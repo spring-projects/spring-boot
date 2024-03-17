@@ -204,6 +204,7 @@ The preceding example YAML corresponds to the following `application.properties`
 [source,properties,subs="verbatim",configprops]
 ----
 spring.application.name=cruncher
+spring.application.group=crunchGroup
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 spring.datasource.url=jdbc:mysql://localhost/test
 server.port=9000

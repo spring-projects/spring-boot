@@ -877,6 +877,62 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void applicationGroupLoggingToConsoleWhenHasApplicationGroup(CapturedOutput output) {
+		this.environment.setProperty("spring.application.group", "mygroup");
+		initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains("[mygroup] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToConsoleWhenHasApplicationGroupWithParenthesis(CapturedOutput output) {
+		this.environment.setProperty("spring.application.group", "mygroup (dev)");
+		initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains("[mygroup (dev)] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToConsoleWhenDisabled(CapturedOutput output) {
+		this.environment.setProperty("spring.application.group", "mygroup");
+		this.environment.setProperty("logging.include-application-group", "false");
+		initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("mygroup").doesNotContain("null");
+	}
+
+	@Test
+	void applicationGroupLoggingToFileWhenHasApplicationGroup() {
+		this.environment.setProperty("spring.application.group", "mygroup");
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("[mygroup] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToFileWhenHasApplicationGroupWithParenthesis() {
+		this.environment.setProperty("spring.application.group", "mygroup (dev)");
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("[mygroup (dev)] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToFileWhenDisabled(CapturedOutput output) {
+		this.environment.setProperty("spring.application.group", "myGroup");
+		this.environment.setProperty("logging.include-application-group", "false");
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).doesNotContain("myGroup").doesNotContain("null");
+	}
+
+	@Test
 	void shouldNotContainAnsiEscapeCodes(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
