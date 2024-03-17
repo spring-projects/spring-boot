@@ -47,6 +47,16 @@ import org.springframework.core.task.VirtualThreadTaskExecutor;
 @ConditionalOnClass(EnableRabbit.class)
 class RabbitAnnotationDrivenConfiguration {
 
+	/**
+	 * Default Name of the thread created for simple rabbit listener.
+	 */
+	public static final String THREADNAME_RABBIT_SIMPLE = "rabbit-simple-";
+
+	/**
+	 * Default Name of the thread created for direct rabbit listener.
+	 */
+	public static final String THREADNAME_RABBIT_DIRECT = "rabbit-direct-";
+
 	private final ObjectProvider<MessageConverter> messageConverter;
 
 	private final ObjectProvider<MessageRecoverer> messageRecoverer;
@@ -76,7 +86,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurerVirtualThreads() {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = simpleListenerConfigurer();
-		configurer.setTaskExecutor(new VirtualThreadTaskExecutor());
+		configurer.setTaskExecutor(new VirtualThreadTaskExecutor(THREADNAME_RABBIT_SIMPLE));
 		return configurer;
 	}
 
@@ -105,7 +115,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurerVirtualThreads() {
 		DirectRabbitListenerContainerFactoryConfigurer configurer = directListenerConfigurer();
-		configurer.setTaskExecutor(new VirtualThreadTaskExecutor());
+		configurer.setTaskExecutor(new VirtualThreadTaskExecutor(THREADNAME_RABBIT_DIRECT));
 		return configurer;
 	}
 
