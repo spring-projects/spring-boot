@@ -73,6 +73,16 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 @Import(PulsarConfiguration.class)
 public class PulsarAutoConfiguration {
 
+	/**
+	 * Default Name of the thread created for pulsar consumer.
+	 */
+	public static final String THREADNAME_PULSAR_CONSUMER = "pulsar-consumer-";
+
+	/**
+	 * Default Name of the thread created for pulsar task executor.
+	 */
+	public static final String THREADNAME_PULSAR_TASKEXECUTOR = "pulsar-taskexecutor-";
+
 	private PulsarProperties properties;
 
 	private PulsarPropertiesMapper propertiesMapper;
@@ -158,7 +168,7 @@ public class PulsarAutoConfiguration {
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
-			containerProperties.setConsumerTaskExecutor(new VirtualThreadTaskExecutor());
+			containerProperties.setConsumerTaskExecutor(new VirtualThreadTaskExecutor(THREADNAME_PULSAR_CONSUMER));
 		}
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
 		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
@@ -189,7 +199,8 @@ public class PulsarAutoConfiguration {
 		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
 		readerContainerProperties.setSchemaResolver(schemaResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
-			readerContainerProperties.setReaderTaskExecutor(new VirtualThreadTaskExecutor());
+			readerContainerProperties
+				.setReaderTaskExecutor(new VirtualThreadTaskExecutor(THREADNAME_PULSAR_TASKEXECUTOR));
 		}
 		this.propertiesMapper.customizeReaderContainerProperties(readerContainerProperties);
 		return new DefaultPulsarReaderContainerFactory<>(pulsarReaderFactory, readerContainerProperties);
