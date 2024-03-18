@@ -1034,7 +1034,7 @@ bom {
 			releaseNotes("https://github.com/Kotlin/kotlinx.serialization/releases/tag/v{version}")
 		}
 	}
-	library("Lettuce", "6.3.1.RELEASE") {
+	library("Lettuce", "6.3.2.RELEASE") {
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
