@@ -11,6 +11,10 @@ dependencies {
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.eclipse.jetty.ee10:jetty-ee10-servlets")
 	api("org.eclipse.jetty.ee10:jetty-ee10-webapp")
-	api("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
-	api("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server")
+	api("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server") {
+		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
+	}
+	api("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server") {
+		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
+	}
 }
