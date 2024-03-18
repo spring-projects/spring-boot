@@ -419,7 +419,7 @@ bom {
 			releaseNotes("https://github.com/git-commit-id/git-commit-id-maven-plugin/releases/tag/v{version}")
 		}
 	}
-	library("Glassfish JAXB", "4.0.4") {
+	library("Glassfish JAXB", "4.0.5") {
 		group("org.glassfish.jaxb") {
 			imports = [
 				"jaxb-bom"
