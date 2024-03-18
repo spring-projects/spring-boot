@@ -31,14 +31,13 @@ public class JdbcDataProperties {
 	/**
 	 * Dialect to use. By default, the dialect is determined by inspecting the database connection.
 	 */
-	private Class<? extends Dialect> dialect;
+	private JdbcDatabaseDialect dialect;
 
-	public Class<? extends Dialect> getDialect() {
+	public JdbcDatabaseDialect getDialect() {
 		return this.dialect;
 	}
 
-	public void setDialect(Class<? extends Dialect> dialect) {
+	public void setDialect(JdbcDatabaseDialect dialect) {
 		this.dialect = dialect;
 	}
-
 }

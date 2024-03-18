@@ -149,16 +149,9 @@ public class JdbcRepositoriesAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public Dialect jdbcDialect(NamedParameterJdbcOperations operations) {
-			if (this.properties.getDialect() != null
-			) {
-				Class<?> dialectType = this.properties.getDialect();
-				try {
-					return (Dialect)dialectType.getDeclaredConstructor().newInstance();
-				}
-				catch (InstantiationException | IllegalAccessException |
-					   InvocationTargetException | NoSuchMethodException e) {
-					throw new BeanCreationException("Couldn't create instance of type " + dialectType, e);
-				}
+			JdbcDatabaseDialect dialectEnum = this.properties.getDialect();
+			if (dialectEnum != null) {
+				return dialectEnum.get();
 			}
 			return super.jdbcDialect(operations);
 		}

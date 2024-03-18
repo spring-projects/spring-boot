@@ -186,7 +186,7 @@ class JdbcRepositoriesAutoConfigurationTests {
 	@Test
 	void allowsConfigurationOfDialectByProperty() {
 		this.contextRunner.with(database())
-				.withPropertyValues("spring.data.jdbc.dialect:" + JdbcPostgresDialect.class.getName())
+				.withPropertyValues("spring.data.jdbc.dialect=postgresql" )
 				.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
 						DataSourceTransactionManagerAutoConfiguration.class))
 				.withUserConfiguration(TestConfiguration.class)
