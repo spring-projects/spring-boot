@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.amqp;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -545,12 +546,34 @@ class RabbitAutoConfigurationTests {
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_21)
-	void shouldConfigureVirtualThreads() {
+	void shouldConfigureVirtualThreadsForSimpleListener() {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
 			SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 				.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
 			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
 				.isInstanceOf(VirtualThreadTaskExecutor.class);
+			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+			assertThat(threadCreated.getName()).containsPattern("rabbit-simple-[0-9]+");
+
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldConfigureVirtualThreadsForDirectListener() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			DirectRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactory = context.getBean(
+					"directRabbitListenerContainerFactoryConfigurer",
+					DirectRabbitListenerContainerFactoryConfigurer.class);
+			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
+				.isInstanceOf(VirtualThreadTaskExecutor.class);
+			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+			assertThat(threadCreated.getName()).containsPattern("rabbit-direct-[0-9]+");
+
 		});
 	}
 

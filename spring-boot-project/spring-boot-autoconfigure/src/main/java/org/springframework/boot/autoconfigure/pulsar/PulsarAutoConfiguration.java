@@ -73,9 +73,9 @@ import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 @Import(PulsarConfiguration.class)
 public class PulsarAutoConfiguration {
 
-	private PulsarProperties properties;
+	private final PulsarProperties properties;
 
-	private PulsarPropertiesMapper propertiesMapper;
+	private final PulsarPropertiesMapper propertiesMapper;
 
 	PulsarAutoConfiguration(PulsarProperties properties) {
 		this.properties = properties;
@@ -158,7 +158,7 @@ public class PulsarAutoConfiguration {
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
-			containerProperties.setConsumerTaskExecutor(new VirtualThreadTaskExecutor());
+			containerProperties.setConsumerTaskExecutor(new VirtualThreadTaskExecutor("pulsar-consumer-"));
 		}
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
 		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
@@ -189,7 +189,7 @@ public class PulsarAutoConfiguration {
 		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
 		readerContainerProperties.setSchemaResolver(schemaResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
-			readerContainerProperties.setReaderTaskExecutor(new VirtualThreadTaskExecutor());
+			readerContainerProperties.setReaderTaskExecutor(new VirtualThreadTaskExecutor("pulsar-reader-"));
 		}
 		this.propertiesMapper.customizeReaderContainerProperties(readerContainerProperties);
 		return new DefaultPulsarReaderContainerFactory<>(pulsarReaderFactory, readerContainerProperties);

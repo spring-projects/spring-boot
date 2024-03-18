@@ -76,7 +76,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	SimpleRabbitListenerContainerFactoryConfigurer simpleRabbitListenerContainerFactoryConfigurerVirtualThreads() {
 		SimpleRabbitListenerContainerFactoryConfigurer configurer = simpleListenerConfigurer();
-		configurer.setTaskExecutor(new VirtualThreadTaskExecutor());
+		configurer.setTaskExecutor(new VirtualThreadTaskExecutor("rabbit-simple-"));
 		return configurer;
 	}
 
@@ -105,7 +105,7 @@ class RabbitAnnotationDrivenConfiguration {
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	DirectRabbitListenerContainerFactoryConfigurer directRabbitListenerContainerFactoryConfigurerVirtualThreads() {
 		DirectRabbitListenerContainerFactoryConfigurer configurer = directListenerConfigurer();
-		configurer.setTaskExecutor(new VirtualThreadTaskExecutor());
+		configurer.setTaskExecutor(new VirtualThreadTaskExecutor("rabbit-direct-"));
 		return configurer;
 	}
 

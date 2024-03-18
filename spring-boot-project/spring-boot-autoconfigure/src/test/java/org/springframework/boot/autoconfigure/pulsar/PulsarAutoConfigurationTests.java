@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -69,6 +70,7 @@ import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -506,6 +508,10 @@ class PulsarAutoConfigurationTests {
 					.getBean(ConcurrentPulsarListenerContainerFactory.class);
 				assertThat(factory.getContainerProperties().getConsumerTaskExecutor())
 					.isInstanceOf(VirtualThreadTaskExecutor.class);
+				Object taskExecutor = factory.getContainerProperties().getConsumerTaskExecutor();
+				Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+				Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+				assertThat(threadCreated.getName()).containsPattern("pulsar-consumer-[0-9]+");
 			});
 		}
 
@@ -561,6 +567,10 @@ class PulsarAutoConfigurationTests {
 					.getBean(DefaultPulsarReaderContainerFactory.class);
 				assertThat(factory.getContainerProperties().getReaderTaskExecutor())
 					.isInstanceOf(VirtualThreadTaskExecutor.class);
+				Object taskExecutor = factory.getContainerProperties().getReaderTaskExecutor();
+				Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+				Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+				assertThat(threadCreated.getName()).containsPattern("pulsar-reader-[0-9]+");
 			});
 		}
 
