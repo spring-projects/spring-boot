@@ -486,7 +486,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Activation", "2.1.2") {
+	library("Jakarta Activation", "2.1.3") {
 		group("jakarta.activation") {
 			modules = [
 				"jakarta.activation-api"
