@@ -1415,7 +1415,18 @@ bom {
 			releaseNotes("https://github.com/pgjdbc/pgjdbc/releases/tag/REL{version}")
 		}
 	}
-	library("Prometheus Client", "0.16.0") {
+	library("Prometheus Client", "1.1.0") {
+		group("io.prometheus") {
+			modules = [
+					"prometheus-metrics-exposition-formats"
+			]
+		}
+		links {
+			site("https://github.com/prometheus/client_java")
+			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
+		}
+	}
+	library("Prometheus Simpleclient", "0.16.0") {
 		group("io.prometheus") {
 			imports = [
 				"simpleclient_bom"

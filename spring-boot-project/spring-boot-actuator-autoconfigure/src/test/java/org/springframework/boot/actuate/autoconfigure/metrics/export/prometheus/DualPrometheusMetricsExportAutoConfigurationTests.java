@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import io.micrometer.core.instrument.Clock;
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
@@ -25,15 +26,16 @@ import io.prometheus.client.exporter.HttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.assertj.core.api.ThrowingConsumer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.DualPrometheusMetricsExportAutoConfigurationTests.CustomSecondEndpointConfiguration.SecondPrometheusScrapeEndpoint;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusSimpleclientScrapeEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -48,29 +50,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link PrometheusMetricsExportAutoConfiguration}.
+ * Tests for {@link PrometheusSimpleclientMetricsExportAutoConfiguration} and
+ * {@link PrometheusMetricsExportAutoConfiguration} with both Prometheus clients on the
+ * classpath.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Jonatan Ivanov
  */
+@SuppressWarnings({ "removal", "deprecation" })
 @ExtendWith(OutputCaptureExtension.class)
-class PrometheusMetricsExportAutoConfigurationTests {
+class DualPrometheusMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withClassLoader(new FilteredClassLoader("io.micrometer.prometheus.", "io.prometheus.client"))
-		.withConfiguration(AutoConfigurations.of(PrometheusMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(PrometheusSimpleclientMetricsExportAutoConfiguration.class,
+				PrometheusMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context)
-			.doesNotHaveBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class));
+			.doesNotHaveBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class)
+			.doesNotHaveBean(io.micrometer.prometheus.PrometheusMeterRegistry.class));
 	}
 
 	@Test
-	void autoConfiguresItsConfigCollectorRegistryAndMeterRegistry() {
+	void autoConfiguresItsConfigPrometheusRegistryAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.run((context) -> assertThat(context)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
+				.hasSingleBean(CollectorRegistry.class)
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class)
 				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class)
 				.hasSingleBean(PrometheusRegistry.class)
 				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusConfig.class));
@@ -81,6 +89,9 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.withPropertyValues("management.defaults.metrics.export.enabled=false")
 			.run((context) -> assertThat(context)
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
+				.doesNotHaveBean(CollectorRegistry.class)
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusConfig.class)
 				.doesNotHaveBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class)
 				.doesNotHaveBean(PrometheusRegistry.class)
 				.doesNotHaveBean(io.micrometer.prometheusmetrics.PrometheusConfig.class));
@@ -91,6 +102,9 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.withPropertyValues("management.prometheus.metrics.export.enabled=false")
 			.run((context) -> assertThat(context)
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
+				.doesNotHaveBean(CollectorRegistry.class)
+				.doesNotHaveBean(io.micrometer.prometheus.PrometheusConfig.class)
 				.doesNotHaveBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class)
 				.doesNotHaveBean(PrometheusRegistry.class)
 				.doesNotHaveBean(io.micrometer.prometheusmetrics.PrometheusConfig.class));
@@ -99,44 +113,48 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	@Test
 	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-			.run((context) -> assertThat(context)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
+				.hasSingleBean(CollectorRegistry.class)
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class)
+				.hasBean("customConfig")
 				.hasSingleBean(PrometheusRegistry.class)
 				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusConfig.class)
-				.hasBean("customConfig"));
+				.hasBean("otherCustomConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-			.run((context) -> assertThat(context)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 				.hasBean("customRegistry")
+				.hasSingleBean(CollectorRegistry.class)
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class)
 				.hasSingleBean(PrometheusRegistry.class)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusConfig.class));
+				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusConfig.class)
+				.hasBean("otherCustomRegistry"));
 	}
 
 	@Test
 	void allowsCustomCollectorRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomPrometheusRegistryConfiguration.class)
-			.run((context) -> assertThat(context)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class)
+		this.contextRunner.withUserConfiguration(CustomCollectorRegistryConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class)
+				.hasBean("customCollectorRegistry")
+				.hasSingleBean(CollectorRegistry.class)
+				.hasSingleBean(io.micrometer.prometheus.PrometheusConfig.class)
 				.hasBean("customPrometheusRegistry")
 				.hasSingleBean(PrometheusRegistry.class)
 				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusConfig.class));
 	}
 
 	@Test
-	@Disabled("exemplar support with new client is not integrated in Micrometer yet")
 	void autoConfiguresExemplarSamplerIfSpanContextSupplierIsPresent() {
 		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
 				.hasSingleBean(ExemplarSampler.class)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class));
+				.hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class));
 	}
 
 	@Test
-	@Disabled("exemplar support with new client is not integrated in Micrometer yet")
 	void allowsCustomExemplarSamplerToBeUsed() {
 		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
 			.withBean("customExemplarSampler", ExemplarSampler.class, () -> mock(ExemplarSampler.class))
@@ -150,7 +168,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class)
 				.doesNotHaveBean(ExemplarSampler.class)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class));
+				.hasSingleBean(io.micrometer.prometheus.PrometheusMeterRegistry.class));
 	}
 
 	@Test
@@ -158,14 +176,16 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class)
 			.withPropertyValues("management.endpoints.web.exposure.include=prometheus")
-			.run((context) -> assertThat(context).hasSingleBean(PrometheusScrapeEndpoint.class));
+			.run((context) -> assertThat(context).hasSingleBean(PrometheusScrapeEndpoint.class)
+				.doesNotHaveBean(PrometheusSimpleclientScrapeEndpoint.class));
 	}
 
 	@Test
 	void scrapeEndpointNotAddedToManagementContextWhenNotExposed() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withUserConfiguration(BaseConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusScrapeEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusSimpleclientScrapeEndpoint.class)
+				.doesNotHaveBean(PrometheusScrapeEndpoint.class));
 	}
 
 	@Test
@@ -174,7 +194,8 @@ class PrometheusMetricsExportAutoConfigurationTests {
 			.withPropertyValues("management.endpoints.web.exposure.include=prometheus")
 			.withPropertyValues("management.endpoint.prometheus.enabled=false")
 			.withUserConfiguration(BaseConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusScrapeEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusSimpleclientScrapeEndpoint.class)
+				.doesNotHaveBean(PrometheusScrapeEndpoint.class));
 	}
 
 	@Test
@@ -182,6 +203,16 @@ class PrometheusMetricsExportAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withUserConfiguration(CustomEndpointConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("customEndpoint")
+				.hasSingleBean(PrometheusSimpleclientScrapeEndpoint.class));
+	}
+
+	@Test
+	void allowsCustomSecondScrapeEndpointToBeUsed() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
+			.withUserConfiguration(CustomSecondEndpointConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("customSecondEndpoint")
+				.hasSingleBean(PrometheusSimpleclientScrapeEndpoint.class)
+				.hasSingleBean(SecondPrometheusScrapeEndpoint.class)
 				.hasSingleBean(PrometheusScrapeEndpoint.class));
 	}
 
@@ -192,7 +223,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	@Disabled("new Prometheus client does not have support for Pushgateway yet")
 	void withPushGatewayEnabled(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=true")
@@ -204,7 +234,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	@Disabled("new Prometheus client does not have support for Pushgateway yet")
 	void withPushGatewayNoBasicAuth() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=true")
@@ -214,7 +243,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	@Disabled("new Prometheus client does not have support for Pushgateway yet")
 	void withCustomPushGatewayURL() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=true",
@@ -224,7 +252,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	@Disabled("new Prometheus client does not have support for Pushgateway yet")
 	void withPushGatewayBasicAuth() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=true",
@@ -269,7 +296,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomConfigConfiguration {
 
 		@Bean
-		io.micrometer.prometheusmetrics.PrometheusConfig customConfig() {
+		io.micrometer.prometheus.PrometheusConfig customConfig() {
+			return (key) -> null;
+		}
+
+		@Bean
+		io.micrometer.prometheusmetrics.PrometheusConfig otherCustomConfig() {
 			return (key) -> null;
 		}
 
@@ -280,7 +312,13 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		io.micrometer.prometheusmetrics.PrometheusMeterRegistry customRegistry(
+		io.micrometer.prometheus.PrometheusMeterRegistry customRegistry(
+				io.micrometer.prometheus.PrometheusConfig config, CollectorRegistry collectorRegistry, Clock clock) {
+			return new io.micrometer.prometheus.PrometheusMeterRegistry(config, collectorRegistry, clock);
+		}
+
+		@Bean
+		io.micrometer.prometheusmetrics.PrometheusMeterRegistry otherCustomRegistry(
 				io.micrometer.prometheusmetrics.PrometheusConfig config, PrometheusRegistry prometheusRegistry,
 				Clock clock) {
 			return new io.micrometer.prometheusmetrics.PrometheusMeterRegistry(config, prometheusRegistry, clock);
@@ -290,7 +328,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	static class CustomPrometheusRegistryConfiguration {
+	static class CustomCollectorRegistryConfiguration {
+
+		@Bean
+		CollectorRegistry customCollectorRegistry() {
+			return new CollectorRegistry();
+		}
 
 		@Bean
 		PrometheusRegistry customPrometheusRegistry() {
@@ -304,8 +347,33 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomEndpointConfiguration {
 
 		@Bean
-		PrometheusScrapeEndpoint customEndpoint(PrometheusRegistry prometheusRegistry) {
+		PrometheusSimpleclientScrapeEndpoint customEndpoint(CollectorRegistry collectorRegistry) {
+			return new PrometheusSimpleclientScrapeEndpoint(collectorRegistry);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class CustomSecondEndpointConfiguration {
+
+		@Bean
+		PrometheusScrapeEndpoint prometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry) {
 			return new PrometheusScrapeEndpoint(prometheusRegistry);
+		}
+
+		@Bean
+		SecondPrometheusScrapeEndpoint customSecondEndpoint(CollectorRegistry collectorRegistry) {
+			return new SecondPrometheusScrapeEndpoint(collectorRegistry);
+		}
+
+		@WebEndpoint(id = "prometheussc")
+		static class SecondPrometheusScrapeEndpoint extends PrometheusSimpleclientScrapeEndpoint {
+
+			SecondPrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
+				super(collectorRegistry);
+			}
+
 		}
 
 	}

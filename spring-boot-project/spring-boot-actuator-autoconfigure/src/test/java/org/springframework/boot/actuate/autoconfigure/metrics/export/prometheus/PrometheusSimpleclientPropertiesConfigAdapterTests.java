@@ -25,29 +25,39 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link PrometheusPropertiesConfigAdapter}.
+ * Tests for {@link PrometheusSimpleclientPropertiesConfigAdapter}.
  *
  * @author Mirko Sobeck
  */
-class PrometheusPropertiesConfigAdapterTests
-		extends AbstractPropertiesConfigAdapterTests<PrometheusProperties, PrometheusPropertiesConfigAdapter> {
+@SuppressWarnings("deprecation")
+class PrometheusSimpleclientPropertiesConfigAdapterTests extends
+		AbstractPropertiesConfigAdapterTests<PrometheusProperties, PrometheusSimpleclientPropertiesConfigAdapter> {
 
-	PrometheusPropertiesConfigAdapterTests() {
-		super(PrometheusPropertiesConfigAdapter.class);
+	PrometheusSimpleclientPropertiesConfigAdapterTests() {
+		super(PrometheusSimpleclientPropertiesConfigAdapter.class);
 	}
 
 	@Test
 	void whenPropertiesDescriptionsIsSetAdapterDescriptionsReturnsIt() {
 		PrometheusProperties properties = new PrometheusProperties();
 		properties.setDescriptions(false);
-		assertThat(new PrometheusPropertiesConfigAdapter(properties).descriptions()).isFalse();
+		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).descriptions()).isFalse();
+	}
+
+	@Test
+	void whenPropertiesHistogramFlavorIsSetAdapterHistogramFlavorReturnsIt() {
+		PrometheusProperties properties = new PrometheusProperties();
+		properties.setHistogramFlavor(io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics);
+		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).histogramFlavor())
+			.isEqualTo(io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics);
 	}
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
 		PrometheusProperties properties = new PrometheusProperties();
 		properties.setStep(Duration.ofSeconds(30));
-		assertThat(new PrometheusPropertiesConfigAdapter(properties).step()).isEqualTo(Duration.ofSeconds(30));
+		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).step())
+			.isEqualTo(Duration.ofSeconds(30));
 	}
 
 }

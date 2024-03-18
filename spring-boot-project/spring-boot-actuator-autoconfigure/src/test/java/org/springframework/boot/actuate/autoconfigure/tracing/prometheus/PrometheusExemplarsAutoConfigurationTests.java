@@ -26,7 +26,7 @@ import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.common.TextFormat;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusSimpleclientMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration;
@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Jonatan Ivanov
  */
+@SuppressWarnings("removal")
 class PrometheusExemplarsAutoConfigurationTests {
 
 	private static final Pattern BUCKET_TRACE_INFO_PATTERN = Pattern.compile(
@@ -57,10 +58,10 @@ class PrometheusExemplarsAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("management.tracing.sampling.probability=1.0",
 				"management.metrics.distribution.percentiles-histogram.all=true")
-		.with(MetricsRun.limitedTo(PrometheusMetricsExportAutoConfiguration.class))
-		.withConfiguration(
-				AutoConfigurations.of(PrometheusExemplarsAutoConfiguration.class, ObservationAutoConfiguration.class,
-						BraveAutoConfiguration.class, MicrometerTracingAutoConfiguration.class));
+		.with(MetricsRun.limitedTo())
+		.withConfiguration(AutoConfigurations.of(PrometheusSimpleclientMetricsExportAutoConfiguration.class,
+				PrometheusExemplarsAutoConfiguration.class, ObservationAutoConfiguration.class,
+				BraveAutoConfiguration.class, MicrometerTracingAutoConfiguration.class));
 
 	@Test
 	void shouldNotSupplyBeansIfPrometheusSupportIsMissing() {
