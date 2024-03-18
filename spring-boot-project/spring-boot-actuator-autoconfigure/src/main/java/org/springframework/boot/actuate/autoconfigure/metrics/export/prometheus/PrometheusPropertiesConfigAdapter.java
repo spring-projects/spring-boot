@@ -17,19 +17,21 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.Properties;
+
+import io.micrometer.prometheusmetrics.PrometheusConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
- * Adapter to convert {@link PrometheusProperties} to a
- * {@link io.micrometer.prometheus.PrometheusConfig}.
+ * Adapter to convert {@link PrometheusProperties} to a {@link PrometheusConfig}.
  *
  * @author Jon Schneider
  * @author Phillip Webb
  */
-@SuppressWarnings("deprecation")
 class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<PrometheusProperties>
-		implements io.micrometer.prometheus.PrometheusConfig {
+		implements PrometheusConfig {
 
 	PrometheusPropertiesConfigAdapter(PrometheusProperties properties) {
 		super(properties);
@@ -47,18 +49,28 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusProperties::isDescriptions, io.micrometer.prometheus.PrometheusConfig.super::descriptions);
-	}
-
-	@Override
-	public io.micrometer.prometheus.HistogramFlavor histogramFlavor() {
-		return get(PrometheusProperties::getHistogramFlavor,
-				io.micrometer.prometheus.PrometheusConfig.super::histogramFlavor);
+		return get(PrometheusProperties::isDescriptions, PrometheusConfig.super::descriptions);
 	}
 
 	@Override
 	public Duration step() {
-		return get(PrometheusProperties::getStep, io.micrometer.prometheus.PrometheusConfig.super::step);
+		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
+	}
+
+	@Override
+	public Properties prometheusProperties() {
+		return get(this::fromPropertiesMap, PrometheusConfig.super::prometheusProperties);
+	}
+
+	private Properties fromPropertiesMap(PrometheusProperties prometheusProperties) {
+		Map<String, String> map = prometheusProperties.getPrometheusProperties();
+		if (map.isEmpty()) {
+			return null;
+		}
+		Properties properties = PrometheusConfig.super.prometheusProperties();
+		properties = (properties != null) ? properties : new Properties();
+		properties.putAll(map);
+		return properties;
 	}
 
 }

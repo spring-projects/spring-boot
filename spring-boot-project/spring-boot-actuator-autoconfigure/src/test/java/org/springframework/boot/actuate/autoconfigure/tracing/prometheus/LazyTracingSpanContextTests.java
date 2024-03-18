@@ -23,19 +23,18 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusExemplarsAutoConfiguration.LazyTracingSpanContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for
- * {@link org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusSimpleclientExemplarsAutoConfiguration.LazyTracingSpanContextSupplier}.
+ * Tests for {@link LazyTracingSpanContext}.
  *
  * @author Andy Wilkinson
  */
-@SuppressWarnings("removal")
-class LazyTracingSpanContextSupplierTests {
+class LazyTracingSpanContextTests {
 
 	private final Tracer tracer = mock(Tracer.class);
 
@@ -43,42 +42,41 @@ class LazyTracingSpanContextSupplierTests {
 
 		@Override
 		public Tracer getObject() throws BeansException {
-			return LazyTracingSpanContextSupplierTests.this.tracer;
+			return LazyTracingSpanContextTests.this.tracer;
 		}
 
 		@Override
 		public Tracer getObject(Object... args) throws BeansException {
-			return LazyTracingSpanContextSupplierTests.this.tracer;
+			return LazyTracingSpanContextTests.this.tracer;
 		}
 
 		@Override
 		public Tracer getIfAvailable() throws BeansException {
-			return LazyTracingSpanContextSupplierTests.this.tracer;
+			return LazyTracingSpanContextTests.this.tracer;
 		}
 
 		@Override
 		public Tracer getIfUnique() throws BeansException {
-			return LazyTracingSpanContextSupplierTests.this.tracer;
+			return LazyTracingSpanContextTests.this.tracer;
 		}
 
 	};
 
-	private final org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusSimpleclientExemplarsAutoConfiguration.LazyTracingSpanContextSupplier spanContextSupplier = new org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusSimpleclientExemplarsAutoConfiguration.LazyTracingSpanContextSupplier(
-			this.objectProvider);
+	private final LazyTracingSpanContext spanContextSupplier = new LazyTracingSpanContext(this.objectProvider);
 
 	@Test
 	void whenCurrentSpanIsNullThenSpanIdIsNull() {
-		assertThat(this.spanContextSupplier.getSpanId()).isNull();
+		assertThat(this.spanContextSupplier.getCurrentSpanId()).isNull();
 	}
 
 	@Test
 	void whenCurrentSpanIsNullThenTraceIdIsNull() {
-		assertThat(this.spanContextSupplier.getTraceId()).isNull();
+		assertThat(this.spanContextSupplier.getCurrentTraceId()).isNull();
 	}
 
 	@Test
 	void whenCurrentSpanIsNullThenSampledIsFalse() {
-		assertThat(this.spanContextSupplier.isSampled()).isFalse();
+		assertThat(this.spanContextSupplier.isCurrentSpanSampled()).isFalse();
 	}
 
 	@Test
@@ -88,7 +86,7 @@ class LazyTracingSpanContextSupplierTests {
 		TraceContext traceContext = mock(TraceContext.class);
 		given(traceContext.spanId()).willReturn("span-id");
 		given(span.context()).willReturn(traceContext);
-		assertThat(this.spanContextSupplier.getSpanId()).isEqualTo("span-id");
+		assertThat(this.spanContextSupplier.getCurrentSpanId()).isEqualTo("span-id");
 	}
 
 	@Test
@@ -98,7 +96,7 @@ class LazyTracingSpanContextSupplierTests {
 		TraceContext traceContext = mock(TraceContext.class);
 		given(traceContext.traceId()).willReturn("trace-id");
 		given(span.context()).willReturn(traceContext);
-		assertThat(this.spanContextSupplier.getTraceId()).isEqualTo("trace-id");
+		assertThat(this.spanContextSupplier.getCurrentTraceId()).isEqualTo("trace-id");
 	}
 
 	@Test
@@ -107,7 +105,7 @@ class LazyTracingSpanContextSupplierTests {
 		given(this.tracer.currentSpan()).willReturn(span);
 		TraceContext traceContext = mock(TraceContext.class);
 		given(span.context()).willReturn(traceContext);
-		assertThat(this.spanContextSupplier.getSpanId()).isNull();
+		assertThat(this.spanContextSupplier.getCurrentSpanId()).isNull();
 	}
 
 	@Test
@@ -116,7 +114,7 @@ class LazyTracingSpanContextSupplierTests {
 		given(this.tracer.currentSpan()).willReturn(span);
 		TraceContext traceContext = mock(TraceContext.class);
 		given(span.context()).willReturn(traceContext);
-		assertThat(this.spanContextSupplier.getTraceId()).isNull();
+		assertThat(this.spanContextSupplier.getCurrentTraceId()).isNull();
 	}
 
 	@Test
@@ -126,7 +124,7 @@ class LazyTracingSpanContextSupplierTests {
 		TraceContext traceContext = mock(TraceContext.class);
 		given(traceContext.sampled()).willReturn(true);
 		given(span.context()).willReturn(traceContext);
-		assertThat(this.spanContextSupplier.isSampled()).isTrue();
+		assertThat(this.spanContextSupplier.isCurrentSpanSampled()).isTrue();
 	}
 
 	@Test
@@ -136,7 +134,7 @@ class LazyTracingSpanContextSupplierTests {
 		TraceContext traceContext = mock(TraceContext.class);
 		given(traceContext.sampled()).willReturn(false);
 		given(span.context()).willReturn(traceContext);
-		assertThat(this.spanContextSupplier.isSampled()).isFalse();
+		assertThat(this.spanContextSupplier.isCurrentSpanSampled()).isFalse();
 	}
 
 	@Test
@@ -146,7 +144,7 @@ class LazyTracingSpanContextSupplierTests {
 		TraceContext traceContext = mock(TraceContext.class);
 		given(traceContext.sampled()).willReturn(null);
 		given(span.context()).willReturn(traceContext);
-		assertThat(this.spanContextSupplier.isSampled()).isFalse();
+		assertThat(this.spanContextSupplier.isCurrentSpanSampled()).isFalse();
 	}
 
 }

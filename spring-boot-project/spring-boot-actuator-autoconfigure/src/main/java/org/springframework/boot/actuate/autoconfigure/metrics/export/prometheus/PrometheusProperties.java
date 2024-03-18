@@ -31,7 +31,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 @ConfigurationProperties(prefix = "management.prometheus.metrics.export")
 public class PrometheusProperties {
 
@@ -55,7 +54,13 @@ public class PrometheusProperties {
 	/**
 	 * Histogram type for backing DistributionSummary and Timer.
 	 */
-	private io.micrometer.prometheus.HistogramFlavor histogramFlavor = io.micrometer.prometheus.HistogramFlavor.Prometheus;
+	@Deprecated(since = "3.3.0")
+	private HistogramFlavor histogramFlavor = HistogramFlavor.Prometheus;
+
+	/**
+	 * Additional properties to pass to the Prometheus client.
+	 */
+	private final Map<String, String> prometheusProperties = new HashMap<>();
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -70,11 +75,11 @@ public class PrometheusProperties {
 		this.descriptions = descriptions;
 	}
 
-	public io.micrometer.prometheus.HistogramFlavor getHistogramFlavor() {
+	public HistogramFlavor getHistogramFlavor() {
 		return this.histogramFlavor;
 	}
 
-	public void setHistogramFlavor(io.micrometer.prometheus.HistogramFlavor histogramFlavor) {
+	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
 		this.histogramFlavor = histogramFlavor;
 	}
 
@@ -96,6 +101,10 @@ public class PrometheusProperties {
 
 	public Pushgateway getPushgateway() {
 		return this.pushgateway;
+	}
+
+	public Map<String, String> getPrometheusProperties() {
+		return this.prometheusProperties;
 	}
 
 	/**
@@ -205,6 +214,15 @@ public class PrometheusProperties {
 
 		public void setShutdownOperation(ShutdownOperation shutdownOperation) {
 			this.shutdownOperation = shutdownOperation;
+		}
+
+	}
+
+	public enum HistogramFlavor {
+
+		Prometheus, VictoriaMetrics;
+
+		HistogramFlavor() {
 		}
 
 	}
