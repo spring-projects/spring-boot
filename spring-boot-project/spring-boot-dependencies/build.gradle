@@ -306,7 +306,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish JAXB", "4.0.4") {
+	library("Glassfish JAXB", "4.0.5") {
 		group("org.glassfish.jaxb") {
 			imports = [
 				"jaxb-bom"
