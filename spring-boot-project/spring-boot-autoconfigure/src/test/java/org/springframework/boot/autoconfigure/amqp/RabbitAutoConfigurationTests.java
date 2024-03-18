@@ -552,11 +552,10 @@ class RabbitAutoConfigurationTests {
 				.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
 			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
 				.isInstanceOf(VirtualThreadTaskExecutor.class);
-			final var taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
-			final var virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
-			final var threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
-			assertThat(threadCreated.getName())
-				.containsPattern(RabbitAnnotationDrivenConfiguration.THREADNAME_RABBIT_SIMPLE + "[0-9]*");
+			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+			assertThat(threadCreated.getName()).containsPattern("rabbit-simple-[0-9]+");
 
 		});
 	}
@@ -570,11 +569,10 @@ class RabbitAutoConfigurationTests {
 					DirectRabbitListenerContainerFactoryConfigurer.class);
 			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
 				.isInstanceOf(VirtualThreadTaskExecutor.class);
-			final var taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
-			final var virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
-			final var threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
-			assertThat(threadCreated.getName())
-				.containsPattern(RabbitAnnotationDrivenConfiguration.THREADNAME_RABBIT_DIRECT + "[0-9]*");
+			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+			assertThat(threadCreated.getName()).containsPattern("rabbit-direct-[0-9]+");
 
 		});
 	}

@@ -508,11 +508,10 @@ class PulsarAutoConfigurationTests {
 					.getBean(ConcurrentPulsarListenerContainerFactory.class);
 				assertThat(factory.getContainerProperties().getConsumerTaskExecutor())
 					.isInstanceOf(VirtualThreadTaskExecutor.class);
-				final var taskExecutor = factory.getContainerProperties().getConsumerTaskExecutor();
-				final var virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
-				final var threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
-				assertThat(threadCreated.getName())
-					.containsPattern(PulsarAutoConfiguration.THREADNAME_PULSAR_CONSUMER + "[0-9]*");
+				Object taskExecutor = factory.getContainerProperties().getConsumerTaskExecutor();
+				Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+				Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+				assertThat(threadCreated.getName()).containsPattern("pulsar-consumer-[0-9]+");
 			});
 		}
 
@@ -568,11 +567,10 @@ class PulsarAutoConfigurationTests {
 					.getBean(DefaultPulsarReaderContainerFactory.class);
 				assertThat(factory.getContainerProperties().getReaderTaskExecutor())
 					.isInstanceOf(VirtualThreadTaskExecutor.class);
-				final var taskExecutor = factory.getContainerProperties().getReaderTaskExecutor();
-				final var virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
-				final var threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
-				assertThat(threadCreated.getName())
-					.containsPattern(PulsarAutoConfiguration.THREADNAME_PULSAR_TASKEXECUTOR + "[0-9]*");
+				Object taskExecutor = factory.getContainerProperties().getReaderTaskExecutor();
+				Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+				Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+				assertThat(threadCreated.getName()).containsPattern("pulsar-reader-[0-9]+");
 			});
 		}
 
