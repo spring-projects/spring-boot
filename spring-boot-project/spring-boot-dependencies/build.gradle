@@ -99,7 +99,7 @@ bom {
 			]
 		}
 	}
-	library("Awaitility", "4.2.1") {
+	library("Awaitility", "4.2.0") {
 		group("org.awaitility") {
 			modules = [
 				"awaitility",
