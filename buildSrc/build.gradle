@@ -53,6 +53,7 @@ dependencies {
 	implementation("org.springframework:spring-context")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
+	implementation("io.spring.nohttp:nohttp-gradle:0.0.11")
 
 	testImplementation("org.assertj:assertj-core:${versions.assertj}")
 	testImplementation("org.hamcrest:hamcrest:${versions.hamcrest}")
