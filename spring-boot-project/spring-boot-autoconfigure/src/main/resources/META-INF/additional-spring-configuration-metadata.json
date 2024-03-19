@@ -1336,6 +1336,14 @@
       }
     },
     {
+      "name": "spring.flyway.cherry-pick",
+      "description": "Migrations that Flyway should consider when migrating or undoing. When empty all available migrations are considered. Requires Flyway Teams.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 10"
+      }
+    },
+    {
       "name": "spring.flyway.dry-run-output",
       "type": "java.io.OutputStream",
       "deprecation": {
@@ -1392,6 +1400,14 @@
       }
     },
     {
+      "name": "spring.flyway.license-key",
+      "description": "License key for Flyway Teams.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Removed in Flyway 10"
+      }
+    },
+    {
       "name": "spring.flyway.locations",
       "sourceType": "org.springframework.boot.autoconfigure.flyway.FlywayProperties",
       "defaultValue": [
@@ -1426,7 +1442,7 @@
       "type": "java.lang.String",
       "deprecation": {
         "level": "error",
-        "reason": "Flyway Teams only."
+        "reason": "Removed in Flyway 10"
       }
     },
     {
