@@ -407,7 +407,7 @@ bom {
 				.formatted(version.toString("_")) }
 		}
 	}
-	library("Git Commit ID Maven Plugin", "6.0.0") {
+	library("Git Commit ID Maven Plugin", "8.0.2") {
 		group("io.github.git-commit-id") {
 			plugins = [
 				"git-commit-id-maven-plugin"
