@@ -43,18 +43,10 @@ dependencies {
 
 	infinispan(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	infinispan("javax.cache:cache-api")
-	infinispan("org.infinispan:infinispan-commons-jakarta")
+	infinispan("org.infinispan:infinispan-commons")
 	infinispan("org.infinispan:infinispan-component-annotations")
-	infinispan("org.infinispan:infinispan-core-jakarta")
+	infinispan("org.infinispan:infinispan-core")
 	infinispan("org.infinispan:infinispan-jcache")
-	modules {
-		module("org.inifinispan:infinispan-commons") {
-			replacedBy("org.infinispan:infinispan-commons-jakarta", "Java EE 9 baseline")
-		}
-		module("org.inifinispan:infinispan-core") {
-			replacedBy("org.infinispan:infinispan-core-jakarta", "Java EE 9 baseline")
-		}
-	}
 
 	redisTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
 	redisTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
