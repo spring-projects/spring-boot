@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.jdbc;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.relational.core.dialect.Dialect;
 
 /**
  * Configuration properties for Spring Data JDBC.

@@ -16,11 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.jdbc;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

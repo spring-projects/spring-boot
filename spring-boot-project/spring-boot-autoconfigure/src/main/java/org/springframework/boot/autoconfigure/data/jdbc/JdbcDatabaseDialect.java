@@ -22,7 +22,6 @@ import org.springframework.data.jdbc.core.dialect.JdbcDb2Dialect;
 import org.springframework.data.jdbc.core.dialect.JdbcMySqlDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcSqlServerDialect;
-import org.springframework.data.relational.core.dialect.Db2Dialect;
 import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.dialect.H2Dialect;
 import org.springframework.data.relational.core.dialect.HsqlDbDialect;
@@ -37,36 +36,59 @@ import org.springframework.data.relational.core.dialect.OracleDialect;
  */
 public enum JdbcDatabaseDialect implements Supplier<Dialect> {
 
+	/**
+	 * Provides an instance of {@link JdbcDb2Dialect}.
+	 */
 	DB2 {
 		@Override
 		public Dialect get() {
 			return JdbcDb2Dialect.INSTANCE;
 		}
 	},
+
+	/**
+	 * Provides an instance of {@link H2Dialect}.
+	 */
 	H2 {
 		@Override
 		public Dialect get() {
 			return H2Dialect.INSTANCE;
 		}
 	},
+
+	/**
+	 * Provides an instance of {@link HsqlDbDialect}.
+	 */
 	HSQL {
 		@Override
 		public Dialect get() {
 			return HsqlDbDialect.INSTANCE;
 		}
 	},
+
+	/**
+	 * Provides an instance of {@link MariaDbDialect}.
+	 */
 	MARIA {
 		@Override
 		public Dialect get() {
 			return MariaDbDialect.INSTANCE;
 		}
 	},
+
+	/**
+	 * Provides an instance of {@link JdbcMySqlDialect}.
+	 */
 	MYSQL {
 		@Override
 		public Dialect get() {
 			return JdbcMySqlDialect.INSTANCE;
 		}
 	},
+
+	/**
+	 * Provides an instance of {@link OracleDialect}.
+	 */
 	ORACLE {
 		@Override
 		public Dialect get() {
@@ -74,12 +96,20 @@ public enum JdbcDatabaseDialect implements Supplier<Dialect> {
 
 		}
 	},
+
+	/**
+	 * Provides an instance of {@link JdbcPostgresDialect}.
+	 */
 	POSTGRESQL {
 		@Override
 		public Dialect get() {
 			return JdbcPostgresDialect.INSTANCE;
 		}
 	},
+
+	/**
+	 * Provides an instance of {@link JdbcSqlServerDialect}.
+	 */
 	SQL_SERVER {
 		@Override
 		public Dialect get() {
