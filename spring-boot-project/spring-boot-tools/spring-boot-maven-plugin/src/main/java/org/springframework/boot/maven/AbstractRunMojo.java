@@ -20,10 +20,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,6 +45,7 @@ import org.apache.maven.toolchain.ToolchainManager;
 import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class to run a Spring Boot application.
@@ -50,6 +55,7 @@ import org.springframework.util.ObjectUtils;
  * @author David Liu
  * @author Daniel Young
  * @author Dmytro Nosan
+ * @author Moritz Halbritter
  * @since 1.3.0
  * @see RunMojo
  * @see StartMojo
@@ -239,6 +245,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
 		File workingDirectoryToUse = (this.workingDirectory != null) ? this.workingDirectory
 				: this.project.getBasedir();
+		if (getLog().isDebugEnabled()) {
+			getLog().debug("Working directory: " + workingDirectoryToUse);
+			getLog().debug("Java arguments: " + String.join(" ", args));
+		}
 		run(processExecutor, workingDirectoryToUse, args, determineEnvironmentVariables());
 	}
 
@@ -351,11 +361,38 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				getLog().debug("Classpath for forked process: " + classpath);
 			}
 			args.add("-cp");
-			args.add(classpath.toString());
+			if (needsClasspathArgFile()) {
+				args.add("@" + writeClasspathArgFile(classpath.toString()));
+			}
+			else {
+				args.add(classpath.toString());
+			}
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
 		}
+	}
+
+	private boolean needsClasspathArgFile() {
+		// Windows limits the maximum command length, so we use an argfile there
+		return runsOnWindows();
+	}
+
+	private boolean runsOnWindows() {
+		String os = System.getProperty("os.name");
+		if (!StringUtils.hasLength(os)) {
+			if (getLog().isWarnEnabled()) {
+				getLog().warn("System property os.name is not set");
+			}
+			return false;
+		}
+		return os.toLowerCase(Locale.ROOT).contains("win");
+	}
+
+	private Path writeClasspathArgFile(String classpath) throws IOException {
+		ArgFile argFile = ArgFile.create();
+		argFile.write(classpath);
+		return argFile.getPath();
 	}
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
@@ -372,7 +409,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	@SuppressWarnings("removal")
 	private void addAdditionalClasspathLocations(List<URL> urls) throws MalformedURLException {
 		Assert.state(ObjectUtils.isEmpty(this.directories) || ObjectUtils.isEmpty(this.additionalClasspathElements),
 				"Either additionalClasspathElements or directories (deprecated) should be set, not both");
@@ -433,6 +469,34 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				return String.format("-D%s", key);
 			}
 			return String.format("-D%s=\"%s\"", key, value);
+		}
+
+	}
+
+	static class ArgFile {
+
+		private final Path path;
+
+		ArgFile(Path path) {
+			this.path = path;
+		}
+
+		void write(String content) throws IOException {
+			String escaped = escape(content);
+			Files.writeString(this.path, "\"" + escaped + "\"", StandardOpenOption.APPEND);
+		}
+
+		Path getPath() {
+			return this.path;
+		}
+
+		private String escape(String content) {
+			return content.replace("\\", "\\\\");
+		}
+
+		static ArgFile create() throws IOException {
+			Path file = Files.createTempFile("spring-boot-", ".argfile");
+			return new ArgFile(file);
 		}
 
 	}
