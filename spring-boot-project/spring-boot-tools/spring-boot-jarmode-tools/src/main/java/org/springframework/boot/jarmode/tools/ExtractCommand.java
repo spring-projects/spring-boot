@@ -20,17 +20,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
@@ -157,8 +160,8 @@ class ExtractCommand extends Command {
 	private void extractLibraries(FileResolver fileResolver, JarStructure jarStructure, Map<Option, String> options)
 			throws IOException {
 		String librariesDirectory = getLibrariesDirectory(options);
-		extractArchive(fileResolver, (zipEntry) -> {
-			Entry entry = jarStructure.resolve(zipEntry);
+		extractArchive(fileResolver, (jarEntry) -> {
+			Entry entry = jarStructure.resolve(jarEntry);
 			if (isType(entry, Type.LIBRARY)) {
 				return librariesDirectory + entry.location();
 			}
@@ -212,22 +215,22 @@ class ExtractCommand extends Command {
 	}
 
 	private void extractArchive(FileResolver fileResolver) throws IOException {
-		extractArchive(fileResolver, ZipEntry::getName);
+		extractArchive(fileResolver, JarEntry::getName);
 	}
 
 	private void extractArchive(FileResolver fileResolver, EntryNameTransformer entryNameTransformer)
 			throws IOException {
-		withZipEntries(this.context.getArchiveFile(), (stream, zipEntry) -> {
-			if (zipEntry.isDirectory()) {
+		withJarEntries(this.context.getArchiveFile(), (stream, jarEntry) -> {
+			if (jarEntry.isDirectory()) {
 				return;
 			}
-			String name = entryNameTransformer.getName(zipEntry);
+			String name = entryNameTransformer.getName(jarEntry);
 			if (name == null) {
 				return;
 			}
-			File file = fileResolver.resolve(zipEntry, name);
+			File file = fileResolver.resolve(jarEntry, name);
 			if (file != null) {
-				extractEntry(stream, zipEntry, file);
+				extractEntry(stream, jarEntry, file);
 			}
 		});
 	}
@@ -249,11 +252,11 @@ class ExtractCommand extends Command {
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
 		mkDirs(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file), manifest)) {
-			withZipEntries(this.context.getArchiveFile(), ((stream, zipEntry) -> {
-				Entry entry = jarStructure.resolve(zipEntry);
+			withJarEntries(this.context.getArchiveFile(), ((stream, jarEntry) -> {
+				Entry entry = jarStructure.resolve(jarEntry);
 				if (isType(entry, Type.APPLICATION_CLASS_OR_RESOURCE) && StringUtils.hasLength(entry.location())) {
-					JarEntry jarEntry = createJarEntry(entry.location(), zipEntry);
-					output.putNextEntry(jarEntry);
+					JarEntry newJarEntry = createJarEntry(entry.location(), jarEntry);
+					output.putNextEntry(newJarEntry);
 					StreamUtils.copy(stream, output);
 					output.closeEntry();
 				}
@@ -275,18 +278,39 @@ class ExtractCommand extends Command {
 		return entry.type() == type;
 	}
 
-	private static void extractEntry(ZipInputStream zip, ZipEntry entry, File file) throws IOException {
+	private static void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {
 		mkDirs(file.getParentFile());
 		try (OutputStream out = new FileOutputStream(file)) {
-			StreamUtils.copy(zip, out);
+			StreamUtils.copy(stream, out);
 		}
 		try {
 			Files.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
-				.setTimes(entry.getLastModifiedTime(), entry.getLastAccessTime(), entry.getCreationTime());
+				.setTimes(getLastModifiedTime(entry), getLastAccessTime(entry), getCreationTime(entry));
 		}
 		catch (IOException ex) {
 			// File system does not support setting time attributes. Continue.
 		}
+	}
+
+	private static FileTime getCreationTime(JarEntry entry) {
+		if (entry.getCreationTime() != null) {
+			return entry.getCreationTime();
+		}
+		return entry.getLastModifiedTime();
+	}
+
+	private static FileTime getLastAccessTime(JarEntry entry) {
+		if (entry.getLastAccessTime() != null) {
+			return entry.getLastAccessTime();
+		}
+		return getLastModifiedTime(entry);
+	}
+
+	private static FileTime getLastModifiedTime(JarEntry entry) {
+		if (entry.getLastModifiedTime() != null) {
+			return entry.getLastModifiedTime();
+		}
+		return entry.getCreationTime();
 	}
 
 	private static void mkDirs(File file) throws IOException {
@@ -295,31 +319,33 @@ class ExtractCommand extends Command {
 		}
 	}
 
-	private static JarEntry createJarEntry(String location, ZipEntry originalEntry) {
+	private static JarEntry createJarEntry(String location, JarEntry originalEntry) {
 		JarEntry jarEntry = new JarEntry(location);
-		FileTime lastModifiedTime = originalEntry.getLastModifiedTime();
+		FileTime lastModifiedTime = getLastModifiedTime(originalEntry);
 		if (lastModifiedTime != null) {
 			jarEntry.setLastModifiedTime(lastModifiedTime);
 		}
-		FileTime lastAccessTime = originalEntry.getLastAccessTime();
+		FileTime lastAccessTime = getLastAccessTime(originalEntry);
 		if (lastAccessTime != null) {
 			jarEntry.setLastAccessTime(lastAccessTime);
 		}
-		FileTime creationTime = originalEntry.getCreationTime();
+		FileTime creationTime = getCreationTime(originalEntry);
 		if (creationTime != null) {
 			jarEntry.setCreationTime(creationTime);
 		}
 		return jarEntry;
 	}
 
-	private static void withZipEntries(File file, ThrowingConsumer callback) throws IOException {
-		try (ZipInputStream stream = new ZipInputStream(new FileInputStream(file))) {
-			ZipEntry entry = stream.getNextEntry();
-			while (entry != null) {
+	private static void withJarEntries(File file, ThrowingConsumer callback) throws IOException {
+		try (JarFile jarFile = new JarFile(file)) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				JarEntry entry = entries.nextElement();
 				if (StringUtils.hasLength(entry.getName())) {
-					callback.accept(stream, entry);
+					try (InputStream stream = jarFile.getInputStream(entry)) {
+						callback.accept(stream, entry);
+					}
 				}
-				entry = stream.getNextEntry();
 			}
 		}
 	}
@@ -336,14 +362,14 @@ class ExtractCommand extends Command {
 	@FunctionalInterface
 	private interface EntryNameTransformer {
 
-		String getName(ZipEntry entry);
+		String getName(JarEntry entry);
 
 	}
 
 	@FunctionalInterface
 	private interface ThrowingConsumer {
 
-		void accept(ZipInputStream stream, ZipEntry entry) throws IOException;
+		void accept(InputStream stream, JarEntry entry) throws IOException;
 
 	}
 
@@ -356,14 +382,14 @@ class ExtractCommand extends Command {
 		void createDirectories() throws IOException;
 
 		/**
-		 * Resolves the given {@link ZipEntry} to a file.
-		 * @param entry the zip entry
+		 * Resolves the given {@link JarEntry} to a file.
+		 * @param entry the jar entry
 		 * @param newName the new name of the file
 		 * @return file where the contents should be written or {@code null} if this entry
 		 * should be skipped
 		 * @throws IOException if something went wrong
 		 */
-		default File resolve(ZipEntry entry, String newName) throws IOException {
+		default File resolve(JarEntry entry, String newName) throws IOException {
 			return resolve(entry.getName(), newName);
 		}
 

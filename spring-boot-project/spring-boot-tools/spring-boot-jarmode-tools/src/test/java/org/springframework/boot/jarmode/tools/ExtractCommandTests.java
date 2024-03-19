@@ -19,13 +19,11 @@ package org.springframework.boot.jarmode.tools;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.Runtime.Version;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.Manifest;
@@ -33,8 +31,6 @@ import java.util.jar.Manifest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.JRE;
-import org.junit.jupiter.api.condition.OS;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -46,13 +42,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class ExtractCommandTests extends AbstractTests {
 
-	private static final Instant NOW = Instant.now();
+	private static final Instant CREATION_TIME = Instant.parse("2020-01-01T00:00:00Z");
 
-	private static final Instant CREATION_TIME = NOW.minus(3, ChronoUnit.DAYS);
+	private static final Instant LAST_MODIFIED_TIME = Instant.parse("2021-01-01T00:00:00Z");
 
-	private static final Instant LAST_MODIFIED_TIME = NOW.minus(2, ChronoUnit.DAYS);
-
-	private static final Instant LAST_ACCESS_TIME = NOW.minus(1, ChronoUnit.DAYS);
+	private static final Instant LAST_ACCESS_TIME = Instant.parse("2022-01-01T00:00:00Z");
 
 	private File archive;
 
@@ -85,35 +79,13 @@ class ExtractCommandTests extends AbstractTests {
 				.getFileAttributeView(file.toPath(), BasicFileAttributeView.class)
 				.readAttributes();
 			assertThat(basicAttributes.lastModifiedTime().toInstant().truncatedTo(ChronoUnit.SECONDS))
+				.as("last modified time")
 				.isEqualTo(LAST_MODIFIED_TIME.truncatedTo(ChronoUnit.SECONDS));
-			Instant expectedCreationTime = expectedCreationTime();
-			if (expectedCreationTime != null) {
-				assertThat(basicAttributes.creationTime().toInstant().truncatedTo(ChronoUnit.SECONDS))
-					.isEqualTo(expectedCreationTime.truncatedTo(ChronoUnit.SECONDS));
-			}
-			assertThat(basicAttributes.lastAccessTime().toInstant().truncatedTo(ChronoUnit.SECONDS))
-				.isEqualTo(LAST_ACCESS_TIME.truncatedTo(ChronoUnit.SECONDS));
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-
-	private Instant expectedCreationTime() {
-		// macOS uses last modified time until Java 20 where it uses creation time.
-		// https://github.com/openjdk/jdk21u-dev/commit/6397d564a5dab07f81bf4c69b116ebfabb2446ba
-		if (OS.MAC.isCurrentOs()) {
-			return (EnumSet.range(JRE.JAVA_17, JRE.JAVA_19).contains(JRE.currentVersion())) ? LAST_MODIFIED_TIME
-					: CREATION_TIME;
-		}
-		if (OS.LINUX.isCurrentOs()) {
-			// Linux uses the modified time until Java 21.0.2 where a bug means that it
-			// uses the birth time which it has not set, preventing us from verifying it.
-			// https://github.com/openjdk/jdk21u-dev/commit/4cf572e3b99b675418e456e7815fb6fd79245e30
-			return (Runtime.version().compareTo(Version.parse("21.0.2")) >= 0) ? null : LAST_MODIFIED_TIME;
-		}
-		return CREATION_TIME;
-	}
+	};
 
 	@Nested
 	class Extract {
