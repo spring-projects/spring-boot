@@ -8,4 +8,5 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("org.springframework:spring-jms")
 	api("org.apache.activemq:activemq-client")
+	api("org.apache.activemq:activemq-broker")
 }
