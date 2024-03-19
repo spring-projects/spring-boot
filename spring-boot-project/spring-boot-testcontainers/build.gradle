@@ -44,7 +44,7 @@ dependencies {
 	testImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	testImplementation("org.apache.activemq:activemq-client-jakarta")
+	testImplementation("org.apache.activemq:activemq-client")
 	testImplementation("org.apache.activemq:artemis-jakarta-client")  {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
