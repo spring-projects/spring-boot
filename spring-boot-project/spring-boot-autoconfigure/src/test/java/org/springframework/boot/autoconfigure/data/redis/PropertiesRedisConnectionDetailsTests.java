@@ -124,7 +124,7 @@ class PropertiesRedisConnectionDetailsTests {
 		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
 		assertThat(connectionDetails.getCluster().getNodes()).containsExactly(
 				new RedisConnectionDetails.Node("localhost", 1111), new RedisConnectionDetails.Node("127.0.0.1", 2222),
-				new RedisConnectionDetails.Node("::1", 3333));
+				new RedisConnectionDetails.Node("[::1]", 3333));
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class PropertiesRedisConnectionDetailsTests {
 		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
 		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(
 				new RedisConnectionDetails.Node("localhost", 1111), new RedisConnectionDetails.Node("127.0.0.1", 2222),
-				new RedisConnectionDetails.Node("::1", 3333));
+				new RedisConnectionDetails.Node("[::1]", 3333));
 	}
 
 }

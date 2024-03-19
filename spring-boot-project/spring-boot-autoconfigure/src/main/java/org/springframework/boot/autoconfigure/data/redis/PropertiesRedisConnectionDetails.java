@@ -113,9 +113,9 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	}
 
 	private Node asNode(String node) {
-		var posLastColon = node.lastIndexOf(':');
-		var host = node.substring(0, posLastColon).replaceFirst("^\\[(.+)]$", "$1");
-		var port = Integer.parseInt(node.substring(posLastColon + 1));
+		int portSeparatorIndex = node.lastIndexOf(':');
+		String host = node.substring(0, portSeparatorIndex);
+		int port = Integer.parseInt(node.substring(portSeparatorIndex + 1));
 		return new Node(host, port);
 	}
 
