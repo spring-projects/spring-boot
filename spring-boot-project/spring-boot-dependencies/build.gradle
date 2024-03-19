@@ -1126,7 +1126,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Compiler Plugin", "3.12.1") {
+	library("Maven Compiler Plugin", "3.13.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-compiler-plugin"
