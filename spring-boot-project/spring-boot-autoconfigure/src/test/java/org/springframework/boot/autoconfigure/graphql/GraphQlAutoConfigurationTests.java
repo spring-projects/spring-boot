@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import java.nio.charset.StandardCharsets;
 import graphql.GraphQL;
 import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
+import graphql.introspection.Introspection;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
-import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
@@ -170,8 +170,7 @@ class GraphQlAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.graphql.schema.introspection.enabled:false").run((context) -> {
 			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
 			GraphQLSchema schema = graphQlSource.schema();
-			assertThat(schema.getCodeRegistry().getFieldVisibility())
-				.isInstanceOf(NoIntrospectionGraphqlFieldVisibility.class);
+			assertThat(Introspection.isEnabledJvmWide()).isFalse();
 		});
 	}
 
