@@ -190,9 +190,7 @@ class JdbcRepositoriesAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(JdbcTemplateAutoConfiguration.class,
 					DataSourceTransactionManagerAutoConfiguration.class))
 			.withUserConfiguration(TestConfiguration.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(JdbcPostgresDialect.class);
-			});
+			.run((context) -> assertThat(context).hasSingleBean(JdbcPostgresDialect.class));
 	}
 
 	private void allowsUserToDefineCustomBean(Class<?> configuration, Class<?> beanType, String beanName) {
