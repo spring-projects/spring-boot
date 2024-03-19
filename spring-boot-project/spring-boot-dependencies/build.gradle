@@ -378,13 +378,28 @@ bom {
 			releaseNotes("https://www.elastic.co/guide/en/elasticsearch/reference/current/release-notes-{version}.html")
 		}
 	}
-	library("Flyway", "9.22.3") {
+	library("Flyway", "10.10.0") {
 		group("org.flywaydb") {
 			modules = [
+				"flyway-commandline",
+				"flyway-community-db-support",
 				"flyway-core",
+				"flyway-database-db2",
+				"flyway-database-derby",
+				"flyway-database-hsqldb",
+				"flyway-database-informix",
+				"flyway-database-mongodb",
 				"flyway-database-oracle",
+				"flyway-database-postgresql",
+				"flyway-database-redshift",
+				"flyway-database-saphana",
+				"flyway-database-snowflake",
+				"flyway-database-sybasease",
 				"flyway-firebird",
+				"flyway-gcp-bigquery",
+				"flyway-gcp-spanner",
 				"flyway-mysql",
+				"flyway-singlestore",
 				"flyway-sqlserver"
 			]
 			plugins = [

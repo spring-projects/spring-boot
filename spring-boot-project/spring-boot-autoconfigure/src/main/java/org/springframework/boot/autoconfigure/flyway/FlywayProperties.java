@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -292,25 +292,9 @@ public class FlywayProperties {
 	private String[] errorOverrides;
 
 	/**
-	 * Licence key for Flyway Teams.
-	 */
-	private String licenseKey;
-
-	/**
 	 * Whether to stream SQL migrations when executing them. Requires Flyway Teams.
 	 */
 	private Boolean stream;
-
-	/**
-	 * File name prefix for undo SQL migrations. Requires Flyway Teams.
-	 */
-	private String undoSqlMigrationPrefix;
-
-	/**
-	 * Migrations that Flyway should consider when migrating or undoing. When empty all
-	 * available migrations are considered. Requires Flyway Teams.
-	 */
-	private String[] cherryPick;
 
 	/**
 	 * Properties to pass to the JDBC driver. Requires Flyway Teams.
@@ -728,14 +712,6 @@ public class FlywayProperties {
 		this.errorOverrides = errorOverrides;
 	}
 
-	public String getLicenseKey() {
-		return this.licenseKey;
-	}
-
-	public void setLicenseKey(String licenseKey) {
-		this.licenseKey = licenseKey;
-	}
-
 	@DeprecatedConfigurationProperty(replacement = "spring.flyway.oracle.sqlplus", since = "3.2.0")
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	public Boolean getOracleSqlplus() {
@@ -775,22 +751,6 @@ public class FlywayProperties {
 
 	public void setStream(Boolean stream) {
 		this.stream = stream;
-	}
-
-	public String getUndoSqlMigrationPrefix() {
-		return this.undoSqlMigrationPrefix;
-	}
-
-	public void setUndoSqlMigrationPrefix(String undoSqlMigrationPrefix) {
-		this.undoSqlMigrationPrefix = undoSqlMigrationPrefix;
-	}
-
-	public String[] getCherryPick() {
-		return this.cherryPick;
-	}
-
-	public void setCherryPick(String[] cherryPick) {
-		this.cherryPick = cherryPick;
 	}
 
 	public Map<String, String> getJdbcProperties() {

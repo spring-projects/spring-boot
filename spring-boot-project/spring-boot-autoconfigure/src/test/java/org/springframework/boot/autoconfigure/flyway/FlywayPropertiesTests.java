@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,9 @@ class FlywayPropertiesTests {
 				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
 		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "driver", "modernConfig",
-				"currentResolvedEnvironment", "reportFilename", "reportEnabled", "workingDirectory");
+				"currentResolvedEnvironment", "reportFilename", "reportEnabled", "workingDirectory",
+				"cachedDataSources", "cachedResolvedEnvironments", "currentEnvironmentName", "allEnvironments",
+				"environmentProvisionMode");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");
@@ -136,6 +138,8 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "databaseType", "password", "url", "user");
 		// Properties not exposed by Flyway
 		ignoreProperties(configuration, "failOnMissingTarget");
+		// Properties managed by a proprietary extension
+		ignoreProperties(configuration, "cherryPick");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());

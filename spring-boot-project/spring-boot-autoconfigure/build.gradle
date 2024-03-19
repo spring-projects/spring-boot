@@ -95,6 +95,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")
+	optional("org.flywaydb:flyway-database-postgresql")
 	optional("org.flywaydb:flyway-database-oracle")
 	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
@@ -250,6 +251,7 @@ dependencies {
 	testImplementation("org.yaml:snakeyaml")
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
+	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
 }
 

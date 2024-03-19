@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.extensibility.ConfigurationExtension;
-import org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.oracle.OracleConfigurationExtension;
+import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -157,7 +157,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnClass(name = "org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension")
+		@ConditionalOnClass(name = "org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension")
 		PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer() {
 			return new PostgresqlFlywayConfigurationCustomizer(this.properties);
 		}
@@ -305,11 +305,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getDryRunOutput()).to((dryRunOutput) -> configuration.dryRunOutput(dryRunOutput));
 			map.from(properties.getErrorOverrides())
 				.to((errorOverrides) -> configuration.errorOverrides(errorOverrides));
-			map.from(properties.getLicenseKey()).to((licenseKey) -> configuration.licenseKey(licenseKey));
 			map.from(properties.getStream()).to((stream) -> configuration.stream(stream));
-			map.from(properties.getUndoSqlMigrationPrefix())
-				.to((undoSqlMigrationPrefix) -> configuration.undoSqlMigrationPrefix(undoSqlMigrationPrefix));
-			map.from(properties.getCherryPick()).to((cherryPick) -> configuration.cherryPick(cherryPick));
 			map.from(properties.getJdbcProperties())
 				.whenNot(Map::isEmpty)
 				.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));

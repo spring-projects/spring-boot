@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
-import org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension;
-import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
+import org.flywaydb.core.internal.license.FlywayEditionUpgradeRequiredException;
 import org.flywaydb.database.oracle.OracleConfigurationExtension;
+import org.flywaydb.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.jooq.DSLContext;
@@ -66,7 +66,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -584,7 +583,10 @@ class FlywayAutoConfigurationTests {
 	void batchIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.batch=true")
-			.run(validateFlywayTeamsPropertyOnly("batch"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getBatch()).isTrue();
+			});
 	}
 
 	@Test
@@ -599,14 +601,6 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.errorOverrides=D12345")
 			.run(validateFlywayTeamsPropertyOnly("errorOverrides"));
-	}
-
-	@Test
-	void licenseKeyIsCorrectlyMapped(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.license-key=<<secret>>")
-			.run((context) -> assertThat(output).contains("License key detected - in order to use Teams or "
-					+ "Enterprise features, download Flyway Teams Edition & Flyway Enterprise Edition"));
 	}
 
 	@Test
@@ -714,14 +708,10 @@ class FlywayAutoConfigurationTests {
 	void streamIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.stream=true")
-			.run(validateFlywayTeamsPropertyOnly("stream"));
-	}
-
-	@Test
-	void undoSqlMigrationPrefix() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.undo-sql-migration-prefix=undo")
-			.run(validateFlywayTeamsPropertyOnly("undoSqlMigrationPrefix"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getStream()).isTrue();
+			});
 	}
 
 	@Test
@@ -757,17 +747,16 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void cherryPickIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-			.withPropertyValues("spring.flyway.cherry-pick=1.1")
-			.run(validateFlywayTeamsPropertyOnly("cherryPick"));
-	}
-
-	@Test
 	void jdbcPropertiesAreCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.jdbc-properties.prop=value")
-			.run(validateFlywayTeamsPropertyOnly("jdbcProperties"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration()
+					.getCachedResolvedEnvironments()
+					.get(flyway.getConfiguration().getCurrentEnvironmentName())
+					.getJdbcProperties()).containsEntry("prop", "value");
+			});
 	}
 
 	@Test
@@ -781,7 +770,10 @@ class FlywayAutoConfigurationTests {
 	void outputQueryResultsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.output-query-results=false")
-			.run(validateFlywayTeamsPropertyOnly("outputQueryResults"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getOutputQueryResults()).isFalse();
+			});
 	}
 
 	@Test
@@ -840,7 +832,11 @@ class FlywayAutoConfigurationTests {
 	void skipExecutingMigrationsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.skip-executing-migrations=true")
-			.run(validateFlywayTeamsPropertyOnly("skipExecutingMigrations"));
+			.run((context) -> {
+				Flyway flyway = context.getBean(Flyway.class);
+				assertThat(flyway.getConfiguration().getModernConfig().getFlyway().getSkipExecutingMigrations())
+					.isTrue();
+			});
 	}
 
 	@Test
@@ -923,7 +919,7 @@ class FlywayAutoConfigurationTests {
 		return (context) -> {
 			assertThat(context).hasFailed();
 			Throwable failure = context.getStartupFailure();
-			assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+			assertThat(failure).hasRootCauseInstanceOf(FlywayEditionUpgradeRequiredException.class);
 			assertThat(failure).hasMessageContaining(String.format(" %s ", propertyName));
 		};
 	}
