@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import java.util.concurrent.Executor;
 
 import graphql.GraphQL;
 import graphql.execution.instrumentation.Instrumentation;
-import graphql.schema.idl.RuntimeWiring.Builder;
-import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
+import graphql.introspection.Introspection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -108,16 +107,12 @@ public class GraphQlAutoConfiguration {
 			builder.inspectSchemaMappings(logger::info);
 		}
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
-			builder.configureRuntimeWiring(this::enableIntrospection);
+			Introspection.enabledJvmWide(false);
 		}
 		builder.configureTypeDefinitions(new ConnectionTypeDefinitionConfigurer());
 		wiringConfigurers.orderedStream().forEach(builder::configureRuntimeWiring);
 		sourceCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
-	}
-
-	private Builder enableIntrospection(Builder wiring) {
-		return wiring.fieldVisibility(NoIntrospectionGraphqlFieldVisibility.NO_INTROSPECTION_FIELD_VISIBILITY);
 	}
 
 	private Resource[] resolveSchemaResources(ResourcePatternResolver resolver, String[] locations,
