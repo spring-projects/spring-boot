@@ -12,11 +12,26 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 == ActiveMQ "Classic" Support
 
 When https://activemq.apache.org/components/classic[ActiveMQ "Classic"] is available on the classpath, Spring Boot can configure a `ConnectionFactory`.
+If the broker is present, an embedded broker is automatically started and configured (provided no broker URL is specified through configuration and the embedded broker is not disabled in the configuration).
 
 NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect to an ActiveMQ "Classic" instance are provided, as is the Spring infrastructure to integrate with JMS.
+Adding `org.apache.activemq:activemq-broker` to your application lets you use the embedded broker.
 
 ActiveMQ "Classic" configuration is controlled by external configuration properties in `+spring.activemq.*+`.
-By default, ActiveMQ "Classic" is auto-configured to use the https://activemq.apache.org/tcp-transport-reference[TCP transport], connecting by default to `tcp://localhost:61616`. The following example shows how to change the default broker URL:
+
+If `activemq-broker` is on the classpath, ActiveMQ "Classic" is auto-configured to use the https://activemq.apache.org/vm-transport-reference.html[VM transport], which starts a broker embedded in the same JVM instance.
+
+You can disable the embedded broker by configuring the configprop:spring.activemq.embedded.enabled[] property, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  activemq:
+    embedded:
+      enabled: false
+----
+
+The embedded broker will also be disabled if you configure the broker URL, as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -26,6 +41,8 @@ spring:
     user: "admin"
     password: "secret"
 ----
+
+If you want to take full control over the embedded broker, see https://activemq.apache.org/how-do-i-embed-a-broker-inside-a-connection.html[the ActiveMQ "Classic" documentation] for further information.
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
