@@ -25,8 +25,7 @@ import java.util.concurrent.Executor;
 
 import graphql.GraphQL;
 import graphql.execution.instrumentation.Instrumentation;
-import graphql.schema.idl.RuntimeWiring.Builder;
-import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
+import graphql.introspection.Introspection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -108,16 +107,12 @@ public class GraphQlAutoConfiguration {
 			builder.inspectSchemaMappings(logger::info);
 		}
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
-			builder.configureRuntimeWiring(this::enableIntrospection);
+			Introspection.enabledJvmWide(false);
 		}
 		builder.configureTypeDefinitions(new ConnectionTypeDefinitionConfigurer());
 		wiringConfigurers.orderedStream().forEach(builder::configureRuntimeWiring);
 		sourceCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
-	}
-
-	private Builder enableIntrospection(Builder wiring) {
-		return wiring.fieldVisibility(NoIntrospectionGraphqlFieldVisibility.NO_INTROSPECTION_FIELD_VISIBILITY);
 	}
 
 	private Resource[] resolveSchemaResources(ResourcePatternResolver resolver, String[] locations,

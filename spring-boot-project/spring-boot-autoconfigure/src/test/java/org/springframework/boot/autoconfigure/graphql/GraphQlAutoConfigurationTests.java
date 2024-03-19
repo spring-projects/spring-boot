@@ -22,12 +22,12 @@ import java.util.concurrent.Executor;
 import graphql.GraphQL;
 import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
+import graphql.introspection.Introspection;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
-import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -183,8 +183,7 @@ class GraphQlAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.graphql.schema.introspection.enabled:false").run((context) -> {
 			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
 			GraphQLSchema schema = graphQlSource.schema();
-			assertThat(schema.getCodeRegistry().getFieldVisibility())
-				.isInstanceOf(NoIntrospectionGraphqlFieldVisibility.class);
+			assertThat(Introspection.isEnabledJvmWide()).isFalse();
 		});
 	}
 
