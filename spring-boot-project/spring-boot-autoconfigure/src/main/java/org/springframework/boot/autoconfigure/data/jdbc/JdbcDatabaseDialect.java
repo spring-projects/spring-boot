@@ -43,47 +43,48 @@ public enum JdbcDatabaseDialect implements Supplier<Dialect> {
 			return JdbcDb2Dialect.INSTANCE;
 		}
 	},
-	H2{
+	H2 {
 		@Override
 		public Dialect get() {
 			return H2Dialect.INSTANCE;
 		}
 	},
-	HSQL{
+	HSQL {
 		@Override
 		public Dialect get() {
 			return HsqlDbDialect.INSTANCE;
 		}
 	},
-	MARIA{
+	MARIA {
 		@Override
 		public Dialect get() {
 			return MariaDbDialect.INSTANCE;
 		}
 	},
-	MYSQL{
+	MYSQL {
 		@Override
 		public Dialect get() {
 			return JdbcMySqlDialect.INSTANCE;
 		}
 	},
-	ORACLE{
+	ORACLE {
 		@Override
 		public Dialect get() {
 			return OracleDialect.INSTANCE;
 
 		}
 	},
-	POSTGRESQL{
+	POSTGRESQL {
 		@Override
 		public Dialect get() {
 			return JdbcPostgresDialect.INSTANCE;
 		}
 	},
-	SQL_SERVER{
+	SQL_SERVER {
 		@Override
 		public Dialect get() {
 			return JdbcSqlServerDialect.INSTANCE;
 		}
 	}
+
 }

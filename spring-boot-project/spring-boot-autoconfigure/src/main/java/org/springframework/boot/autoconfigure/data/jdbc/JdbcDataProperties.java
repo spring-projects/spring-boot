@@ -29,7 +29,8 @@ import org.springframework.data.relational.core.dialect.Dialect;
 public class JdbcDataProperties {
 
 	/**
-	 * Dialect to use. By default, the dialect is determined by inspecting the database connection.
+	 * Dialect to use. By default, the dialect is determined by inspecting the database
+	 * connection.
 	 */
 	private JdbcDatabaseDialect dialect;
 
@@ -40,4 +41,5 @@ public class JdbcDataProperties {
 	public void setDialect(JdbcDatabaseDialect dialect) {
 		this.dialect = dialect;
 	}
+
 }
