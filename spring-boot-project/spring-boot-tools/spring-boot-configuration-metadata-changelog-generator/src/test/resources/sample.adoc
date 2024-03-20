@@ -3,11 +3,13 @@ Configuration property changes between `1.0` and `2.0`
 
 
 == Deprecated in 2.0
+
 _None_.
 
 
 
 == Added in 2.0
+
 |======================
 | Key | Default value | Description
 
@@ -19,6 +21,7 @@ _None_.
 
 
 == Removed in 2.0
+
 |======================
 | Key | Replacement | Reason
 
