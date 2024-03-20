@@ -46,11 +46,12 @@ class GenerateAntoraPlaybookTests {
 			task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*");
 			task.getAlwaysInclude().set(Map.of("name", "test", "classifier", "local-aggregate-content"));
 		});
-		Path actual = this.temp.toPath()
-			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml");
-		System.out.println(Files.readString(actual));
-		assertThat(actual).hasSameTextualContentAs(
-				Path.of("src/test/resources/org/springframework/boot/build/antora/expected-playbook.yml"));
+		String actual = Files.readString(this.temp.toPath()
+			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"));
+		String expected = Files
+			.readString(Path.of("src/test/resources/org/springframework/boot/build/antora/expected-playbook.yml"));
+		System.out.println(actual);
+		assertThat(actual).isEqualToNormalizingNewlines(expected);
 	}
 
 	private void writePlaybookYml(ThrowingConsumer<GenerateAntoraPlaybook> customizer) throws Exception {

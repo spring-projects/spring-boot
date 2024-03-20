@@ -135,7 +135,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		Path playbookPath = getOutputFile().get().getAsFile().toPath().getParent();
 		Path antoraSrc = getProjectPath(getProject()).resolve(ANTORA_SOURCE_DIR);
 		StringBuilder url = new StringBuilder(".");
-		relativizeFromRootProject(playbookPath).normalize().forEach((path) -> url.append("/.."));
+		relativizeFromRootProject(playbookPath).normalize().forEach((path) -> url.append(File.separator).append(".."));
 		source.put("url", url.toString());
 		source.put("branches", "HEAD");
 		source.put("version", getProject().getVersion().toString());
@@ -159,7 +159,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	private void addDir(Map<String, Object> data) {
 		Path playbookDir = toRealPath(getOutputFile().get().getAsFile().toPath()).getParent();
 		Path outputDir = toRealPath(getProject().getBuildDir().toPath().resolve("site"));
-		data.put("output", Map.of("dir", "./" + playbookDir.relativize(outputDir).toString()));
+		data.put("output", Map.of("dir", "." + File.separator + playbookDir.relativize(outputDir).toString()));
 	}
 
 	@SuppressWarnings("unchecked")
