@@ -11,6 +11,7 @@ For complete details see the
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
 
 == Community Contributions
+
 If you create a starter for a technology that is not already in the standard list we can
 list it here. To ask us to do so, please open a pull request that updates this page.
 
