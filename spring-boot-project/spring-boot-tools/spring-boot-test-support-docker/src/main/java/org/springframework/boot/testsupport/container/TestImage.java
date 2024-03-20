@@ -111,6 +111,11 @@ public enum TestImage {
 	OPEN_LDAP("osixia/openldap", "1.5.0", () -> OpenLdapContainer.class),
 
 	/**
+	 * A container image suitable for testing SMTP.
+	 */
+	MAILPIT("axllent/mailpit", "v1.19.0", () -> MailpitContainer.class),
+
+	/**
 	 * A container image suitable for testing MariaDB.
 	 */
 	MARIADB("mariadb", "10.10"),
