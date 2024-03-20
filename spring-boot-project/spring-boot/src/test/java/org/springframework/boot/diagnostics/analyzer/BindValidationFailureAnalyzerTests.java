@@ -63,9 +63,11 @@ class BindValidationFailureAnalyzerTests {
 	@Test
 	void bindExceptionWithFieldErrorsDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class);
-		assertThat(analysis.getDescription()).contains(failure("test.foo.foo", "null", "must not be null"));
-		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "0", "at least five"));
-		assertThat(analysis.getDescription()).contains(failure("test.foo.nested.bar", "null", "must not be null"));
+		assertThat(analysis.getDescription()).contains(failure("test.foo.foo", "null", "must not be null"))
+			.contains(failure("test.foo.value", "0", "at least five"))
+			.contains(failure("test.foo.nested.bar", "null", "must not be null"))
+			.contains(
+					"Binding to target org.springframework.boot.diagnostics.analyzer.BindValidationFailureAnalyzerTests$FieldValidationFailureProperties failed:");
 	}
 
 	@Test
