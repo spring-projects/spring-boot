@@ -1,5 +1,5 @@
 plugins {
-	id "org.asciidoctor.jvm.convert"
+	id "org.antora"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
@@ -9,12 +9,10 @@ description = "Spring Boot Maven Plugin"
 
 configurations {
 	dependenciesBom
-	documentation
+	antoraContent
 }
 
 dependencies {
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
-
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
 	compileOnly("org.apache.maven:maven-core") {
@@ -36,6 +34,21 @@ dependencies {
 	}
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-context")
+
+	testImplementation("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	testImplementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.springframework:spring-core")
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -61,21 +74,6 @@ dependencies {
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
-	testImplementation("org.apache.maven:maven-core") {
-		exclude(group: "javax.annotation", module: "javax.annotation-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
-	testImplementation("org.apache.maven.shared:maven-common-artifact-filters") {
-		exclude(group: "javax.annotation", module: "javax.annotation-api")
-		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
-	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.mockito:mockito-junit-jupiter")
-	testImplementation("org.springframework:spring-core")
-
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
 
@@ -84,42 +82,12 @@ ext {
 	xsdVersion = versionElements[0] + "." + versionElements[1]
 }
 
-syncDocumentationSourceForAsciidoctor {
-	from(documentPluginGoals) {
-		into "asciidoc/goals"
-	}
-}
-
 sourceSets {
 	main {
 		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
 	}
 	intTest {
 		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
-	}
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	doFirst {
-		attributes "spring-boot-xsd-version" : project.ext.xsdVersion
-	}
-}
-
-asciidoctor {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "index.adoc"
-	}
-}
-
-syncDocumentationSourceForAsciidoctorPdf {
-	from(documentPluginGoals) {
-		into "asciidoc/goals"
 	}
 }
 
@@ -136,21 +104,6 @@ javadoc {
 	}
 }
 
-task zip(type: Zip) {
-	dependsOn asciidoctor, asciidoctorPdf
-	duplicatesStrategy "fail"
-	from(asciidoctorPdf.outputDir) {
-		into "reference/pdf"
-		rename "index.pdf", "${project.name}-reference.pdf"
-	}
-	from(asciidoctor.outputDir) {
-		into "reference/htmlsingle"
-	}
-	from(javadoc) {
-		into "api"
-	}
-}
-
 task xsdResources(type: Sync) {
 	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
 	into "${buildDir}/generated/resources/xsd/org/springframework/boot/maven"
@@ -159,10 +112,6 @@ task xsdResources(type: Sync) {
 
 prepareMavenBinaries {
 	versions "3.9.0", "3.8.5", "3.6.3"
-}
-
-artifacts {
-	"documentation" zip
 }
 
 tasks.named("documentPluginGoals") {
@@ -179,4 +128,44 @@ tasks.named("documentPluginGoals") {
 		"stop": "integration-tests",
 		"test-run": "run"
 	]
+}
+
+def antoraMavenPluginLocalAggregateContent  = tasks.register("antoraMavenPluginLocalAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "maven-plugin-local-aggregate-content"
+	from(tasks.getByName("generateAntoraYml")) {
+		into "modules"
+	}
+}
+
+def antoraMavenPluginAggregateContent = tasks.register("antoraMavenPluginAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "maven-plugin-aggregate-content"
+	from(documentPluginGoals) {
+		into "modules/maven-plugin/partials/goals"
+	}
+}
+
+def antoraMavenPluginCatalogContent = tasks.register("antoraMavenPluginCatalogContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "maven-plugin-catalog-content"
+	from(javadoc) {
+		into "api/java"
+	}
+}
+
+tasks.named("generateAntoraPlaybook") {
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+	alwaysInclude = [name: "maven-plugin", classifier: "local-aggregate-content"]
+	dependsOn antoraMavenPluginLocalAggregateContent
+}
+
+
+tasks.named("antora") {
+	inputs.files(antoraMavenPluginLocalAggregateContent, antoraMavenPluginAggregateContent, antoraMavenPluginCatalogContent)
+}
+
+artifacts {
+	antoraContent antoraMavenPluginAggregateContent
+	antoraContent antoraMavenPluginCatalogContent
 }

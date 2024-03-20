@@ -1,0 +1,11 @@
+* xref:build-tool-plugin:index.adoc[]
++
+--
+include::maven-plugin:partial$nav-maven-plugin.adoc[]
+--
++
+--
+include::gradle-plugin:partial$nav-gradle-plugin.adoc[]
+--
+** xref:build-tool-plugin:antlib.adoc[]
+** xref:build-tool-plugin:other-build-systems.adoc[]

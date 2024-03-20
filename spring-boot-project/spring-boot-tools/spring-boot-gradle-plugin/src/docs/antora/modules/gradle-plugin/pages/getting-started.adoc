@@ -1,0 +1,128 @@
+[[getting-started]]
+= Getting Started
+
+To get started with the plugin it needs to be applied to your project.
+
+ifeval::["{artifact-release-type}" == "release"]
+The plugin is https://plugins.gradle.org/plugin/org.springframework.boot[published to Gradle's plugin portal] and can be applied using the `plugins` block:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{artifact-release-type}" == "milestone"]
+The plugin is published to the Spring milestones repository.
+Gradle can be configured to use the milestones repository and the plugin can then be applied using the `plugins` block.
+To configure Gradle to use the milestones repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/milestone-settings.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/milestone-settings.gradle.kts[]
+----
+======
+
+The plugin can then be applied using the `plugins` block:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{artifact-release-type}" == "snapshot"]
+The plugin is published to the Spring snapshots repository.
+Gradle can be configured to use the snapshots repository and the plugin can then be applied using the `plugins` block.
+To configure Gradle to use the snapshots repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/snapshot-settings.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/snapshot-settings.gradle.kts[]
+----
+======
+
+The plugin can then be applied using the `plugins` block:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+Applied in isolation the plugin makes few changes to a project.
+Instead, the plugin detects when certain other plugins are applied and reacts accordingly.
+For example, when the `java` plugin is applied a task for building an executable jar is automatically configured.
+A typical Spring Boot project will apply the {url-gradle-docs-groovy-plugin}[`groovy`], {url-gradle-docs-java-plugin}[`java`], or {url-kotlin-docs-kotlin-plugin}[`org.jetbrains.kotlin.jvm`] plugin as a minimum and also use the {url-dependency-management-plugin-site}[`io.spring.dependency-management`] plugin or Gradle's native bom support for dependency management.
+For example:
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/typical-plugins.gradle[tags=apply]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/typical-plugins.gradle.kts[tags=apply]
+----
+======
+
+To learn more about how the Spring Boot plugin behaves when other plugins are applied please see the section on xref:reacting.adoc[reacting to other plugins].

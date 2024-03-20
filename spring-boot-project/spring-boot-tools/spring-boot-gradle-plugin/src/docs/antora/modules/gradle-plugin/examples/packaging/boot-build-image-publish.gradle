@@ -1,0 +1,27 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+}
+
+tasks.named("bootJar") {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::publish[]
+tasks.named("bootBuildImage") {
+	imageName.set("docker.example.com/library/${project.name}")
+	publish = true
+	docker {
+		publishRegistry {
+			username = "user"
+			password = "secret"
+		}
+	}
+}
+// end::publish[]
+
+tasks.register("bootBuildImagePublish") {
+	doFirst {
+		println(tasks.bootBuildImage.publish.get())
+	}
+}

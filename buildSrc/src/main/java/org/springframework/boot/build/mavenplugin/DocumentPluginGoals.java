@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println("| Goal | Description");
 			writer.println();
 			for (Mojo mojo : plugin.getMojos()) {
-				writer.printf("| <<%s,%s:%s>>%n", goalSectionId(mojo), plugin.getGoalPrefix(), mojo.getGoal());
+				writer.printf("| xref:%s[%s:%s]%n", goalSectionId(mojo, false), plugin.getGoalPrefix(), mojo.getGoal());
 				writer.printf("| %s%n", mojo.getDescription());
 				writer.println();
 			}
@@ -102,11 +102,9 @@ public class DocumentPluginGoals extends DefaultTask {
 
 	private void documentMojo(Plugin plugin, Mojo mojo) throws IOException {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(new File(this.outputDir, mojo.getGoal() + ".adoc")))) {
-			String sectionId = goalSectionId(mojo);
-			writer.println();
-			writer.println();
+			String sectionId = goalSectionId(mojo, true);
 			writer.printf("[[%s]]%n", sectionId);
-			writer.printf("= `%s:%s`%n", plugin.getGoalPrefix(), mojo.getGoal());
+			writer.printf("= `%s:%s`%n%n", plugin.getGoalPrefix(), mojo.getGoal());
 			writer.printf("`%s:%s:%s`%n", plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion());
 			writer.println();
 			writer.println(mojo.getDescription());
@@ -116,8 +114,10 @@ public class DocumentPluginGoals extends DefaultTask {
 			if (!requiredParameters.isEmpty()) {
 				writer.println();
 				writer.println();
+				writer.println();
 				writer.printf("[[%s.required-parameters]]%n", sectionId);
 				writer.println("== Required parameters");
+				writer.println();
 				writeParametersTable(writer, detailsSectionId, requiredParameters);
 			}
 			List<Parameter> optionalParameters = parameters.stream()
@@ -126,25 +126,29 @@ public class DocumentPluginGoals extends DefaultTask {
 			if (!optionalParameters.isEmpty()) {
 				writer.println();
 				writer.println();
+				writer.println();
 				writer.printf("[[%s.optional-parameters]]%n", sectionId);
 				writer.println("== Optional parameters");
+				writer.println();
 				writeParametersTable(writer, detailsSectionId, optionalParameters);
 			}
 			writer.println();
 			writer.println();
+			writer.println();
 			writer.printf("[[%s]]%n", detailsSectionId);
 			writer.println("== Parameter details");
+			writer.println();
 			writeParameterDetails(writer, parameters, detailsSectionId);
 		}
 	}
 
-	private String goalSectionId(Mojo mojo) {
+	private String goalSectionId(Mojo mojo, boolean innerReference) {
 		String goalSection = this.goalSections.get(mojo.getGoal());
 		if (goalSection == null) {
 			throw new IllegalStateException("Goal '" + mojo.getGoal() + "' has not be assigned to a section");
 		}
 		String sectionId = goalSection + "." + mojo.getGoal() + "-goal";
-		return sectionId;
+		return (!innerReference) ? goalSection + "#" + sectionId : sectionId;
 	}
 
 	private void writeParametersTable(PrintWriter writer, String detailsSectionId, List<Parameter> parameters) {
@@ -236,10 +240,10 @@ public class DocumentPluginGoals extends DefaultTask {
 
 	private String typeNameToJavadocLink(String shortName, String name) {
 		if (name.startsWith("org.springframework.boot.maven")) {
-			return "{spring-boot-docs}/maven-plugin/api/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
+			return "xref:maven-plugin:api/java/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
 		}
 		if (name.startsWith("org.springframework.boot")) {
-			return "{spring-boot-docs}/api/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
+			return "xref:api:java/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
 		}
 		return shortName;
 	}

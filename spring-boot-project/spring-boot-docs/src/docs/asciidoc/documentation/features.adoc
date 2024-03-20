@@ -1,9 +1,0 @@
-[[documentation.features]]
-== Learning About Spring Boot Features
-Need more details about Spring Boot's core features?
-<<features#features, The following content is for you>>:
-
-* *Spring Application:* <<features#features.spring-application, SpringApplication>>
-* *External Configuration:* <<features#features.external-config, External Configuration>>
-* *Profiles:* <<features#features.profiles, Profiles>>
-* *Logging:* <<features#features.logging, Logging>>

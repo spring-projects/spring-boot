@@ -1,0 +1,18 @@
+[[build-info]]
+= Integrating with Actuator
+
+Spring Boot Actuator displays build-related information if a `META-INF/build-info.properties` file is present.
+The `build-info` goal generates such file with the coordinates of the project and the build time.
+It also allows you to add an arbitrary number of additional properties, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$build-info/pom.xml[tags=build-info]
+----
+
+This configuration will generate a `build-info.properties` at the expected location with three additional keys.
+
+NOTE: `java.version` is expected to be a regular property available in the project.
+It will be interpolated as you would expect.
+
+include::partial$goals/build-info.adoc[leveloffset=+1]

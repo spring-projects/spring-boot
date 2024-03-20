@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class DocumentDevtoolsPropertyDefaults extends DefaultTask {
 		this.outputFile = getProject().getObjects().fileProperty();
 		this.outputFile.convention(getProject().getLayout()
 			.getBuildDirectory()
-			.file("docs/generated/using/devtools-property-defaults.adoc"));
+			.file("generated/docs/using/devtools-property-defaults.adoc"));
 		Map<String, String> dependency = new HashMap<>();
 		dependency.put("path", ":spring-boot-project:spring-boot-devtools");
 		dependency.put("configuration", "propertyDefaults");
