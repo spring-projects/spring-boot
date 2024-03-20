@@ -1,7 +1,7 @@
 plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
-	id "org.asciidoctor.jvm.convert"
+	id "org.antora"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-repository"
 	id "org.springframework.boot.optional-dependencies"
@@ -10,7 +10,7 @@ plugins {
 description = "Spring Boot Gradle Plugins"
 
 configurations {
-	documentation
+	antoraContent
 	"testCompileClasspath" {
 		// Downgrade SLF4J is required for tests to run in Eclipse
 		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
@@ -34,8 +34,6 @@ configurations {
 }
 
 dependencies {
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
-
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("io.spring.gradle:dependency-management-plugin")
@@ -86,36 +84,8 @@ validatePlugins {
 	enableStricterValidation = true
 }
 
-task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
-	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	dependsOn dependencyVersions
-	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
-	doFirst {
-		attributes "dependency-management-plugin-version": dependencyVersions.versionConstraints["io.spring.gradle:dependency-management-plugin"]
-	}
-}
-
 tasks.named('test') {
-	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
-}
-
-asciidoctor {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "index.adoc"
-	}
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	attributes "native-build-tools-version": nativeBuildToolsVersion
+	inputs.dir('src/docs/antora/modules/gradle-plugin/examples').withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName('buildScripts')
 }
 
 javadoc {
@@ -133,25 +103,33 @@ javadoc {
 	}
 }
 
-task zip(type: Zip) {
-	dependsOn asciidoctor, asciidoctorPdf
-	duplicatesStrategy "fail"
-	from(asciidoctorPdf.outputDir) {
-		into "reference/pdf"
-		rename "index.pdf", "${project.name}-reference.pdf"
+def antoraGradlePluginLocalAggregateContent  = tasks.register("antoraGradlePluginLocalAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "gradle-plugin-local-aggregate-content"
+	from(tasks.getByName("generateAntoraYml")) {
+		into "modules"
 	}
-	from(asciidoctor.outputDir) {
-		into "reference/htmlsingle"
-	}
+}
+
+def antoraGradlePluginCatalogContent = tasks.register("antoraGradlePluginCatalogContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "gradle-plugin-catalog-content"
 	from(javadoc) {
-		into "api"
+		into "api/java"
 	}
+}
+
+tasks.named("generateAntoraPlaybook") {
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+	alwaysInclude = [name: "gradle-plugin", classifier: "local-aggregate-content"]
+	dependsOn antoraGradlePluginLocalAggregateContent
+}
+
+tasks.named("antora") {
+	inputs.files(antoraGradlePluginLocalAggregateContent, antoraGradlePluginCatalogContent)
 }
 
 artifacts {
-	"documentation" zip
+	antoraContent antoraGradlePluginCatalogContent
 }
 
-toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
-}

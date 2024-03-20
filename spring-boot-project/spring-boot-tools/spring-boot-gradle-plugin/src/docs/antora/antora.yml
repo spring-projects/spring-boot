@@ -1,0 +1,8 @@
+name: spring-boot
+ext:
+  zip_contents_collector:
+    include:
+    - name: gradle-plugin
+      classifier: catalog-content
+      module: gradle-plugin
+      destination: content-catalog

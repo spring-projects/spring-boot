@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class PublishingDocumentationTests {
 
 	@TestTemplate
 	void mavenPublish() {
-		assertThat(this.gradleBuild.script("src/docs/gradle/publishing/maven-publish")
+		assertThat(this.gradleBuild.script(Examples.DIR + "publishing/maven-publish")
 			.build("publishingConfiguration")
 			.getOutput()).contains("MavenPublication").contains("https://repo.example.com");
 	}
