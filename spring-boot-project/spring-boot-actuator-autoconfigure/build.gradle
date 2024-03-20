@@ -1,6 +1,6 @@
 plugins {
 	id "java-library"
-	id "org.asciidoctor.jvm.convert"
+	id "org.antora"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.conventions"
@@ -11,13 +11,10 @@ plugins {
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	documentation
+	antoraContent
 }
 
 dependencies {
-	asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
-
 	api(project(":spring-boot-project:spring-boot-actuator"))
 	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
@@ -195,38 +192,6 @@ dependencies {
 	}
 }
 
-task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
-	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
-}
-
-asciidoctor {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task zip(type: Zip) {
-	dependsOn asciidoctor, asciidoctorPdf
-	duplicatesStrategy "fail"
-	from(asciidoctorPdf.outputDir) {
-		into "pdf"
-		rename { "spring-boot-actuator-web-api.pdf" }
-	}
-	from(asciidoctor.outputDir) {
-		into "htmlsingle"
-	}
-}
-
-artifacts {
-	documentation zip
-}
-
 tasks.named("test") {
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
@@ -235,28 +200,46 @@ tasks.named("test") {
 }
 
 def documentationTest = tasks.register("documentationTest", Test) {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
 		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
 	}
-	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	outputs.dir("${buildDir}/generated-snippets")
 	predictiveSelection {
 		enabled = false
 	}
 }
 
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	dependsOn dependencyVersions
-	doFirst {
-		def versionConstraints = dependencyVersions.versionConstraints
-		def toAntoraVersion = version -> {
-			String formatted = version.split("\\.").take(2).join('.')
-			return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
-		}
-		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
-		String integrationDocs = String.format("https://docs.spring.io/spring-integration/reference/%s", toAntoraVersion(integrationVersion))
-		attributes "spring-integration-docs": integrationDocs
+def antoraActuatorRestApiLocalAggregateContent  = tasks.register("antoraActuatorRestApiLocalAggregateContent", Zip) {
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "actuator-rest-api-local-aggregate-content"
+	from(tasks.getByName("generateAntoraYml")) {
+		into "modules"
 	}
-	dependsOn documentationTest
-	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
 }
+
+def antoraActuatorRestApiAggregateContent = tasks.register("antoraActuatorRestApiAggregateContent", Zip) {
+	dependsOn documentationTest
+	inputs.dir("${buildDir}/generated-snippets")
+		.withPathSensitivity(PathSensitivity.RELATIVE)
+		.withPropertyName("generatedSnippets")
+	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
+	archiveClassifier = "actuator-rest-api-aggregate-content"
+	from("${buildDir}/generated-snippets") {
+		into "modules/api/partials/rest/actuator"
+	}
+}
+
+tasks.named("generateAntoraPlaybook") {
+	alwaysInclude = [name: "actuator-rest-api", classifier: "local-aggregate-content"]
+	dependsOn antoraActuatorRestApiLocalAggregateContent
+}
+
+tasks.named("antora") {
+	inputs.files(antoraActuatorRestApiAggregateContent)
+}
+
+artifacts {
+	antoraContent antoraActuatorRestApiAggregateContent
+}
+
