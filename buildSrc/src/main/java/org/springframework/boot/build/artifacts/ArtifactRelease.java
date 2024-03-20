@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,24 +26,18 @@ import org.gradle.api.Project;
  */
 public final class ArtifactRelease {
 
-	private static final String SNAPSHOT = "snapshot";
-
-	private static final String MILESTONE = "milestone";
-
-	private static final String RELEASE = "release";
-
 	private static final String SPRING_REPO = "https://repo.spring.io/%s";
 
 	private static final String MAVEN_REPO = "https://repo.maven.apache.org/maven2";
 
-	private final String type;
+	private final Type type;
 
-	private ArtifactRelease(String type) {
+	private ArtifactRelease(Type type) {
 		this.type = type;
 	}
 
 	public String getType() {
-		return this.type;
+		return this.type.toString().toLowerCase();
 	}
 
 	public String getDownloadRepo() {
@@ -51,24 +45,34 @@ public final class ArtifactRelease {
 	}
 
 	public boolean isRelease() {
-		return RELEASE.equals(this.type);
+		return this.type == Type.RELEASE;
 	}
 
 	public static ArtifactRelease forProject(Project project) {
-		return new ArtifactRelease(determineReleaseType(project));
+		return forVersion(project.getVersion().toString());
 	}
 
-	private static String determineReleaseType(Project project) {
-		String version = project.getVersion().toString();
-		int modifierIndex = version.lastIndexOf('-');
-		if (modifierIndex == -1) {
-			return RELEASE;
+	public static ArtifactRelease forVersion(String version) {
+		return new ArtifactRelease(Type.forVersion(version));
+	}
+
+	enum Type {
+
+		SNAPSHOT, MILESTONE, RELEASE;
+
+		static Type forVersion(String version) {
+			int modifierIndex = version.lastIndexOf('-');
+			if (modifierIndex == -1) {
+				return RELEASE;
+			}
+			String type = version.substring(modifierIndex + 1);
+			if (type.startsWith("M") || type.startsWith("RC")) {
+				return MILESTONE;
+			}
+			return SNAPSHOT;
+
 		}
-		String type = version.substring(modifierIndex + 1);
-		if (type.startsWith("M") || type.startsWith("RC")) {
-			return MILESTONE;
-		}
-		return SNAPSHOT;
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,9 +89,9 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 
 			for (AutoConfigurationClass autoConfigurationClass : autoConfigurationClasses.classes) {
 				writer.println();
-				writer.printf("| {spring-boot-code}/spring-boot-project/%s/src/main/java/%s.java[`%s`]%n",
+				writer.printf("| {code-spring-boot}/spring-boot-project/%s/src/main/java/%s.java[`%s`]%n",
 						autoConfigurationClasses.module, autoConfigurationClass.path, autoConfigurationClass.name);
-				writer.printf("| {spring-boot-api}/%s.html[javadoc]%n", autoConfigurationClass.path);
+				writer.printf("| xref:api:java/%s.html[javadoc]%n", autoConfigurationClass.path);
 			}
 
 			writer.println("|===");

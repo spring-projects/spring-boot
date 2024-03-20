@@ -153,7 +153,6 @@ class ArchitectureCheckTests {
 		Resource root = resolver.getResource("classpath:org/springframework/boot/build/architecture/" + name);
 		FileSystemUtils.copyRecursively(root.getFile(),
 				new File(projectDir, "classes/org/springframework/boot/build/architecture/" + name));
-
 	}
 
 	private interface Callback<T> {

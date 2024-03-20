@@ -1,0 +1,27 @@
+antora:
+  extensions:
+site:
+  title: Spring Boot
+content:
+  sources: []
+asciidoc:
+  sourcemap: true
+  attributes:
+    chomp: all
+    hide-uri-scheme: '@'
+    page-pagination: ''
+    page-stackoverflow-url: https://stackoverflow.com/tags/spring-boot
+    tabs-sync-option: '@'
+  extensions:
+    - '@asciidoctor/tabs'
+    - '@springio/asciidoctor-extensions'
+    - '@springio/asciidoctor-extensions/configuration-properties-extension'
+    - '@springio/asciidoctor-extensions/section-ids-extension'
+urls:
+  latest_version_segment: ''
+runtime:
+  log:
+    failure_level: warn
+ui:
+  bundle:
+    url: https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.11/ui-bundle.zip

@@ -17,7 +17,7 @@ def versions = [:]
 new File(projectDir.parentFile, "gradle.properties").withInputStream {
 	def properties = new Properties()
 	properties.load(it)
-	["assertj", "commonsCodec", "hamcrest", "junitJupiter", "kotlin", "maven"].each {
+	["assertj", "commonsCodec", "hamcrest", "junitJupiter", "kotlin", "maven", "snakeYaml"].each {
 		versions[it] = properties[it + "Version"]
 	}
 }
@@ -42,20 +42,23 @@ dependencies {
 	implementation(platform("org.springframework:spring-framework-bom:${versions.springFramework}"))
 	implementation("com.diffplug.gradle:goomph:3.37.2")
 	implementation("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}")
+	implementation("com.github.node-gradle:gradle-node-plugin:3.5.1")
 	implementation("com.gradle:gradle-enterprise-gradle-plugin:3.12.1")
 	implementation("com.tngtech.archunit:archunit:1.0.0")
 	implementation("commons-codec:commons-codec:${versions.commonsCodec}")
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
+	implementation("io.spring.gradle.antora:spring-antora-plugin:0.0.1")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
+	implementation("io.spring.nohttp:nohttp-gradle:0.0.11")
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
 	implementation("org.apache.maven:maven-embedder:${versions.maven}")
-	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
+	implementation("org.antora:gradle-antora-plugin:1.0.0")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${versions.kotlin}")
 	implementation("org.springframework:spring-context")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
-	implementation("io.spring.nohttp:nohttp-gradle:0.0.11")
+	implementation("org.yaml:snakeyaml:${versions.snakeYaml}")
 
 	testImplementation("org.assertj:assertj-core:${versions.assertj}")
 	testImplementation("org.hamcrest:hamcrest:${versions.hamcrest}")
