@@ -51,7 +51,7 @@ class GenerateAntoraPlaybookTests {
 		String expected = Files
 			.readString(Path.of("src/test/resources/org/springframework/boot/build/antora/expected-playbook.yml"));
 		System.out.println(actual);
-		assertThat(actual).isEqualToNormalizingNewlines(expected);
+		assertThat(actual.replace('\\', '/')).isEqualToNormalizingNewlines(expected.replace('\\', '/'));
 	}
 
 	private void writePlaybookYml(ThrowingConsumer<GenerateAntoraPlaybook> customizer) throws Exception {
