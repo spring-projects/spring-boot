@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.ShowSummary;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.ShowSummaryOutput;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.UIService;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties.UiService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +49,7 @@ class LiquibasePropertiesTests {
 
 	@Test
 	void valuesOfUiServiceMatchValuesOfUiServiceEnum() {
-		assertThat(namesOf(UIService.values())).isEqualTo(namesOf(UIServiceEnum.values()));
+		assertThat(namesOf(UiService.values())).isEqualTo(namesOf(UIServiceEnum.values()));
 	}
 
 	private List<String> namesOf(Enum<?>[] input) {

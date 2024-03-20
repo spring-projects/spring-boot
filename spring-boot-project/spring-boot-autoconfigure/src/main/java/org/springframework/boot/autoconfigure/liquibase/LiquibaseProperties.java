@@ -151,7 +151,7 @@ public class LiquibaseProperties {
 	/**
 	 * Which UIService to use.
 	 */
-	private UIService uiService;
+	private UiService uiService;
 
 	public String getChangeLog() {
 		return this.changeLog;
@@ -322,11 +322,11 @@ public class LiquibaseProperties {
 		this.showSummaryOutput = showSummaryOutput;
 	}
 
-	public UIService getUiService() {
+	public UiService getUiService() {
 		return this.uiService;
 	}
 
-	public void setUiService(UIService uiService) {
+	public void setUiService(UiService uiService) {
 		this.uiService = uiService;
 	}
 
@@ -386,10 +386,8 @@ public class LiquibaseProperties {
 	 * Enumeration of types of UIService. Values are the same as those on
 	 * {@link UIServiceEnum}. To maximize backwards compatibility, the Liquibase enum is
 	 * not used directly.
-	 *
-	 * @since 3.3.0
 	 */
-	public enum UIService {
+	public enum UiService {
 
 		/**
 		 * Console-based UIService.

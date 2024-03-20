@@ -26,7 +26,6 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -83,19 +82,17 @@ public class OAuth2ResourceServerProperties {
 		private List<String> audiences = new ArrayList<>();
 
 		/**
-		 * Prefix to use for {@link GrantedAuthority authorities} mapped from JWT.
+		 * Prefix to use for authorities mapped from JWT.
 		 */
 		private String authorityPrefix;
 
 		/**
-		 * Regex to use for splitting the value of the authorities claim into
-		 * {@link GrantedAuthority authorities}.
+		 * Regex to use for splitting the value of the authorities claim into authorities.
 		 */
 		private String authoritiesClaimDelimiter;
 
 		/**
-		 * Name of token claim to use for mapping {@link GrantedAuthority authorities}
-		 * from JWT.
+		 * Name of token claim to use for mapping authorities from JWT.
 		 */
 		private String authoritiesClaimName;
 
