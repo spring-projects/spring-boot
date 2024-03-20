@@ -65,6 +65,12 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+configurations.all {
+	exclude group:"org.slf4j", module:"slf4j-api"
+	exclude group:"ch.qos.logback", module:"logback-classic"
+	exclude group:"ch.qos.logback", module:"logback-core"
+}
+
 gradlePlugin {
 	plugins {
 		annotationProcessorPlugin {
@@ -134,8 +140,12 @@ test {
 	useJUnitPlatform()
 }
 
-eclipse.classpath.file.whenMerged {
-	def jreEntry = entries.find { it.path.contains("org.eclipse.jdt.launching.JRE_CONTAINER") }
-	jreEntry.entryAttributes['module'] = 'true'
-	jreEntry.entryAttributes['limit-modules'] = 'java.base'
+eclipse {
+	jdt {
+		file {
+			withProperties {
+				it["org.eclipse.jdt.core.compiler.ignoreUnnamedModuleForSplitPackage"] = "enabled"
+			}
+		}
+	}
 }
