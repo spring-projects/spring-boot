@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import org.springframework.aot.AotDetector;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -62,9 +63,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -246,7 +247,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 				applySystemProperties(initializationContext.getEnvironment(), logFile);
 			}
 			try {
-				configureByResourceUrl(initializationContext, loggerContext, ResourceUtils.getURL(location));
+				Resource resource = new ApplicationResourceLoader().getResource(location);
+				configureByResourceUrl(initializationContext, loggerContext, resource.getURL());
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Could not initialize Logback logging from " + location, ex);

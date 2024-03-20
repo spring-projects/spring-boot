@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import org.apache.logging.log4j.util.PropertiesUtil;
 import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.logging.AbstractLoggingSystem;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
@@ -67,10 +68,10 @@ import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -300,15 +301,16 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private Configuration load(String location, LoggerContext context) throws IOException {
-		URL url = ResourceUtils.getURL(location);
-		ConfigurationSource source = getConfigurationSource(url);
+		Resource resource = new ApplicationResourceLoader().getResource(location);
+		ConfigurationSource source = getConfigurationSource(resource);
 		return ConfigurationFactory.getInstance().getConfiguration(context, source);
 	}
 
-	private ConfigurationSource getConfigurationSource(URL url) throws IOException {
-		if (FILE_PROTOCOL.equals(url.getProtocol())) {
-			return new ConfigurationSource(url.openStream(), ResourceUtils.getFile(url));
+	private ConfigurationSource getConfigurationSource(Resource resource) throws IOException {
+		if (resource.isFile()) {
+			return new ConfigurationSource(resource.getInputStream(), resource.getFile());
 		}
+		URL url = resource.getURL();
 		AuthorizationProvider authorizationProvider = ConfigurationFactory
 			.authorizationProvider(PropertiesUtil.getProperties());
 		SslConfiguration sslConfiguration = url.getProtocol().equals("https")

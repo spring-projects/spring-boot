@@ -101,3 +101,7 @@ org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitiali
 org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector
+
+# Resource Locator Protocol Resolvers
+org.springframework.core.io.ProtocolResolver=\
+org.springframework.boot.io.Base64ProtocolResolver

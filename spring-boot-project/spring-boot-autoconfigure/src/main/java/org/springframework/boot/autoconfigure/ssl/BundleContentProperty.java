@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.io.FileNotFoundException;
-import java.net.URL;
 import java.nio.file.Path;
 
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.pem.PemContent;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,9 +56,9 @@ record BundleContentProperty(String name, String value) {
 
 	private Path toPath() {
 		try {
-			URL url = toUrl();
-			Assert.state(isFileUrl(url), () -> "Value '%s' is not a file URL".formatted(url));
-			return Path.of(url.toURI()).toAbsolutePath();
+			Resource resource = getResource();
+			Assert.state(resource.isFile(), () -> "Value '%s' is not a file resource".formatted(this.value));
+			return Path.of(resource.getFile().getAbsolutePath());
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to convert value of property '%s' to a path".formatted(this.name),
@@ -67,13 +66,10 @@ record BundleContentProperty(String name, String value) {
 		}
 	}
 
-	private URL toUrl() throws FileNotFoundException {
+	private Resource getResource() {
 		Assert.state(!isPemContent(), "Value contains PEM content");
-		return ResourceUtils.getURL(this.value);
-	}
-
-	private boolean isFileUrl(URL url) {
-		return "file".equalsIgnoreCase(url.getProtocol());
+		ApplicationResourceLoader resourceLoader = new ApplicationResourceLoader();
+		return resourceLoader.getResource(this.value);
 	}
 
 }

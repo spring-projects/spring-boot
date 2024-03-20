@@ -18,17 +18,18 @@ package org.springframework.boot.ssl.jks;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -114,8 +115,9 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	private void loadKeyStore(KeyStore store, String location, char[] password) {
 		Assert.state(StringUtils.hasText(location), () -> "Location must not be empty or null");
 		try {
-			URL url = ResourceUtils.getURL(location);
-			try (InputStream stream = url.openStream()) {
+			ResourceLoader resourceLoader = new ApplicationResourceLoader();
+			Resource resource = resourceLoader.getResource(location);
+			try (InputStream stream = resource.getInputStream()) {
 				store.load(stream, password);
 			}
 		}
