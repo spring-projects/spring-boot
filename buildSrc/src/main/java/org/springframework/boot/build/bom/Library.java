@@ -93,8 +93,12 @@ public class Library {
 		this.prohibitedVersions = prohibitedVersions;
 		this.considerSnapshots = considerSnapshots;
 		this.versionAlignment = versionAlignment;
-		this.linkRootName = linkRootName;
+		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
 		this.links = Collections.unmodifiableMap(links);
+	}
+
+	private static String generateLinkRootName(String name) {
+		return name.replace("-", "").replace(" ", "-").toLowerCase();
 	}
 
 	public String getName() {

@@ -898,7 +898,7 @@ bom {
 		}
 		links {
 			site("https://www.jooq.org")
-			docs("https://www.jooq.org/doc/{jooq-version}/manual-single-page")
+			docs("https://www.jooq.org/doc/{version}/manual-single-page")
 			releaseNotes("https://github.com/jOOQ/jOOQ/releases/tag/version-{version}")
 		}
 	}
@@ -1778,7 +1778,7 @@ bom {
 			]
 		}
 	}
-	library("SnakeYAML", "2.2") {
+	library("SnakeYAML", "${snakeYamlVersion}") {
 		group("org.yaml") {
 			modules = [
 				"snakeyaml"
@@ -2029,7 +2029,7 @@ bom {
 				"spring-ws-bom"
 			]
 		}
-		links {
+		links("spring-webservices") {
 			site("https://spring.io/projects/spring-ws")
 			github("https://github.com/spring-projects/spring-ws")
 			javadoc("https://docs.spring.io/spring-ws/docs/{version}/api")
@@ -2110,6 +2110,7 @@ bom {
 		}
 		links {
 			site("https://tomcat.apache.org")
+			docs { version -> "https://tomcat.apache.org/tomcat-%s.%s-doc".formatted(version.major(), version.minor()) }
 		}
 	}
 	library("UnboundID LDAPSDK", "6.0.11") {
