@@ -1,0 +1,5 @@
+[appendix]
+[[appendix.dependency-versions]]
+= Dependency Versions
+
+This appendix provides details of the dependencies that are managed by Spring Boot.

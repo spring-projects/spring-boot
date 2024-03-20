@@ -1,0 +1,5 @@
+[[cli]]
+= Spring Boot CLI
+
+The Spring Boot CLI is a command line tool that you can use to bootstrap a new project from https://start.spring.io or encode a password.
+

@@ -1,4 +1,0 @@
-[[data.whats-next]]
-== What to Read Next
-You should now have a feeling for how to use Spring Boot with various data technologies.
-From here, you can read about Spring Boot's support for various <<messaging#messaging, messaging technologies>> and how to enable them in your application.
