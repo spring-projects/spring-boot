@@ -70,4 +70,8 @@ public enum AnsiColor implements AnsiElement {
 		return this.code;
 	}
 
+	public String colorName() {
+		return "Green, Yellow";
+	}
+
 }
