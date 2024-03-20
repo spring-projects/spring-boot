@@ -417,10 +417,8 @@ class LiquibaseAutoConfigurationTests {
 	void overrideUiService() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.liquibase.ui-service=console")
-			.run(assertLiquibase((liquibase) -> {
-				UIServiceEnum uiService = (UIServiceEnum) ReflectionTestUtils.getField(liquibase, "uiService");
-				assertThat(uiService).isEqualTo(UIServiceEnum.CONSOLE);
-			}));
+			.run(assertLiquibase(
+					(liquibase) -> assertThat(liquibase).extracting("uiService").isEqualTo(UIServiceEnum.CONSOLE)));
 	}
 
 	@Test

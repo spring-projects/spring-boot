@@ -135,7 +135,7 @@ If you define your own `DataSource` bean, auto-configuration does not occur.
 The following connection pools are supported by `DataSourceBuilder`:
 
 * HikariCP
-* Tomcat pooling `Datasource`
+* Tomcat pooling `DataSource`
 * Commons DBCP2
 * Oracle UCP & `OracleDataSource`
 * Spring Framework's `SimpleDriverDataSource`
