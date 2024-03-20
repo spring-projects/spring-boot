@@ -19,7 +19,7 @@
 				<!-- Import dependency management from Spring Boot -->
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
-				<version>{gradle-project-version}</version>
+				<version>{version-spring-boot}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
