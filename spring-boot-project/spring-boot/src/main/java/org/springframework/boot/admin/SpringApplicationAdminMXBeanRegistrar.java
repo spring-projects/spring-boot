@@ -43,7 +43,8 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.Assert;
 
 /**
- * Register a {@link SpringApplicationAdminMXBean} implementation to the platform
+ * Register a {@link SpringApplicationAdminMXBean} implementation to the
+ * platform
  * {@link MBeanServer}.
  *
  * @author Stephane Nicoll
@@ -158,6 +159,11 @@ public class SpringApplicationAdminMXBeanRegistrar implements ApplicationContext
 		public void shutdown() {
 			logger.info("Application shutdown requested.");
 			SpringApplicationAdminMXBeanRegistrar.this.applicationContext.close();
+		}
+
+		// Just for testing purpose
+		public String getName() {
+			return "Hello Deepak";
 		}
 
 	}
