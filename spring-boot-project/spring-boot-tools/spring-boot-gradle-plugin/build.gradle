@@ -133,3 +133,6 @@ artifacts {
 	antoraContent antoraGradlePluginCatalogContent
 }
 
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
+}
