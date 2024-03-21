@@ -42,7 +42,7 @@ public final class Extensions {
 		extensions.add(new Extension("@springio/antora-extensions", "1.8.2", ROOT_COMPONENT_EXTENSION,
 				"@springio/antora-extensions/static-page-extension"));
 		extensions.add(new Extension("@springio/antora-xref-extension", "1.0.0-alpha.3"));
-		extensions.add(new Extension("@springio/antora-zip-contents-collector-extension", "1.0.0-alpha.2"));
+		extensions.add(new Extension("@springio/antora-zip-contents-collector-extension", "1.0.0-alpha.3"));
 		antora = List.copyOf(extensions);
 	}
 
