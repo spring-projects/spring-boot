@@ -2,7 +2,7 @@
 [[getting-started.system-requirements]]
 = System Requirements
 
-Spring Boot {version-spring-boot} requires https://www.java.com[Java 17] and is compatible up to and including Java 21.
+Spring Boot {version-spring-boot} requires https://www.java.com[Java 17] and is compatible up to and including Java 22.
 {url-spring-framework-docs}/[Spring Framework {version-spring-framework}] or above is also required.
 
 Explicit build support is provided for the following build tools:
