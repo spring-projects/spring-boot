@@ -294,9 +294,13 @@ def antoraRootAggregateContent = tasks.register("antoraRootAggregateContent", Zi
 	}
 	from(project.configurations.configurationProperties) {
 		eachFile {
-			it.path = it.file.toString()
-				.replaceFirst('/build/(?:classes|resources)/java/main/', '/')
-				.replaceFirst('^.*/([^/]+)/META-INF/(spring-configuration-metadata\\.json)$', 'modules/ROOT/partials/$1/$2')
+			it.path = rootProject
+				.projectDir
+				.toPath()
+				.relativize(it.file.toPath())
+				.toString()
+				.replace('\\', '/')
+				.replaceAll('.*\\/([^\\/]+)\\/build.*', 'modules/ROOT/partials/$1/spring-configuration-metadata.json')
 		}
 	}
 	from(runRemoteSpringApplicationExample) {
