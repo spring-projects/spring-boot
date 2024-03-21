@@ -141,9 +141,8 @@ public class AntoraConventions {
 		if (project.getGradle().getStartParameter().getLogLevel() != LogLevel.DEBUG) {
 			antoraExtension.getOptions().add("--quiet");
 		}
-		else {
-			antoraExtension.getOptions().addAll("--log-level", "all");
-		}
+		antoraExtension.getOptions().addAll("--stacktrace");
+		antoraExtension.getOptions().addAll("--log-level", "all");
 	}
 
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
