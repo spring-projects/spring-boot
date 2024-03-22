@@ -114,7 +114,7 @@ do as they were designed before this was clarified.
 | https://github.com/dabla/grizzly-spring-boot-starter
 
 | https://www.grpc.io/[gRPC]
-| https://github.com/LogNet/grpc-spring-boot-starter & https://github.com/yidongnan/grpc-spring-boot-starter
+| https://github.com/LogNet/grpc-spring-boot-starter & https://github.com/yidongnan/grpc-spring-boot-starter & https://github.com/DanielLiu1123/grpc-starter
 
 | https://ha-jdbc.github.io/[HA JDBC]
 | https://github.com/lievendoclo/hajdbc-spring-boot
@@ -229,6 +229,9 @@ do as they were designed before this was clarified.
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
+
+| https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface[Spring Http Interface]
+| https://github.com/DanielLiu1123/httpexchange-spring-boot-starter
 
 | https://projects.spring.io/spring-shell/[Spring Shell]
 | https://github.com/fonimus/ssh-shell-spring-boot
