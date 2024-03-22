@@ -32,7 +32,7 @@ import org.springframework.data.relational.core.dialect.OracleDialect;
  * List of database dialects that can be configured in Boot for use with Spring Data JDBC.
  *
  * @author Jens Schauder
- * @since 3.3
+ * @since 3.3.0
  */
 public enum JdbcDatabaseDialect implements Supplier<Dialect> {
 

@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Spring Data JDBC.
  *
  * @author Jens Schauder
- * @since 3.3
+ * @since 3.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.jdbc")
 public class JdbcDataProperties {
