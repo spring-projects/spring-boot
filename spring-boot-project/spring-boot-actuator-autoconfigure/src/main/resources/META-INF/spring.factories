@@ -1,7 +1,7 @@
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer,\
-org.springframework.boot.actuate.autoconfigure.health.NoSuchHealthContributorFailureAnalyzer
+org.springframework.boot.actuate.autoconfigure.health.NoSuchHealthContributorFailureAnalyzer,\
+org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\

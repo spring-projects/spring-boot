@@ -345,7 +345,7 @@ public class ServerProperties {
 			private Duration timeout = Duration.ofMinutes(30);
 
 			/**
-			 * The maximum number of sessions that can be stored.
+			 * Maximum number of sessions that can be stored.
 			 */
 			private int maxSessions = 10000;
 
