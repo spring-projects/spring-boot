@@ -2077,7 +2077,7 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
-      "name": "spring.pulsar.client.failover.failover-policy",
+      "name": "spring.pulsar.client.failover.policy",
       "defaultValue": "order"
     },
     {

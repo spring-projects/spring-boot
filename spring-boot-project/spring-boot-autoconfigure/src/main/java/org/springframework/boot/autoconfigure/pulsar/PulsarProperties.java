@@ -903,13 +903,13 @@ public class PulsarProperties {
 		/**
 		 * Cluster failover policy.
 		 */
-		private FailoverPolicy failoverPolicy = FailoverPolicy.ORDER;
+		private FailoverPolicy policy = FailoverPolicy.ORDER;
 
 		/**
 		 * Delay before the Pulsar client switches from the primary cluster to the backup
 		 * cluster.
 		 */
-		private Duration failoverDelay;
+		private Duration delay;
 
 		/**
 		 * Delay before the Pulsar client switches from the backup cluster to the primary
@@ -929,20 +929,20 @@ public class PulsarProperties {
 		 */
 		private List<BackupCluster> backupClusters = new ArrayList<>();
 
-		public FailoverPolicy getFailoverPolicy() {
-			return this.failoverPolicy;
+		public FailoverPolicy getPolicy() {
+			return this.policy;
 		}
 
-		public void setFailoverPolicy(FailoverPolicy failoverPolicy) {
-			this.failoverPolicy = failoverPolicy;
+		public void setPolicy(FailoverPolicy policy) {
+			this.policy = policy;
 		}
 
-		public Duration getFailoverDelay() {
-			return this.failoverDelay;
+		public Duration getDelay() {
+			return this.delay;
 		}
 
-		public void setFailoverDelay(Duration failoverDelay) {
-			this.failoverDelay = failoverDelay;
+		public void setDelay(Duration delay) {
+			this.delay = delay;
 		}
 
 		public Duration getSwitchBackDelay() {

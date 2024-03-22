@@ -90,7 +90,7 @@ class PulsarPropertiesTests {
 		void bindFailover() {
 			Map<String, String> map = new HashMap<>();
 			map.put("spring.pulsar.client.service-url", "my-service-url");
-			map.put("spring.pulsar.client.failover.failover-delay", "30s");
+			map.put("spring.pulsar.client.failover.delay", "30s");
 			map.put("spring.pulsar.client.failover.switch-back-delay", "15s");
 			map.put("spring.pulsar.client.failover.check-interval", "1s");
 			map.put("spring.pulsar.client.failover.backup-clusters[0].service-url", "backup-service-url-1");
@@ -105,7 +105,7 @@ class PulsarPropertiesTests {
 			Failover failoverProperties = properties.getFailover();
 			List<BackupCluster> backupClusters = properties.getFailover().getBackupClusters();
 			assertThat(properties.getServiceUrl()).isEqualTo("my-service-url");
-			assertThat(failoverProperties.getFailoverDelay()).isEqualTo(Duration.ofMillis(30000));
+			assertThat(failoverProperties.getDelay()).isEqualTo(Duration.ofMillis(30000));
 			assertThat(failoverProperties.getSwitchBackDelay()).isEqualTo(Duration.ofMillis(15000));
 			assertThat(failoverProperties.getCheckInterval()).isEqualTo(Duration.ofMillis(1000));
 			assertThat(backupClusters.get(0).getServiceUrl()).isEqualTo("backup-service-url-1");

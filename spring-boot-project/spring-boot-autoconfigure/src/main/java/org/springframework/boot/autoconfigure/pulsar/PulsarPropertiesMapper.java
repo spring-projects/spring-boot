@@ -82,8 +82,8 @@ final class PulsarPropertiesMapper {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(connectionDetails::getBrokerUrl).to(autoClusterFailoverBuilder::primary);
 		map.from(secondaryAuths::keySet).as(ArrayList::new).to(autoClusterFailoverBuilder::secondary);
-		map.from(failoverProperties::getFailoverPolicy).to(autoClusterFailoverBuilder::failoverPolicy);
-		map.from(failoverProperties::getFailoverDelay).to(timeoutProperty(autoClusterFailoverBuilder::failoverDelay));
+		map.from(failoverProperties::getPolicy).to(autoClusterFailoverBuilder::failoverPolicy);
+		map.from(failoverProperties::getDelay).to(timeoutProperty(autoClusterFailoverBuilder::failoverDelay));
 		map.from(failoverProperties::getSwitchBackDelay)
 			.to(timeoutProperty(autoClusterFailoverBuilder::switchBackDelay));
 		map.from(failoverProperties::getCheckInterval).to(timeoutProperty(autoClusterFailoverBuilder::checkInterval));

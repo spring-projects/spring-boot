@@ -128,7 +128,7 @@ class PulsarConfigurationTests {
 			PulsarConfigurationTests.this.contextRunner.withBean(PulsarConnectionDetails.class, () -> connectionDetails)
 				.withPropertyValues("spring.pulsar.client.service-url=properties",
 						"spring.pulsar.client.failover.backup-clusters[0].service-url=backup-cluster-1",
-						"spring.pulsar.client.failover.failover-delay=15s",
+						"spring.pulsar.client.failover.delay=15s",
 						"spring.pulsar.client.failover.switch-back-delay=30s",
 						"spring.pulsar.client.failover.check-interval=5s",
 						"spring.pulsar.client.failover.backup-clusters[1].service-url=backup-cluster-2",
@@ -144,8 +144,7 @@ class PulsarConfigurationTests {
 					customizeAction.accept(pulsarClientBuilderCustomizer, target);
 					InOrder ordered = inOrder(target);
 					ordered.verify(target).serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
-					assertThat(pulsarProperties.getClient().getFailover().getFailoverDelay())
-						.isEqualTo(Duration.ofSeconds(15));
+					assertThat(pulsarProperties.getClient().getFailover().getDelay()).isEqualTo(Duration.ofSeconds(15));
 					assertThat(pulsarProperties.getClient().getFailover().getSwitchBackDelay())
 						.isEqualTo(Duration.ofSeconds(30));
 					assertThat(pulsarProperties.getClient().getFailover().getCheckInterval())
