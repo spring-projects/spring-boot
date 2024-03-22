@@ -389,7 +389,6 @@ bom {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-commandline",
-				"flyway-community-db-support",
 				"flyway-core",
 				"flyway-database-db2",
 				"flyway-database-derby",
