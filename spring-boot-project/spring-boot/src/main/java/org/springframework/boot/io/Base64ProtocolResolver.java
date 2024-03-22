@@ -35,17 +35,14 @@ class Base64ProtocolResolver implements ProtocolResolver {
 	@Override
 	public Resource resolve(String location, ResourceLoader resourceLoader) {
 		if (location.startsWith(BASE64_PREFIX)) {
-			return new Base64ByteArrayResource(location.substring(BASE64_PREFIX.length()));
+			String value = location.substring(BASE64_PREFIX.length());
+			return new ByteArrayResource(decode(value));
 		}
 		return null;
 	}
 
-	static class Base64ByteArrayResource extends ByteArrayResource {
-
-		Base64ByteArrayResource(String location) {
-			super(Base64.getDecoder().decode(location.getBytes()));
-		}
-
+	private static byte[] decode(String location) {
+		return Base64.getDecoder().decode(location);
 	}
 
 }
