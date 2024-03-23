@@ -127,8 +127,8 @@ public enum CloudPlatform {
 						&& environmentPropertySource.containsProperty(KUBERNETES_SERVICE_PORT)) {
 					return true;
 				}
-				if (environmentPropertySource instanceof EnumerablePropertySource) {
-					return isAutoDetected((EnumerablePropertySource<?>) environmentPropertySource);
+				if (environmentPropertySource instanceof EnumerablePropertySource<?> enumerablePropertySource) {
+					return isAutoDetected(enumerablePropertySource);
 				}
 			}
 			return false;
