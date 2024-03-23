@@ -31,7 +31,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * Signals that a test should be run against one or more of the web endpoint
- * infrastructure implementations (Jersey, Web MVC, and WebFlux)
+ * infrastructure implementations (Jersey, Web MVC, and WebFlux).
  *
  * @author Andy Wilkinson
  */
@@ -47,6 +47,11 @@ public @interface WebEndpointTest {
 	 */
 	Infrastructure[] infrastructure() default { Infrastructure.JERSEY, Infrastructure.MVC, Infrastructure.WEBFLUX };
 
+	/**
+	 * Web endpoint infrastructure.
+	 *
+	 * @since 3.3.0
+	 */
 	enum Infrastructure {
 
 		/**
