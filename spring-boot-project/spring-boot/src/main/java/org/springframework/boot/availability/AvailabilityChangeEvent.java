@@ -60,8 +60,8 @@ public class AvailabilityChangeEvent<S extends AvailabilityState> extends Payloa
 
 	private Class<?> getStateType() {
 		S state = getState();
-		if (state instanceof Enum) {
-			return ((Enum<?>) state).getDeclaringClass();
+		if (state instanceof Enum<?> enumState) {
+			return enumState.getDeclaringClass();
 		}
 		return state.getClass();
 	}

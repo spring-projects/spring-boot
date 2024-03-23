@@ -167,10 +167,10 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 
 	private static boolean isFullEnumerable(PropertySource<?> source) {
 		PropertySource<?> rootSource = getRootSource(source);
-		if (rootSource.getSource() instanceof Map) {
+		if (rootSource.getSource() instanceof Map<?, ?> map) {
 			// Check we're not security restricted
 			try {
-				((Map<?, ?>) rootSource.getSource()).size();
+				map.size();
 			}
 			catch (UnsupportedOperationException ex) {
 				return false;
@@ -180,8 +180,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	private static PropertySource<?> getRootSource(PropertySource<?> source) {
-		while (source.getSource() != null && source.getSource() instanceof PropertySource) {
-			source = (PropertySource<?>) source.getSource();
+		while (source.getSource() != null && source.getSource() instanceof PropertySource<?> propertySource) {
+			source = propertySource;
 		}
 		return source;
 	}
