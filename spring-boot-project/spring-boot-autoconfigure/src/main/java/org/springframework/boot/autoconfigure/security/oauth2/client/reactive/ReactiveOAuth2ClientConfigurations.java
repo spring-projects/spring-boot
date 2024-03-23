@@ -23,8 +23,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientConnectionDetails;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientConnectionDetailsMapper;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
+import org.springframework.boot.autoconfigure.security.oauth2.client.PropertiesOAuth2ClientConnectionDetails;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -48,14 +51,23 @@ import static org.springframework.security.config.Customizer.withDefaults;
 class ReactiveOAuth2ClientConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Conditional(ClientsConfiguredCondition.class)
-	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
+	@EnableConfigurationProperties(OAuth2ClientProperties.class)
 	static class ReactiveClientRegistrationRepositoryConfiguration {
 
 		@Bean
-		InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
+		@ConditionalOnMissingBean(OAuth2ClientConnectionDetails.class)
+		@Conditional(ClientsConfiguredCondition.class)
+		PropertiesOAuth2ClientConnectionDetails oAuth2ClientConnectionDetails(OAuth2ClientProperties properties) {
+			return new PropertiesOAuth2ClientConnectionDetails(properties);
+		}
+
+		@Bean
+		@ConditionalOnBean(OAuth2ClientConnectionDetails.class)
+		@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
+		InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(
+				OAuth2ClientConnectionDetails connectionDetails) {
 			List<ClientRegistration> registrations = new ArrayList<>(
-					new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().values());
+					new OAuth2ClientConnectionDetailsMapper(connectionDetails).asClientRegistrations().values());
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
 		}
 

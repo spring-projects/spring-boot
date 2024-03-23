@@ -42,6 +42,8 @@ public final class DockerImageNames {
 
 	private static final String KAFKA_VERSION = "7.4.0";
 
+	private static final String KEYCLOAK_VERSION = "23.0";
+
 	private static final String MARIADB_VERSION = "10.10";
 
 	private static final String MONGO_VERSION = "5.0.17";
@@ -137,6 +139,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName kafka() {
 		return DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Keycloak.
+	 * @return a docker image name for running Keycloak
+	 */
+	public static DockerImageName keycloak() {
+		return DockerImageName.parse("keycloak/keycloak").withTag(KEYCLOAK_VERSION);
 	}
 
 	/**

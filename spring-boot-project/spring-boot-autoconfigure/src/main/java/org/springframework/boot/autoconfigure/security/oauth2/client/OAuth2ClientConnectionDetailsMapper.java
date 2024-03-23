@@ -19,7 +19,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.client;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties.Provider;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientConnectionDetails.Provider;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientConnectionDetails.Registration;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.convert.ConversionException;
@@ -33,7 +34,8 @@ import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.util.StringUtils;
 
 /**
- * Maps {@link OAuth2ClientProperties} to {@link ClientRegistration ClientRegistrations}.
+ * Maps {@link OAuth2ClientConnectionDetails} to {@link ClientRegistration
+ * ClientRegistrations}.
  *
  * @author Phillip Webb
  * @author Thiago Hirata
@@ -42,16 +44,16 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 3.1.0
  */
-public final class OAuth2ClientPropertiesMapper {
+public final class OAuth2ClientConnectionDetailsMapper {
 
-	private final OAuth2ClientProperties properties;
+	private final OAuth2ClientConnectionDetails connectionDetails;
 
 	/**
 	 * Creates a new mapper for the given {@code properties}.
-	 * @param properties the properties to map
+	 * @param connectionDetails the properties to map
 	 */
-	public OAuth2ClientPropertiesMapper(OAuth2ClientProperties properties) {
-		this.properties = properties;
+	public OAuth2ClientConnectionDetailsMapper(OAuth2ClientConnectionDetails connectionDetails) {
+		this.connectionDetails = connectionDetails;
 	}
 
 	/**
@@ -60,14 +62,14 @@ public final class OAuth2ClientPropertiesMapper {
 	 */
 	public Map<String, ClientRegistration> asClientRegistrations() {
 		Map<String, ClientRegistration> clientRegistrations = new HashMap<>();
-		this.properties.getRegistration()
+		this.connectionDetails.getRegistrations()
 			.forEach((key, value) -> clientRegistrations.put(key,
-					getClientRegistration(key, value, this.properties.getProvider())));
+					getClientRegistration(key, value, this.connectionDetails.getProviders())));
 		return clientRegistrations;
 	}
 
-	private static ClientRegistration getClientRegistration(String registrationId,
-			OAuth2ClientProperties.Registration properties, Map<String, Provider> providers) {
+	private static ClientRegistration getClientRegistration(String registrationId, Registration properties,
+			Map<String, Provider> providers) {
 		Builder builder = getBuilderFromIssuerIfPossible(registrationId, properties.getProvider(), providers);
 		if (builder == null) {
 			builder = getBuilder(registrationId, properties.getProvider(), providers);
@@ -82,7 +84,7 @@ public final class OAuth2ClientPropertiesMapper {
 			.as(AuthorizationGrantType::new)
 			.to(builder::authorizationGrantType);
 		map.from(properties::getRedirectUri).to(builder::redirectUri);
-		map.from(properties::getScope).as(StringUtils::toStringArray).to(builder::scope);
+		map.from(properties::getScopes).as(StringUtils::toStringArray).to(builder::scope);
 		map.from(properties::getClientName).to(builder::clientName);
 		return builder.build();
 	}

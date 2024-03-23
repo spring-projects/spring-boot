@@ -32,9 +32,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class RedisDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class KeycloakDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
-	RedisDockerComposeConnectionDetailsFactoryIntegrationTests() {
+	KeycloakDockerComposeConnectionDetailsFactoryIntegrationTests() {
 		super("redis-compose.yaml", DockerImageNames.redis());
 	}
 
