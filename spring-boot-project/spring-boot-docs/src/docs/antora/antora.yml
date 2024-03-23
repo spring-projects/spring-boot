@@ -1,4 +1,5 @@
 name: spring-boot
+version: true
 ext:
   zip_contents_collector:
     include:
