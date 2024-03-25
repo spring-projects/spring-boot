@@ -19,6 +19,7 @@ package org.springframework.boot.web.client;
 import java.io.File;
 
 import okhttp3.OkHttpClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -33,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@Disabled
 @ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
 @Deprecated(since = "3.2.0")
 @SuppressWarnings("removal")

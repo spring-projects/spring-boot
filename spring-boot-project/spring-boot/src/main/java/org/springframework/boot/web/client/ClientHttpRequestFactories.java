@@ -32,6 +32,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -80,6 +82,8 @@ public final class ClientHttpRequestFactories {
 
 	private static final boolean JETTY_CLIENT_PRESENT = ClassUtils.isPresent(JETTY_CLIENT_CLASS, null);
 
+	private static final Log logger = LogFactory.getLog(ClientHttpRequestFactories.class);
+
 	private ClientHttpRequestFactories() {
 	}
 
@@ -106,7 +110,7 @@ public final class ClientHttpRequestFactories {
 			return Jetty.get(settings);
 		}
 		if (OKHTTP_CLIENT_PRESENT) {
-			return OkHttp.get(settings);
+			logger.warn("OkHttpClient is deprecated in Spring Boot 3.2.0. Spring Boot chooses the default client.");
 		}
 		return Simple.get(settings);
 	}
@@ -150,7 +154,7 @@ public final class ClientHttpRequestFactories {
 			return (T) Simple.get(settings);
 		}
 		if (requestFactoryType == OkHttp3ClientHttpRequestFactory.class) {
-			return (T) OkHttp.get(settings);
+			logger.warn("OkHttpClient is deprecated in Spring Boot 3.2.0. Spring Boot chooses the default client.");
 		}
 		return get(() -> createRequestFactory(requestFactoryType), settings);
 	}
