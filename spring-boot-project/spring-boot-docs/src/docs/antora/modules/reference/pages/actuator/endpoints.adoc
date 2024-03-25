@@ -1267,3 +1267,73 @@ If you reach the `info` endpoint, you should see a response that contains the fo
 	}
 }
 ----
+
+
+
+[[actuator.endpoints.sbom]]
+== Software Bill of Materials (SBOM)
+
+The `sbom` endpoint exposes the https://en.wikipedia.org/wiki/Software_supply_chain[Software Bill of Materials].
+CycloneDX SBOMs can be auto-detected, but other formats can be manually configured, too.
+
+The `spring-boot-starter-parent` Maven parent and the Spring Boot Gradle plugin configure the https://github.com/CycloneDX/cyclonedx-maven-plugin[CycloneDX Maven plugin] and the https://github.com/CycloneDX/cyclonedx-gradle-plugin[CycloneDX Gradle plugin] respectively.
+
+To get a CycloneDX SBOM, you'll need to add this to your Maven build:
+
+[source,xml]
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+----
+
+For Gradle, you'll need to apply the CycloneDX Gradle plugin:
+
+[source,groovy]
+----
+plugins {
+    id 'org.cyclonedx.bom' version '1.8.2'
+}
+----
+
+The `sbom` actuator endpoint will then expose an SBOM called "application", which describes the contents of your application.
+
+
+
+[[actuator.endpoints.sbom.other-formats]]
+=== Other SBOM formats
+
+If you want to publish an SBOM in a different format, there are some configuration properties which you can use.
+
+The configuration property configprop:management.endpoint.sbom.application.location[] sets the location for the application SBOM.
+For example, setting this to `classpath:sbom.json` will use the contents of the `/sbom.json` resource on the classpath.
+
+The media type for SBOMs in CycloneDX, SPDX and Syft format is detected automatically.
+To override the auto-detected media type, use the configuration property configprop:management.endpoint.sbom.application.media-type[].
+
+
+
+[[actuator.endpoints.sbom.additional]]
+=== Additional SBOMs
+
+The actuator endpoint can handle multiple SBOMs.
+To add SBOMs, use the configuration property configprop:management.endpoint.sbom.additional[], as shown in this example:
+
+[configprops,yaml]
+----
+management:
+  endpoint:
+    sbom:
+      additional:
+        system:
+          location: "optional:file:/system.spdx.json"
+          media-type: "application/spdx+json"
+----
+
+This will add an SBOM called "system", which is stored in `/system.spdx.json`.
+The `optional:` prefix can be used to prevent a startup failure if the file doesn't exist.
