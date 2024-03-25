@@ -7,7 +7,7 @@ apply plugin: 'org.springframework.boot.aot'
 
 repositories {
 	mavenCentral()
-	maven { url 'file:repository' }
+	maven { url 'repository' }
 }
 
 configurations.all {
