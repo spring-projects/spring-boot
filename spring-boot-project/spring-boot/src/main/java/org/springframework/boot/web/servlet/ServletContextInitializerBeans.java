@@ -111,13 +111,13 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 			Filter source = filterRegistrationBean.getFilter();
 			addServletContextInitializerBean(Filter.class, beanName, filterRegistrationBean, beanFactory, source);
 		}
-		else if (initializer instanceof DelegatingFilterProxyRegistrationBean delegatingFilterProxyRegistrationBean) {
-			String source = delegatingFilterProxyRegistrationBean.getTargetBeanName();
-			addServletContextInitializerBean(Filter.class, beanName, delegatingFilterProxyRegistrationBean, beanFactory, source);
+		else if (initializer instanceof DelegatingFilterProxyRegistrationBean registrationBean) {
+			String source = registrationBean.getTargetBeanName();
+			addServletContextInitializerBean(Filter.class, beanName, registrationBean, beanFactory, source);
 		}
-		else if (initializer instanceof ServletListenerRegistrationBean<?> servletListenerRegistrationBean) {
-			EventListener source = servletListenerRegistrationBean.getListener();
-			addServletContextInitializerBean(EventListener.class, beanName, servletListenerRegistrationBean, beanFactory, source);
+		else if (initializer instanceof ServletListenerRegistrationBean<?> registrationBean) {
+			EventListener source = registrationBean.getListener();
+			addServletContextInitializerBean(EventListener.class, beanName, registrationBean, beanFactory, source);
 		}
 		else {
 			addServletContextInitializerBean(ServletContextInitializer.class, beanName, initializer, beanFactory,
