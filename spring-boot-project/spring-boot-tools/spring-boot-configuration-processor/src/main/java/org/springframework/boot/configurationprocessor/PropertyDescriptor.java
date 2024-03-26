@@ -113,7 +113,8 @@ abstract class PropertyDescriptor<S extends Element> {
 		if (environment.getConfigurationPropertiesAnnotation(getGetter()) != null) {
 			return false;
 		}
-		if (environment.getNestedConfigurationPropertyAnnotation(getField()) != null) {
+		if (environment.getNestedConfigurationPropertyAnnotation(getField()) != null
+				|| environment.getNestedConfigurationPropertyAnnotation(getGetter()) != null) {
 			return true;
 		}
 		if (isCyclePresent(typeElement, getOwnerElement())) {

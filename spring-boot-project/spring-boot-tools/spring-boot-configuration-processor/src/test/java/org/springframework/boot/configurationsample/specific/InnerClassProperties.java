@@ -36,6 +36,8 @@ public class InnerClassProperties {
 
 	private Fourth fourth;
 
+	private final DeprecatedSimplePojo fifth = new DeprecatedSimplePojo();
+
 	public Foo getFirst() {
 		return this.first;
 	}
@@ -58,6 +60,11 @@ public class InnerClassProperties {
 
 	public void setFourth(Fourth fourth) {
 		this.fourth = fourth;
+	}
+
+	@NestedConfigurationProperty
+	public DeprecatedSimplePojo getFifth() {
+		return this.fifth;
 	}
 
 	public static class Foo {

@@ -42,6 +42,7 @@ import org.springframework.boot.configurationsample.specific.AnnotatedGetter;
 import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedLessPreciseTypePojo;
+import org.springframework.boot.configurationsample.specific.DeprecatedSimplePojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.EmptyDefaultValueProperties;
@@ -333,6 +334,9 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("config.third.value"));
 		assertThat(metadata).has(Metadata.withProperty("config.fourth"));
 		assertThat(metadata).isNotEqualTo(Metadata.withGroup("config.fourth"));
+		assertThat(metadata)
+				.has(Metadata.withGroup("config.fifth").ofType(DeprecatedSimplePojo.class).fromSource(InnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("config.fifth.value").withDeprecation());
 	}
 
 	@Test
