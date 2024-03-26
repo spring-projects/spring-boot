@@ -22,9 +22,8 @@ import org.springframework.core.env.Environment;
  * Adapts {@link LdapProperties} to {@link LdapConnectionDetails}.
  *
  * @author Philipp Kessler
- * @since 3.3.0
  */
-public class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
+class PropertiesLdapConnectionDetails implements LdapConnectionDetails {
 
 	private final LdapProperties properties;
 
