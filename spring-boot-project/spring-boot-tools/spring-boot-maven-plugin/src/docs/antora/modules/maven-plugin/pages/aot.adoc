@@ -80,7 +80,7 @@ include::partial$goals/process-aot.adoc[leveloffset=+1]
 
 
 
-[[aot.processint-tests]]
+[[aot.processing-tests]]
 == Processing Tests
 
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
