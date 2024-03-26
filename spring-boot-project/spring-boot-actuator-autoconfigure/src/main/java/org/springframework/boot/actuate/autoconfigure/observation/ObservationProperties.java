@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@ public class ObservationProperties {
 	 */
 	private Map<String, Boolean> enable = new LinkedHashMap<>();
 
+	private final LongTaskTimer longTaskTimer = new LongTaskTimer();
+
 	public Map<String, Boolean> getEnable() {
 		return this.enable;
 	}
@@ -63,6 +65,10 @@ public class ObservationProperties {
 
 	public void setKeyValues(Map<String, String> keyValues) {
 		this.keyValues = keyValues;
+	}
+
+	public LongTaskTimer getLongTaskTimer() {
+		return this.longTaskTimer;
 	}
 
 	public static class Http {
@@ -131,6 +137,23 @@ public class ObservationProperties {
 
 			}
 
+		}
+
+	}
+
+	public static class LongTaskTimer {
+
+		/**
+		 * Whether to create a LongTaskTimer for every observation.
+		 */
+		private boolean enabled = true;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

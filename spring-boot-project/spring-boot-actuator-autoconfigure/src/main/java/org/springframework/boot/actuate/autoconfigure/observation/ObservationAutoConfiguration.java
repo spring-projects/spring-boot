@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
+import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler.IgnoredMeters;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
@@ -131,8 +132,10 @@ public class ObservationAutoConfiguration {
 		static class OnlyMetricsMeterObservationHandlerConfiguration {
 
 			@Bean
-			DefaultMeterObservationHandler defaultMeterObservationHandler(MeterRegistry meterRegistry) {
-				return new DefaultMeterObservationHandler(meterRegistry);
+			DefaultMeterObservationHandler defaultMeterObservationHandler(MeterRegistry meterRegistry,
+					ObservationProperties properties) {
+				return properties.getLongTaskTimer().isEnabled() ? new DefaultMeterObservationHandler(meterRegistry)
+						: new DefaultMeterObservationHandler(meterRegistry, IgnoredMeters.LONG_TASK_TIMER);
 			}
 
 		}
@@ -143,8 +146,10 @@ public class ObservationAutoConfiguration {
 
 			@Bean
 			TracingAwareMeterObservationHandler<Observation.Context> tracingAwareMeterObservationHandler(
-					MeterRegistry meterRegistry, Tracer tracer) {
-				DefaultMeterObservationHandler delegate = new DefaultMeterObservationHandler(meterRegistry);
+					MeterRegistry meterRegistry, Tracer tracer, ObservationProperties properties) {
+				DefaultMeterObservationHandler delegate = properties.getLongTaskTimer().isEnabled()
+						? new DefaultMeterObservationHandler(meterRegistry)
+						: new DefaultMeterObservationHandler(meterRegistry, IgnoredMeters.LONG_TASK_TIMER);
 				return new TracingAwareMeterObservationHandler<>(delegate, tracer);
 			}
 
