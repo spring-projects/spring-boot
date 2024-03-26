@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class SingleRow extends Row {
 
@@ -56,7 +57,7 @@ class SingleRow extends Row {
 	void write(Asciidoc asciidoc) {
 		asciidoc.append("|");
 		asciidoc.append("[[" + getAnchor() + "]]");
-		asciidoc.appendln("<<" + getAnchor() + ",`+", this.displayName, "+`>>");
+		asciidoc.appendln("xref:#" + getAnchor() + "[`+", this.displayName, "+`]");
 		writeDescription(asciidoc);
 		writeDefaultValue(asciidoc);
 	}

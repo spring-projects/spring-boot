@@ -158,7 +158,7 @@ public class DocumentPluginGoals extends DefaultTask {
 		writer.println();
 		for (Parameter parameter : parameters) {
 			String name = parameter.getName();
-			writer.printf("| <<%s.%s,%s>>%n", detailsSectionId, parameterId(name), name);
+			writer.printf("| xref:#%s.%s[%s]%n", detailsSectionId, parameterId(name), name);
 			writer.printf("| `%s`%n", typeNameToJavadocLink(shortTypeName(parameter.getType()), parameter.getType()));
 			String defaultValue = parameter.getDefaultValue();
 			if (defaultValue != null) {
