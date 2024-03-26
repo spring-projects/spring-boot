@@ -10,6 +10,7 @@ description = "Spring Boot Test"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	api("org.springframework:spring-test")
 
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
@@ -32,7 +33,6 @@ dependencies {
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 	optional("org.seleniumhq.selenium:selenium-api")
-	optional("org.springframework:spring-test")
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework.graphql:spring-graphql-test")
