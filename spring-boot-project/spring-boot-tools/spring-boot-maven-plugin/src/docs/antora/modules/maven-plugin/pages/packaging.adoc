@@ -254,9 +254,9 @@ include::example$packaging/exclude-artifact-group-pom.xml[tags=exclude-artifact-
 
 
 [[packaging.examples.layered-archive-tools]]
-=== Layered Archive Tools
+=== JAR Tools
 
-When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
+When a layered jar or war is created, the `spring-boot-jarmode-tools` jar will be added as a dependency to your archive.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 

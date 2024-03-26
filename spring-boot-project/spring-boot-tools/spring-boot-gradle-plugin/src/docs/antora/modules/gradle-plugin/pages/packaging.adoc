@@ -376,7 +376,7 @@ include::example$packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
 ----
 ======
 
-When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
+When a layered jar or war is created, the `spring-boot-jarmode-tools` jar will be added as a dependency to your archive.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 

@@ -9,8 +9,6 @@ tasks.named("bootJar") {
 
 // tag::layered[]
 tasks.named("bootJar") {
-	layered {
-		includeLayerTools = false
-	}
+	includeTools = false
 }
 // end::layered[]
