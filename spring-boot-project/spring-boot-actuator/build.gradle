@@ -11,7 +11,7 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	optional("com.datastax.oss:java-driver-core") {
+	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 	optional("com.fasterxml.jackson.core:jackson-databind")

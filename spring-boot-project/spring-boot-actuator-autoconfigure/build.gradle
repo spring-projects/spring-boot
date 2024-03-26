@@ -23,7 +23,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 	optional("ch.qos.logback:logback-classic")
-	optional("com.datastax.oss:java-driver-core") {
+	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
