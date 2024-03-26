@@ -365,7 +365,7 @@ management:
         allowed-methods: "GET,POST"
 ----
 
-TIP: See {code-spring-boot-actuator-autoconfigure-src}/endpoint/web/CorsEndpointProperties.java[`CorsEndpointProperties`] for a complete list of options.
+TIP: See xref:api:java/org/springframework/boot/actuate/autoconfigure/endpoint/web/CorsEndpointProperties.html[`CorsEndpointProperties`] for a complete list of options.
 
 
 
@@ -585,7 +585,7 @@ You can configure the roles by using the configprop:management.endpoint.health.r
 
 NOTE: If you have secured your application and wish to use `always`, your security configuration must permit access to the health endpoint for both authenticated and unauthenticated users.
 
-Health information is collected from the content of a {code-spring-boot-actuator-src}/health/HealthContributorRegistry.java[`HealthContributorRegistry`] (by default, all {code-spring-boot-actuator-src}/health/HealthContributor.java[`HealthContributor`] instances defined in your `ApplicationContext`).
+Health information is collected from the content of a xref:api:java/org/springframework/boot/actuate/health/HealthContributorRegistry.html[`HealthContributorRegistry`] (by default, all xref:api:java/org/springframework/boot/actuate/health/HealthContributor.html[`HealthContributor`] instances defined in your `ApplicationContext`).
 Spring Boot includes a number of auto-configured `HealthContributors`, and you can also write your own.
 
 A `HealthContributor` can be either a `HealthIndicator` or a `CompositeHealthContributor`.
@@ -613,63 +613,63 @@ with the `key` listed in the following table:
 | Key | Name | Description
 
 | `cassandra`
-| {code-spring-boot-actuator-src}/cassandra/CassandraDriverHealthIndicator.java[`CassandraDriverHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/cassandra/CassandraDriverHealthIndicator.html[`CassandraDriverHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | `couchbase`
-| {code-spring-boot-actuator-src}/couchbase/CouchbaseHealthIndicator.java[`CouchbaseHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/couchbase/CouchbaseHealthIndicator.html[`CouchbaseHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
 | `db`
-| {code-spring-boot-actuator-src}/jdbc/DataSourceHealthIndicator.java[`DataSourceHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/jdbc/DataSourceHealthIndicator.html[`DataSourceHealthIndicator`]
 | Checks that a connection to `DataSource` can be obtained.
 
 | `diskspace`
-| {code-spring-boot-actuator-src}/system/DiskSpaceHealthIndicator.java[`DiskSpaceHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/system/DiskSpaceHealthIndicator.html[`DiskSpaceHealthIndicator`]
 | Checks for low disk space.
 
 | `elasticsearch`
-| {code-spring-boot-actuator-src}/elasticsearch/ElasticsearchRestClientHealthIndicator.java[`ElasticsearchRestClientHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/elasticsearch/ElasticsearchRestClientHealthIndicator.html[`ElasticsearchRestClientHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
 | `hazelcast`
-| {code-spring-boot-actuator-src}/hazelcast/HazelcastHealthIndicator.java[`HazelcastHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/hazelcast/HazelcastHealthIndicator.html[`HazelcastHealthIndicator`]
 | Checks that a Hazelcast server is up.
 
 | `influxdb`
-| {code-spring-boot-actuator-src}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/influx/InfluxDbHealthIndicator.html[`InfluxDbHealthIndicator`]
 | Checks that an InfluxDB server is up.
 
 | `jms`
-| {code-spring-boot-actuator-src}/jms/JmsHealthIndicator.java[`JmsHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/jms/JmsHealthIndicator.html[`JmsHealthIndicator`]
 | Checks that a JMS broker is up.
 
 | `ldap`
-| {code-spring-boot-actuator-src}/ldap/LdapHealthIndicator.java[`LdapHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/ldap/LdapHealthIndicator.html[`LdapHealthIndicator`]
 | Checks that an LDAP server is up.
 
 | `mail`
-| {code-spring-boot-actuator-src}/mail/MailHealthIndicator.java[`MailHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/mail/MailHealthIndicator.html[`MailHealthIndicator`]
 | Checks that a mail server is up.
 
 | `mongo`
-| {code-spring-boot-actuator-src}/data/mongo/MongoHealthIndicator.java[`MongoHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/data/mongo/MongoHealthIndicator.html[`MongoHealthIndicator`]
 | Checks that a Mongo database is up.
 
 | `neo4j`
-| {code-spring-boot-actuator-src}/neo4j/Neo4jHealthIndicator.java[`Neo4jHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/neo4j/Neo4jHealthIndicator.html[`Neo4jHealthIndicator`]
 | Checks that a Neo4j database is up.
 
 | `ping`
-| {code-spring-boot-actuator-src}/health/PingHealthIndicator.java[`PingHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/health/PingHealthIndicator.html[`PingHealthIndicator`]
 | Always responds with `UP`.
 
 | `rabbit`
-| {code-spring-boot-actuator-src}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/amqp/RabbitHealthIndicator.html[`RabbitHealthIndicator`]
 | Checks that a Rabbit server is up.
 
 | `redis`
-| {code-spring-boot-actuator-src}/data/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/data/redis/RedisHealthIndicator.html[`RedisHealthIndicator`]
 | Checks that a Redis server is up.
 |===
 
@@ -682,11 +682,11 @@ Additional `HealthIndicators` are available but are not enabled by default:
 | Key | Name | Description
 
 | `livenessstate`
-| {code-spring-boot-actuator-src}/availability/LivenessStateHealthIndicator.java[`LivenessStateHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/availability/LivenessStateHealthIndicator.html[`LivenessStateHealthIndicator`]
 | Exposes the "`Liveness`" application availability state.
 
 | `readinessstate`
-| {code-spring-boot-actuator-src}/availability/ReadinessStateHealthIndicator.java[`ReadinessStateHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/availability/ReadinessStateHealthIndicator.html[`ReadinessStateHealthIndicator`]
 | Exposes the "`Readiness`" application availability state.
 |===
 
@@ -695,7 +695,7 @@ Additional `HealthIndicators` are available but are not enabled by default:
 [[actuator.endpoints.health.writing-custom-health-indicators]]
 === Writing Custom HealthIndicators
 
-To provide custom health information, you can register Spring beans that implement the {code-spring-boot-actuator-src}/health/HealthIndicator.java[`HealthIndicator`] interface.
+To provide custom health information, you can register Spring beans that implement the xref:api:java/org/springframework/boot/actuate/health/HealthIndicator.html[`HealthIndicator`] interface.
 You need to provide an implementation of the `health()` method and return a `Health` response.
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
@@ -709,8 +709,8 @@ TIP: Health indicators are usually called over HTTP and need to respond before a
 Spring Boot will log a warning message for any health indicator that takes longer than 10 seconds to respond.
 If you want to configure this threshold, you can use the configprop:management.endpoint.health.logging.slow-indicator-threshold[] property.
 
-In addition to Spring Boot's predefined {code-spring-boot-actuator-src}/health/Status.java[`Status`] types, `Health` can return a custom `Status` that represents a new system state.
-In such cases, you also need to provide a custom implementation of the {code-spring-boot-actuator-src}/health/StatusAggregator.java[`StatusAggregator`] interface, or you must configure the default implementation by using the configprop:management.endpoint.health.status.order[] configuration property.
+In addition to Spring Boot's predefined xref:api:java/org/springframework/boot/actuate/health/Status.html[`Status`] types, `Health` can return a custom `Status` that represents a new system state.
+In such cases, you also need to provide a custom implementation of the xref:api:java/org/springframework/boot/actuate/health/StatusAggregator.html[`StatusAggregator`] interface, or you must configure the default implementation by using the configprop:management.endpoint.health.status.order[] configuration property.
 
 For example, assume a new `Status` with a code of `FATAL` is being used in one of your `HealthIndicator` implementations.
 To configure the severity order, add the following property to your application properties:
@@ -771,13 +771,13 @@ The following table shows the default status mappings for the built-in statuses:
 === Reactive Health Indicators
 
 For reactive applications, such as those that use Spring WebFlux, `ReactiveHealthContributor` provides a non-blocking contract for getting application health.
-Similar to a traditional `HealthContributor`, health information is collected from the content of a {code-spring-boot-actuator-src}/health/ReactiveHealthContributorRegistry.java[`ReactiveHealthContributorRegistry`] (by default, all {code-spring-boot-actuator-src}/health/HealthContributor.java[`HealthContributor`] and {code-spring-boot-actuator-src}/health/ReactiveHealthContributor.java[`ReactiveHealthContributor`] instances defined in your `ApplicationContext`).
+Similar to a traditional `HealthContributor`, health information is collected from the content of a xref:api:java/org/springframework/boot/actuate/health/ReactiveHealthContributorRegistry.html[`ReactiveHealthContributorRegistry`] (by default, all xref:api:java/org/springframework/boot/actuate/health/HealthContributor.html[`HealthContributor`] and xref:api:java/org/springframework/boot/actuate/health/ReactiveHealthContributor.html[`ReactiveHealthContributor`] instances defined in your `ApplicationContext`).
 Regular `HealthContributors` that do not check against a reactive API are executed on the elastic scheduler.
 
 TIP: In a reactive application, you should use the `ReactiveHealthContributorRegistry` to register and unregister health indicators at runtime.
 If you need to register a regular `HealthContributor`, you should wrap it with `ReactiveHealthContributor#adapt`.
 
-To provide custom health information from a reactive API, you can register Spring beans that implement the {code-spring-boot-actuator-src}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
+To provide custom health information from a reactive API, you can register Spring beans that implement the xref:api:java/org/springframework/boot/actuate/health/ReactiveHealthIndicator.html[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
 include-code::MyReactiveHealthIndicator[]
@@ -796,27 +796,27 @@ When appropriate, Spring Boot auto-configures the following `ReactiveHealthIndic
 | Key | Name | Description
 
 | `cassandra`
-| {code-spring-boot-actuator-src}/cassandra/CassandraDriverReactiveHealthIndicator.java[`CassandraDriverReactiveHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/cassandra/CassandraDriverReactiveHealthIndicator.html[`CassandraDriverReactiveHealthIndicator`]
 | Checks that a Cassandra database is up.
 
 | `couchbase`
-| {code-spring-boot-actuator-src}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/couchbase/CouchbaseReactiveHealthIndicator.html[`CouchbaseReactiveHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
 | `elasticsearch`
-| {code-spring-boot-actuator-src}/data/elasticsearch/ElasticsearchReactiveHealthIndicator.java[`ElasticsearchReactiveHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/data/elasticsearch/ElasticsearchReactiveHealthIndicator.html[`ElasticsearchReactiveHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
 | `mongo`
-| {code-spring-boot-actuator-src}/data/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/data/mongo/MongoReactiveHealthIndicator.html[`MongoReactiveHealthIndicator`]
 | Checks that a Mongo database is up.
 
 | `neo4j`
-| {code-spring-boot-actuator-src}/neo4j/Neo4jReactiveHealthIndicator.java[`Neo4jReactiveHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/neo4j/Neo4jReactiveHealthIndicator.html[`Neo4jReactiveHealthIndicator`]
 | Checks that a Neo4j database is up.
 
 | `redis`
-| {code-spring-boot-actuator-src}/data/redis/RedisReactiveHealthIndicator.java[`RedisReactiveHealthIndicator`]
+| xref:api:java/org/springframework/boot/actuate/data/redis/RedisReactiveHealthIndicator.html[`RedisReactiveHealthIndicator`]
 | Checks that a Redis server is up.
 |===
 
@@ -1089,7 +1089,7 @@ TIP: See xref:deployment/cloud.adoc#deployment.cloud.kubernetes.container-lifecy
 [[actuator.endpoints.info]]
 == Application Information
 
-Application information exposes various information collected from all {code-spring-boot-actuator-src}/info/InfoContributor.java[`InfoContributor`] beans defined in your `ApplicationContext`.
+Application information exposes various information collected from all xref:api:java/org/springframework/boot/actuate/info/InfoContributor.html[`InfoContributor`] beans defined in your `ApplicationContext`.
 Spring Boot includes a number of auto-configured `InfoContributor` beans, and you can write your own.
 
 
@@ -1104,32 +1104,32 @@ When appropriate, Spring auto-configures the following `InfoContributor` beans:
 | ID | Name | Description | Prerequisites
 
 | `build`
-| {code-spring-boot-actuator-src}/info/BuildInfoContributor.java[`BuildInfoContributor`]
+| xref:api:java/org/springframework/boot/actuate/info/BuildInfoContributor.html[`BuildInfoContributor`]
 | Exposes build information.
 | A `META-INF/build-info.properties` resource.
 
 | `env`
-| {code-spring-boot-actuator-src}/info/EnvironmentInfoContributor.java[`EnvironmentInfoContributor`]
+| xref:api:java/org/springframework/boot/actuate/info/EnvironmentInfoContributor.html[`EnvironmentInfoContributor`]
 | Exposes any property from the `Environment` whose name starts with `info.`.
 | None.
 
 | `git`
-| {code-spring-boot-actuator-src}/info/GitInfoContributor.java[`GitInfoContributor`]
+| xref:api:java/org/springframework/boot/actuate/info/GitInfoContributor.html[`GitInfoContributor`]
 | Exposes git information.
 | A `git.properties` resource.
 
 | `java`
-| {code-spring-boot-actuator-src}/info/JavaInfoContributor.java[`JavaInfoContributor`]
+| xref:api:java/org/springframework/boot/actuate/info/JavaInfoContributor.html[`JavaInfoContributor`]
 | Exposes Java runtime information.
 | None.
 
 | `os`
-| {code-spring-boot-actuator-src}/info/OsInfoContributor.java[`OsInfoContributor`]
+| xref:api:java/org/springframework/boot/actuate/info/OsInfoContributor.html[`OsInfoContributor`]
 | Exposes Operating System information.
 | None.
 
 | `process`
-| {code-spring-boot-actuator-src}/info/ProcessInfoContributor.java[`ProcessInfoContributor`]
+| xref:api:java/org/springframework/boot/actuate/info/ProcessInfoContributor.html[`ProcessInfoContributor`]
 | Exposes process information.
 | None.
 
@@ -1251,7 +1251,7 @@ The `info` endpoint publishes information about your process, see xref:api:java/
 [[actuator.endpoints.info.writing-custom-info-contributors]]
 === Writing Custom InfoContributors
 
-To provide custom application information, you can register Spring beans that implement the {code-spring-boot-actuator-src}/info/InfoContributor.java[`InfoContributor`] interface.
+To provide custom application information, you can register Spring beans that implement the xref:api:java/org/springframework/boot/actuate/info/InfoContributor.html[`InfoContributor`] interface.
 
 The following example contributes an `example` entry with a single value:
 

@@ -381,6 +381,6 @@ include-code::ElasticsearchEntityManagerFactoryDependsOnPostProcessor[]
 == Configure jOOQ with Two DataSources
 
 If you need to use jOOQ with multiple data sources, you should create your own `DSLContext` for each one.
-See {code-spring-boot-autoconfigure-src}/jooq/JooqAutoConfiguration.java[JooqAutoConfiguration] for more details.
+See {code-spring-boot-autoconfigure-src}/jooq/JooqAutoConfiguration.java[`JooqAutoConfiguration`] for more details.
 
 TIP: In particular, `JooqExceptionTranslator` and `SpringTransactionProvider` can be reused to provide similar features to what the auto-configuration does with a single `DataSource`.

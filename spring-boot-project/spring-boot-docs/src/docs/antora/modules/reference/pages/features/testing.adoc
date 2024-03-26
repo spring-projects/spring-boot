@@ -605,7 +605,7 @@ If that is not what you want, you can disable transaction management for a test 
 
 include-code::MyNonTransactionalTests[]
 
-Data JPA tests may also inject a {code-spring-boot-test-autoconfigure-src}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
+Data JPA tests may also inject a xref:api:java/org/springframework/boot/test/autoconfigure/orm/jpa/TestEntityManager.html[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
 
 TIP: `TestEntityManager` can also be auto-configured to any of your Spring-based test class by adding `@AutoConfigureTestEntityManager`.
 When doing so, make sure that your test is running in a transaction, for instance by adding  `@Transactional` on your test class or method.

@@ -82,7 +82,7 @@ Thanks to relaxed binding of `Environment` values, you can also use configprop:s
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see "`xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers]`" in the '`Spring Boot Features`' section, or the {code-spring-boot-autoconfigure-src}/web/ServerProperties.java[`ServerProperties`] source code.
+For more details, see "`xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers]`" in the '`Spring Boot Features`' section, or the xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`] class.
 
 
 
@@ -205,7 +205,7 @@ server:
 
 NOTE: The `server.ssl.bundle` property can not be combined with the discrete Java KeyStore or PEM property options under `server.ssl`.
 
-See {code-spring-boot-src}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
+See xref:api:java/org/springframework/boot/web/server/Ssl.html[`Ssl`] for details of all of the supported properties.
 
 
 

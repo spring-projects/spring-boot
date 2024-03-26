@@ -117,7 +117,7 @@ Inside your `banner.txt` file, you can use any key available in the `Environment
 
 | `${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
 | Where `NAME` is the name of an ANSI escape code.
-  See {code-spring-boot-src}/ansi/AnsiPropertySource.java[`AnsiPropertySource`] for details.
+  See xref:api:java/org/springframework/boot/ansi/AnsiPropertySource.html[`AnsiPropertySource`] for details.
 
 | `${application.title}`
 | The title of your application, as declared in `MANIFEST.MF`.
@@ -360,7 +360,7 @@ To control the order in which the generators are called, additionally implement 
 == Admin Features
 
 It is possible to enable admin-related features for the application by specifying the configprop:spring.application.admin.enabled[] property.
-This exposes the {code-spring-boot-src}/admin/SpringApplicationAdminMXBean.java[`SpringApplicationAdminMXBean`] on the platform `MBeanServer`.
+This exposes the xref:api:java/org/springframework/boot/admin/SpringApplicationAdminMXBean.html[`SpringApplicationAdminMXBean`] on the platform `MBeanServer`.
 You could use this feature to administer your Spring Boot application remotely.
 This feature could also be useful for any service wrapper implementation.
 

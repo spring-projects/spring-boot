@@ -189,7 +189,7 @@ spring:
 
 With this configuration, JavaScript modules located under `"/js/lib/"` use a fixed versioning strategy (`"/v12/js/lib/mymodule.js"`), while other resources still use the content one (`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`).
 
-See {code-spring-boot-autoconfigure-src}/web/WebProperties.java[`WebProperties.Resources`] for more supported options.
+See xref:api:java/org/springframework/boot/autoconfigure/web/WebProperties.Resources.html[`WebProperties.Resources`] for more supported options.
 
 [TIP]
 ====
@@ -600,7 +600,7 @@ Spring Boot tries as much as possible to expose common settings, but this is not
 For those cases, dedicated namespaces offer server-specific customizations (see `server.tomcat` and `server.undertow`).
 For instance, xref:how-to:webserver.adoc#howto.webserver.configure-access-logs[access logs] can be configured with specific features of the embedded servlet container.
 
-TIP: See the {code-spring-boot-autoconfigure-src}/web/ServerProperties.java[`ServerProperties`] class for a complete list.
+TIP: See the xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`] class for a complete list.
 
 
 

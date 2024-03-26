@@ -46,7 +46,7 @@ When reading the code, remember the following rules of thumb:
   Pay special attention to the `+@Conditional*+` annotations to find out what features they enable and when.
   Add `--debug` to the command line or a System property `-Ddebug` to get a log on the console of all the auto-configuration decisions that were made in your app.
   In a running application with actuator enabled, look at the `conditions` endpoint (`/actuator/conditions` or the JMX equivalent) for the same information.
-* Look for classes that are `@ConfigurationProperties` (such as {code-spring-boot-autoconfigure-src}/web/ServerProperties.java[`ServerProperties`]) and read from there the available external configuration options.
+* Look for classes that are `@ConfigurationProperties` (such as xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`]) and read from there the available external configuration options.
   The `@ConfigurationProperties` annotation has a `name` attribute that acts as a prefix to external properties.
   Thus, `ServerProperties` has `prefix="server"` and its configuration properties are `server.port`, `server.address`, and others.
   In a running application with actuator enabled, look at the `configprops` endpoint.
