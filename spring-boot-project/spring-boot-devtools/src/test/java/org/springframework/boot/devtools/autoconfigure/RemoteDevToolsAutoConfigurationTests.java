@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.mock.web.MockFilterChain;
@@ -241,14 +240,14 @@ class RemoteDevToolsAutoConfigurationTests {
 	private AnnotationConfigServletWebApplicationContext loadContext(String... properties) {
 		AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 		context.setServletContext(new MockServletContext());
-		context.register(Config.class, PropertyPlaceholderAutoConfiguration.class);
+		context.register(Config.class, SecurityAutoConfiguration.class, RemoteDevToolsAutoConfiguration.class,
+				PropertyPlaceholderAutoConfiguration.class);
 		TestPropertyValues.of(properties).applyTo(context);
 		context.refresh();
 		return context;
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ SecurityAutoConfiguration.class, RemoteDevToolsAutoConfiguration.class })
 	static class Config {
 
 		@Bean

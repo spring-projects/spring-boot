@@ -261,7 +261,7 @@ class ConfigurationPropertiesTests {
 	@Test
 	void loadWhenBindingWithDefaultsInXmlShouldBind() {
 		removeSystemProperties();
-		load(new Class<?>[] { BasicConfiguration.class, DefaultsInXmlConfiguration.class });
+		load(new Class<?>[] { DefaultsInXmlConfiguration.class });
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.name).isEqualTo("bar");
 	}
@@ -1354,6 +1354,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
 	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
 	static class DefaultsInXmlConfiguration {
 
