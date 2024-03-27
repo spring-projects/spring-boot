@@ -28,7 +28,7 @@ jobs:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
     runs-on: ${{ matrix.os.id }}
     steps:
-      - name: Set up Java
+      - name: Set Up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'liberica'
@@ -41,20 +41,20 @@ jobs:
           git config --global core.autocrlf true
           git config --global core.longPaths true
           Stop-Service -name Docker
-      - name: Check out code
+      - name: Check Out Code
         uses: actions/checkout@v4
-      - name: Set up Gradle
+      - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
         with:
           cache-read-only: false
-      - name: Configure Gradle properties
+      - name: Configure Gradle Properties
         shell: bash
         run: |
           mkdir -p $HOME/.gradle
           echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
           echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
           echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
-      - name: Configure toolchain properties
+      - name: Configure Toolchain Properties
         if: ${{ matrix.java.toolchain }}
         shell: bash
         run: |
@@ -71,7 +71,7 @@ jobs:
           GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
           GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
         run: ./gradlew build
-      - name: Send notification
+      - name: Send Notification
         uses: ./.github/actions/send-notification
         if: always()
         with:
