@@ -78,6 +78,7 @@ jobs:
         with:
           repository: spring-projects/spring-boot-release-verification
           ref: 'main'
+          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
