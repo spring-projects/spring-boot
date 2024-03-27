@@ -38,7 +38,6 @@ jobs:
     - name: Sync Documentation
       uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.15
       with:
-        dry-run: true
         docs-username: ${{ secrets.DOCS_USERNAME }}
         docs-host: ${{ secrets.DOCS_HOST }}
         docs-ssh-key: ${{ secrets.DOCS_SSH_KEY }}
