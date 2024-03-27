@@ -19,10 +19,8 @@ package org.springframework.boot.actuate.metrics.export.prometheus;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
-import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
-import io.prometheus.metrics.expositionformats.PrometheusTextFormatWriter;
-import io.prometheus.metrics.model.registry.PrometheusRegistry;
+import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
@@ -33,16 +31,18 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link PrometheusScrapeEndpoint}.
+ * Tests for {@link PrometheusSimpleclientScrapeEndpoint}.
  *
  * @author Jon Schneider
  * @author Johnny Lim
  */
-class PrometheusScrapeEndpointIntegrationTests {
+@SuppressWarnings("removal")
+class PrometheusSimpleclientScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapeHasContentTypeText004ByDefault(WebTestClient client) {
-		String expectedContentType = PrometheusTextFormatWriter.CONTENT_TYPE;
+		String expectedContentType = TextFormat.CONTENT_TYPE_004;
+		assertThat(TextFormat.chooseContentType(null)).isEqualTo(expectedContentType);
 		client.get()
 			.uri("/actuator/prometheus")
 			.exchange()
@@ -58,8 +58,9 @@ class PrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapeHasContentTypeText004ByDefaultWhenClientAcceptsWildcardWithParameter(WebTestClient client) {
-		String expectedContentType = PrometheusTextFormatWriter.CONTENT_TYPE;
+		String expectedContentType = TextFormat.CONTENT_TYPE_004;
 		String accept = "*/*;q=0.8";
+		assertThat(TextFormat.chooseContentType(accept)).isEqualTo(expectedContentType);
 		client.get()
 			.uri("/actuator/prometheus")
 			.accept(MediaType.parseMediaType(accept))
@@ -76,7 +77,7 @@ class PrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapeCanProduceOpenMetrics100(WebTestClient client) {
-		MediaType openMetrics = MediaType.parseMediaType(OpenMetricsTextFormatWriter.CONTENT_TYPE);
+		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
 		client.get()
 			.uri("/actuator/prometheus")
 			.accept(openMetrics)
@@ -93,8 +94,8 @@ class PrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapePrefersToProduceOpenMetrics100(WebTestClient client) {
-		MediaType openMetrics = MediaType.parseMediaType(OpenMetricsTextFormatWriter.CONTENT_TYPE);
-		MediaType textPlain = MediaType.parseMediaType(PrometheusTextFormatWriter.CONTENT_TYPE);
+		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
+		MediaType textPlain = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004);
 		client.get()
 			.uri("/actuator/prometheus")
 			.accept(openMetrics, textPlain)
@@ -108,12 +109,12 @@ class PrometheusScrapeEndpointIntegrationTests {
 	@WebEndpointTest
 	void scrapeWithIncludedNames(WebTestClient client) {
 		client.get()
-			.uri("/actuator/prometheus?includedNames=counter1,counter2")
+			.uri("/actuator/prometheus?includedNames=counter1_total,counter2_total")
 			.exchange()
 			.expectStatus()
 			.isOk()
 			.expectHeader()
-			.contentType(MediaType.parseMediaType(PrometheusTextFormatWriter.CONTENT_TYPE))
+			.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004))
 			.expectBody(String.class)
 			.value((body) -> assertThat(body).contains("counter1_total")
 				.contains("counter2_total")
@@ -124,19 +125,20 @@ class PrometheusScrapeEndpointIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		PrometheusScrapeEndpoint prometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry) {
-			return new PrometheusScrapeEndpoint(prometheusRegistry);
+		PrometheusSimpleclientScrapeEndpoint prometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
+			return new PrometheusSimpleclientScrapeEndpoint(collectorRegistry);
 		}
 
 		@Bean
-		PrometheusRegistry prometheusRegistry() {
-			return new PrometheusRegistry();
+		CollectorRegistry collectorRegistry() {
+			return new CollectorRegistry(true);
 		}
 
 		@Bean
-		MeterRegistry registry(PrometheusRegistry prometheusRegistry) {
-			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((k) -> null, prometheusRegistry,
-					Clock.SYSTEM);
+		@SuppressWarnings("deprecation")
+		MeterRegistry registry(CollectorRegistry registry) {
+			io.micrometer.prometheus.PrometheusMeterRegistry meterRegistry = new io.micrometer.prometheus.PrometheusMeterRegistry(
+					(k) -> null, registry, Clock.SYSTEM);
 			Counter.builder("counter1").register(meterRegistry);
 			Counter.builder("counter2").register(meterRegistry);
 			Counter.builder("counter3").register(meterRegistry);

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import io.micrometer.atlas.AtlasMeterRegistry;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration;
@@ -36,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jon Schneider
  * @author Andy Wilkinson
  */
-@SuppressWarnings("deprecation")
 class MeterRegistryCustomizerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -63,7 +63,7 @@ class MeterRegistryCustomizerTests {
 	@Test
 	void customizersCanBeAppliedToSpecificRegistryTypes() {
 		this.contextRunner.withUserConfiguration(MeterRegistryCustomizerConfiguration.class).run((context) -> {
-			MeterRegistry prometheus = context.getBean(io.micrometer.prometheus.PrometheusMeterRegistry.class);
+			MeterRegistry prometheus = context.getBean(PrometheusMeterRegistry.class);
 			prometheus.get("jvm.memory.used").tags("job", "myjob").gauge();
 			MeterRegistry atlas = context.getBean(AtlasMeterRegistry.class);
 			assertThat(atlas.find("jvm.memory.used").tags("job", "myjob").gauge()).isNull();
@@ -79,7 +79,7 @@ class MeterRegistryCustomizerTests {
 		}
 
 		@Bean
-		MeterRegistryCustomizer<io.micrometer.prometheus.PrometheusMeterRegistry> prometheusOnlyCommonTags() {
+		MeterRegistryCustomizer<PrometheusMeterRegistry> prometheusOnlyCommonTags() {
 			return (registry) -> registry.config().commonTags("job", "myjob");
 		}
 

@@ -31,7 +31,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 @ConfigurationProperties(prefix = "management.prometheus.metrics.export")
 public class PrometheusProperties {
 
@@ -55,6 +54,8 @@ public class PrometheusProperties {
 	/**
 	 * Histogram type for backing DistributionSummary and Timer.
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated(since = "3.3.0", forRemoval = true)
 	private io.micrometer.prometheus.HistogramFlavor histogramFlavor = io.micrometer.prometheus.HistogramFlavor.Prometheus;
 
 	/**
@@ -70,10 +71,12 @@ public class PrometheusProperties {
 		this.descriptions = descriptions;
 	}
 
+	@SuppressWarnings("deprecation")
 	public io.micrometer.prometheus.HistogramFlavor getHistogramFlavor() {
 		return this.histogramFlavor;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setHistogramFlavor(io.micrometer.prometheus.HistogramFlavor histogramFlavor) {
 		this.histogramFlavor = histogramFlavor;
 	}

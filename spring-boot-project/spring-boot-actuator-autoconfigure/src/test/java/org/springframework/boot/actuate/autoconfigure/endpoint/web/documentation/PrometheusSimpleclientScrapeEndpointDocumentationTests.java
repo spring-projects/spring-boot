@@ -18,12 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
-import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
-import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusScrapeEndpoint;
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusSimpleclientScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -36,16 +35,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for generating documentation describing the {@link PrometheusScrapeEndpoint}.
+ * Tests for generating documentation describing the
+ * {@link PrometheusSimpleclientScrapeEndpoint}.
  *
  * @author Andy Wilkinson
  * @author Johnny Lim
  */
-class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class PrometheusSimpleclientScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	void prometheus() throws Exception {
-		this.mockMvc.perform(get("/actuator/prometheus")).andExpect(status().isOk()).andDo(document("prometheus/all"));
+		this.mockMvc.perform(get("/actuator/prometheus"))
+			.andExpect(status().isOk())
+			.andDo(document("prometheus-simpleclient/all"));
 	}
 
 	@Test
@@ -53,7 +55,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 		this.mockMvc.perform(get("/actuator/prometheus").accept(TextFormat.CONTENT_TYPE_OPENMETRICS_100))
 			.andExpect(status().isOk())
 			.andExpect(header().string("Content-Type", "application/openmetrics-text;version=1.0.0;charset=utf-8"))
-			.andDo(document("prometheus/openmetrics"));
+			.andDo(document("prometheus-simpleclient/openmetrics"));
 	}
 
 	@Test
@@ -62,7 +64,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 			.perform(get("/actuator/prometheus").param("includedNames",
 					"jvm_memory_used_bytes,jvm_memory_committed_bytes"))
 			.andExpect(status().isOk())
-			.andDo(document("prometheus/names",
+			.andDo(document("prometheus-simpleclient/names",
 					queryParameters(parameterWithName("includedNames")
 						.description("Restricts the samples to those that match the names. Optional.")
 						.optional())));
@@ -73,12 +75,13 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 	static class TestConfiguration {
 
 		@Bean
-		PrometheusScrapeEndpoint endpoint() {
-			PrometheusRegistry prometheusRegistry = new PrometheusRegistry();
-			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((key) -> null, prometheusRegistry,
-					Clock.SYSTEM);
+		@SuppressWarnings({ "removal", "deprecation" })
+		PrometheusSimpleclientScrapeEndpoint endpoint() {
+			CollectorRegistry collectorRegistry = new CollectorRegistry(true);
+			io.micrometer.prometheus.PrometheusMeterRegistry meterRegistry = new io.micrometer.prometheus.PrometheusMeterRegistry(
+					(key) -> null, collectorRegistry, Clock.SYSTEM);
 			new JvmMemoryMetrics().bindTo(meterRegistry);
-			return new PrometheusScrapeEndpoint(prometheusRegistry);
+			return new PrometheusSimpleclientScrapeEndpoint(collectorRegistry);
 		}
 
 	}
