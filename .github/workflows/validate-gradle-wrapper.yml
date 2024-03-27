@@ -4,7 +4,7 @@ permissions:
   contents: read
 jobs:
   validation:
-    name: "Validation"
+    name: "Validate Gradle Wrapper"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
