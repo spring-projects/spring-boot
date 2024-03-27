@@ -79,6 +79,11 @@ jobs:
           repository: spring-projects/spring-boot-release-verification
           ref: 'main'
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+      - name: Check out send notification action
+        uses: actions/checkout@v4
+        with:
+          path: spring-boot
+          sparse-checkout: .github/actions/send-notification
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
@@ -105,7 +110,7 @@ jobs:
           name: build-reports
           path: '**/build/reports/'
       - name: Send notification
-        uses: ./.github/actions/send-notification
+        uses: ./spring-boot/.github/actions/send-notification
         if: always()
         with:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
