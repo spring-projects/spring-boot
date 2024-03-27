@@ -1,4 +1,4 @@
-name: Send notification
+name: Send Notification
 description: Sends a Google Chat message as a notification of the job's outcome
 inputs:
   webhook-url:
