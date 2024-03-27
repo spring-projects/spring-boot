@@ -118,7 +118,7 @@ class PropertyPlaceholderAutoConfigurationTests {
 
 		@Bean
 		static PropertySourcesPlaceholderConfigurer morePlaceholders() {
-			PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+			PropertySourcesPlaceholderConfigurer configurer = new ConfigurationPropertySourcesPlaceholderConfigurer();
 			configurer
 				.setProperties(StringUtils.splitArrayElementsIntoProperties(new String[] { "fruit=orange" }, "="));
 			configurer.setLocalOverride(true);

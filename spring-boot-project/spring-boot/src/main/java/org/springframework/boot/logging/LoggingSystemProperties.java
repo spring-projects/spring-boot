@@ -21,11 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.ConfigurablePropertyResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -217,8 +218,8 @@ public class LoggingSystemProperties {
 
 	private PropertyResolver getPropertyResolver() {
 		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
-			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
-					configurableEnvironment.getPropertySources());
+			ConfigurablePropertyResolver resolver = ConfigurationPropertySources
+					.createPropertyResolver(configurableEnvironment.getPropertySources());
 			resolver.setConversionService(((ConfigurableEnvironment) this.environment).getConversionService());
 			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 			return resolver;
