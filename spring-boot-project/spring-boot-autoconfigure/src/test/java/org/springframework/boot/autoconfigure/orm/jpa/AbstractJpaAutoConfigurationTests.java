@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
+import org.springframework.orm.jpa.persistenceunit.ManagedClassNameFilter;
 import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
@@ -69,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 abstract class AbstractJpaAutoConfigurationTests {
 
@@ -279,6 +281,16 @@ abstract class AbstractJpaAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void customManagedClassNameFilter() {
+		this.contextRunner.withBean(ManagedClassNameFilter.class, () -> (s) -> !s.endsWith("City"))
+			.withUserConfiguration(AutoConfigurePackageForCountry.class)
+			.run((context) -> {
+				EntityManager entityManager = context.getBean(EntityManagerFactory.class).createEntityManager();
+				assertThat(getManagedJavaTypes(entityManager)).contains(Country.class).doesNotContain(City.class);
+			});
+	}
+
 	private Class<?>[] getManagedJavaTypes(EntityManager entityManager) {
 		Set<ManagedType<?>> managedTypes = entityManager.getMetamodel().getManagedTypes();
 		return managedTypes.stream().map(ManagedType::getJavaType).toArray(Class<?>[]::new);
@@ -420,6 +432,12 @@ abstract class AbstractJpaAutoConfigurationTests {
 		TransactionManager testTransactionManager() {
 			return new CustomJpaTransactionManager();
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(Country.class)
+	static class AutoConfigurePackageForCountry {
 
 	}
 
