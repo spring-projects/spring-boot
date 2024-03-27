@@ -7,6 +7,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   ci:
+    name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
+    runs-on: ${{ matrix.os.id }}
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     strategy:
       matrix:
@@ -25,8 +27,6 @@ jobs:
               name: Linux
             java:
               version: 17
-    name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
-    runs-on: ${{ matrix.os.id }}
     steps:
       - name: Set Up Java
         uses: actions/setup-java@v4
