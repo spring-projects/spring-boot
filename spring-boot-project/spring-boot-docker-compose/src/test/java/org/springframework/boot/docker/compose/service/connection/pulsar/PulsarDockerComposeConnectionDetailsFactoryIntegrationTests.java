@@ -39,8 +39,8 @@ class PulsarDockerComposeConnectionDetailsFactoryIntegrationTests extends Abstra
 	void runCreatesConnectionDetails() {
 		PulsarConnectionDetails connectionDetails = run(PulsarConnectionDetails.class);
 		assertThat(connectionDetails).isNotNull();
-		assertThat(connectionDetails.getBrokerUrl()).matches("^pulsar:\\/\\/\\S+:\\d+");
-		assertThat(connectionDetails.getAdminUrl()).matches("^http:\\/\\/\\S+:\\d+");
+		assertThat(connectionDetails.getBrokerUrl()).matches("^pulsar://\\S+:\\d+");
+		assertThat(connectionDetails.getAdminUrl()).matches("^http://\\S+:\\d+");
 	}
 
 }

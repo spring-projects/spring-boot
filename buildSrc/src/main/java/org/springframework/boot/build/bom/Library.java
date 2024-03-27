@@ -246,7 +246,7 @@ public class Library {
 		}
 
 		private String[] parts() {
-			return toString().split("[\\.-]");
+			return toString().split("[.-]");
 		}
 
 	}

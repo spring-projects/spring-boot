@@ -300,7 +300,7 @@ def antoraRootAggregateContent = tasks.register("antoraRootAggregateContent", Zi
 				.relativize(it.file.toPath())
 				.toString()
 				.replace('\\', '/')
-				.replaceAll('.*\\/([^\\/]+)\\/build.*', 'modules/ROOT/partials/$1/spring-configuration-metadata.json')
+				.replaceAll('.*/([^/]+)/build.*', 'modules/ROOT/partials/$1/spring-configuration-metadata.json')
 		}
 	}
 	from(runRemoteSpringApplicationExample) {
