@@ -13,7 +13,8 @@ on:
     branches: docs-build
 permissions: read-all
 jobs:
-  build:
+  build-and-deploy-docs:
+    name: Build and Deploy Documentation
     if: github.repository_owner == 'spring-projects'
     runs-on: ubuntu-latest
     steps:
