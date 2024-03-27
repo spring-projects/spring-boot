@@ -8,9 +8,9 @@ private String format(String input) {
 		.replace("<br>", " ")
 		.replace("\n", " ")
 		.replace("&quot;", '"')
-		.replaceAll('\\{@code (.*?)\\}', '`$1`')
-		.replaceAll('\\{@link (.*?)\\}', '`$1`')
-		.replaceAll('\\{@literal (.*?)\\}', '`$1`')
+		.replaceAll('\\{@code (.*?)}', '`$1`')
+		.replaceAll('\\{@link (.*?)}', '`$1`')
+		.replaceAll('\\{@literal (.*?)}', '`$1`')
 		.replaceAll('<a href=."(.*?)".>(.*?)</a>', '\$1[\$2]')
 }
 
