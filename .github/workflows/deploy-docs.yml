@@ -17,15 +17,15 @@ jobs:
     if: github.repository_owner == 'spring-projects'
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
+    - name: Check Out
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Setup Node
+    - name: Set Up Node
       uses: actions/setup-node@v4
       with:
         node-version: 20
-    - name: Setup NPM
+    - name: Set Up NPM
       run: npm ci
     - name: Run Antora
       env:
