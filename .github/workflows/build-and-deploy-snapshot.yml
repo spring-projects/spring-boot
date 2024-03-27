@@ -29,6 +29,13 @@ jobs:
           echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
           echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
           echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
+      - name: Read Version From gradle.properties
+        id: read-version
+        shell: bash
+        run: |
+          version=$(sed -n 's/version=\(.*\)/\1/p' gradle.properties)
+          echo "Version is $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
       - name: Build and Publish
         id: build
         env:
@@ -51,6 +58,10 @@ jobs:
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           artifact-properties: |
             /**/spring-boot-docs-*.zip::zip.type=docs,zip.deployed=false
+      - name: Trigger Docs Build Workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy-docs.yml -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ steps.read-version.outputs.version }}
       - name: Send Notification
         uses: ./.github/actions/send-notification
         if: always()
@@ -59,13 +70,6 @@ jobs:
           status: ${{ job.status }}
           build-scan-url: ${{ steps.build.outputs.build-scan-url }}
           run-name: ${{ format('{0} | Linux | Java 17', github.ref_name) }}
-      - name: Read Version From gradle.properties
-        id: read-version
-        shell: bash
-        run: |
-          version=$(sed -n 's/version=\(.*\)/\1/p' gradle.properties)
-          echo "Version is $version"
-          echo "version=$version" >> $GITHUB_OUTPUT
     outputs:
       version: ${{ steps.read-version.outputs.version }}
   run-verification-tests:
