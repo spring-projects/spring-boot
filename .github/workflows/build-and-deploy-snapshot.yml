@@ -8,9 +8,8 @@ concurrency:
 jobs:
   build-and-deploy-snapshot:
     name: Build and Deploy Snapshot
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
-    name: Build and Deploy Snapshot
     runs-on: ubuntu22-8-32
+    if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
       - name: Set Up Java
         uses: actions/setup-java@v4
