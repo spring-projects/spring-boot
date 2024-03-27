@@ -312,8 +312,14 @@ class RedisAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.sentinel.master:mymaster",
 					"spring.data.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
-			.run((context) -> assertThat(context.getBean(LettuceConnectionFactory.class).isRedisSentinelAware())
-				.isTrue());
+			.run((context) -> {
+				assertThat(context.getBean(LettuceConnectionFactory.class).isRedisSentinelAware()).isTrue();
+				assertThat(context.getBean(LettuceConnectionFactory.class).getSentinelConfiguration()).isNotNull();
+				assertThat(context.getBean(LettuceConnectionFactory.class).getSentinelConfiguration().getSentinels())
+					.isNotNull()
+					.extracting(RedisNode::toString)
+					.containsExactlyInAnyOrder("[0:0:0:0:0:0:0:1]:26379", "[0:0:0:0:0:0:0:1]:26380");
+			});
 	}
 
 	@Test
@@ -398,17 +404,17 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithCluster() {
-		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380", "[::1]:27381");
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-					"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1))
+					"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1),
+					"spring.data.redis.cluster.nodes[2]:" + clusterNodes.get(2))
 			.run((context) -> {
 				RedisClusterConfiguration clusterConfiguration = context.getBean(LettuceConnectionFactory.class)
 					.getClusterConfiguration();
-				assertThat(clusterConfiguration.getClusterNodes()).hasSize(2);
-				assertThat(clusterConfiguration.getClusterNodes())
-					.extracting((node) -> node.getHost() + ":" + node.getPort())
-					.containsExactlyInAnyOrder("127.0.0.1:27379", "127.0.0.1:27380");
+				assertThat(clusterConfiguration.getClusterNodes()).hasSize(3);
+				assertThat(clusterConfiguration.getClusterNodes()).extracting(RedisNode::asString)
+					.containsExactlyInAnyOrder("127.0.0.1:27379", "127.0.0.1:27380", "[::1]:27381");
 			});
 
 	}

@@ -113,8 +113,10 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	}
 
 	private Node asNode(String node) {
-		String[] components = node.split(":");
-		return new Node(components[0], Integer.parseInt(components[1]));
+		int portSeparatorIndex = node.lastIndexOf(':');
+		String host = node.substring(0, portSeparatorIndex);
+		int port = Integer.parseInt(node.substring(portSeparatorIndex + 1));
+		return new Node(host, port);
 	}
 
 }

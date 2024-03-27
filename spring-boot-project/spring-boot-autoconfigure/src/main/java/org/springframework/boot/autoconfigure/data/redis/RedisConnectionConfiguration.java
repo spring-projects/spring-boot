@@ -139,7 +139,7 @@ abstract class RedisConnectionConfiguration {
 	}
 
 	private List<String> getNodes(Cluster cluster) {
-		return cluster.getNodes().stream().map((node) -> "%s:%d".formatted(node.host(), node.port())).toList();
+		return cluster.getNodes().stream().map(Node::asString).toList();
 	}
 
 	protected final RedisProperties getProperties() {
@@ -162,7 +162,7 @@ abstract class RedisConnectionConfiguration {
 	private List<RedisNode> createSentinels(Sentinel sentinel) {
 		List<RedisNode> nodes = new ArrayList<>();
 		for (Node node : sentinel.getNodes()) {
-			nodes.add(new RedisNode(node.host(), node.port()));
+			nodes.add(RedisNode.fromString(node.asString()));
 		}
 		return nodes;
 	}
