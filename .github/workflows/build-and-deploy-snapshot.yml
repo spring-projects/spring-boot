@@ -7,6 +7,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build-and-deploy-snapshot:
+    name: Build And Deploy Snapshot
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     name: Build and Deploy Snapshot
     runs-on: ubuntu22-8-32
