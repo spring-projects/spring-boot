@@ -11,7 +11,8 @@ on:
 permissions:
   actions: write
 jobs:
-  build:
+  trigger-docs-build:
+    name: Trigger Docs Build
     if: github.repository_owner == 'spring-projects'
     runs-on: ubuntu-latest
     steps:
