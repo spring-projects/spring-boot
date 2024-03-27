@@ -26,7 +26,7 @@ site:
   robots: allow
 content:
   sources:
-  - url: https://github.com/spring-projects/spring-boot
+  - url: .
     branches:
     - 'main'
     - '*({0..9}).*({0..9}).x'

@@ -19,6 +19,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Setup Node
       uses: actions/setup-node@v4
       with:
@@ -34,7 +36,7 @@ jobs:
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         REFERENCE: ${{ github.event.inputs.build-refname }}
         BUILD_VERSION: ${{ github.event.inputs.build-refname }}
-      run: npx antora antora-playbook.yml --stacktrace --fetch
+      run: npx antora antora-playbook.yml --stacktrace
     - name: Sync Documentation
       uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.15
       with:
