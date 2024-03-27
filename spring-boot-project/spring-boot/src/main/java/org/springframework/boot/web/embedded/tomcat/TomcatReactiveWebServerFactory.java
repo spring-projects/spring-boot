@@ -202,8 +202,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		if (StringUtils.hasText(getServerHeader())) {
 			connector.setProperty("server", getServerHeader());
 		}
-		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
-			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
+		if (connector.getProtocolHandler() instanceof AbstractProtocol<?> abstractProtocol) {
+			customizeProtocol(abstractProtocol);
 		}
 		invokeProtocolHandlerCustomizers(connector.getProtocolHandler());
 		if (getUriEncoding() != null) {

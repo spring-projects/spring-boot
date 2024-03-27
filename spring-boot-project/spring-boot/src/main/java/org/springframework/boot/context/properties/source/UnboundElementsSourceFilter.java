@@ -43,8 +43,8 @@ public class UnboundElementsSourceFilter implements Function<ConfigurationProper
 	@Override
 	public Boolean apply(ConfigurationPropertySource configurationPropertySource) {
 		Object underlyingSource = configurationPropertySource.getUnderlyingSource();
-		if (underlyingSource instanceof PropertySource) {
-			String name = ((PropertySource<?>) underlyingSource).getName();
+		if (underlyingSource instanceof PropertySource<?> propertySource) {
+			String name = propertySource.getName();
 			return !BENIGN_PROPERTY_SOURCE_NAMES.contains(name);
 		}
 		return true;

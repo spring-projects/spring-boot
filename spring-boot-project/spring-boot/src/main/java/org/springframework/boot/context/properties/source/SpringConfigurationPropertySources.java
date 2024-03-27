@@ -67,8 +67,8 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 			return result;
 		}
 		result = SpringConfigurationPropertySource.from(source);
-		if (source instanceof OriginLookup) {
-			result = result.withPrefix(((OriginLookup<?>) source).getPrefix());
+		if (source instanceof OriginLookup<?> originLookup) {
+			result = result.withPrefix(originLookup.getPrefix());
 		}
 		this.cache.put(source, result);
 		return result;

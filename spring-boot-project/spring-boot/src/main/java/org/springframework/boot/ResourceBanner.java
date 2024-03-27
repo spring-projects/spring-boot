@@ -86,8 +86,8 @@ public class ResourceBanner implements Banner {
 	 */
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
 		MutablePropertySources sources = new MutablePropertySources();
-		if (environment instanceof ConfigurableEnvironment) {
-			((ConfigurableEnvironment) environment).getPropertySources().forEach(sources::addLast);
+		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
+			configurableEnvironment.getPropertySources().forEach(sources::addLast);
 		}
 		sources.addLast(getTitleSource(sourceClass));
 		sources.addLast(getAnsiSource());

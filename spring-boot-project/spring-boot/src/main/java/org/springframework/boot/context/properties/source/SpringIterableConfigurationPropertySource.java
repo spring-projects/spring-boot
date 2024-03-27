@@ -169,8 +169,8 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 
 	private boolean isImmutablePropertySource() {
 		EnumerablePropertySource<?> source = getPropertySource();
-		if (source instanceof OriginLookup) {
-			return ((OriginLookup<?>) source).isImmutable();
+		if (source instanceof OriginLookup<?> originLookup) {
+			return originLookup.isImmutable();
 		}
 		if (StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME.equals(source.getName())) {
 			return source.getSource() == System.getenv();

@@ -116,8 +116,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	private static Collection<AnnotatedElement> getAnnotatedElements(Object[] array) {
 		Set<AnnotatedElement> result = new LinkedHashSet<>();
 		for (Object item : array) {
-			if (item instanceof AnnotatedElement) {
-				result.add((AnnotatedElement) item);
+			if (item instanceof AnnotatedElement annotatedElement) {
+				result.add(annotatedElement);
 			}
 			else if (ObjectUtils.isArray(item)) {
 				result.addAll(getAnnotatedElements(ObjectUtils.toObjectArray(item)));

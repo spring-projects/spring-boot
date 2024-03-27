@@ -305,8 +305,8 @@ class BeanDefinitionLoader {
 		ClassExcludeFilter(Object... sources) {
 			super(false, false);
 			for (Object source : sources) {
-				if (source instanceof Class<?>) {
-					this.classNames.add(((Class<?>) source).getName());
+				if (source instanceof Class<?> classSource) {
+					this.classNames.add(classSource.getName());
 				}
 			}
 		}

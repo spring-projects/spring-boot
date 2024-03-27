@@ -41,8 +41,8 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 	public void customize(Connector connector) {
 		if (this.compression != null && this.compression.getEnabled()) {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol) {
-				customize((AbstractHttp11Protocol<?>) handler);
+			if (handler instanceof AbstractHttp11Protocol<?> abstractHttp11Protocol) {
+				customize(abstractHttp11Protocol);
 			}
 		}
 	}

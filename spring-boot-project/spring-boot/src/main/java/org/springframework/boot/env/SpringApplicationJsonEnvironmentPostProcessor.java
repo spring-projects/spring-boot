@@ -126,20 +126,20 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 
 	@SuppressWarnings("unchecked")
 	private void extract(String name, Map<String, Object> result, Object value) {
-		if (value instanceof Map) {
-			if (CollectionUtils.isEmpty((Map<?, ?>) value)) {
+		if (value instanceof Map<?, ?> map) {
+			if (CollectionUtils.isEmpty(map)) {
 				result.put(name, value);
 				return;
 			}
 			flatten(name, result, (Map<String, Object>) value);
 		}
-		else if (value instanceof Collection) {
-			if (CollectionUtils.isEmpty((Collection<?>) value)) {
+		else if (value instanceof Collection<?> collection) {
+			if (CollectionUtils.isEmpty(collection)) {
 				result.put(name, value);
 				return;
 			}
 			int index = 0;
-			for (Object object : (Collection<Object>) value) {
+			for (Object object : collection) {
 				extract(name + "[" + index + "]", result, object);
 				index++;
 			}
