@@ -11,14 +11,14 @@ jobs:
     name: Build and Deploy Snapshot
     runs-on: ubuntu22-8-32
     steps:
-      - name: Setup Java
+      - name: Set Up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'liberica'
           java-version: 17
-      - name: Checkout
+      - name: Check Out
         uses: actions/checkout@v4
-      - name: Set up Gradle
+      - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
         with:
           cache-read-only: false
@@ -73,23 +73,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-deploy-snapshot
     steps:
-      - name: Checkout Release Verification Tests
+      - name: Check Out Release Verification Tests
         uses: actions/checkout@v4
         with:
           repository: spring-projects/spring-boot-release-verification
           ref: 'main'
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
-      - name: Checkout Send Notification Action
+      - name: Check Out Send Notification Action
         uses: actions/checkout@v4
         with:
           path: spring-boot
           sparse-checkout: .github/actions/send-notification
-      - name: Setup Java
+      - name: Set Up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'liberica'
           java-version: 17
-      - name: Setup Gradle
+      - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
         with:
           cache-read-only: false

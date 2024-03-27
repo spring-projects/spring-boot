@@ -10,16 +10,16 @@ jobs:
     runs-on: ubuntu22-8-32
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
-      - name: Setup JDK 17
+      - name: Set Up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'liberica'
-      - name: Checkout
+      - name: Check Out
         uses: actions/checkout@v4
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@b231772637bb498f11fdbc86052b6e8a8dc9fc92
-      - name: Setup Gradle
+      - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5
       - name: Build
         env:
