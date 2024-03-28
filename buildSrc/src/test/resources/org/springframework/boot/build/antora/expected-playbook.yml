@@ -15,7 +15,7 @@ antora:
     - project/build/generated/docs/antora-dependencies-content/test-${version}-${name}-${classifier}.zip
     version_file: gradle.properties
   - require: '@springio/antora-extensions/root-component-extension'
-    root_component_name: spring-boot
+    root_component_name: boot
 site:
   title: Spring Boot
 content:

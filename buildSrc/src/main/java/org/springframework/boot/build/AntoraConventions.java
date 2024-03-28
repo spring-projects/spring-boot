@@ -43,8 +43,7 @@ import org.springframework.boot.build.constraints.ExtractVersionConstraints;
 import org.springframework.util.Assert;
 
 /**
- * Conventions that are applied in the presence of the {@link AntoraPlugin} and
- * {@link GenerateAntoraYmlPlugin}.
+ * Conventions that are applied in the presence of the {@link AntoraPlugin}.
  *
  * @author Phillip Webb
  */
@@ -90,7 +89,7 @@ public class AntoraConventions {
 			ExtractVersionConstraints dependencyVersionsTask) {
 		generateAntoraYmlTask.getOutputs().doNotCacheIf("getAsciidocAttributes() changes output", (task) -> true);
 		generateAntoraYmlTask.dependsOn(dependencyVersionsTask);
-		generateAntoraYmlTask.setProperty("componentName", "spring-boot");
+		generateAntoraYmlTask.setProperty("componentName", "boot");
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
 		generateAntoraYmlTask.setProperty("yml", getDefaultYml(project));

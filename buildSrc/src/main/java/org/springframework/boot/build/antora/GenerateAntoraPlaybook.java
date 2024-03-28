@@ -119,7 +119,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 				zipContentsCollector.locations(antoraContent, antoraDepenencies);
 				zipContentsCollector.alwaysInclude(getAlwaysInclude().getOrNull());
 			});
-			extensions.rootComponent((rootComponent) -> rootComponent.name("spring-boot"));
+			extensions.rootComponent((rootComponent) -> rootComponent.name("boot"));
 		}));
 		Map<String, Object> asciidoc = (Map<String, Object>) data.get("asciidoc");
 		asciidoc.put("extensions", Extensions.asciidoc());
