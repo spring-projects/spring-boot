@@ -23,6 +23,8 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.origin.MockOrigin;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +47,8 @@ class InvalidConfigDataPropertyExceptionTests {
 
 	private final ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad",
 			MockOrigin.of("origin"));
+
+	private final ConversionService conversionService = DefaultConversionService.getSharedInstance();
 
 	@Test
 	void createHasCorrectMessage() {
@@ -104,7 +108,8 @@ class InvalidConfigDataPropertyExceptionTests {
 	void throwOrWarnWhenHasInvalidPropertyThrowsException() {
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("spring.profiles", "a");
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource,
+				this.conversionService);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
 			.isThrownBy(() -> InvalidConfigDataPropertyException.throwIfPropertyFound(contributor))
 			.withMessageStartingWith("Property 'spring.profiles' is invalid and should be replaced with "
@@ -136,16 +141,15 @@ class InvalidConfigDataPropertyExceptionTests {
 			ConfigData.Option... configDataOptions) {
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty(name, "a");
-		ConfigDataEnvironmentContributor contributor = new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, null,
-				null, true, propertySource, ConfigurationPropertySource.from(propertySource), null,
-				ConfigData.Options.of(configDataOptions), null);
-		return contributor;
+		return new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, null, null, true, propertySource,
+				ConfigurationPropertySource.from(propertySource), null, ConfigData.Options.of(configDataOptions), null,
+				this.conversionService);
 	}
 
 	@Test
 	void throwOrWarnWhenHasNoInvalidPropertyDoesNothing() {
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
-			.ofExisting(new MockPropertySource());
+			.ofExisting(new MockPropertySource(), this.conversionService);
 		InvalidConfigDataPropertyException.throwIfPropertyFound(contributor);
 	}
 

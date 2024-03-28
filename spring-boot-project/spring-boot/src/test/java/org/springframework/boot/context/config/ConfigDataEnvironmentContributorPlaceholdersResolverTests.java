@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.PropertySourceOrigin;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
@@ -38,42 +41,63 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
 class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
+
+	private final ConversionService conversionService = DefaultConversionService.getSharedInstance();
 
 	@Test
 	void resolvePlaceholdersWhenNotStringReturnsResolved() {
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				Collections.emptyList(), null, null, false);
+				Collections.emptyList(), null, null, false, this.conversionService);
 		assertThat(resolver.resolvePlaceholders(123)).isEqualTo(123);
 	}
 
 	@Test
 	void resolvePlaceholdersWhenNotFoundReturnsOriginal() {
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				Collections.emptyList(), null, null, false);
+				Collections.emptyList(), null, null, false, this.conversionService);
 		assertThat(resolver.resolvePlaceholders("${test}")).isEqualTo("${test}");
 	}
 
 	@Test
 	void resolvePlaceholdersWhenFoundReturnsFirstMatch() {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>();
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s1", "nope", "t1"), true));
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true));
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), true));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s1", "nope", "t1"), true,
+				this.conversionService));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true,
+				this.conversionService));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), true,
+				this.conversionService));
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				contributors, null, null, true);
+				contributors, null, null, true, this.conversionService);
 		assertThat(resolver.resolvePlaceholders("${test}")).isEqualTo("t2");
+	}
+
+	@Test
+	void shouldUseConversionService() {
+		GenericConversionService conversionService = new GenericConversionService();
+		conversionService.addConverter(CustomValue.class, String.class, (input) -> "custom-value");
+		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>();
+		contributors.add(new TestConfigDataEnvironmentContributor(
+				new TestPropertySource("s1", Map.of("test", new CustomValue())), true, conversionService));
+		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
+				contributors, null, null, true, conversionService);
+		assertThat(resolver.resolvePlaceholders("${test}")).isEqualTo("custom-value");
 	}
 
 	@Test
 	void resolvePlaceholdersWhenFoundInInactiveThrowsException() {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>();
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s1", "nope", "t1"), true));
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true));
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), false));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s1", "nope", "t1"), true,
+				this.conversionService));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true,
+				this.conversionService));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), false,
+				this.conversionService));
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				contributors, null, null, true);
+				contributors, null, null, true, this.conversionService);
 		assertThatExceptionOfType(InactiveConfigDataAccessException.class)
 			.isThrownBy(() -> resolver.resolvePlaceholders("${test}"))
 			.satisfies(propertyNameAndOriginOf("test", "s3"));
@@ -82,11 +106,14 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 	@Test
 	void resolvePlaceholderWhenFoundInInactiveAndIgnoringReturnsResolved() {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>();
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s1", "nope", "t1"), true));
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true));
-		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), false));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s1", "nope", "t1"), true,
+				this.conversionService));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s2", "test", "t2"), true,
+				this.conversionService));
+		contributors.add(new TestConfigDataEnvironmentContributor(new TestPropertySource("s3", "test", "t3"), false,
+				this.conversionService));
 		ConfigDataEnvironmentContributorPlaceholdersResolver resolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				contributors, null, null, false);
+				contributors, null, null, false, this.conversionService);
 		assertThat(resolver.resolvePlaceholders("${test}")).isEqualTo("t2");
 	}
 
@@ -121,8 +148,9 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 
 		private final boolean active;
 
-		protected TestConfigDataEnvironmentContributor(PropertySource<?> propertySource, boolean active) {
-			super(Kind.ROOT, null, null, false, propertySource, null, null, null, null);
+		protected TestConfigDataEnvironmentContributor(PropertySource<?> propertySource, boolean active,
+				ConversionService conversionService) {
+			super(Kind.ROOT, null, null, false, propertySource, null, null, null, null, conversionService);
 			this.active = active;
 		}
 
@@ -130,6 +158,10 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		boolean isActive(ConfigDataActivationContext activationContext) {
 			return this.active;
 		}
+
+	}
+
+	private static final class CustomValue {
 
 	}
 

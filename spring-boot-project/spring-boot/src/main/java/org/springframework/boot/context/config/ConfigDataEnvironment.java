@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,20 +172,23 @@ class ConfigDataEnvironment {
 			else {
 				this.logger.trace(LogMessage.format("Creating wrapped config data contributor for '%s'",
 						propertySource.getName()));
-				contributors.add(ConfigDataEnvironmentContributor.ofExisting(propertySource));
+				contributors.add(ConfigDataEnvironmentContributor.ofExisting(propertySource,
+						this.environment.getConversionService()));
 			}
 		}
 		contributors.addAll(getInitialImportContributors(binder));
 		if (defaultPropertySource != null) {
 			this.logger.trace("Creating wrapped config data contributor for default property source");
-			contributors.add(ConfigDataEnvironmentContributor.ofExisting(defaultPropertySource));
+			contributors.add(ConfigDataEnvironmentContributor.ofExisting(defaultPropertySource,
+					this.environment.getConversionService()));
 		}
 		return createContributors(contributors);
 	}
 
 	protected ConfigDataEnvironmentContributors createContributors(
 			List<ConfigDataEnvironmentContributor> contributors) {
-		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapContext, contributors);
+		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapContext, contributors,
+				this.environment.getConversionService());
 	}
 
 	ConfigDataEnvironmentContributors getContributors() {
@@ -215,7 +218,7 @@ class ConfigDataEnvironment {
 
 	private ConfigDataEnvironmentContributor createInitialImportContributor(ConfigDataLocation location) {
 		this.logger.trace(LogMessage.format("Adding initial config data import from location '%s'", location));
-		return ConfigDataEnvironmentContributor.ofInitialImport(location);
+		return ConfigDataEnvironmentContributor.ofInitialImport(location, this.environment.getConversionService());
 	}
 
 	/**
@@ -288,7 +291,7 @@ class ConfigDataEnvironment {
 	private Collection<? extends String> getIncludedProfiles(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext) {
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
-				contributors, activationContext, null, true);
+				contributors, activationContext, null, true, this.environment.getConversionService());
 		Set<String> result = new LinkedHashSet<>();
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			ConfigurationPropertySource source = contributor.getConfigurationPropertySource();

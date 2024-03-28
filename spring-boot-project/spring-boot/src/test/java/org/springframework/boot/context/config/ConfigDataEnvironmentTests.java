@@ -42,6 +42,8 @@ import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.
 import org.springframework.boot.context.config.TestConfigDataEnvironmentUpdateListener.AddedPropertySource;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -72,6 +74,8 @@ class ConfigDataEnvironmentTests {
 	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	private final Collection<String> additionalProfiles = Collections.emptyList();
+
+	private final ConversionService conversionService = DefaultConversionService.getSharedInstance();
 
 	@Test
 	void createExposesEnvironmentBinderToConfigDataLocationResolvers() {
@@ -217,7 +221,8 @@ class ConfigDataEnvironmentTests {
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)),
 						ConfigData.Option.IGNORE_PROFILES);
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -241,7 +246,8 @@ class ConfigDataEnvironmentTests {
 				source.put("spring.profiles." + property, "include");
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)));
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -264,7 +270,8 @@ class ConfigDataEnvironmentTests {
 				source.put(property, "included");
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)));
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -288,7 +295,8 @@ class ConfigDataEnvironmentTests {
 				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)),
 						ConfigData.Option.IGNORE_PROFILES);
 				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
-						mock(ConfigDataResource.class), false, data, 0));
+						mock(ConfigDataResource.class), false, data, 0,
+						ConfigDataEnvironmentTests.this.conversionService));
 				return super.createContributors(contributors);
 			}
 
@@ -305,7 +313,7 @@ class ConfigDataEnvironmentTests {
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-			.isThrownBy(() -> configDataEnvironment.processAndApply());
+			.isThrownBy(configDataEnvironment::processAndApply);
 	}
 
 	@Test
