@@ -176,6 +176,9 @@ do as they were designed before this was clarified.
 | https://developer.nexmo.com/[Nexmo]
 | https://github.com/nexmo/nexmo-spring-boot-starter
 
+| https://github.com/nostr-protocol/nostr[Nostr]
+| https://github.com/theborakompanioni/nostr-spring-boot-starter
+
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 
