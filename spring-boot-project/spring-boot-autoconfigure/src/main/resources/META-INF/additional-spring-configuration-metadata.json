@@ -338,6 +338,10 @@
       "defaultValue": "TLS"
     },
     {
+      "name": "server.ssl.server-name-bundles",
+      "description": "Mapping of host names to SSL bundles for SNI configuration."
+    },
+    {
       "name": "server.ssl.trust-certificate",
       "description": "Path to a PEM-encoded SSL certificate authority file."
     },
@@ -2675,6 +2679,10 @@
       "name": "spring.rsocket.server.ssl.protocol",
       "description": "SSL protocol to use.",
       "defaultValue": "TLS"
+    },
+    {
+      "name": "spring.rsocket.server.ssl.server-name-bundles",
+      "description": "Mapping of host names to SSL bundles for SNI configuration."
     },
     {
       "name": "spring.rsocket.server.ssl.trust-certificate",

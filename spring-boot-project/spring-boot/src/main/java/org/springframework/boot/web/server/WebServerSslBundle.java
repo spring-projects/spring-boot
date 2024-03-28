@@ -206,7 +206,8 @@ public final class WebServerSslBundle implements SslBundle {
 		private final String keyStorePassword;
 
 		private WebServerSslStoreBundle(KeyStore keyStore, KeyStore trustStore, String keyStorePassword) {
-			Assert.state(keyStore != null || trustStore != null, "SSL is enabled but no trust material is configured");
+			Assert.state(keyStore != null || trustStore != null,
+					"SSL is enabled but no trust material is configured for the default host");
 			this.keyStore = keyStore;
 			this.trustStore = trustStore;
 			this.keyStorePassword = keyStorePassword;

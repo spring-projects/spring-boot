@@ -1,0 +1,42 @@
+spring:
+  ssl:
+    bundle:
+      pem:
+        default:
+          keystore:
+            certificate: "classpath:default/test-hello-server.crt"
+            private-key: "classpath:default/test-hello-server.key"
+          truststore:
+            certificate: "classpath:ca/test-ca.crt"
+        alt:
+          keystore:
+            certificate: "classpath:alt/test-hello-alt-server.crt"
+            private-key: "classpath:alt/test-hello-alt-server.key"
+          truststore:
+            certificate: "classpath:ca/test-ca.crt"
+
+server:
+  port: 8443
+  ssl:
+    bundle: "default"
+    server-name-bundles:
+      - server-name: "hello.example.com"
+        bundle: "default"
+      - server-name: "hello-alt.example.com"
+        bundle: "alt"
+
+management:
+  server:
+    port: 8444
+    ssl:
+      bundle: "default"
+      server-name-bundles:
+        - server-name: "hello.example.com"
+          bundle: "default"
+        - server-name: "hello-alt.example.com"
+          bundle: "alt"
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"

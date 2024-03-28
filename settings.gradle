@@ -79,6 +79,7 @@ include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-scri
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-classic-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-sni-tests"
 include "spring-boot-system-tests:spring-boot-deployment-tests"
 include "spring-boot-system-tests:spring-boot-image-tests"
 

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -67,6 +68,7 @@ import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
@@ -74,6 +76,7 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -281,6 +284,19 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		SslConnectionFactory connectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
 		SslContextFactory sslContextFactory = extractSslContextFactory(connectionFactory);
 		assertThat(sslContextFactory.getIncludeProtocols()).containsExactly("TLSv1.1");
+	}
+
+	@Test
+	void sslServerNameBundlesConfigurationThrowsException() {
+		Ssl ssl = new Ssl();
+		ssl.setBundle("test");
+		List<ServerNameSslBundle> bundles = List.of(new ServerNameSslBundle("first", "test1"),
+				new ServerNameSslBundle("second", "test2"));
+		ssl.setServerNameBundles(bundles);
+		JettyServletWebServerFactory factory = getFactory();
+		factory.setSsl(ssl);
+		assertThatIllegalArgumentException().isThrownBy(() -> this.webServer = factory.getWebServer())
+			.withMessageContaining("Server name SSL bundles are not supported with Jetty");
 	}
 
 	private SslContextFactory extractSslContextFactory(SslConnectionFactory connectionFactory) {

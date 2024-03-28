@@ -107,6 +107,7 @@ import org.springframework.util.StringUtils;
  * @author Christoffer Sawicki
  * @author Dawid Antecki
  * @author Moritz Halbritter
+ * @author Scott Frederick
  * @since 2.0.0
  * @see #setPort(int)
  * @see #setContextLifecycleListeners(Collection)
@@ -379,10 +380,17 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private void customizeSsl(Connector connector) {
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(logger, connector, getSsl().getClientAuth());
-		customizer.customize(getSslBundle());
-		String sslBundleName = getSsl().getBundle();
+		customizer.customize(getSslBundle(), getServerNameSslBundles());
+		addBundleUpdateHandler(null, getSsl().getBundle(), customizer);
+		getSsl().getServerNameBundles()
+			.forEach((serverNameSslBundle) -> addBundleUpdateHandler(serverNameSslBundle.serverName(),
+					serverNameSslBundle.bundle(), customizer));
+	}
+
+	private void addBundleUpdateHandler(String hostName, String sslBundleName, SslConnectorCustomizer customizer) {
 		if (StringUtils.hasText(sslBundleName)) {
-			getSslBundles().addBundleUpdateHandler(sslBundleName, customizer::update);
+			getSslBundles().addBundleUpdateHandler(sslBundleName,
+					(sslBundle) -> customizer.update(hostName, sslBundle));
 		}
 	}
 

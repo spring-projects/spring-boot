@@ -2174,6 +2174,10 @@
       "defaultValue": "TLS"
     },
     {
+      "name": "management.server.ssl.server-name-bundles",
+      "description": "Mapping of host names to SSL bundles for SNI configuration."
+    },
+    {
       "name": "management.server.ssl.trust-certificate",
       "description": "Path to a PEM-encoded SSL certificate authority file."
     },

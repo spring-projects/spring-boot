@@ -248,6 +248,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private void customizeSsl(Server server, InetSocketAddress address) {
+		if (!getSsl().getServerNameBundles().isEmpty()) {
+			throw new IllegalArgumentException("Server name SSL bundles are not supported with Jetty");
+		}
 		new SslServerCustomizer(getHttp2(), address, getSsl().getClientAuth(), getSslBundle()).customize(server);
 	}
 

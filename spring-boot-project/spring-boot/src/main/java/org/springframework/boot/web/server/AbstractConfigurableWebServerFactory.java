@@ -22,10 +22,13 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.util.Assert;
 
 /**
@@ -193,6 +196,13 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 */
 	protected final SslBundle getSslBundle() {
 		return WebServerSslBundle.get(this.ssl, this.sslBundles);
+	}
+
+	protected final Map<String, SslBundle> getServerNameSslBundles() {
+		return this.ssl.getServerNameBundles()
+			.stream()
+			.collect(Collectors.toMap(ServerNameSslBundle::serverName,
+					(serverNameSslBundle) -> this.sslBundles.getBundle(serverNameSslBundle.bundle())));
 	}
 
 	/**

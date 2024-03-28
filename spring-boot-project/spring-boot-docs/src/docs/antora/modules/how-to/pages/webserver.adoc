@@ -148,6 +148,8 @@ You can configure this behavior by setting the configprop:server.compression.mim
 == Configure SSL
 
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yaml`.
+See xref:api:java/org/springframework/boot/web/server/Ssl.html[`Ssl`] for details of all of the supported properties.
+
 The following example shows setting SSL properties using a Java KeyStore file:
 
 [configprops,yaml]
@@ -193,6 +195,9 @@ server:
     trust-certificate: "classpath:ca-cert.crt"
 ----
 
+[[howto.webserver.configure-ssl.bundles]]
+=== Using SSL Bundles
+
 Alternatively, the SSL trust material can be configured in an xref:reference:features/ssl.adoc[SSL bundle] and applied to the web server as shown in this example:
 
 [configprops,yaml]
@@ -205,7 +210,29 @@ server:
 
 NOTE: The `server.ssl.bundle` property can not be combined with the discrete Java KeyStore or PEM property options under `server.ssl`.
 
-See xref:api:java/org/springframework/boot/web/server/Ssl.html[`Ssl`] for details of all of the supported properties.
+[[howto.webserver.configure-ssl.sni]]
+=== Configure Server Name Indication
+
+Tomcat, Netty, and Undertow can be configured to use unique SSL trust material for individual host names to support Server Name Indication (SNI).
+SNI configuration is not supported with Jetty, but Jetty can https://eclipse.dev/jetty/documentation/jetty-12/operations-guide/index.html#og-protocols-ssl-sni[automatically set up SNI] if multiple certificates are provided to it.
+
+Assuming xref:reference:features/ssl.adoc[SSL bundles] named `web`, `web-alt1`, and `web-alt2` have been configured, the following configuration can be used to assign each bundle to a host name served by the embedded web server:
+
+[configprops,yaml]
+----
+server:
+  port: 8443
+  ssl:
+    bundle: "web"
+    server-name-bundles:
+      - server-name: "alt1.example.com"
+        bundle: "web-alt1"
+      - server-name: "alt2.example.com"
+        bundle: "web-alt2"
+----
+
+The bundle specified with `server.ssl.bundle` will be used for the default host, and for any client that does support SNI.
+This default bundle must be configured if any `server.ssl.server-name-bundles` are configured.
 
 
 
