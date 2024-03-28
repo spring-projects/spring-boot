@@ -39,34 +39,26 @@ public final class Extensions {
 	private static final List<Extension> antora;
 	static {
 		List<Extension> extensions = new ArrayList<>();
-		extensions.add(new Extension("@springio/antora-extensions", "1.8.2", ROOT_COMPONENT_EXTENSION,
+		extensions.add(new Extension("@springio/antora-extensions", ROOT_COMPONENT_EXTENSION,
 				"@springio/antora-extensions/static-page-extension"));
-		extensions.add(new Extension("@springio/antora-xref-extension", "1.0.0-alpha.3"));
-		extensions.add(new Extension("@springio/antora-zip-contents-collector-extension", "1.0.0-alpha.3"));
+		extensions.add(new Extension("@springio/antora-xref-extension"));
+		extensions.add(new Extension("@springio/antora-zip-contents-collector-extension"));
 		antora = List.copyOf(extensions);
 	}
 
 	private static final List<Extension> asciidoc;
 	static {
 		List<Extension> extensions = new ArrayList<>();
-		extensions.add(new Extension("@asciidoctor/tabs", "1.0.0-beta.6"));
-		extensions
-			.add(new Extension("@springio/asciidoctor-extensions", "1.0.0-alpha.10", "@springio/asciidoctor-extensions",
-					"@springio/asciidoctor-extensions/configuration-properties-extension",
-					"@springio/asciidoctor-extensions/section-ids-extension"));
+		extensions.add(new Extension("@asciidoctor/tabs"));
+		extensions.add(new Extension("@springio/asciidoctor-extensions", "@springio/asciidoctor-extensions",
+				"@springio/asciidoctor-extensions/configuration-properties-extension",
+				"@springio/asciidoctor-extensions/section-ids-extension"));
 		asciidoc = List.copyOf(extensions);
 	}
 
 	private static final Map<String, String> localOverrides = Collections.emptyMap();
 
 	private Extensions() {
-	}
-
-	public static Map<String, String> packages() {
-		Map<String, String> packages = new TreeMap<>();
-		antora.stream().forEach((extension) -> packages.put(extension.name(), extension.version()));
-		asciidoc.stream().forEach((extension) -> packages.put(extension.name(), extension.version()));
-		return Collections.unmodifiableMap(packages);
 	}
 
 	static List<Map<String, Object>> antora(Consumer<AntoraExtensionsConfiguration> extensions) {
@@ -80,7 +72,7 @@ public final class Extensions {
 		return asciidoc.stream().flatMap(Extension::names).sorted().toList();
 	}
 
-	private record Extension(String name, String version, String... includeNames) {
+	private record Extension(String name, String... includeNames) {
 
 		Stream<String> names() {
 			return (this.includeNames.length != 0) ? Arrays.stream(this.includeNames) : Stream.of(this.name);
