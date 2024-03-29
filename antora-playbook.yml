@@ -8,8 +8,8 @@ antora:
   - require: '@springio/antora-xref-extension'
   - require: '@springio/antora-zip-contents-collector-extension'
     version_file: gradle.properties
-    username: ${env.ARTIFACTORY_USERNAME}"
-    password: ${env.ARTIFACTORY_PASSWORD}"
+    username: '${env.ARTIFACTORY_USERNAME}'
+    password: '${env.ARTIFACTORY_PASSWORD}'
     locations:
     - url: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-docs/${version}/spring-boot-docs-${version}-${name}-${classifier}.zip
       for-version-type: [snapshot]
@@ -64,6 +64,3 @@ urls:
 runtime:
   log:
     failure_level: warn
-ui:
-  bundle:
-    url: https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.11/ui-bundle.zip

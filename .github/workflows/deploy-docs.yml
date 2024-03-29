@@ -22,13 +22,13 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    - name: Fetch Main Branch
+      run: git fetch origin main:main
     - name: Set Up Node
       uses: actions/setup-node@v4
       with:
         node-version: 20
-    - name: Set Up NPM
-      run: npm ci
-    - name: Run Antora
+    - name: Install and Run Antora
       env:
         ALGOLIA_APP_ID: 244V8V9FGG
         ALGOLIA_API_KEY: 82c7ead946afbac3cf98c32446154691
@@ -37,7 +37,7 @@ jobs:
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         REFERENCE: ${{ github.event.inputs.build-refname }}
         BUILD_VERSION: ${{ github.event.inputs.build-version }}
-      run: npx antora antora-playbook.yml --stacktrace
+      run: node run.js
     - name: Sync Documentation
       uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.15
       with:
