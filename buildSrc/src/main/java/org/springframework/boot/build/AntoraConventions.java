@@ -101,7 +101,7 @@ public class AntoraConventions {
 		environment.put("npm_config_omit", "optional");
 		environment.put("npm_config_update_notifier", "false");
 		npmInstallTask.getEnvironment().set(environment);
-		npmInstallTask.getNpmCommand().set(List.of("ci", "--quiet"));
+		npmInstallTask.getNpmCommand().set(List.of("ci", "--silent", "--no-progress"));
 	}
 
 	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
