@@ -11,5 +11,8 @@
     "@springio/antora-zip-contents-collector-extension": "1.0.0-alpha.2",
     "@asciidoctor/tabs": "1.0.0-beta.6",
     "@springio/asciidoctor-extensions": "1.0.0-alpha.10"
+  },
+  "config": {
+    "ui-bundle-url": "https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.11/ui-bundle.zip"
   }
 }

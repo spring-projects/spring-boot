@@ -22,6 +22,3 @@ urls:
 runtime:
   log:
     failure_level: warn
-ui:
-  bundle:
-    url: https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.11/ui-bundle.zip

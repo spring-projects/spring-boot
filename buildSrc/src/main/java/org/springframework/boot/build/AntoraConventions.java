@@ -17,11 +17,14 @@
 package org.springframework.boot.build;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.gradle.node.NodeExtension;
 import com.github.gradle.node.npm.task.NpmInstallTask;
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
@@ -40,6 +43,7 @@ import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.constraints.ExtractVersionConstraints;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Conventions that are applied in the presence of the {@link AntoraPlugin}.
@@ -147,11 +151,27 @@ public class AntoraConventions {
 		antoraTask.setGroup("Documentation");
 		antoraTask.dependsOn(npmInstallTask, generateAntoraPlaybookTask);
 		antoraTask.setPlaybook("antora-playbook.yml");
+		antoraTask.setUiBundleUrl(getUiBundleUrl(project));
 		project.getPlugins()
 			.withType(JavaBasePlugin.class,
 					(javaBasePlugin) -> project.getTasks()
 						.getByName(JavaBasePlugin.CHECK_TASK_NAME)
 						.dependsOn(antoraTask));
+	}
+
+	private String getUiBundleUrl(Project project) {
+		try {
+			File packageJson = project.getRootProject().file("antora/package.json");
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<?, ?> json = objectMapper.readerFor(Map.class).readValue(packageJson);
+			Map<?, ?> config = (json != null) ? (Map<?, ?>) json.get("config") : null;
+			String url = (config != null) ? (String) config.get("ui-bundle-url") : null;
+			Assert.state(StringUtils.hasText(url.toString()), "package.json has not ui-bundle-url config");
+			return url;
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	private void configureAntoraExtension(Project project, AntoraExtension antoraExtension) {
