@@ -19,6 +19,8 @@ package org.springframework.boot.build;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,9 +31,9 @@ import com.github.gradle.node.NodeExtension;
 import com.github.gradle.node.npm.task.NpmInstallTask;
 import io.spring.gradle.antora.GenerateAntoraYmlPlugin;
 import io.spring.gradle.antora.GenerateAntoraYmlTask;
-import org.antora.gradle.AntoraExtension;
 import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
+import org.gradle.StartParameter;
 import org.gradle.api.Project;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
@@ -78,8 +80,6 @@ public class AntoraConventions {
 		tasks.withType(AntoraTask.class,
 				(antoraTask) -> configureAntoraTask(project, antoraTask, npmInstallTask, generateAntoraPlaybookTask));
 		project.getExtensions()
-			.configure(AntoraExtension.class, (antoraExtension) -> configureAntoraExtension(project, antoraExtension));
-		project.getExtensions()
 			.configure(NodeExtension.class, (nodeExtension) -> configureNodeExtension(project, nodeExtension));
 	}
 
@@ -101,7 +101,7 @@ public class AntoraConventions {
 		environment.put("npm_config_omit", "optional");
 		environment.put("npm_config_update_notifier", "false");
 		npmInstallTask.getEnvironment().set(environment);
-		npmInstallTask.getNpmCommand().set(List.of("ci"));
+		npmInstallTask.getNpmCommand().set(List.of("ci", "--quiet"));
 	}
 
 	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
@@ -152,11 +152,36 @@ public class AntoraConventions {
 		antoraTask.dependsOn(npmInstallTask, generateAntoraPlaybookTask);
 		antoraTask.setPlaybook("antora-playbook.yml");
 		antoraTask.setUiBundleUrl(getUiBundleUrl(project));
+		antoraTask.getArgs().set(project.provider(() -> getAntoraNpxArs(project, antoraTask)));
 		project.getPlugins()
 			.withType(JavaBasePlugin.class,
 					(javaBasePlugin) -> project.getTasks()
 						.getByName(JavaBasePlugin.CHECK_TASK_NAME)
 						.dependsOn(antoraTask));
+	}
+
+	private List<String> getAntoraNpxArs(Project project, AntoraTask antoraTask) {
+		logWarningIfNodeModulesInUserHome(project);
+		StartParameter startParameter = project.getGradle().getStartParameter();
+		boolean showStacktrace = startParameter.getShowStacktrace().name().startsWith("ALWAYS");
+		boolean debugLogging = project.getGradle().getStartParameter().getLogLevel() == LogLevel.DEBUG;
+		String playbookPath = antoraTask.getPlaybook();
+		List<String> arguments = new ArrayList<>();
+		arguments.addAll(List.of("--package", "@antora/cli"));
+		arguments.add("antora");
+		arguments.addAll((!showStacktrace) ? Collections.emptyList() : List.of("--stacktrace"));
+		arguments.addAll((!debugLogging) ? List.of("--quiet") : List.of("--log-level", "all"));
+		arguments.addAll(List.of("--ui-bundle-url", antoraTask.getUiBundleUrl()));
+		arguments.add(playbookPath);
+		return arguments;
+	}
+
+	private void logWarningIfNodeModulesInUserHome(Project project) {
+		if (new File(System.getProperty("user.home"), "node_modules").exists()) {
+			project.getLogger()
+				.warn("Detected the existence of $HOME/node_modules. This directory is "
+						+ "not compatible with this plugin. Please remove it.");
+		}
 	}
 
 	private String getUiBundleUrl(Project project) {
@@ -171,15 +196,6 @@ public class AntoraConventions {
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
-		}
-	}
-
-	private void configureAntoraExtension(Project project, AntoraExtension antoraExtension) {
-		if (project.getGradle().getStartParameter().getLogLevel() != LogLevel.DEBUG) {
-			antoraExtension.getOptions().add("--quiet");
-		}
-		else {
-			antoraExtension.getOptions().addAll("--log-level", "all");
 		}
 	}
 
