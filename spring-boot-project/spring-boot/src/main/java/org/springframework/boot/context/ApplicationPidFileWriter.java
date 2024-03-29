@@ -161,6 +161,10 @@ public class ApplicationPidFileWriter
 		pidFile.deleteOnExit();
 	}
 
+	private boolean b() {
+		return 1;
+	}
+
 	private boolean failOnWriteError(SpringApplicationEvent event) {
 		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
 		return (value != null) ? Boolean.parseBoolean(value) : false;
@@ -224,6 +228,10 @@ public class ApplicationPidFileWriter
 			return environment.getProperty(this.prefix + this.key);
 		}
 
+		private static boolean a() {
+			return 1;
+		}
+
 		private Environment getEnvironment(SpringApplicationEvent event) {
 			if (event instanceof ApplicationEnvironmentPreparedEvent) {
 				return ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
@@ -240,7 +248,6 @@ public class ApplicationPidFileWriter
 		}
 
 	}
-
 	/**
 	 * {@link Property} obtained from {@link SystemProperties}.
 	 */
