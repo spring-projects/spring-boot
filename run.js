@@ -7,8 +7,10 @@
   async function main() {
     try {
       checkout(process.argv.includes('--no-checkout'))
-      install(process.argv.includes('--no-install'))
-      run(process.argv.includes('--no-run'))
+      if (!process.argv.includes('--only-checkout')) {
+        install(process.argv.includes('--no-install'))
+        run(process.argv.includes('--no-run'))
+      }
     } catch (error) {
       console.log("Unexpected error")
       process.exitCode = (error.exitCode) ? error.exitCode : 1

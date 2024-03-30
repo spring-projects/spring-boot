@@ -28,6 +28,15 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
+    - name: Check Out 'package.json' From Main
+      run: node run.js --only-checkout
+    - name: Cache Files
+      uses: actions/cache@v4
+      with:
+        key: antora-${{ hashFiles('package-lock.json', 'antora-playbook.yml') }}
+        path: |
+          ~/.npm
+          ~/.cache/antora
     - name: Install and Run Antora
       env:
         ALGOLIA_APP_ID: 244V8V9FGG
@@ -37,7 +46,7 @@ jobs:
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         REFERENCE: ${{ github.event.inputs.build-refname }}
         BUILD_VERSION: ${{ github.event.inputs.build-version }}
-      run: node run.js
+      run: node run.js --no-checkout
     - name: Sync Documentation
       uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.15
       with:
