@@ -29,9 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({ "deprecation", "removal" })
 class PrometheusSimpleclientPropertiesConfigAdapterTests extends
-		AbstractPropertiesConfigAdapterTests<PrometheusProperties, PrometheusSimpleclientPropertiesConfigAdapter> {
+		AbstractPropertiesConfigAdapterTests<PrometheusSimpleclientProperties, PrometheusSimpleclientPropertiesConfigAdapter> {
 
 	PrometheusSimpleclientPropertiesConfigAdapterTests() {
 		super(PrometheusSimpleclientPropertiesConfigAdapter.class);
@@ -39,14 +39,14 @@ class PrometheusSimpleclientPropertiesConfigAdapterTests extends
 
 	@Test
 	void whenPropertiesDescriptionsIsSetAdapterDescriptionsReturnsIt() {
-		PrometheusProperties properties = new PrometheusProperties();
+		PrometheusSimpleclientProperties properties = new PrometheusSimpleclientProperties();
 		properties.setDescriptions(false);
 		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).descriptions()).isFalse();
 	}
 
 	@Test
 	void whenPropertiesHistogramFlavorIsSetAdapterHistogramFlavorReturnsIt() {
-		PrometheusProperties properties = new PrometheusProperties();
+		PrometheusSimpleclientProperties properties = new PrometheusSimpleclientProperties();
 		properties.setHistogramFlavor(io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics);
 		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).histogramFlavor())
 			.isEqualTo(io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics);
@@ -54,7 +54,7 @@ class PrometheusSimpleclientPropertiesConfigAdapterTests extends
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
-		PrometheusProperties properties = new PrometheusProperties();
+		PrometheusSimpleclientProperties properties = new PrometheusSimpleclientProperties();
 		properties.setStep(Duration.ofSeconds(30));
 		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).step())
 			.isEqualTo(Duration.ofSeconds(30));

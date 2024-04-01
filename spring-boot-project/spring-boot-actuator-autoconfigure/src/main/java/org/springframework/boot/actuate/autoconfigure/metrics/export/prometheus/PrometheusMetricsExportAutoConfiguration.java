@@ -20,7 +20,9 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
+import io.prometheus.metrics.tracer.common.SpanContext;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -63,8 +65,8 @@ public class PrometheusMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
-			PrometheusRegistry prometheusRegistry, Clock clock) {
-		return new PrometheusMeterRegistry(prometheusConfig, prometheusRegistry, clock, null);
+			PrometheusRegistry prometheusRegistry, Clock clock, ObjectProvider<SpanContext> spanContext) {
+		return new PrometheusMeterRegistry(prometheusConfig, prometheusRegistry, clock, spanContext.getIfAvailable());
 	}
 
 	@Bean

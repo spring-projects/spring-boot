@@ -63,6 +63,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  * @deprecated in favor of {@link PrometheusMetricsExportAutoConfiguration}
  */
+@SuppressWarnings("removal")
 @Deprecated(since = "3.3.0", forRemoval = true)
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
@@ -70,12 +71,12 @@ import org.springframework.util.StringUtils;
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(PrometheusMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("prometheus")
-@EnableConfigurationProperties(PrometheusProperties.class)
+@EnableConfigurationProperties(PrometheusSimpleclientProperties.class)
 public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusConfig simpleclientPrometheusConfig(PrometheusProperties prometheusProperties) {
+	public PrometheusConfig simpleclientPrometheusConfig(PrometheusSimpleclientProperties prometheusProperties) {
 		return new PrometheusSimpleclientPropertiesConfigAdapter(prometheusProperties);
 	}
 
@@ -133,8 +134,9 @@ public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public PrometheusPushGatewayManager prometheusPushGatewayManager(CollectorRegistry collectorRegistry,
-				PrometheusProperties prometheusProperties, Environment environment) throws MalformedURLException {
-			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
+				PrometheusSimpleclientProperties prometheusProperties, Environment environment)
+				throws MalformedURLException {
+			PrometheusSimpleclientProperties.Pushgateway properties = prometheusProperties.getPushgateway();
 			Duration pushRate = properties.getPushRate();
 			String job = getJob(properties, environment);
 			Map<String, String> groupingKey = properties.getGroupingKey();
@@ -152,7 +154,7 @@ public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 			return new PushGateway(new URL(url));
 		}
 
-		private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {
+		private String getJob(PrometheusSimpleclientProperties.Pushgateway properties, Environment environment) {
 			String job = properties.getJob();
 			job = (job != null) ? job : environment.getProperty("spring.application.name");
 			return (job != null) ? job : FALLBACK_JOB;

@@ -17,10 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -46,19 +43,6 @@ public class PrometheusProperties {
 	private boolean descriptions = true;
 
 	/**
-	 * Configuration options for using Prometheus Pushgateway, allowing metrics to be
-	 * pushed when they cannot be scraped.
-	 */
-	private final Pushgateway pushgateway = new Pushgateway();
-
-	/**
-	 * Histogram type for backing DistributionSummary and Timer.
-	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
-	@Deprecated(since = "3.3.0", forRemoval = true)
-	private io.micrometer.prometheus.HistogramFlavor histogramFlavor = io.micrometer.prometheus.HistogramFlavor.Prometheus;
-
-	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step = Duration.ofMinutes(1);
@@ -69,16 +53,6 @@ public class PrometheusProperties {
 
 	public void setDescriptions(boolean descriptions) {
 		this.descriptions = descriptions;
-	}
-
-	@SuppressWarnings("deprecation")
-	public io.micrometer.prometheus.HistogramFlavor getHistogramFlavor() {
-		return this.histogramFlavor;
-	}
-
-	@SuppressWarnings("deprecation")
-	public void setHistogramFlavor(io.micrometer.prometheus.HistogramFlavor histogramFlavor) {
-		this.histogramFlavor = histogramFlavor;
 	}
 
 	public Duration getStep() {
@@ -95,121 +69,6 @@ public class PrometheusProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public Pushgateway getPushgateway() {
-		return this.pushgateway;
-	}
-
-	/**
-	 * Configuration options for push-based interaction with Prometheus.
-	 */
-	public static class Pushgateway {
-
-		/**
-		 * Enable publishing over a Prometheus Pushgateway.
-		 */
-		private Boolean enabled = false;
-
-		/**
-		 * Base URL for the Pushgateway.
-		 */
-		private String baseUrl = "http://localhost:9091";
-
-		/**
-		 * Login user of the Prometheus Pushgateway.
-		 */
-		private String username;
-
-		/**
-		 * Login password of the Prometheus Pushgateway.
-		 */
-		private String password;
-
-		/**
-		 * Frequency with which to push metrics.
-		 */
-		private Duration pushRate = Duration.ofMinutes(1);
-
-		/**
-		 * Job identifier for this application instance.
-		 */
-		private String job;
-
-		/**
-		 * Grouping key for the pushed metrics.
-		 */
-		private Map<String, String> groupingKey = new HashMap<>();
-
-		/**
-		 * Operation that should be performed on shutdown.
-		 */
-		private ShutdownOperation shutdownOperation = ShutdownOperation.NONE;
-
-		public Boolean getEnabled() {
-			return this.enabled;
-		}
-
-		public void setEnabled(Boolean enabled) {
-			this.enabled = enabled;
-		}
-
-		public String getBaseUrl() {
-			return this.baseUrl;
-		}
-
-		public void setBaseUrl(String baseUrl) {
-			this.baseUrl = baseUrl;
-		}
-
-		public String getUsername() {
-			return this.username;
-		}
-
-		public void setUsername(String username) {
-			this.username = username;
-		}
-
-		public String getPassword() {
-			return this.password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-		public Duration getPushRate() {
-			return this.pushRate;
-		}
-
-		public void setPushRate(Duration pushRate) {
-			this.pushRate = pushRate;
-		}
-
-		public String getJob() {
-			return this.job;
-		}
-
-		public void setJob(String job) {
-			this.job = job;
-		}
-
-		public Map<String, String> getGroupingKey() {
-			return this.groupingKey;
-		}
-
-		public void setGroupingKey(Map<String, String> groupingKey) {
-			this.groupingKey = groupingKey;
-		}
-
-		public ShutdownOperation getShutdownOperation() {
-			return this.shutdownOperation;
-		}
-
-		public void setShutdownOperation(ShutdownOperation shutdownOperation) {
-			this.shutdownOperation = shutdownOperation;
-		}
-
 	}
 
 }

@@ -1232,7 +1232,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.13.0-M2") {
+	library("Micrometer", "1.13.0-SNAPSHOT") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1415,10 +1415,10 @@ bom {
 			releaseNotes("https://github.com/pgjdbc/pgjdbc/releases/tag/REL{version}")
 		}
 	}
-	library("Prometheus Client", "1.1.0") {
+	library("Prometheus Client", "1.2.0") {
 		group("io.prometheus") {
-			modules = [
-					"prometheus-metrics-exposition-formats"
+			imports = [
+					"prometheus-metrics-bom"
 			]
 		}
 		links {

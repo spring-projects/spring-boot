@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
@@ -24,6 +25,7 @@ import io.prometheus.client.exporter.DefaultHttpConnectionFactory;
 import io.prometheus.client.exporter.HttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
+import io.prometheus.metrics.tracer.common.SpanContext;
 import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -127,30 +129,10 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	@Disabled("exemplar support with new client is not integrated in Micrometer yet")
-	void autoConfiguresExemplarSamplerIfSpanContextSupplierIsPresent() {
+	void autoConfiguresPrometheusMeterRegistryIfSpanContextIsPresent() {
 		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
-				.hasSingleBean(ExemplarSampler.class)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class));
-	}
-
-	@Test
-	@Disabled("exemplar support with new client is not integrated in Micrometer yet")
-	void allowsCustomExemplarSamplerToBeUsed() {
-		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
-			.withBean("customExemplarSampler", ExemplarSampler.class, () -> mock(ExemplarSampler.class))
-			.run((context) -> assertThat(context).hasSingleBean(ExemplarSampler.class)
-				.getBean(ExemplarSampler.class)
-				.isSameAs(context.getBean("customExemplarSampler")));
-	}
-
-	@Test
-	void exemplarSamplerIsNotAutoConfiguredIfSpanContextSupplierIsMissing() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class)
-				.doesNotHaveBean(ExemplarSampler.class)
-				.hasSingleBean(io.micrometer.prometheusmetrics.PrometheusMeterRegistry.class));
+			.run((context) -> assertThat(context).hasSingleBean(SpanContext.class)
+				.hasSingleBean(PrometheusMeterRegistry.class));
 	}
 
 	@Test
@@ -315,24 +297,27 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class ExemplarsConfiguration {
 
 		@Bean
-		SpanContextSupplier spanContextSupplier() {
-			return new SpanContextSupplier() {
+		SpanContext spanContext() {
+			return new SpanContext() {
 
 				@Override
-				public String getTraceId() {
+				public String getCurrentTraceId() {
 					return null;
 				}
 
 				@Override
-				public String getSpanId() {
+				public String getCurrentSpanId() {
 					return null;
 				}
 
 				@Override
-				public boolean isSampled() {
+				public boolean isCurrentSpanSampled() {
 					return false;
 				}
 
+				@Override
+				public void markCurrentSpanAsExemplar() {
+				}
 			};
 		}
 

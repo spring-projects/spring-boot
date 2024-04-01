@@ -21,17 +21,20 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link PrometheusProperties}.
+ * Tests for {@link PrometheusSimpleclientProperties}.
  *
  * @author Stephane Nicoll
  */
-class PrometheusPropertiesTests {
+@SuppressWarnings("removal")
+class PrometheusSimpleclientPropertiesTests {
 
+	@SuppressWarnings("deprecation")
 	@Test
-	void defaultValuesAreConsistent() {
-		PrometheusProperties properties = new PrometheusProperties();
-		io.micrometer.prometheusmetrics.PrometheusConfig config = io.micrometer.prometheusmetrics.PrometheusConfig.DEFAULT;
+	void defaultValuesAreConsistentWithSimpleclient() {
+		PrometheusSimpleclientProperties properties = new PrometheusSimpleclientProperties();
+		io.micrometer.prometheus.PrometheusConfig config = io.micrometer.prometheus.PrometheusConfig.DEFAULT;
 		assertThat(properties.isDescriptions()).isEqualTo(config.descriptions());
+		assertThat(properties.getHistogramFlavor()).isEqualTo(config.histogramFlavor());
 		assertThat(properties.getStep()).isEqualTo(config.step());
 	}
 
