@@ -24,7 +24,6 @@ import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
-import io.prometheus.metrics.expositionformats.PrometheusTextFormatWriter;
 import io.prometheus.metrics.tracer.common.SpanContext;
 import org.junit.jupiter.api.Test;
 
