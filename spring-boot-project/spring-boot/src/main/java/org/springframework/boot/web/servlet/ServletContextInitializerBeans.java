@@ -103,21 +103,21 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 
 	private void addServletContextInitializerBean(String beanName, ServletContextInitializer initializer,
 			ListableBeanFactory beanFactory) {
-		if (initializer instanceof ServletRegistrationBean) {
-			Servlet source = ((ServletRegistrationBean<?>) initializer).getServlet();
-			addServletContextInitializerBean(Servlet.class, beanName, initializer, beanFactory, source);
+		if (initializer instanceof ServletRegistrationBean<?> servletRegistrationBean) {
+			Servlet source = servletRegistrationBean.getServlet();
+			addServletContextInitializerBean(Servlet.class, beanName, servletRegistrationBean, beanFactory, source);
 		}
-		else if (initializer instanceof FilterRegistrationBean) {
-			Filter source = ((FilterRegistrationBean<?>) initializer).getFilter();
-			addServletContextInitializerBean(Filter.class, beanName, initializer, beanFactory, source);
+		else if (initializer instanceof FilterRegistrationBean<?> filterRegistrationBean) {
+			Filter source = filterRegistrationBean.getFilter();
+			addServletContextInitializerBean(Filter.class, beanName, filterRegistrationBean, beanFactory, source);
 		}
-		else if (initializer instanceof DelegatingFilterProxyRegistrationBean) {
-			String source = ((DelegatingFilterProxyRegistrationBean) initializer).getTargetBeanName();
-			addServletContextInitializerBean(Filter.class, beanName, initializer, beanFactory, source);
+		else if (initializer instanceof DelegatingFilterProxyRegistrationBean registrationBean) {
+			String source = registrationBean.getTargetBeanName();
+			addServletContextInitializerBean(Filter.class, beanName, registrationBean, beanFactory, source);
 		}
-		else if (initializer instanceof ServletListenerRegistrationBean) {
-			EventListener source = ((ServletListenerRegistrationBean<?>) initializer).getListener();
-			addServletContextInitializerBean(EventListener.class, beanName, initializer, beanFactory, source);
+		else if (initializer instanceof ServletListenerRegistrationBean<?> registrationBean) {
+			EventListener source = registrationBean.getListener();
+			addServletContextInitializerBean(EventListener.class, beanName, registrationBean, beanFactory, source);
 		}
 		else {
 			addServletContextInitializerBean(ServletContextInitializer.class, beanName, initializer, beanFactory,

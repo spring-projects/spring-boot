@@ -98,7 +98,7 @@ public class ApplicationAvailabilityBean
 
 	@SuppressWarnings("unchecked")
 	private Class<? extends AvailabilityState> getStateType(AvailabilityState state) {
-		Class<?> type = (state instanceof Enum) ? ((Enum<?>) state).getDeclaringClass() : state.getClass();
+		Class<?> type = (state instanceof Enum<?> enumState) ? enumState.getDeclaringClass() : state.getClass();
 		return (Class<? extends AvailabilityState>) type;
 	}
 

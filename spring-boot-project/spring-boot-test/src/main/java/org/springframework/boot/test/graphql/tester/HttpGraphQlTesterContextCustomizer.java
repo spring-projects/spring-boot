@@ -66,8 +66,8 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 	private void registerHttpGraphQlTester(ConfigurableApplicationContext context) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beanFactory instanceof BeanDefinitionRegistry) {
-			registerHttpGraphQlTester((BeanDefinitionRegistry) beanFactory);
+		if (beanFactory instanceof BeanDefinitionRegistry beanDefinitionRegistry) {
+			registerHttpGraphQlTester(beanDefinitionRegistry);
 		}
 	}
 

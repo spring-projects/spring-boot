@@ -1462,8 +1462,8 @@ class SpringApplicationTests {
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
-		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
-				&& ((AvailabilityChangeEvent<?>) argument).getState().equals(state);
+		return (argument) -> (argument instanceof AvailabilityChangeEvent<?> availabilityChangeEvent)
+				&& availabilityChangeEvent.getState().equals(state);
 	}
 
 	private <E extends ApplicationEvent> AtomicReference<E> addListener(SpringApplication application,
