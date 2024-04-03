@@ -1,5 +1,4 @@
-* Reference Guides
-
+* xref:reference:index.adoc[]
 ** xref:reference:using/index.adoc[]
 *** xref:reference:using/build-systems.adoc[]
 *** xref:reference:using/structuring-your-code.adoc[]
