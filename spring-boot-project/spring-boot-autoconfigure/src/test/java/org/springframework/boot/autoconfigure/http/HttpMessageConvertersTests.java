@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
-				MappingJackson2HttpMessageConverter.class);
+				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class);
 	}
 
 	private List<HttpMessageConverter<?>> extractFormPartConverters(List<HttpMessageConverter<?>> converters) {
