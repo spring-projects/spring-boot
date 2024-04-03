@@ -225,8 +225,8 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		else if (event instanceof ApplicationPreparedEvent preparedEvent) {
 			onApplicationPreparedEvent(preparedEvent);
 		}
-		else if (event instanceof ContextClosedEvent) {
-			onContextClosedEvent((ContextClosedEvent) event);
+		else if (event instanceof ContextClosedEvent contextClosedEvent) {
+			onContextClosedEvent(contextClosedEvent);
 		}
 		else if (event instanceof ApplicationFailedEvent) {
 			onApplicationFailedEvent();

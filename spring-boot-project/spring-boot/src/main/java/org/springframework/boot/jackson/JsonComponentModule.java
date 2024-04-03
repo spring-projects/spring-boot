@@ -102,14 +102,14 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	private void addJsonBean(Object bean, Class<?>[] types, Scope scope) {
-		if (bean instanceof JsonSerializer) {
-			addJsonSerializerBean((JsonSerializer<?>) bean, scope, types);
+		if (bean instanceof JsonSerializer<?> jsonSerializer) {
+			addJsonSerializerBean(jsonSerializer, scope, types);
 		}
-		else if (bean instanceof JsonDeserializer) {
-			addJsonDeserializerBean((JsonDeserializer<?>) bean, types);
+		else if (bean instanceof JsonDeserializer<?> jsonDeserializer) {
+			addJsonDeserializerBean(jsonDeserializer, types);
 		}
-		else if (bean instanceof KeyDeserializer) {
-			addKeyDeserializerBean((KeyDeserializer) bean, types);
+		else if (bean instanceof KeyDeserializer keyDeserializer) {
+			addKeyDeserializerBean(keyDeserializer, types);
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
 			if (isSuitableInnerClass(innerClass)) {
