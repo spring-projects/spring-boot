@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
+import io.prometheus.metrics.expositionformats.PrometheusProtobufWriter;
 import io.prometheus.metrics.expositionformats.PrometheusTextFormatWriter;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 
@@ -118,6 +119,21 @@ class PrometheusScrapeEndpointIntegrationTests {
 			.value((body) -> assertThat(body).contains("counter1_total")
 				.contains("counter2_total")
 				.doesNotContain("counter3_total"));
+	}
+
+	@WebEndpointTest
+	void scrapeCanProducePrometheusProtobuf(WebTestClient client) {
+		MediaType prometheusProtobuf = MediaType.parseMediaType(PrometheusProtobufWriter.CONTENT_TYPE);
+		client.get()
+			.uri("/actuator/prometheus")
+			.accept(prometheusProtobuf)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(prometheusProtobuf)
+			.expectBody(byte[].class)
+			.value((body) -> assertThat(body).isNotEmpty());
 	}
 
 	@Configuration(proxyBeanMethods = false)
