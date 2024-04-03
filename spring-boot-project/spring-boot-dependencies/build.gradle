@@ -1821,7 +1821,7 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-batch")
 			github("https://github.com/spring-projects/spring-batch")
-			javadoc("https://docs.spring.io/spring-batch/docs/{version}/api/org/springframework/batch")
+			javadoc("https://docs.spring.io/spring-batch/docs/{version}/api")
 			docs { version -> "https://docs.spring.io/spring-batch/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
