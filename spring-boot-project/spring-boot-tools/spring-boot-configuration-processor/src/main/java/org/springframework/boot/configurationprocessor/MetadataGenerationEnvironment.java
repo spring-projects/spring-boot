@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,30 +50,22 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
  *
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class MetadataGenerationEnvironment {
 
 	private static final String NULLABLE_ANNOTATION = "org.springframework.lang.Nullable";
 
-	private static final Set<String> TYPE_EXCLUDES;
-	static {
-		Set<String> excludes = new HashSet<>();
-		excludes.add("com.zaxxer.hikari.IConnectionCustomizer");
-		excludes.add("groovy.lang.MetaClass");
-		excludes.add("groovy.text.markup.MarkupTemplateEngine");
-		excludes.add("java.io.Writer");
-		excludes.add("java.io.PrintWriter");
-		excludes.add("java.lang.ClassLoader");
-		excludes.add("java.util.concurrent.ThreadFactory");
-		excludes.add("jakarta.jms.XAConnectionFactory");
-		excludes.add("javax.sql.DataSource");
-		excludes.add("javax.sql.XADataSource");
-		excludes.add("org.apache.tomcat.jdbc.pool.PoolConfiguration");
-		excludes.add("org.apache.tomcat.jdbc.pool.Validator");
-		excludes.add("org.flywaydb.core.api.callback.FlywayCallback");
-		excludes.add("org.flywaydb.core.api.resolver.MigrationResolver");
-		TYPE_EXCLUDES = Collections.unmodifiableSet(excludes);
-	}
+	private static final Set<String> TYPE_EXCLUDES = Set.of("com.zaxxer.hikari.IConnectionCustomizer",
+			"groovy.lang.MetaClass", "groovy.text.markup.MarkupTemplateEngine", "java.io.Writer", "java.io.PrintWriter",
+			"java.lang.ClassLoader", "java.util.concurrent.ThreadFactory", "jakarta.jms.XAConnectionFactory",
+			"javax.sql.DataSource", "javax.sql.XADataSource", "org.apache.tomcat.jdbc.pool.PoolConfiguration",
+			"org.apache.tomcat.jdbc.pool.Validator", "org.flywaydb.core.api.callback.FlywayCallback",
+			"org.flywaydb.core.api.resolver.MigrationResolver");
+
+	private static final Set<String> DEPRECATION_EXCLUDES = Set.of(
+			"org.apache.commons.dbcp2.BasicDataSource#getPassword",
+			"org.apache.commons.dbcp2.BasicDataSource#getUsername");
 
 	private final TypeUtils typeUtils;
 
@@ -162,6 +154,13 @@ class MetadataGenerationEnvironment {
 	}
 
 	boolean isDeprecated(Element element) {
+		if (element == null) {
+			return false;
+		}
+		String elementName = element.getEnclosingElement() + "#" + element.getSimpleName();
+		if (DEPRECATION_EXCLUDES.contains(elementName)) {
+			return false;
+		}
 		if (isElementDeprecated(element)) {
 			return true;
 		}
