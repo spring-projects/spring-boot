@@ -56,8 +56,9 @@ jobs:
         docs-ssh-host-key: ${{ secrets.DOCS_SSH_HOST_KEY }}
         httpdocs-path: /spring-boot/antora/reference
     - name: Bust Cloudflare Cache
-      uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.15
+      uses: philwebb/spring-doc-actions/bust-cloudflare-antora-cache@context-path
       with:
         context-root: spring-boot
+        context-path: /
         cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
         cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
