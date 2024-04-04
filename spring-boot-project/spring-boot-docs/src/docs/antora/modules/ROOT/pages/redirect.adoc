@@ -1,4 +1,4 @@
-:page-layout: bare
+:page-layout: redirect
 
 * xref:community.adoc[getting-help]
 * xref:documentation.adoc[documentation]
