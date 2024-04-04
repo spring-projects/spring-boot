@@ -19,7 +19,7 @@ antora:
       for-version-type: [release]
     # The root component extension must be last!
   - require: '@springio/antora-extensions/root-component-extension'
-    root_component_name: spring-boot
+    root_component_name: boot
 site:
   title: Spring Boot
   url: https://docs.spring.io/spring-boot
