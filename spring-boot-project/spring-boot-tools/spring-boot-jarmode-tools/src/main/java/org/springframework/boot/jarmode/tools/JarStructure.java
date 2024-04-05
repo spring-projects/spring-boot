@@ -68,11 +68,13 @@ interface JarStructure {
 	 * @param type of the entry
 	 */
 	record Entry(String originalLocation, String location, Type type) {
+
 		enum Type {
 
 			LIBRARY, APPLICATION_CLASS_OR_RESOURCE, LOADER
 
 		}
+
 	}
 
 }

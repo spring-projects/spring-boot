@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
-class ToolsJarModeTests extends AbstractTests {
+class ToolsJarModeTests extends AbstractJarModeTests {
 
 	private ToolsJarMode mode;
 

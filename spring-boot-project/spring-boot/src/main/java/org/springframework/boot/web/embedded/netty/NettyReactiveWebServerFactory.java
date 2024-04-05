@@ -182,10 +182,10 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return customizer.apply(httpServer);
 	}
 
-	private void addBundleUpdateHandler(String hostName, String bundleName, SslServerCustomizer customizer) {
+	private void addBundleUpdateHandler(String serverName, String bundleName, SslServerCustomizer customizer) {
 		if (StringUtils.hasText(bundleName)) {
 			getSslBundles().addBundleUpdateHandler(bundleName,
-					(sslBundle) -> customizer.updateSslBundle(hostName, sslBundle));
+					(sslBundle) -> customizer.updateSslBundle(serverName, sslBundle));
 		}
 	}
 

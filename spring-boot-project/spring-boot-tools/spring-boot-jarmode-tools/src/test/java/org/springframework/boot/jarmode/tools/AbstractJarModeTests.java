@@ -44,9 +44,11 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Base class for jar mode tests.
+ *
  * @author Moritz Halbritter
  */
-abstract class AbstractTests {
+abstract class AbstractJarModeTests {
 
 	@TempDir
 	File tempDir;

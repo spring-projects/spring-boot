@@ -79,7 +79,7 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		SNIContextMatcher.Builder builder = new SNIContextMatcher.Builder();
 		builder.setDefaultContext(this.sslBundle.createSslContext());
 		this.serverNameSslBundles
-			.forEach((server, sslBundle) -> builder.addMatch(server, sslBundle.createSslContext()));
+			.forEach((serverName, sslBundle) -> builder.addMatch(serverName, sslBundle.createSslContext()));
 		return new SNISSLContext(builder.build());
 	}
 

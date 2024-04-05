@@ -109,7 +109,6 @@ class GraphQlWebFluxAutoConfigurationTests {
 				.contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
 				.expectBody(String.class)
 				.returnResult();
-
 			assertThat(result.getResponseBody()).contains("event:next",
 					"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-1\",\"name\":\"GraphQL for beginners\",\"pageCount\":100,\"author\":\"John GraphQL\"}}}",
 					"event:next",

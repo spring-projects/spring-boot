@@ -245,10 +245,10 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 					serverNameSslBundle.bundle(), customizer));
 	}
 
-	private void addBundleUpdateHandler(String hostName, String sslBundleName, SslConnectorCustomizer customizer) {
+	private void addBundleUpdateHandler(String serverName, String sslBundleName, SslConnectorCustomizer customizer) {
 		if (StringUtils.hasText(sslBundleName)) {
 			getSslBundles().addBundleUpdateHandler(sslBundleName,
-					(sslBundle) -> customizer.update(hostName, sslBundle));
+					(sslBundle) -> customizer.update(serverName, sslBundle));
 		}
 	}
 

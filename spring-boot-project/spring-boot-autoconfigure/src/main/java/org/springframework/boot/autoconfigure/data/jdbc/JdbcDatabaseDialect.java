@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.jdbc;
 
-import java.util.function.Supplier;
-
 import org.springframework.data.jdbc.core.dialect.JdbcDb2Dialect;
 import org.springframework.data.jdbc.core.dialect.JdbcMySqlDialect;
 import org.springframework.data.jdbc.core.dialect.JdbcPostgresDialect;
@@ -26,6 +24,7 @@ import org.springframework.data.relational.core.dialect.Dialect;
 import org.springframework.data.relational.core.dialect.H2Dialect;
 import org.springframework.data.relational.core.dialect.HsqlDbDialect;
 import org.springframework.data.relational.core.dialect.MariaDbDialect;
+import org.springframework.data.relational.core.dialect.MySqlDialect;
 import org.springframework.data.relational.core.dialect.OracleDialect;
 
 /**
@@ -34,87 +33,56 @@ import org.springframework.data.relational.core.dialect.OracleDialect;
  * @author Jens Schauder
  * @since 3.3.0
  */
-public enum JdbcDatabaseDialect implements Supplier<Dialect> {
+public enum JdbcDatabaseDialect {
 
 	/**
 	 * Provides an instance of {@link JdbcDb2Dialect}.
 	 */
-	DB2 {
-		@Override
-		public Dialect get() {
-			return JdbcDb2Dialect.INSTANCE;
-		}
-	},
+	DB2(JdbcDb2Dialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link H2Dialect}.
 	 */
-	H2 {
-		@Override
-		public Dialect get() {
-			return H2Dialect.INSTANCE;
-		}
-	},
+	H2(H2Dialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link HsqlDbDialect}.
 	 */
-	HSQL {
-		@Override
-		public Dialect get() {
-			return HsqlDbDialect.INSTANCE;
-		}
-	},
+	HSQL(HsqlDbDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link MariaDbDialect}.
 	 */
-	MARIA {
-		@Override
-		public Dialect get() {
-			return MariaDbDialect.INSTANCE;
-		}
-	},
+	MARIA(MySqlDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcMySqlDialect}.
 	 */
-	MYSQL {
-		@Override
-		public Dialect get() {
-			return JdbcMySqlDialect.INSTANCE;
-		}
-	},
+	MYSQL(MySqlDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link OracleDialect}.
 	 */
-	ORACLE {
-		@Override
-		public Dialect get() {
-			return OracleDialect.INSTANCE;
-
-		}
-	},
+	ORACLE(OracleDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcPostgresDialect}.
 	 */
-	POSTGRESQL {
-		@Override
-		public Dialect get() {
-			return JdbcPostgresDialect.INSTANCE;
-		}
-	},
+	POSTGRESQL(JdbcPostgresDialect.INSTANCE),
 
 	/**
 	 * Provides an instance of {@link JdbcSqlServerDialect}.
 	 */
-	SQL_SERVER {
-		@Override
-		public Dialect get() {
-			return JdbcSqlServerDialect.INSTANCE;
-		}
+	SQL_SERVER(JdbcSqlServerDialect.INSTANCE);
+
+	private final Dialect dialect;
+
+	JdbcDatabaseDialect(Dialect dialect) {
+		this.dialect = dialect;
+	}
+
+	final Dialect getDialect() {
+		return this.dialect;
 	}
 
 }

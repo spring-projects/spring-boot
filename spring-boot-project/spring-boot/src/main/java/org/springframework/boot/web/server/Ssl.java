@@ -338,8 +338,8 @@ public class Ssl {
 		return this.serverNameBundles;
 	}
 
-	public void setServerNameBundles(List<ServerNameSslBundle> serverNames) {
-		this.serverNameBundles = serverNames;
+	public void setServerNameBundles(List<ServerNameSslBundle> serverNameBundles) {
+		this.serverNameBundles = serverNameBundles;
 	}
 
 	/**

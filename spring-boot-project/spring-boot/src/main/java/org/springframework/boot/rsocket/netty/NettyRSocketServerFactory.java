@@ -46,6 +46,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
+import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.boot.web.server.WebServerSslBundle;
 import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.util.Assert;
@@ -207,8 +208,11 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	protected final Map<String, SslBundle> getServerNameSslBundles() {
 		return this.ssl.getServerNameBundles()
 			.stream()
-			.collect(Collectors.toMap(Ssl.ServerNameSslBundle::serverName,
-					(serverNameSslBundle) -> this.sslBundles.getBundle(serverNameSslBundle.bundle())));
+			.collect(Collectors.toMap(Ssl.ServerNameSslBundle::serverName, this::getBundle));
+	}
+
+	private SslBundle getBundle(ServerNameSslBundle serverNameSslBundle) {
+		return this.sslBundles.getBundle(serverNameSslBundle.bundle());
 	}
 
 	private InetSocketAddress getListenAddress() {

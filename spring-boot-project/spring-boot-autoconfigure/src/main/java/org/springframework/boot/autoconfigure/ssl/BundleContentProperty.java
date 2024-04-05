@@ -68,8 +68,7 @@ record BundleContentProperty(String name, String value) {
 
 	private Resource getResource() {
 		Assert.state(!isPemContent(), "Value contains PEM content");
-		ApplicationResourceLoader resourceLoader = new ApplicationResourceLoader();
-		return resourceLoader.getResource(this.value);
+		return new ApplicationResourceLoader().getResource(this.value);
 	}
 
 }

@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Moritz Halbritter
  */
-class ExtractCommandTests extends AbstractTests {
+class ExtractCommandTests extends AbstractJarModeTests {
 
 	private static final Instant CREATION_TIME = Instant.parse("2020-01-01T00:00:00Z");
 

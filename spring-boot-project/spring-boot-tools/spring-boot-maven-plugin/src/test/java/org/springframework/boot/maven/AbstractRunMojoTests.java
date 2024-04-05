@@ -34,11 +34,8 @@ class AbstractRunMojoTests {
 
 	@Test
 	void argfileEscapesContent() throws IOException {
-		ArgFile file = ArgFile.create();
-		file.write("some \\ content");
-		file.write("And even more content");
-		assertThat(file.getPath()).content(StandardCharsets.UTF_8)
-			.isEqualTo("\"some \\\\ content\"\"And even more content\"");
+		ArgFile file = ArgFile.create("some \\ content");
+		assertThat(file.path()).content(StandardCharsets.UTF_8).isEqualTo("\"some \\\\ content\"");
 	}
 
 }

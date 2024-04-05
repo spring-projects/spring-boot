@@ -21,12 +21,13 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * A {@link DefaultResourceLoader} with any {@link ProtocolResolver}s registered in a
- * {@code spring.factories} file applied to it. Plain paths without a qualifier will
- * resolve to file system resources. This is different from {@code DefaultResourceLoader},
- * which resolves unqualified paths to classpath resources.
+ * A {@link DefaultResourceLoader} with any {@link ProtocolResolver ProtocolResolvers}
+ * registered in a {@code spring.factories} file applied to it. Plain paths without a
+ * qualifier will resolve to file system resources. This is different from
+ * {@code DefaultResourceLoader}, which resolves unqualified paths to classpath resources.
  *
  * @author Scott Frederick
  * @since 3.3.0
@@ -37,8 +38,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * Create a new {@code ApplicationResourceLoader}.
 	 */
 	public ApplicationResourceLoader() {
-		super();
-		ProtocolResolvers.applyTo(this);
+		this(null);
 	}
 
 	/**
@@ -49,7 +49,8 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 */
 	public ApplicationResourceLoader(ClassLoader classLoader) {
 		super(classLoader);
-		ProtocolResolvers.applyTo(this);
+		SpringFactoriesLoader loader = SpringFactoriesLoader.forDefaultResourceLocation(classLoader);
+		getProtocolResolvers().addAll(loader.load(ProtocolResolver.class));
 	}
 
 	@Override

@@ -130,10 +130,8 @@ public abstract class BootWar extends War implements BootArchive {
 
 	@SuppressWarnings("removal")
 	private boolean isIncludeJarmodeTools() {
-		if (!this.getIncludeTools().get()) {
-			return false;
-		}
-		return this.layered.getIncludeLayerTools().get();
+		return Boolean.TRUE.equals(this.getIncludeTools().get())
+				&& Boolean.TRUE.equals(this.layered.getIncludeLayerTools().get());
 	}
 
 	@Override

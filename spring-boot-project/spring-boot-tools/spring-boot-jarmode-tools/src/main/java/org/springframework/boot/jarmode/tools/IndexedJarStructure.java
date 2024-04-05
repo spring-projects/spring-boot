@@ -65,10 +65,7 @@ class IndexedJarStructure implements JarStructure {
 
 	private static String getLocation(Manifest manifest, String attribute) {
 		String location = getMandatoryAttribute(manifest, attribute);
-		if (!location.endsWith("/")) {
-			location = location + "/";
-		}
-		return location;
+		return (!location.endsWith("/")) ? location + "/" : location;
 	}
 
 	private static List<String> readIndexFile(String indexFile) {
@@ -78,12 +75,8 @@ class IndexedJarStructure implements JarStructure {
 			.toArray(String[]::new);
 		List<String> classpathEntries = new ArrayList<>();
 		for (String line : lines) {
-			if (line.startsWith("- ")) {
-				classpathEntries.add(line.substring(3, line.length() - 1));
-			}
-			else {
-				throw new IllegalStateException("Classpath index file is malformed");
-			}
+			Assert.state(line.startsWith("- "), "Classpath index file is malformed");
+			classpathEntries.add(line.substring(3, line.length() - 1));
 		}
 		Assert.state(!classpathEntries.isEmpty(), "Empty classpath index file loaded");
 		return classpathEntries;
@@ -99,10 +92,10 @@ class IndexedJarStructure implements JarStructure {
 		if (this.classpathEntries.contains(name)) {
 			return new Entry(name, toStructureDependency(name), Type.LIBRARY);
 		}
-		else if (name.startsWith(this.classesLocation)) {
+		if (name.startsWith(this.classesLocation)) {
 			return new Entry(name, name.substring(this.classesLocation.length()), Type.APPLICATION_CLASS_OR_RESOURCE);
 		}
-		else if (name.startsWith("org/springframework/boot/loader")) {
+		if (name.startsWith("org/springframework/boot/loader")) {
 			return new Entry(name, name, Type.LOADER);
 		}
 		return null;

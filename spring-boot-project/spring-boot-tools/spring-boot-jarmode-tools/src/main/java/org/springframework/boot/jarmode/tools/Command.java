@@ -316,18 +316,13 @@ abstract class Command {
 			}
 			if (this.optionalValue) {
 				String nextArg = args.peek();
-				if (nextArg == null || nextArg.startsWith("--")) {
-					return null;
-				}
+				return (nextArg != null && !nextArg.startsWith("--")) ? args.removeFirst() : null;
+			}
+			try {
 				return args.removeFirst();
 			}
-			else {
-				try {
-					return args.removeFirst();
-				}
-				catch (NoSuchElementException ex) {
-					throw new MissingValueException(this.name);
-				}
+			catch (NoSuchElementException ex) {
+				throw new MissingValueException(this.name);
 			}
 		}
 

@@ -22,7 +22,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -362,7 +361,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			}
 			args.add("-cp");
 			if (needsClasspathArgFile()) {
-				args.add("@" + writeClasspathArgFile(classpath.toString()));
+				args.add("@" + ArgFile.create(classpath).path());
 			}
 			else {
 				args.add(classpath.toString());
@@ -387,12 +386,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			return false;
 		}
 		return os.toLowerCase(Locale.ROOT).contains("win");
-	}
-
-	private Path writeClasspathArgFile(String classpath) throws IOException {
-		ArgFile argFile = ArgFile.create();
-		argFile.write(classpath);
-		return argFile.getPath();
 	}
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
@@ -473,30 +466,20 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	}
 
-	static class ArgFile {
+	record ArgFile(Path path) {
 
-		private final Path path;
-
-		ArgFile(Path path) {
-			this.path = path;
+		private void write(CharSequence content) throws IOException {
+			Files.writeString(this.path, "\"" + escape(content) + "\"");
 		}
 
-		void write(String content) throws IOException {
-			String escaped = escape(content);
-			Files.writeString(this.path, "\"" + escaped + "\"", StandardOpenOption.APPEND);
+		private String escape(CharSequence content) {
+			return content.toString().replace("\\", "\\\\");
 		}
 
-		Path getPath() {
-			return this.path;
-		}
-
-		private String escape(String content) {
-			return content.replace("\\", "\\\\");
-		}
-
-		static ArgFile create() throws IOException {
-			Path file = Files.createTempFile("spring-boot-", ".argfile");
-			return new ArgFile(file);
+		static ArgFile create(CharSequence content) throws IOException {
+			ArgFile argFile = new ArgFile(Files.createTempFile("spring-boot-", ".argfile"));
+			argFile.write(content);
+			return argFile;
 		}
 
 	}

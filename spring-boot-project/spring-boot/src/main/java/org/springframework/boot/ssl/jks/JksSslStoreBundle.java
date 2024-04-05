@@ -27,7 +27,6 @@ import java.security.cert.CertificateException;
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -115,8 +114,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	private void loadKeyStore(KeyStore store, String location, char[] password) {
 		Assert.state(StringUtils.hasText(location), () -> "Location must not be empty or null");
 		try {
-			ResourceLoader resourceLoader = new ApplicationResourceLoader();
-			Resource resource = resourceLoader.getResource(location);
+			Resource resource = new ApplicationResourceLoader().getResource(location);
 			try (InputStream stream = resource.getInputStream()) {
 				store.load(stream, password);
 			}

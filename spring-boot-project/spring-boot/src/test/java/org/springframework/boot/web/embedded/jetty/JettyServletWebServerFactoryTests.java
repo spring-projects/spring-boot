@@ -76,7 +76,7 @@ import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
@@ -295,7 +295,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		ssl.setServerNameBundles(bundles);
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setSsl(ssl);
-		assertThatIllegalArgumentException().isThrownBy(() -> this.webServer = factory.getWebServer())
+		assertThatIllegalStateException().isThrownBy(() -> this.webServer = factory.getWebServer())
 			.withMessageContaining("Server name SSL bundles are not supported with Jetty");
 	}
 
@@ -561,7 +561,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	@Test
-	void shouldApplyMaxConnectionsToConnectors() throws Exception {
+	void shouldApplyMaxConnectionsToConnectors() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.setMaxConnections(1);
 		this.webServer = factory.getWebServer();

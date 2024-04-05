@@ -236,10 +236,7 @@ class ExtractCommand extends Command {
 	}
 
 	private Layers getLayers() {
-		if (this.layers != null) {
-			return this.layers;
-		}
-		return Layers.get(this.context);
+		return (this.layers != null) ? this.layers : Layers.get(this.context);
 	}
 
 	private void createApplication(JarStructure jarStructure, FileResolver fileResolver, Map<Option, String> options)
@@ -250,7 +247,7 @@ class ExtractCommand extends Command {
 		}
 		String librariesDirectory = getLibrariesDirectory(options);
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
-		mkDirs(file.getParentFile());
+		mkdirs(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file), manifest)) {
 			withJarEntries(this.context.getArchiveFile(), ((stream, jarEntry) -> {
 				Entry entry = jarStructure.resolve(jarEntry);
@@ -272,14 +269,11 @@ class ExtractCommand extends Command {
 	}
 
 	private static boolean isType(Entry entry, Type type) {
-		if (entry == null) {
-			return false;
-		}
-		return entry.type() == type;
+		return (entry != null) && entry.type() == type;
 	}
 
 	private static void extractEntry(InputStream stream, JarEntry entry, File file) throws IOException {
-		mkDirs(file.getParentFile());
+		mkdirs(file.getParentFile());
 		try (OutputStream out = new FileOutputStream(file)) {
 			StreamUtils.copy(stream, out);
 		}
@@ -293,27 +287,18 @@ class ExtractCommand extends Command {
 	}
 
 	private static FileTime getCreationTime(JarEntry entry) {
-		if (entry.getCreationTime() != null) {
-			return entry.getCreationTime();
-		}
-		return entry.getLastModifiedTime();
+		return (entry.getCreationTime() != null) ? entry.getCreationTime() : entry.getLastModifiedTime();
 	}
 
 	private static FileTime getLastAccessTime(JarEntry entry) {
-		if (entry.getLastAccessTime() != null) {
-			return entry.getLastAccessTime();
-		}
-		return getLastModifiedTime(entry);
+		return (entry.getLastAccessTime() != null) ? entry.getLastAccessTime() : getLastModifiedTime(entry);
 	}
 
 	private static FileTime getLastModifiedTime(JarEntry entry) {
-		if (entry.getLastModifiedTime() != null) {
-			return entry.getLastModifiedTime();
-		}
-		return entry.getCreationTime();
+		return (entry.getLastModifiedTime() != null) ? entry.getLastModifiedTime() : entry.getCreationTime();
 	}
 
-	private static void mkDirs(File file) throws IOException {
+	private static void mkdirs(File file) throws IOException {
 		if (!file.exists() && !file.mkdirs()) {
 			throw new IOException("Unable to create directory " + file);
 		}
@@ -461,7 +446,7 @@ class ExtractCommand extends Command {
 		public void createDirectories() throws IOException {
 			for (String layer : this.layers) {
 				if (shouldExtractLayer(layer)) {
-					mkDirs(getLayerDirectory(layer));
+					mkdirs(getLayerDirectory(layer));
 				}
 			}
 		}
@@ -492,10 +477,7 @@ class ExtractCommand extends Command {
 		}
 
 		private boolean shouldExtractLayer(String layer) {
-			if (this.layersToExtract.isEmpty()) {
-				return true;
-			}
-			return this.layersToExtract.contains(layer);
+			return this.layersToExtract.isEmpty() || this.layersToExtract.contains(layer);
 		}
 
 	}

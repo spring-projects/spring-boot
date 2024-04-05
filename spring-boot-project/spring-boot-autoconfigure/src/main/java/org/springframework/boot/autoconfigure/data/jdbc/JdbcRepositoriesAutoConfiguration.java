@@ -148,10 +148,7 @@ public class JdbcRepositoriesAutoConfiguration {
 		@ConditionalOnMissingBean
 		public Dialect jdbcDialect(NamedParameterJdbcOperations operations) {
 			JdbcDatabaseDialect dialect = this.properties.getDialect();
-			if (dialect != null) {
-				return dialect.get();
-			}
-			return super.jdbcDialect(operations);
+			return (dialect != null) ? dialect.getDialect() : super.jdbcDialect(operations);
 		}
 
 	}

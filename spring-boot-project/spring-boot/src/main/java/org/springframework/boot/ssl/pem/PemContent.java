@@ -119,8 +119,7 @@ public final class PemContent {
 			return new PemContent(content);
 		}
 		try {
-			ApplicationResourceLoader resourceLoader = new ApplicationResourceLoader();
-			Resource resource = resourceLoader.getResource(content);
+			Resource resource = new ApplicationResourceLoader().getResource(content);
 			return load(resource.getInputStream());
 		}
 		catch (IOException | UncheckedIOException ex) {

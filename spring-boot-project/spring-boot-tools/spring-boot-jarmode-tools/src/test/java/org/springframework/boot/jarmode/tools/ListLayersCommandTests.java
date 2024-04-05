@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
-class ListLayersCommandTests extends AbstractTests {
+class ListLayersCommandTests extends AbstractJarModeTests {
 
 	@Test
 	void shouldListLayers() throws IOException {

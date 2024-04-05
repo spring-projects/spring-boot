@@ -58,9 +58,9 @@ class SslConnectorCustomizer {
 		this.connector = connector;
 	}
 
-	void update(String hostName, SslBundle updatedSslBundle) {
+	void update(String serverName, SslBundle updatedSslBundle) {
 		AbstractHttp11JsseProtocol<?> protocol = (AbstractHttp11JsseProtocol<?>) this.connector.getProtocolHandler();
-		String host = (hostName != null) ? hostName : protocol.getDefaultSSLHostConfigName();
+		String host = (serverName != null) ? serverName : protocol.getDefaultSSLHostConfigName();
 		this.logger.debug("SSL Bundle for host " + host + " has been updated, reloading SSL configuration");
 		addSslHostConfig(protocol, host, updatedSslBundle);
 	}
@@ -86,12 +86,12 @@ class SslConnectorCustomizer {
 		if (sslBundle != null) {
 			addSslHostConfig(protocol, protocol.getDefaultSSLHostConfigName(), sslBundle);
 		}
-		serverNameSslBundles.forEach((hostName, bundle) -> addSslHostConfig(protocol, hostName, bundle));
+		serverNameSslBundles.forEach((serverName, bundle) -> addSslHostConfig(protocol, serverName, bundle));
 	}
 
-	private void addSslHostConfig(AbstractHttp11JsseProtocol<?> protocol, String hostName, SslBundle sslBundle) {
+	private void addSslHostConfig(AbstractHttp11JsseProtocol<?> protocol, String serverName, SslBundle sslBundle) {
 		SSLHostConfig sslHostConfig = new SSLHostConfig();
-		sslHostConfig.setHostName(hostName);
+		sslHostConfig.setHostName(serverName);
 		configureSslClientAuth(sslHostConfig);
 		applySslBundle(protocol, sslHostConfig, sslBundle);
 		protocol.addSslHostConfig(sslHostConfig, true);

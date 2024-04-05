@@ -76,28 +76,28 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	private void applySecurity(SslContextSpec spec) {
-		spec.sslContext(this.sslProvider.getSslContext()).setSniAsyncMappings((domainName, promise) -> {
-			SslProvider provider = (domainName != null) ? this.serverNameSslProviders.get(domainName)
+		spec.sslContext(this.sslProvider.getSslContext()).setSniAsyncMappings((serverName, promise) -> {
+			SslProvider provider = (serverName != null) ? this.serverNameSslProviders.get(serverName)
 					: this.sslProvider;
 			return promise.setSuccess(provider);
 		});
 	}
 
-	void updateSslBundle(String hostName, SslBundle sslBundle) {
+	void updateSslBundle(String serverName, SslBundle sslBundle) {
 		logger.debug("SSL Bundle has been updated, reloading SSL configuration");
-		if (hostName == null) {
+		if (serverName == null) {
 			this.sslBundle = sslBundle;
 			this.sslProvider = createSslProvider(sslBundle);
 		}
 		else {
-			this.serverNameSslProviders.put(hostName, createSslProvider(sslBundle));
+			this.serverNameSslProviders.put(serverName, createSslProvider(sslBundle));
 		}
 	}
 
 	private Map<String, SslProvider> createServerNameSslProviders(Map<String, SslBundle> serverNameSslBundles) {
 		Map<String, SslProvider> serverNameSslProviders = new HashMap<>();
 		serverNameSslBundles
-			.forEach((hostName, sslBundle) -> serverNameSslProviders.put(hostName, createSslProvider(sslBundle)));
+			.forEach((serverName, sslBundle) -> serverNameSslProviders.put(serverName, createSslProvider(sslBundle)));
 		return serverNameSslProviders;
 	}
 

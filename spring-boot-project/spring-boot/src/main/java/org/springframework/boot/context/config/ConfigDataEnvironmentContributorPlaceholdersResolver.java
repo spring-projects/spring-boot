@@ -97,10 +97,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 	}
 
 	private String convertValueIfNecessary(Object value) {
-		if (value instanceof String string) {
-			return string;
-		}
-		return this.conversionService.convert(value, String.class);
+		return (value instanceof String string) ? string : this.conversionService.convert(value, String.class);
 	}
 
 }

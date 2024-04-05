@@ -22,7 +22,6 @@ import java.io.IOException;
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 /**
  * {@link Converter} to convert from a {@link String} to a {@link File}. Supports basic
@@ -33,11 +32,9 @@ import org.springframework.core.io.ResourceLoader;
  */
 class StringToFileConverter implements Converter<String, File> {
 
-	private static final ResourceLoader resourceLoader = new ApplicationResourceLoader();
-
 	@Override
 	public File convert(String source) {
-		Resource resource = resourceLoader.getResource(source);
+		Resource resource = new ApplicationResourceLoader().getResource(source);
 		return getFile(resource);
 	}
 
