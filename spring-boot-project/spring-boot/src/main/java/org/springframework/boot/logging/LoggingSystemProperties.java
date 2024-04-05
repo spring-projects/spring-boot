@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,8 +232,8 @@ public class LoggingSystemProperties {
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, defaultCharsetName);
 		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, defaultCharsetName);
-		setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD, resolver);
-		setSystemProperty(LoggingSystemProperty.FILE_THRESHOLD, resolver);
+		setSystemProperty(LoggingSystemProperty.CONSOLE_THRESHOLD, resolver, this::thresholdMapper);
+		setSystemProperty(LoggingSystemProperty.FILE_THRESHOLD, resolver, this::thresholdMapper);
 		setSystemProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD, resolver);
 		setSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN, resolver);
 		setSystemProperty(LoggingSystemProperty.FILE_PATTERN, resolver);
@@ -256,19 +256,37 @@ public class LoggingSystemProperties {
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver) {
-		setSystemProperty(property, resolver, null);
+		setSystemProperty(property, resolver, Function.identity());
+	}
+
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver,
+			Function<String, String> mapper) {
+		setSystemProperty(property, resolver, null, mapper);
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue) {
+		setSystemProperty(property, resolver, defaultValue, Function.identity());
+	}
+
+	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue,
+			Function<String, String> mapper) {
 		String value = (property.getApplicationPropertyName() != null)
 				? resolver.getProperty(property.getApplicationPropertyName()) : null;
 		value = (value != null) ? value : this.defaultValueResolver.apply(property.getApplicationPropertyName());
 		value = (value != null) ? value : defaultValue;
-		setSystemProperty(property.getEnvironmentVariableName(), value);
+		setSystemProperty(property.getEnvironmentVariableName(), mapper.apply(value));
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, String value) {
 		setSystemProperty(property.getEnvironmentVariableName(), value);
+	}
+
+	private String thresholdMapper(String input) {
+		// YAML converts an unquoted OFF to false
+		if ("false".equals(input)) {
+			return "OFF";
+		}
+		return input;
 	}
 
 	/**

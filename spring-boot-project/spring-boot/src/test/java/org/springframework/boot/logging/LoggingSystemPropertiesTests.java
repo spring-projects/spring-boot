@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  */
 class LoggingSystemPropertiesTests {
 
@@ -153,6 +154,21 @@ class LoggingSystemPropertiesTests {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")
 			.withProperty("logging.include-application-name", "false")).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isNull();
+	}
+
+	@Test
+	void shouldSupportFalseConsoleThreshold() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.threshold.console", "false"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_THRESHOLD.getEnvironmentVariableName()))
+			.isEqualTo("OFF");
+	}
+
+	@Test
+	void shouldSupportFalseFileThreshold() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.threshold.file", "false")).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.FILE_THRESHOLD.getEnvironmentVariableName()))
+			.isEqualTo("OFF");
 	}
 
 	private Environment environment(String key, Object value) {
