@@ -24,6 +24,7 @@ publishing.publications.withType(MavenPublication) {
 				delegate."maven.compiler.release"('${java.version}')
 				delegate."project.build.sourceEncoding"('UTF-8')
 				delegate."project.reporting.outputEncoding"('UTF-8')
+				delegate."spring-boot.run.main-class"('${start-class}')
 			}
 		}
 		root.scm.plus {
@@ -182,7 +183,7 @@ publishing.publications.withType(MavenPublication) {
 								}
 							}
 							configuration {
-								delegate.mainClass('${start-class}')
+								delegate.mainClass('${spring-boot.run.main-class}')
 							}
 						}
 						plugin {
