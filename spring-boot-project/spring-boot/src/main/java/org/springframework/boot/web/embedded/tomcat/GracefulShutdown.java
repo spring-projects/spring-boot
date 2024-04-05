@@ -104,7 +104,6 @@ final class GracefulShutdown {
 					}
 				}
 			}
-
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();

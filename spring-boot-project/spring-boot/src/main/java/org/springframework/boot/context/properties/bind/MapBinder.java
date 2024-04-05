@@ -62,8 +62,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				ConfigurationProperty property = source.getConfigurationProperty(name);
 				if (property != null && !hasDescendants) {
 					getContext().setConfigurationProperty(property);
-					Object result = property.getValue();
-					result = getContext().getPlaceholdersResolver().resolvePlaceholders(result);
+					Object result = getContext().getPlaceholdersResolver().resolvePlaceholders(property.getValue());
 					return getContext().getConverter().convert(result, target);
 				}
 				source = source.filter(name::isAncestorOf);

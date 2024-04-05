@@ -569,7 +569,6 @@ class RabbitAutoConfigurationTests {
 			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
 			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
 			assertThat(threadCreated.getName()).containsPattern("rabbit-simple-[0-9]+");
-
 		});
 	}
 
@@ -586,7 +585,6 @@ class RabbitAutoConfigurationTests {
 			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
 			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
 			assertThat(threadCreated.getName()).containsPattern("rabbit-direct-[0-9]+");
-
 		});
 	}
 
