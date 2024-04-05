@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties.HistogramFlavor;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,9 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-@SuppressWarnings({ "deprecation", "removal" })
+@SuppressWarnings({ "deprecation" })
 class PrometheusSimpleclientPropertiesConfigAdapterTests extends
-		AbstractPropertiesConfigAdapterTests<PrometheusSimpleclientProperties, PrometheusSimpleclientPropertiesConfigAdapter> {
+		AbstractPropertiesConfigAdapterTests<PrometheusProperties, PrometheusSimpleclientPropertiesConfigAdapter> {
 
 	PrometheusSimpleclientPropertiesConfigAdapterTests() {
 		super(PrometheusSimpleclientPropertiesConfigAdapter.class);
@@ -39,22 +40,22 @@ class PrometheusSimpleclientPropertiesConfigAdapterTests extends
 
 	@Test
 	void whenPropertiesDescriptionsIsSetAdapterDescriptionsReturnsIt() {
-		PrometheusSimpleclientProperties properties = new PrometheusSimpleclientProperties();
+		PrometheusProperties properties = new PrometheusProperties();
 		properties.setDescriptions(false);
 		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).descriptions()).isFalse();
 	}
 
 	@Test
 	void whenPropertiesHistogramFlavorIsSetAdapterHistogramFlavorReturnsIt() {
-		PrometheusSimpleclientProperties properties = new PrometheusSimpleclientProperties();
-		properties.setHistogramFlavor(io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics);
+		PrometheusProperties properties = new PrometheusProperties();
+		properties.setHistogramFlavor(HistogramFlavor.VictoriaMetrics);
 		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).histogramFlavor())
 			.isEqualTo(io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics);
 	}
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
-		PrometheusSimpleclientProperties properties = new PrometheusSimpleclientProperties();
+		PrometheusProperties properties = new PrometheusProperties();
 		properties.setStep(Duration.ofSeconds(30));
 		assertThat(new PrometheusSimpleclientPropertiesConfigAdapter(properties).step())
 			.isEqualTo(Duration.ofSeconds(30));

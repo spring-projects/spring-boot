@@ -35,4 +35,15 @@ class PrometheusPropertiesTests {
 		assertThat(properties.getStep()).isEqualTo(config.step());
 	}
 
+	@SuppressWarnings("deprecation")
+	@Test
+	void defaultValuesAreConsistentWithSimpleclient() {
+		PrometheusProperties properties = new PrometheusProperties();
+		io.micrometer.prometheus.PrometheusConfig config = io.micrometer.prometheus.PrometheusConfig.DEFAULT;
+		assertThat(properties.isDescriptions()).isEqualTo(config.descriptions());
+		assertThat(PrometheusSimpleclientPropertiesConfigAdapter.mapToMicrometerHistogramFlavor(properties))
+			.isEqualTo(config.histogramFlavor());
+		assertThat(properties.getStep()).isEqualTo(config.step());
+	}
+
 }

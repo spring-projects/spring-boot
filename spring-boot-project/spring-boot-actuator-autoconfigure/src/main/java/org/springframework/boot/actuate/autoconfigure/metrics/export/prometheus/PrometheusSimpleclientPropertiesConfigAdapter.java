@@ -18,20 +18,21 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus
 
 import java.time.Duration;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties.HistogramFlavor;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
- * Adapter to convert {@link PrometheusSimpleclientProperties} to a
+ * Adapter to convert {@link PrometheusProperties} to a
  * {@link io.micrometer.prometheus.PrometheusConfig}.
  *
  * @author Jon Schneider
  * @author Phillip Webb
  */
 @SuppressWarnings({ "deprecation", "removal" })
-class PrometheusSimpleclientPropertiesConfigAdapter extends PropertiesConfigAdapter<PrometheusSimpleclientProperties>
+class PrometheusSimpleclientPropertiesConfigAdapter extends PropertiesConfigAdapter<PrometheusProperties>
 		implements io.micrometer.prometheus.PrometheusConfig {
 
-	PrometheusSimpleclientPropertiesConfigAdapter(PrometheusSimpleclientProperties properties) {
+	PrometheusSimpleclientPropertiesConfigAdapter(PrometheusProperties properties) {
 		super(properties);
 	}
 
@@ -47,19 +48,26 @@ class PrometheusSimpleclientPropertiesConfigAdapter extends PropertiesConfigAdap
 
 	@Override
 	public boolean descriptions() {
-		return get(PrometheusSimpleclientProperties::isDescriptions,
-				io.micrometer.prometheus.PrometheusConfig.super::descriptions);
+		return get(PrometheusProperties::isDescriptions, io.micrometer.prometheus.PrometheusConfig.super::descriptions);
 	}
 
 	@Override
 	public io.micrometer.prometheus.HistogramFlavor histogramFlavor() {
-		return get(PrometheusSimpleclientProperties::getHistogramFlavor,
+		return get(PrometheusSimpleclientPropertiesConfigAdapter::mapToMicrometerHistogramFlavor,
 				io.micrometer.prometheus.PrometheusConfig.super::histogramFlavor);
+	}
+
+	static io.micrometer.prometheus.HistogramFlavor mapToMicrometerHistogramFlavor(PrometheusProperties properties) {
+		HistogramFlavor histogramFlavor = properties.getHistogramFlavor();
+		return switch (histogramFlavor) {
+			case Prometheus -> io.micrometer.prometheus.HistogramFlavor.Prometheus;
+			case VictoriaMetrics -> io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics;
+		};
 	}
 
 	@Override
 	public Duration step() {
-		return get(PrometheusSimpleclientProperties::getStep, io.micrometer.prometheus.PrometheusConfig.super::step);
+		return get(PrometheusProperties::getStep, io.micrometer.prometheus.PrometheusConfig.super::step);
 	}
 
 }

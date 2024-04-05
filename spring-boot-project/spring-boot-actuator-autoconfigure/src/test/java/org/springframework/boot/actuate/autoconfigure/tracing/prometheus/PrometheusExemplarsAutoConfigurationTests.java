@@ -84,6 +84,33 @@ class PrometheusExemplarsAutoConfigurationTests {
 	}
 
 	@Test
+	void prometheusOpenMetricsOutputWithoutExemplarsOnHistogramCount() {
+		this.contextRunner.withPropertyValues(
+				"management.prometheus.metrics.export.prometheus-properties.io.prometheus.exporter.exemplarsOnAllMetricTypes=false")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpanContext.class);
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation.start("test.observation", observationRegistry).stop();
+				PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
+				String openMetricsOutput = prometheusMeterRegistry.scrape(OpenMetricsTextFormatWriter.CONTENT_TYPE);
+
+				assertThat(openMetricsOutput).contains("test_observation_seconds_bucket");
+				assertThat(openMetricsOutput).containsOnlyOnce("test_observation_seconds_count");
+				assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "span_id")).isEqualTo(1);
+				assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "trace_id")).isEqualTo(1);
+
+				Optional<TraceInfo> bucketTraceInfo = openMetricsOutput.lines()
+					.filter((line) -> line.contains("test_observation_seconds_bucket") && line.contains("span_id"))
+					.map(BUCKET_TRACE_INFO_PATTERN::matcher)
+					.flatMap(Matcher::results)
+					.map((matchResult) -> new TraceInfo(matchResult.group(2), matchResult.group(1)))
+					.findFirst();
+
+				assertThat(bucketTraceInfo).isNotEmpty();
+			});
+	}
+
+	@Test
 	void prometheusOpenMetricsOutputShouldContainExemplars() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(SpanContext.class);
@@ -94,8 +121,8 @@ class PrometheusExemplarsAutoConfigurationTests {
 
 			assertThat(openMetricsOutput).contains("test_observation_seconds_bucket");
 			assertThat(openMetricsOutput).containsOnlyOnce("test_observation_seconds_count");
-			assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "span_id")).isEqualTo(1);
-			assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "trace_id")).isEqualTo(1);
+			assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "span_id")).isEqualTo(2);
+			assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "trace_id")).isEqualTo(2);
 
 			Optional<TraceInfo> bucketTraceInfo = openMetricsOutput.lines()
 				.filter((line) -> line.contains("test_observation_seconds_bucket") && line.contains("span_id"))
@@ -104,42 +131,15 @@ class PrometheusExemplarsAutoConfigurationTests {
 				.map((matchResult) -> new TraceInfo(matchResult.group(2), matchResult.group(1)))
 				.findFirst();
 
-			assertThat(bucketTraceInfo).isNotEmpty();
+			Optional<TraceInfo> counterTraceInfo = openMetricsOutput.lines()
+				.filter((line) -> line.contains("test_observation_seconds_count") && line.contains("span_id"))
+				.map(COUNT_TRACE_INFO_PATTERN::matcher)
+				.flatMap(Matcher::results)
+				.map((matchResult) -> new TraceInfo(matchResult.group(2), matchResult.group(1)))
+				.findFirst();
+
+			assertThat(bucketTraceInfo).isNotEmpty().contains(counterTraceInfo.orElse(null));
 		});
-	}
-
-	@Test
-	void prometheusOpenMetricsOutputCanBeConfiguredToContainExemplarsOnHistogramCount() {
-		this.contextRunner.withSystemProperties("io.prometheus.exporter.exemplarsOnAllMetricTypes=true")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(SpanContext.class);
-				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-				Observation.start("test.observation", observationRegistry).stop();
-				PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
-				String openMetricsOutput = prometheusMeterRegistry.scrape(OpenMetricsTextFormatWriter.CONTENT_TYPE);
-				System.out.println(openMetricsOutput);
-
-				assertThat(openMetricsOutput).contains("test_observation_seconds_bucket");
-				assertThat(openMetricsOutput).containsOnlyOnce("test_observation_seconds_count");
-				assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "span_id")).isEqualTo(2);
-				assertThat(StringUtils.countOccurrencesOf(openMetricsOutput, "trace_id")).isEqualTo(2);
-
-				Optional<TraceInfo> bucketTraceInfo = openMetricsOutput.lines()
-					.filter((line) -> line.contains("test_observation_seconds_bucket") && line.contains("span_id"))
-					.map(BUCKET_TRACE_INFO_PATTERN::matcher)
-					.flatMap(Matcher::results)
-					.map((matchResult) -> new TraceInfo(matchResult.group(2), matchResult.group(1)))
-					.findFirst();
-
-				Optional<TraceInfo> counterTraceInfo = openMetricsOutput.lines()
-					.filter((line) -> line.contains("test_observation_seconds_count") && line.contains("span_id"))
-					.map(COUNT_TRACE_INFO_PATTERN::matcher)
-					.flatMap(Matcher::results)
-					.map((matchResult) -> new TraceInfo(matchResult.group(2), matchResult.group(1)))
-					.findFirst();
-
-				assertThat(bucketTraceInfo).isNotEmpty().contains(counterTraceInfo.orElse(null));
-			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

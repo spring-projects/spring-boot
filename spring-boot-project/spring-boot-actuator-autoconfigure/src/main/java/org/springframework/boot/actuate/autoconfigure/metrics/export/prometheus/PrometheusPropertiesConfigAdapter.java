@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.Properties;
 
 import io.micrometer.prometheusmetrics.PrometheusConfig;
 
@@ -53,6 +55,22 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 	@Override
 	public Duration step() {
 		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
+	}
+
+	@Override
+	public Properties prometheusProperties() {
+		return get(this::fromPropertiesMap, PrometheusConfig.super::prometheusProperties);
+	}
+
+	private Properties fromPropertiesMap(PrometheusProperties prometheusProperties) {
+		Map<String, String> map = prometheusProperties.getPrometheusProperties();
+		if (map.isEmpty()) {
+			return null;
+		}
+		Properties properties = PrometheusConfig.super.prometheusProperties();
+		properties = (properties != null) ? properties : new Properties();
+		properties.putAll(map);
+		return properties;
 	}
 
 }
