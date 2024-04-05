@@ -122,28 +122,11 @@ public class ConnectionDetailsFactories {
 		@SuppressWarnings("unchecked")
 		private static <S, D extends ConnectionDetails> Registration<S, D> get(ConnectionDetailsFactory<S, D> factory) {
 			ResolvableType type = ResolvableType.forClass(ConnectionDetailsFactory.class, factory.getClass());
-			Class<?>[] generics = resolveGenerics(type);
-			if (generics != null) {
-				return new Registration<>((Class<S>) generics[0], (Class<D>) generics[1], factory);
-			}
-			return null;
-		}
-
-		/**
-		 * Resolve the generics of the given {@link ResolvableType} or {@code null} if any
-		 * of them cannot be resolved.
-		 * @param type the type to inspect
-		 * @return the resolved generics if they can be loaded from the classpath,
-		 * {@code null} otherwise
-		 */
-		private static Class<?>[] resolveGenerics(ResolvableType type) {
-			Class<?>[] resolvedGenerics = type.resolveGenerics();
-			for (Class<?> genericRawType : resolvedGenerics) {
-				if (genericRawType == null) {
-					return null;
-				}
-			}
-			return resolvedGenerics;
+			Class<?>[] generics = type.resolveGenerics();
+			Class<S> sourceType = (Class<S>) generics[0];
+			Class<D> connectionDetailsType = (Class<D>) generics[1];
+			return (sourceType != null && connectionDetailsType != null)
+					? new Registration<>(sourceType, connectionDetailsType, factory) : null;
 		}
 
 	}
