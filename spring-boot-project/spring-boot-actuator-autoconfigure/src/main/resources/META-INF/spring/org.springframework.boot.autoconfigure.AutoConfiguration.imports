@@ -64,6 +64,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.kairos.KairosMetri
 org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic.NewRelicMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusSimpleclientMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver.StackdriverMetricsExportAutoConfiguration
@@ -109,6 +110,7 @@ org.springframework.boot.actuate.autoconfigure.tracing.NoopTracerAutoConfigurati
 org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusExemplarsAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusSimpleclientExemplarsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.wavefront.WavefrontTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration
