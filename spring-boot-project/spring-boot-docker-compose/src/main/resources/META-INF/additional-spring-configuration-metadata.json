@@ -19,6 +19,10 @@
       "defaultValue": "info"
     },
     {
+      "name": "spring.docker.compose.start.skip",
+      "defaultValue": "if-running"
+    },
+    {
       "name": "spring.docker.compose.stop.command",
       "defaultValue": "stop"
     }

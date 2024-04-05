@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ package org.springframework.boot.docker.compose.lifecycle;
 import java.io.File;
 import java.time.Duration;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.logging.LogLevel;
 
 /**
@@ -148,6 +150,11 @@ public class DockerComposeProperties {
 		 */
 		private LogLevel logLevel = LogLevel.INFO;
 
+		/**
+		 * Whether to skip executing the start command.
+		 */
+		private Skip skip = Skip.IF_RUNNING;
+
 		public StartCommand getCommand() {
 			return this.command;
 		}
@@ -162,6 +169,51 @@ public class DockerComposeProperties {
 
 		public void setLogLevel(LogLevel logLevel) {
 			this.logLevel = logLevel;
+		}
+
+		public Skip getSkip() {
+			return this.skip;
+		}
+
+		public void setSkip(Skip skip) {
+			this.skip = skip;
+		}
+
+		/**
+		 * Start command skip mode.
+		 */
+		public enum Skip {
+
+			/**
+			 * Never skip start.
+			 */
+			NEVER {
+				@Override
+				boolean shouldSkip(List<RunningService> runningServices) {
+					return false;
+				}
+			},
+			/**
+			 * Skip start if there are already services running.
+			 */
+			IF_RUNNING {
+				@Override
+				boolean shouldSkip(List<RunningService> runningServices) {
+					return !runningServices.isEmpty();
+				}
+
+				@Override
+				String getLogMessage() {
+					return "There are already Docker Compose services running, skipping startup";
+				}
+			};
+
+			abstract boolean shouldSkip(List<RunningService> runningServices);
+
+			String getLogMessage() {
+				return "";
+			}
+
 		}
 
 	}

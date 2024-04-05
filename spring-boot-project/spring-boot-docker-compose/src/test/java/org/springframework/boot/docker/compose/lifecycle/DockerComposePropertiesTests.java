@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,21 @@ package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Start.Skip;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link DockerComposeProperties}.
@@ -82,6 +87,18 @@ class DockerComposePropertiesTests {
 		assertThat(properties.getReadiness().getTimeout()).isEqualTo(Duration.ofSeconds(10));
 		assertThat(properties.getReadiness().getTcp().getConnectTimeout()).isEqualTo(Duration.ofMillis(400));
 		assertThat(properties.getReadiness().getTcp().getReadTimeout()).isEqualTo(Duration.ofMillis(500));
+	}
+
+	@Test
+	void skipModeNeverShouldNeverSkip() {
+		assertThat(Skip.NEVER.shouldSkip(Collections.emptyList())).isFalse();
+		assertThat(Skip.NEVER.shouldSkip(List.of(mock(RunningService.class)))).isFalse();
+	}
+
+	@Test
+	void skipModeIfRunningShouldSkipWhenServicesAreRunning() {
+		assertThat(Skip.IF_RUNNING.shouldSkip(Collections.emptyList())).isFalse();
+		assertThat(Skip.IF_RUNNING.shouldSkip(List.of(mock(RunningService.class)))).isTrue();
 	}
 
 }

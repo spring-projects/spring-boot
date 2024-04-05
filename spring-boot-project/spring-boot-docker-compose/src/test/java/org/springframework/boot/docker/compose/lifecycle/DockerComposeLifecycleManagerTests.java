@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.docker.compose.core.DockerComposeFile;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Start.Skip;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationContext;
@@ -382,6 +383,38 @@ class DockerComposeLifecycleManagerTests {
 		given(this.dockerCompose.getRunningServices()).willReturn(Collections.emptyList());
 		this.lifecycleManager.start();
 		assertThat(output).doesNotContain("There are already Docker Compose services running, skipping startup");
+	}
+
+	@Test
+	void shouldStartIfSkipModeIsIfRunningAndNoServicesAreRunning() {
+		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
+		this.properties.getStart().setSkip(Skip.IF_RUNNING);
+		this.lifecycleManager.start();
+		then(this.dockerCompose).should().up(any());
+	}
+
+	@Test
+	void shouldNotStartIfSkipModeIsIfRunningAndServicesAreAlreadyRunning() {
+		setUpRunningServices();
+		this.properties.getStart().setSkip(Skip.IF_RUNNING);
+		this.lifecycleManager.start();
+		then(this.dockerCompose).should(never()).up(any());
+	}
+
+	@Test
+	void shouldStartIfSkipModeIsNeverAndNoServicesAreRunning() {
+		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
+		this.properties.getStart().setSkip(Skip.NEVER);
+		this.lifecycleManager.start();
+		then(this.dockerCompose).should().up(any());
+	}
+
+	@Test
+	void shouldStartIfSkipModeIsNeverAndServicesAreAlreadyRunning() {
+		setUpRunningServices();
+		this.properties.getStart().setSkip(Skip.NEVER);
+		this.lifecycleManager.start();
+		then(this.dockerCompose).should().up(any());
 	}
 
 	private void setUpRunningServices() {

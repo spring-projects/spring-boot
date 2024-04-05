@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.docker.compose.core.DockerComposeFile;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Start;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Start.Skip;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Stop;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -119,7 +120,11 @@ class DockerComposeLifecycleManager {
 		Wait wait = this.properties.getReadiness().getWait();
 		List<RunningService> runningServices = dockerCompose.getRunningServices();
 		if (lifecycleManagement.shouldStart()) {
-			if (runningServices.isEmpty()) {
+			Skip skip = this.properties.getStart().getSkip();
+			if (skip.shouldSkip(runningServices)) {
+				logger.info(skip.getLogMessage());
+			}
+			else {
 				start.getCommand().applyTo(dockerCompose, start.getLogLevel());
 				runningServices = dockerCompose.getRunningServices();
 				if (wait == Wait.ONLY_IF_STARTED) {
@@ -128,9 +133,6 @@ class DockerComposeLifecycleManager {
 				if (lifecycleManagement.shouldStop()) {
 					this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
 				}
-			}
-			else {
-				logger.info("There are already Docker Compose services running, skipping startup");
 			}
 		}
 		List<RunningService> relevantServices = new ArrayList<>(runningServices);
