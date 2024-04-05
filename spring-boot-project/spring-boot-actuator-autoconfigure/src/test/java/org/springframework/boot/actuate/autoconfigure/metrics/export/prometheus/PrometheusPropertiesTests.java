@@ -25,15 +25,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@SuppressWarnings("deprecation")
 class PrometheusPropertiesTests {
 
 	@Test
 	void defaultValuesAreConsistent() {
 		PrometheusProperties properties = new PrometheusProperties();
+		io.micrometer.prometheusmetrics.PrometheusConfig config = io.micrometer.prometheusmetrics.PrometheusConfig.DEFAULT;
+		assertThat(properties.isDescriptions()).isEqualTo(config.descriptions());
+		assertThat(properties.getStep()).isEqualTo(config.step());
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	void defaultValuesAreConsistentWithSimpleclient() {
+		PrometheusProperties properties = new PrometheusProperties();
 		io.micrometer.prometheus.PrometheusConfig config = io.micrometer.prometheus.PrometheusConfig.DEFAULT;
 		assertThat(properties.isDescriptions()).isEqualTo(config.descriptions());
-		assertThat(properties.getHistogramFlavor()).isEqualTo(config.histogramFlavor());
+		assertThat(PrometheusSimpleclientPropertiesConfigAdapter.mapToMicrometerHistogramFlavor(properties))
+			.isEqualTo(config.histogramFlavor());
 		assertThat(properties.getStep()).isEqualTo(config.step());
 	}
 

@@ -53,6 +53,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-kairos")
 	optional("io.micrometer:micrometer-registry-new-relic")
 	optional("io.micrometer:micrometer-registry-otlp")
+	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.micrometer:micrometer-registry-prometheus-simpleclient")
 	optional("io.micrometer:micrometer-registry-stackdriver") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -141,6 +142,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("io.prometheus:prometheus-metrics-exposition-formats")
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.jayway.jsonpath:json-path")

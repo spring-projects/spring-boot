@@ -1241,7 +1241,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.13.0-M2") {
+	library("Micrometer", "1.13.0-SNAPSHOT") {
 		considerSnapshots()
 		group("io.micrometer") {
 			modules = [
@@ -1424,7 +1424,18 @@ bom {
 			releaseNotes("https://github.com/pgjdbc/pgjdbc/releases/tag/REL{version}")
 		}
 	}
-	library("Prometheus Client", "0.16.0") {
+	library("Prometheus Client", "1.2.1") {
+		group("io.prometheus") {
+			imports = [
+					"prometheus-metrics-bom"
+			]
+		}
+		links {
+			site("https://github.com/prometheus/client_java")
+			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
+		}
+	}
+	library("Prometheus Simpleclient", "0.16.0") {
 		group("io.prometheus") {
 			imports = [
 				"simpleclient_bom"

@@ -543,11 +543,13 @@ scrape_configs:
 ----
 
 https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported.
-To enable this feature, a `SpanContextSupplier` bean should be present.
+To enable this feature, a `SpanContext` bean should be present.
+If you're using the deprecated Prometheus simpleclient support and want to enable that feature, a `SpanContextSupplier` bean should be present.
 If you use https://micrometer.io/docs/tracing[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
 Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Docs], since this feature needs to be explicitly enabled on Prometheus' side, and it is only supported using the https://github.com/OpenObservability/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#exemplars[OpenMetrics] format.
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
+The Prometheus Pushgateway only works with the deprecated Prometheus simpleclient for now, until the Prometheus client 1.x adds support for it.
 To enable Prometheus Pushgateway support, add the following dependency to your project:
 
 [source,xml]
