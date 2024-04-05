@@ -38,7 +38,8 @@ import org.springframework.lang.Nullable;
  * @author Jon Schneider
  * @author Johnny Lim
  * @since 2.0.0
- * @deprecated in favor of {@link PrometheusScrapeEndpoint}
+ * @deprecated since 3.3.0 for removal in 3.5.0 in favor of
+ * {@link PrometheusScrapeEndpoint}
  */
 @Deprecated(since = "3.3.0", forRemoval = true)
 @WebEndpoint(id = "prometheus")
@@ -63,10 +64,8 @@ public class PrometheusSimpleclientScrapeEndpoint {
 					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
 					: this.collectorRegistry.metricFamilySamples();
 			format.write(writer, samples);
-
 			String scrapePage = writer.toString();
 			this.nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
-
 			return new WebEndpointResponse<>(scrapePage, format);
 		}
 		catch (IOException ex) {

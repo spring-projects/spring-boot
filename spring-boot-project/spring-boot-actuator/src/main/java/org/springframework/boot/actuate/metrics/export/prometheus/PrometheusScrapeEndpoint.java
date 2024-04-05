@@ -35,6 +35,7 @@ import org.springframework.lang.Nullable;
  *
  * @author Jon Schneider
  * @author Johnny Lim
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @WebEndpoint(id = "prometheus")
@@ -51,17 +52,15 @@ public class PrometheusScrapeEndpoint {
 	}
 
 	@ReadOperation(producesFrom = PrometheusOutputFormat.class)
-	public WebEndpointResponse<String> scrape(PrometheusOutputFormat format, @Nullable Set<String> includedNames) {
+	public WebEndpointResponse<byte[]> scrape(PrometheusOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(this.nextMetricsScrapeSize);
 			MetricSnapshots metricSnapshots = (includedNames != null)
 					? this.prometheusRegistry.scrape(includedNames::contains) : this.prometheusRegistry.scrape();
 			format.write(outputStream, metricSnapshots);
-
-			String scrapePage = outputStream.toString();
-			this.nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
-
-			return new WebEndpointResponse<>(scrapePage, format);
+			byte[] content = outputStream.toByteArray();
+			this.nextMetricsScrapeSize = content.length + METRICS_SCRAPE_CHARS_EXTRA;
+			return new WebEndpointResponse<>(content, format);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Writing metrics failed", ex);

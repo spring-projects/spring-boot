@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-@SuppressWarnings({ "deprecation" })
+@SuppressWarnings({ "deprecation", "removal" })
 class PrometheusSimpleclientPropertiesConfigAdapterTests extends
 		AbstractPropertiesConfigAdapterTests<PrometheusProperties, PrometheusSimpleclientPropertiesConfigAdapter> {
 

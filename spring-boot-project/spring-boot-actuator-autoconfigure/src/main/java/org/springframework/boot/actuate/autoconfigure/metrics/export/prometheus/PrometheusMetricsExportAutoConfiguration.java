@@ -58,31 +58,31 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusConfig prometheusConfig(PrometheusProperties prometheusProperties) {
+	PrometheusConfig prometheusConfig(PrometheusProperties prometheusProperties) {
 		return new PrometheusPropertiesConfigAdapter(prometheusProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
+	PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
 			PrometheusRegistry prometheusRegistry, Clock clock, ObjectProvider<SpanContext> spanContext) {
 		return new PrometheusMeterRegistry(prometheusConfig, prometheusRegistry, clock, spanContext.getIfAvailable());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusRegistry prometheusRegistry() {
+	PrometheusRegistry prometheusRegistry() {
 		return new PrometheusRegistry();
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnAvailableEndpoint(endpoint = PrometheusScrapeEndpoint.class)
-	public static class PrometheusScrapeEndpointConfiguration {
+	static class PrometheusScrapeEndpointConfiguration {
 
 		@SuppressWarnings("removal")
 		@Bean
 		@ConditionalOnMissingBean({ PrometheusScrapeEndpoint.class, PrometheusSimpleclientScrapeEndpoint.class })
-		public PrometheusScrapeEndpoint prometheusEndpoint(PrometheusRegistry prometheusRegistry) {
+		PrometheusScrapeEndpoint prometheusEndpoint(PrometheusRegistry prometheusRegistry) {
 			return new PrometheusScrapeEndpoint(prometheusRegistry);
 		}
 

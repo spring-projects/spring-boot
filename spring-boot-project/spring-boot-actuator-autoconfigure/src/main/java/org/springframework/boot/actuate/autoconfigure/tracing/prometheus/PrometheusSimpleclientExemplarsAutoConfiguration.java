@@ -37,6 +37,7 @@ import org.springframework.util.function.SingletonSupplier;
  *
  * @author Jonatan Ivanov
  * @since 3.0.0
+ * @deprecated since 3.3.0 for removal in 3.5.0
  */
 @SuppressWarnings("removal")
 @Deprecated(forRemoval = true, since = "3.3.0")

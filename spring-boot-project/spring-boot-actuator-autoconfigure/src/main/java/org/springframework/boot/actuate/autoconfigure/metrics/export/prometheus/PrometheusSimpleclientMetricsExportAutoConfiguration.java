@@ -61,9 +61,9 @@ import org.springframework.util.StringUtils;
  * @author David J. M. Karlsen
  * @author Jonatan Ivanov
  * @since 2.0.0
- * @deprecated in favor of {@link PrometheusMetricsExportAutoConfiguration}
+ * @deprecated since 3.3.0 for removal in 3.5.0 in favor of
+ * {@link PrometheusMetricsExportAutoConfiguration}
  */
-@SuppressWarnings("removal")
 @Deprecated(since = "3.3.0", forRemoval = true)
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
@@ -76,13 +76,13 @@ public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PrometheusConfig simpleclientPrometheusConfig(PrometheusProperties prometheusProperties) {
+	PrometheusConfig simpleclientPrometheusConfig(PrometheusProperties prometheusProperties) {
 		return new PrometheusSimpleclientPropertiesConfigAdapter(prometheusProperties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public io.micrometer.prometheus.PrometheusMeterRegistry simpleclientPrometheusMeterRegistry(
+	io.micrometer.prometheus.PrometheusMeterRegistry simpleclientPrometheusMeterRegistry(
 			io.micrometer.prometheus.PrometheusConfig prometheusConfig, CollectorRegistry collectorRegistry,
 			Clock clock, ObjectProvider<ExemplarSampler> exemplarSamplerProvider) {
 		return new io.micrometer.prometheus.PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock,
@@ -91,25 +91,25 @@ public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CollectorRegistry collectorRegistry() {
+	CollectorRegistry collectorRegistry() {
 		return new CollectorRegistry(true);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ExemplarSampler.class)
 	@ConditionalOnBean(SpanContextSupplier.class)
-	public DefaultExemplarSampler exemplarSampler(SpanContextSupplier spanContextSupplier) {
+	DefaultExemplarSampler exemplarSampler(SpanContextSupplier spanContextSupplier) {
 		return new DefaultExemplarSampler(spanContextSupplier);
 	}
 
 	@SuppressWarnings("removal")
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnAvailableEndpoint(endpoint = PrometheusSimpleclientScrapeEndpoint.class)
-	public static class PrometheusScrapeEndpointConfiguration {
+	static class PrometheusScrapeEndpointConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean({ PrometheusSimpleclientScrapeEndpoint.class, PrometheusScrapeEndpoint.class })
-		public PrometheusSimpleclientScrapeEndpoint prometheusEndpoint(CollectorRegistry collectorRegistry) {
+		PrometheusSimpleclientScrapeEndpoint prometheusEndpoint(CollectorRegistry collectorRegistry) {
 			return new PrometheusSimpleclientScrapeEndpoint(collectorRegistry);
 		}
 
@@ -122,7 +122,7 @@ public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(PushGateway.class)
 	@ConditionalOnProperty(prefix = "management.prometheus.metrics.export.pushgateway", name = "enabled")
-	public static class PrometheusPushGatewayConfiguration {
+	static class PrometheusPushGatewayConfiguration {
 
 		/**
 		 * The fallback job name. We use 'spring' since there's a history of Prometheus
@@ -133,7 +133,7 @@ public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public PrometheusPushGatewayManager prometheusPushGatewayManager(CollectorRegistry collectorRegistry,
+		PrometheusPushGatewayManager prometheusPushGatewayManager(CollectorRegistry collectorRegistry,
 				PrometheusProperties prometheusProperties, Environment environment) throws MalformedURLException {
 			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
 			Duration pushRate = properties.getPushRate();

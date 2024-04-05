@@ -32,7 +32,7 @@ import org.springframework.util.MimeTypeUtils;
  *
  * @author Andy Wilkinson
  * @since 2.5.0
- * @deprecated in favor of {@link PrometheusOutputFormat}
+ * @deprecated since 3.3.0 for removal in 3.5.0 in favor of {@link PrometheusOutputFormat}
  */
 @Deprecated(since = "3.3.0", forRemoval = true)
 public enum TextOutputFormat implements Producible<TextOutputFormat> {

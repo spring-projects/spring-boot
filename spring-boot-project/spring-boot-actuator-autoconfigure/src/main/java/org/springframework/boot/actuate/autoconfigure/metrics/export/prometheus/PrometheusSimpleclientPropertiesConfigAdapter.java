@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus
 
 import java.time.Duration;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties.HistogramFlavor;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
 /**
@@ -58,8 +57,7 @@ class PrometheusSimpleclientPropertiesConfigAdapter extends PropertiesConfigAdap
 	}
 
 	static io.micrometer.prometheus.HistogramFlavor mapToMicrometerHistogramFlavor(PrometheusProperties properties) {
-		HistogramFlavor histogramFlavor = properties.getHistogramFlavor();
-		return switch (histogramFlavor) {
+		return switch (properties.getHistogramFlavor()) {
 			case Prometheus -> io.micrometer.prometheus.HistogramFlavor.Prometheus;
 			case VictoriaMetrics -> io.micrometer.prometheus.HistogramFlavor.VictoriaMetrics;
 		};

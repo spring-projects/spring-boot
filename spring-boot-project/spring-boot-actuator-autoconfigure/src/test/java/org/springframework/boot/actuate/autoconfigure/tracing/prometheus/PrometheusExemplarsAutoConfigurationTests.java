@@ -86,7 +86,7 @@ class PrometheusExemplarsAutoConfigurationTests {
 	@Test
 	void prometheusOpenMetricsOutputWithoutExemplarsOnHistogramCount() {
 		this.contextRunner.withPropertyValues(
-				"management.prometheus.metrics.export.prometheus-properties.io.prometheus.exporter.exemplarsOnAllMetricTypes=false")
+				"management.prometheus.metrics.export.properties.io.prometheus.exporter.exemplarsOnAllMetricTypes=false")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SpanContext.class);
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
