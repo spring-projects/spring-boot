@@ -89,7 +89,7 @@ final class PulsarPropertiesMapper {
 		try {
 			return sortedParams.entrySet()
 				.stream()
-				.map((e) -> "\"%s\":\"%s\"".formatted(e.getKey(), e.getValue()))
+				.map((entry) -> "\"%s\":\"%s\"".formatted(entry.getKey(), entry.getValue()))
 				.collect(Collectors.joining(",", "{", "}"));
 		}
 		catch (Exception ex) {
