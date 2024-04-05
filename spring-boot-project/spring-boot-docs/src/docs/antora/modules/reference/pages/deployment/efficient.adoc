@@ -1,18 +1,18 @@
 [[deployment.efficient]]
-= Efficient deployments
+= Efficient Deployments
 
 
 
 [[deployment.efficient.unpacking]]
 == Unpacking the Executable JAR
 
-If you are running your application, you can use an executable jar, but it is also often an advantage to extract it and run it in a different way.
+You can run your application using the executable jar, but loading the classes from nested jars has a small cost.
+Depending on the size of the jar, running the application from an exploded structure is faster and recommended in production.
 Certain PaaS implementations may also choose to extract archives before they run.
 For example, Cloud Foundry operates this way.
 
-With the help of the jarmode, you can extract the jar to different layouts.
-The most efficient layout is a CDS (class data sharing) friendly layout.
-This layout is used by default.
+Spring Boot supports extracting your application to a directory using different layouts.
+The default layout is the most efficient, and is xref:#deployment.efficient.cds[CDS friendly].
 
 In this layout, the libraries are extracted to a `lib/` folder, and the application JAR
 contains the application classes and a manifest which references the libraries in the `lib/` folder.
@@ -23,11 +23,35 @@ $ java -Djarmode=tools -jar my-app.jar extract
 $ java -jar my-app/my-app.jar
 ----
 
-This is actually faster on startup (depending on the size of the jar) than running from an unexploded archive.
 After startup, you should not expect any differences.
 
 TIP: Run `java -Djarmode=tools -jar my-app.jar help extract` to see all possible options.
 
+
+[[deployment.efficient.cds]]
+== Optimize Startup Time with CDS
+
+Class Data Sharing (CDS) is a https://docs.oracle.com/en/java/javase/17/vm/class-data-sharing.html[JVM feature] that can help reduce the startup time and memory footprint of Java applications.
+
+To use it, you should first perform a training run on your application in exploded form:
+
+[source,shell]
+----
+$ java -Djarmode=tools -jar my-app.jar extract --destination application
+$ cd application
+$ java -XX:ArchiveClassesAtExit=application.jsa -Dspring.context.exit=onRefresh -jar my-app.jar
+----
+
+This creates an `application.jsa` file that can be reused as long as the application is not updated.
+
+To use the cache, you need to add an extra parameter when starting the application:
+
+[source,shell]
+----
+$ java -XX:SharedArchiveFile=application.jsa -jar my-app.jar
+----
+
+NOTE: For more details about CDS, refer to the {url-spring-framework-docs}/integration/cds.html[Spring Framework reference documentation]
 
 
 [[deployment.efficient.aot]]
@@ -35,6 +59,8 @@ TIP: Run `java -Djarmode=tools -jar my-app.jar help extract` to see all possible
 
 It's beneficial for the startup time to run your application using the AOT generated initialization code.
 First, you need to ensure that the jar you are building includes AOT generated code.
+
+NOTE: CDS and AOT can be combined to further improve startup time.
 
 For Maven, this means that you should build with `-Pnative` to activate the `native` profile:
 
