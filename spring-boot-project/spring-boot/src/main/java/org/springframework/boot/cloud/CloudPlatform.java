@@ -154,7 +154,7 @@ public enum CloudPlatform {
 	 */
 	AZURE_APP_SERVICE {
 
-		private final List<String> azureEnvVariables = Arrays.asList("WEBSITE_SITE_NAME", "WEBSITE_INSTANCE_ID",
+		private final List<String> azureEnvVariables = List.of("WEBSITE_SITE_NAME", "WEBSITE_INSTANCE_ID",
 				"WEBSITE_RESOURCE_GROUP", "WEBSITE_SKU");
 
 		@Override
