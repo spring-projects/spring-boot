@@ -307,7 +307,7 @@ spring:
 The line in the preceding example passes a value of `true` for the `hibernate.globally_quoted_identifiers` property to the Hibernate entity manager.
 
 By default, the DDL execution (or validation) is deferred until the `ApplicationContext` has started.
-There is also a `spring.jpa.generate-ddl` flag, but it is not used if Hibernate auto-configuration is active, because the `ddl-auto` settings are more fine-grained.
+There is also a `spring.jpa.generate-ddl` flag, but it is not used if `spring.jpa.hibernate.ddl-auto` or `spring.jpa.properties.hibernate.hbm2ddl.auto` is present, because they are more fine-grained.
 
 
 

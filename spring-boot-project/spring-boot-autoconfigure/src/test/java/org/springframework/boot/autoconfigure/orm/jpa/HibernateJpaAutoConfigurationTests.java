@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,11 @@ import jakarta.transaction.Synchronization;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.UserTransaction;
+import org.h2.tools.DeleteDbFiles;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.ManagedBeanSettings;
 import org.hibernate.cfg.SchemaToolingSettings;
 import org.hibernate.dialect.H2Dialect;
@@ -76,6 +78,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -98,6 +101,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Chris Bono
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
@@ -180,6 +184,46 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		contextRunner().withPropertyValues("spring.jpa.database-platform=" + databasePlatform)
 			.run(assertJpaVendorAdapter((adapter) -> assertThat(adapter.getJpaPropertyMap())
 				.contains(entry("hibernate.dialect", databasePlatform))));
+	}
+
+	@Test
+	void jpaGenerateDdlIsUsedIfHibernateHbm2ddlAutoIsNotSet() {
+		try {
+			contextRunner().withPropertyValues("spring.jpa.generate-ddl=true", "spring.datasource.url=jdbc:h2:./test")
+				// simulate non-embedded database
+				// see HibernateDefaultDdlAutoProvider.getDefaultDdlAuto(DataSource)
+				.run(assertEntityManagerFactoryBean((adapter) -> assertThat(adapter.getJpaPropertyMap())
+					.containsEntry(AvailableSettings.HBM2DDL_AUTO, "update")));
+		}
+		finally {
+			DeleteDbFiles.execute(".", "test", true);
+		}
+	}
+
+	@Test
+	void jpaGenerateDdlIsNotUsedIfHibernateHbm2ddlAutoIsSetToNone() {
+		contextRunner()
+			.withPropertyValues("spring.jpa.generate-ddl=true", "spring.jpa.properties.hibernate.hbm2ddl.auto=none")
+			.run(assertEntityManagerFactoryBean((adapter) -> assertThat(adapter.getJpaPropertyMap())
+				.containsEntry(AvailableSettings.HBM2DDL_AUTO, "none")));
+	}
+
+	@Test
+	void jpaGenerateDdlIsNotUsedIfHibernateHbm2ddlAutoIsSetToOtherThanNone() {
+		contextRunner()
+			.withPropertyValues("spring.jpa.generate-ddl=true", "spring.jpa.properties.hibernate.hbm2ddl.auto=create")
+			.run(assertEntityManagerFactoryBean((adapter) -> assertThat(adapter.getJpaPropertyMap())
+				.containsEntry(AvailableSettings.HBM2DDL_AUTO, "create")));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertEntityManagerFactoryBean(
+			Consumer<AbstractEntityManagerFactoryBean> adapter) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(JpaVendorAdapter.class);
+			assertThat(context).hasSingleBean(HibernateJpaVendorAdapter.class);
+			assertThat(context).hasSingleBean(AbstractEntityManagerFactoryBean.class);
+			adapter.accept(context.getBean(AbstractEntityManagerFactoryBean.class));
+		};
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertJpaVendorAdapter(
