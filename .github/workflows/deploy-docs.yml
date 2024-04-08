@@ -39,9 +39,9 @@ jobs:
           ~/.cache/antora
     - name: Install and Run Antora
       env:
-        ALGOLIA_APP_ID: 244V8V9FGG
-        ALGOLIA_API_KEY: 82c7ead946afbac3cf98c32446154691
-        ALGOLIA_INDEX_NAME': spring-boot-docs
+        ALGOLIA_APP_ID: 'WB1FQYI187'
+        ALGOLIA_API_KEY: '9d489079e5ec46dbb238909fee5c9c29'
+        ALGOLIA_INDEX_NAME': 'springdocs'
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         REFERENCE: ${{ github.event.inputs.build-refname }}
