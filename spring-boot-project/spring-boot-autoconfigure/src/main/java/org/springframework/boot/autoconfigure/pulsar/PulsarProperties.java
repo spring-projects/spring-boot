@@ -103,6 +103,14 @@ public class PulsarProperties {
 		return this.template;
 	}
 
+	/**
+	 * Whether transactions are enabled for either the template or the listener.
+	 * @return whether transactions are enabled for either the template or the listener
+	 */
+	public boolean isTransactionEnabled() {
+		return this.template.getTransaction().isEnabled() || this.listener.getTransaction().isEnabled();
+	}
+
 	public static class Client {
 
 		/**
@@ -763,6 +771,11 @@ public class PulsarProperties {
 		 */
 		private boolean observationEnabled;
 
+		/**
+		 * Transaction settings.
+		 */
+		private final Transaction transaction = new Transaction();
+
 		public SchemaType getSchemaType() {
 			return this.schemaType;
 		}
@@ -777,6 +790,10 @@ public class PulsarProperties {
 
 		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
+		}
+
+		public Transaction getTransaction() {
+			return this.transaction;
 		}
 
 	}
@@ -858,12 +875,65 @@ public class PulsarProperties {
 		 */
 		private boolean observationsEnabled;
 
+		/**
+		 * Transaction settings.
+		 */
+		private final Transaction transaction = new Transaction();
+
 		public boolean isObservationsEnabled() {
 			return this.observationsEnabled;
 		}
 
 		public void setObservationsEnabled(boolean observationsEnabled) {
 			this.observationsEnabled = observationsEnabled;
+		}
+
+		public Transaction getTransaction() {
+			return this.transaction;
+		}
+
+	}
+
+	public static class Transaction {
+
+		/**
+		 * Whether the component supports transactions.
+		 */
+		private boolean enabled;
+
+		/**
+		 * Whether the component requires transactions.
+		 */
+		private boolean required;
+
+		/**
+		 * Duration representing the transaction timeout - null to use default timeout of
+		 * the underlying transaction system, or none if timeouts are not supported.
+		 */
+		private Duration timeout;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public boolean isRequired() {
+			return this.required;
+		}
+
+		public void setRequired(boolean required) {
+			this.required = required;
+		}
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
 		}
 
 	}

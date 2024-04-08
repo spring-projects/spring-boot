@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.pulsar.client.api.CompressionType;
 import org.apache.pulsar.client.api.HashingScheme;
@@ -32,6 +33,9 @@ import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.SchemaInfo;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.TypeMapping;
@@ -355,9 +359,15 @@ class PulsarPropertiesTests {
 			Map<String, String> map = new HashMap<>();
 			map.put("spring.pulsar.listener.schema-type", "avro");
 			map.put("spring.pulsar.listener.observation-enabled", "true");
+			map.put("spring.pulsar.listener.transaction.enabled", "true");
+			map.put("spring.pulsar.listener.transaction.required", "true");
+			map.put("spring.pulsar.listener.transaction.timeout", "60s");
 			PulsarProperties.Listener properties = bindPropeties(map).getListener();
 			assertThat(properties.getSchemaType()).isEqualTo(SchemaType.AVRO);
 			assertThat(properties.isObservationEnabled()).isTrue();
+			assertThat(properties.getTransaction().isEnabled()).isTrue();
+			assertThat(properties.getTransaction().isRequired()).isTrue();
+			assertThat(properties.getTransaction().getTimeout()).isEqualTo(Duration.ofSeconds(60));
 		}
 
 	}
@@ -390,8 +400,34 @@ class PulsarPropertiesTests {
 		void bind() {
 			Map<String, String> map = new HashMap<>();
 			map.put("spring.pulsar.template.observations-enabled", "true");
+			map.put("spring.pulsar.template.transaction.enabled", "true");
+			map.put("spring.pulsar.template.transaction.required", "true");
+			map.put("spring.pulsar.template.transaction.timeout", "60s");
 			PulsarProperties.Template properties = bindPropeties(map).getTemplate();
 			assertThat(properties.isObservationsEnabled()).isTrue();
+			assertThat(properties.getTransaction().isEnabled()).isTrue();
+			assertThat(properties.getTransaction().isRequired()).isTrue();
+			assertThat(properties.getTransaction().getTimeout()).isEqualTo(Duration.ofSeconds(60));
+		}
+
+	}
+
+	@Nested
+	class TransactionProperties {
+
+		@ParameterizedTest
+		@MethodSource
+		void transactionsEnabledTests(boolean listenerEnablesTransactions, boolean templateEnablesTransactions,
+				boolean shouldTransactionsBeEnabled) {
+			PulsarProperties properties = new PulsarProperties();
+			properties.getListener().getTransaction().setEnabled(listenerEnablesTransactions);
+			properties.getTemplate().getTransaction().setEnabled(templateEnablesTransactions);
+			assertThat(properties.isTransactionEnabled()).isEqualTo(shouldTransactionsBeEnabled);
+		}
+
+		static Stream<Arguments> transactionsEnabledTests() {
+			return Stream.of(Arguments.arguments(true, true, true), Arguments.arguments(true, false, true),
+					Arguments.arguments(false, true, true), Arguments.arguments(false, false, false));
 		}
 
 	}

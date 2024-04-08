@@ -28,12 +28,14 @@ import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
@@ -57,6 +59,8 @@ import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
+import org.springframework.pulsar.transaction.PulsarAwareTransactionManager;
+import org.springframework.pulsar.transaction.PulsarTransactionManager;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Pulsar.
@@ -126,8 +130,11 @@ public class PulsarAutoConfiguration {
 	PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
 			ObjectProvider<ProducerInterceptor> producerInterceptors, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
-		return new PulsarTemplate<>(pulsarProducerFactory, producerInterceptors.orderedStream().toList(),
-				schemaResolver, topicResolver, this.properties.getTemplate().isObservationsEnabled());
+		PulsarTemplate<?> template = new PulsarTemplate<>(pulsarProducerFactory,
+				producerInterceptors.orderedStream().toList(), schemaResolver, topicResolver,
+				this.properties.getTemplate().isObservationsEnabled());
+		this.propertiesMapper.customizeTemplate(template);
+		return template;
 	}
 
 	@Bean
@@ -142,6 +149,13 @@ public class PulsarAutoConfiguration {
 		return new DefaultPulsarConsumerFactory<>(pulsarClient, lambdaSafeCustomizers);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	@Conditional(TransactionsEnabledCondition.class)
+	public PulsarAwareTransactionManager pulsarTransactionManager(PulsarClient pulsarClient) {
+		return new PulsarTransactionManager(pulsarClient);
+	}
+
 	@SuppressWarnings("unchecked")
 	private void applyConsumerBuilderCustomizers(List<ConsumerBuilderCustomizer<?>> customizers,
 			ConsumerBuilder<?> builder) {
@@ -153,13 +167,15 @@ public class PulsarAutoConfiguration {
 	@ConditionalOnMissingBean(name = "pulsarListenerContainerFactory")
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
-			TopicResolver topicResolver, Environment environment) {
+			TopicResolver topicResolver, ObjectProvider<PulsarAwareTransactionManager> pulsarTransactionManager,
+			Environment environment) {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
 			containerProperties.setConsumerTaskExecutor(new VirtualThreadTaskExecutor("pulsar-consumer-"));
 		}
+		pulsarTransactionManager.ifUnique(containerProperties.transactions()::setTransactionManager);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
 		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
 	}
@@ -200,6 +216,28 @@ public class PulsarAutoConfiguration {
 	@ConditionalOnMissingBean(name = { PulsarAnnotationSupportBeanNames.PULSAR_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME,
 			PulsarAnnotationSupportBeanNames.PULSAR_READER_ANNOTATION_PROCESSOR_BEAN_NAME })
 	static class EnablePulsarConfiguration {
+
+	}
+
+	/**
+	 * Custom condition that is true when transactions have been enabled in the template
+	 * and/or in the listener.
+	 */
+	static final class TransactionsEnabledCondition extends AnyNestedCondition {
+
+		TransactionsEnabledCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty(prefix = "spring.pulsar.template.transaction", name = "enabled", havingValue = "true")
+		static class TemplateTransactionEnabledCondition {
+
+		}
+
+		@ConditionalOnProperty(prefix = "spring.pulsar.listener.transaction", name = "enabled", havingValue = "true")
+		static class ListenerTransactionEnabledCondition {
+
+		}
 
 	}
 

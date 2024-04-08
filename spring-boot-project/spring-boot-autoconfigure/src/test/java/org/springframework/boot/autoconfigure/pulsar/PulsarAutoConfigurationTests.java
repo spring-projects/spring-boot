@@ -70,6 +70,7 @@ import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
+import org.springframework.pulsar.transaction.PulsarAwareTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -525,6 +526,24 @@ class PulsarAutoConfigurationTests {
 			});
 		}
 
+		@Test
+		void whenTransactionManagerIsAvailableListenerContainerShouldUseTransactionManager() {
+			this.contextRunner.withPropertyValues("spring.pulsar.listener.transaction.enabled=true").run((context) -> {
+				ConcurrentPulsarListenerContainerFactory<?> factory = context
+					.getBean(ConcurrentPulsarListenerContainerFactory.class);
+				assertThat(factory.getContainerProperties().transactions().getTransactionManager()).isNotNull();
+			});
+		}
+
+		@Test
+		void whenTransactionManagerIsNotAvailableListenerContainerShouldNotUseTransactionManager() {
+			this.contextRunner.withPropertyValues("spring.pulsar.listener.transaction.enabled=false").run((context) -> {
+				ConcurrentPulsarListenerContainerFactory<?> factory = context
+					.getBean(ConcurrentPulsarListenerContainerFactory.class);
+				assertThat(factory.getContainerProperties().transactions().getTransactionManager()).isNull();
+			});
+		}
+
 	}
 
 	@Nested
@@ -599,6 +618,51 @@ class PulsarAutoConfigurationTests {
 				return (builder) -> builder.readerName("fromCustomizer1");
 			}
 
+		}
+
+	}
+
+	@Nested
+	class TransactionManagerTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarAutoConfigurationTests.this.contextRunner;
+
+		@Test
+		@SuppressWarnings("unchecked")
+		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
+			PulsarAwareTransactionManager txnMgr = mock(PulsarAwareTransactionManager.class);
+			this.contextRunner.withBean("customTransactionManager", PulsarAwareTransactionManager.class, () -> txnMgr)
+				.run((context) -> assertThat(context).getBean(PulsarAwareTransactionManager.class).isSameAs(txnMgr));
+		}
+
+		@Test
+		void whenNoPropertiesSetDoesNotAutoconfigureBean() {
+			this.contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(PulsarAwareTransactionManager.class));
+		}
+
+		@Test
+		void whenListenerAndTemplateDisablesTransactionsDoesNotAutoconfigureBean() {
+			this.contextRunner
+				.withPropertyValues("spring.pulsar.listener.transaction.enabled=false",
+						"spring.pulsar.template.transaction.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(PulsarAwareTransactionManager.class));
+		}
+
+		@Test
+		void whenListenerEnablesTransactionsAutoconfiguresBean() {
+			this.contextRunner
+				.withPropertyValues("spring.pulsar.listener.transaction.enabled=true",
+						"spring.pulsar.template.transaction.enabled=false")
+				.run((context) -> assertThat(context).hasSingleBean(PulsarAwareTransactionManager.class));
+		}
+
+		@Test
+		void whenTemplateEnablesTransactionsAutoconfiguresBean() {
+			this.contextRunner
+				.withPropertyValues("spring.pulsar.listener.transaction.enabled=false",
+						"spring.pulsar.template.transaction.enabled=true")
+				.run((context) -> assertThat(context).hasSingleBean(PulsarAwareTransactionManager.class));
 		}
 
 	}

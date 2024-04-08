@@ -39,6 +39,7 @@ import org.apache.pulsar.client.api.ServiceUrlProvider;
 import org.apache.pulsar.client.impl.AutoClusterFailover.AutoClusterFailoverBuilderImpl;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 import org.springframework.util.StringUtils;
@@ -64,6 +65,10 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
+		if (this.properties.getTemplate().getTransaction().isEnabled()
+				|| this.properties.getListener().getTransaction().isEnabled()) {
+			clientBuilder.enableTransaction(true);
+		}
 		customizeAuthentication(properties.getAuthentication(), clientBuilder::authentication);
 		customizeServiceUrlProviderBuilder(clientBuilder::serviceUrl, clientBuilder::serviceUrlProvider, properties,
 				connectionDetails);
@@ -157,6 +162,14 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getAccessMode).to(producerBuilder::accessMode);
 	}
 
+	<T> void customizeTemplate(PulsarTemplate<T> template) {
+		PulsarProperties.Transaction properties = this.properties.getTemplate().getTransaction();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::isEnabled).to(template.transactions()::setEnabled);
+		map.from(properties::isRequired).to(template.transactions()::setRequired);
+		map.from(properties::getTimeout).to(template.transactions()::setTimeout);
+	}
+
 	<T> void customizeConsumerBuilder(ConsumerBuilder<T> consumerBuilder) {
 		PulsarProperties.Consumer properties = this.properties.getConsumer();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -183,6 +196,7 @@ final class PulsarPropertiesMapper {
 	void customizeContainerProperties(PulsarContainerProperties containerProperties) {
 		customizePulsarContainerConsumerSubscriptionProperties(containerProperties);
 		customizePulsarContainerListenerProperties(containerProperties);
+		customizePulsarContainerTransactionProperties(containerProperties);
 	}
 
 	private void customizePulsarContainerConsumerSubscriptionProperties(PulsarContainerProperties containerProperties) {
@@ -196,6 +210,14 @@ final class PulsarPropertiesMapper {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
+	}
+
+	private void customizePulsarContainerTransactionProperties(PulsarContainerProperties containerProperties) {
+		PulsarProperties.Transaction properties = this.properties.getListener().getTransaction();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::isEnabled).to(containerProperties.transactions()::setEnabled);
+		map.from(properties::isRequired).to(containerProperties.transactions()::setRequired);
+		map.from(properties::getTimeout).to(containerProperties.transactions()::setTimeout);
 	}
 
 	<T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder) {
