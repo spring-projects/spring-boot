@@ -215,6 +215,26 @@ TIP: For more details on any of the above components and to discover other avail
 
 
 
+[[messaging.pulsar.transactions]]
+== Transaction Support
+
+Spring for Apache Pulsar supports transactions when using `PulsarTemplate` and `@PulsarListener`.
+
+NOTE: Transactions are not currently supported when using the reactive variants.
+
+Setting the configprop:spring.pulsar.transaction.enabled[] property to `true` will:
+
+* Configure a `PulsarTransactionManager` bean
+* Enable transaction support for `PulsarTemplate`
+* Enable transaction support for `@PulsarListener` methods
+
+The `transactional` attribute of `@PulsarListener` can be used to fine-tune when transactions should be used with listeners.
+
+For more control of the Spring for Apache Pulsar transaction features you should define your own `PulsarTemplate` and/or `ConcurrentPulsarListenerContainerFactory` beans.
+You can also define a `PulsarAwareTransactionManager` bean if the default auto-configured `PulsarTransactionManager` is not suitable.
+
+
+
 [[messaging.pulsar.additional-properties]]
 == Additional Pulsar Properties
 

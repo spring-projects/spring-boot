@@ -67,6 +67,8 @@ public class PulsarProperties {
 
 	private final Template template = new Template();
 
+	private final Transaction transaction = new Transaction();
+
 	public Client getClient() {
 		return this.client;
 	}
@@ -101,6 +103,10 @@ public class PulsarProperties {
 
 	public Template getTemplate() {
 		return this.template;
+	}
+
+	public Transaction getTransaction() {
+		return this.transaction;
 	}
 
 	public static class Client {
@@ -864,6 +870,23 @@ public class PulsarProperties {
 
 		public void setObservationsEnabled(boolean observationsEnabled) {
 			this.observationsEnabled = observationsEnabled;
+		}
+
+	}
+
+	public static class Transaction {
+
+		/**
+		 * Whether transaction support is enabled.
+		 */
+		private boolean enabled;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

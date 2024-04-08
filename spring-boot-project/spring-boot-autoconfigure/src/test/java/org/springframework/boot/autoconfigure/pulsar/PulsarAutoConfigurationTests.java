@@ -70,6 +70,8 @@ import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
+import org.springframework.pulsar.listener.PulsarContainerProperties.TransactionSettings;
+import org.springframework.pulsar.transaction.PulsarAwareTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -330,6 +332,13 @@ class PulsarAutoConfigurationTests {
 					.hasFieldOrPropertyWithValue("observationEnabled", false));
 		}
 
+		@Test
+		void whenTransactionEnabledTrueEnablesTransactions() {
+			this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=true")
+				.run((context) -> assertThat(context.getBean(PulsarTemplate.class).transactions().isEnabled())
+					.isTrue());
+		}
+
 		@Configuration(proxyBeanMethods = false)
 		static class InterceptorTestConfiguration {
 
@@ -525,6 +534,28 @@ class PulsarAutoConfigurationTests {
 			});
 		}
 
+		@Test
+		void whenTransactionEnabledTrueListenerContainerShouldUseTransactions() {
+			this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=true").run((context) -> {
+				ConcurrentPulsarListenerContainerFactory<?> factory = context
+					.getBean(ConcurrentPulsarListenerContainerFactory.class);
+				TransactionSettings transactions = factory.getContainerProperties().transactions();
+				assertThat(transactions.isEnabled()).isTrue();
+				assertThat(transactions.getTransactionManager()).isNotNull();
+			});
+		}
+
+		@Test
+		void whenTransactionEnabledFalseListenerContainerShouldNotUseTransactions() {
+			this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=false").run((context) -> {
+				ConcurrentPulsarListenerContainerFactory<?> factory = context
+					.getBean(ConcurrentPulsarListenerContainerFactory.class);
+				TransactionSettings transactions = factory.getContainerProperties().transactions();
+				assertThat(transactions.isEnabled()).isFalse();
+				assertThat(transactions.getTransactionManager()).isNull();
+			});
+		}
+
 	}
 
 	@Nested
@@ -599,6 +630,39 @@ class PulsarAutoConfigurationTests {
 				return (builder) -> builder.readerName("fromCustomizer1");
 			}
 
+		}
+
+	}
+
+	@Nested
+	class TransactionManagerTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarAutoConfigurationTests.this.contextRunner;
+
+		@Test
+		@SuppressWarnings("unchecked")
+		void whenUserHasDefinedATransactionManagerTheAutoConfigurationBacksOff() {
+			PulsarAwareTransactionManager txnMgr = mock(PulsarAwareTransactionManager.class);
+			this.contextRunner.withBean("customTransactionManager", PulsarAwareTransactionManager.class, () -> txnMgr)
+				.run((context) -> assertThat(context).getBean(PulsarAwareTransactionManager.class).isSameAs(txnMgr));
+		}
+
+		@Test
+		void whenNoPropertiesAreSetTransactionManagerShouldNotBeDefined() {
+			this.contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(PulsarAwareTransactionManager.class));
+		}
+
+		@Test
+		void whenTransactionEnabledFalseTransactionManagerIsNotAutoConfigured() {
+			this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(PulsarAwareTransactionManager.class));
+		}
+
+		@Test
+		void whenTransactionEnabledTrueTransactionManagerIsAutoConfigured() {
+			this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=true")
+				.run((context) -> assertThat(context).hasSingleBean(PulsarAwareTransactionManager.class));
 		}
 
 	}

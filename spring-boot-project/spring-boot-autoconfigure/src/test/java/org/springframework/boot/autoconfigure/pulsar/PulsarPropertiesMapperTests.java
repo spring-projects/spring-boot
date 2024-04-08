@@ -38,16 +38,20 @@ import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.client.impl.AutoClusterFailover;
 import org.apache.pulsar.common.schema.SchemaType;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Failover.BackupCluster;
+import org.springframework.pulsar.core.PulsarProducerFactory;
+import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link PulsarPropertiesMapper}.
@@ -88,6 +92,26 @@ class PulsarPropertiesMapperTests {
 	}
 
 	@Test
+	void customizeClientBuilderWhenTransactionEnabled() {
+		PulsarProperties properties = new PulsarProperties();
+		properties.getTransaction().setEnabled(true);
+		ClientBuilder builder = mock(ClientBuilder.class);
+		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
+				new PropertiesPulsarConnectionDetails(properties));
+		then(builder).should().enableTransaction(true);
+	}
+
+	@Test
+	void customizeClientBuilderWhenTransactionDisabled() {
+		PulsarProperties properties = new PulsarProperties();
+		properties.getTransaction().setEnabled(false);
+		ClientBuilder builder = mock(ClientBuilder.class);
+		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
+				new PropertiesPulsarConnectionDetails(properties));
+		then(builder).should(never()).enableTransaction(anyBoolean());
+	}
+
+	@Test
 	void customizeClientBuilderWhenHasConnectionDetails() {
 		PulsarProperties properties = new PulsarProperties();
 		properties.getClient().setServiceUrl("https://ignored.example.com");
@@ -120,7 +144,7 @@ class PulsarPropertiesMapperTests {
 		ClientBuilder builder = mock(ClientBuilder.class);
 		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
 				new PropertiesPulsarConnectionDetails(properties));
-		then(builder).should().serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
+		then(builder).should().serviceUrlProvider(any(AutoClusterFailover.class));
 	}
 
 	@Test
@@ -191,6 +215,16 @@ class PulsarPropertiesMapperTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	void customizeTemplate() {
+		PulsarProperties properties = new PulsarProperties();
+		properties.getTransaction().setEnabled(true);
+		PulsarTemplate<Object> template = new PulsarTemplate<>(mock(PulsarProducerFactory.class));
+		new PulsarPropertiesMapper(properties).customizeTemplate(template);
+		assertThat(template.transactions().isEnabled()).isTrue();
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	void customizeConsumerBuilder() {
 		PulsarProperties properties = new PulsarProperties();
 		List<String> topics = List.of("mytopic");
@@ -220,11 +254,13 @@ class PulsarPropertiesMapperTests {
 		properties.getConsumer().getSubscription().setType(SubscriptionType.Shared);
 		properties.getListener().setSchemaType(SchemaType.AVRO);
 		properties.getListener().setObservationEnabled(true);
+		properties.getTransaction().setEnabled(true);
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties("my-topic-pattern");
 		new PulsarPropertiesMapper(properties).customizeContainerProperties(containerProperties);
 		assertThat(containerProperties.getSubscriptionType()).isEqualTo(SubscriptionType.Shared);
 		assertThat(containerProperties.getSchemaType()).isEqualTo(SchemaType.AVRO);
 		assertThat(containerProperties.isObservationEnabled()).isTrue();
+		assertThat(containerProperties.transactions().isEnabled()).isTrue();
 	}
 
 	@Test
