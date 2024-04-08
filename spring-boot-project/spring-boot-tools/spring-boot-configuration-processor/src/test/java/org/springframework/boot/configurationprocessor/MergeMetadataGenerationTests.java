@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -196,7 +195,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	@Test
 	void mergingOfHintWithProvider() throws Exception {
 		String hints = buildAdditionalHints(new ItemHint("simple.theName", Collections.emptyList(),
-				Arrays.asList(new ItemHint.ValueProvider("first", Collections.singletonMap("target", "org.foo")),
+				List.of(new ItemHint.ValueProvider("first", Collections.singletonMap("target", "org.foo")),
 						new ItemHint.ValueProvider("second", null))));
 		ConfigurationMetadata metadata = compile(hints, SimpleProperties.class);
 		assertThat(metadata).has(Metadata.withProperty("simple.the-name", String.class)
@@ -248,7 +247,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	private String buildAdditionalHints(ItemHint... hints) throws Exception {
 		TestJsonConverter converter = new TestJsonConverter();
 		JSONObject additionalMetadata = new JSONObject();
-		additionalMetadata.put("hints", converter.toJsonArray(Arrays.asList(hints)));
+		additionalMetadata.put("hints", converter.toJsonArray(List.of(hints)));
 		return additionalMetadata.toString();
 	}
 

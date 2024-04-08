@@ -18,7 +18,6 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -462,9 +461,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenJarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-output-timestamp").execute((project) -> {
 			File repackaged = new File(project, "target/jar-output-timestamp-0.0.1.BUILD-SNAPSHOT.jar");
-			List<String> sortedLibs = Arrays.asList("BOOT-INF/lib/jakarta.servlet-api",
-					"BOOT-INF/lib/micrometer-commons", "BOOT-INF/lib/micrometer-observation", "BOOT-INF/lib/spring-aop",
-					"BOOT-INF/lib/spring-beans",
+			List<String> sortedLibs = List.of("BOOT-INF/lib/jakarta.servlet-api", "BOOT-INF/lib/micrometer-commons",
+					"BOOT-INF/lib/micrometer-observation", "BOOT-INF/lib/spring-aop", "BOOT-INF/lib/spring-beans",
 					"BOOT-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId(),
 					"BOOT-INF/lib/spring-context", "BOOT-INF/lib/spring-core", "BOOT-INF/lib/spring-expression",
 					"BOOT-INF/lib/spring-jcl");

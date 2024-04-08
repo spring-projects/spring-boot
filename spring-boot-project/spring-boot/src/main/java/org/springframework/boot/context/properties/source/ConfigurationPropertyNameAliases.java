@@ -59,7 +59,7 @@ public final class ConfigurationPropertyNameAliases implements Iterable<Configur
 	public void addAliases(ConfigurationPropertyName name, ConfigurationPropertyName... aliases) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(aliases, "Aliases must not be null");
-		this.aliases.addAll(name, Arrays.asList(aliases));
+		this.aliases.addAll(name, List.of(aliases));
 	}
 
 	public List<ConfigurationPropertyName> getAliases(ConfigurationPropertyName name) {

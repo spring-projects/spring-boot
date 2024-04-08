@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.flyway;
 import java.beans.PropertyDescriptor;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +58,7 @@ class FlywayPropertiesTests {
 			.isEqualTo(configuration.getConnectRetriesInterval());
 		assertThat(properties.getLockRetryCount()).isEqualTo(configuration.getLockRetryCount());
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());
-		assertThat(properties.getSchemas()).isEqualTo(Arrays.asList(configuration.getSchemas()));
+		assertThat(properties.getSchemas()).isEqualTo(List.of(configuration.getSchemas()));
 		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.isCreateSchemas());
 		assertThat(properties.getTable()).isEqualTo(configuration.getTable());
 		assertThat(properties.getBaselineDescription()).isEqualTo(configuration.getBaselineDescription());

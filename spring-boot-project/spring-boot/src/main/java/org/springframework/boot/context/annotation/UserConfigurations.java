@@ -16,8 +16,8 @@
 
 package org.springframework.boot.context.annotation;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.core.Ordered;
@@ -47,7 +47,7 @@ public class UserConfigurations extends Configurations implements PriorityOrdere
 	}
 
 	public static UserConfigurations of(Class<?>... classes) {
-		return new UserConfigurations(Arrays.asList(classes));
+		return new UserConfigurations(List.of(classes));
 	}
 
 }

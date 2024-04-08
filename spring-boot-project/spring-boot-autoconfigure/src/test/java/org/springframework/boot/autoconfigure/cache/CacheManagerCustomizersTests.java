@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -70,7 +69,7 @@ class CacheManagerCustomizersTests {
 
 		@Override
 		public void customize(ConcurrentMapCacheManager cacheManager) {
-			cacheManager.setCacheNames(Arrays.asList("one", "two"));
+			cacheManager.setCacheNames(List.of("one", "two"));
 		}
 
 	}

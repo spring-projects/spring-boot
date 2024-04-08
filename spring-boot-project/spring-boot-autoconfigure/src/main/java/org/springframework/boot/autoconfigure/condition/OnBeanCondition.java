@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.condition;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -660,7 +659,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	 */
 	private static class SingleCandidateSpec extends Spec<ConditionalOnSingleCandidate> {
 
-		private static final Collection<String> FILTERED_TYPES = Arrays.asList("", Object.class.getName());
+		private static final Collection<String> FILTERED_TYPES = List.of("", Object.class.getName());
 
 		SingleCandidateSpec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations) {
 			super(context, metadata, annotations, ConditionalOnSingleCandidate.class);

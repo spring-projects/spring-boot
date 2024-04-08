@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -47,7 +47,7 @@ public interface StatusAggregator {
 	 * @return the aggregate status
 	 */
 	default Status getAggregateStatus(Status... statuses) {
-		return getAggregateStatus(new LinkedHashSet<>(Arrays.asList(statuses)));
+		return getAggregateStatus(new LinkedHashSet<>(List.of(statuses)));
 	}
 
 	/**

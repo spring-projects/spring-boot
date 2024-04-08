@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
@@ -91,7 +90,7 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 	}
 
 	private List<Enum<? extends Producible<?>>> getValues(Class<Enum<? extends Producible<?>>> type) {
-		List<Enum<? extends Producible<?>>> values = Arrays.asList(type.getEnumConstants());
+		List<Enum<? extends Producible<?>>> values = List.of(type.getEnumConstants());
 		Collections.reverse(values);
 		Assert.state(values.stream().filter(this::isDefault).count() <= 1,
 				"Multiple default values declared in " + type.getName());

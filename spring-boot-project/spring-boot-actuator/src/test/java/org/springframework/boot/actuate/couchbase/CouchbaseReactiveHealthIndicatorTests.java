@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.couchbase;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -73,10 +72,9 @@ class CouchbaseReactiveHealthIndicatorTests {
 		Cluster cluster = mock(Cluster.class);
 		CouchbaseReactiveHealthIndicator healthIndicator = new CouchbaseReactiveHealthIndicator(cluster);
 		Map<ServiceType, List<EndpointDiagnostics>> endpoints = Collections.singletonMap(ServiceType.KV,
-				Arrays.asList(
-						new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTED, CircuitBreaker.State.DISABLED,
-								"127.0.0.1", "127.0.0.1", Optional.empty(), Optional.of(1234L),
-								Optional.of("endpoint-1"), Optional.empty()),
+				List.of(new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTED, CircuitBreaker.State.DISABLED,
+						"127.0.0.1", "127.0.0.1", Optional.empty(), Optional.of(1234L), Optional.of("endpoint-1"),
+						Optional.empty()),
 						new EndpointDiagnostics(ServiceType.KV, EndpointState.CONNECTING, CircuitBreaker.State.DISABLED,
 								"127.0.0.1", "127.0.0.1", Optional.empty(), Optional.of(1234L),
 								Optional.of("endpoint-2"), Optional.empty())));

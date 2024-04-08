@@ -18,7 +18,6 @@ package org.springframework.boot.system;
 
 import java.io.Console;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedSet;
@@ -91,7 +90,7 @@ public enum JavaVersion {
 	 * @return the {@link JavaVersion}
 	 */
 	public static JavaVersion getJavaVersion() {
-		List<JavaVersion> candidates = Arrays.asList(JavaVersion.values());
+		List<JavaVersion> candidates = List.of(JavaVersion.values());
 		Collections.reverse(candidates);
 		for (JavaVersion candidate : candidates) {
 			if (candidate.available) {

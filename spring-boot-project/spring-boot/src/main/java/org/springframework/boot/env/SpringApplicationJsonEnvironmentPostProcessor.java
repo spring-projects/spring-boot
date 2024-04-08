@@ -16,10 +16,10 @@
 
 package org.springframework.boot.env;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -70,7 +70,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 			+ "context.support.StandardServletEnvironment";
 
 	private static final Set<String> SERVLET_ENVIRONMENT_PROPERTY_SOURCES = new LinkedHashSet<>(
-			Arrays.asList(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME,
+			List.of(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME,
 					StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME,
 					StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME));
 

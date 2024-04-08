@@ -18,7 +18,6 @@ package org.springframework.boot.context.config;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -97,7 +96,7 @@ public class Profiles implements Iterable<String> {
 		Set<String> environmentPropertyProfiles = (!StringUtils.hasLength(environmentPropertyValue))
 				? Collections.emptySet()
 				: StringUtils.commaDelimitedListToSet(StringUtils.trimAllWhitespace(environmentPropertyValue));
-		Set<String> environmentProfiles = new LinkedHashSet<>(Arrays.asList(type.get(environment)));
+		Set<String> environmentProfiles = new LinkedHashSet<>(List.of(type.get(environment)));
 		BindResult<Set<String>> boundProfiles = binder.bind(type.getName(), STRING_SET);
 		if (hasProgrammaticallySetProfiles(type, environmentPropertyValue, environmentPropertyProfiles,
 				environmentProfiles)) {

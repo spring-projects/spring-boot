@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
@@ -114,7 +114,7 @@ class SystemMetricsAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:.,..")
 			.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
 				.getBean(DiskSpaceMetricsBinder.class)
-				.hasFieldOrPropertyWithValue("paths", Arrays.asList(new File("."), new File(".."))));
+				.hasFieldOrPropertyWithValue("paths", List.of(new File("."), new File(".."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

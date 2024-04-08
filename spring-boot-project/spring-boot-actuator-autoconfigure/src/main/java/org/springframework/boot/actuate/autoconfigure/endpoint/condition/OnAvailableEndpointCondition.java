@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -151,8 +151,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	private Set<EndpointExposure> getExposuresToCheck(
 			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
 		EndpointExposure[] exposure = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
-		return (exposure.length == 0) ? EnumSet.allOf(EndpointExposure.class)
-				: new LinkedHashSet<>(Arrays.asList(exposure));
+		return (exposure.length == 0) ? EnumSet.allOf(EndpointExposure.class) : new LinkedHashSet<>(List.of(exposure));
 	}
 
 	private Set<ExposureFilter> getExposureFilters(Environment environment) {

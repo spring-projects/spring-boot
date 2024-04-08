@@ -18,7 +18,6 @@ package org.springframework.boot.jarmode.tools;
 
 import java.io.PrintStream;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -103,7 +102,7 @@ class CommandTests {
 	void findWhenNameMatchesReturnsCommand() {
 		TestCommand test1 = new TestCommand("test1");
 		TestCommand test2 = new TestCommand("test2");
-		List<Command> commands = Arrays.asList(test1, test2);
+		List<Command> commands = List.of(test1, test2);
 		assertThat(Command.find(commands, "test1")).isEqualTo(test1);
 		assertThat(Command.find(commands, "test2")).isEqualTo(test2);
 	}
@@ -112,7 +111,7 @@ class CommandTests {
 	void findWhenNameDoesNotMatchReturnsNull() {
 		TestCommand test1 = new TestCommand("test1");
 		TestCommand test2 = new TestCommand("test2");
-		List<Command> commands = Arrays.asList(test1, test2);
+		List<Command> commands = List.of(test1, test2);
 		assertThat(Command.find(commands, "test3")).isNull();
 	}
 
@@ -160,7 +159,7 @@ class CommandTests {
 	}
 
 	private void run(TestCommand command, String... args) {
-		command.run(System.out, new ArrayDeque<>(Arrays.asList(args)));
+		command.run(System.out, new ArrayDeque<>(List.of(args)));
 	}
 
 	static class TestCommand extends Command {

@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.liquibase;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -165,7 +165,7 @@ class LiquibaseEndpointTests {
 				.setName(UUID.randomUUID().toString())
 				.build();
 			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-			settings.setSchemaLocations(Arrays.asList("classpath:/db/create-custom-schema.sql"));
+			settings.setSchemaLocations(List.of("classpath:/db/create-custom-schema.sql"));
 			DataSourceScriptDatabaseInitializer initializer = new DataSourceScriptDatabaseInitializer(dataSource,
 					settings);
 			initializer.initializeDatabase();

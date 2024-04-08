@@ -17,10 +17,10 @@
 package org.springframework.boot.webservices.client;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.xml.transform.TransformerFactory;
@@ -80,7 +80,7 @@ public class WebServiceTemplateBuilder {
 		this.detectHttpMessageSender = true;
 		this.interceptors = null;
 		this.internalCustomizers = null;
-		this.customizers = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(customizers)));
+		this.customizers = Collections.unmodifiableSet(new LinkedHashSet<>(List.of(customizers)));
 		this.messageSenders = new WebServiceMessageSenders();
 		this.marshaller = null;
 		this.unmarshaller = null;
@@ -133,7 +133,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder messageSenders(WebServiceMessageSender... messageSenders) {
 		Assert.notNull(messageSenders, "MessageSenders must not be null");
-		return messageSenders(Arrays.asList(messageSenders));
+		return messageSenders(List.of(messageSenders));
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder additionalMessageSenders(WebServiceMessageSender... messageSenders) {
 		Assert.notNull(messageSenders, "MessageSenders must not be null");
-		return additionalMessageSenders(Arrays.asList(messageSenders));
+		return additionalMessageSenders(List.of(messageSenders));
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder interceptors(ClientInterceptor... interceptors) {
 		Assert.notNull(interceptors, "Interceptors must not be null");
-		return interceptors(Arrays.asList(interceptors));
+		return interceptors(List.of(interceptors));
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder additionalInterceptors(ClientInterceptor... interceptors) {
 		Assert.notNull(interceptors, "Interceptors must not be null");
-		return additionalInterceptors(Arrays.asList(interceptors));
+		return additionalInterceptors(List.of(interceptors));
 	}
 
 	/**
@@ -247,7 +247,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder customizers(WebServiceTemplateCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return customizers(Arrays.asList(customizers));
+		return customizers(List.of(customizers));
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder additionalCustomizers(WebServiceTemplateCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return additionalCustomizers(Arrays.asList(customizers));
+		return additionalCustomizers(List.of(customizers));
 	}
 
 	/**
@@ -462,7 +462,7 @@ public class WebServiceTemplateBuilder {
 		if (!CollectionUtils.isEmpty(this.interceptors)) {
 			Set<ClientInterceptor> merged = new LinkedHashSet<>(this.interceptors);
 			if (webServiceTemplate.getInterceptors() != null) {
-				merged.addAll(Arrays.asList(webServiceTemplate.getInterceptors()));
+				merged.addAll(List.of(webServiceTemplate.getInterceptors()));
 			}
 			webServiceTemplate.setInterceptors(merged.toArray(new ClientInterceptor[0]));
 		}

@@ -17,8 +17,8 @@
 package org.springframework.boot.cli.command.shell;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.boot.cli.command.AbstractCommand;
 import org.springframework.boot.cli.command.Command;
@@ -45,7 +45,7 @@ class RunProcessCommand extends AbstractCommand {
 
 	@Override
 	public ExitStatus run(String... args) throws Exception {
-		return run(Arrays.asList(args));
+		return run(List.of(args));
 	}
 
 	protected ExitStatus run(Collection<String> args) throws IOException {

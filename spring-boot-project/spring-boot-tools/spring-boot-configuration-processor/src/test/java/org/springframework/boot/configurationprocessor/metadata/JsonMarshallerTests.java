@@ -21,8 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +52,7 @@ class JsonMarshallerTests {
 		metadata.add(ItemHint.newHint("a.b"));
 		metadata.add(ItemHint.newHint("c", new ItemHint.ValueHint(123, "hey"), new ItemHint.ValueHint(456, null)));
 		metadata.add(new ItemHint("d", null,
-				Arrays.asList(new ItemHint.ValueProvider("first", Collections.singletonMap("target", "foo")),
+				List.of(new ItemHint.ValueProvider("first", Collections.singletonMap("target", "foo")),
 						new ItemHint.ValueProvider("second", null))));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();

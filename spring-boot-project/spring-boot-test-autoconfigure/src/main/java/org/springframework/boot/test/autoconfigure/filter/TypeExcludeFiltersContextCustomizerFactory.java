@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.autoconfigure.filter;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -58,7 +57,7 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 	@SuppressWarnings("unchecked")
 	private ContextCustomizer createContextCustomizer(Class<?> testClass, Class<?>[] filterClasses) {
 		return new TypeExcludeFiltersContextCustomizer(testClass,
-				new LinkedHashSet<>(Arrays.asList((Class<? extends TypeExcludeFilter>[]) filterClasses)));
+				new LinkedHashSet<>(List.of((Class<? extends TypeExcludeFilter>[]) filterClasses)));
 	}
 
 }

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationprocessor.test;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -109,7 +109,7 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	@Override
 	protected Set<String> endpointAnnotations() {
-		return new HashSet<>(Arrays.asList(CONTROLLER_ENDPOINT_ANNOTATION, ENDPOINT_ANNOTATION, JMX_ENDPOINT_ANNOTATION,
+		return new HashSet<>(List.of(CONTROLLER_ENDPOINT_ANNOTATION, ENDPOINT_ANNOTATION, JMX_ENDPOINT_ANNOTATION,
 				REST_CONTROLLER_ENDPOINT_ANNOTATION, SERVLET_ENDPOINT_ANNOTATION, WEB_ENDPOINT_ANNOTATION));
 	}
 

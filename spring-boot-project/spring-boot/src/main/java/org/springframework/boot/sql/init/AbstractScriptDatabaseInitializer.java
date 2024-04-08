@@ -19,7 +19,6 @@ package org.springframework.boot.sql.init;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -164,8 +163,7 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 		}
 
 		private List<Resource> resolve(String location) throws IOException {
-			List<Resource> resources = new ArrayList<>(
-					Arrays.asList(this.resourcePatternResolver.getResources(location)));
+			List<Resource> resources = new ArrayList<>(List.of(this.resourcePatternResolver.getResources(location)));
 			resources.sort((r1, r2) -> {
 				try {
 					return r1.getURL().toString().compareTo(r2.getURL().toString());

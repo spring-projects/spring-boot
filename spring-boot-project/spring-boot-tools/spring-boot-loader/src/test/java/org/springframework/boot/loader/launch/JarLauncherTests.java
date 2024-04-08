@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +83,7 @@ class JarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
 	@Test
 	void jarFilesPresentInBootInfLibsAndNotInClasspathIndexShouldBeAddedAfterBootInfClasses() throws Exception {
-		ArrayList<String> extraLibs = new ArrayList<>(Arrays.asList("extra-1.jar", "extra-2.jar"));
+		ArrayList<String> extraLibs = new ArrayList<>(List.of("extra-1.jar", "extra-2.jar"));
 		File explodedRoot = explode(createJarArchive("archive.jar", "BOOT-INF", true, extraLibs));
 		JarLauncher launcher = new JarLauncher(new ExplodedArchive(explodedRoot));
 		URLClassLoader classLoader = createClassLoader(launcher);

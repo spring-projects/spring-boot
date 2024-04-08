@@ -18,7 +18,6 @@ package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -118,7 +117,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	@Override
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
+		this.jettyServerCustomizers.addAll(List.of(customizers));
 	}
 
 	@Override

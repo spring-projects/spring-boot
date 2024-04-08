@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class DiscoveredOperationMethod extends OperationMethod {
 		super(method, operationType);
 		Assert.notNull(annotationAttributes, "AnnotationAttributes must not be null");
 		List<String> producesMediaTypes = new ArrayList<>();
-		producesMediaTypes.addAll(Arrays.asList(annotationAttributes.getStringArray("produces")));
+		producesMediaTypes.addAll(List.of(annotationAttributes.getStringArray("produces")));
 		producesMediaTypes.addAll(getProducesFromProducable(annotationAttributes));
 		this.producesMediaTypes = Collections.unmodifiableList(producesMediaTypes);
 	}

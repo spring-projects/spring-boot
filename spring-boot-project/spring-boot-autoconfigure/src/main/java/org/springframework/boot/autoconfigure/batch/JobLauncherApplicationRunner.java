@@ -16,10 +16,10 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -165,7 +165,7 @@ public class JobLauncherApplicationRunner
 	}
 
 	public void run(String... args) throws JobExecutionException {
-		logger.info("Running default command line with: " + Arrays.asList(args));
+		logger.info("Running default command line with: " + List.of(args));
 		launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args, "="));
 	}
 

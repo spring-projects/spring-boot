@@ -29,7 +29,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -101,7 +100,7 @@ class MavenBuild {
 	}
 
 	MavenBuild goals(String... goals) {
-		this.goals.addAll(Arrays.asList(goals));
+		this.goals.addAll(List.of(goals));
 		return this;
 	}
 

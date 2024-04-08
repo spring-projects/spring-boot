@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -58,7 +57,7 @@ public interface SpanProcessors extends Iterable<SpanProcessor> {
 	 * @return the constructed {@link SpanProcessors} instance
 	 */
 	static SpanProcessors of(SpanProcessor... spanProcessors) {
-		return of(Arrays.asList(spanProcessors));
+		return of(List.of(spanProcessors));
 	}
 
 	/**

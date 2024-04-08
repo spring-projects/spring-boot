@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -116,8 +115,7 @@ abstract class MongoClientFactorySupportTests<T> {
 	}
 
 	protected void createMongoClient(MongoClientSettingsBuilderCustomizer... customizers) {
-		createMongoClient((customizers != null) ? Arrays.asList(customizers) : null,
-				MongoClientSettings.builder().build());
+		createMongoClient((customizers != null) ? List.of(customizers) : null, MongoClientSettings.builder().build());
 	}
 
 	protected abstract T createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,

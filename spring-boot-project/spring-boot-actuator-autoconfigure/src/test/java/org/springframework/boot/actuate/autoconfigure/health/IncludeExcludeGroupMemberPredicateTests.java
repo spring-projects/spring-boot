@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -135,7 +135,7 @@ class IncludeExcludeGroupMemberPredicateTests {
 		}
 
 		private Set<String> asSet(String[] names) {
-			return (names != null) ? new LinkedHashSet<>(Arrays.asList(names)) : null;
+			return (names != null) ? new LinkedHashSet<>(List.of(names)) : null;
 		}
 
 	}

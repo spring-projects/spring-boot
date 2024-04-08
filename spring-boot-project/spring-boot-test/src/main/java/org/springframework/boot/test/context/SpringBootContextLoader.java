@@ -182,8 +182,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 	private void configure(MergedContextConfiguration mergedConfig, SpringApplication application) {
 		application.setMainApplicationClass(mergedConfig.getTestClass());
-		application.addPrimarySources(Arrays.asList(mergedConfig.getClasses()));
-		application.getSources().addAll(Arrays.asList(mergedConfig.getLocations()));
+		application.addPrimarySources(List.of(mergedConfig.getClasses()));
+		application.getSources().addAll(List.of(mergedConfig.getLocations()));
 		List<ApplicationContextInitializer<?>> initializers = getInitializers(mergedConfig, application);
 		if (mergedConfig instanceof WebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.SERVLET);
@@ -283,7 +283,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		ArrayList<String> properties = new ArrayList<>();
 		// JMX bean names will clash if the same bean is used in multiple contexts
 		properties.add("spring.jmx.enabled=false");
-		properties.addAll(Arrays.asList(mergedConfig.getPropertySourceProperties()));
+		properties.addAll(List.of(mergedConfig.getPropertySourceProperties()));
 		return StringUtils.toStringArray(properties);
 	}
 

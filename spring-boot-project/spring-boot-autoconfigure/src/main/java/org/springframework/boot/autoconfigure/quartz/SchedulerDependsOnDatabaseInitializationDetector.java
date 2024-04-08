@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.quartz.Scheduler;
@@ -37,7 +37,7 @@ class SchedulerDependsOnDatabaseInitializationDetector
 
 	@Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
-		return new HashSet<>(Arrays.asList(Scheduler.class, SchedulerFactoryBean.class));
+		return new HashSet<>(List.of(Scheduler.class, SchedulerFactoryBean.class));
 	}
 
 }

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.web.client;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -68,7 +67,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 		this.request.getHeaders().add("one", "existing");
 		Map<String, List<String>> defaultHeaders = new LinkedHashMap<>();
 		defaultHeaders.put("one", Collections.singletonList("1"));
-		defaultHeaders.put("two", Arrays.asList("2", "3"));
+		defaultHeaders.put("two", List.of("2", "3"));
 		defaultHeaders.put("three", Collections.singletonList("4"));
 		new RestTemplateBuilderClientHttpRequestInitializer(null, defaultHeaders, Collections.emptySet())
 			.initialize(this.request);

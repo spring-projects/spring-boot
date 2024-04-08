@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -298,7 +297,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithSentinel() {
-		List<String> sentinels = Arrays.asList("127.0.0.1:26379", "127.0.0.1:26380");
+		List<String> sentinels = List.of("127.0.0.1:26379", "127.0.0.1:26380");
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.sentinel.master:mymaster",
 					"spring.data.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
@@ -308,7 +307,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithIpv6Sentinel() {
-		List<String> sentinels = Arrays.asList("[0:0:0:0:0:0:0:1]:26379", "[0:0:0:0:0:0:0:1]:26380");
+		List<String> sentinels = List.of("[0:0:0:0:0:0:0:1]:26379", "[0:0:0:0:0:0:0:1]:26380");
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.sentinel.master:mymaster",
 					"spring.data.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
@@ -398,7 +397,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithCluster() {
-		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		List<String> clusterNodes = List.of("127.0.0.1:27379", "127.0.0.1:27380");
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.cluster.nodes[0]:" + clusterNodes.get(0),
 					"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1))
@@ -415,7 +414,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithClusterAndAuthentication() {
-		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		List<String> clusterNodes = List.of("127.0.0.1:27379", "127.0.0.1:27380");
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.username=user", "spring.data.redis.password=password",
 					"spring.data.redis.cluster.nodes[0]:" + clusterNodes.get(0),

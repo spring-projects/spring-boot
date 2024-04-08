@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
@@ -38,8 +38,8 @@ class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 			Scanner<JavaMigration> scanner = new Scanner<>(JavaMigration.class, false, new ResourceNameCache(),
 					new LocationScannerCache(), configuration);
 			NativeImageResourceProvider resourceProvider = new NativeImageResourceProvider(scanner,
-					configuration.getClassLoader(), Arrays.asList(configuration.getLocations()),
-					configuration.getEncoding(), configuration.isFailOnMissingLocations());
+					configuration.getClassLoader(), List.of(configuration.getLocations()), configuration.getEncoding(),
+					configuration.isFailOnMissingLocations());
 			configuration.resourceProvider(resourceProvider);
 		}
 	}

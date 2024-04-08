@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -310,7 +309,7 @@ class PropertiesLauncherTests {
 	void testArgsEnhanced() throws Exception {
 		System.setProperty("loader.args", "foo");
 		this.launcher = new PropertiesLauncher();
-		assertThat(Arrays.asList(this.launcher.getArgs("bar"))).hasToString("[foo, bar]");
+		assertThat(List.of(this.launcher.getArgs("bar"))).hasToString("[foo, bar]");
 	}
 
 	@Test

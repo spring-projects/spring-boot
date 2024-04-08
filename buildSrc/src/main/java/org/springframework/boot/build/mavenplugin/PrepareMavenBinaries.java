@@ -17,8 +17,8 @@
 package org.springframework.boot.build.mavenplugin;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.gradle.api.DefaultTask;
@@ -54,7 +54,7 @@ public class PrepareMavenBinaries extends DefaultTask {
 	}
 
 	public void versions(String... versions) {
-		this.versions.addAll(Arrays.asList(versions));
+		this.versions.addAll(List.of(versions));
 	}
 
 	@TaskAction

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -35,7 +35,7 @@ class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnviron
 	@Override
 	public MetadataGenerationEnvironment apply(ProcessingEnvironment environment) {
 		Set<String> endpointAnnotations = new HashSet<>(
-				Arrays.asList(TestConfigurationMetadataAnnotationProcessor.CONTROLLER_ENDPOINT_ANNOTATION,
+				List.of(TestConfigurationMetadataAnnotationProcessor.CONTROLLER_ENDPOINT_ANNOTATION,
 						TestConfigurationMetadataAnnotationProcessor.ENDPOINT_ANNOTATION,
 						TestConfigurationMetadataAnnotationProcessor.REST_CONTROLLER_ENDPOINT_ANNOTATION,
 						TestConfigurationMetadataAnnotationProcessor.SERVLET_ENDPOINT_ANNOTATION,

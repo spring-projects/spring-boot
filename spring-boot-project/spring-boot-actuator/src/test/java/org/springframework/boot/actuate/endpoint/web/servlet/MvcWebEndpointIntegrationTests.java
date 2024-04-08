@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -145,8 +145,8 @@ class MvcWebEndpointIntegrationTests
 		WebMvcEndpointHandlerMapping webEndpointHandlerMapping(Environment environment,
 				WebEndpointDiscoverer endpointDiscoverer, EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
-			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
-			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
+			corsConfiguration.setAllowedOrigins(List.of("https://example.com"));
+			corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
 			String endpointPath = environment.getProperty("endpointPath");
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping(endpointPath),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes, corsConfiguration,
@@ -170,8 +170,8 @@ class MvcWebEndpointIntegrationTests
 		WebMvcEndpointHandlerMapping webEndpointHandlerMapping(Environment environment,
 				WebEndpointDiscoverer endpointDiscoverer, EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
-			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
-			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
+			corsConfiguration.setAllowedOrigins(List.of("https://example.com"));
+			corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
 			String endpointPath = environment.getProperty("endpointPath");
 			WebMvcEndpointHandlerMapping handlerMapping = new WebMvcEndpointHandlerMapping(
 					new EndpointMapping(endpointPath), endpointDiscoverer.getEndpoints(), endpointMediaTypes,
@@ -194,7 +194,7 @@ class MvcWebEndpointIntegrationTests
 						FilterChain filterChain) throws ServletException, IOException {
 					SecurityContext context = SecurityContextHolder.createEmptyContext();
 					context.setAuthentication(new UsernamePasswordAuthenticationToken("Alice", "secret",
-							Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR"))));
+							List.of(new SimpleGrantedAuthority("ROLE_ACTUATOR"))));
 					SecurityContextHolder.setContext(context);
 					try {
 						filterChain.doFilter(new SecurityContextHolderAwareRequestWrapper(request, "ROLE_"), response);

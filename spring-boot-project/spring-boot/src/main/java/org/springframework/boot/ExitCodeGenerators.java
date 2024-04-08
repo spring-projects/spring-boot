@@ -17,7 +17,6 @@
 package org.springframework.boot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,7 +43,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mappers, "Mappers must not be null");
-		addAll(exception, Arrays.asList(mappers));
+		addAll(exception, List.of(mappers));
 	}
 
 	void addAll(Throwable exception, Iterable<? extends ExitCodeExceptionMapper> mappers) {
@@ -63,7 +62,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 
 	void addAll(ExitCodeGenerator... generators) {
 		Assert.notNull(generators, "Generators must not be null");
-		addAll(Arrays.asList(generators));
+		addAll(List.of(generators));
 	}
 
 	void addAll(Iterable<? extends ExitCodeGenerator> generators) {

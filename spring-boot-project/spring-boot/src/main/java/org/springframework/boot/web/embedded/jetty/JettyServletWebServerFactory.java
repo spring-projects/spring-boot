@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventListener;
 import java.util.Iterator;
@@ -523,7 +522,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	@Override
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
+		this.jettyServerCustomizers.addAll(List.of(customizers));
 	}
 
 	/**
@@ -553,7 +552,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 */
 	public void addConfigurations(Configuration... configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
-		this.configurations.addAll(Arrays.asList(configurations));
+		this.configurations.addAll(List.of(configurations));
 	}
 
 	/**

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.util.Arrays;
 import java.util.List;
 
 import jakarta.servlet.MultipartConfigElement;
@@ -139,8 +138,8 @@ public class DispatcherServletAutoConfiguration {
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("Default DispatcherServlet");
 			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-			List<String> dispatchServletBeans = Arrays
-				.asList(beanFactory.getBeanNamesForType(DispatcherServlet.class, false, false));
+			List<String> dispatchServletBeans = List
+				.of(beanFactory.getBeanNamesForType(DispatcherServlet.class, false, false));
 			if (dispatchServletBeans.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
 				return ConditionOutcome
 					.noMatch(message.found("dispatcher servlet bean").items(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME));
@@ -177,8 +176,7 @@ public class DispatcherServletAutoConfiguration {
 			if (!containsDispatcherBean) {
 				return ConditionOutcome.match();
 			}
-			List<String> servlets = Arrays
-				.asList(beanFactory.getBeanNamesForType(DispatcherServlet.class, false, false));
+			List<String> servlets = List.of(beanFactory.getBeanNamesForType(DispatcherServlet.class, false, false));
 			if (!servlets.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
 				return ConditionOutcome.noMatch(
 						startMessage().found("non dispatcher servlet").items(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME));
@@ -188,8 +186,8 @@ public class DispatcherServletAutoConfiguration {
 
 		private ConditionOutcome checkServletRegistration(ConfigurableListableBeanFactory beanFactory) {
 			ConditionMessage.Builder message = startMessage();
-			List<String> registrations = Arrays
-				.asList(beanFactory.getBeanNamesForType(ServletRegistrationBean.class, false, false));
+			List<String> registrations = List
+				.of(beanFactory.getBeanNamesForType(ServletRegistrationBean.class, false, false));
 			boolean containsDispatcherRegistrationBean = beanFactory
 				.containsBean(DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME);
 			if (registrations.isEmpty()) {

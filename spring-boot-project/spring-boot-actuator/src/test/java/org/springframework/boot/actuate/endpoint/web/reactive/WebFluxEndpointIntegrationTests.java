@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -134,8 +134,8 @@ class WebFluxEndpointIntegrationTests
 		WebFluxEndpointHandlerMapping webEndpointHandlerMapping(Environment environment,
 				WebEndpointDiscoverer endpointDiscoverer, EndpointMediaTypes endpointMediaTypes) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
-			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
-			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
+			corsConfiguration.setAllowedOrigins(List.of("https://example.com"));
+			corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
 			String endpointPath = environment.getProperty("endpointPath");
 			return new WebFluxEndpointHandlerMapping(new EndpointMapping(endpointPath),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes, corsConfiguration,
@@ -156,7 +156,7 @@ class WebFluxEndpointIntegrationTests
 		WebFilter webFilter() {
 			return (exchange, chain) -> chain.filter(exchange)
 				.contextWrite(ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken(
-						"Alice", "secret", Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR")))));
+						"Alice", "secret", List.of(new SimpleGrantedAuthority("ROLE_ACTUATOR")))));
 		}
 
 	}

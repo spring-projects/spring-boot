@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -94,7 +93,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	private Collection<String> getConfigurationsForAnnotation(Class<?> source, Annotation annotation) {
 		String[] classes = (String[]) AnnotationUtils.getAnnotationAttributes(annotation, true).get("classes");
 		if (classes.length > 0) {
-			return Arrays.asList(classes);
+			return List.of(classes);
 		}
 		return loadFactoryNames(source).stream().map(this::mapFactoryName).filter(Objects::nonNull).toList();
 	}
@@ -133,7 +132,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 			for (Annotation annotation : annotations) {
 				String[] exclude = (String[]) AnnotationUtils.getAnnotationAttributes(annotation, true).get("exclude");
 				if (!ObjectUtils.isEmpty(exclude)) {
-					exclusions.addAll(Arrays.asList(exclude));
+					exclusions.addAll(List.of(exclude));
 				}
 			}
 		}

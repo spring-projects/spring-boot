@@ -16,7 +16,6 @@
 
 package org.springframework.boot.gradle.junit;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -62,7 +61,7 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 		public List<Extension> getAdditionalExtensions() {
 			GradleBuild gradleBuild = new GradleBuild(this.dsl);
 			gradleBuild.gradleVersion(GradleVersions.minimumCompatible());
-			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
+			return List.of(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
 		@Override

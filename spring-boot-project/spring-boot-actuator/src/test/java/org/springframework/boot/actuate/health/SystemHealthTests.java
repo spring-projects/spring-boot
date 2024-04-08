@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.health;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +41,7 @@ class SystemHealthTests {
 		Map<String, HealthComponent> components = new LinkedHashMap<>();
 		components.put("db1", Health.up().build());
 		components.put("db2", Health.down().withDetail("a", "b").build());
-		Set<String> groups = new LinkedHashSet<>(Arrays.asList("liveness", "readiness"));
+		Set<String> groups = new LinkedHashSet<>(List.of("liveness", "readiness"));
 		CompositeHealth health = new SystemHealth(ApiVersion.V3, Status.UP, components, groups);
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(health);

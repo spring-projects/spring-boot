@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import java.util.Arrays;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -72,7 +72,7 @@ public class JndiConnectionFactoryAutoConfiguration {
 			}
 		}
 		throw new IllegalStateException(
-				"Unable to find ConnectionFactory in JNDI locations " + Arrays.asList(JNDI_LOCATIONS));
+				"Unable to find ConnectionFactory in JNDI locations " + List.of(JNDI_LOCATIONS));
 	}
 
 	/**

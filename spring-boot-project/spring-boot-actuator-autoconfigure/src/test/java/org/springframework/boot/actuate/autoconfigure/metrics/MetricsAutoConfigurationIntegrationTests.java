@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -167,7 +167,7 @@ class MetricsAutoConfigurationIntegrationTests {
 		@Bean
 		CompositeMeterRegistry compositeMeterRegistry() {
 			return new CompositeMeterRegistry(new MockClock(),
-					Arrays.asList(new SimpleMeterRegistry(), new SimpleMeterRegistry()));
+					List.of(new SimpleMeterRegistry(), new SimpleMeterRegistry()));
 		}
 
 	}

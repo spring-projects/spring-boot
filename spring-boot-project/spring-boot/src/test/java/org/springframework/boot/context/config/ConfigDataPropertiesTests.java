@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.config;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +49,7 @@ class ConfigDataPropertiesTests {
 		ConfigDataLocation l1 = ConfigDataLocation.of("one");
 		ConfigDataLocation l2 = ConfigDataLocation.of("two");
 		ConfigDataLocation l3 = ConfigDataLocation.of("three");
-		List<ConfigDataLocation> imports = Arrays.asList(l1, l2, l3);
+		List<ConfigDataLocation> imports = List.of(l1, l2, l3);
 		ConfigDataProperties properties = new ConfigDataProperties(imports, null);
 		assertThat(properties.getImports()).containsExactly(l1, l2, l3);
 	}

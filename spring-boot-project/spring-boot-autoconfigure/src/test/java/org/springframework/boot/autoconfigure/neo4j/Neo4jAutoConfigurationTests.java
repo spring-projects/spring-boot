@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -329,7 +329,7 @@ class Neo4jAutoConfigurationTests {
 
 	private Config mapDriverConfig(Neo4jProperties properties, ConfigBuilderCustomizer... customizers) {
 		return new Neo4jAutoConfiguration().mapDriverConfig(properties,
-				new PropertiesNeo4jConnectionDetails(properties, null), Arrays.asList(customizers));
+				new PropertiesNeo4jConnectionDetails(properties, null), List.of(customizers));
 	}
 
 }

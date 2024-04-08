@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
-import java.util.Arrays;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -52,7 +52,7 @@ class QuartzDataSourceScriptDatabaseInitializerTests {
 	void customizeSetCommentPrefixes() {
 		QuartzProperties properties = new QuartzProperties();
 		properties.getJdbc().setPlatform("test");
-		properties.getJdbc().setCommentPrefix(Arrays.asList("##", "--"));
+		properties.getJdbc().setCommentPrefix(List.of("##", "--"));
 		QuartzDataSourceScriptDatabaseInitializer initializer = new QuartzDataSourceScriptDatabaseInitializer(
 				mock(DataSource.class), properties);
 		ResourceDatabasePopulator populator = mock(ResourceDatabasePopulator.class);

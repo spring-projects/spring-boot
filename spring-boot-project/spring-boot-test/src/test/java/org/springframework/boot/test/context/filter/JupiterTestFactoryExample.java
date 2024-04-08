@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.context.filter;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
@@ -27,7 +27,7 @@ class JupiterTestFactoryExample {
 
 	@TestFactory
 	Collection<DynamicNode> testFactory() {
-		return Arrays.asList(DynamicTest.dynamicTest("Some dynamic test", () -> {
+		return List.of(DynamicTest.dynamicTest("Some dynamic test", () -> {
 			// Test
 		}));
 	}

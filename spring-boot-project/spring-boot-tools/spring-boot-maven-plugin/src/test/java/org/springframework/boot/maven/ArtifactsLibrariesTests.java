@@ -18,9 +18,9 @@ package org.springframework.boot.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
@@ -125,7 +125,7 @@ class ArtifactsLibrariesTests {
 		given(artifact2.getBaseVersion()).willReturn("1.0");
 		given(artifact2.getFile()).willReturn(new File("a"));
 		given(artifact2.getArtifactHandler()).willReturn(this.artifactHandler);
-		this.artifacts = new LinkedHashSet<>(Arrays.asList(artifact1, artifact2));
+		this.artifacts = new LinkedHashSet<>(List.of(artifact1, artifact2));
 		this.libs = new ArtifactsLibraries(this.artifacts, Collections.emptyList(), null, mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
 		then(this.callback).should(times(2)).library(this.libraryCaptor.capture());

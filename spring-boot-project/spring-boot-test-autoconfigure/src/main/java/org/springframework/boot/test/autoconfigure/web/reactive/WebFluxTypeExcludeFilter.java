@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
@@ -94,7 +94,7 @@ public final class WebFluxTypeExcludeFilter extends StandardAnnotationCustomizab
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<>(Arrays.asList(this.controllers));
+		return new LinkedHashSet<>(List.of(this.controllers));
 	}
 
 }

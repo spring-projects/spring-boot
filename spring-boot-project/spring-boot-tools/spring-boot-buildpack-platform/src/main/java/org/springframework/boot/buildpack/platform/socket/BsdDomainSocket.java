@@ -18,7 +18,6 @@ package org.springframework.boot.buildpack.platform.socket;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 import com.sun.jna.LastErrorException;
@@ -75,7 +74,7 @@ class BsdDomainSocket extends DomainSocket {
 
 		@Override
 		protected List<String> getFieldOrder() {
-			return Arrays.asList("sunLen", "sunFamily", "sunPath");
+			return List.of("sunLen", "sunFamily", "sunPath");
 		}
 
 	}

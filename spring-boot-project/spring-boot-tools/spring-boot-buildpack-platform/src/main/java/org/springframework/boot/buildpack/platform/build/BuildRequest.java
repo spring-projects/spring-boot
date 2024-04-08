@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.File;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -267,7 +266,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withBuildpacks(BuildpackReference... buildpacks) {
 		Assert.notEmpty(buildpacks, "Buildpacks must not be empty");
-		return withBuildpacks(Arrays.asList(buildpacks));
+		return withBuildpacks(List.of(buildpacks));
 	}
 
 	/**
@@ -292,7 +291,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withBindings(Binding... bindings) {
 		Assert.notEmpty(bindings, "Bindings must not be empty");
-		return withBindings(Arrays.asList(bindings));
+		return withBindings(List.of(bindings));
 	}
 
 	/**
@@ -329,7 +328,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withTags(ImageReference... tags) {
 		Assert.notEmpty(tags, "Tags must not be empty");
-		return withTags(Arrays.asList(tags));
+		return withTags(List.of(tags));
 	}
 
 	/**

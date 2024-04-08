@@ -16,12 +16,12 @@
 
 package org.springframework.boot.builder;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -295,7 +295,7 @@ public class SpringApplicationBuilder {
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder sources(Class<?>... sources) {
-		this.sources.addAll(new LinkedHashSet<>(Arrays.asList(sources)));
+		this.sources.addAll(new LinkedHashSet<>(List.of(sources)));
 		return this;
 	}
 
@@ -495,7 +495,7 @@ public class SpringApplicationBuilder {
 	 * @return the current builder
 	 */
 	public SpringApplicationBuilder profiles(String... profiles) {
-		this.additionalProfiles.addAll(Arrays.asList(profiles));
+		this.additionalProfiles.addAll(List.of(profiles));
 		this.application.setAdditionalProfiles(StringUtils.toStringArray(this.additionalProfiles));
 		return this;
 	}

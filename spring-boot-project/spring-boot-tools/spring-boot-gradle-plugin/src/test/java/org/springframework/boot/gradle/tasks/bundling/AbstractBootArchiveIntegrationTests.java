@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -369,8 +368,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(this.classesPath + "static/file.txt")).isNotNull();
 			indexedLayers = readLayerIndex(jarFile);
 		}
-		List<String> layerNames = Arrays.asList("dependencies", "spring-boot-loader", "snapshot-dependencies",
-				"application");
+		List<String> layerNames = List.of("dependencies", "spring-boot-loader", "snapshot-dependencies", "application");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedDependencies = new TreeSet<>();
 		expectedDependencies.add(this.libPath + "commons-lang3-3.9.jar");
@@ -424,8 +422,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(this.classesPath + "static/file.txt")).isNotNull();
 			indexedLayers = readLayerIndex(jarFile);
 		}
-		List<String> layerNames = Arrays.asList("dependencies", "spring-boot-loader", "snapshot-dependencies",
-				"application");
+		List<String> layerNames = List.of("dependencies", "spring-boot-loader", "snapshot-dependencies", "application");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedDependencies = new TreeSet<>();
 		expectedDependencies.add(this.libPath + "commons-lang3-3.9.jar");
@@ -468,8 +465,8 @@ abstract class AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(this.indexPath + "layers.idx")).isNotNull();
 			indexedLayers = readLayerIndex(jarFile);
 		}
-		List<String> layerNames = Arrays.asList("dependencies", "commons-dependencies", "snapshot-dependencies",
-				"static", "app");
+		List<String> layerNames = List.of("dependencies", "commons-dependencies", "snapshot-dependencies", "static",
+				"app");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedDependencies = new TreeSet<>();
 		expectedDependencies.add(this.libPath + "spring-core-5.2.5.RELEASE.jar");
@@ -484,7 +481,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
 		String[] appLayerContents = getExpectedApplicationLayerContents(this.classesPath + "example/");
 		assertThat(appLayer).containsSubsequence(appLayerContents);
-		appLayer.removeAll(Arrays.asList(appLayerContents));
+		appLayer.removeAll(List.of(appLayerContents));
 		assertThat(appLayer).containsExactly("org/");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -518,7 +515,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(this.indexPath + "layers.idx")).isNotNull();
 			indexedLayers = readLayerIndex(jarFile);
 		}
-		List<String> layerNames = Arrays.asList("dependencies", "commons-dependencies", "snapshot-dependencies",
+		List<String> layerNames = List.of("dependencies", "commons-dependencies", "snapshot-dependencies",
 				"subproject-dependencies", "static", "app");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedSubprojectDependencies = new TreeSet<>();
@@ -540,7 +537,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
 		String[] appLayerContents = getExpectedApplicationLayerContents(this.classesPath + "example/");
 		assertThat(appLayer).containsSubsequence(appLayerContents);
-		appLayer.removeAll(Arrays.asList(appLayerContents));
+		appLayer.removeAll(List.of(appLayerContents));
 		assertThat(appLayer).containsExactly("org/");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

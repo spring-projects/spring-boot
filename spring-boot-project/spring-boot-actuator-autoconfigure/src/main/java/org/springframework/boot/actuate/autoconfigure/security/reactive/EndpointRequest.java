@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.security.reactive;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -162,11 +161,11 @@ public final class EndpointRequest {
 		}
 
 		private EndpointServerWebExchangeMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(List.of((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointServerWebExchangeMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(List.of((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointServerWebExchangeMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
@@ -178,13 +177,13 @@ public final class EndpointRequest {
 
 		public EndpointServerWebExchangeMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
-			excludes.addAll(Arrays.asList((Object[]) endpoints));
+			excludes.addAll(List.of((Object[]) endpoints));
 			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks);
 		}
 
 		public EndpointServerWebExchangeMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
-			excludes.addAll(Arrays.asList((Object[]) endpoints));
+			excludes.addAll(List.of((Object[]) endpoints));
 			return new EndpointServerWebExchangeMatcher(this.includes, excludes, this.includeLinks);
 		}
 

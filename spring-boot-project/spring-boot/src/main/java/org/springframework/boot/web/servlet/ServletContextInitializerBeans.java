@@ -18,7 +18,6 @@ package org.springframework.boot.web.servlet;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -81,7 +80,7 @@ public class ServletContextInitializerBeans extends AbstractCollection<ServletCo
 	public ServletContextInitializerBeans(ListableBeanFactory beanFactory,
 			Class<? extends ServletContextInitializer>... initializerTypes) {
 		this.initializers = new LinkedMultiValueMap<>();
-		this.initializerTypes = (initializerTypes.length != 0) ? Arrays.asList(initializerTypes)
+		this.initializerTypes = (initializerTypes.length != 0) ? List.of(initializerTypes)
 				: Collections.singletonList(ServletContextInitializer.class);
 		addServletContextInitializerBeans(beanFactory);
 		addAdaptableBeans(beanFactory);

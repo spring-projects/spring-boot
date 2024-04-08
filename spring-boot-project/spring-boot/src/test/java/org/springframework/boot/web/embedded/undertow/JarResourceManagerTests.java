@@ -23,7 +23,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -88,7 +87,7 @@ class JarResourceManagerTests {
 		}
 		File troublesomeNameJar = new File(tempDir, "test##1.0.jar");
 		FileCopyUtils.copy(jar, troublesomeNameJar);
-		return Arrays.asList(Arguments.of(jar.getName(), new JarResourceManager(jar)),
+		return List.of(Arguments.of(jar.getName(), new JarResourceManager(jar)),
 				Arguments.of(troublesomeNameJar.getName(), new JarResourceManager(troublesomeNameJar)));
 	}
 

@@ -19,7 +19,6 @@ package org.springframework.boot.devtools.tests;
 import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -59,9 +58,9 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 	@Override
 	public LaunchedApplication launchApplication(JvmLauncher javaLauncher, File serverPortFile,
 			String... additionalArgs) throws Exception {
-		List<String> args = new ArrayList<>(Arrays.asList("com.example.DevToolsTestApplication",
+		List<String> args = new ArrayList<>(List.of("com.example.DevToolsTestApplication",
 				serverPortFile.getAbsolutePath(), "--server.port=0", "--spring.devtools.remote.secret=secret"));
-		args.addAll(Arrays.asList(additionalArgs));
+		args.addAll(List.of(additionalArgs));
 		LaunchedJvm applicationJvm = javaLauncher.launch("app", createApplicationClassPath(),
 				args.toArray(new String[] {}));
 		int port = awaitServerPort(applicationJvm, serverPortFile);

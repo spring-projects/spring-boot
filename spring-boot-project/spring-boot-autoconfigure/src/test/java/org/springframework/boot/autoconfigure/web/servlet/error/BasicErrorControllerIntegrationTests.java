@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Parameter;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -366,7 +365,7 @@ class BasicErrorControllerIntegrationTests {
 		List<String> args = new ArrayList<>();
 		args.add("--server.port=0");
 		if (arguments != null) {
-			args.addAll(Arrays.asList(arguments));
+			args.addAll(List.of(arguments));
 		}
 		this.context = SpringApplication.run(TestConfiguration.class, StringUtils.toStringArray(args));
 	}

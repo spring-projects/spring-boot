@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -61,7 +60,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	 * @return the configuration file names
 	 */
 	protected List<String> getFileNames(ClassLoader classLoader) {
-		return Arrays.asList(StandardConfigDataLocationResolver.DEFAULT_CONFIG_NAMES);
+		return List.of(StandardConfigDataLocationResolver.DEFAULT_CONFIG_NAMES);
 	}
 
 	/**

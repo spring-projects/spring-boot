@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -39,7 +38,7 @@ public class ConfigurationMetadata {
 	private static final Set<Character> SEPARATORS;
 
 	static {
-		List<Character> chars = Arrays.asList('-', '_');
+		List<Character> chars = List.of('-', '_');
 		SEPARATORS = Collections.unmodifiableSet(new HashSet<>(chars));
 	}
 

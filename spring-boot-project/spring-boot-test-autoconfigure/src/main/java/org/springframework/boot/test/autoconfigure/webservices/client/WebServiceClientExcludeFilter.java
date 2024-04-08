@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.webservices.client;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.context.TypeExcludeFilter;
@@ -41,7 +41,7 @@ public final class WebServiceClientExcludeFilter
 
 	@Override
 	protected Set<Class<?>> getComponentIncludes() {
-		return new LinkedHashSet<>(Arrays.asList(this.components));
+		return new LinkedHashSet<>(List.of(this.components));
 	}
 
 }

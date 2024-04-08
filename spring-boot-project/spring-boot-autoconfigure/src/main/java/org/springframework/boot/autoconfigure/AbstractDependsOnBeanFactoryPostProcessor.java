@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -64,7 +65,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 			Class<? extends FactoryBean<?>> factoryBeanClass, String... dependsOn) {
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
-		this.dependsOn = (beanFactory) -> new HashSet<>(Arrays.asList(dependsOn));
+		this.dependsOn = (beanFactory) -> new HashSet<>(List.of(dependsOn));
 	}
 
 	/**

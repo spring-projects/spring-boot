@@ -21,7 +21,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -201,7 +200,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	@Override
 	public void addInitializers(ServletContextInitializer... initializers) {
 		Assert.notNull(initializers, "Initializers must not be null");
-		this.initializers.addAll(Arrays.asList(initializers));
+		this.initializers.addAll(List.of(initializers));
 	}
 
 	public Jsp getJsp() {
@@ -254,7 +253,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	@Override
 	public void addCookieSameSiteSuppliers(CookieSameSiteSupplier... cookieSameSiteSuppliers) {
 		Assert.notNull(cookieSameSiteSuppliers, "CookieSameSiteSuppliers must not be null");
-		this.cookieSameSiteSuppliers.addAll(Arrays.asList(cookieSameSiteSuppliers));
+		this.cookieSameSiteSuppliers.addAll(List.of(cookieSameSiteSuppliers));
 	}
 
 	public List<CookieSameSiteSupplier> getCookieSameSiteSuppliers() {
@@ -272,7 +271,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 		List<ServletContextInitializer> mergedInitializers = new ArrayList<>();
 		mergedInitializers.add((servletContext) -> this.initParameters.forEach(servletContext::setInitParameter));
 		mergedInitializers.add(new SessionConfiguringInitializer(this.session));
-		mergedInitializers.addAll(Arrays.asList(initializers));
+		mergedInitializers.addAll(List.of(initializers));
 		mergedInitializers.addAll(this.initializers);
 		return mergedInitializers.toArray(new ServletContextInitializer[0]);
 	}
@@ -309,7 +308,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	@Override
 	public void addWebListeners(String... webListenerClassNames) {
-		this.webListenerClassNames.addAll(Arrays.asList(webListenerClassNames));
+		this.webListenerClassNames.addAll(List.of(webListenerClassNames));
 	}
 
 	protected final Set<String> getWebListenerClassNames() {

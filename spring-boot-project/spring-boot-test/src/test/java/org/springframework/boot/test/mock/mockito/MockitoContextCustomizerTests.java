@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -43,8 +43,8 @@ class MockitoContextCustomizerTests {
 		MockDefinition d1 = createTestMockDefinition(ExampleService.class);
 		MockDefinition d2 = createTestMockDefinition(ExampleServiceCaller.class);
 		MockitoContextCustomizer c1 = new MockitoContextCustomizer(NO_DEFINITIONS);
-		MockitoContextCustomizer c2 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d1, d2)));
-		MockitoContextCustomizer c3 = new MockitoContextCustomizer(new LinkedHashSet<>(Arrays.asList(d2, d1)));
+		MockitoContextCustomizer c2 = new MockitoContextCustomizer(new LinkedHashSet<>(List.of(d1, d2)));
+		MockitoContextCustomizer c3 = new MockitoContextCustomizer(new LinkedHashSet<>(List.of(d2, d1)));
 		assertThat(c2).hasSameHashCodeAs(c3);
 		assertThat(c1).isEqualTo(c1).isNotEqualTo(c2);
 		assertThat(c2).isEqualTo(c2).isEqualTo(c3).isNotEqualTo(c1);

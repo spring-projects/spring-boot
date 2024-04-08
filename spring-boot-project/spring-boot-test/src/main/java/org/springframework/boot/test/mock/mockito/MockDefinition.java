@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.mockito.Answers;
@@ -63,7 +63,7 @@ class MockDefinition extends Definition {
 	private Set<Class<?>> asClassSet(Class<?>[] classes) {
 		Set<Class<?>> classSet = new LinkedHashSet<>();
 		if (classes != null) {
-			classSet.addAll(Arrays.asList(classes));
+			classSet.addAll(List.of(classes));
 		}
 		return Collections.unmodifiableSet(classSet);
 	}

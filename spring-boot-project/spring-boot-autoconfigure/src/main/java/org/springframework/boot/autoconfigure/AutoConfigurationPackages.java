@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -145,7 +144,7 @@ public abstract class AutoConfigurationPackages {
 		PackageImports(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
-			List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
+			List<String> packageNames = new ArrayList<>(List.of(attributes.getStringArray("basePackages")));
 			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
 				packageNames.add(basePackageClass.getPackage().getName());
 			}

@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -145,7 +144,7 @@ class ProfilesTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.profiles.active", "d,e,f");
 		Binder binder = Binder.get(environment);
-		Profiles profiles = new Profiles(environment, binder, Arrays.asList("a", "b", "c"));
+		Profiles profiles = new Profiles(environment, binder, List.of("a", "b", "c"));
 		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 

@@ -173,7 +173,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder messageConverters(HttpMessageConverter<?>... messageConverters) {
 		Assert.notNull(messageConverters, "MessageConverters must not be null");
-		return messageConverters(Arrays.asList(messageConverters));
+		return messageConverters(List.of(messageConverters));
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder additionalMessageConverters(HttpMessageConverter<?>... messageConverters) {
 		Assert.notNull(messageConverters, "MessageConverters must not be null");
-		return additionalMessageConverters(Arrays.asList(messageConverters));
+		return additionalMessageConverters(List.of(messageConverters));
 	}
 
 	/**
@@ -248,7 +248,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder interceptors(ClientHttpRequestInterceptor... interceptors) {
 		Assert.notNull(interceptors, "interceptors must not be null");
-		return interceptors(Arrays.asList(interceptors));
+		return interceptors(List.of(interceptors));
 	}
 
 	/**
@@ -278,7 +278,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder additionalInterceptors(ClientHttpRequestInterceptor... interceptors) {
 		Assert.notNull(interceptors, "interceptors must not be null");
-		return additionalInterceptors(Arrays.asList(interceptors));
+		return additionalInterceptors(List.of(interceptors));
 	}
 
 	/**
@@ -475,7 +475,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder customizers(RestTemplateCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return customizers(Arrays.asList(customizers));
+		return customizers(List.of(customizers));
 	}
 
 	/**
@@ -505,7 +505,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder additionalCustomizers(RestTemplateCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return additionalCustomizers(Arrays.asList(customizers));
+		return additionalCustomizers(List.of(customizers));
 	}
 
 	/**
@@ -536,7 +536,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder requestCustomizers(RestTemplateRequestCustomizer<?>... requestCustomizers) {
 		Assert.notNull(requestCustomizers, "RequestCustomizers must not be null");
-		return requestCustomizers(Arrays.asList(requestCustomizers));
+		return requestCustomizers(List.of(requestCustomizers));
 	}
 
 	/**
@@ -569,7 +569,7 @@ public class RestTemplateBuilder {
 	 */
 	public RestTemplateBuilder additionalRequestCustomizers(RestTemplateRequestCustomizer<?>... requestCustomizers) {
 		Assert.notNull(requestCustomizers, "RequestCustomizers must not be null");
-		return additionalRequestCustomizers(Arrays.asList(requestCustomizers));
+		return additionalRequestCustomizers(List.of(requestCustomizers));
 	}
 
 	/**
@@ -675,7 +675,7 @@ public class RestTemplateBuilder {
 
 	@SuppressWarnings("unchecked")
 	private <T> Set<T> copiedSetOf(T... items) {
-		return copiedSetOf(Arrays.asList(items));
+		return copiedSetOf(List.of(items));
 	}
 
 	private <T> Set<T> copiedSetOf(Collection<? extends T> collection) {
@@ -683,7 +683,7 @@ public class RestTemplateBuilder {
 	}
 
 	private static <T> List<T> copiedListOf(T[] items) {
-		return Collections.unmodifiableList(Arrays.asList(Arrays.copyOf(items, items.length)));
+		return Collections.unmodifiableList(List.of(Arrays.copyOf(items, items.length)));
 	}
 
 	private static <T> Set<T> append(Collection<? extends T> collection, Collection<? extends T> additions) {

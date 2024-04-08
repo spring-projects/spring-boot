@@ -16,7 +16,6 @@
 
 package smoketest.actuator;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -121,7 +120,7 @@ class SampleActuatorApplicationTests {
 	@Test
 	void testHtmlErrorPage() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
 		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
 			.exchange("/foo", HttpMethod.GET, request, String.class);

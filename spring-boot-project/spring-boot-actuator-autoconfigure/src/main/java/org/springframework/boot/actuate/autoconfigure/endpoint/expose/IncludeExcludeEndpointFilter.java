@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.expose;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -150,7 +149,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		private final Set<EndpointId> endpointIds;
 
 		EndpointPatterns(String[] patterns) {
-			this((patterns != null) ? Arrays.asList(patterns) : null);
+			this((patterns != null) ? List.of(patterns) : null);
 		}
 
 		EndpointPatterns(Collection<String> patterns) {

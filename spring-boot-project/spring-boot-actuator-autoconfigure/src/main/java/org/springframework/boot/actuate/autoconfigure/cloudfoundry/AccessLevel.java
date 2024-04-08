@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,7 +45,7 @@ public enum AccessLevel {
 	private final List<String> ids;
 
 	AccessLevel(String... ids) {
-		this.ids = Arrays.asList(ids);
+		this.ids = List.of(ids);
 	}
 
 	/**

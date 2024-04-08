@@ -16,7 +16,6 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -143,7 +142,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 	private void registerPluginActions(Project project, Configuration bootArchives) {
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives,
 				project.getArtifacts());
-		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
+		List<PluginApplicationAction> actions = List.of(new JavaPluginAction(singlePublishedArtifact),
 				new WarPluginAction(singlePublishedArtifact), new DependencyManagementPluginAction(),
 				new ApplicationPluginAction(), new KotlinPluginAction(), new NativeImagePluginAction(),
 				new CycloneDxPluginAction());

@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -255,7 +254,7 @@ public final class ConfigData {
 			if (options.length == 0) {
 				return NONE;
 			}
-			return new Options(EnumSet.copyOf(Arrays.asList(options)));
+			return new Options(EnumSet.copyOf(List.of(options)));
 		}
 
 	}

@@ -16,9 +16,9 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.servlet.MultipartConfigElement;
@@ -90,7 +90,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
 		this.servlet = servlet;
 		this.alwaysMapUrl = alwaysMapUrl;
-		this.urlMappings.addAll(Arrays.asList(urlMappings));
+		this.urlMappings.addAll(List.of(urlMappings));
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 */
 	public void addUrlMappings(String... urlMappings) {
 		Assert.notNull(urlMappings, "UrlMappings must not be null");
-		this.urlMappings.addAll(Arrays.asList(urlMappings));
+		this.urlMappings.addAll(List.of(urlMappings));
 	}
 
 	/**

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.loader.tools.layer;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,8 +59,8 @@ class IncludeExcludeContentSelectorTests {
 
 	@Test
 	void containsWhenEmptyIncludesAndEmptyExcludesReturnsTrue() {
-		List<String> includes = Arrays.asList();
-		List<String> excludes = Arrays.asList();
+		List<String> includes = Collections.emptyList();
+		List<String> excludes = Collections.emptyList();
 		IncludeExcludeContentSelector<String> selector = new IncludeExcludeContentSelector<>(LAYER, includes, excludes,
 				TestContentsFilter::new);
 		assertThat(selector.contains("A")).isTrue();
@@ -78,8 +77,8 @@ class IncludeExcludeContentSelectorTests {
 
 	@Test
 	void containsWhenEmptyIncludesAndNotExcludedReturnsTrue() {
-		List<String> includes = Arrays.asList();
-		List<String> excludes = Arrays.asList("B");
+		List<String> includes = Collections.emptyList();
+		List<String> excludes = List.of("B");
 		IncludeExcludeContentSelector<String> selector = new IncludeExcludeContentSelector<>(LAYER, includes, excludes,
 				TestContentsFilter::new);
 		assertThat(selector.contains("A")).isTrue();
@@ -87,8 +86,8 @@ class IncludeExcludeContentSelectorTests {
 
 	@Test
 	void containsWhenEmptyIncludesAndExcludedReturnsFalse() {
-		List<String> includes = Arrays.asList();
-		List<String> excludes = Arrays.asList("A");
+		List<String> includes = Collections.emptyList();
+		List<String> excludes = List.of("A");
 		IncludeExcludeContentSelector<String> selector = new IncludeExcludeContentSelector<>(LAYER, includes, excludes,
 				TestContentsFilter::new);
 		assertThat(selector.contains("A")).isFalse();
@@ -96,8 +95,8 @@ class IncludeExcludeContentSelectorTests {
 
 	@Test
 	void containsWhenIncludedAndEmptyExcludesReturnsTrue() {
-		List<String> includes = Arrays.asList("A", "B");
-		List<String> excludes = Arrays.asList();
+		List<String> includes = List.of("A", "B");
+		List<String> excludes = Collections.emptyList();
 		IncludeExcludeContentSelector<String> selector = new IncludeExcludeContentSelector<>(LAYER, includes, excludes,
 				TestContentsFilter::new);
 		assertThat(selector.contains("B")).isTrue();
@@ -105,8 +104,8 @@ class IncludeExcludeContentSelectorTests {
 
 	@Test
 	void containsWhenIncludedAndNotExcludedReturnsTrue() {
-		List<String> includes = Arrays.asList("A", "B");
-		List<String> excludes = Arrays.asList("C", "D");
+		List<String> includes = List.of("A", "B");
+		List<String> excludes = List.of("C", "D");
 		IncludeExcludeContentSelector<String> selector = new IncludeExcludeContentSelector<>(LAYER, includes, excludes,
 				TestContentsFilter::new);
 		assertThat(selector.contains("B")).isTrue();
@@ -114,8 +113,8 @@ class IncludeExcludeContentSelectorTests {
 
 	@Test
 	void containsWhenIncludedAndExcludedReturnsFalse() {
-		List<String> includes = Arrays.asList("A", "B");
-		List<String> excludes = Arrays.asList("C", "D");
+		List<String> includes = List.of("A", "B");
+		List<String> excludes = List.of("C", "D");
 		IncludeExcludeContentSelector<String> selector = new IncludeExcludeContentSelector<>(LAYER, includes, excludes,
 				TestContentsFilter::new);
 		assertThat(selector.contains("C")).isFalse();

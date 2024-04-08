@@ -21,7 +21,7 @@ import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.CodeSource;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -146,7 +146,7 @@ class DocumentRoot {
 	}
 
 	private void logNoDocumentRoots() {
-		this.logger.debug("None of the document roots " + Arrays.asList(COMMON_DOC_ROOTS)
+		this.logger.debug("None of the document roots " + List.of(COMMON_DOC_ROOTS)
 				+ " point to a directory and will be ignored.");
 	}
 

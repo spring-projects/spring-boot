@@ -21,10 +21,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.function.Predicate;
 
 import org.springframework.core.SmartClassLoader;
@@ -81,7 +81,7 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	@SafeVarargs
 	@SuppressWarnings("varargs")
 	public FilteredClassLoader(Predicate<String>... filters) {
-		this(Arrays.asList(filters), Arrays.asList(filters));
+		this(List.of(filters), List.of(filters));
 	}
 
 	private FilteredClassLoader(Collection<Predicate<String>> classesFilters,

@@ -27,9 +27,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
@@ -131,7 +131,7 @@ class ExtractLayersCommandTests {
 	void runWhenHasLayerParamsExtractsLimitedLayers() {
 		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
-		this.command.run(System.out, Collections.emptyMap(), Arrays.asList("a", "c"));
+		this.command.run(System.out, Collections.emptyMap(), List.of("a", "c"));
 		assertThat(this.extract.list()).containsOnly("a", "c");
 		assertThat(new File(this.extract, "a/a/a.jar")).exists().satisfies(this::timeAttributes);
 		assertThat(new File(this.extract, "c/c/c.jar")).exists().satisfies(this::timeAttributes);
@@ -217,7 +217,7 @@ class ExtractLayersCommandTests {
 
 		@Override
 		public Iterator<String> iterator() {
-			return Arrays.asList("a", "b", "c", "d").iterator();
+			return List.of("a", "b", "c", "d").iterator();
 		}
 
 		@Override

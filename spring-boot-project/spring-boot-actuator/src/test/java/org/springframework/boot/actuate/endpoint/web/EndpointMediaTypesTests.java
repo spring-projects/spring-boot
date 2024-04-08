@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,14 +64,14 @@ class EndpointMediaTypesTests {
 
 	@Test
 	void getProducedShouldReturnProduced() {
-		List<String> produced = Arrays.asList("a", "b", "c");
+		List<String> produced = List.of("a", "b", "c");
 		EndpointMediaTypes types = new EndpointMediaTypes(produced, Collections.emptyList());
 		assertThat(types.getProduced()).isEqualTo(produced);
 	}
 
 	@Test
 	void getConsumedShouldReturnConsumed() {
-		List<String> consumed = Arrays.asList("a", "b", "c");
+		List<String> consumed = List.of("a", "b", "c");
 		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(), consumed);
 		assertThat(types.getConsumed()).isEqualTo(consumed);
 	}

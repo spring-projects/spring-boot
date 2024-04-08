@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -164,7 +163,7 @@ class DependencyFilterMojoTests {
 		}
 
 		Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
-			Set<Artifact> input = new LinkedHashSet<>(Arrays.asList(artifacts));
+			Set<Artifact> input = new LinkedHashSet<>(List.of(artifacts));
 			return filterDependencies(input, this.additionalFilters);
 		}
 

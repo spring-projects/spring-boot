@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -113,7 +114,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(UndertowBuilderCustomizer.class));
-		factory.setBuilderCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setBuilderCustomizers(List.of(customizers[0], customizers[1]));
 		factory.addBuilderCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -142,7 +143,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		UndertowServletWebServerFactory factory = getFactory();
 		UndertowDeploymentInfoCustomizer[] customizers = new UndertowDeploymentInfoCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(UndertowDeploymentInfoCustomizer.class));
-		factory.setDeploymentInfoCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setDeploymentInfoCustomizers(List.of(customizers[0], customizers[1]));
 		factory.addDeploymentInfoCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) customizers);

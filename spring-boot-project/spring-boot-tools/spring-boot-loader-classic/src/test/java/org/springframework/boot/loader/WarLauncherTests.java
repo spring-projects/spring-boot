@@ -20,7 +20,6 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -83,7 +82,7 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 
 	@Test
 	void warFilesPresentInWebInfLibsAndNotInClasspathIndexShouldBeAddedAfterWebInfClasses() throws Exception {
-		ArrayList<String> extraLibs = new ArrayList<>(Arrays.asList("extra-1.jar", "extra-2.jar"));
+		ArrayList<String> extraLibs = new ArrayList<>(List.of("extra-1.jar", "extra-2.jar"));
 		File explodedRoot = explode(createJarArchive("archive.war", "WEB-INF", true, extraLibs));
 		WarLauncher launcher = new WarLauncher(new ExplodedArchive(explodedRoot, true));
 		Iterator<Archive> archives = launcher.getClassPathArchivesIterator();

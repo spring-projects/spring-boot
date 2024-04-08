@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.util;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -52,7 +52,7 @@ class TestPropertyValuesTests {
 
 	@Test
 	void ofIterableCreatesValues() {
-		TestPropertyValues.of(Arrays.asList("spring:boot", "version:latest")).applyTo(this.environment);
+		TestPropertyValues.of(List.of("spring:boot", "version:latest")).applyTo(this.environment);
 		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
 		assertThat(this.environment.getProperty("version")).isEqualTo("latest");
 	}

@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -196,11 +195,11 @@ public final class EndpointRequest {
 		}
 
 		private EndpointRequestMatcher(Class<?>[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(List.of((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointRequestMatcher(String[] endpoints, boolean includeLinks) {
-			this(Arrays.asList((Object[]) endpoints), Collections.emptyList(), includeLinks);
+			this(List.of((Object[]) endpoints), Collections.emptyList(), includeLinks);
 		}
 
 		private EndpointRequestMatcher(List<Object> includes, List<Object> excludes, boolean includeLinks) {
@@ -211,13 +210,13 @@ public final class EndpointRequest {
 
 		public EndpointRequestMatcher excluding(Class<?>... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
-			excludes.addAll(Arrays.asList((Object[]) endpoints));
+			excludes.addAll(List.of((Object[]) endpoints));
 			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
 		}
 
 		public EndpointRequestMatcher excluding(String... endpoints) {
 			List<Object> excludes = new ArrayList<>(this.excludes);
-			excludes.addAll(Arrays.asList((Object[]) endpoints));
+			excludes.addAll(List.of((Object[]) endpoints));
 			return new EndpointRequestMatcher(this.includes, excludes, this.includeLinks);
 		}
 

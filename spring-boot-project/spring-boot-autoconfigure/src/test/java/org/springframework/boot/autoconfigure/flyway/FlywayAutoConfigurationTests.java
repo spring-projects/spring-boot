@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -367,7 +367,7 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
-				assertThat(Arrays.asList(flyway.getConfiguration().getSchemas())).hasToString("[public]");
+				assertThat(List.of(flyway.getConfiguration().getSchemas())).hasToString("[public]");
 			});
 	}
 

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.mustache;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.samskivert.mustache.Mustache;
@@ -205,7 +205,7 @@ class MustacheAutoConfigurationTests {
 	void mediaTypesCanBeCustomizedOnReactiveViewResolver() {
 		assertViewResolverProperty(ViewResolverKind.REACTIVE,
 				"spring.mustache.reactive.media-types=text/xml;charset=UTF-8,text/plain;charset=UTF-16", "mediaTypes",
-				Arrays.asList(MediaType.parseMediaType("text/xml;charset=UTF-8"),
+				List.of(MediaType.parseMediaType("text/xml;charset=UTF-8"),
 						MediaType.parseMediaType("text/plain;charset=UTF-16")));
 	}
 

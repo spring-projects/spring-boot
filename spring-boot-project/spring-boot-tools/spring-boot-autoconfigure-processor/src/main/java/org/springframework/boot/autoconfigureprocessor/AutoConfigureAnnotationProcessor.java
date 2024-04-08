@@ -21,7 +21,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -226,7 +225,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		private final Set<String> names;
 
 		NamedValuesExtractor(String... names) {
-			this.names = new HashSet<>(Arrays.asList(names));
+			this.names = new HashSet<>(List.of(names));
 		}
 
 		@Override

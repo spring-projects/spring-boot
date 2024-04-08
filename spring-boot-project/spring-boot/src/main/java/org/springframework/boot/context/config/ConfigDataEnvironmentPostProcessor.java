@@ -16,9 +16,9 @@
 
 package org.springframework.boot.context.config;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
@@ -124,7 +124,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	 */
 	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			ConfigurableBootstrapContext bootstrapContext, String... additionalProfiles) {
-		applyTo(environment, resourceLoader, bootstrapContext, Arrays.asList(additionalProfiles));
+		applyTo(environment, resourceLoader, bootstrapContext, List.of(additionalProfiles));
 	}
 
 	/**

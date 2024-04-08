@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.http;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,7 +84,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 	 * used for further converter manipulation.
 	 */
 	public HttpMessageConverters(HttpMessageConverter<?>... additionalConverters) {
-		this(Arrays.asList(additionalConverters));
+		this(List.of(additionalConverters));
 	}
 
 	/**

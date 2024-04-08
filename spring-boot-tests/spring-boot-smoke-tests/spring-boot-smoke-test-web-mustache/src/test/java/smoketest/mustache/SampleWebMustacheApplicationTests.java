@@ -16,7 +16,7 @@
 
 package smoketest.mustache;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +55,7 @@ class SampleWebMustacheApplicationTests {
 	@Test
 	void testMustacheErrorTemplate() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> responseEntity = this.restTemplate.exchange("/does-not-exist", HttpMethod.GET,
 				requestEntity, String.class);
@@ -66,7 +66,7 @@ class SampleWebMustacheApplicationTests {
 	@Test
 	void test503HtmlResource() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/serviceUnavailable", HttpMethod.GET, requestEntity,
 				String.class);
@@ -77,7 +77,7 @@ class SampleWebMustacheApplicationTests {
 	@Test
 	void test5xxHtmlResource() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/bang", HttpMethod.GET, requestEntity,
 				String.class);
@@ -88,7 +88,7 @@ class SampleWebMustacheApplicationTests {
 	@Test
 	void test507Template() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> entity = this.restTemplate.exchange("/insufficientStorage", HttpMethod.GET,
 				requestEntity, String.class);

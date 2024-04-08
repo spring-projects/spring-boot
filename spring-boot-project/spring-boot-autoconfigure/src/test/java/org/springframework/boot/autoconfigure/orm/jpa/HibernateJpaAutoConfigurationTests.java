@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -491,8 +490,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void registersHintsForJtaClasses() {
 		RuntimeHints hints = new RuntimeHints();
 		new HibernateRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		for (String noJtaPlatformClass : Arrays.asList(
-				"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
+		for (String noJtaPlatformClass : List.of("org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
 				"org.hibernate.service.jta.platform.internal.NoJtaPlatform")) {
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(TypeReference.of(noJtaPlatformClass))
@@ -504,7 +502,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void registersHintsForNamingClasses() {
 		RuntimeHints hints = new RuntimeHints();
 		new HibernateRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		for (Class<?> noJtaPlatformClass : Arrays.asList(SpringImplicitNamingStrategy.class,
+		for (Class<?> noJtaPlatformClass : List.of(SpringImplicitNamingStrategy.class,
 				CamelCaseToUnderscoresNamingStrategy.class)) {
 			assertThat(RuntimeHintsPredicates.reflection()
 				.onType(noJtaPlatformClass)
@@ -615,7 +613,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	static class HideDataScriptClassLoader extends URLClassLoader {
 
-		private static final List<String> HIDDEN_RESOURCES = Arrays.asList("schema-all.sql", "schema.sql");
+		private static final List<String> HIDDEN_RESOURCES = List.of("schema-all.sql", "schema.sql");
 
 		HideDataScriptClassLoader() {
 			super(new URL[0], HideDataScriptClassLoader.class.getClassLoader());

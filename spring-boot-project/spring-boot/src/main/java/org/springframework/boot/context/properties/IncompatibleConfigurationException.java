@@ -33,7 +33,7 @@ public class IncompatibleConfigurationException extends RuntimeException {
 
 	public IncompatibleConfigurationException(String... incompatibleKeys) {
 		super("The following configuration properties have incompatible values: " + Arrays.toString(incompatibleKeys));
-		this.incompatibleKeys = Arrays.asList(incompatibleKeys);
+		this.incompatibleKeys = List.of(incompatibleKeys);
 	}
 
 	public Collection<String> getIncompatibleKeys() {

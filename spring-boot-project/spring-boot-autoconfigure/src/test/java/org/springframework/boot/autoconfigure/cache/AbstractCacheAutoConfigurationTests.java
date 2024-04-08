@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.cache;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +59,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 	protected ContextConsumer<AssertableApplicationContext> verifyCustomizers(String... expectedCustomizerNames) {
 		return (context) -> {
 			CacheManager cacheManager = getCacheManager(context, CacheManager.class);
-			List<String> expected = new ArrayList<>(Arrays.asList(expectedCustomizerNames));
+			List<String> expected = new ArrayList<>(List.of(expectedCustomizerNames));
 			Map<String, CacheManagerTestCustomizer> customizer = context
 				.getBeansOfType(CacheManagerTestCustomizer.class);
 			customizer.forEach((key, value) -> {

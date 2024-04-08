@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jdbc.metadata;
 
-import java.util.Arrays;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -67,7 +67,7 @@ class CompositeDataSourcePoolMetadataProviderTests {
 	@Test
 	void createWithProviders() {
 		CompositeDataSourcePoolMetadataProvider provider = new CompositeDataSourcePoolMetadataProvider(
-				Arrays.asList(this.firstProvider, this.secondProvider));
+				List.of(this.firstProvider, this.secondProvider));
 		assertThat(provider.getDataSourcePoolMetadata(this.firstDataSource)).isSameAs(this.first);
 		assertThat(provider.getDataSourcePoolMetadata(this.secondDataSource)).isSameAs(this.second);
 		assertThat(provider.getDataSourcePoolMetadata(this.unknownDataSource)).isNull();

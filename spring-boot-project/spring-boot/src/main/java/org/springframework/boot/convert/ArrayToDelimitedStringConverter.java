@@ -16,7 +16,6 @@
 
 package org.springframework.boot.convert;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +50,7 @@ final class ArrayToDelimitedStringConverter implements ConditionalGenericConvert
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		List<Object> list = Arrays.asList(ObjectUtils.toObjectArray(source));
+		List<Object> list = List.of(ObjectUtils.toObjectArray(source));
 		return this.delegate.convert(list, sourceType, targetType);
 	}
 

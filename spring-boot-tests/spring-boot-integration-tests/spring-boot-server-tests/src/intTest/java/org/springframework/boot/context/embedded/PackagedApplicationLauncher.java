@@ -17,7 +17,6 @@
 package org.springframework.boot.context.embedded;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,7 +43,7 @@ class PackagedApplicationLauncher extends AbstractApplicationLauncher {
 
 	@Override
 	protected List<String> getArguments(File archive, File serverPortFile) {
-		return Arrays.asList("-jar", archive.getAbsolutePath(), serverPortFile.getAbsolutePath());
+		return List.of("-jar", archive.getAbsolutePath(), serverPortFile.getAbsolutePath());
 	}
 
 }

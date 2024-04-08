@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.mockito.Mockito;
@@ -77,7 +77,7 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 	private void resetMocks(ConfigurableApplicationContext applicationContext, MockReset reset) {
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		String[] names = beanFactory.getBeanDefinitionNames();
-		Set<String> instantiatedSingletons = new HashSet<>(Arrays.asList(beanFactory.getSingletonNames()));
+		Set<String> instantiatedSingletons = new HashSet<>(List.of(beanFactory.getSingletonNames()));
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
 			if (definition.isSingleton() && instantiatedSingletons.contains(name)) {

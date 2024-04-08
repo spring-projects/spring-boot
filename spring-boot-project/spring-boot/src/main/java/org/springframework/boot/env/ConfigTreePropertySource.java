@@ -23,9 +23,9 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -99,7 +99,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 	 * @param options the property source options
 	 */
 	public ConfigTreePropertySource(String name, Path sourceDirectory, Option... options) {
-		this(name, sourceDirectory, EnumSet.copyOf(Arrays.asList(options)));
+		this(name, sourceDirectory, EnumSet.copyOf(List.of(options)));
 	}
 
 	private ConfigTreePropertySource(String name, Path sourceDirectory, Set<Option> options) {

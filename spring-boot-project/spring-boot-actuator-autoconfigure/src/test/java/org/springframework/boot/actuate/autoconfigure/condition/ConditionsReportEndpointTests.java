@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.condition;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
@@ -71,7 +71,7 @@ class ConditionsReportEndpointTests {
 		@PostConstruct
 		void setupAutoConfigurationReport() {
 			ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context.getBeanFactory());
-			report.recordEvaluationCandidates(Arrays.asList("a", "b"));
+			report.recordEvaluationCandidates(List.of("a", "b"));
 			report.recordConditionEvaluation("a", mock(Condition.class), mock(ConditionOutcome.class));
 			report.recordExclusions(Collections.singletonList("com.foo.Bar"));
 		}

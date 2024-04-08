@@ -20,6 +20,7 @@ import java.net.ConnectException;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.ConnectionLimit;
@@ -85,7 +86,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		JettyReactiveWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
 		Arrays.setAll(configurations, (i) -> mock(JettyServerCustomizer.class));
-		factory.setServerCustomizers(Arrays.asList(configurations[0], configurations[1]));
+		factory.setServerCustomizers(List.of(configurations[0], configurations[1]));
 		factory.addServerCustomizers(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) configurations);

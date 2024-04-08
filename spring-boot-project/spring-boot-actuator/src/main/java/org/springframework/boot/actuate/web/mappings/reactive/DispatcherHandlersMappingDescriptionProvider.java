@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.web.mappings.reactive;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +59,8 @@ import org.springframework.web.util.pattern.PathPattern;
 @ImportRuntimeHints(DispatcherHandlersMappingDescriptionProviderRuntimeHints.class)
 public class DispatcherHandlersMappingDescriptionProvider implements MappingDescriptionProvider {
 
-	private static final List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> descriptionProviders = Arrays
-		.asList(new RequestMappingInfoHandlerMappingDescriptionProvider(), new UrlHandlerMappingDescriptionProvider(),
+	private static final List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> descriptionProviders = List
+		.of(new RequestMappingInfoHandlerMappingDescriptionProvider(), new UrlHandlerMappingDescriptionProvider(),
 				new RouterFunctionMappingDescriptionProvider());
 
 	@Override

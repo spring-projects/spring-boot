@@ -19,7 +19,6 @@ package org.springframework.boot.jarmode.tools;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 
@@ -88,7 +87,7 @@ class Runner {
 	}
 
 	private Deque<String> dequeOf(String... args) {
-		return new ArrayDeque<>(Arrays.asList(args));
+		return new ArrayDeque<>(List.of(args));
 	}
 
 }

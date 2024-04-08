@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.freemarker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -44,7 +43,7 @@ public class FreeMarkerTemplateAvailabilityProvider extends PathBasedTemplateAva
 	protected static final class FreeMarkerTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
 
 		private List<String> templateLoaderPath = new ArrayList<>(
-				Arrays.asList(FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH));
+				List.of(FreeMarkerProperties.DEFAULT_TEMPLATE_LOADER_PATH));
 
 		FreeMarkerTemplateAvailabilityProperties() {
 			super(FreeMarkerProperties.DEFAULT_PREFIX, FreeMarkerProperties.DEFAULT_SUFFIX);

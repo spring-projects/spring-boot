@@ -25,7 +25,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -250,7 +249,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 			.build();
 		session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepository));
 		for (int i = 0; i < MAX_RESOLUTION_ATTEMPTS; i++) {
-			CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(remoteRepository));
+			CollectRequest collectRequest = new CollectRequest(null, List.of(remoteRepository));
 			collectRequest.setDependencies(createDependencies(coordinates));
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
 			try {
@@ -291,7 +290,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		for (MergedAnnotations candidate : annotations) {
 			MergedAnnotation<ClassPathExclusions> annotation = candidate.get(ClassPathExclusions.class);
 			if (annotation.isPresent()) {
-				excludedPackages.addAll(Arrays.asList(annotation.getStringArray("packages")));
+				excludedPackages.addAll(List.of(annotation.getStringArray("packages")));
 			}
 		}
 		return excludedPackages;
@@ -311,7 +310,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 			for (MergedAnnotations candidate : annotations) {
 				MergedAnnotation<ClassPathExclusions> annotation = candidate.get(ClassPathExclusions.class);
 				if (annotation.isPresent()) {
-					exclusions.addAll(Arrays.asList(annotation.getStringArray(MergedAnnotation.VALUE)));
+					exclusions.addAll(List.of(annotation.getStringArray(MergedAnnotation.VALUE)));
 				}
 			}
 			this.exclusions = exclusions.stream().toList();

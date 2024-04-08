@@ -19,7 +19,6 @@ package org.springframework.boot.context.embedded;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -59,7 +58,7 @@ class ExplodedApplicationLauncher extends AbstractApplicationLauncher {
 				: "org.springframework.boot.loader.launch.JarLauncher");
 		try {
 			explodeArchive(archive);
-			return Arrays.asList("-cp", this.exploded.getAbsolutePath(), mainClass, serverPortFile.getAbsolutePath());
+			return List.of("-cp", this.exploded.getAbsolutePath(), mainClass, serverPortFile.getAbsolutePath());
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

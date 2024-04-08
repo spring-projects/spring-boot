@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -57,7 +56,7 @@ import org.springframework.util.Assert;
 public class Binder {
 
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
-		.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
+		.unmodifiableSet(new HashSet<>(List.of(Object.class, Class.class)));
 
 	private final Iterable<ConfigurationPropertySource> sources;
 
@@ -75,7 +74,7 @@ public class Binder {
 	 * @param sources the sources used for binding
 	 */
 	public Binder(ConfigurationPropertySource... sources) {
-		this((sources != null) ? Arrays.asList(sources) : null, null, null, null);
+		this((sources != null) ? List.of(sources) : null, null, null, null);
 	}
 
 	/**
@@ -545,7 +544,7 @@ public class Binder {
 
 		private int depth;
 
-		private final List<ConfigurationPropertySource> source = Arrays.asList((ConfigurationPropertySource) null);
+		private final List<ConfigurationPropertySource> source = List.of((ConfigurationPropertySource) null);
 
 		private int sourcePushCount;
 

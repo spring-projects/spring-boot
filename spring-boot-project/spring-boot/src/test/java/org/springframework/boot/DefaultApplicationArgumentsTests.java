@@ -16,8 +16,8 @@
 
 package org.springframework.boot;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class DefaultApplicationArgumentsTests {
 	@Test
 	void optionNames() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		Set<String> expected = new HashSet<>(Arrays.asList("foo", "debug"));
+		Set<String> expected = new HashSet<>(List.of("foo", "debug"));
 		assertThat(arguments.getOptionNames()).isEqualTo(expected);
 	}
 
@@ -64,7 +64,7 @@ class DefaultApplicationArgumentsTests {
 	@Test
 	void getOptionValues() {
 		ApplicationArguments arguments = new DefaultApplicationArguments(ARGS);
-		assertThat(arguments.getOptionValues("foo")).isEqualTo(Arrays.asList("bar", "baz"));
+		assertThat(arguments.getOptionValues("foo")).isEqualTo(List.of("bar", "baz"));
 		assertThat(arguments.getOptionValues("debug")).isEmpty();
 		assertThat(arguments.getOptionValues("spring")).isNull();
 	}

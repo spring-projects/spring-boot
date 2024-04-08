@@ -18,12 +18,12 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  */
 class DirectorySnapshot {
 
-	private static final Set<String> DOTS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(".", "..")));
+	private static final Set<String> DOTS = Collections.unmodifiableSet(new HashSet<>(List.of(".", "..")));
 
 	private final File directory;
 

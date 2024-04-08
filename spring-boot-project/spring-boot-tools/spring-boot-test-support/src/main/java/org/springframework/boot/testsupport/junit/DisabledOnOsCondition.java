@@ -17,6 +17,7 @@
 package org.springframework.boot.testsupport.junit;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
@@ -53,7 +54,7 @@ class DisabledOnOsCondition implements ExecutionCondition {
 		String architecture = System.getProperty("os.arch");
 		String os = System.getProperty("os.name");
 		boolean onDisabledOs = Arrays.stream(annotation.os()).anyMatch(OS::isCurrentOs);
-		boolean onDisabledArchitecture = Arrays.asList(annotation.architecture()).contains(architecture);
+		boolean onDisabledArchitecture = List.of(annotation.architecture()).contains(architecture);
 		if (onDisabledOs && onDisabledArchitecture) {
 			String reason = annotation.disabledReason().isEmpty()
 					? String.format("Disabled on OS = %s, architecture = %s", os, architecture)

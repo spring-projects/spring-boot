@@ -29,6 +29,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -43,7 +44,7 @@ import java.util.jar.Manifest;
  */
 public class ExplodedArchive implements Archive {
 
-	private static final Set<String> SKIPPED_NAMES = new HashSet<>(Arrays.asList(".", ".."));
+	private static final Set<String> SKIPPED_NAMES = new HashSet<>(List.of(".", ".."));
 
 	private final File root;
 
@@ -217,7 +218,7 @@ public class ExplodedArchive implements Archive {
 				return Collections.emptyIterator();
 			}
 			Arrays.sort(files, entryComparator);
-			return Arrays.asList(files).iterator();
+			return List.of(files).iterator();
 		}
 
 		@Override

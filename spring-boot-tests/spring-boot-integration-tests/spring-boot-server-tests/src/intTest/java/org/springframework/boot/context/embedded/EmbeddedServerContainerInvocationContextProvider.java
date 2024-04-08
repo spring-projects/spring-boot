@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +60,7 @@ import org.springframework.web.util.UriTemplateHandler;
 class EmbeddedServerContainerInvocationContextProvider
 		implements TestTemplateInvocationContextProvider, AfterAllCallback {
 
-	private static final Set<String> CONTAINERS = new HashSet<>(Arrays.asList("jetty", "tomcat", "undertow"));
+	private static final Set<String> CONTAINERS = new HashSet<>(List.of("jetty", "tomcat", "undertow"));
 
 	private static final BuildOutput buildOutput = new BuildOutput(
 			EmbeddedServerContainerInvocationContextProvider.class);
@@ -142,7 +141,7 @@ class EmbeddedServerContainerInvocationContextProvider
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			return Arrays.asList(this.launcher, new RestTemplateParameterResolver(this.launcher));
+			return List.of(this.launcher, new RestTemplateParameterResolver(this.launcher));
 		}
 
 		@Override

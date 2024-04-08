@@ -17,7 +17,6 @@
 package org.springframework.boot.docker.compose.service.connection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -87,7 +86,7 @@ class DockerComposeServiceConnectionsApplicationListener
 		List<String> parts = new ArrayList<>();
 		parts.add(ClassUtils.getShortNameAsProperty(connectionDetailsType));
 		parts.add("for");
-		parts.addAll(Arrays.asList(runningService.name().split("-")));
+		parts.addAll(List.of(runningService.name().split("-")));
 		return StringUtils.uncapitalize(parts.stream().map(StringUtils::capitalize).collect(Collectors.joining()));
 	}
 

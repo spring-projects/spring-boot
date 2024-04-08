@@ -19,7 +19,7 @@ package org.springframework.boot.web.embedded.netty;
 import java.net.ConnectException;
 import java.net.SocketAddress;
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.List;
 
 import io.netty.channel.Channel;
 import org.awaitility.Awaitility;
@@ -117,7 +117,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			customizers[i] = mock(NettyServerCustomizer.class);
 			given(customizers[i].apply(any(HttpServer.class))).will((invocation) -> invocation.getArgument(0));
 		}
-		factory.setServerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setServerCustomizers(List.of(customizers[0], customizers[1]));
 		this.webServer = factory.getWebServer(new EchoHandler());
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (NettyServerCustomizer customizer : customizers) {

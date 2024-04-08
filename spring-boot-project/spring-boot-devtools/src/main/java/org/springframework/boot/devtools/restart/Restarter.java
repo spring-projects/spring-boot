@@ -20,7 +20,6 @@ import java.beans.Introspector;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -157,7 +156,7 @@ public class Restarter {
 	protected void initialize(boolean restartOnInitialize) {
 		preInitializeLeakyClasses();
 		if (this.initialUrls != null) {
-			this.urls.addAll(Arrays.asList(this.initialUrls));
+			this.urls.addAll(List.of(this.initialUrls));
 			if (restartOnInitialize) {
 				this.logger.debug("Immediately restarting application");
 				immediateRestart();
@@ -277,7 +276,7 @@ public class Restarter {
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
 		ClassLoader classLoader = new RestartClassLoader(this.applicationClassLoader, urls, updatedFiles);
 		if (this.logger.isDebugEnabled()) {
-			this.logger.debug("Starting application " + this.mainClassName + " with URLs " + Arrays.asList(urls));
+			this.logger.debug("Starting application " + this.mainClassName + " with URLs " + List.of(urls));
 		}
 		return relaunch(classLoader);
 	}

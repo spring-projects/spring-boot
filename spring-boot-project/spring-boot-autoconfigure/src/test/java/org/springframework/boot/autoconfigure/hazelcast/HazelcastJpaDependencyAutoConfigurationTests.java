@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.hazelcast;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +92,7 @@ class HazelcastJpaDependencyAutoConfigurationTests {
 		String[] dependsOn = ((BeanDefinitionRegistry) context.getSourceApplicationContext())
 			.getBeanDefinition("entityManagerFactory")
 			.getDependsOn();
-		return (dependsOn != null) ? Arrays.asList(dependsOn) : Collections.emptyList();
+		return (dependsOn != null) ? List.of(dependsOn) : Collections.emptyList();
 	}
 
 	@Configuration(proxyBeanMethods = false)

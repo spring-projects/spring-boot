@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.servlet.DispatcherType;
@@ -124,7 +125,7 @@ public abstract class AbstractFilterRegistrationBean<T extends Filter> extends D
 	 */
 	public void addServletNames(String... servletNames) {
 		Assert.notNull(servletNames, "ServletNames must not be null");
-		this.servletNames.addAll(Arrays.asList(servletNames));
+		this.servletNames.addAll(List.of(servletNames));
 	}
 
 	/**

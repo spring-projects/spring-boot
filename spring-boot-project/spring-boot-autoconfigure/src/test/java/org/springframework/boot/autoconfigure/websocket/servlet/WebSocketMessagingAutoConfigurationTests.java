@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -93,7 +92,7 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	@BeforeEach
 	void setup() {
-		List<Transport> transports = Arrays.asList(
+		List<Transport> transports = List.of(
 				new WebSocketTransport(new StandardWebSocketClient(new WsWebSocketContainer())),
 				new RestTemplateXhrTransport(new RestTemplate()));
 		this.sockJsClient = new SockJsClient(transports);

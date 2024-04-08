@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.junit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -94,7 +93,7 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 			if (this.configurationCache) {
 				gradleBuild.configurationCache();
 			}
-			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
+			return List.of(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
 	}

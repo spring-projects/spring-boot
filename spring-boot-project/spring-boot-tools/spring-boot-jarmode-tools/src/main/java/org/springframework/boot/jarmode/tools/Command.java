@@ -20,7 +20,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -159,7 +158,7 @@ abstract class Command {
 		private final List<String> descriptions;
 
 		private Parameters(String[] descriptions) {
-			this.descriptions = Collections.unmodifiableList(Arrays.asList(descriptions));
+			this.descriptions = List.of(descriptions);
 		}
 
 		/**

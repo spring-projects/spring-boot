@@ -16,7 +16,6 @@
 
 package org.springframework.boot.build.bom.bomr.version;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -62,7 +61,7 @@ public interface DependencyVersion extends Comparable<DependencyVersion> {
 	boolean isSnapshotFor(DependencyVersion candidate);
 
 	static DependencyVersion parse(String version) {
-		List<Function<String, DependencyVersion>> parsers = Arrays.asList(CalendarVersionDependencyVersion::parse,
+		List<Function<String, DependencyVersion>> parsers = List.of(CalendarVersionDependencyVersion::parse,
 				ArtifactVersionDependencyVersion::parse, ReleaseTrainDependencyVersion::parse,
 				MultipleComponentsDependencyVersion::parse, CombinedPatchAndQualifierDependencyVersion::parse,
 				LeadingZeroesDependencyVersion::parse, UnstructuredDependencyVersion::parse);

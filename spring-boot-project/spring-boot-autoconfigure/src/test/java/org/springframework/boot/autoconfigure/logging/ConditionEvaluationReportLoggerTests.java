@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
-import java.util.Arrays;
+import java.util.List;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -101,7 +101,7 @@ class ConditionEvaluationReportLoggerTests {
 			ConditionEvaluationReportLogger logger = new ConditionEvaluationReportLogger(LogLevel.DEBUG,
 					() -> ConditionEvaluationReport.get(context.getBeanFactory()));
 			context.register(Config.class);
-			ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(Arrays.asList("com.foo.Bar"));
+			ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(List.of("com.foo.Bar"));
 			context.refresh();
 			withDebugLogging(() -> logger.logReport(false));
 			assertThat(output).contains("not a servlet web application (OnWebApplicationCondition)");

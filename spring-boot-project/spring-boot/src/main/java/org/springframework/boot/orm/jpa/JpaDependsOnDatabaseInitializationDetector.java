@@ -16,9 +16,9 @@
 
 package org.springframework.boot.orm.jpa;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.EntityManagerFactory;
@@ -46,7 +46,7 @@ class JpaDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDepe
 		boolean postpone = this.environment.getProperty("spring.jpa.defer-datasource-initialization", boolean.class,
 				false);
 		return postpone ? Collections.emptySet()
-				: new HashSet<>(Arrays.asList(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class));
+				: new HashSet<>(List.of(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class));
 	}
 
 }

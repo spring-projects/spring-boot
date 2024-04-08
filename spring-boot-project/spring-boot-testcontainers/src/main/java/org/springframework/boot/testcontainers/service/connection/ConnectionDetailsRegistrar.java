@@ -17,7 +17,6 @@
 package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -97,7 +96,7 @@ class ConnectionDetailsRegistrar {
 		String[] existingBeans = this.beanFactory.getBeanNamesForType(connectionDetailsType);
 		if (!ObjectUtils.isEmpty(existingBeans)) {
 			logger.debug(LogMessage.of(() -> "Skipping registration of %s due to existing beans %s".formatted(source,
-					Arrays.asList(existingBeans))));
+					List.of(existingBeans))));
 			return;
 		}
 		String beanName = getBeanName(source, connectionDetails);

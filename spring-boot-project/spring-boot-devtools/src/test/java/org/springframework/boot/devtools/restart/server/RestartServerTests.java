@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -64,7 +64,7 @@ class RestartServerTests {
 		files.addFile("my/module-a", "ClassA.class", fileA);
 		files.addFile("my/module-c", "ClassB.class", fileB);
 		server.updateAndRestart(files);
-		Set<URL> expectedUrls = new LinkedHashSet<>(Arrays.asList(url1, url3));
+		Set<URL> expectedUrls = new LinkedHashSet<>(List.of(url1, url3));
 		assertThat(server.restartUrls).isEqualTo(expectedUrls);
 		assertThat(server.restartFiles).isEqualTo(files);
 	}

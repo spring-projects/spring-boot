@@ -187,7 +187,7 @@ public class JsonMarshaller {
 		Arrays.stream(allowedKeys).forEach(availableKeys::remove);
 		if (!availableKeys.isEmpty()) {
 			throw new IllegalStateException("Expected only keys %s, but found additional keys %s. Path: %s"
-				.formatted(new TreeSet<>(Arrays.asList(allowedKeys)), availableKeys, path));
+				.formatted(new TreeSet<>(List.of(allowedKeys)), availableKeys, path));
 		}
 	}
 

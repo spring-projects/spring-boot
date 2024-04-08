@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.tomcat;
 import java.net.ConnectException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -74,7 +75,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		TomcatReactiveWebServerFactory factory = getFactory();
 		TomcatContextCustomizer[] customizers = new TomcatContextCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatContextCustomizer.class));
-		factory.setTomcatContextCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatContextCustomizers(List.of(customizers[0], customizers[1]));
 		factory.addContextCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -108,7 +109,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		TomcatReactiveWebServerFactory factory = getFactory();
 		LifecycleListener[] listeners = new LifecycleListener[4];
 		Arrays.setAll(listeners, (i) -> mock(LifecycleListener.class));
-		factory.setContextLifecycleListeners(Arrays.asList(listeners[0], listeners[1]));
+		factory.setContextLifecycleListeners(List.of(listeners[0], listeners[1]));
 		factory.addContextLifecycleListeners(listeners[2], listeners[3]);
 		this.webServer = factory.getWebServer(mock(HttpHandler.class));
 		InOrder ordered = inOrder((Object[]) listeners);
@@ -153,7 +154,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatConnectorCustomizer[] customizers = new TomcatConnectorCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatConnectorCustomizer.class));
-		factory.setTomcatConnectorCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatConnectorCustomizers(List.of(customizers[0], customizers[1]));
 		factory.addConnectorCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);
@@ -169,7 +170,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		HttpHandler handler = mock(HttpHandler.class);
 		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>>[] customizers = new TomcatProtocolHandlerCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(TomcatProtocolHandlerCustomizer.class));
-		factory.setTomcatProtocolHandlerCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setTomcatProtocolHandlerCustomizers(List.of(customizers[0], customizers[1]));
 		factory.addProtocolHandlerCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);

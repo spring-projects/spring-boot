@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -94,7 +93,7 @@ class ProducibleOperationArgumentResolverTests {
 	}
 
 	private Supplier<List<String>> acceptHeader(String... types) {
-		List<String> value = Arrays.asList(types);
+		List<String> value = List.of(types);
 		return () -> (value.isEmpty() ? null : value);
 	}
 

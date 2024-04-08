@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint;
 
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +52,7 @@ public class InvocationContext {
 		this.arguments = arguments;
 		this.argumentResolvers = new ArrayList<>();
 		if (argumentResolvers != null) {
-			this.argumentResolvers.addAll(Arrays.asList(argumentResolvers));
+			this.argumentResolvers.addAll(List.of(argumentResolvers));
 		}
 		this.argumentResolvers.add(OperationArgumentResolver.of(SecurityContext.class, () -> securityContext));
 		this.argumentResolvers.add(OperationArgumentResolver.of(Principal.class, securityContext::getPrincipal));

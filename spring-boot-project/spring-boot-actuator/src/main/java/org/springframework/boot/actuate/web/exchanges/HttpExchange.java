@@ -20,7 +20,6 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -182,8 +181,7 @@ public final class HttpExchange {
 		public HttpExchange finish(Clock clock, RecordableHttpResponse response,
 				Supplier<java.security.Principal> principalSupplier, Supplier<String> sessionIdSupplier,
 				Include... includes) {
-			return finish(clock, response, principalSupplier, sessionIdSupplier,
-					new HashSet<>(Arrays.asList(includes)));
+			return finish(clock, response, principalSupplier, sessionIdSupplier, new HashSet<>(List.of(includes)));
 		}
 
 		/**

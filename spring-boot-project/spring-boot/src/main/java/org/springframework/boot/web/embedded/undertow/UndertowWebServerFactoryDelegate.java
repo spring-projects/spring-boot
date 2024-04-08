@@ -19,7 +19,6 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -82,7 +81,7 @@ class UndertowWebServerFactoryDelegate {
 
 	void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers.addAll(Arrays.asList(customizers));
+		this.builderCustomizers.addAll(List.of(customizers));
 	}
 
 	Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
@@ -196,7 +195,7 @@ class UndertowWebServerFactoryDelegate {
 
 	static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
 			String serverHeader, Shutdown shutdown, HttpHandlerFactory... initialHttpHandlerFactories) {
-		List<HttpHandlerFactory> factories = new ArrayList<>(Arrays.asList(initialHttpHandlerFactories));
+		List<HttpHandlerFactory> factories = new ArrayList<>(List.of(initialHttpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {
 			factories.add(new CompressionHttpHandlerFactory(compression));
 		}

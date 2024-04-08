@@ -17,7 +17,6 @@
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -96,7 +95,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 			Thread thread = new Thread(() -> {
 				for (int j = 0; j < 1000; j++) {
 					DeferredLinesWriter writer = DeferredLinesWriter.get(context);
-					writer.write(Arrays.asList("1", "2", "3", "4", "5"));
+					writer.write(List.of("1", "2", "3", "4", "5"));
 					writer.writeDeferredResult();
 					writer.clear();
 				}

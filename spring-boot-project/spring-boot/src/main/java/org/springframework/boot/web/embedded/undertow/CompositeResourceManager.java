@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import io.undertow.UndertowMessages;
@@ -35,7 +34,7 @@ class CompositeResourceManager implements ResourceManager {
 	private final List<ResourceManager> resourceManagers;
 
 	CompositeResourceManager(ResourceManager... resourceManagers) {
-		this.resourceManagers = Arrays.asList(resourceManagers);
+		this.resourceManagers = List.of(resourceManagers);
 	}
 
 	@Override

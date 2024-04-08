@@ -17,9 +17,9 @@
 package org.springframework.boot.maven;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -35,7 +35,7 @@ import org.apache.maven.artifact.Artifact;
 class JarTypeFilter extends DependencyFilter {
 
 	private static final Set<String> EXCLUDED_JAR_TYPES = Collections
-		.unmodifiableSet(new HashSet<>(Arrays.asList("annotation-processor", "dependencies-starter")));
+		.unmodifiableSet(new HashSet<>(List.of("annotation-processor", "dependencies-starter")));
 
 	JarTypeFilter() {
 		super(Collections.emptyList());

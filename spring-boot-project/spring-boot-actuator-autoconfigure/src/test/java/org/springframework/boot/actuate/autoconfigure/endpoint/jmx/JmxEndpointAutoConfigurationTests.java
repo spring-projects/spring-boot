@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jmx;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -94,7 +94,7 @@ class JmxEndpointAutoConfigurationTests {
 	@Test
 	void jmxEndpointWithContextHierarchyGeneratesUniqueNamesForEachEndpoint() throws Exception {
 		given(this.mBeanServer.queryNames(any(), any()))
-			.willReturn(new HashSet<>(Arrays.asList(new ObjectName("test:test=test"))));
+			.willReturn(new HashSet<>(List.of(new ObjectName("test:test=test"))));
 		ArgumentCaptor<ObjectName> objectName = ArgumentCaptor.forClass(ObjectName.class);
 		ApplicationContextRunner jmxEnabledContextRunner = this.contextRunner
 			.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=test");

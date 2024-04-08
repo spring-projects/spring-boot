@@ -16,7 +16,6 @@
 
 package org.springframework.boot.maven;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -139,7 +138,7 @@ class ImageTests {
 	@Test
 	void getBuildRequestWhenHasBuildpacksUsesBuildpacks() {
 		Image image = new Image();
-		image.buildpacks = Arrays.asList("example/buildpack1@0.0.1", "example/buildpack2@0.0.2");
+		image.buildpacks = List.of("example/buildpack1@0.0.1", "example/buildpack2@0.0.2");
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBuildpacks()).containsExactly(BuildpackReference.of("example/buildpack1@0.0.1"),
 				BuildpackReference.of("example/buildpack2@0.0.2"));
@@ -148,7 +147,7 @@ class ImageTests {
 	@Test
 	void getBuildRequestWhenHasBindingsUsesBindings() {
 		Image image = new Image();
-		image.bindings = Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw");
+		image.bindings = List.of("host-src:container-dest:ro", "volume-name:container-dest:rw");
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBindings()).containsExactly(Binding.of("host-src:container-dest:ro"),
 				Binding.of("volume-name:container-dest:rw"));
@@ -165,7 +164,7 @@ class ImageTests {
 	@Test
 	void getBuildRequestWhenHasTagsUsesTags() {
 		Image image = new Image();
-		image.tags = Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest");
+		image.tags = List.of("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest");
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));

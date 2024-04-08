@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -71,7 +70,7 @@ class MavenBuildExtension implements TestTemplateInvocationContextProvider {
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			return Arrays.asList(new MavenBuildParameterResolver(this.mavenHome));
+			return List.of(new MavenBuildParameterResolver(this.mavenHome));
 		}
 
 	}

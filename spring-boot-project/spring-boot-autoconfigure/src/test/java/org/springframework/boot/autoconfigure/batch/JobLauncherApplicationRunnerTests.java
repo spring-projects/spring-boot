@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -238,7 +237,7 @@ class JobLauncherApplicationRunnerTests {
 		@Bean
 		DataSourceScriptDatabaseInitializer batchDataSourceInitializer() {
 			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-			settings.setSchemaLocations(Arrays.asList("classpath:org/springframework/batch/core/schema-h2.sql"));
+			settings.setSchemaLocations(List.of("classpath:org/springframework/batch/core/schema-h2.sql"));
 			return new DataSourceScriptDatabaseInitializer(this.dataSource, settings);
 		}
 

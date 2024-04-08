@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public class EndpointMediaTypes {
 	 * @since 2.2.0
 	 */
 	public EndpointMediaTypes(String... producedAndConsumed) {
-		this((producedAndConsumed != null) ? Arrays.asList(producedAndConsumed) : null);
+		this((producedAndConsumed != null) ? List.of(producedAndConsumed) : null);
 	}
 
 	/**

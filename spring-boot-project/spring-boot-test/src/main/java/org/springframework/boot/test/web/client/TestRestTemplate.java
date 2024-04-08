@@ -23,8 +23,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -1011,7 +1011,7 @@ public class TestRestTemplate {
 
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				ClientHttpRequestFactorySettings settings) {
-			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
+			Set<HttpClientOption> options = new HashSet<>(List.of(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);

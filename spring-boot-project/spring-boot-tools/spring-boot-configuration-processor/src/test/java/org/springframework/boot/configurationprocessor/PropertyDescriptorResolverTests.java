@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -68,7 +67,7 @@ class PropertyDescriptorResolverTests {
 	@Test
 	void propertiesWithJavaBeanHierarchicalProperties() {
 		process(HierarchicalProperties.class,
-				Arrays.asList(HierarchicalPropertiesParent.class, HierarchicalPropertiesGrandparent.class),
+				List.of(HierarchicalPropertiesParent.class, HierarchicalPropertiesGrandparent.class),
 				(type, metadataEnv) -> {
 					PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
 					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",

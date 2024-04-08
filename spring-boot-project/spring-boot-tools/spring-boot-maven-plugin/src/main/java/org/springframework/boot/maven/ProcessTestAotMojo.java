@@ -22,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -159,7 +158,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 		handler.setIncludesDependencies(true);
 		Set<Artifact> artifacts = resolveArtifact(new DefaultArtifact(JUNIT_PLATFORM_GROUP_ID,
 				JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID, version, null, "jar", null, handler));
-		Set<URL> fullClassPath = new LinkedHashSet<>(Arrays.asList(classPath));
+		Set<URL> fullClassPath = new LinkedHashSet<>(List.of(classPath));
 		for (Artifact artifact : artifacts) {
 			fullClassPath.add(artifact.getFile().toURI().toURL());
 		}

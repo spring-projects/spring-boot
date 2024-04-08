@@ -66,7 +66,7 @@ final class CommandLineBuilder {
 	}
 
 	CommandLineBuilder withClasspath(URL... elements) {
-		this.classpathElements.addAll(Arrays.asList(elements));
+		this.classpathElements.addAll(List.of(elements));
 		return this;
 	}
 

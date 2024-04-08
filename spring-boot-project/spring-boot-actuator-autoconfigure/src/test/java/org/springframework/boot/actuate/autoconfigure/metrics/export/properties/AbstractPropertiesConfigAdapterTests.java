@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.properties
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public abstract class AbstractPropertiesConfigAdapterTests<P, A extends Properti
 			.filter(this::isNotDeprecated)
 			.map(Method::getName)
 			.collect(Collectors.toCollection(TreeSet::new));
-		expectedConfigMethodNames.removeAll(Arrays.asList(nonConfigMethods));
+		expectedConfigMethodNames.removeAll(List.of(nonConfigMethods));
 		Set<String> actualConfigMethodNames = new TreeSet<>();
 		Class<?> currentClass = this.adapter;
 		while (!Object.class.equals(currentClass)) {

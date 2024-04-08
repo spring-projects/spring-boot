@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.management;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -60,7 +59,7 @@ public class ThreadDumpEndpoint {
 		private final List<ThreadInfo> threads;
 
 		private ThreadDumpDescriptor(ThreadInfo[] threads) {
-			this.threads = Arrays.asList(threads);
+			this.threads = List.of(threads);
 		}
 
 		public List<ThreadInfo> getThreads() {

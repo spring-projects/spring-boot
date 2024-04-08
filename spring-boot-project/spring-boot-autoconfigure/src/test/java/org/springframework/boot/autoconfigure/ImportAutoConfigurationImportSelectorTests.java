@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -348,8 +348,7 @@ class ImportAutoConfigurationImportSelectorTests {
 		@Override
 		protected Collection<String> loadFactoryNames(Class<?> source) {
 			if (source == MetaImportAutoConfiguration.class) {
-				return Arrays.asList(ThymeleafAutoConfiguration.class.getName(),
-						FreeMarkerAutoConfiguration.class.getName());
+				return List.of(ThymeleafAutoConfiguration.class.getName(), FreeMarkerAutoConfiguration.class.getName());
 			}
 			return super.loadFactoryNames(source);
 		}

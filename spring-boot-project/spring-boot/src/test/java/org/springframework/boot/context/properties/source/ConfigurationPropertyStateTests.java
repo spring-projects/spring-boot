@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,14 +46,14 @@ class ConfigurationPropertyStateTests {
 
 	@Test
 	void searchWhenContainsItemShouldReturnPresent() {
-		List<String> source = Arrays.asList("a", "b", "c");
+		List<String> source = List.of("a", "b", "c");
 		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
 	@Test
 	void searchWhenContainsNoItemShouldReturnAbsent() {
-		List<String> source = Arrays.asList("a", "x", "c");
+		List<String> source = List.of("a", "x", "c");
 		ConfigurationPropertyState result = ConfigurationPropertyState.search(source, "b"::equals);
 		assertThat(result).isEqualTo(ConfigurationPropertyState.ABSENT);
 	}

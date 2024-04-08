@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.command.shell;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -74,7 +73,7 @@ class ForkProcessCommand extends RunProcessCommand {
 		fullArgs.add(System.getProperty("java.class.path"));
 		fullArgs.add(MAIN_CLASS);
 		fullArgs.add(this.command.getName());
-		fullArgs.addAll(Arrays.asList(args));
+		fullArgs.addAll(List.of(args));
 		run(fullArgs);
 		return ExitStatus.OK;
 	}

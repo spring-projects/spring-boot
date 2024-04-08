@@ -17,7 +17,6 @@
 package org.springframework.boot.env;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -62,7 +61,7 @@ class ReflectionEnvironmentPostProcessorsFactoryTests {
 	@Test
 	void createWithClassNamesListCreatesFactory() {
 		ReflectionEnvironmentPostProcessorsFactory factory = new ReflectionEnvironmentPostProcessorsFactory(null,
-				Arrays.asList(TestEnvironmentPostProcessor.class.getName()));
+				List.of(TestEnvironmentPostProcessor.class.getName()));
 		assertThatFactory(factory).createsSinglePostProcessor(TestEnvironmentPostProcessor.class);
 	}
 
@@ -78,7 +77,7 @@ class ReflectionEnvironmentPostProcessorsFactoryTests {
 
 		};
 		ReflectionEnvironmentPostProcessorsFactory factory = new ReflectionEnvironmentPostProcessorsFactory(classLoader,
-				Arrays.asList(TestEnvironmentPostProcessor.class.getName()));
+				List.of(TestEnvironmentPostProcessor.class.getName()));
 		assertThatFactory(factory).createsSinglePostProcessorWithClassLoader(classLoader);
 	}
 

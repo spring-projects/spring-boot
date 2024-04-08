@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.graphql;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -128,7 +127,7 @@ public class GraphQlAutoConfiguration {
 
 	private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String pattern) {
 		try {
-			return Arrays.asList(resolver.getResources(pattern));
+			return List.of(resolver.getResources(pattern));
 		}
 		catch (IOException ex) {
 			logger.debug(LogMessage.format("Could not resolve schema location: '%s'", pattern), ex);

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,7 +72,7 @@ class SpyBeanWithAopProxyAndNotProxyTargetAwareTests {
 		@Bean
 		ConcurrentMapCacheManager cacheManager() {
 			ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-			cacheManager.setCacheNames(Arrays.asList("test"));
+			cacheManager.setCacheNames(List.of("test"));
 			return cacheManager;
 		}
 

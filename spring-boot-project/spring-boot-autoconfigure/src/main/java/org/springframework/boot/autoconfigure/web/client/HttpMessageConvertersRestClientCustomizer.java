@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -38,7 +37,7 @@ public class HttpMessageConvertersRestClientCustomizer implements RestClientCust
 
 	public HttpMessageConvertersRestClientCustomizer(HttpMessageConverter<?>... messageConverters) {
 		Assert.notNull(messageConverters, "MessageConverters must not be null");
-		this.messageConverters = Arrays.asList(messageConverters);
+		this.messageConverters = List.of(messageConverters);
 	}
 
 	HttpMessageConvertersRestClientCustomizer(HttpMessageConverters messageConverters) {

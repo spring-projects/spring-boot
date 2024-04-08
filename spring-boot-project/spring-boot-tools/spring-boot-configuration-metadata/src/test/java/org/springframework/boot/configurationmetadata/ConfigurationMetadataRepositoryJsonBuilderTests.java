@@ -18,7 +18,7 @@ package org.springframework.boot.configurationmetadata;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -92,7 +92,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 	void severalRepositoriesIdenticalGroups() throws IOException {
 		try (InputStream foo = getInputStreamFor("foo"); InputStream foo2 = getInputStreamFor("foo2")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo2).build();
-			Iterable<String> allKeys = Arrays.asList("spring.foo.name", "spring.foo.description", "spring.foo.counter",
+			Iterable<String> allKeys = List.of("spring.foo.name", "spring.foo.description", "spring.foo.counter",
 					"spring.foo.enabled", "spring.foo.type");
 			assertThat(repo.getAllProperties()).containsOnlyKeys(allKeys);
 			assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");
@@ -113,7 +113,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 	void severalRepositoriesIdenticalGroupsWithSameType() throws IOException {
 		try (InputStream foo = getInputStreamFor("foo"); InputStream foo3 = getInputStreamFor("foo3")) {
 			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo3).build();
-			Iterable<String> allKeys = Arrays.asList("spring.foo.name", "spring.foo.description", "spring.foo.counter",
+			Iterable<String> allKeys = List.of("spring.foo.name", "spring.foo.description", "spring.foo.counter",
 					"spring.foo.enabled", "spring.foo.type");
 			assertThat(repo.getAllProperties()).containsOnlyKeys(allKeys);
 			assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");

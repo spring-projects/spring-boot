@@ -19,7 +19,7 @@ package org.springframework.boot.rsocket.netty;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import io.netty.buffer.PooledByteBufAllocator;
@@ -147,7 +147,7 @@ class NettyRSocketServerFactoryTests {
 			will((invocation) -> invocation.getArgument(0)).given(customizers[i])
 				.customize(any(io.rsocket.core.RSocketServer.class));
 		}
-		factory.setRSocketServerCustomizers(Arrays.asList(customizers));
+		factory.setRSocketServerCustomizers(List.of(customizers));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		InOrder ordered = inOrder((Object[]) customizers);
 		for (RSocketServerCustomizer customizer : customizers) {

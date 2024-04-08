@@ -16,9 +16,9 @@
 
 package org.springframework.boot.cli.command;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -77,7 +77,7 @@ public class CommandException extends RuntimeException {
 		if (options == null || options.length == 0) {
 			return EnumSet.noneOf(Option.class);
 		}
-		return EnumSet.copyOf(Arrays.asList(options));
+		return EnumSet.copyOf(List.of(options));
 	}
 
 	/**

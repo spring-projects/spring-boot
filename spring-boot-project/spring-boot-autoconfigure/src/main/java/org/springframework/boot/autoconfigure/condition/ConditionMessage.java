@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -355,7 +354,7 @@ public final class ConditionMessage {
 		 * @return a built {@link ConditionMessage}
 		 */
 		public ConditionMessage items(Style style, Object... items) {
-			return items(style, (items != null) ? Arrays.asList(items) : null);
+			return items(style, (items != null) ? List.of(items) : null);
 		}
 
 		/**

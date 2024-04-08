@@ -21,8 +21,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -150,8 +150,8 @@ public class DocumentStarters extends DefaultTask {
 		}
 
 		private boolean isTechnical() {
-			return !Arrays.asList("spring-boot-starter", "spring-boot-starter-test").contains(this.name)
-					&& !isProduction() && !this.dependencies.contains("spring-boot-starter");
+			return !List.of("spring-boot-starter", "spring-boot-starter-test").contains(this.name) && !isProduction()
+					&& !this.dependencies.contains("spring-boot-starter");
 		}
 
 		private boolean isApplication() {

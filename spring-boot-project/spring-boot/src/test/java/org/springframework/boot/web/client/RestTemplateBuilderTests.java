@@ -18,8 +18,8 @@ package org.springframework.boot.web.client;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -332,7 +332,7 @@ class RestTemplateBuilderTests {
 		String[] values = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE };
 		RestTemplate template = this.builder.defaultHeader(name, values).build();
 		ClientHttpRequest request = createRequest(template);
-		assertThat(request.getHeaders()).contains(entry(name, Arrays.asList(values)));
+		assertThat(request.getHeaders()).contains(entry(name, List.of(values)));
 	}
 
 	@Test // gh-17885

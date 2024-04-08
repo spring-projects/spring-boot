@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,9 +112,8 @@ public class GradleBuild {
 	}
 
 	private List<File> pluginClasspath() {
-		return Arrays.asList(new File("bin/main"), new File("build/classes/java/main"),
-				new File("build/resources/main"), new File(pathOfJarContaining(LaunchScript.class)),
-				new File(pathOfJarContaining(ClassVisitor.class)),
+		return List.of(new File("bin/main"), new File("build/classes/java/main"), new File("build/resources/main"),
+				new File(pathOfJarContaining(LaunchScript.class)), new File(pathOfJarContaining(ClassVisitor.class)),
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
 				new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")),
 				new File(pathOfJarContaining(KotlinPlatformJvmPlugin.class)),
@@ -165,7 +163,7 @@ public class GradleBuild {
 	}
 
 	public GradleBuild expectDeprecationMessages(String... messages) {
-		this.expectedDeprecationMessages.addAll(Arrays.asList(messages));
+		this.expectedDeprecationMessages.addAll(List.of(messages));
 		return this;
 	}
 
@@ -246,7 +244,7 @@ public class GradleBuild {
 		List<String> allArguments = new ArrayList<>();
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
-		allArguments.addAll(Arrays.asList(arguments));
+		allArguments.addAll(List.of(arguments));
 		allArguments.add("--warning-mode");
 		allArguments.add("all");
 		if (this.configurationCache) {

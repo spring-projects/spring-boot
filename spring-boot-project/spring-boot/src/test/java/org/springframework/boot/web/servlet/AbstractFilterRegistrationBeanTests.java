@@ -16,11 +16,11 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.DispatcherType;
@@ -75,9 +75,9 @@ abstract class AbstractFilterRegistrationBeanTests {
 		bean.setAsyncSupported(false);
 		bean.setInitParameters(Collections.singletonMap("a", "b"));
 		bean.addInitParameter("c", "d");
-		bean.setUrlPatterns(new LinkedHashSet<>(Arrays.asList("/a", "/b")));
+		bean.setUrlPatterns(new LinkedHashSet<>(List.of("/a", "/b")));
 		bean.addUrlPatterns("/c");
-		bean.setServletNames(new LinkedHashSet<>(Arrays.asList("s1", "s2")));
+		bean.setServletNames(new LinkedHashSet<>(List.of("s1", "s2")));
 		bean.addServletNames("s3");
 		bean.setServletRegistrationBeans(Collections.singleton(mockServletRegistration("s4")));
 		bean.addServletRegistrationBeans(mockServletRegistration("s5"));

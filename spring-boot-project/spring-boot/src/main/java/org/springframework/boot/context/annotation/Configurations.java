@@ -17,7 +17,6 @@
 package org.springframework.boot.context.annotation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -107,7 +106,7 @@ public abstract class Configurations {
 	 * @return configuration classes in registration order
 	 */
 	public static Class<?>[] getClasses(Configurations... configurations) {
-		return getClasses(Arrays.asList(configurations));
+		return getClasses(List.of(configurations));
 	}
 
 	/**

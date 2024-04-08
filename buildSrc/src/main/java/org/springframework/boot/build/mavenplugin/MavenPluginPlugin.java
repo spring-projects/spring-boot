@@ -26,7 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
@@ -215,7 +215,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	private void setJavadocOptions(Javadoc javadoc) {
 		StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) javadoc.getOptions();
-		options.addMultilineStringsOption("tag").setValue(Arrays.asList("goal:X", "requiresProject:X", "threadSafe:X"));
+		options.addMultilineStringsOption("tag").setValue(List.of("goal:X", "requiresProject:X", "threadSafe:X"));
 	}
 
 	private FormatHelpMojoSource createFormatHelpMojoSource(Project project, MavenExec generateHelpMojoTask,

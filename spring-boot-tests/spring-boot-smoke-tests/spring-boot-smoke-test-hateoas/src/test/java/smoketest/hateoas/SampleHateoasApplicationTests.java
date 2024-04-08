@@ -16,7 +16,7 @@
 
 package smoketest.hateoas;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +52,7 @@ class SampleHateoasApplicationTests {
 	@Test
 	void hasHalLinksWhenJsonIsAcceptable() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setAccept(List.of(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/customers/1", HttpMethod.GET,
 				new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

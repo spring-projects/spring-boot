@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -104,7 +103,7 @@ class JacksonJmxOperationResponseMapperTests {
 
 	@Test
 	void mapResponseWhenCollectionShouldReturnJsonArray() {
-		Object mapped = this.mapper.mapResponse(Arrays.asList("a", "b", "c"));
+		Object mapped = this.mapper.mapResponse(List.of("a", "b", "c"));
 		assertThat(this.json.from(mapped.toString())).isEqualToJson("[a,b,c]");
 	}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.File;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 
 import io.undertow.Undertow;
 import org.awaitility.Awaitility;
@@ -80,7 +81,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		HttpHandler handler = mock(HttpHandler.class);
 		UndertowBuilderCustomizer[] customizers = new UndertowBuilderCustomizer[4];
 		Arrays.setAll(customizers, (i) -> mock(UndertowBuilderCustomizer.class));
-		factory.setBuilderCustomizers(Arrays.asList(customizers[0], customizers[1]));
+		factory.setBuilderCustomizers(List.of(customizers[0], customizers[1]));
 		factory.addBuilderCustomizers(customizers[2], customizers[3]);
 		this.webServer = factory.getWebServer(handler);
 		InOrder ordered = inOrder((Object[]) customizers);

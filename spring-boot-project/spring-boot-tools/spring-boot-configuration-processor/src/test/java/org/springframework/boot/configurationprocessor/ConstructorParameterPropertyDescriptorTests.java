@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.lang.model.element.ExecutableElement;
@@ -211,9 +210,9 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableCollectionProperties.class);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "names")).hasDefaultValue(null);
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "flags"))
-				.hasDefaultValue(Arrays.asList(true, false));
+				.hasDefaultValue(List.of(true, false));
 			assertItemMetadata(metadataEnv, createPropertyDescriptor(ownerElement, "durations"))
-				.hasDefaultValue(Arrays.asList("10s", "1m", "1h"));
+				.hasDefaultValue(List.of("10s", "1m", "1h"));
 		});
 	}
 

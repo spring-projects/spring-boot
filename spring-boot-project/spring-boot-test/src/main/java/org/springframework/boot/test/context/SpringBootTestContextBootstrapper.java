@@ -17,7 +17,6 @@
 package org.springframework.boot.test.context;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -133,9 +132,9 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	private void addConfigAttributesClasses(ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
-		Set<Class<?>> combined = new LinkedHashSet<>(Arrays.asList(classes));
+		Set<Class<?>> combined = new LinkedHashSet<>(List.of(classes));
 		if (configAttributes.getClasses() != null) {
-			combined.addAll(Arrays.asList(configAttributes.getClasses()));
+			combined.addAll(List.of(configAttributes.getClasses()));
 		}
 		configAttributes.setClasses(ClassUtils.toClassArray(combined));
 	}
@@ -216,7 +215,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			ContextConfiguration configuration) {
 		ContextConfigurationAttributes attributes = new ContextConfigurationAttributes(candidateConfig.getTestClass(),
 				configuration);
-		Set<Class<?>> configurationClasses = new HashSet<>(Arrays.asList(attributes.getClasses()));
+		Set<Class<?>> configurationClasses = new HashSet<>(List.of(attributes.getClasses()));
 		for (Class<?> candidate : candidateConfig.getClasses()) {
 			if (configurationClasses.contains(candidate)) {
 				return true;
@@ -267,8 +266,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	private List<String> getAndProcessPropertySourceProperties(MergedContextConfiguration mergedConfig) {
-		List<String> propertySourceProperties = new ArrayList<>(
-				Arrays.asList(mergedConfig.getPropertySourceProperties()));
+		List<String> propertySourceProperties = new ArrayList<>(List.of(mergedConfig.getPropertySourceProperties()));
 		String differentiator = getDifferentiatorPropertySourceProperty();
 		if (differentiator != null) {
 			propertySourceProperties.add(differentiator);
@@ -301,7 +299,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		if (!ObjectUtils.isEmpty(properties)) {
 			// Added first so that inlined properties from @TestPropertySource take
 			// precedence
-			propertySourceProperties.addAll(0, Arrays.asList(properties));
+			propertySourceProperties.addAll(0, List.of(properties));
 		}
 		WebEnvironment webEnvironment = getWebEnvironment(testClass);
 		if (webEnvironment == WebEnvironment.RANDOM_PORT) {

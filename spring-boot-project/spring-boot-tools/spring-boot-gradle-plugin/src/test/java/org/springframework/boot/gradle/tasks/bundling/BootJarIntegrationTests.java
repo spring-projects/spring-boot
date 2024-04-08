@@ -18,7 +18,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.jar.JarFile;
@@ -89,8 +89,8 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	@Override
 	String[] getExpectedApplicationLayerContents(String... additionalFiles) {
-		Set<String> contents = new TreeSet<>(Arrays.asList(additionalFiles));
-		contents.addAll(Arrays.asList("BOOT-INF/classpath.idx", "BOOT-INF/layers.idx", "META-INF/"));
+		Set<String> contents = new TreeSet<>(List.of(additionalFiles));
+		contents.addAll(List.of("BOOT-INF/classpath.idx", "BOOT-INF/layers.idx", "META-INF/"));
 		return contents.toArray(new String[0]);
 	}
 

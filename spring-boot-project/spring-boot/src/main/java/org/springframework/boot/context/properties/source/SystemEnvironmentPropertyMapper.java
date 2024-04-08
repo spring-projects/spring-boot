@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +46,7 @@ final class SystemEnvironmentPropertyMapper implements PropertyMapper {
 		if (name.equals(legacyName)) {
 			return Collections.singletonList(name);
 		}
-		return Arrays.asList(name, legacyName);
+		return List.of(name, legacyName);
 	}
 
 	private String convertName(ConfigurationPropertyName name) {

@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.mongodb.ConnectionString;
@@ -329,7 +329,7 @@ class MongoDataAutoConfigurationTests {
 
 		@Bean
 		MongoCustomConversions customConversions() {
-			return new MongoCustomConversions(Arrays.asList(new MyConverter()));
+			return new MongoCustomConversions(List.of(new MyConverter()));
 		}
 
 	}

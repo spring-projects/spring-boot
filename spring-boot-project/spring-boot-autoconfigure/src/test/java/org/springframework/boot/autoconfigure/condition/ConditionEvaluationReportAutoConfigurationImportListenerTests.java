@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -82,7 +81,7 @@ class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 
 	@Test
 	void onAutoConfigurationImportEventShouldApplyExclusionsGlobally() {
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, Arrays.asList("First", "Second"),
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, List.of("First", "Second"),
 				Collections.emptySet());
 		this.listener.onAutoConfigurationImportEvent(event);
 		AutoConfigurationImportEvent anotherEvent = new AutoConfigurationImportEvent(this, Collections.emptyList(),
@@ -98,7 +97,7 @@ class ConditionEvaluationReportAutoConfigurationImportListenerTests {
 		AutoConfigurationImportEvent excludeEvent = new AutoConfigurationImportEvent(this, Collections.emptyList(),
 				Collections.singleton("First"));
 		this.listener.onAutoConfigurationImportEvent(excludeEvent);
-		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, Arrays.asList("First", "Second"),
+		AutoConfigurationImportEvent event = new AutoConfigurationImportEvent(this, List.of("First", "Second"),
 				Collections.emptySet());
 		this.listener.onAutoConfigurationImportEvent(event);
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.beanFactory);

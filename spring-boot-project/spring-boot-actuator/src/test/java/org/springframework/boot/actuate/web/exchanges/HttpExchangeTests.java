@@ -22,7 +22,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,13 +47,12 @@ import static org.mockito.Mockito.mock;
 class HttpExchangeTests {
 
 	private static final Map<String, List<String>> AUTHORIZATION_HEADER = Map.of(HttpHeaders.AUTHORIZATION,
-			Arrays.asList("secret"));
+			List.of("secret"));
 
-	private static final Map<String, List<String>> COOKIE_HEADER = Map.of(HttpHeaders.COOKIE,
-			Arrays.asList("test=test"));
+	private static final Map<String, List<String>> COOKIE_HEADER = Map.of(HttpHeaders.COOKIE, List.of("test=test"));
 
 	private static final Map<String, List<String>> SET_COOKIE_HEADER = Map.of(HttpHeaders.SET_COOKIE,
-			Arrays.asList("test=test"));
+			List.of("test=test"));
 
 	private static final Supplier<Principal> NO_PRINCIPAL = () -> null;
 
@@ -278,7 +276,7 @@ class HttpExchangeTests {
 	@Test
 	void defaultIncludes() {
 		HttpHeaders requestHeaders = new HttpHeaders();
-		requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		requestHeaders.setAccept(List.of(MediaType.APPLICATION_JSON));
 		requestHeaders.set(HttpHeaders.COOKIE, "value");
 		requestHeaders.set(HttpHeaders.AUTHORIZATION, "secret");
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -298,7 +296,7 @@ class HttpExchangeTests {
 	}
 
 	private RecordableHttpRequest createRequest() {
-		return createRequest(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
+		return createRequest(Collections.singletonMap(HttpHeaders.ACCEPT, List.of("application/json")));
 	}
 
 	private RecordableHttpRequest createRequest(Map<String, List<String>> headers) {
@@ -311,7 +309,7 @@ class HttpExchangeTests {
 	}
 
 	private RecordableHttpResponse createResponse() {
-		return createResponse(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
+		return createResponse(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, List.of("application/json")));
 	}
 
 	private RecordableHttpResponse createResponse(Map<String, List<String>> headers) {

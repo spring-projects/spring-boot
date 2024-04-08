@@ -184,7 +184,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		Configuration[] configurations = new Configuration[] { mockConfiguration(Configuration1.class),
 				mockConfiguration(Configuration2.class), mockConfiguration(Configuration3.class),
 				mockConfiguration(Configuration4.class) };
-		factory.setConfigurations(Arrays.asList(configurations[0], configurations[1]));
+		factory.setConfigurations(List.of(configurations[0], configurations[1]));
 		factory.addConfigurations(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) configurations);
@@ -206,7 +206,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		JettyServletWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
 		Arrays.setAll(configurations, (i) -> mock(JettyServerCustomizer.class));
-		factory.setServerCustomizers(Arrays.asList(configurations[0], configurations[1]));
+		factory.setServerCustomizers(List.of(configurations[0], configurations[1]));
 		factory.addServerCustomizers(configurations[2], configurations[3]);
 		this.webServer = factory.getWebServer();
 		InOrder ordered = inOrder((Object[]) configurations);

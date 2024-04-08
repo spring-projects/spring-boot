@@ -18,9 +18,9 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,7 +66,7 @@ public class RunProcess {
 	}
 
 	public int run(boolean waitForProcess, String... args) throws IOException {
-		return run(waitForProcess, Arrays.asList(args), Collections.emptyMap());
+		return run(waitForProcess, List.of(args), Collections.emptyMap());
 	}
 
 	public int run(boolean waitForProcess, Collection<String> args, Map<String, String> environmentVariables)

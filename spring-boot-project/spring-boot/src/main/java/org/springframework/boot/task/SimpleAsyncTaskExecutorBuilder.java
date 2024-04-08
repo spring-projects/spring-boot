@@ -17,9 +17,9 @@
 package org.springframework.boot.task;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -134,7 +134,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 */
 	public SimpleAsyncTaskExecutorBuilder customizers(SimpleAsyncTaskExecutorCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return customizers(Arrays.asList(customizers));
+		return customizers(List.of(customizers));
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 */
 	public SimpleAsyncTaskExecutorBuilder additionalCustomizers(SimpleAsyncTaskExecutorCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		return additionalCustomizers(Arrays.asList(customizers));
+		return additionalCustomizers(List.of(customizers));
 	}
 
 	/**

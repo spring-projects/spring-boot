@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -98,7 +98,7 @@ class ControllerEndpointHandlerMappingTests {
 
 	private ControllerEndpointHandlerMapping createMapping(String prefix, ExposableControllerEndpoint... endpoints) {
 		ControllerEndpointHandlerMapping mapping = new ControllerEndpointHandlerMapping(new EndpointMapping(prefix),
-				Arrays.asList(endpoints), null);
+				List.of(endpoints), null);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		return mapping;

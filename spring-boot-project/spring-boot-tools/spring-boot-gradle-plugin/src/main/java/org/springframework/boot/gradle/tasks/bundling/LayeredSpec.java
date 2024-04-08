@@ -18,7 +18,6 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -191,7 +190,7 @@ public abstract class LayeredSpec {
 		}
 
 		IntoLayersSpec(Function<String, S> specFactory, IntoLayerSpec... spec) {
-			this.intoLayers = new ArrayList<>(Arrays.asList(spec));
+			this.intoLayers = new ArrayList<>(List.of(spec));
 			this.specFactory = specFactory;
 		}
 
@@ -239,7 +238,7 @@ public abstract class LayeredSpec {
 		 * @param patterns the patterns to be included
 		 */
 		public void include(String... patterns) {
-			this.includes.addAll(Arrays.asList(patterns));
+			this.includes.addAll(List.of(patterns));
 		}
 
 		/**
@@ -250,7 +249,7 @@ public abstract class LayeredSpec {
 		 * @param patterns the patterns to be excluded
 		 */
 		public void exclude(String... patterns) {
-			this.includes.addAll(Arrays.asList(patterns));
+			this.includes.addAll(List.of(patterns));
 		}
 
 		<T> ContentSelector<T> asSelector(Function<String, ContentFilter<T>> filterFactory) {

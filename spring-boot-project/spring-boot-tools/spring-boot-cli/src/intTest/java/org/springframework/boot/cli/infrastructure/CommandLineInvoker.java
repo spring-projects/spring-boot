@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -72,7 +71,7 @@ public final class CommandLineInvoker {
 				StandardCopyOption.REPLACE_EXISTING);
 		List<String> command = new ArrayList<>();
 		command.add(findLaunchScript().getAbsolutePath());
-		command.addAll(Arrays.asList(args));
+		command.addAll(List.of(args));
 		ProcessBuilder processBuilder = new ProcessBuilder(command).directory(this.workingDirectory);
 		processBuilder.environment().put("JAVA_OPTS", "-Duser.home=" + this.temp);
 		processBuilder.environment().put("JAVA_HOME", System.getProperty("java.home"));

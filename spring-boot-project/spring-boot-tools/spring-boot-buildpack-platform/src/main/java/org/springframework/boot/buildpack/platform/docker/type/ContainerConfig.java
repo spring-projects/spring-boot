@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +165,7 @@ public class ContainerConfig {
 		 * @param args the arguments to add
 		 */
 		public void withArgs(String... args) {
-			this.args.addAll(Arrays.asList(args));
+			this.args.addAll(List.of(args));
 		}
 
 		/**

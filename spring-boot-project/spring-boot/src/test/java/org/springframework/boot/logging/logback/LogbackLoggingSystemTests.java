@@ -22,7 +22,6 @@ import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -553,7 +552,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		Set<String> expectedProperties = new HashSet<>();
 		ReflectionUtils.doWithFields(LogbackLoggingSystemProperties.class,
 				(field) -> expectedProperties.add((String) field.get(null)), this::isPublicStaticFinal);
-		expectedProperties.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH"));
+		expectedProperties.removeAll(List.of("LOG_FILE", "LOG_PATH"));
 		expectedProperties.add("org.jboss.logging.provider");
 		expectedProperties.add("LOG_CORRELATION_PATTERN");
 		assertThat(properties).containsOnlyKeys(expectedProperties);

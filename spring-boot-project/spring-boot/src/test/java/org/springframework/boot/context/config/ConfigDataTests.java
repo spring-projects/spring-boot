@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -76,7 +75,7 @@ class ConfigDataTests {
 		Options options1 = Options.of(Option.IGNORE_IMPORTS);
 		Options options2 = Options.of(Option.IGNORE_PROFILES);
 		PropertySourceOptions propertySourceOptions = (source) -> (source != source1) ? options2 : options1;
-		ConfigData configData = new ConfigData(Arrays.asList(source1, source2), propertySourceOptions);
+		ConfigData configData = new ConfigData(List.of(source1, source2), propertySourceOptions);
 		assertThat(configData.getOptions(source1)).isEqualTo(options1);
 		assertThat(configData.getOptions(source2)).isEqualTo(options2);
 	}

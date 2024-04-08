@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.availability;
 
-import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.SecurityContext;
@@ -39,7 +39,7 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 	private final AdditionalHealthEndpointPath additionalPath;
 
 	AvailabilityProbesHealthEndpointGroup(AdditionalHealthEndpointPath additionalPath, String... members) {
-		this.members = new HashSet<>(Arrays.asList(members));
+		this.members = new HashSet<>(List.of(members));
 		this.additionalPath = additionalPath;
 	}
 

@@ -16,7 +16,6 @@
 
 package org.springframework.boot;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +50,7 @@ public class DefaultApplicationArguments implements ApplicationArguments {
 	@Override
 	public Set<String> getOptionNames() {
 		String[] names = this.source.getPropertyNames();
-		return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(names)));
+		return Collections.unmodifiableSet(new HashSet<>(List.of(names)));
 	}
 
 	@Override

@@ -366,7 +366,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		AbstractServletWebServerFactory factory = getFactory();
 		ServletContextInitializer[] initializers = new ServletContextInitializer[6];
 		Arrays.setAll(initializers, (i) -> mock(ServletContextInitializer.class));
-		factory.setInitializers(Arrays.asList(initializers[2], initializers[3]));
+		factory.setInitializers(List.of(initializers[2], initializers[3]));
 		factory.addInitializers(initializers[4], initializers[5]);
 		this.webServer = factory.getWebServer(initializers[0], initializers[1]);
 		this.webServer.start();

@@ -246,7 +246,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 				.orElse(Collections.emptyList());
 		}
 		String[] excludes = environment.getProperty(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE, String[].class);
-		return (excludes != null) ? Arrays.asList(excludes) : Collections.emptyList();
+		return (excludes != null) ? List.of(excludes) : Collections.emptyList();
 	}
 
 	protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
@@ -270,7 +270,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	protected final List<String> asList(AnnotationAttributes attributes, String name) {
 		String[] value = attributes.getStringArray(name);
-		return Arrays.asList(value);
+		return List.of(value);
 	}
 
 	private void fireAutoConfigurationImportEvents(List<String> configurations, Set<String> exclusions) {

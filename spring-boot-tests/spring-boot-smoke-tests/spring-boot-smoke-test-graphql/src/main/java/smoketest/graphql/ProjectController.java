@@ -16,7 +16,6 @@
 
 package smoketest.graphql;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ public class ProjectController {
 	private final List<Project> projects;
 
 	public ProjectController() {
-		this.projects = Arrays.asList(new Project("spring-boot", "Spring Boot"),
+		this.projects = List.of(new Project("spring-boot", "Spring Boot"),
 				new Project("spring-graphql", "Spring GraphQL"), new Project("spring-framework", "Spring Framework"));
 	}
 

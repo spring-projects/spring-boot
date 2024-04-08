@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -63,7 +64,7 @@ public final class ErrorAttributeOptions {
 	 */
 	public ErrorAttributeOptions including(Include... includes) {
 		EnumSet<Include> updated = copyIncludes();
-		updated.addAll(Arrays.asList(includes));
+		updated.addAll(List.of(includes));
 		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
 	}
 
@@ -98,7 +99,7 @@ public final class ErrorAttributeOptions {
 	 * @return an {@code ErrorAttributeOptions}
 	 */
 	public static ErrorAttributeOptions of(Include... includes) {
-		return of(Arrays.asList(includes));
+		return of(List.of(includes));
 	}
 
 	/**

@@ -28,7 +28,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -70,7 +69,7 @@ import org.springframework.util.StringUtils;
  */
 public class DockerApi {
 
-	private static final List<String> FORCE_PARAMS = Collections.unmodifiableList(Arrays.asList("force", "1"));
+	private static final List<String> FORCE_PARAMS = Collections.unmodifiableList(List.of("force", "1"));
 
 	static final String API_VERSION = "v1.24";
 

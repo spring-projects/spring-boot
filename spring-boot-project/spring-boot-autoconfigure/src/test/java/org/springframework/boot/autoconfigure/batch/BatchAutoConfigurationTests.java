@@ -16,9 +16,9 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -466,7 +466,7 @@ class BatchAutoConfigurationTests {
 	@Test
 	void whenTheUserDefinesAJobNameThatDoesNotExistWithJobInstancesFailsFast() {
 		JobLauncherApplicationRunner runner = createInstance();
-		runner.setJobs(Arrays.asList(mockJob("one"), mockJob("two")));
+		runner.setJobs(List.of(mockJob("one"), mockJob("two")));
 		runner.setJobName("three");
 		assertThatIllegalArgumentException().isThrownBy(runner::afterPropertiesSet)
 			.withMessage("No job found with name 'three'");
@@ -505,7 +505,7 @@ class BatchAutoConfigurationTests {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobLauncher.class),
 				mock(JobExplorer.class), mock(JobRepository.class));
 		JobRegistry jobRegistry = mock(JobRegistry.class);
-		given(jobRegistry.getJobNames()).willReturn(Arrays.asList(registeredJobNames));
+		given(jobRegistry.getJobNames()).willReturn(List.of(registeredJobNames));
 		runner.setJobRegistry(jobRegistry);
 		return runner;
 	}

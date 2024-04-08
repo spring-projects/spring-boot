@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -97,9 +96,9 @@ class CloudFoundryActuatorAutoConfigurationTests {
 						"corsConfiguration");
 				assertThat(corsConfiguration.getAllowedOrigins()).contains("*");
 				assertThat(corsConfiguration.getAllowedMethods())
-					.containsAll(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
+					.containsAll(List.of(HttpMethod.GET.name(), HttpMethod.POST.name()));
 				assertThat(corsConfiguration.getAllowedHeaders())
-					.containsAll(Arrays.asList("Authorization", "X-Cf-App-Instance", "Content-Type"));
+					.containsAll(List.of("Authorization", "X-Cf-App-Instance", "Content-Type"));
 			});
 	}
 

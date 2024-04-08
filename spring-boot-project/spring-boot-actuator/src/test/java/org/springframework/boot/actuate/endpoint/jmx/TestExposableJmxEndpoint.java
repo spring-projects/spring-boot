@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint.jmx;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 
@@ -31,7 +31,7 @@ public class TestExposableJmxEndpoint implements ExposableJmxEndpoint {
 	private final Collection<JmxOperation> operations;
 
 	public TestExposableJmxEndpoint(JmxOperation... operations) {
-		this(Arrays.asList(operations));
+		this(List.of(operations));
 	}
 
 	public TestExposableJmxEndpoint(Collection<JmxOperation> operations) {

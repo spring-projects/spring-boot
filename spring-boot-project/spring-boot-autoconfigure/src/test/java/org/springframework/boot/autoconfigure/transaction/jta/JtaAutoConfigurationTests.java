@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.transaction.jta;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -94,7 +93,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	static List<Arguments> transactionManagerJndiEntries() {
-		return Arrays.asList(Arguments.of(new JndiEntry("java:comp/UserTransaction", UserTransaction.class)),
+		return List.of(Arguments.of(new JndiEntry("java:comp/UserTransaction", UserTransaction.class)),
 				Arguments.of(new JndiEntry("java:appserver/TransactionManager", TransactionManager.class)),
 				Arguments.of(new JndiEntry("java:pm/TransactionManager", TransactionManager.class)),
 				Arguments.of(new JndiEntry("java:/TransactionManager", TransactionManager.class)));

@@ -18,7 +18,6 @@ package org.springframework.boot.cli.command.init;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -138,9 +137,9 @@ public class InitCommand extends OptionParsingCommand {
 
 		@Override
 		protected void options() {
-			this.target = option(Arrays.asList("target"), "URL of the service to use").withRequiredArg()
+			this.target = option(List.of("target"), "URL of the service to use").withRequiredArg()
 				.defaultsTo(ProjectGenerationRequest.DEFAULT_SERVICE_URL);
-			this.listCapabilities = option(Arrays.asList("list"),
+			this.listCapabilities = option(List.of("list"),
 					"List the capabilities of the service. Use it to discover the "
 							+ "dependencies and the types that are available");
 			projectGenerationOptions();
@@ -148,21 +147,21 @@ public class InitCommand extends OptionParsingCommand {
 		}
 
 		private void projectGenerationOptions() {
-			this.groupId = option(Arrays.asList("group-id", "g"), "Project coordinates (for example 'org.test')")
+			this.groupId = option(List.of("group-id", "g"), "Project coordinates (for example 'org.test')")
 				.withRequiredArg();
-			this.artifactId = option(Arrays.asList("artifact-id", "a"),
+			this.artifactId = option(List.of("artifact-id", "a"),
 					"Project coordinates; infer archive name (for example 'test')")
 				.withRequiredArg();
-			this.version = option(Arrays.asList("version", "v"), "Project version (for example '0.0.1-SNAPSHOT')")
+			this.version = option(List.of("version", "v"), "Project version (for example '0.0.1-SNAPSHOT')")
 				.withRequiredArg();
-			this.name = option(Arrays.asList("name", "n"), "Project name; infer application name").withRequiredArg();
+			this.name = option(List.of("name", "n"), "Project name; infer application name").withRequiredArg();
 			this.description = option("description", "Project description").withRequiredArg();
-			this.packageName = option(Arrays.asList("package-name"), "Package name").withRequiredArg();
-			this.type = option(Arrays.asList("type", "t"),
+			this.packageName = option(List.of("package-name"), "Package name").withRequiredArg();
+			this.type = option(List.of("type", "t"),
 					"Project type. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service (--list) for more details")
 				.withRequiredArg();
-			this.packaging = option(Arrays.asList("packaging", "p"), "Project packaging (for example 'jar')")
+			this.packaging = option(List.of("packaging", "p"), "Project packaging (for example 'jar')")
 				.withRequiredArg();
 			this.build = option("build", "Build system to use (for example 'maven' or 'gradle')").withRequiredArg()
 				.defaultsTo("maven");
@@ -170,22 +169,21 @@ public class InitCommand extends OptionParsingCommand {
 					+ "'project' for a project archive)")
 				.withRequiredArg()
 				.defaultsTo("project");
-			this.javaVersion = option(Arrays.asList("java-version", "j"), "Language level (for example '1.8')")
+			this.javaVersion = option(List.of("java-version", "j"), "Language level (for example '1.8')")
 				.withRequiredArg();
-			this.language = option(Arrays.asList("language", "l"), "Programming language  (for example 'java')")
+			this.language = option(List.of("language", "l"), "Programming language  (for example 'java')")
 				.withRequiredArg();
-			this.bootVersion = option(Arrays.asList("boot-version", "b"),
-					"Spring Boot version (for example '1.2.0.RELEASE')")
+			this.bootVersion = option(List.of("boot-version", "b"), "Spring Boot version (for example '1.2.0.RELEASE')")
 				.withRequiredArg();
-			this.dependencies = option(Arrays.asList("dependencies", "d"),
+			this.dependencies = option(List.of("dependencies", "d"),
 					"Comma-separated list of dependency identifiers to include in the generated project")
 				.withRequiredArg();
 		}
 
 		private void otherOptions() {
-			this.extract = option(Arrays.asList("extract", "x"),
+			this.extract = option(List.of("extract", "x"),
 					"Extract the project archive. Inferred if a location is specified without an extension");
-			this.force = option(Arrays.asList("force", "f"), "Force overwrite of existing files");
+			this.force = option(List.of("force", "f"), "Force overwrite of existing files");
 		}
 
 		@Override

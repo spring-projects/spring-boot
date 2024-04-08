@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -243,8 +242,8 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 				WebEndpointDiscoverer webEndpointDiscoverer, EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
-			corsConfiguration.setAllowedOrigins(Arrays.asList("https://example.com"));
-			corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST"));
+			corsConfiguration.setAllowedOrigins(List.of("https://example.com"));
+			corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
 			Collection<ExposableWebEndpoint> webEndpoints = webEndpointDiscoverer.getEndpoints();
 			List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>(webEndpoints);
 			return new CloudFoundryWebEndpointServletHandlerMapping(new EndpointMapping("/cfApplication"), webEndpoints,

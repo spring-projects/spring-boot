@@ -16,9 +16,9 @@
 
 package org.springframework.boot.actuate.cache;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -188,7 +188,7 @@ class CachesEndpointTests {
 
 	private CacheManager cacheManager(Cache... caches) {
 		SimpleCacheManager cacheManager = new SimpleCacheManager();
-		cacheManager.setCaches(Arrays.asList(caches));
+		cacheManager.setCaches(List.of(caches));
 		cacheManager.afterPropertiesSet();
 		return cacheManager;
 	}

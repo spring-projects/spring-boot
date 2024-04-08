@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -238,7 +237,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		List<String> expected = Stream.of(libJarFile1, libJarFile2, libJarFile3)
 			.map((jar) -> "- \"BOOT-INF/lib/" + jar.getName() + "\"")
 			.toList();
-		assertThat(Arrays.asList(libraries)).containsExactlyElementsOf(expected);
+		assertThat(List.of(libraries)).containsExactlyElementsOf(expected);
 	}
 
 	@Test
@@ -270,7 +269,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		List<String> expectedClasspathIndex = Stream.of(libJarFile1, libJarFile2, libJarFile3)
 			.map((file) -> "- \"BOOT-INF/lib/" + file.getName() + "\"")
 			.toList();
-		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
+		assertThat(List.of(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -299,7 +298,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, Libraries.NONE);
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
-		assertThat(Arrays.asList(classpathIndex.split("\\n")))
+		assertThat(List.of(classpathIndex.split("\\n")))
 			.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-tools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");

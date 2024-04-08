@@ -16,9 +16,9 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -69,7 +69,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 			.fromMap(metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
-		Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));
+		Set<String> packagesToScan = new LinkedHashSet<>(List.of(basePackages));
 		for (Class<?> basePackageClass : basePackageClasses) {
 			packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 		}

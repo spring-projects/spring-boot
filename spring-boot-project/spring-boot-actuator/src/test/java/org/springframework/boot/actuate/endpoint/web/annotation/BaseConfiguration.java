@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.endpoint.web.annotation;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,7 +57,7 @@ class BaseConfiguration {
 
 	@Bean
 	EndpointMediaTypes endpointMediaTypes() {
-		List<String> mediaTypes = Arrays.asList("application/vnd.test+json", "application/json");
+		List<String> mediaTypes = List.of("application/vnd.test+json", "application/json");
 		return new EndpointMediaTypes(mediaTypes, mediaTypes);
 	}
 

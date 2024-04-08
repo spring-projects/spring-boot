@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.config;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +89,7 @@ class ConfigDataImporterTests {
 				this.resolvers, this.loaders);
 		Collection<ConfigData> loaded = importer
 			.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext,
-					Arrays.asList(location1, location2))
+					List.of(location1, location2))
 			.values();
 		assertThat(loaded).containsExactly(configData2, configData1);
 	}
@@ -100,8 +99,8 @@ class ConfigDataImporterTests {
 		ConfigDataLocation location1 = ConfigDataLocation.of("test1");
 		ConfigDataLocation location2 = ConfigDataLocation.of("test2");
 		ConfigDataLocation location3 = ConfigDataLocation.of("test3");
-		List<ConfigDataLocation> locations1and2 = Arrays.asList(location1, location2);
-		List<ConfigDataLocation> locations2and3 = Arrays.asList(location2, location3);
+		List<ConfigDataLocation> locations1and2 = List.of(location1, location2);
+		List<ConfigDataLocation> locations2and3 = List.of(location2, location3);
 		TestResource resource1 = new TestResource("r1");
 		TestResource resource2 = new TestResource("r2");
 		TestResource resource3 = new TestResource("r3");

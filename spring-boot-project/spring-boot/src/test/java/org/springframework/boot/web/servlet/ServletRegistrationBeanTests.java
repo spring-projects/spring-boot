@@ -16,10 +16,10 @@
 
 package org.springframework.boot.web.servlet;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.Servlet;
@@ -90,7 +90,7 @@ class ServletRegistrationBeanTests {
 		bean.setAsyncSupported(false);
 		bean.setInitParameters(Collections.singletonMap("a", "b"));
 		bean.addInitParameter("c", "d");
-		bean.setUrlMappings(new LinkedHashSet<>(Arrays.asList("/a", "/b")));
+		bean.setUrlMappings(new LinkedHashSet<>(List.of("/a", "/b")));
 		bean.addUrlMappings("/c");
 		bean.setLoadOnStartup(10);
 		bean.onStartup(this.servletContext);
@@ -170,7 +170,7 @@ class ServletRegistrationBeanTests {
 	void setMappingReplacesValue() throws Exception {
 		given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(this.registration);
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet, "/a", "/b");
-		bean.setUrlMappings(new LinkedHashSet<>(Arrays.asList("/c", "/d")));
+		bean.setUrlMappings(new LinkedHashSet<>(List.of("/c", "/d")));
 		bean.onStartup(this.servletContext);
 		then(this.registration).should().addMapping("/c", "/d");
 	}

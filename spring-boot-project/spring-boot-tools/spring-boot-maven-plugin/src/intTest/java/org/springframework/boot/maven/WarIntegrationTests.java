@@ -19,7 +19,6 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -120,7 +119,7 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	void whenWarIsRepackagedWithOutputTimestampConfiguredThenLibrariesAreSorted(MavenBuild mavenBuild) {
 		mavenBuild.project("war-output-timestamp").execute((project) -> {
 			File repackaged = new File(project, "target/war-output-timestamp-0.0.1.BUILD-SNAPSHOT.war");
-			List<String> sortedLibs = Arrays.asList(
+			List<String> sortedLibs = List.of(
 					// these libraries are copied from the original war, sorted when
 					// packaged by Maven
 					"WEB-INF/lib/micrometer-commons", "WEB-INF/lib/micrometer-observation", "WEB-INF/lib/spring-aop",

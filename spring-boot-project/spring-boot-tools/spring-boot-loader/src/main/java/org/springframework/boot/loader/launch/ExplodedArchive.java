@@ -111,7 +111,7 @@ class ExplodedArchive implements Archive {
 			return Collections.emptyList();
 		}
 		Arrays.sort(files, entryComparator);
-		return Arrays.asList(files);
+		return List.of(files);
 	}
 
 	@Override

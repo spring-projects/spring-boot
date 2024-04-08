@@ -17,7 +17,7 @@
 package smoketest.jsp;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +55,7 @@ class SampleWebJspApplicationTests {
 	@Test
 	void customErrorPage() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		RequestEntity<Void> request = new RequestEntity<>(headers, HttpMethod.GET, URI.create("/foo"));
 		ResponseEntity<String> entity = this.restTemplate.exchange(request, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

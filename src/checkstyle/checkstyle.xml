@@ -77,4 +77,10 @@
 			<property name="requireSinceTag" value="true" />
 		</module>
 	</module>
+	<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpMultilineCheck">
+		<property name="fileExtensions" value="java"/>
+		<property name="maximum" value="0"/>
+		<property name="format" value="Arrays(\s*)?\.asList\(" />
+		<property name="message" value="Please use List.of(...) instead." />
+	</module>
 </module>

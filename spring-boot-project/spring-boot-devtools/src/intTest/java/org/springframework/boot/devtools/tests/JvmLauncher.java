@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -54,8 +53,8 @@ class JvmLauncher implements BeforeTestExecutionCallback {
 
 	LaunchedJvm launch(String name, String classpath, String... args) throws IOException {
 		List<String> command = new ArrayList<>(
-				Arrays.asList(System.getProperty("java.home") + "/bin/java", "-cp", classpath));
-		command.addAll(Arrays.asList(args));
+				List.of(System.getProperty("java.home") + "/bin/java", "-cp", classpath));
+		command.addAll(List.of(args));
 		File standardOut = new File(this.outputDirectory, name + ".out");
 		File standardError = new File(this.outputDirectory, name + ".err");
 		Process process = new ProcessBuilder(StringUtils.toStringArray(command)).redirectError(standardError)

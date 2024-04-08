@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -100,8 +99,7 @@ class TaskConfigurationAvoidanceTests {
 			}
 
 			private ProhibitedConfigurer method(String name, Class<?>... parameterTypes) {
-				ProhibitedMethods.this.prohibited
-					.add(new ProhibitMethod(this.type, name, Arrays.asList(parameterTypes)));
+				ProhibitedMethods.this.prohibited.add(new ProhibitMethod(this.type, name, List.of(parameterTypes)));
 				return this;
 			}
 

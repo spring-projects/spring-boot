@@ -16,11 +16,11 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -48,8 +48,8 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 	@Test
 	void analyzeWhenEnvironmentIsNullShouldReturnNull() {
 		MutuallyExclusiveConfigurationPropertiesException failure = new MutuallyExclusiveConfigurationPropertiesException(
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
+				new HashSet<>(List.of("com.example.a", "com.example.b")),
+				new HashSet<>(List.of("com.example.a", "com.example.b")));
 		FailureAnalysis failureAnalysis = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(null)
 			.analyze(failure);
 		assertThat(failureAnalysis).isNull();
@@ -60,8 +60,8 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 		MapPropertySource source = new MapPropertySource("test", Collections.singletonMap("com.example.a", "alpha"));
 		this.environment.getPropertySources().addFirst(OriginCapablePropertySource.get(source));
 		MutuallyExclusiveConfigurationPropertiesException failure = new MutuallyExclusiveConfigurationPropertiesException(
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
+				new HashSet<>(List.of("com.example.a", "com.example.b")),
+				new HashSet<>(List.of("com.example.a", "com.example.b")));
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertThat(analysis).isNull();
 	}
@@ -74,8 +74,8 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 		MapPropertySource source = new MapPropertySource("test", properties);
 		this.environment.getPropertySources().addFirst(OriginCapablePropertySource.get(source));
 		MutuallyExclusiveConfigurationPropertiesException failure = new MutuallyExclusiveConfigurationPropertiesException(
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
+				new HashSet<>(List.of("com.example.a", "com.example.b")),
+				new HashSet<>(List.of("com.example.a", "com.example.b")));
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertThat(analysis.getAction()).isEqualTo(
 				"Update your configuration so that only one of the mutually exclusive properties is configured.");
@@ -97,8 +97,8 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 		this.environment.getPropertySources()
 			.addLast(OriginCapablePropertySource.get(new MapPropertySource("test-two", properties)));
 		MutuallyExclusiveConfigurationPropertiesException failure = new MutuallyExclusiveConfigurationPropertiesException(
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
-				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
+				new HashSet<>(List.of("com.example.a", "com.example.b")),
+				new HashSet<>(List.of("com.example.a", "com.example.b")));
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertThat(analysis.getAction()).isEqualTo(
 				"Update your configuration so that only one of the mutually exclusive properties is configured.");

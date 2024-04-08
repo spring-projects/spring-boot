@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -62,7 +61,7 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 			for (File dependency : dependencies.listFiles()) {
 				classpath.add(dependency.getAbsolutePath());
 			}
-			return Arrays.asList("-cp", StringUtils.collectionToDelimitedString(classpath, File.pathSeparator),
+			return List.of("-cp", StringUtils.collectionToDelimitedString(classpath, File.pathSeparator),
 					"com.example.ResourceHandlingApplication", serverPortFile.getAbsolutePath());
 		}
 		catch (IOException ex) {
@@ -111,7 +110,7 @@ class BootRunApplicationLauncher extends AbstractApplicationLauncher {
 
 	private List<String> getLibPaths(File archive) {
 		return (archive.getName().endsWith(".jar") ? Collections.singletonList("BOOT-INF/lib")
-				: Arrays.asList("WEB-INF/lib"));
+				: List.of("WEB-INF/lib"));
 	}
 
 	private void explodeArchive(File archive) throws IOException {

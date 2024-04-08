@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -152,7 +151,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 	static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
 
 		private static final List<MediaType> MEDIA_TYPES = Collections
-			.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
+			.unmodifiableList(List.of(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
 
 		private final Supplier<EndpointObjectMapper> endpointObjectMapper;
 

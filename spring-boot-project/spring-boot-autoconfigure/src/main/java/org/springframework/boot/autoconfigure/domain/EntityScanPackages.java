@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -98,7 +97,7 @@ public class EntityScanPackages {
 	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notNull(packageNames, "PackageNames must not be null");
-		register(registry, Arrays.asList(packageNames));
+		register(registry, List.of(packageNames));
 	}
 
 	/**

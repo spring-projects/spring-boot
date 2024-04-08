@@ -631,12 +631,12 @@ class WebEndpointDiscovererTests {
 		}
 
 		RequestPredicateMatcher produces(String... mediaTypes) {
-			this.produces = Arrays.asList(mediaTypes);
+			this.produces = List.of(mediaTypes);
 			return this;
 		}
 
 		RequestPredicateMatcher consumes(String... mediaTypes) {
-			this.consumes = Arrays.asList(mediaTypes);
+			this.consumes = List.of(mediaTypes);
 			return this;
 		}
 

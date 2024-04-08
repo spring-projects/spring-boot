@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.env;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,8 +100,8 @@ public class EnvironmentEndpoint {
 						propertyNamePredicate, showUnsanitized));
 			}
 		});
-		return new EnvironmentDescriptor(Arrays.asList(this.environment.getActiveProfiles()),
-				Arrays.asList(this.environment.getDefaultProfiles()), propertySources);
+		return new EnvironmentDescriptor(List.of(this.environment.getActiveProfiles()),
+				List.of(this.environment.getDefaultProfiles()), propertySources);
 	}
 
 	@ReadOperation
@@ -114,8 +113,8 @@ public class EnvironmentEndpoint {
 	EnvironmentEntryDescriptor getEnvironmentEntryDescriptor(String propertyName, boolean showUnsanitized) {
 		Map<String, PropertyValueDescriptor> descriptors = getPropertySourceDescriptors(propertyName, showUnsanitized);
 		PropertySummaryDescriptor summary = getPropertySummaryDescriptor(descriptors);
-		return new EnvironmentEntryDescriptor(summary, Arrays.asList(this.environment.getActiveProfiles()),
-				Arrays.asList(this.environment.getDefaultProfiles()), toPropertySourceDescriptors(descriptors));
+		return new EnvironmentEntryDescriptor(summary, List.of(this.environment.getActiveProfiles()),
+				List.of(this.environment.getDefaultProfiles()), toPropertySourceDescriptors(descriptors));
 	}
 
 	private List<PropertySourceEntryDescriptor> toPropertySourceDescriptors(

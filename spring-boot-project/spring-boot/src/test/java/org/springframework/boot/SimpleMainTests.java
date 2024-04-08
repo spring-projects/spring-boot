@@ -17,7 +17,6 @@
 package org.springframework.boot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -73,7 +72,7 @@ class SimpleMainTests {
 	}
 
 	private String[] getArgs(String... args) {
-		List<String> list = new ArrayList<>(Arrays.asList("--spring.main.web-application-type=none",
+		List<String> list = new ArrayList<>(List.of("--spring.main.web-application-type=none",
 				"--spring.main.show-banner=OFF", "--spring.main.register-shutdownHook=false"));
 		if (args.length > 0) {
 			list.add("--spring.main.sources=" + StringUtils.arrayToCommaDelimitedString(args));

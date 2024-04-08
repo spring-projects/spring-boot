@@ -16,7 +16,7 @@
 
 package org.springframework.boot.loader.jarmode;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * {@link JarMode} for testing.
@@ -32,7 +32,7 @@ class TestJarMode implements JarMode {
 
 	@Override
 	public void run(String mode, String[] args) {
-		System.out.println("running in " + mode + " jar mode " + Arrays.asList(args));
+		System.out.println("running in " + mode + " jar mode " + List.of(args));
 	}
 
 }

@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -65,7 +64,7 @@ public class AutoConfigurations extends Configurations implements Ordered {
 	}
 
 	public static AutoConfigurations of(Class<?>... classes) {
-		return new AutoConfigurations(Arrays.asList(classes));
+		return new AutoConfigurations(List.of(classes));
 	}
 
 }

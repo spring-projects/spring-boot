@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +75,7 @@ public class ItemHint implements Comparable<ItemHint> {
 	}
 
 	public static ItemHint newHint(String name, ValueHint... values) {
-		return new ItemHint(name, Arrays.asList(values), Collections.emptyList());
+		return new ItemHint(name, List.of(values), Collections.emptyList());
 	}
 
 	@Override

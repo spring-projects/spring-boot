@@ -20,7 +20,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +138,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 */
 	public void addRSocketServerCustomizers(RSocketServerCustomizer... rSocketServerCustomizers) {
 		Assert.notNull(rSocketServerCustomizers, "RSocketServerCustomizers must not be null");
-		this.rSocketServerCustomizers.addAll(Arrays.asList(rSocketServerCustomizers));
+		this.rSocketServerCustomizers.addAll(List.of(rSocketServerCustomizers));
 	}
 
 	/**

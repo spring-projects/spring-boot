@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +107,7 @@ abstract class AbstractJarModeTests {
 		Context context = new Context(archive, this.tempDir);
 		Command command = commandFactory.create(context);
 		TestPrintStream out = new TestPrintStream(this);
-		command.run(out, new ArrayDeque<>(Arrays.asList(arguments)));
+		command.run(out, new ArrayDeque<>(List.of(arguments)));
 		return out;
 	}
 

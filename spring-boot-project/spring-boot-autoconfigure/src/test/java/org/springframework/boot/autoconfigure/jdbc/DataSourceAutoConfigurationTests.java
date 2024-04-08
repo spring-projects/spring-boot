@@ -21,7 +21,6 @@ import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -130,14 +129,14 @@ class DataSourceAutoConfigurationTests {
 
 	@Test
 	void commonsDbcp2IsFallback() {
-		assertDataSource(BasicDataSource.class, Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"),
+		assertDataSource(BasicDataSource.class, List.of("com.zaxxer.hikari", "org.apache.tomcat"),
 				(dataSource) -> assertThat(dataSource.getUrl()).startsWith("jdbc:hsqldb:mem:testdb"));
 	}
 
 	@Test
 	void commonsDbcp2ValidatesConnectionByDefault() {
 		assertDataSource(org.apache.commons.dbcp2.BasicDataSource.class,
-				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), (dataSource) -> {
+				List.of("com.zaxxer.hikari", "org.apache.tomcat"), (dataSource) -> {
 					assertThat(dataSource.getTestOnBorrow()).isTrue();
 					// Use Connection#isValid()
 					assertThat(dataSource.getValidationQuery()).isNull();
@@ -147,14 +146,14 @@ class DataSourceAutoConfigurationTests {
 	@Test
 	void oracleUcpIsFallback() {
 		assertDataSource(PoolDataSourceImpl.class,
-				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"),
+				List.of("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"),
 				(dataSource) -> assertThat(dataSource.getURL()).startsWith("jdbc:hsqldb:mem:testdb"));
 	}
 
 	@Test
 	void oracleUcpDoesNotValidateConnectionByDefault() {
 		assertDataSource(PoolDataSourceImpl.class,
-				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"), (dataSource) -> {
+				List.of("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"), (dataSource) -> {
 					assertThat(dataSource.getValidateConnectionOnBorrow()).isFalse();
 					// Use an internal ping when using an Oracle JDBC driver
 					assertThat(dataSource.getSQLForValidateConnection()).isNull();

@@ -16,7 +16,7 @@
 
 package smoketest.freemarker;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +55,7 @@ class SampleWebFreeMarkerApplicationTests {
 	@Test
 	void testFreeMarkerErrorTemplate() {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
 		ResponseEntity<String> responseEntity = this.testRestTemplate.exchange("/does-not-exist", HttpMethod.GET,

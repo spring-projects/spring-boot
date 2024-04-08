@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -78,8 +77,9 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	@Test
 	void beanFactoryPostProcessorHasOrderAllowingSubsequentPostProcessorsToFineTuneDependencies() {
-		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
-				MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
+		performDetection(
+				List.of(MockDatabaseInitializerDetector.class, MockedDependsOnDatabaseInitializationDetector.class),
+				(context) -> {
 					BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 					BeanDefinition bravo = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 					context.register(DependsOnCaptor.class);
@@ -99,7 +99,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	@Test
 	void whenDetectorsAreCreatedThenTheEnvironmentCanBeInjected() {
-		performDetection(Arrays.asList(ConstructorInjectionDatabaseInitializerDetector.class,
+		performDetection(List.of(ConstructorInjectionDatabaseInitializerDetector.class,
 				ConstructorInjectionDependsOnDatabaseInitializationDetector.class), (context) -> {
 					BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 					context.registerBeanDefinition("alpha", alpha);
@@ -115,8 +115,9 @@ class DatabaseInitializationDependencyConfigurerTests {
 	void whenDependenciesAreConfiguredThenBeansThatDependUponDatabaseInitializationDependUponDetectedDatabaseInitializers() {
 		BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 		BeanDefinition bravo = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
-		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
-				MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
+		performDetection(
+				List.of(MockDatabaseInitializerDetector.class, MockedDependsOnDatabaseInitializationDetector.class),
+				(context) -> {
 					context.registerBeanDefinition("alpha", alpha);
 					context.registerBeanDefinition("bravo", bravo);
 					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
@@ -142,16 +143,16 @@ class DatabaseInitializationDependencyConfigurerTests {
 		BeanDefinition charlie = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 		BeanDefinition delta = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 		performDetection(
-				Arrays.asList(MockDatabaseInitializerDetector.class, OrderedLowestMockDatabaseInitializerDetector.class,
+				List.of(MockDatabaseInitializerDetector.class, OrderedLowestMockDatabaseInitializerDetector.class,
 						OrderedNearLowestMockDatabaseInitializerDetector.class,
 						MockedDependsOnDatabaseInitializationDetector.class),
 				(context) -> {
 					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
 						.willReturn(Collections.singleton("alpha"));
 					given(OrderedNearLowestMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-						.willReturn(new LinkedHashSet<>(Arrays.asList("bravo1", "bravo2")));
+						.willReturn(new LinkedHashSet<>(List.of("bravo1", "bravo2")));
 					given(OrderedLowestMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-						.willReturn(new LinkedHashSet<>(Arrays.asList("charlie")));
+						.willReturn(new LinkedHashSet<>(List.of("charlie")));
 					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
 						.willReturn(Collections.singleton("delta"));
 					context.registerBeanDefinition("alpha", alpha);
@@ -174,8 +175,9 @@ class DatabaseInitializationDependencyConfigurerTests {
 		withAotEnabled(() -> {
 			BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
 			BeanDefinition bravo = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
-			performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
-					MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
+			performDetection(
+					List.of(MockDatabaseInitializerDetector.class, MockedDependsOnDatabaseInitializationDetector.class),
+					(context) -> {
 						context.registerBeanDefinition("alpha", alpha);
 						context.registerBeanDefinition("bravo", bravo);
 						context.register(DependencyConfigurerConfiguration.class);
@@ -370,7 +372,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 		private static void storeDependsOn(String name, ConfigurableListableBeanFactory beanFactory) {
 			String[] dependsOn = beanFactory.getBeanDefinition(name).getDependsOn();
 			if (dependsOn != null) {
-				DependsOnCaptor.dependsOn.put(name, Arrays.asList(dependsOn));
+				DependsOnCaptor.dependsOn.put(name, List.of(dependsOn));
 			}
 		}
 

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,8 +100,8 @@ public class CheckClasspathForConflicts extends DefaultTask {
 
 	private static final class ClasspathContents {
 
-		private static final Set<String> IGNORED_NAMES = new HashSet<>(Arrays.asList("about.html", "changelog.txt",
-				"LICENSE", "license.txt", "module-info.class", "notice.txt", "readme.txt"));
+		private static final Set<String> IGNORED_NAMES = new HashSet<>(List.of("about.html", "changelog.txt", "LICENSE",
+				"license.txt", "module-info.class", "notice.txt", "readme.txt"));
 
 		private final Map<String, List<String>> classpathContents = new HashMap<>();
 

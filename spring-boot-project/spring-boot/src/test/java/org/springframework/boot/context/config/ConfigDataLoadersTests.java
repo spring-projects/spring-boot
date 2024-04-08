@@ -18,7 +18,6 @@ package org.springframework.boot.context.config;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -147,7 +146,7 @@ class ConfigDataLoadersTests {
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("loader", loader);
 		propertySource.setProperty("resource", resource);
-		List<PropertySource<?>> propertySources = Arrays.asList(propertySource);
+		List<PropertySource<?>> propertySources = List.of(propertySource);
 		return new ConfigData(propertySources);
 	}
 

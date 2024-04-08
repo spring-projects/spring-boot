@@ -16,7 +16,6 @@
 
 package org.springframework.boot.devtools.remote.server;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -101,7 +100,7 @@ class DispatcherTests {
 		HandlerMapper mapper2 = mock(HandlerMapper.class, withSettings().extraInterfaces(Ordered.class));
 		given(((Ordered) mapper1).getOrder()).willReturn(1);
 		given(((Ordered) mapper2).getOrder()).willReturn(2);
-		List<HandlerMapper> mappers = Arrays.asList(mapper2, mapper1);
+		List<HandlerMapper> mappers = List.of(mapper2, mapper1);
 		Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
 		dispatcher.handle(this.serverRequest, this.serverResponse);
 		InOrder inOrder = inOrder(mapper1, mapper2);

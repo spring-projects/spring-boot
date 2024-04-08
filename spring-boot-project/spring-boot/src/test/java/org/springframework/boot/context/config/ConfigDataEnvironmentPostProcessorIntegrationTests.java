@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -437,8 +436,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void loadWhenHasConfigLocationAsFile() {
 		String location = "file:src/test/resources/specificlocation.properties";
 		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
-		assertThat(context.getEnvironment()).has(matchingPropertySource("Config resource 'file [" + Strings
-			.join(Arrays.asList("src", "test", "resources", "specificlocation.properties"), File.separatorChar)
+		assertThat(context.getEnvironment()).has(matchingPropertySource("Config resource 'file ["
+				+ Strings.join(List.of("src", "test", "resources", "specificlocation.properties"), File.separatorChar)
 				+ "]' via location '" + location + "'"));
 	}
 
@@ -446,8 +445,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void loadWhenHasRelativeConfigLocationUsesFileLocation() {
 		String location = "src/test/resources/specificlocation.properties";
 		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
-		assertThat(context.getEnvironment()).has(matchingPropertySource("Config resource 'file [" + Strings
-			.join(Arrays.asList("src", "test", "resources", "specificlocation.properties"), File.separatorChar)
+		assertThat(context.getEnvironment()).has(matchingPropertySource("Config resource 'file ["
+				+ Strings.join(List.of("src", "test", "resources", "specificlocation.properties"), File.separatorChar)
 				+ "]' via location '" + location + "'"));
 	}
 

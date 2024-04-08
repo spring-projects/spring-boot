@@ -16,7 +16,6 @@
 
 package org.springframework.boot.convert;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -38,7 +37,7 @@ class CollectionToDelimitedStringConverterTests {
 
 	@ConversionServiceTest
 	void convertListToStringShouldConvert(ConversionService conversionService) {
-		List<String> list = Arrays.asList("a", "b", "c");
+		List<String> list = List.of("a", "b", "c");
 		String converted = conversionService.convert(list, String.class);
 		assertThat(converted).isEqualTo("a,b,c");
 	}
@@ -46,7 +45,7 @@ class CollectionToDelimitedStringConverterTests {
 	@ConversionServiceTest
 	void convertWhenHasDelimiterNoneShouldConvert(ConversionService conversionService) {
 		Data data = new Data();
-		data.none = Arrays.asList("1", "2", "3");
+		data.none = List.of("1", "2", "3");
 		String converted = (String) conversionService.convert(data.none,
 				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "none"), 0),
 				TypeDescriptor.valueOf(String.class));
@@ -56,7 +55,7 @@ class CollectionToDelimitedStringConverterTests {
 	@ConversionServiceTest
 	void convertWhenHasDelimiterDashShouldConvert(ConversionService conversionService) {
 		Data data = new Data();
-		data.dash = Arrays.asList("1", "2", "3");
+		data.dash = List.of("1", "2", "3");
 		String converted = (String) conversionService.convert(data.dash,
 				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "dash"), 0),
 				TypeDescriptor.valueOf(String.class));
@@ -73,7 +72,7 @@ class CollectionToDelimitedStringConverterTests {
 	@Test
 	void convertShouldConvertElements() {
 		Data data = new Data();
-		data.type = Arrays.asList(1, 2, 3);
+		data.type = List.of(1, 2, 3);
 		String converted = (String) new ApplicationConversionService().convert(data.type,
 				TypeDescriptor.nested(ReflectionUtils.findField(Data.class, "type"), 0),
 				TypeDescriptor.valueOf(String.class));

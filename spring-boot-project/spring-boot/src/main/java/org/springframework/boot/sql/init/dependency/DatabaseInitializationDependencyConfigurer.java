@@ -16,7 +16,6 @@
 
 package org.springframework.boot.sql.init.dependency;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -122,7 +121,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			if (CollectionUtils.isEmpty(additional)) {
 				return source;
 			}
-			Set<String> result = new LinkedHashSet<>((source != null) ? Arrays.asList(source) : Collections.emptySet());
+			Set<String> result = new LinkedHashSet<>((source != null) ? List.of(source) : Collections.emptySet());
 			result.addAll(additional);
 			return StringUtils.toStringArray(result);
 		}

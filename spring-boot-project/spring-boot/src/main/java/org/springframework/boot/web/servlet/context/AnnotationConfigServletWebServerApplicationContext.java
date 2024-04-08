@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.servlet.context;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -173,7 +173,7 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 	@Override
 	public final void register(Class<?>... annotatedClasses) {
 		Assert.notEmpty(annotatedClasses, "At least one annotated class must be specified");
-		this.annotatedClasses.addAll(Arrays.asList(annotatedClasses));
+		this.annotatedClasses.addAll(List.of(annotatedClasses));
 	}
 
 	/**

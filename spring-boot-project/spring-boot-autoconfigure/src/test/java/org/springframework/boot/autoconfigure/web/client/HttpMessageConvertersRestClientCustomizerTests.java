@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -65,7 +64,7 @@ class HttpMessageConvertersRestClientCustomizerTests {
 	@SuppressWarnings("unchecked")
 	private List<HttpMessageConverter<?>> apply(HttpMessageConvertersRestClientCustomizer customizer,
 			HttpMessageConverter<?>... converters) {
-		List<HttpMessageConverter<?>> messageConverters = new ArrayList<>(Arrays.asList(converters));
+		List<HttpMessageConverter<?>> messageConverters = new ArrayList<>(List.of(converters));
 		RestClient.Builder restClientBuilder = mock();
 		ArgumentCaptor<Consumer<List<HttpMessageConverter<?>>>> captor = ArgumentCaptor.forClass(Consumer.class);
 		given(restClientBuilder.messageConverters(captor.capture())).willReturn(restClientBuilder);

@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -129,7 +128,7 @@ class TomcatEmbeddedContext extends StandardContext {
 	@Override
 	public String[] findMimeMappings() {
 		List<String> mappings = new ArrayList<>();
-		mappings.addAll(Arrays.asList(super.findMimeMappings()));
+		mappings.addAll(List.of(super.findMimeMappings()));
 		if (this.mimeMappings != null) {
 			this.mimeMappings.forEach((mapping) -> mappings.add(mapping.getExtension()));
 		}

@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -211,8 +210,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 	}
 
 	private Set<BinderOption> asBinderOptionsSet(BinderOption... options) {
-		return ObjectUtils.isEmpty(options) ? EnumSet.noneOf(BinderOption.class)
-				: EnumSet.copyOf(Arrays.asList(options));
+		return ObjectUtils.isEmpty(options) ? EnumSet.noneOf(BinderOption.class) : EnumSet.copyOf(List.of(options));
 	}
 
 	private Binder getBinder(ConfigDataActivationContext activationContext,

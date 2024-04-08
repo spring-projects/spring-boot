@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -142,8 +141,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	private static final List<FieldDescriptor> simpleTriggerSummary = Collections
 		.singletonList(fieldWithPath("interval").description("Interval, in milliseconds, between two executions."));
 
-	private static final List<FieldDescriptor> dailyTimeIntervalTriggerSummary = Arrays
-		.asList(fieldWithPath("interval").description(
+	private static final List<FieldDescriptor> dailyTimeIntervalTriggerSummary = List
+		.of(fieldWithPath("interval").description(
 				"Interval, in milliseconds, added to the fire time in order to calculate the time of the next trigger repeat."),
 				fieldWithPath("daysOfWeek").type(JsonFieldType.ARRAY)
 					.description("An array of days of the week upon which to fire."),
@@ -152,8 +151,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				fieldWithPath("endTimeOfDay").type(JsonFieldType.STRING)
 					.description("Time of day to complete firing at the given interval, if any."));
 
-	private static final List<FieldDescriptor> calendarIntervalTriggerSummary = Arrays
-		.asList(fieldWithPath("interval").description(
+	private static final List<FieldDescriptor> calendarIntervalTriggerSummary = List
+		.of(fieldWithPath("interval").description(
 				"Interval, in milliseconds, added to the fire time in order to calculate the time of the next trigger repeat."),
 				fieldWithPath("timeZone").type(JsonFieldType.STRING)
 					.description("Time zone within which time calculations will be performed, if any."));

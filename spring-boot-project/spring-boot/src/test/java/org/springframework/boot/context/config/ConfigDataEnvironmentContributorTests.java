@@ -17,7 +17,6 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -226,7 +225,7 @@ class ConfigDataEnvironmentContributorTests {
 		classpathImports = classpathImports.withChildren(ImportPhase.AFTER_PROFILE_ACTIVATION,
 				Collections.singletonList(classpathProfile));
 		ConfigDataEnvironmentContributor root = createBoundContributor("root");
-		root = root.withChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION, Arrays.asList(fileImports, classpathImports));
+		root = root.withChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION, List.of(fileImports, classpathImports));
 		assertThat(asLocationsList(root.iterator())).containsExactly("file:application-profile.properties",
 				"file:application.properties", "file:./", "classpath:application-profile.properties",
 				"classpath:application.properties", "classpath:/", "root");
@@ -274,7 +273,7 @@ class ConfigDataEnvironmentContributorTests {
 	void ofCreatesRootContributor() {
 		ConfigDataEnvironmentContributor one = createBoundContributor("one");
 		ConfigDataEnvironmentContributor two = createBoundContributor("two");
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.of(Arrays.asList(one, two),
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.of(List.of(one, two),
 				this.conversionService);
 		assertThat(contributor.getKind()).isEqualTo(Kind.ROOT);
 		assertThat(contributor.getResource()).isNull();

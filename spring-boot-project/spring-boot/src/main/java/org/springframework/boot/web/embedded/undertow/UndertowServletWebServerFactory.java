@@ -23,7 +23,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
@@ -238,7 +237,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 */
 	public void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers) {
 		Assert.notNull(customizers, "UndertowDeploymentInfoCustomizers must not be null");
-		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
+		this.deploymentInfoCustomizers.addAll(List.of(customizers));
 	}
 
 	/**

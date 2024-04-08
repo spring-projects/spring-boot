@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
@@ -81,7 +80,7 @@ public abstract class ResourceCondition extends SpringBootCondition {
 		}
 		if (found.isEmpty()) {
 			ConditionMessage message = startConditionMessage().didNotFind("resource", "resources")
-				.items(Style.QUOTE, Arrays.asList(this.resourceLocations));
+				.items(Style.QUOTE, List.of(this.resourceLocations));
 			return ConditionOutcome.noMatch(message);
 		}
 		ConditionMessage message = startConditionMessage().found("resource", "resources").items(Style.QUOTE, found);

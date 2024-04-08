@@ -17,8 +17,8 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.gradle.api.Project;
@@ -210,14 +210,14 @@ class BootBuildImageTests {
 
 	@Test
 	void whenBuildpacksAreConfiguredThenRequestHasBuildpacks() {
-		this.buildImage.getBuildpacks().set(Arrays.asList("example/buildpack1", "example/buildpack2"));
+		this.buildImage.getBuildpacks().set(List.of("example/buildpack1", "example/buildpack2"));
 		assertThat(this.buildImage.createRequest().getBuildpacks())
 			.containsExactly(BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
 	}
 
 	@Test
 	void whenEntriesAreAddedToBuildpacksThenRequestHasBuildpacks() {
-		this.buildImage.getBuildpacks().addAll(Arrays.asList("example/buildpack1", "example/buildpack2"));
+		this.buildImage.getBuildpacks().addAll(List.of("example/buildpack1", "example/buildpack2"));
 		assertThat(this.buildImage.createRequest().getBuildpacks())
 			.containsExactly(BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
 	}
@@ -237,15 +237,14 @@ class BootBuildImageTests {
 
 	@Test
 	void whenBindingsAreConfiguredThenRequestHasBindings() {
-		this.buildImage.getBindings().set(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
+		this.buildImage.getBindings().set(List.of("host-src:container-dest:ro", "volume-name:container-dest:rw"));
 		assertThat(this.buildImage.createRequest().getBindings())
 			.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
 	}
 
 	@Test
 	void whenEntriesAreAddedToBindingsThenRequestHasBindings() {
-		this.buildImage.getBindings()
-			.addAll(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
+		this.buildImage.getBindings().addAll(List.of("host-src:container-dest:ro", "volume-name:container-dest:rw"));
 		assertThat(this.buildImage.createRequest().getBindings())
 			.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
 	}
@@ -272,7 +271,7 @@ class BootBuildImageTests {
 	@Test
 	void whenTagsAreConfiguredThenRequestHasTags() {
 		this.buildImage.getTags()
-			.set(Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
+			.set(List.of("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}
@@ -280,7 +279,7 @@ class BootBuildImageTests {
 	@Test
 	void whenEntriesAreAddedToTagsThenRequestHasTags() {
 		this.buildImage.getTags()
-			.addAll(Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
+			.addAll(List.of("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}

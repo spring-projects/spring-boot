@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.graphql;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,13 +70,13 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 		}
 		else {
 			messages.add(message.didNotFind("schema files in locations")
-				.items(ConditionMessage.Style.QUOTE, Arrays.asList(schema.getLocations())));
+				.items(ConditionMessage.Style.QUOTE, List.of(schema.getLocations())));
 		}
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		String[] customizerBeans = beanFactory.getBeanNamesForType(GraphQlSourceBuilderCustomizer.class, false, false);
 		if (customizerBeans.length != 0) {
 			match = true;
-			messages.add(message.found("customizer", "customizers").items(Arrays.asList(customizerBeans)));
+			messages.add(message.found("customizer", "customizers").items(List.of(customizerBeans)));
 		}
 		else {
 			messages.add((message.didNotFind("GraphQlSourceBuilderCustomizer").atAll()));
@@ -98,7 +97,7 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 
 	private List<Resource> resolveSchemaResources(ResourcePatternResolver resolver, String pattern) {
 		try {
-			return Arrays.asList(resolver.getResources(pattern));
+			return List.of(resolver.getResources(pattern));
 		}
 		catch (IOException ex) {
 			return Collections.emptyList();

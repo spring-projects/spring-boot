@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -347,8 +346,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				arguments.putAll(body);
 			}
 			request.getParameterMap()
-				.forEach((name, values) -> arguments.put(name,
-						(values.length != 1) ? Arrays.asList(values) : values[0]));
+				.forEach((name, values) -> arguments.put(name, (values.length != 1) ? List.of(values) : values[0]));
 			return arguments;
 		}
 

@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.integrationtest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.glassfish.jersey.server.ResourceConfig;
@@ -152,11 +151,11 @@ class JerseyEndpointIntegrationTests {
 	}
 
 	private Class<?>[] getAutoconfigurations(Class<?>... additional) {
-		List<Class<?>> autoconfigurations = new ArrayList<>(Arrays.asList(JacksonAutoConfiguration.class,
-				JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
-				ServletWebServerFactoryAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class));
-		autoconfigurations.addAll(Arrays.asList(additional));
+		List<Class<?>> autoconfigurations = new ArrayList<>(
+				List.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class));
+		autoconfigurations.addAll(List.of(additional));
 		return autoconfigurations.toArray(new Class<?>[0]);
 	}
 

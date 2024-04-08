@@ -16,7 +16,6 @@
 
 package org.springframework.boot.util;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,8 +65,8 @@ class InstantiatorTests {
 
 	@Test
 	void instantiateOrdersInstances() {
-		List<Object> instances = createInstantiator(Object.class).instantiate(
-				Arrays.asList(WithMultipleConstructors.class.getName(), WithAdditionalConstructor.class.getName()));
+		List<Object> instances = createInstantiator(Object.class)
+			.instantiate(List.of(WithMultipleConstructors.class.getName(), WithAdditionalConstructor.class.getName()));
 		assertThat(instances).hasSize(2);
 		assertThat(instances.get(0)).isInstanceOf(WithAdditionalConstructor.class);
 		assertThat(instances.get(1)).isInstanceOf(WithMultipleConstructors.class);

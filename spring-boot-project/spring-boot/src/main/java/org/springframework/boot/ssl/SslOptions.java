@@ -16,10 +16,10 @@
 
 package org.springframework.boot.ssl;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.net.ssl.SSLEngine;
@@ -111,7 +111,7 @@ public interface SslOptions {
 	 * @return a collection or {@code null}
 	 */
 	static Set<String> asSet(String[] array) {
-		return (array != null) ? Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(array))) : null;
+		return (array != null) ? Collections.unmodifiableSet(new LinkedHashSet<>(List.of(array))) : null;
 	}
 
 	private static String[] toArray(Collection<String> collection) {

@@ -18,7 +18,6 @@ package org.springframework.boot.devtools.tests;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
@@ -46,9 +45,9 @@ public class LocalApplicationLauncher extends AbstractApplicationLauncher {
 	@Override
 	public LaunchedApplication launchApplication(JvmLauncher jvmLauncher, File serverPortFile, String... additionalArgs)
 			throws Exception {
-		List<String> args = new ArrayList<>(Arrays.asList("com.example.DevToolsTestApplication",
-				serverPortFile.getAbsolutePath(), "--server.port=0"));
-		args.addAll(Arrays.asList(additionalArgs));
+		List<String> args = new ArrayList<>(
+				List.of("com.example.DevToolsTestApplication", serverPortFile.getAbsolutePath(), "--server.port=0"));
+		args.addAll(List.of(additionalArgs));
 		LaunchedJvm jvm = jvmLauncher.launch("local", createApplicationClassPath(), args.toArray(new String[] {}));
 		return new LaunchedApplication(getDirectories().getAppDirectory(), jvm.getStandardOut(), jvm.getStandardError(),
 				jvm.getProcess(), null, null);

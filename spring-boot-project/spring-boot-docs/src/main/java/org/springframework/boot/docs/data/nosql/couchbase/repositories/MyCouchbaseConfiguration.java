@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.data.nosql.couchbase.repositories;
 
-import org.assertj.core.util.Arrays;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ public class MyCouchbaseConfiguration {
 
 	@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 	public CouchbaseCustomConversions myCustomConversions() {
-		return new CouchbaseCustomConversions(Arrays.asList(new MyConverter()));
+		return new CouchbaseCustomConversions(List.of(new MyConverter()));
 	}
 
 }

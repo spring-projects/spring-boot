@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.task;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +60,7 @@ class ScheduledBeanLazyInitializationExcludeFilter implements LazyInitialization
 	private boolean hasScheduledTask(Class<?> type) {
 		Class<?> targetType = ClassUtils.getUserClass(type);
 		if (!this.nonAnnotatedClasses.contains(targetType)
-				&& AnnotationUtils.isCandidateClass(targetType, Arrays.asList(Scheduled.class, Schedules.class))) {
+				&& AnnotationUtils.isCandidateClass(targetType, List.of(Scheduled.class, Schedules.class))) {
 			Map<Method, Set<Scheduled>> annotatedMethods = MethodIntrospector.selectMethods(targetType,
 					(MethodIntrospector.MetadataLookup<Set<Scheduled>>) (method) -> {
 						Set<Scheduled> scheduledAnnotations = AnnotatedElementUtils

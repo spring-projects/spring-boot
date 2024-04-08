@@ -322,7 +322,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void addAgents(List<String> args) {
 		if (this.agents != null) {
 			if (getLog().isInfoEnabled()) {
-				getLog().info("Attaching agents: " + Arrays.asList(this.agents));
+				getLog().info("Attaching agents: " + List.of(this.agents));
 			}
 			for (File agent : this.agents) {
 				args.add("-javaagent:" + agent);

@@ -19,7 +19,6 @@ package org.springframework.boot.web.embedded.netty;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -109,7 +108,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void addServerCustomizers(NettyServerCustomizer... serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
-		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+		this.serverCustomizers.addAll(List.of(serverCustomizers));
 	}
 
 	/**
@@ -119,7 +118,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void addRouteProviders(NettyRouteProvider... routeProviders) {
 		Assert.notNull(routeProviders, "NettyRouteProvider must not be null");
-		this.routeProviders.addAll(Arrays.asList(routeProviders));
+		this.routeProviders.addAll(List.of(routeProviders));
 	}
 
 	/**

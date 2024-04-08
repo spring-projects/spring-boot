@@ -287,7 +287,7 @@ public class SpringApplication {
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
-		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		this.primarySources = new LinkedHashSet<>(List.of(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
 		this.bootstrapRegistryInitializers = new ArrayList<>(
 				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
@@ -1062,7 +1062,7 @@ public class SpringApplication {
 	 */
 	public void addBootstrapRegistryInitializer(BootstrapRegistryInitializer bootstrapRegistryInitializer) {
 		Assert.notNull(bootstrapRegistryInitializer, "BootstrapRegistryInitializer must not be null");
-		this.bootstrapRegistryInitializers.addAll(Arrays.asList(bootstrapRegistryInitializer));
+		this.bootstrapRegistryInitializers.addAll(List.of(bootstrapRegistryInitializer));
 	}
 
 	/**
@@ -1091,7 +1091,7 @@ public class SpringApplication {
 	 * @param profiles the additional profiles to set
 	 */
 	public void setAdditionalProfiles(String... profiles) {
-		this.additionalProfiles = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(profiles)));
+		this.additionalProfiles = Collections.unmodifiableSet(new LinkedHashSet<>(List.of(profiles)));
 	}
 
 	/**
@@ -1243,7 +1243,7 @@ public class SpringApplication {
 	 * @param initializers the initializers to add
 	 */
 	public void addInitializers(ApplicationContextInitializer<?>... initializers) {
-		this.initializers.addAll(Arrays.asList(initializers));
+		this.initializers.addAll(List.of(initializers));
 	}
 
 	/**
@@ -1270,7 +1270,7 @@ public class SpringApplication {
 	 * @param listeners the listeners to add
 	 */
 	public void addListeners(ApplicationListener<?>... listeners) {
-		this.listeners.addAll(Arrays.asList(listeners));
+		this.listeners.addAll(List.of(listeners));
 	}
 
 	/**
@@ -1495,7 +1495,7 @@ public class SpringApplication {
 		 */
 		public Augmented with(Class<?>... sources) {
 			LinkedHashSet<Class<?>> merged = new LinkedHashSet<>(this.sources);
-			merged.addAll(Arrays.asList(sources));
+			merged.addAll(List.of(sources));
 			return new Augmented(this.main, merged);
 		}
 

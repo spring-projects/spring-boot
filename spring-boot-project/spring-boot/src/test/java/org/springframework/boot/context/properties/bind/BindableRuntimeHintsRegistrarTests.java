@@ -68,7 +68,7 @@ class BindableRuntimeHintsRegistrarTests {
 	@Test
 	void registerHintsWithIterable() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		List<Class<?>> types = Arrays.asList(BoundConfigurationProperties.class, ConfigurationPropertiesBean.class);
+		List<Class<?>> types = List.of(BoundConfigurationProperties.class, ConfigurationPropertiesBean.class);
 		BindableRuntimeHintsRegistrar registrar = BindableRuntimeHintsRegistrar.forTypes(types);
 		registrar.registerHints(runtimeHints);
 		for (Class<?> type : types) {

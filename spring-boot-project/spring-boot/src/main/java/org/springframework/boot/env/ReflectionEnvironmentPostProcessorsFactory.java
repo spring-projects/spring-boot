@@ -17,7 +17,6 @@
 package org.springframework.boot.env;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -43,12 +42,12 @@ class ReflectionEnvironmentPostProcessorsFactory implements EnvironmentPostProce
 	private final List<String> classNames;
 
 	ReflectionEnvironmentPostProcessorsFactory(Class<?>... classes) {
-		this.classes = new ArrayList<>(Arrays.asList(classes));
+		this.classes = new ArrayList<>(List.of(classes));
 		this.classNames = null;
 	}
 
 	ReflectionEnvironmentPostProcessorsFactory(ClassLoader classLoader, String... classNames) {
-		this(classLoader, Arrays.asList(classNames));
+		this(classLoader, List.of(classNames));
 	}
 
 	ReflectionEnvironmentPostProcessorsFactory(ClassLoader classLoader, List<String> classNames) {

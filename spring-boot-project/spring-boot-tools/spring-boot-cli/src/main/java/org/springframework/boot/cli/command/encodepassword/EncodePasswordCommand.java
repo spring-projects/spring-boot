@@ -17,7 +17,6 @@
 package org.springframework.boot.cli.command.encodepassword;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -83,7 +82,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 
 		@Override
 		protected void options() {
-			this.algorithm = option(Arrays.asList("algorithm", "a"),
+			this.algorithm = option(List.of("algorithm", "a"),
 					"The algorithm to use. Supported algorithms: "
 							+ StringUtils.collectionToDelimitedString(ENCODERS.keySet(), ", ")
 							+ ". The default algorithm uses bcrypt")

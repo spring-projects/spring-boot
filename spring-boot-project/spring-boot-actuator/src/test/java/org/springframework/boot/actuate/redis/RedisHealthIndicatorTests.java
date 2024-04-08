@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.redis;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -125,7 +124,7 @@ class RedisHealthIndicatorTests {
 		boolean failure = "fail".equals(state);
 		clusterProperties.setProperty("cluster_slots_ok", failure ? "3" : "4");
 		clusterProperties.setProperty("cluster_slots_fail", failure ? "1" : "0");
-		List<RedisClusterNode> redisMasterNodes = Arrays.asList(new RedisClusterNode("127.0.0.1", 7001),
+		List<RedisClusterNode> redisMasterNodes = List.of(new RedisClusterNode("127.0.0.1", 7001),
 				new RedisClusterNode("127.0.0.2", 7001));
 		RedisClusterConnection redisConnection = mock(RedisClusterConnection.class);
 		given(redisConnection.clusterGetNodes()).willReturn(redisMasterNodes);

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.info;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class InfoEndpointTests {
 
 	@Test
 	void info() {
-		InfoEndpoint endpoint = new InfoEndpoint(Arrays.asList((builder) -> builder.withDetail("key1", "value1"),
+		InfoEndpoint endpoint = new InfoEndpoint(List.of((builder) -> builder.withDetail("key1", "value1"),
 				(builder) -> builder.withDetail("key2", "value2")));
 		Map<String, Object> info = endpoint.info();
 		assertThat(info).hasSize(2);

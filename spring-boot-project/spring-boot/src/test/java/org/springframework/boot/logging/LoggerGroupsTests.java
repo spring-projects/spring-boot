@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,8 +35,7 @@ class LoggerGroupsTests {
 
 	@Test
 	void putAllShouldAddLoggerGroups() {
-		Map<String, List<String>> groups = Collections.singletonMap("test",
-				Arrays.asList("test.member", "test.member2"));
+		Map<String, List<String>> groups = Collections.singletonMap("test", List.of("test.member", "test.member2"));
 		LoggerGroups loggerGroups = new LoggerGroups();
 		loggerGroups.putAll(groups);
 		LoggerGroup group = loggerGroups.get("test");
@@ -53,9 +51,9 @@ class LoggerGroupsTests {
 
 	private LoggerGroups createLoggerGroups() {
 		Map<String, List<String>> groups = new LinkedHashMap<>();
-		groups.put("test0", Arrays.asList("test0.member", "test0.member2"));
-		groups.put("test1", Arrays.asList("test1.member", "test1.member2"));
-		groups.put("test2", Arrays.asList("test2.member", "test2.member2"));
+		groups.put("test0", List.of("test0.member", "test0.member2"));
+		groups.put("test1", List.of("test1.member", "test1.member2"));
+		groups.put("test2", List.of("test2.member", "test2.member2"));
 		return new LoggerGroups(groups);
 	}
 

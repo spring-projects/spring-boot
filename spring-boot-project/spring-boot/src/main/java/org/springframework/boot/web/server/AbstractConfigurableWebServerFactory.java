@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -123,7 +123,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	@Override
 	public void addErrorPages(ErrorPage... errorPages) {
 		Assert.notNull(errorPages, "ErrorPages must not be null");
-		this.errorPages.addAll(Arrays.asList(errorPages));
+		this.errorPages.addAll(List.of(errorPages));
 	}
 
 	public Ssl getSsl() {

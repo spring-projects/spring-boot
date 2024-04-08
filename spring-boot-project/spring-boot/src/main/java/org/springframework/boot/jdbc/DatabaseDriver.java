@@ -16,9 +16,9 @@
 
 package org.springframework.boot.jdbc;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.util.Assert;
@@ -129,7 +129,7 @@ public enum DatabaseDriver {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
-			return Arrays.asList("firebirdsql", "firebird");
+			return List.of("firebirdsql", "firebird");
 		}
 
 		@Override
@@ -184,7 +184,7 @@ public enum DatabaseDriver {
 
 		@Override
 		protected Collection<String> getUrlPrefixes() {
-			return Arrays.asList("informix-sqli", "informix-direct");
+			return List.of("informix-sqli", "informix-direct");
 		}
 
 	},

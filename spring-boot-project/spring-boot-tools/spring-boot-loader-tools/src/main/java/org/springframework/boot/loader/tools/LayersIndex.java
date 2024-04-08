@@ -22,7 +22,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +59,7 @@ public class LayersIndex {
 	 * @param layers the layers in the index
 	 */
 	public LayersIndex(Layer... layers) {
-		this(Arrays.asList(layers));
+		this(List.of(layers));
 	}
 
 	/**

@@ -23,7 +23,6 @@ import java.io.Reader;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -120,7 +119,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 				int issueNumber = getOrOpenUpgradeIssue(repository, issueLabels, milestone, title,
 						existingUpgradeIssue);
 				if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.CLOSED) {
-					existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
+					existingUpgradeIssue.label(List.of("type: task", "status: superseded"));
 				}
 				System.out.println("   Issue: " + issueNumber + " - " + title
 						+ getExistingUpgradeIssueMessageDetails(existingUpgradeIssue));

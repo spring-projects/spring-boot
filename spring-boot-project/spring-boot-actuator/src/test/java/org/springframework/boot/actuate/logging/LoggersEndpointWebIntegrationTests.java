@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.logging;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
@@ -316,7 +315,7 @@ class LoggersEndpointWebIntegrationTests {
 
 	private JSONArray jsonArrayOf(Object... entries) {
 		JSONArray array = new JSONArray();
-		array.addAll(Arrays.asList(entries));
+		array.addAll(List.of(entries));
 		return array;
 	}
 
@@ -335,8 +334,8 @@ class LoggersEndpointWebIntegrationTests {
 
 		private LoggerGroups getLoggerGroups() {
 			Map<String, List<String>> groups = new LinkedHashMap<>();
-			groups.put("test", Arrays.asList("test.member1", "test.member2"));
-			groups.put("group.png", Arrays.asList("png.member1", "png.member2"));
+			groups.put("test", List.of("test.member1", "test.member2"));
+			groups.put("group.png", List.of("png.member1", "png.member2"));
 			return new LoggerGroups(groups);
 		}
 

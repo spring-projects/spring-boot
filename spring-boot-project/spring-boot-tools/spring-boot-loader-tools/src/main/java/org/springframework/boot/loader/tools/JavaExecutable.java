@@ -18,7 +18,7 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -54,7 +54,7 @@ public class JavaExecutable {
 	 */
 	public ProcessBuilder processBuilder(String... arguments) {
 		ProcessBuilder processBuilder = new ProcessBuilder(toString());
-		processBuilder.command().addAll(Arrays.asList(arguments));
+		processBuilder.command().addAll(List.of(arguments));
 		return processBuilder;
 	}
 

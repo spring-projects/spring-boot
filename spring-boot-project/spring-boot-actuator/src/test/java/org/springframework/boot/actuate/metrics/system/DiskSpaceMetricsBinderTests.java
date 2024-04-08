@@ -17,8 +17,8 @@
 package org.springframework.boot.actuate.metrics.system;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -52,7 +52,7 @@ class DiskSpaceMetricsBinderTests {
 		MeterRegistry meterRegistry = new SimpleMeterRegistry();
 		File path1 = new File(".");
 		File path2 = new File("..");
-		DiskSpaceMetricsBinder metricsBinder = new DiskSpaceMetricsBinder(Arrays.asList(path1, path2), Tags.empty());
+		DiskSpaceMetricsBinder metricsBinder = new DiskSpaceMetricsBinder(List.of(path1, path2), Tags.empty());
 		metricsBinder.bindTo(meterRegistry);
 
 		Tags tags = Tags.of("path", path1.getAbsolutePath());

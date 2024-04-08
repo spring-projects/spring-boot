@@ -18,7 +18,6 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -218,7 +217,7 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withBindRestrictions(BindRestriction... additionalRestrictions) {
 		EnumSet<BindRestriction> bindRestrictions = EnumSet.copyOf(this.bindRestrictions);
-		bindRestrictions.addAll(Arrays.asList(additionalRestrictions));
+		bindRestrictions.addAll(List.of(additionalRestrictions));
 		return new Bindable<>(this.type, this.boxedType, this.value, this.annotations, bindRestrictions,
 				this.bindMethod);
 	}

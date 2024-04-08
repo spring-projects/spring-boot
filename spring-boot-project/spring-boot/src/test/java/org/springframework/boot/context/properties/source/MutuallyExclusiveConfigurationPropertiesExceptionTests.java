@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,7 +36,7 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 	@Test
 	void createWhenConfiguredNamesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(null, Arrays.asList("a", "b")))
+			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(null, List.of("a", "b")))
 			.withMessage("ConfiguredNames must contain 2 or more names");
 	}
 
@@ -45,28 +44,28 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 	void createWhenConfiguredNamesContainsOneElementThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(Collections.singleton("a"),
-					Arrays.asList("a", "b")))
+					List.of("a", "b")))
 			.withMessage("ConfiguredNames must contain 2 or more names");
 	}
 
 	@Test
 	void createWhenMutuallyExclusiveNamesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(Arrays.asList("a", "b"), null))
+			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(List.of("a", "b"), null))
 			.withMessage("MutuallyExclusiveNames must contain 2 or more names");
 	}
 
 	@Test
 	void createWhenMutuallyExclusiveNamesContainsOneElementThrowsException() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(Arrays.asList("a", "b"),
+			.isThrownBy(() -> new MutuallyExclusiveConfigurationPropertiesException(List.of("a", "b"),
 					Collections.singleton("a")))
 			.withMessage("MutuallyExclusiveNames must contain 2 or more names");
 	}
 
 	@Test
 	void createBuildsSensibleMessage() {
-		List<String> names = Arrays.asList("a", "b");
+		List<String> names = List.of("a", "b");
 		assertThat(new MutuallyExclusiveConfigurationPropertiesException(names, names))
 			.hasMessage("The configuration properties 'a, b' are mutually exclusive "
 					+ "and 'a, b' have been configured together");
@@ -74,8 +73,8 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 
 	@Test
 	void getConfiguredNamesReturnsConfiguredNames() {
-		List<String> configuredNames = Arrays.asList("a", "b");
-		List<String> mutuallyExclusiveNames = Arrays.asList("a", "b", "c");
+		List<String> configuredNames = List.of("a", "b");
+		List<String> mutuallyExclusiveNames = List.of("a", "b", "c");
 		MutuallyExclusiveConfigurationPropertiesException exception = new MutuallyExclusiveConfigurationPropertiesException(
 				configuredNames, mutuallyExclusiveNames);
 		assertThat(exception.getConfiguredNames()).hasSameElementsAs(configuredNames);
@@ -83,8 +82,8 @@ class MutuallyExclusiveConfigurationPropertiesExceptionTests {
 
 	@Test
 	void getMutuallyExclusiveNamesReturnsMutuallyExclusiveNames() {
-		List<String> configuredNames = Arrays.asList("a", "b");
-		List<String> mutuallyExclusiveNames = Arrays.asList("a", "b", "c");
+		List<String> configuredNames = List.of("a", "b");
+		List<String> mutuallyExclusiveNames = List.of("a", "b", "c");
 		MutuallyExclusiveConfigurationPropertiesException exception = new MutuallyExclusiveConfigurationPropertiesException(
 				configuredNames, mutuallyExclusiveNames);
 		assertThat(exception.getMutuallyExclusiveNames()).hasSameElementsAs(mutuallyExclusiveNames);
