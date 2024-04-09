@@ -74,6 +74,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.GracefulHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.session.DefaultSessionCache;
 import org.eclipse.jetty.session.FileSessionDataStore;
@@ -196,9 +197,9 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			new ForwardHeadersCustomizer().customize(server);
 		}
 		if (getShutdown() == Shutdown.GRACEFUL) {
-			StatisticsHandler statisticsHandler = new StatisticsHandler();
-			statisticsHandler.setHandler(server.getHandler());
-			server.setHandler(statisticsHandler);
+			GracefulHandler gracefulHandler = new GracefulHandler();
+			gracefulHandler.setHandler(server.getHandler());
+			server.setHandler(gracefulHandler);
 		}
 		return getJettyWebServer(server);
 	}
