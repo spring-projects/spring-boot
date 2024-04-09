@@ -14,14 +14,13 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("ActiveMQ", "6.1.0") {
+	library("ActiveMQ", "6.1.1") {
 		group("org.apache.activemq") {
 			modules = [
 					"activemq-amqp",
 					"activemq-blueprint",
 					"activemq-broker",
 					"activemq-client",
-					"activemq-client-jakarta",
 					"activemq-console" {
 						exclude group: "commons-logging", module: "commons-logging"
 					},
