@@ -292,7 +292,7 @@ bom {
 			]
 		}
 	}
-	library("CycloneDX Maven Plugin", "2.7.11") {
+	library("CycloneDX Maven Plugin", "2.8.0") {
 		group("org.cyclonedx") {
 			plugins = [
 				"cyclonedx-maven-plugin"
