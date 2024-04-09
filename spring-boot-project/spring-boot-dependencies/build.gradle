@@ -679,7 +679,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Json Bind", "3.0.0") {
+	library("Jakarta Json Bind", "3.0.1") {
 		group("jakarta.json.bind") {
 			modules = [
 				"jakarta.json.bind-api"
