@@ -1054,7 +1054,7 @@ bom {
 			releaseNotes("https://github.com/lettuce-io/lettuce-core/releases/tag/{version}")
 		}
 	}
-	library("Liquibase", "4.26.0") {
+	library("Liquibase", "4.27.0") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",
