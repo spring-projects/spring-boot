@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.action.ActionUtil;
 import ch.qos.logback.core.joran.action.ActionUtil.Scope;
 import ch.qos.logback.core.model.Model;
-import ch.qos.logback.core.model.ModelUtil;
 import ch.qos.logback.core.model.processor.ModelHandlerBase;
 import ch.qos.logback.core.model.processor.ModelHandlerException;
 import ch.qos.logback.core.model.processor.ModelInterpretationContext;
+import ch.qos.logback.core.model.util.PropertyModelHandlerHelper;
 import ch.qos.logback.core.util.OptionHelper;
 
 import org.springframework.core.env.Environment;
@@ -57,7 +57,8 @@ class SpringPropertyModelHandler extends ModelHandlerBase {
 		if (OptionHelper.isNullOrEmpty(propertyModel.getName()) || OptionHelper.isNullOrEmpty(source)) {
 			addError("The \"name\" and \"source\" attributes of <springProperty> must be set");
 		}
-		ModelUtil.setProperty(intercon, propertyModel.getName(), getValue(source, defaultValue), scope);
+		PropertyModelHandlerHelper.setProperty(intercon, propertyModel.getName(), getValue(source, defaultValue),
+				scope);
 	}
 
 	private String getValue(String source, String defaultValue) {

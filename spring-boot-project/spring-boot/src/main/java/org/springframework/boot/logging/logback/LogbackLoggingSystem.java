@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.io.PrintStream;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -38,7 +39,7 @@ import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusUtil;
 import ch.qos.logback.core.util.StatusListenerConfigHelper;
-import ch.qos.logback.core.util.StatusPrinter;
+import ch.qos.logback.core.util.StatusPrinter2;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 
 	};
+
+	private final StatusPrinter2 statusPrinter = new StatusPrinter2();
 
 	public LogbackLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
@@ -271,7 +274,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		if (errors.isEmpty()) {
 			if (!StatusUtil.contextHasStatusListener(loggerContext)) {
-				StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
+				this.statusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 			}
 			return;
 		}
@@ -471,6 +474,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		finally {
 			turboFilters.remove(FILTER);
 		}
+	}
+
+	void setStatusPrinterStream(PrintStream stream) {
+		this.statusPrinter.setPrintStream(stream);
 	}
 
 	/**
