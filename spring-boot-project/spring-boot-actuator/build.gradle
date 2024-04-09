@@ -68,7 +68,9 @@ dependencies {
 	optional("org.springframework.data:spring-data-cassandra") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
-	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-couchbase") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 	optional("org.springframework.data:spring-data-elasticsearch")  {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
