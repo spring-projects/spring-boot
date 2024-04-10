@@ -51,18 +51,16 @@ final class GracefulShutdown {
 
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
-		for (Graceful graceful : this.server.getBeans(Graceful.class)) {
-			shutdown(graceful);
-		}
+		shutdownGracefulComponents();
 		this.shuttingDown = true;
 		new Thread(() -> awaitShutdown(callback), "jetty-shutdown").start();
 
 	}
 
 	@SuppressWarnings("unchecked")
-	private void shutdown(Graceful graceful) {
+	private void shutdownGracefulComponents() {
 		try {
-			graceful.shutdown().get();
+			Graceful.shutdown(this.server).get();
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
