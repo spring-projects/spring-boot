@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,7 @@ import java.util.logging.Handler;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.AbstractConfiguration;
@@ -42,14 +40,13 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
-import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.filter.DenyAllFilter;
 import org.apache.logging.log4j.core.net.UrlConnectionFactory;
 import org.apache.logging.log4j.core.net.ssl.SslConfiguration;
 import org.apache.logging.log4j.core.net.ssl.SslConfigurationFactory;
 import org.apache.logging.log4j.core.util.AuthorizationProvider;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
-import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.PropertiesUtil;
 
 import org.springframework.boot.context.properties.bind.BindResult;
@@ -106,29 +103,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		LEVELS.map(LogLevel.OFF, Level.OFF);
 	}
 
-	private static final Filter FILTER = new AbstractFilter() {
-
-		@Override
-		public Result filter(LogEvent event) {
-			return Result.DENY;
-		}
-
-		@Override
-		public Result filter(Logger logger, Level level, Marker marker, Message msg, Throwable t) {
-			return Result.DENY;
-		}
-
-		@Override
-		public Result filter(Logger logger, Level level, Marker marker, Object msg, Throwable t) {
-			return Result.DENY;
-		}
-
-		@Override
-		public Result filter(Logger logger, Level level, Marker marker, String msg, Object... params) {
-			return Result.DENY;
-		}
-
-	};
+	private static final Filter FILTER = DenyAllFilter.newBuilder().build();
 
 	public Log4J2LoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
