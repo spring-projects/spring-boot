@@ -1,13 +1,17 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
+    <!-- Indentation Settings -->
     <option name="AUTODETECT_INDENTS" value="false" />
     <option name="OTHER_INDENT_OPTIONS">
       <value>
         <option name="USE_TAB_CHARACTER" value="true" />
       </value>
     </option>
+
+    <!-- Import Settings -->
     <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
     <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+    <!-- Import Layout -->
     <option name="IMPORT_LAYOUT_TABLE">
       <value>
         <package name="java" withSubpackages="true" static="false" />
@@ -21,11 +25,31 @@
         <package name="" withSubpackages="true" static="true" />
       </value>
     </option>
+
+    <!-- Right Margin and Formatting -->
     <option name="RIGHT_MARGIN" value="90" />
     <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
+
+    <!-- Java Code Style Settings -->
+    <JavaCodeStyleSettings>
+      <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
+      <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
+      <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
+        <value />
+      </option>
+      <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
+      <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
+      <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
+      <option name="JD_KEEP_INVALID_TAGS" value="false" />
+      <option name="JD_KEEP_EMPTY_LINES" value="false" />
+    </JavaCodeStyleSettings>
+
+    <!-- Groovy Code Style Settings -->
     <GroovyCodeStyleSettings>
+      <!-- Import Settings -->
       <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
       <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+      <!-- Import Layout -->
       <option name="IMPORT_LAYOUT_TABLE">
         <value>
           <emptyLine />
@@ -40,33 +64,8 @@
         </value>
       </option>
     </GroovyCodeStyleSettings>
-    <JavaCodeStyleSettings>
-      <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
-      <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
-      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
-      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
-      <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
-        <value />
-      </option>
-      <option name="IMPORT_LAYOUT_TABLE">
-        <value>
-          <package name="java" withSubpackages="true" static="false" />
-          <emptyLine />
-          <package name="javax" withSubpackages="true" static="false" />
-          <emptyLine />
-          <package name="" withSubpackages="true" static="false" />
-          <emptyLine />
-          <package name="org.springframework" withSubpackages="true" static="false" />
-          <emptyLine />
-          <package name="" withSubpackages="true" static="true" />
-        </value>
-      </option>
-      <option name="ENABLE_JAVADOC_FORMATTING" value="false" />
-      <option name="JD_ALIGN_PARAM_COMMENTS" value="false" />
-      <option name="JD_ALIGN_EXCEPTION_COMMENTS" value="false" />
-      <option name="JD_KEEP_INVALID_TAGS" value="false" />
-      <option name="JD_KEEP_EMPTY_LINES" value="false" />
-    </JavaCodeStyleSettings>
+
+    <!-- Jet Code Style Settings -->
     <JetCodeStyleSettings>
       <option name="PACKAGES_TO_USE_STAR_IMPORTS">
         <value>
@@ -77,14 +76,14 @@
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="20" />
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT_FOR_MEMBERS" value="20" />
     </JetCodeStyleSettings>
+
+    <!-- EditorConfig -->
     <editorconfig>
       <option name="ENABLED" value="false" />
     </editorconfig>
-    <codeStyleSettings language="Groovy">
-      <indentOptions>
-        <option name="USE_TAB_CHARACTER" value="true" />
-      </indentOptions>
-    </codeStyleSettings>
+
+    <!-- Language-specific Settings -->
+    <!-- Java -->
     <codeStyleSettings language="JAVA">
       <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="1" />
       <option name="BLANK_LINES_AROUND_FIELD" value="1" />
@@ -102,16 +101,19 @@
         <option name="USE_TAB_CHARACTER" value="true" />
       </indentOptions>
     </codeStyleSettings>
+    <!-- JSON -->
     <codeStyleSettings language="JSON">
       <indentOptions>
         <option name="TAB_SIZE" value="2" />
       </indentOptions>
     </codeStyleSettings>
+    <!-- XML -->
     <codeStyleSettings language="XML">
       <indentOptions>
         <option name="USE_TAB_CHARACTER" value="true" />
       </indentOptions>
     </codeStyleSettings>
+    <!-- Kotlin -->
     <codeStyleSettings language="kotlin">
       <indentOptions>
         <option name="USE_TAB_CHARACTER" value="true" />
