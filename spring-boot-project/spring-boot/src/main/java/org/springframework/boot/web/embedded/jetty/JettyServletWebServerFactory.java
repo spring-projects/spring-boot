@@ -683,6 +683,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 
 		@Override
+		@SuppressWarnings({ "deprecation", "removal" })
 		public ReadableByteChannel newReadableByteChannel() throws IOException {
 			return this.delegate.newReadableByteChannel();
 		}
