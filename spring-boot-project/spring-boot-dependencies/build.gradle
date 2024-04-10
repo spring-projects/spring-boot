@@ -327,7 +327,7 @@ bom {
 			]
 		}
 	}
-	library("Groovy", "4.0.20") {
+	library("Groovy", "4.0.21") {
 		group("org.apache.groovy") {
 			imports = [
 				"groovy-bom"
