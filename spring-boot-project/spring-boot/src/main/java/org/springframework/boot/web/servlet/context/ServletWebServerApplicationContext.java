@@ -170,12 +170,11 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	protected void doClose() {
 		if (isActive()) {
 			AvailabilityChangeEvent.publish(this, ReadinessState.REFUSING_TRAFFIC);
-			super.doClose();
-
-			WebServer webServer = this.webServer;
-			if (webServer != null) {
-				webServer.destroy();
-			}
+		}
+		super.doClose();
+		WebServer webServer = this.webServer;
+		if (webServer != null) {
+			webServer.destroy();
 		}
 	}
 
