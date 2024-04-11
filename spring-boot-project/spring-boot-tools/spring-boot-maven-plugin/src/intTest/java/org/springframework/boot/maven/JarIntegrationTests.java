@@ -201,6 +201,48 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenAnEntryIsExcludedWithPropertyItDoesNotAppearInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar")
+			.systemProperty("spring-boot.excludes", "jakarta.servlet:jakarta.servlet-api")
+			.goals("install")
+			.execute((project) -> {
+				File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl")
+					.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-");
+			});
+	}
+
+	@TestTemplate
+	void whenAnEntryIsIncludedOnlyIncludedEntriesAppearInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-include-entry").goals("install").execute((project) -> {
+			File repackaged = new File(project, "target/jar-include-entry-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+				.hasEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-")
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+				.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl");
+		});
+	}
+
+	@TestTemplate
+	void whenAnIncludeIsSpecifiedAsAPropertyOnlyIncludedEntriesAppearInTheRepackagedJar(MavenBuild mavenBuild) {
+		mavenBuild.project("jar")
+			.systemProperty("spring-boot.includes", "jakarta.servlet:jakarta.servlet-api")
+			.goals("install")
+			.execute((project) -> {
+				File repackaged = new File(project, "target/jar-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-")
+					.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/spring-context")
+					.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/spring-core")
+					.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/spring-jcl");
+			});
+	}
+
+	@TestTemplate
 	void whenAGroupIsExcludedNoEntriesInThatGroupAppearInTheRepackagedJar(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-exclude-group").goals("install").execute((project) -> {
 			File repackaged = new File(project, "target/jar-exclude-group-0.0.1.BUILD-SNAPSHOT.jar");
