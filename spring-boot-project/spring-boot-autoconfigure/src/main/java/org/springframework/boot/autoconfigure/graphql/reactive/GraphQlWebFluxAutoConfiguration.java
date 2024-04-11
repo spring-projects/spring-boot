@@ -163,7 +163,7 @@ public class GraphQlWebFluxAutoConfiguration {
 		public GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
 				GraphQlProperties properties, ServerCodecConfigurer configurer) {
 			return new GraphQlWebSocketHandler(webGraphQlHandler, configurer,
-					properties.getWebsocket().getConnectionInitTimeout());
+					properties.getWebsocket().getConnectionInitTimeout(), properties.getWebsocket().getKeepAlive());
 		}
 
 		@Bean

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql.reactive;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -218,6 +219,20 @@ class GraphQlWebFluxAutoConfigurationTests {
 	void shouldConfigureWebSocketBeans() {
 		this.contextRunner.withPropertyValues("spring.graphql.websocket.path=/ws")
 			.run((context) -> assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class));
+	}
+
+	@Test
+	void shouldConfigureWebSocketProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.graphql.websocket.path=/ws",
+					"spring.graphql.websocket.connection-init-timeout=120s", "spring.graphql.websocket.keep-alive=30s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class);
+				GraphQlWebSocketHandler graphQlWebSocketHandler = context.getBean(GraphQlWebSocketHandler.class);
+				assertThat(graphQlWebSocketHandler).extracting("initTimeoutDuration")
+					.isEqualTo(Duration.ofSeconds(120));
+				assertThat(graphQlWebSocketHandler).extracting("keepAliveDuration").isEqualTo(Duration.ofSeconds(30));
+			});
 	}
 
 	@Test

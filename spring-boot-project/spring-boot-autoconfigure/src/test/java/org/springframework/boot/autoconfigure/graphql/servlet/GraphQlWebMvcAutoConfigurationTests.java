@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql.servlet;
 
+import java.time.Duration;
 import java.util.Map;
 
 import graphql.schema.idl.TypeRuntimeWiring;
@@ -182,6 +183,20 @@ class GraphQlWebMvcAutoConfigurationTests {
 					context.getBean(WebSocketHandlerMapping.class), context.getBean(RouterFunctionMapping.class),
 					context.getBean(RequestMappingHandlerMapping.class));
 		});
+	}
+
+	@Test
+	void shouldConfigureWebSocketProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.graphql.websocket.path=/ws",
+					"spring.graphql.websocket.connection-init-timeout=120s", "spring.graphql.websocket.keep-alive=30s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class);
+				GraphQlWebSocketHandler graphQlWebSocketHandler = context.getBean(GraphQlWebSocketHandler.class);
+				assertThat(graphQlWebSocketHandler).extracting("initTimeoutDuration")
+					.isEqualTo(Duration.ofSeconds(120));
+				assertThat(graphQlWebSocketHandler).extracting("keepAliveDuration").isEqualTo(Duration.ofSeconds(30));
+			});
 	}
 
 	@Test

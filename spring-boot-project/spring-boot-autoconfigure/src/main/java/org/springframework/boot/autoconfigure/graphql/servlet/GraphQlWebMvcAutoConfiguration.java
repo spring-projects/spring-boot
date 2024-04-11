@@ -169,7 +169,7 @@ public class GraphQlWebMvcAutoConfiguration {
 		public GraphQlWebSocketHandler graphQlWebSocketHandler(WebGraphQlHandler webGraphQlHandler,
 				GraphQlProperties properties, HttpMessageConverters converters) {
 			return new GraphQlWebSocketHandler(webGraphQlHandler, getJsonConverter(converters),
-					properties.getWebsocket().getConnectionInitTimeout());
+					properties.getWebsocket().getConnectionInitTimeout(), properties.getWebsocket().getKeepAlive());
 		}
 
 		private GenericHttpMessageConverter<Object> getJsonConverter(HttpMessageConverters converters) {
