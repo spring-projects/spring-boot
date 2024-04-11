@@ -81,9 +81,10 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
 	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
-	 * mandatory {@code groupId} and {@code artifactId} properties and an optional
-	 * {@code classifier} property. If passing in excludes as a property the syntax is
-	 * <pre>-Dspring-boot.excludes=groupId1:artifactId1,groupId2:artifactId2:optional-qualifier</pre>
+	 * mandatory {@code groupId} and {@code artifactId} components and an optional
+	 * {@code classifier} component. When configured as a property, values should be
+	 * comma-separated with colon-separated components:
+	 * {@code groupId:artifactId,groupId:artifactId:classifier}
 	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.excludes")
