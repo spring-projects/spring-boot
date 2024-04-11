@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.maven;
+package org.test;
 
-/**
- * A model for a dependency to exclude.
- *
- * @author Stephane Nicoll
- * @since 1.1.0
- */
-public class Exclude extends FilterableDependency {
+public class SampleApplication {
+
+	public static void main(String[] args) {
+	}
 
 }
