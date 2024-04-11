@@ -145,9 +145,7 @@ dependencies {
 	implementation("org.springframework.amqp:spring-rabbit")
 	implementation("org.springframework.batch:spring-batch-core")
 	implementation("org.springframework.data:spring-data-cassandra")
-	implementation("org.springframework.data:spring-data-couchbase") {
-		exclude group: "javax.inject", module: "javax.inject"
-	}
+	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
