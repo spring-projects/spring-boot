@@ -665,6 +665,28 @@ class PulsarAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(PulsarAwareTransactionManager.class));
 		}
 
+		@Test
+		void whenTemplateRequiresTransactionsThenTransactionsMustBeEnabled() {
+			this.contextRunner
+				.withPropertyValues("spring.pulsar.template.transaction.required=true",
+						"spring.pulsar.template.transaction.enabled=false")
+				.run((context) -> assertThat(context).hasFailed()
+					.getFailure()
+					.hasMessageEndingWith(
+							"If transactions are required they must also be enabled - consult your 'spring.pulsar.template.transaction' properties."));
+		}
+
+		@Test
+		void whenListenerRequiresTransactionsThenTransactionsMustBeEnabled() {
+			this.contextRunner
+				.withPropertyValues("spring.pulsar.listener.transaction.required=true",
+						"spring.pulsar.listener.transaction.enabled=false")
+				.run((context) -> assertThat(context).hasFailed()
+					.getFailure()
+					.hasMessageEndingWith(
+							"If transactions are required they must also be enabled - consult your 'spring.pulsar.listener.transaction' properties."));
+		}
+
 	}
 
 }

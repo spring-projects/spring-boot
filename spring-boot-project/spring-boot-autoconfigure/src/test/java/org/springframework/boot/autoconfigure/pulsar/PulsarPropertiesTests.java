@@ -415,19 +415,39 @@ class PulsarPropertiesTests {
 	@Nested
 	class TransactionProperties {
 
-		@ParameterizedTest
-		@MethodSource
-		void transactionsEnabledTests(boolean listenerEnablesTransactions, boolean templateEnablesTransactions,
-				boolean shouldTransactionsBeEnabled) {
+		@Test
+		void transactionsEnabledWhenListenerAndTemplateBothEnabled() {
 			PulsarProperties properties = new PulsarProperties();
-			properties.getListener().getTransaction().setEnabled(listenerEnablesTransactions);
-			properties.getTemplate().getTransaction().setEnabled(templateEnablesTransactions);
-			assertThat(properties.isTransactionEnabled()).isEqualTo(shouldTransactionsBeEnabled);
+			properties.getListener().getTransaction().setEnabled(true);
+			properties.getTemplate().getTransaction().setEnabled(true);
+			assertThat(properties.isTransactionEnabled()).isTrue();
+
 		}
 
-		static Stream<Arguments> transactionsEnabledTests() {
-			return Stream.of(Arguments.arguments(true, true, true), Arguments.arguments(true, false, true),
-					Arguments.arguments(false, true, true), Arguments.arguments(false, false, false));
+		@Test
+		void transactionsEnabledWhenListenerEnabledAndTemplateDisabled() {
+			PulsarProperties properties = new PulsarProperties();
+			properties.getListener().getTransaction().setEnabled(true);
+			properties.getTemplate().getTransaction().setEnabled(false);
+			assertThat(properties.isTransactionEnabled()).isTrue();
+
+		}
+
+		@Test
+		void transactionsEnabledWhenListenerDisabledAndTemplateEnabled() {
+			PulsarProperties properties = new PulsarProperties();
+			properties.getListener().getTransaction().setEnabled(false);
+			properties.getTemplate().getTransaction().setEnabled(true);
+			assertThat(properties.isTransactionEnabled()).isTrue();
+
+		}
+
+		void transactionsDisabledWhenListenerAndTemplateBothDisabled() {
+			PulsarProperties properties = new PulsarProperties();
+			properties.getListener().getTransaction().setEnabled(false);
+			properties.getTemplate().getTransaction().setEnabled(false);
+			assertThat(properties.isTransactionEnabled()).isFalse();
+
 		}
 
 	}

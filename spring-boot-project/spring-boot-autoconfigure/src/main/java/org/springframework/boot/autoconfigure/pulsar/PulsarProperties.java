@@ -34,6 +34,7 @@ import org.apache.pulsar.client.api.SubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
@@ -47,7 +48,7 @@ import org.springframework.util.Assert;
  * @since 3.2.0
  */
 @ConfigurationProperties("spring.pulsar")
-public class PulsarProperties {
+public class PulsarProperties implements InitializingBean {
 
 	private final Client client = new Client();
 
@@ -103,11 +104,17 @@ public class PulsarProperties {
 		return this.template;
 	}
 
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.getTemplate().getTransaction().validate("spring.pulsar.template");
+		this.getListener().getTransaction().validate("spring.pulsar.listener");
+	}
+
 	/**
 	 * Whether transactions are enabled for either the template or the listener.
 	 * @return whether transactions are enabled for either the template or the listener
 	 */
-	public boolean isTransactionEnabled() {
+	boolean isTransactionEnabled() {
 		return this.template.getTransaction().isEnabled() || this.listener.getTransaction().isEnabled();
 	}
 
@@ -897,7 +904,7 @@ public class PulsarProperties {
 	public static class Transaction {
 
 		/**
-		 * Whether the component supports transactions.
+		 * Whether transactions are enabled for the component.
 		 */
 		private boolean enabled;
 
@@ -934,6 +941,11 @@ public class PulsarProperties {
 
 		public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
+		}
+
+		void validate(String prefix) {
+			Assert.state((this.enabled || !this.required), "If transactions are required "
+					+ "they must also be enabled - consult your '%s.transaction' properties.".formatted(prefix));
 		}
 
 	}

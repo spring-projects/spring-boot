@@ -65,8 +65,7 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
-		if (this.properties.getTemplate().getTransaction().isEnabled()
-				|| this.properties.getListener().getTransaction().isEnabled()) {
+		if (this.properties.isTransactionEnabled()) {
 			clientBuilder.enableTransaction(true);
 		}
 		customizeAuthentication(properties.getAuthentication(), clientBuilder::authentication);
