@@ -133,7 +133,7 @@ bom {
 			releaseNotes("https://github.com/openzipkin/zipkin-reporter-java/releases/tag/{version}")
 		}
 	}
-	library("Brave", "6.0.2") {
+	library("Brave", "6.0.3") {
 		group("io.zipkin.brave") {
 			imports = [
 				"brave-bom"
