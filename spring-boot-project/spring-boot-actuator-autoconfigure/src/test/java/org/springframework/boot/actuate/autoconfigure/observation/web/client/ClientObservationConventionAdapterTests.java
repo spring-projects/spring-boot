@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,7 @@ class ClientObservationConventionAdapterTests {
 
 	@Test
 	void doesNotFailWithEmptyRequest() {
+		this.context.setUriTemplate(null);
 		assertThat(this.convention.getLowCardinalityKeyValues(this.context)).contains(KeyValue.of("status", "200"),
 				KeyValue.of("outcome", "SUCCESS"), KeyValue.of("uri", "/resource/{name}"),
 				KeyValue.of("method", "GET"));

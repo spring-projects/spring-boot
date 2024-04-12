@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class ClientObservationConventionAdapter implements ClientRequestObservationConv
 	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 		ClientRequest request = context.getRequest();
 		if (request == null) {
-			request = context.getCarrier().attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
+			request = context.getCarrier().build();
 		}
 		Iterable<Tag> tags = this.tagsProvider.tags(request, context.getResponse(), context.getError());
 		return KeyValues.of(tags, Tag::getKey, Tag::getValue);
