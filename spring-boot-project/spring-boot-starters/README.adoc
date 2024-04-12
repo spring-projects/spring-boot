@@ -188,6 +188,9 @@ do as they were designed before this was clarified.
 | https://developer.okta.com/[Okta]
 | https://github.com/okta/okta-spring-boot
 
+| https://opentelemetry.io/docs/languages/java/automatic/spring-boot/#opentelemetry-spring-boot-starter[OpenTelemetry]
+| https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/spring/starters/spring-boot-starter
+
 | https://www.optaplanner.org/[OptaPlanner]
 | https://github.com/kiegroup/optaplanner/tree/master/optaplanner-spring-integration/optaplanner-spring-boot-starter
 
