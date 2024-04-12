@@ -68,7 +68,6 @@ import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
-import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierReactiveJwtDecoder;
@@ -483,8 +482,8 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
 				ReactiveJwtDecoder reactiveJwtDecoder = context.getBean(ReactiveJwtDecoder.class);
-				validate(jwt(), reactiveJwtDecoder, (validators) -> assertThat(validators).singleElement()
-					.isInstanceOf(JwtTimestampValidator.class));
+				validate(jwt(), reactiveJwtDecoder,
+						(validators) -> assertThat(validators).hasSize(2).noneSatisfy(audClaimValidator()));
 			});
 	}
 

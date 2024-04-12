@@ -65,7 +65,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
-import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
@@ -501,8 +500,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JwtDecoder.class);
 				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
-				validate(jwt(), jwtDecoder, (validators) -> assertThat(validators).singleElement()
-					.isInstanceOf(JwtTimestampValidator.class));
+				validate(jwt(), jwtDecoder,
+						(validators) -> assertThat(validators).hasSize(2).noneSatisfy(audClaimValidator()));
 			});
 	}
 
