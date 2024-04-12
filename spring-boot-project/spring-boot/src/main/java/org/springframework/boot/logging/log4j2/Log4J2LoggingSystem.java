@@ -89,6 +89,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";
 
+	private static final SpringEnvironmentPropertySource propertySource = new SpringEnvironmentPropertySource();
+
 	static final String ENVIRONMENT_KEY = Conventions.getQualifiedAttributeName(Log4J2LoggingSystem.class,
 			"environment");
 
@@ -215,8 +217,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 		Environment environment = initializationContext.getEnvironment();
 		if (environment != null) {
-			getLoggerContext().putObjectIfAbsent(ENVIRONMENT_KEY, environment);
-			PropertiesUtil.getProperties().addPropertySource(new SpringEnvironmentPropertySource(environment));
+			getLoggerContext().putObject(ENVIRONMENT_KEY, environment);
+			Log4J2LoggingSystem.propertySource.setEnvironment(environment);
+			PropertiesUtil.getProperties().addPropertySource(Log4J2LoggingSystem.propertySource);
 		}
 		loggerContext.getConfiguration().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
@@ -439,6 +442,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		LoggerContext loggerContext = getLoggerContext();
 		markAsUninitialized(loggerContext);
 		loggerContext.getConfiguration().removeFilter(FILTER);
+		Log4J2LoggingSystem.propertySource.setEnvironment(null);
+		getLoggerContext().removeObject(ENVIRONMENT_KEY);
 	}
 
 	private LoggerConfig getLogger(String name) {
