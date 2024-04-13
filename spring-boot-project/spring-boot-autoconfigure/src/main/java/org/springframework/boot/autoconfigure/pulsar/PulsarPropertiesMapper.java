@@ -163,6 +163,7 @@ final class PulsarPropertiesMapper {
 
 	<T> void customizeTemplate(PulsarTemplate<T> template) {
 		PulsarProperties.Transaction properties = this.properties.getTemplate().getTransaction();
+		properties.validate();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::isEnabled).to(template.transactions()::setEnabled);
 		map.from(properties::isRequired).to(template.transactions()::setRequired);
@@ -213,6 +214,7 @@ final class PulsarPropertiesMapper {
 
 	private void customizePulsarContainerTransactionProperties(PulsarContainerProperties containerProperties) {
 		PulsarProperties.Transaction properties = this.properties.getListener().getTransaction();
+		properties.validate();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::isEnabled).to(containerProperties.transactions()::setEnabled);
 		map.from(properties::isRequired).to(containerProperties.transactions()::setRequired);

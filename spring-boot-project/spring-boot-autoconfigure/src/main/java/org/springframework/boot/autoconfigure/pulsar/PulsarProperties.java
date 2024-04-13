@@ -34,9 +34,9 @@ import org.apache.pulsar.client.api.SubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.util.Assert;
 
 /**
@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  * @since 3.2.0
  */
 @ConfigurationProperties("spring.pulsar")
-public class PulsarProperties implements InitializingBean {
+public class PulsarProperties {
 
 	private final Client client = new Client();
 
@@ -102,12 +102,6 @@ public class PulsarProperties implements InitializingBean {
 
 	public Template getTemplate() {
 		return this.template;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.getTemplate().getTransaction().validate("spring.pulsar.template");
-		this.getListener().getTransaction().validate("spring.pulsar.listener");
 	}
 
 	/**
@@ -781,7 +775,7 @@ public class PulsarProperties implements InitializingBean {
 		/**
 		 * Transaction settings.
 		 */
-		private final Transaction transaction = new Transaction();
+		private final Transaction transaction = new ListenerTransaction();
 
 		public SchemaType getSchemaType() {
 			return this.schemaType;
@@ -885,7 +879,7 @@ public class PulsarProperties implements InitializingBean {
 		/**
 		 * Transaction settings.
 		 */
-		private final Transaction transaction = new Transaction();
+		private final Transaction transaction = new TemplateTransaction();
 
 		public boolean isObservationsEnabled() {
 			return this.observationsEnabled;
@@ -901,7 +895,7 @@ public class PulsarProperties implements InitializingBean {
 
 	}
 
-	public static class Transaction {
+	public abstract static class Transaction {
 
 		/**
 		 * Whether transactions are enabled for the component.
@@ -943,9 +937,39 @@ public class PulsarProperties implements InitializingBean {
 			this.timeout = timeout;
 		}
 
-		void validate(String prefix) {
-			Assert.state((this.enabled || !this.required), "If transactions are required "
-					+ "they must also be enabled - consult your '%s.transaction' properties.".formatted(prefix));
+		void validate() {
+			if (this.required && !this.enabled) {
+				String requiredProp = "%s.required".formatted(this.propertyPath());
+				String enabledProp = "%s.enabled".formatted(this.propertyPath());
+				throw new InvalidConfigurationPropertyValueException(requiredProp, this.required,
+						"Transactions must be enabled in order to be required. "
+								+ "Either set %s to 'true' or make transactions optional by setting %s to 'false'"
+									.formatted(enabledProp, requiredProp));
+			}
+		}
+
+		/**
+		 * Gets the property path that the transaction properties are mapped to.
+		 * @return the property path that the transaction properties are mapped to
+		 */
+		protected abstract String propertyPath();
+
+	}
+
+	static class TemplateTransaction extends Transaction {
+
+		@Override
+		protected String propertyPath() {
+			return "spring.pulsar.template.transaction";
+		}
+
+	}
+
+	static class ListenerTransaction extends Transaction {
+
+		@Override
+		protected String propertyPath() {
+			return "spring.pulsar.listener.transaction";
 		}
 
 	}

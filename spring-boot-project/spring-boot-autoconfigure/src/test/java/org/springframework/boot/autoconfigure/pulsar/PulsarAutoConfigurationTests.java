@@ -673,7 +673,10 @@ class PulsarAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasFailed()
 					.getFailure()
 					.hasMessageEndingWith(
-							"If transactions are required they must also be enabled - consult your 'spring.pulsar.template.transaction' properties."));
+							"Property spring.pulsar.template.transaction.required with value 'true' is invalid: "
+									+ "Transactions must be enabled in order to be required. Either set "
+									+ "spring.pulsar.template.transaction.enabled to 'true' or make transactions "
+									+ "optional by setting spring.pulsar.template.transaction.required to 'false'"));
 		}
 
 		@Test
@@ -684,7 +687,10 @@ class PulsarAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasFailed()
 					.getFailure()
 					.hasMessageEndingWith(
-							"If transactions are required they must also be enabled - consult your 'spring.pulsar.listener.transaction' properties."));
+							"Property spring.pulsar.listener.transaction.required with value 'true' is invalid: "
+									+ "Transactions must be enabled in order to be required. Either set "
+									+ "spring.pulsar.listener.transaction.enabled to 'true' or make transactions "
+									+ "optional by setting spring.pulsar.listener.transaction.required to 'false'"));
 		}
 
 	}
