@@ -74,51 +74,10 @@ jobs:
           run-name: ${{ format('{0} | Linux | Java 17', github.ref_name) }}
     outputs:
       version: ${{ steps.read-version.outputs.version }}
-  run-verification-tests:
-    name: Verify ${{ needs.build-and-deploy-snapshot.outputs.version }}
-    runs-on: ubuntu-latest
+  verify:
+    name: Verify
     needs: build-and-deploy-snapshot
-    steps:
-      - name: Check Out Release Verification Tests
-        uses: actions/checkout@v4
-        with:
-          repository: spring-projects/spring-boot-release-verification
-          ref: 'main'
-          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
-      - name: Check Out Send Notification Action
-        uses: actions/checkout@v4
-        with:
-          path: spring-boot
-          sparse-checkout: .github/actions/send-notification
-      - name: Set Up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'liberica'
-          java-version: 17
-      - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@1168cd3d07c1876a65e1724114de42ccbdfa7b78
-        with:
-          cache-read-only: false
-      - name: Configure Gradle Properties
-        shell: bash
-        run: |
-          mkdir -p $HOME/.gradle
-          echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
-      - name: Run Release Verification Tests
-        env:
-          RVT_VERSION: ${{ needs.build-and-deploy-snapshot.outputs.version }}
-          RVT_RELEASE_TYPE: oss
-        run: ./gradlew spring-boot-release-verification-tests:test
-      - name: Upload Build Reports on Failure
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: build-reports
-          path: '**/build/reports/'
-      - name: Send Notification
-        uses: ./spring-boot/.github/actions/send-notification
-        if: always()
-        with:
-          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-          status: ${{ job.status }}
-          run-name: ${{ format('{0} | Verification | {1}', github.ref_name, needs.build-and-deploy-snapshot.outputs.version) }}
+    uses: .github/workflows/verify.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.build-and-deploy-snapshot.outputs.version }}
