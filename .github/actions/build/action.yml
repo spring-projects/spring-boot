@@ -63,6 +63,7 @@ runs:
         echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', inputs.java-version) }} >> $HOME/.gradle/gradle.properties
     - name: Build
       if: ${{ !inputs.publish }}
+      shell: bash
       env:
         GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
         GRADLE_ENTERPRISE_ACCESS_KEY: ${{ inputs.gradle-enterprise-secret-access-key }}
@@ -71,6 +72,7 @@ runs:
       run: ./gradlew build
     - name: Build and Publish
       if: ${{ inputs.publish }}
+      shell: bash
       env:
         GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
         GRADLE_ENTERPRISE_ACCESS_KEY: ${{ inputs.gradle-enterprise-secret-access-key }}
