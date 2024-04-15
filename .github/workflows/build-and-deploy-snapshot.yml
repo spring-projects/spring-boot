@@ -77,7 +77,7 @@ jobs:
   verify:
     name: Verify
     needs: build-and-deploy-snapshot
-    uses: .github/workflows/verify.yml
+    uses: ./.github/workflows/verify.yml
     secrets: inherit
     with:
       version: ${{ needs.build-and-deploy-snapshot.outputs.version }}
