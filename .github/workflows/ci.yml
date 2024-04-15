@@ -37,6 +37,7 @@ jobs:
       - name: Check Out Code
         uses: actions/checkout@v4
       - name: Build
+        id: build
         uses: ./.github/actions/build
         with:
           java-version: ${{ matrix.java.version }}

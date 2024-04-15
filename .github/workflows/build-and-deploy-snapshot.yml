@@ -14,6 +14,7 @@ jobs:
       - name: Check Out Code
         uses: actions/checkout@v4
       - name: Build and Publish
+        id: build-and-publish
         uses: ./.github/actions/build
         with:
           gradle-enterprise-secret-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
@@ -39,10 +40,10 @@ jobs:
         with:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
           status: ${{ job.status }}
-          build-scan-url: ${{ steps.build.outputs.build-scan-url }}
+          build-scan-url: ${{ steps.build-and-publish.outputs.build-scan-url }}
           run-name: ${{ format('{0} | Linux | Java 17', github.ref_name) }}
     outputs:
-      version: ${{ steps.build.outputs.version }}
+      version: ${{ steps.build-and-publish.outputs.version }}
   verify:
     name: Verify
     needs: build-and-deploy-snapshot
