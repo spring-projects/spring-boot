@@ -1,6 +1,6 @@
 name: Verify
 on:
-  workflow-call:
+  workflow_call:
     inputs:
       version:
         required: true
