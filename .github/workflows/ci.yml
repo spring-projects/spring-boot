@@ -43,7 +43,7 @@ jobs:
         with:
           java-version: ${{ matrix.java.version }}
           java-toolchain: ${{ matrix.java.toolchain }}
-          gradle-enterprise-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          gradle-enterprise-secret-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
           gradle-enterprise-cache-user: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
           gradle-enterprise-cache-password: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
       - name: Send Notification
