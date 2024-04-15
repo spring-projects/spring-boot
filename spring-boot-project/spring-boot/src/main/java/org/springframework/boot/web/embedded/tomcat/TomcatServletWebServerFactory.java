@@ -207,6 +207,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			tomcat.getServer().addLifecycleListener(listener);
 		}
 		Connector connector = new Connector(this.protocol);
+		int port = Math.max(getPort(), 0);
+		connector.setPort(port);
 		connector.setThrowOnFailure(true);
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
@@ -340,8 +342,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	// Needs to be protected so it can be used by subclasses
 	protected void customizeConnector(Connector connector) {
-		int port = Math.max(getPort(), 0);
-		connector.setPort(port);
 		if (StringUtils.hasText(getServerHeader())) {
 			connector.setProperty("server", getServerHeader());
 		}
