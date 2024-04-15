@@ -29,7 +29,7 @@ inputs:
     description: 'The password for authentication with the remote build cache'
 outputs:
   build-scan-url:
-    value: ${{ steps.build.outputs.build-scan-url }}
+    value: ${{ (inputs.publish && steps.build-and-publish.outputs.build-scan-url) || steps.build.outputs.build-scan-url }}
   version:
     value: ${{ steps.read-version.outputs.version }}
 runs:
@@ -62,6 +62,7 @@ runs:
         echo systemProp.org.gradle.java.installations.auto-download=false >> $HOME/.gradle/gradle.properties
         echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', inputs.java-version) }} >> $HOME/.gradle/gradle.properties
     - name: Build
+      id: build
       if: ${{ !inputs.publish }}
       shell: bash
       env:
@@ -71,6 +72,7 @@ runs:
         GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ inputs.gradle-enterprise-cache-password }}
       run: ./gradlew build
     - name: Build and Publish
+      id: build-and-publish
       if: ${{ inputs.publish }}
       shell: bash
       env:
