@@ -13,40 +13,15 @@ jobs:
     runs-on: ubuntu22-8-32
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
-      - name: Set Up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'liberica'
-          java-version: 17
-      - name: Check Out
+      - name: Check Out Code
         uses: actions/checkout@v4
-      - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@1168cd3d07c1876a65e1724114de42ccbdfa7b78 # v3.2.1
-        with:
-          cache-read-only: false
-      - name: Configure Gradle Properties
-        shell: bash
-        run: |
-          mkdir -p $HOME/.gradle
-          echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
-          echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
-          echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
-      - name: Read Version From gradle.properties
-        id: read-version
-        shell: bash
-        run: |
-          version=$(sed -n 's/version=\(.*\)/\1/p' gradle.properties)
-          echo "Version is $version"
-          echo "version=$version" >> $GITHUB_OUTPUT
       - name: Build and Publish
-        id: build
-        env:
-          CI: 'true'
-          GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
-          GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-        run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository build publishAllPublicationsToDeploymentRepository
+        uses: ./.github/actions/build
+        with:
+          gradle-enterprise-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          gradle-enterprise-cache-user: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
+          gradle-enterprise-cache-password: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
+          publish: true
       - name: Deploy
         uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
         with:
@@ -63,7 +38,7 @@ jobs:
       - name: Trigger Docs Build Workflow
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run deploy-docs.yml -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ steps.read-version.outputs.version }}
+        run: gh workflow run deploy-docs.yml -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ steps.build.outputs.version }}
       - name: Send Notification
         uses: ./.github/actions/send-notification
         if: always()
@@ -73,7 +48,7 @@ jobs:
           build-scan-url: ${{ steps.build.outputs.build-scan-url }}
           run-name: ${{ format('{0} | Linux | Java 17', github.ref_name) }}
     outputs:
-      version: ${{ steps.read-version.outputs.version }}
+      version: ${{ steps.build.outputs.version }}
   verify:
     name: Verify
     needs: build-and-deploy-snapshot
