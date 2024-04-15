@@ -28,13 +28,6 @@ jobs:
             java:
               version: 17
     steps:
-      - name: Set Up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'liberica'
-          java-version: |
-            ${{ matrix.java.version }}
-            ${{ matrix.java.toolchain && '17' || '' }}
       - name: Prepare Windows runner
         if: ${{ runner.os == 'Windows' }}
         run: |
@@ -43,34 +36,14 @@ jobs:
           Stop-Service -name Docker
       - name: Check Out Code
         uses: actions/checkout@v4
-      - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@1168cd3d07c1876a65e1724114de42ccbdfa7b78 # v3.2.1
-        with:
-          cache-read-only: false
-      - name: Configure Gradle Properties
-        shell: bash
-        run: |
-          mkdir -p $HOME/.gradle
-          echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
-          echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
-          echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
-      - name: Configure Toolchain Properties
-        if: ${{ matrix.java.toolchain }}
-        shell: bash
-        run: |
-          echo toolchainVersion=${{ matrix.java.version }} >> $HOME/.gradle/gradle.properties
-          echo systemProp.org.gradle.java.installations.auto-detect=false >> $HOME/.gradle/gradle.properties
-          echo systemProp.org.gradle.java.installations.auto-download=false >> $HOME/.gradle/gradle.properties
-          echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', matrix.java.version) }} >> $HOME/.gradle/gradle.properties
       - name: Build
-        id: build
-        env:
-          CI: 'true'
-          GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
-          GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-        run: ./gradlew build
+        uses: ./.github/actions/build
+        with:
+          java-version: ${{ matrix.java.version }}
+          java-toolchain: ${{ matrix.java.toolchain }}
+          gradle-enterprise-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          gradle-enterprise-cache-user: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
+          gradle-enterprise-cache-password: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
       - name: Send Notification
         uses: ./.github/actions/send-notification
         if: always()
