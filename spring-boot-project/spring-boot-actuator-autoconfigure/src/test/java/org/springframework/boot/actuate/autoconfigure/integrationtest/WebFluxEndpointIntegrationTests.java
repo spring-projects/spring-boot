@@ -108,11 +108,13 @@ class WebFluxEndpointIntegrationTests {
 	}
 
 	@ControllerEndpoint(id = "controller")
+	@SuppressWarnings("removal")
 	static class TestControllerEndpoint {
 
 	}
 
 	@RestControllerEndpoint(id = "restcontroller")
+	@SuppressWarnings("removal")
 	static class TestRestControllerEndpoint {
 
 	}

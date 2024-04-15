@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,6 +96,7 @@ public class WebEndpointAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ControllerEndpointsSupplier.class)
+	@SuppressWarnings("removal")
 	public ControllerEndpointDiscoverer controllerEndpointDiscoverer(ObjectProvider<PathMapper> endpointPathMappers,
 			ObjectProvider<Collection<EndpointFilter<ExposableControllerEndpoint>>> filters) {
 		return new ControllerEndpointDiscoverer(this.applicationContext, endpointPathMappers.orderedStream().toList(),
@@ -124,6 +125,7 @@ public class WebEndpointAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@SuppressWarnings("removal")
 	static class WebEndpointServletConfiguration {
 
 		@Bean

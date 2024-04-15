@@ -217,6 +217,7 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	}
 
 	@RestControllerEndpoint(id = "failController")
+	@SuppressWarnings("removal")
 	static class FailingControllerEndpoint {
 
 		@GetMapping

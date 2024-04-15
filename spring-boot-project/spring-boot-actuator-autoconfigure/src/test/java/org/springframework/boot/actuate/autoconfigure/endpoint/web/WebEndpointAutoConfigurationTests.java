@@ -95,6 +95,7 @@ class WebEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void webApplicationConfiguresEndpointDiscoverer() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(ControllerEndpointDiscoverer.class);
@@ -109,11 +110,13 @@ class WebEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void contextShouldConfigureServletEndpointDiscoverer() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ServletEndpointDiscoverer.class));
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void contextWhenNotServletShouldNotConfigureServletEndpointDiscoverer() {
 		new ApplicationContextRunner().withConfiguration(CONFIGURATIONS)
 			.run((context) -> assertThat(context).doesNotHaveBean(ServletEndpointDiscoverer.class));

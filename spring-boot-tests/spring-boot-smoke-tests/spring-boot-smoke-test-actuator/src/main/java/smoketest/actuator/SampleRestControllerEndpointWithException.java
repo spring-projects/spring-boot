@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  */
 @Component
 @RestControllerEndpoint(id = "exception")
+@SuppressWarnings("removal")
 public class SampleRestControllerEndpointWithException {
 
 	@GetMapping("/")

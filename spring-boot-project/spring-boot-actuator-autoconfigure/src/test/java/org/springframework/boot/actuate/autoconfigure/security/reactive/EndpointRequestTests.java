@@ -355,6 +355,7 @@ class EndpointRequestTests {
 	}
 
 	@ServletEndpoint(id = "baz")
+	@SuppressWarnings("removal")
 	static class BazServletEndpoint {
 
 	}

@@ -121,6 +121,7 @@ class ControllerEndpointWebMvcIntegrationTests {
 	}
 
 	@RestControllerEndpoint(id = "example")
+	@SuppressWarnings("removal")
 	static class ExampleController {
 
 		@GetMapping("/")

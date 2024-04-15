@@ -38,7 +38,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer.ServletEndpointDiscovererRuntimeHints;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -58,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  * @author Moritz Halbritter
  */
+@SuppressWarnings("removal")
 class ServletEndpointDiscovererTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
@@ -135,7 +135,8 @@ class ServletEndpointDiscovererTests {
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		new ServletEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		new ServletEndpointDiscoverer.ServletEndpointDiscovererRuntimeHints().registerHints(runtimeHints,
+				getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onType(ServletEndpointFilter.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);

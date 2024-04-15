@@ -190,6 +190,7 @@ class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	@RestControllerEndpoint(id = "custommvc")
+	@SuppressWarnings("removal")
 	static class CustomMvcEndpoint {
 
 		@GetMapping("/")
@@ -200,6 +201,7 @@ class WebMvcEndpointExposureIntegrationTests {
 	}
 
 	@ServletEndpoint(id = "customservlet")
+	@SuppressWarnings("removal")
 	static class CustomServletEndpoint implements Supplier<EndpointServlet> {
 
 		@Override

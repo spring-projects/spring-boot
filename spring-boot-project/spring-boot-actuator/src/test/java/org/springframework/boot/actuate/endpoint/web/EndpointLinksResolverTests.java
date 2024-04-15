@@ -75,6 +75,7 @@ class EndpointLinksResolverTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void resolvedLinksContainsALinkForServletEndpoint() {
 		ExposableServletEndpoint servletEndpoint = mock(ExposableServletEndpoint.class);
 		given(servletEndpoint.getEndpointId()).willReturn(EndpointId.of("alpha"));

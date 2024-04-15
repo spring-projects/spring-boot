@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Component
 @RestControllerEndpoint(id = "example")
+@SuppressWarnings("removal")
 public class ExampleRestControllerEndpoint {
 
 	@GetMapping("/echo")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 	private static final EndpointId HEALTH_ENDPOINT_ID = EndpointId.of("health");
 
 	@Bean
+	@SuppressWarnings("removal")
 	JerseyWebEndpointsResourcesRegistrar jerseyWebEndpointsResourcesRegistrar(Environment environment,
 			WebEndpointsSupplier webEndpointsSupplier, ServletEndpointsSupplier servletEndpointsSupplier,
 			EndpointMediaTypes endpointMediaTypes, WebEndpointProperties webEndpointProperties) {
@@ -124,6 +125,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 	/**
 	 * Register endpoints with the {@link ResourceConfig} for the management context.
 	 */
+	@SuppressWarnings("removal")
 	static class JerseyWebEndpointsResourcesRegistrar implements ManagementContextResourceConfigCustomizer {
 
 		private final WebEndpointsSupplier webEndpointsSupplier;

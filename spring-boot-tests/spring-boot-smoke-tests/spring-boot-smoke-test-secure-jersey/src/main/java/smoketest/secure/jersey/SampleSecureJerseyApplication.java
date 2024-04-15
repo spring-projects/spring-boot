@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
+@SuppressWarnings("removal")
 public class SampleSecureJerseyApplication {
 
 	public static void main(String[] args) {
@@ -43,6 +44,7 @@ public class SampleSecureJerseyApplication {
 	}
 
 	@ServletEndpoint(id = "se1")
+	@SuppressWarnings("removal")
 	static class TestServletEndpoint implements Supplier<EndpointServlet> {
 
 		@Override

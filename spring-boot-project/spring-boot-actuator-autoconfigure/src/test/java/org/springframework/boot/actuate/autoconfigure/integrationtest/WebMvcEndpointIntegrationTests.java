@@ -198,6 +198,7 @@ class WebMvcEndpointIntegrationTests {
 	}
 
 	@ServletEndpoint(id = "servlet")
+	@SuppressWarnings("removal")
 	static class TestServletEndpoint implements Supplier<EndpointServlet> {
 
 		@Override
@@ -209,11 +210,13 @@ class WebMvcEndpointIntegrationTests {
 	}
 
 	@ControllerEndpoint(id = "controller")
+	@SuppressWarnings("removal")
 	static class TestControllerEndpoint {
 
 	}
 
 	@RestControllerEndpoint(id = "restcontroller")
+	@SuppressWarnings("removal")
 	static class TestRestControllerEndpoint {
 
 	}

@@ -178,6 +178,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 	}
 
 	@ServletEndpoint(id = "se1")
+	@SuppressWarnings("removal")
 	static class TestServletEndpoint implements Supplier<EndpointServlet> {
 
 		@Override

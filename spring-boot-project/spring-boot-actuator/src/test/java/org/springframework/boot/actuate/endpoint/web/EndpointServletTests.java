@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
+@SuppressWarnings("removal")
 class EndpointServletTests {
 
 	@Test
