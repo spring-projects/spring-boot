@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.springframework.boot.loader.zip;
 
-import org.springframework.boot.loader.zip.FileChannelDataBlock.ManagedFileChannel;
+import org.springframework.boot.loader.zip.FileDataBlock.FileAccess;
 
 /**
- * Test access to {@link ManagedFileChannel} details.
+ * Test access to {@link FileAccess} details.
  *
  * @author Phillip Webb
  */
@@ -28,6 +28,6 @@ public final class FileChannelDataBlockManagedFileChannel {
 	private FileChannelDataBlockManagedFileChannel() {
 	}
 
-	public static int BUFFER_SIZE = FileChannelDataBlock.ManagedFileChannel.BUFFER_SIZE;
+	public static int BUFFER_SIZE = FileDataBlock.FileAccess.BUFFER_SIZE;
 
 }

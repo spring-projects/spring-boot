@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ClosedChannelException;
@@ -29,31 +31,31 @@ import java.util.function.Supplier;
 import org.springframework.boot.loader.log.DebugLogger;
 
 /**
- * Reference counted {@link DataBlock} implementation backed by a {@link FileChannel} with
+ * Reference counted {@link DataBlock} implementation backed by a {@link File} with
  * support for slicing.
  *
  * @author Phillip Webb
  */
-class FileChannelDataBlock implements CloseableDataBlock {
+class FileDataBlock implements CloseableDataBlock {
 
-	private static final DebugLogger debug = DebugLogger.get(FileChannelDataBlock.class);
+	private static final DebugLogger debug = DebugLogger.get(FileDataBlock.class);
 
-	static Tracker tracker;
+	static Tracker tracker = Tracker.NONE;
 
-	private final ManagedFileChannel channel;
+	private final FileAccess fileAccess;
 
 	private final long offset;
 
 	private final long size;
 
-	FileChannelDataBlock(Path path) throws IOException {
-		this.channel = new ManagedFileChannel(path);
+	FileDataBlock(Path path) throws IOException {
+		this.fileAccess = new FileAccess(path);
 		this.offset = 0;
 		this.size = Files.size(path);
 	}
 
-	FileChannelDataBlock(ManagedFileChannel channel, long offset, long size) {
-		this.channel = channel;
+	FileDataBlock(FileAccess fileAccess, long offset, long size) {
+		this.fileAccess = fileAccess;
 		this.offset = offset;
 		this.size = size;
 	}
@@ -78,7 +80,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			originalDestinationLimit = dst.limit();
 			dst.limit(dst.position() + remaining);
 		}
-		int result = this.channel.read(dst, this.offset + pos);
+		int result = this.fileAccess.read(dst, this.offset + pos);
 		if (originalDestinationLimit != -1) {
 			dst.limit(originalDestinationLimit);
 		}
@@ -91,7 +93,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 * @throws IOException on I/O error
 	 */
 	void open() throws IOException {
-		this.channel.open();
+		this.fileAccess.open();
 	}
 
 	/**
@@ -101,7 +103,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 */
 	@Override
 	public void close() throws IOException {
-		this.channel.close();
+		this.fileAccess.close();
 	}
 
 	/**
@@ -111,30 +113,30 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 * @throws E if the channel is closed
 	 */
 	<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
-		this.channel.ensureOpen(exceptionSupplier);
+		this.fileAccess.ensureOpen(exceptionSupplier);
 	}
 
 	/**
-	 * Return a new {@link FileChannelDataBlock} slice providing access to a subset of the
-	 * data. The caller is responsible for calling {@link #open()} and {@link #close()} on
-	 * the returned block.
+	 * Return a new {@link FileDataBlock} slice providing access to a subset of the data.
+	 * The caller is responsible for calling {@link #open()} and {@link #close()} on the
+	 * returned block.
 	 * @param offset the start offset for the slice relative to this block
-	 * @return a new {@link FileChannelDataBlock} instance
+	 * @return a new {@link FileDataBlock} instance
 	 * @throws IOException on I/O error
 	 */
-	FileChannelDataBlock slice(long offset) throws IOException {
+	FileDataBlock slice(long offset) throws IOException {
 		return slice(offset, this.size - offset);
 	}
 
 	/**
-	 * Return a new {@link FileChannelDataBlock} slice providing access to a subset of the
-	 * data. The caller is responsible for calling {@link #open()} and {@link #close()} on
-	 * the returned block.
+	 * Return a new {@link FileDataBlock} slice providing access to a subset of the data.
+	 * The caller is responsible for calling {@link #open()} and {@link #close()} on the
+	 * returned block.
 	 * @param offset the start offset for the slice relative to this block
 	 * @param size the size of the new slice
-	 * @return a new {@link FileChannelDataBlock} instance
+	 * @return a new {@link FileDataBlock} instance
 	 */
-	FileChannelDataBlock slice(long offset, long size) {
+	FileDataBlock slice(long offset, long size) {
 		if (offset == 0 && size == this.size) {
 			return this;
 		}
@@ -144,14 +146,14 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		if (size < 0 || offset + size > this.size) {
 			throw new IllegalArgumentException("Size must not be negative and must be within bounds");
 		}
-		debug.log("Slicing %s at %s with size %s", this.channel, offset, size);
-		return new FileChannelDataBlock(this.channel, this.offset + offset, size);
+		debug.log("Slicing %s at %s with size %s", this.fileAccess, offset, size);
+		return new FileDataBlock(this.fileAccess, this.offset + offset, size);
 	}
 
 	/**
 	 * Manages access to underlying {@link FileChannel}.
 	 */
-	static class ManagedFileChannel {
+	static class FileAccess {
 
 		static final int BUFFER_SIZE = 1024 * 10;
 
@@ -161,6 +163,10 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		private FileChannel fileChannel;
 
+		private boolean fileChannelInterrupted;
+
+		private RandomAccessFile randomAccessFile;
+
 		private ByteBuffer buffer;
 
 		private long bufferPosition = -1;
@@ -169,7 +175,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		private final Object lock = new Object();
 
-		ManagedFileChannel(Path path) {
+		FileAccess(Path path) {
 			if (!Files.isRegularFile(path)) {
 				throw new IllegalArgumentException(path + " must be a regular file");
 			}
@@ -193,34 +199,45 @@ class FileChannelDataBlock implements CloseableDataBlock {
 		}
 
 		private void fillBuffer(long position) throws IOException {
-			for (int i = 0; i < 10; i++) {
-				boolean interrupted = (i != 0) ? Thread.interrupted() : false;
-				try {
-					this.buffer.clear();
-					this.bufferSize = this.fileChannel.read(this.buffer, position);
-					this.bufferPosition = position;
-					return;
-				}
-				catch (ClosedByInterruptException ex) {
-					repairFileChannel();
-				}
-				finally {
-					if (interrupted) {
-						Thread.currentThread().interrupt();
-					}
-				}
+			if (Thread.currentThread().isInterrupted()) {
+				fillBufferUsingRandomAccessFile(position);
+				return;
 			}
-			throw new ClosedByInterruptException();
+			try {
+				if (this.fileChannelInterrupted) {
+					repairFileChannel();
+					this.fileChannelInterrupted = false;
+				}
+				this.buffer.clear();
+				this.bufferSize = this.fileChannel.read(this.buffer, position);
+				this.bufferPosition = position;
+			}
+			catch (ClosedByInterruptException ex) {
+				this.fileChannelInterrupted = true;
+				fillBufferUsingRandomAccessFile(position);
+			}
+		}
+
+		private void fillBufferUsingRandomAccessFile(long position) throws IOException {
+			if (this.randomAccessFile == null) {
+				this.randomAccessFile = new RandomAccessFile(this.path.toFile(), "r");
+				tracker.openedFileChannel(this.path);
+			}
+			byte[] bytes = new byte[BUFFER_SIZE];
+			this.randomAccessFile.seek(position);
+			int len = this.randomAccessFile.read(bytes);
+			this.buffer.clear();
+			if (len > 0) {
+				this.buffer.put(bytes, 0, len);
+			}
+			this.bufferSize = len;
+			this.bufferPosition = position;
 		}
 
 		private void repairFileChannel() throws IOException {
-			if (tracker != null) {
-				tracker.closedFileChannel(this.path, this.fileChannel);
-			}
+			tracker.closedFileChannel(this.path);
 			this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
-			if (tracker != null) {
-				tracker.openedFileChannel(this.path, this.fileChannel);
-			}
+			tracker.openedFileChannel(this.path);
 		}
 
 		void open() throws IOException {
@@ -229,9 +246,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 					debug.log("Opening '%s'", this.path);
 					this.fileChannel = FileChannel.open(this.path, StandardOpenOption.READ);
 					this.buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
-					if (tracker != null) {
-						tracker.openedFileChannel(this.path, this.fileChannel);
-					}
+					tracker.openedFileChannel(this.path);
 				}
 				this.referenceCount++;
 				debug.log("Reference count for '%s' incremented to %s", this.path, this.referenceCount);
@@ -250,10 +265,13 @@ class FileChannelDataBlock implements CloseableDataBlock {
 					this.bufferPosition = -1;
 					this.bufferSize = 0;
 					this.fileChannel.close();
-					if (tracker != null) {
-						tracker.closedFileChannel(this.path, this.fileChannel);
-					}
+					tracker.closedFileChannel(this.path);
 					this.fileChannel = null;
+					if (this.randomAccessFile != null) {
+						this.randomAccessFile.close();
+						tracker.closedFileChannel(this.path);
+						this.randomAccessFile = null;
+					}
 				}
 				debug.log("Reference count for '%s' decremented to %s", this.path, this.referenceCount);
 			}
@@ -261,7 +279,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 		<E extends Exception> void ensureOpen(Supplier<E> exceptionSupplier) throws E {
 			synchronized (this.lock) {
-				if (this.referenceCount == 0 || !this.fileChannel.isOpen()) {
+				if (this.referenceCount == 0) {
 					throw exceptionSupplier.get();
 				}
 			}
@@ -279,9 +297,21 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	 */
 	interface Tracker {
 
-		void openedFileChannel(Path path, FileChannel fileChannel);
+		Tracker NONE = new Tracker() {
 
-		void closedFileChannel(Path path, FileChannel fileChannel);
+			@Override
+			public void openedFileChannel(Path path) {
+			}
+
+			@Override
+			public void closedFileChannel(Path path) {
+			}
+
+		};
+
+		void openedFileChannel(Path path);
+
+		void closedFileChannel(Path path);
 
 	}
 
