@@ -509,7 +509,7 @@ bom {
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
-	library("Hibernate", "6.5.0.CR1") {
+	library("Hibernate", "6.5.0.CR2") {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
