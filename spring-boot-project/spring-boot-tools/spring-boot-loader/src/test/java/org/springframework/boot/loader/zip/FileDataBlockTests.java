@@ -19,7 +19,6 @@ package org.springframework.boot.loader.zip;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -55,7 +54,7 @@ class FileDataBlockTests {
 
 	@AfterEach
 	void resetTracker() {
-		FileDataBlock.tracker = null;
+		FileDataBlock.tracker = Tracker.NONE;
 	}
 
 	@Test
@@ -160,25 +159,25 @@ class FileDataBlockTests {
 		TestTracker tracker = new TestTracker();
 		FileDataBlock.tracker = tracker;
 		FileDataBlock block = createBlock();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(0);
 		tracker.assertOpenCloseCounts(0, 0);
 		block.open();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(1);
 		tracker.assertOpenCloseCounts(1, 0);
 		block.open();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(2);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(2);
 		tracker.assertOpenCloseCounts(1, 0);
 		block.close();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(1);
 		tracker.assertOpenCloseCounts(1, 0);
 		block.close();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(0);
 		tracker.assertOpenCloseCounts(1, 1);
 		block.open();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(1);
 		tracker.assertOpenCloseCounts(2, 1);
 		block.close();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(0);
 		tracker.assertOpenCloseCounts(2, 2);
 	}
 
@@ -188,31 +187,31 @@ class FileDataBlockTests {
 		FileDataBlock.tracker = tracker;
 		FileDataBlock block = createBlock();
 		FileDataBlock slice = block.slice(1, 4);
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(0);
 		tracker.assertOpenCloseCounts(0, 0);
 		block.open();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(1);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(1);
 		tracker.assertOpenCloseCounts(1, 0);
 		slice.open();
-		assertThat(slice).extracting("channel.referenceCount").isEqualTo(2);
+		assertThat(slice).extracting("fileAccess.referenceCount").isEqualTo(2);
 		tracker.assertOpenCloseCounts(1, 0);
 		slice.open();
-		assertThat(slice).extracting("channel.referenceCount").isEqualTo(3);
+		assertThat(slice).extracting("fileAccess.referenceCount").isEqualTo(3);
 		tracker.assertOpenCloseCounts(1, 0);
 		slice.close();
-		assertThat(slice).extracting("channel.referenceCount").isEqualTo(2);
+		assertThat(slice).extracting("fileAccess.referenceCount").isEqualTo(2);
 		tracker.assertOpenCloseCounts(1, 0);
 		slice.close();
-		assertThat(slice).extracting("channel.referenceCount").isEqualTo(1);
+		assertThat(slice).extracting("fileAccess.referenceCount").isEqualTo(1);
 		tracker.assertOpenCloseCounts(1, 0);
 		block.close();
-		assertThat(block).extracting("channel.referenceCount").isEqualTo(0);
+		assertThat(block).extracting("fileAccess.referenceCount").isEqualTo(0);
 		tracker.assertOpenCloseCounts(1, 1);
 		slice.open();
-		assertThat(slice).extracting("channel.referenceCount").isEqualTo(1);
+		assertThat(slice).extracting("fileAccess.referenceCount").isEqualTo(1);
 		tracker.assertOpenCloseCounts(2, 1);
 		slice.close();
-		assertThat(slice).extracting("channel.referenceCount").isEqualTo(0);
+		assertThat(slice).extracting("fileAccess.referenceCount").isEqualTo(0);
 		tracker.assertOpenCloseCounts(2, 2);
 	}
 
@@ -233,12 +232,12 @@ class FileDataBlockTests {
 		private int closeCount;
 
 		@Override
-		public void openedFileChannel(Path path, FileChannel fileChannel) {
+		public void openedFileChannel(Path path) {
 			this.openCount++;
 		}
 
 		@Override
-		public void closedFileChannel(Path path, FileChannel fileChannel) {
+		public void closedFileChannel(Path path) {
 			this.closeCount++;
 		}
 

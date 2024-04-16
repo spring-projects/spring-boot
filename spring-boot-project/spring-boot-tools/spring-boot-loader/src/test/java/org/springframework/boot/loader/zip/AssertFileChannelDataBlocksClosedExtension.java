@@ -19,7 +19,6 @@ package org.springframework.boot.loader.zip;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.ref.Cleaner.Cleanable;
-import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -52,7 +51,7 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
 		tracker.assertAllClosed();
-		FileDataBlock.tracker = null;
+		FileDataBlock.tracker = Tracker.NONE;
 	}
 
 	private static final class OpenFilesTracker implements Tracker {
@@ -64,12 +63,12 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 		private final List<Closeable> close = new ArrayList<>();
 
 		@Override
-		public void openedFileChannel(Path path, FileChannel fileChannel) {
+		public void openedFileChannel(Path path) {
 			this.paths.add(path);
 		}
 
 		@Override
-		public void closedFileChannel(Path path, FileChannel fileChannel) {
+		public void closedFileChannel(Path path) {
 			this.paths.remove(path);
 		}
 
