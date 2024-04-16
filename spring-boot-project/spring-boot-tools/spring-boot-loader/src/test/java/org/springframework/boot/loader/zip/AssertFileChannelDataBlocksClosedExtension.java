@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.boot.loader.ref.DefaultCleanerTracking;
-import org.springframework.boot.loader.zip.FileChannelDataBlock.Tracker;
+import org.springframework.boot.loader.zip.FileDataBlock.Tracker;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,14 +45,14 @@ class AssertFileChannelDataBlocksClosedExtension implements BeforeEachCallback, 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		tracker.clear();
-		FileChannelDataBlock.tracker = tracker;
+		FileDataBlock.tracker = tracker;
 		DefaultCleanerTracking.set(tracker::addedCleanable);
 	}
 
 	@Override
 	public void afterEach(ExtensionContext context) throws Exception {
 		tracker.assertAllClosed();
-		FileChannelDataBlock.tracker = null;
+		FileDataBlock.tracker = null;
 	}
 
 	private static final class OpenFilesTracker implements Tracker {

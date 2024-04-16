@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.loader.zip;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedByInterruptException;
@@ -29,14 +30,14 @@ import java.util.function.Supplier;
 import org.springframework.boot.loader.log.DebugLogger;
 
 /**
- * Reference counted {@link DataBlock} implementation backed by a {@link FileChannel} with
+ * Reference counted {@link DataBlock} implementation backed by a {@link File} with
  * support for slicing.
  *
  * @author Phillip Webb
  */
-class FileChannelDataBlock implements CloseableDataBlock {
+class FileDataBlock implements CloseableDataBlock {
 
-	private static final DebugLogger debug = DebugLogger.get(FileChannelDataBlock.class);
+	private static final DebugLogger debug = DebugLogger.get(FileDataBlock.class);
 
 	static Tracker tracker;
 
@@ -46,13 +47,13 @@ class FileChannelDataBlock implements CloseableDataBlock {
 
 	private final long size;
 
-	FileChannelDataBlock(Path path) throws IOException {
+	FileDataBlock(Path path) throws IOException {
 		this.channel = new ManagedFileChannel(path);
 		this.offset = 0;
 		this.size = Files.size(path);
 	}
 
-	FileChannelDataBlock(ManagedFileChannel channel, long offset, long size) {
+	FileDataBlock(ManagedFileChannel channel, long offset, long size) {
 		this.channel = channel;
 		this.offset = offset;
 		this.size = size;
@@ -115,26 +116,26 @@ class FileChannelDataBlock implements CloseableDataBlock {
 	}
 
 	/**
-	 * Return a new {@link FileChannelDataBlock} slice providing access to a subset of the
-	 * data. The caller is responsible for calling {@link #open()} and {@link #close()} on
-	 * the returned block.
+	 * Return a new {@link FileDataBlock} slice providing access to a subset of the data.
+	 * The caller is responsible for calling {@link #open()} and {@link #close()} on the
+	 * returned block.
 	 * @param offset the start offset for the slice relative to this block
-	 * @return a new {@link FileChannelDataBlock} instance
+	 * @return a new {@link FileDataBlock} instance
 	 * @throws IOException on I/O error
 	 */
-	FileChannelDataBlock slice(long offset) throws IOException {
+	FileDataBlock slice(long offset) throws IOException {
 		return slice(offset, this.size - offset);
 	}
 
 	/**
-	 * Return a new {@link FileChannelDataBlock} slice providing access to a subset of the
-	 * data. The caller is responsible for calling {@link #open()} and {@link #close()} on
-	 * the returned block.
+	 * Return a new {@link FileDataBlock} slice providing access to a subset of the data.
+	 * The caller is responsible for calling {@link #open()} and {@link #close()} on the
+	 * returned block.
 	 * @param offset the start offset for the slice relative to this block
 	 * @param size the size of the new slice
-	 * @return a new {@link FileChannelDataBlock} instance
+	 * @return a new {@link FileDataBlock} instance
 	 */
-	FileChannelDataBlock slice(long offset, long size) {
+	FileDataBlock slice(long offset, long size) {
 		if (offset == 0 && size == this.size) {
 			return this;
 		}
@@ -145,7 +146,7 @@ class FileChannelDataBlock implements CloseableDataBlock {
 			throw new IllegalArgumentException("Size must not be negative and must be within bounds");
 		}
 		debug.log("Slicing %s at %s with size %s", this.channel, offset, size);
-		return new FileChannelDataBlock(this.channel, this.offset + offset, size);
+		return new FileDataBlock(this.channel, this.offset + offset, size);
 	}
 
 	/**
