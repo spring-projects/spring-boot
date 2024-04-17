@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,12 +76,13 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 			.withOffsetToLocalHeader(offsetToLocalHeader);
 		int originalExtraFieldLength = Short.toUnsignedInt(originalRecord.extraFieldLength());
 		int originalFileCommentLength = Short.toUnsignedInt(originalRecord.fileCommentLength());
-		DataBlock extraFieldAndComment = new DataPart(
-				originalRecordPos + originalRecord.size() - originalExtraFieldLength - originalFileCommentLength,
-				originalExtraFieldLength + originalFileCommentLength);
+		int extraFieldAndCommentSize = originalExtraFieldLength + originalFileCommentLength;
 		parts.add(new ByteArrayDataBlock(record.asByteArray()));
 		parts.add(name);
-		parts.add(extraFieldAndComment);
+		if (extraFieldAndCommentSize > 0) {
+			parts.add(new DataPart(originalRecordPos + originalRecord.size() - extraFieldAndCommentSize,
+					extraFieldAndCommentSize));
+		}
 		return record.size();
 	}
 
@@ -93,7 +94,9 @@ class VirtualZipDataBlock extends VirtualDataBlock implements CloseableDataBlock
 		int extraFieldLength = Short.toUnsignedInt(originalRecord.extraFieldLength());
 		parts.add(new ByteArrayDataBlock(record.asByteArray()));
 		parts.add(name);
-		parts.add(new DataPart(originalRecordPos + originalRecord.size() - extraFieldLength, extraFieldLength));
+		if (extraFieldLength > 0) {
+			parts.add(new DataPart(originalRecordPos + originalRecord.size() - extraFieldLength, extraFieldLength));
+		}
 		parts.add(content);
 		if (dataDescriptorRecord != null) {
 			parts.add(new ByteArrayDataBlock(dataDescriptorRecord.asByteArray()));
