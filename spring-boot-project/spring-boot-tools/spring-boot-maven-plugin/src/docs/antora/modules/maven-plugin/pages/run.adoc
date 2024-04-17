@@ -55,7 +55,7 @@ In order to be consistent with the `repackage` goal, the `run` goal builds the c
 For more details, see xref:packaging.adoc#packaging.examples.exclude-dependency[the dedicated example].
 
 Sometimes it is useful to run a test variant of your application.
-For example, if you want to xref:reference:features/testcontainers.adoc#features.testcontainers.at-development-time[use Testcontainers at development time] or make use of some test stubs.
+For example, if you want to xref:reference:features/dev-services.adoc#features.dev-services.testcontainers.at-development-time[use Testcontainers at development time] or make use of some test stubs.
 Use the `test-run` goal with many of the same features and configuration options as `run` for this purpose.
 
 include::partial$goals/run.adoc[leveloffset=+1]

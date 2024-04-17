@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.dynamicproperties;
+package org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.test;
 
-import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.containers.Neo4jContainer;
 
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.DynamicPropertyRegistry;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class MyContainersConfiguration {
 
 	@Bean
-	public MongoDBContainer mongoDbContainer(DynamicPropertyRegistry properties) {
-		MongoDBContainer container = new MongoDBContainer("mongo:5.0");
-		properties.add("spring.data.mongodb.host", container::getHost);
-		properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
-		return container;
+	@ServiceConnection
+	public Neo4jContainer<?> neo4jContainer() {
+		return new Neo4jContainer<>("neo4j:5");
 	}
 
 }

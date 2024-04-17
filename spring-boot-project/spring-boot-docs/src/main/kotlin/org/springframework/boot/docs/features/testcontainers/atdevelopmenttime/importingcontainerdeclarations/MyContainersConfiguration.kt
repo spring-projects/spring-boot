@@ -16,6 +16,7 @@
 
 package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.importingcontainerdeclarations
 
+import org.springframework.boot.docs.features.devservices.testcontainers.atdevelopmenttime.importingcontainerdeclarations.MyContainers
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.testcontainers.context.ImportTestcontainers
 
