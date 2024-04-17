@@ -58,7 +58,7 @@ For example, you might choose to run native tests once a day.
 Spring Framework includes ahead-of-time support for running tests.
 All the usual Spring testing features work with native image tests.
 For example, you can continue to use the `@SpringBootTest` annotation.
-You can also use Spring Boot xref:features/testing.adoc#features.testing.spring-boot-applications.autoconfigured-tests[test slices] to test only specific parts of your application.
+You can also use Spring Boot xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[test slices] to test only specific parts of your application.
 
 Spring Framework's native testing support works in the following way:
 

@@ -218,4 +218,4 @@ For the example above, setting this property to `baggage1` results in an MDC ent
 == Tests
 
 Tracing components which are reporting data are not auto-configured when using `@SpringBootTest`.
-See xref:features/testing.adoc#features.testing.spring-boot-applications.tracing[the testing section] for more details.
+See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.tracing[the testing section] for more details.

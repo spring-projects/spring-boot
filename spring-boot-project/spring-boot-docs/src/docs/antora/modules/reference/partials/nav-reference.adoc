@@ -19,7 +19,6 @@
 *** xref:reference:features/aop.adoc[]
 *** xref:reference:features/json.adoc[]
 *** xref:reference:features/task-execution-and-scheduling.adoc[]
-*** xref:reference:features/testing.adoc[]
 *** xref:reference:features/dev-services.adoc[]
 *** xref:reference:features/developing-auto-configuration.adoc[]
 *** xref:reference:features/kotlin.adoc[]
@@ -56,6 +55,13 @@
 *** xref:reference:messaging/rsocket.adoc[]
 *** xref:reference:messaging/spring-integration.adoc[]
 *** xref:reference:messaging/websockets.adoc[]
+
+** xref:reference:testing/index.adoc[]
+*** xref:reference:testing/test-scope-dependencies.adoc[]
+*** xref:reference:testing/spring-applications.adoc[]
+*** xref:reference:testing/spring-boot-applications.adoc[]
+*** xref:reference:testing/testcontainers.adoc[]
+*** xref:reference:testing/test-utilities.adoc[]
 
 ** xref:reference:container-images/index.adoc[]
 *** xref:reference:container-images/efficient-images.adoc[]
