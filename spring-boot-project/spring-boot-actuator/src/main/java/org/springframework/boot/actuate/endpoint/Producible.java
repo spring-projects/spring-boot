@@ -26,7 +26,7 @@ import org.springframework.util.MimeType;
  * producible mime-types.
  * <p>
  * Can be used with {@link ReadOperation @ReadOperation},
- * {@link WriteOperation @ReadOperation} and {@link DeleteOperation @ReadOperation}
+ * {@link WriteOperation @WriteOperation} and {@link DeleteOperation @DeleteOperation}
  * annotations to quickly define a list of {@code produces} values.
  * <p>
  * {@link Producible} types can also be injected into operations when the underlying
