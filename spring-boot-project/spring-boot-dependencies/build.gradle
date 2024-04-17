@@ -1358,7 +1358,7 @@ bom {
 			]
 		}
 	}
-	library("SLF4J", "2.0.12") {
+	library("SLF4J", "2.0.13") {
 		group("org.slf4j") {
 			modules = [
 				"jcl-over-slf4j",
