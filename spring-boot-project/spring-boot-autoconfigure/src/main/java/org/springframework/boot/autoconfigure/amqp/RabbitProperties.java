@@ -48,6 +48,7 @@ import org.springframework.util.unit.DataSize;
  * @author Rafael Carvalho
  * @author Scott Frederick
  * @author Lasse Wulff
+ * @author Yanming Zhou
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -1015,6 +1016,11 @@ public class RabbitProperties {
 		 */
 		private boolean observationEnabled;
 
+		/**
+		 * Simple patterns for allowable packages/classes for deserialization.
+		 */
+		private List<String> allowedListPatterns;
+
 		public Retry getRetry() {
 			return this.retry;
 		}
@@ -1073,6 +1079,14 @@ public class RabbitProperties {
 
 		public void setObservationEnabled(boolean observationEnabled) {
 			this.observationEnabled = observationEnabled;
+		}
+
+		public List<String> getAllowedListPatterns() {
+			return this.allowedListPatterns;
+		}
+
+		public void setAllowedListPatterns(List<String> allowedListPatterns) {
+			this.allowedListPatterns = allowedListPatterns;
 		}
 
 	}
