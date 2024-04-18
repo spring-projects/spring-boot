@@ -41,8 +41,10 @@ jobs:
       staging: true
       version: ${{ needs.build-and-stage-release.outputs.version }}
     secrets:
-      repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+      google-chat-webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
       repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+      token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
   sync-to-maven-central:
     name: Sync to Maven Central
     needs:
