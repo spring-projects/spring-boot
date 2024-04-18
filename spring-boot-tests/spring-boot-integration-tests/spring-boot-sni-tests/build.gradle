@@ -14,6 +14,8 @@ dependencies {
 	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-undertow", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux", configuration: "mavenRepository")
 	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
