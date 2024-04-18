@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,6 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 
 import org.springframework.amqp.core.AcknowledgeMode;
@@ -59,7 +62,9 @@ import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.support.converter.AllowedListDeserializingMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SerializerMessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
@@ -107,6 +112,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RabbitAutoConfigurationTests {
@@ -796,6 +802,20 @@ class RabbitAutoConfigurationTests {
 			});
 	}
 
+	@SuppressWarnings("unchecked")
+	@ParameterizedTest
+	@ValueSource(classes = { TestConfiguration.class, TestConfiguration6.class })
+	void customizeAllowedListPatterns(Class<?> configuration) {
+		this.contextRunner.withUserConfiguration(configuration)
+			.withPropertyValues("spring.rabbitmq.template.allowed-list-patterns:*")
+			.run((context) -> {
+				MessageConverter messageConverter = context.getBean(RabbitTemplate.class).getMessageConverter();
+				assertThat(messageConverter).isInstanceOfSatisfying(AllowedListDeserializingMessageConverter.class,
+						(mc) -> assertThat(mc).extracting("allowedListPatterns")
+							.isInstanceOfSatisfying(Collection.class, (set) -> assertThat(set).contains("*")));
+			});
+	}
+
 	@Test
 	void noSslByDefault() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
@@ -1109,6 +1129,16 @@ class RabbitAutoConfigurationTests {
 		@Bean
 		RabbitListenerContainerFactory<?> rabbitListenerContainerFactory() {
 			return mock(SimpleRabbitListenerContainerFactory.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfiguration6 {
+
+		@Bean
+		MessageConverter messageConverter() {
+			return new SerializerMessageConverter();
 		}
 
 	}

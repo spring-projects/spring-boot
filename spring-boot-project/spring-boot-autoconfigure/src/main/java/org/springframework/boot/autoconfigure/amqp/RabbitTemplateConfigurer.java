@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.AllowedListDeserializingMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.Assert;
@@ -29,6 +30,7 @@ import org.springframework.util.Assert;
  * Configure {@link RabbitTemplate} with sensible defaults.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.3.0
  */
 public class RabbitTemplateConfigurer {
@@ -102,6 +104,12 @@ public class RabbitTemplateConfigurer {
 		map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);
 		map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(template::setDefaultReceiveQueue);
 		map.from(templateProperties::isObservationEnabled).to(template::setObservationEnabled);
+		if (templateProperties.getAllowedListPatterns() != null) {
+			MessageConverter messageConverter = template.getMessageConverter();
+			if (messageConverter instanceof AllowedListDeserializingMessageConverter mc) {
+				mc.setAllowedListPatterns(templateProperties.getAllowedListPatterns());
+			}
+		}
 	}
 
 	private boolean determineMandatoryFlag() {
