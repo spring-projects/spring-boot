@@ -57,6 +57,8 @@ import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
+import org.springframework.pulsar.transaction.PulsarAwareTransactionManager;
+import org.springframework.pulsar.transaction.PulsarTransactionManager;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Apache Pulsar.
@@ -126,8 +128,11 @@ public class PulsarAutoConfiguration {
 	PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
 			ObjectProvider<ProducerInterceptor> producerInterceptors, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
-		return new PulsarTemplate<>(pulsarProducerFactory, producerInterceptors.orderedStream().toList(),
-				schemaResolver, topicResolver, this.properties.getTemplate().isObservationsEnabled());
+		PulsarTemplate<?> template = new PulsarTemplate<>(pulsarProducerFactory,
+				producerInterceptors.orderedStream().toList(), schemaResolver, topicResolver,
+				this.properties.getTemplate().isObservationsEnabled());
+		this.propertiesMapper.customizeTemplate(template);
+		return template;
 	}
 
 	@Bean
@@ -142,6 +147,13 @@ public class PulsarAutoConfiguration {
 		return new DefaultPulsarConsumerFactory<>(pulsarClient, lambdaSafeCustomizers);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(PulsarAwareTransactionManager.class)
+	@ConditionalOnProperty(prefix = "spring.pulsar.transaction", name = "enabled")
+	public PulsarTransactionManager pulsarTransactionManager(PulsarClient pulsarClient) {
+		return new PulsarTransactionManager(pulsarClient);
+	}
+
 	@SuppressWarnings("unchecked")
 	private void applyConsumerBuilderCustomizers(List<ConsumerBuilderCustomizer<?>> customizers,
 			ConsumerBuilder<?> builder) {
@@ -153,13 +165,15 @@ public class PulsarAutoConfiguration {
 	@ConditionalOnMissingBean(name = "pulsarListenerContainerFactory")
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
-			TopicResolver topicResolver, Environment environment) {
+			TopicResolver topicResolver, ObjectProvider<PulsarAwareTransactionManager> pulsarTransactionManager,
+			Environment environment) {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
 			containerProperties.setConsumerTaskExecutor(new VirtualThreadTaskExecutor("pulsar-consumer-"));
 		}
+		pulsarTransactionManager.ifUnique(containerProperties.transactions()::setTransactionManager);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
 		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
 	}
