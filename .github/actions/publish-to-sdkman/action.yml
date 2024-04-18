@@ -4,8 +4,8 @@ inputs:
   sdkman-consumer-key:
     description: 'Key for publishing to SDKMAN!'
     required: true
-  sdkman-consumer-secret:
-    description: 'Secret for publishing to SDKMAN!'
+  sdkman-consumer-token:
+    description: 'Token for publishing to SDKMAN!'
     required: true
   spring-boot-version:
     description: 'The version to publish'
@@ -20,19 +20,19 @@ runs:
     - shell: bash
       run: >
         curl -X POST \
-          -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}"
-          -H "Consumer-Token: ${{ inputs.sdkman-consumer-token }}"
-          -H "Content-Type: application/json"
-          -H "Accept: application/json"
-          -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}", "url": "${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/{0}/spring-boot-cli-{0}-bin.zip', inputs.spring-boot-version)"}'
+          -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \
+          -H "Consumer-Token: ${{ inputs.sdkman-consumer-token }}" \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/json" \
+          -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}", "url": "${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/{0}/spring-boot-cli-{0}-bin.zip', inputs.spring-boot-version) }}"}' \
           https://vendors.sdkman.io/release
     - shell: bash
       if: ${{ inputs.make-default }}
       run: >
         curl -X POST \
-          -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}"
-          -H "Consumer-Token: ${{ inputs.sdkman-consumer-token }}"
-          -H "Content-Type: application/json"
-          -H "Accept: application/json"
-          -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}"}'
+          -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \
+          -H "Consumer-Token: ${{ inputs.sdkman-consumer-token }}" \
+          -H "Content-Type: application/json" \
+          -H "Accept: application/json" \
+          -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}"}' \
           https://vendors.sdkman.io/default

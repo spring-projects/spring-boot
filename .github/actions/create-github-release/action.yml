@@ -15,9 +15,9 @@ runs:
       with:
         milestone: ${{ inputs.milestone }}
         token: ${{ inputs.token }}
-        config-file: ${{ github.action_path }}/changelog-generator.yml
+        config-file: .github/actions/create-github-release/changelog-generator.yml
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
-      run: gh release create ${{ github.ref_name }} --notes-file changelog.md
+      run: gh release create ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md
