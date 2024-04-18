@@ -24,7 +24,9 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.AllowedListDeserializingMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Configure {@link RabbitTemplate} with sensible defaults.
@@ -104,12 +106,19 @@ public class RabbitTemplateConfigurer {
 		map.from(templateProperties::getRoutingKey).to(template::setRoutingKey);
 		map.from(templateProperties::getDefaultReceiveQueue).whenNonNull().to(template::setDefaultReceiveQueue);
 		map.from(templateProperties::isObservationEnabled).to(template::setObservationEnabled);
-		if (templateProperties.getAllowedListPatterns() != null) {
-			MessageConverter messageConverter = template.getMessageConverter();
-			if (messageConverter instanceof AllowedListDeserializingMessageConverter mc) {
-				mc.setAllowedListPatterns(templateProperties.getAllowedListPatterns());
-			}
+		map.from(templateProperties::getAllowedListPatterns)
+			.whenNot(CollectionUtils::isEmpty)
+			.to((allowListPatterns) -> setAllowedListPatterns(template.getMessageConverter(), allowListPatterns));
+	}
+
+	private void setAllowedListPatterns(MessageConverter messageConverter, List<String> allowListPatterns) {
+		if (messageConverter instanceof AllowedListDeserializingMessageConverter allowedListDeserializingMessageConverter) {
+			allowedListDeserializingMessageConverter.setAllowedListPatterns(allowListPatterns);
+			return;
 		}
+		throw new InvalidConfigurationPropertyValueException("spring.rabbitmq.template.allow-list-patterns",
+				allowListPatterns,
+				"Allow list patterns can only be applied to a AllowedListDeserializingMessageConverter");
 	}
 
 	private boolean determineMandatoryFlag() {
