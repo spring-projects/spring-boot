@@ -16,8 +16,9 @@ runs:
         path: updated-homebrew-tap-repo
         repository: spring-io/homebrew-tap
         token: ${{ inputs.token }}
-    - shell: bash
-    - run: |
+    - name: Update Homebrew Tap
+      shell: bash
+      run: |
         pushd updated-homebrew-tap-repo > /dev/null
         curl https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/${{ inputs.spring-boot-version }}/spring-boot-cli-${{ inputs.spring-boot-version }}-homebrew.rb --output spring-boot-cli-${{ inputs.spring-boot-version }}-homebrew.rb
         rm spring-boot.rb
