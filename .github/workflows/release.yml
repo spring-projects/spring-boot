@@ -14,6 +14,7 @@ jobs:
       - name: Check Out Code
         uses: actions/checkout@v4
       - name: Build and Publish
+        id: build-and-publish
         uses: ./.github/actions/build
         with:
           gradle-enterprise-cache-password: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
@@ -32,7 +33,7 @@ jobs:
           uri: 'https://repo.spring.io'
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
     outputs:
-      version: ${{ steps.build.outputs.version }}
+      version: ${{ steps.build-and-publish.outputs.version }}
   verify:
     name: Verify
     needs: build-and-stage-release
