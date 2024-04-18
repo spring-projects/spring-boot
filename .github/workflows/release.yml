@@ -16,9 +16,9 @@ jobs:
       - name: Build and Publish
         uses: ./.github/actions/build
         with:
-          gradle-enterprise-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
           gradle-enterprise-cache-password: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
           gradle-enterprise-cache-user: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
+          gradle-enterprise-secret-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
           publish: true
       - name: Stage Release
         uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
