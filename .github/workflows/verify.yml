@@ -23,17 +23,17 @@ jobs:
     name: Verify
     runs-on: ubuntu-latest
     steps:
-      - name: Check Out Send Notification Action
-        uses: actions/checkout@v4
-        with:
-          path: spring-boot
-          sparse-checkout: .github/actions/send-notification
       - name: Check Out Release Verification Tests
         uses: actions/checkout@v4
         with:
           repository: spring-projects/spring-boot-release-verification
           ref: 'v0.0.2'
           token: ${{ secrets.token }}
+      - name: Check Out Send Notification Action
+        uses: actions/checkout@v4
+        with:
+          path: spring-boot
+          sparse-checkout: .github/actions/send-notification
       - name: Set Up Java
         uses: actions/setup-java@v4
         with:
