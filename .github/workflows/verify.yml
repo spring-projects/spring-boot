@@ -12,10 +12,8 @@ on:
     secrets:
       repository-username:
         required: false
-        type: string
       repository-password:
         required: false
-        type: string
 jobs:
   verify:
     name: Verify
