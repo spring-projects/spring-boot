@@ -38,10 +38,11 @@ jobs:
     needs: build-and-stage-release
     uses: ./.github/workflows/verify.yml
     with:
-      repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
-      repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
       staging: true
       version: ${{ needs.build-and-stage-release.outputs.version }}
+    secrets:
+      repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+      repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
   sync-to-maven-central:
     name: Sync to Maven Central
     needs:

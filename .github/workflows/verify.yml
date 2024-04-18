@@ -9,6 +9,13 @@ on:
         required: false
         default: false
         type: boolean
+    secrets:
+      repository-username:
+        required: false
+        type: string
+      repository-password:
+        required: false
+        type: string
 jobs:
   verify:
     name: Verify
@@ -46,8 +53,8 @@ jobs:
           RVT_VERSION: ${{ inputs.version }}
           RVT_RELEASE_TYPE: oss
           RVT_STAGING: ${{ inputs.staging }}
-          RVT_OSS_REPOSITORY_USERNAME: ${{ inputs.repository-username }}
-          RVT_OSS_REPOSITORY_PASSWORD: ${{ inputs.repository-password }}
+          RVT_OSS_REPOSITORY_USERNAME: ${{ secrets.repository-username }}
+          RVT_OSS_REPOSITORY_PASSWORD: ${{ secrets.repository-password }}
         run: ./gradlew spring-boot-release-verification-tests:test
       - name: Upload Build Reports on Failure
         uses: actions/upload-artifact@v4
