@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,11 +36,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
@@ -59,10 +63,13 @@ import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SerializerMessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -107,6 +114,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RabbitAutoConfigurationTests {
@@ -796,6 +804,27 @@ class RabbitAutoConfigurationTests {
 			});
 	}
 
+	@ParameterizedTest
+	@ValueSource(classes = { TestConfiguration.class, TestConfiguration6.class })
+	@SuppressWarnings("unchecked")
+	void customizeAllowedListPatterns(Class<?> configuration) {
+		this.contextRunner.withUserConfiguration(configuration)
+			.withPropertyValues("spring.rabbitmq.template.allowed-list-patterns:*")
+			.run((context) -> {
+				MessageConverter messageConverter = context.getBean(RabbitTemplate.class).getMessageConverter();
+				assertThat(messageConverter).extracting("allowedListPatterns")
+					.isInstanceOfSatisfying(Collection.class, (set) -> assertThat(set).contains("*"));
+			});
+	}
+
+	@Test
+	void customizeAllowedListPatternsWhenHasNoAllowedListDeserializingMessageConverter() {
+		this.contextRunner.withUserConfiguration(CustomMessageConverterConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.template.allowed-list-patterns:*")
+			.run((context) -> assertThat(context).getFailure()
+				.hasRootCauseInstanceOf(InvalidConfigurationPropertyValueException.class));
+	}
+
 	@Test
 	void noSslByDefault() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
@@ -1114,6 +1143,16 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class TestConfiguration6 {
+
+		@Bean
+		MessageConverter messageConverter() {
+			return new SerializerMessageConverter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class MessageConvertersConfiguration {
 
 		@Bean
@@ -1380,6 +1419,29 @@ class RabbitAutoConfigurationTests {
 				@Override
 				public List<Address> getAddresses() {
 					return List.of(new Address("rabbit.example.com", 12345), new Address("rabbit2.example.com", 23456));
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration
+	static class CustomMessageConverterConfiguration {
+
+		@Bean
+		MessageConverter messageConverter() {
+			return new MessageConverter() {
+
+				@Override
+				public Message toMessage(Object object, MessageProperties messageProperties)
+						throws MessageConversionException {
+					return new Message(object.toString().getBytes());
+				}
+
+				@Override
+				public Object fromMessage(Message message) throws MessageConversionException {
+					return new String(message.getBody());
 				}
 
 			};
