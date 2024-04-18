@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.Runtime.Version;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -134,10 +133,11 @@ class ExtractCommandTests {
 					: CREATION_TIME;
 		}
 		if (OS.LINUX.isCurrentOs()) {
-			// Linux uses the modified time until Java 21.0.2 where a bug means that it
-			// uses the birth time which it has not set, preventing us from verifying it.
+			// Linux uses the birth time which it has not set, preventing us from
+			// verifying it.
 			// https://github.com/openjdk/jdk21u-dev/commit/4cf572e3b99b675418e456e7815fb6fd79245e30
-			return (Runtime.version().compareTo(Version.parse("21.0.2")) >= 0) ? null : LAST_MODIFIED_TIME;
+			// https://github.com/openjdk/jdk17u-dev/commit/184fac8af61633ccf833eda53183a27da8efb0f7
+			return null;
 		}
 		return CREATION_TIME;
 	}
