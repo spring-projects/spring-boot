@@ -14,22 +14,26 @@ on:
         required: false
       repository-password:
         required: false
+      google-chat-webhook-url:
+        required: true
+      token:
+        required: true
 jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
     steps:
-      - name: Check Out Release Verification Tests
-        uses: actions/checkout@v4
-        with:
-          repository: spring-projects/spring-boot-release-verification
-          ref: 'v0.0.2'
-          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
       - name: Check Out Send Notification Action
         uses: actions/checkout@v4
         with:
           path: spring-boot
           sparse-checkout: .github/actions/send-notification
+      - name: Check Out Release Verification Tests
+        uses: actions/checkout@v4
+        with:
+          repository: spring-projects/spring-boot-release-verification
+          ref: 'v0.0.2'
+          token: ${{ secrets.token }}
       - name: Set Up Java
         uses: actions/setup-java@v4
         with:
@@ -64,6 +68,6 @@ jobs:
         uses: ./spring-boot/.github/actions/send-notification
         if: always()
         with:
-          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          webhook-url: ${{ secrets.google-chat-webhook-url }}
           status: ${{ job.status }}
           run-name: ${{ format('{0} | Verification | {1}', github.ref_name, inputs.version) }}
