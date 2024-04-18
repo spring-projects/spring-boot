@@ -1,0 +1,34 @@
+name: Publish Gradle Plugin
+description: Publishes Spring Boot's Gradle plugin to the Plugin Portal
+inputs:
+  jfrog-cli-config-token:
+    description: 'Config token for the JFrog CLI'
+    required: true
+  plugin-version:
+    description: 'Version of the plugin'
+    required: true
+  gradle-plugin-publish-key:
+    description: 'Gradle publishing key'
+    required: true
+  gradle-plugin-publish-secret:
+    description: 'Gradle publishing secret'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set Up JFrog CLI
+      uses: jfrog/setup-jfrog-cli@d82fe26823e1f25529250895d5673f65b02af085 # v4.0.1
+      env:
+        JF_ENV_SPRING: ${{ inputs.jfrog-cli-config-token }}
+    - name: Download Artifacts
+      shell: bash
+      run: jf rt download --spec ${{ format('{0}/artifacts.spec', github.action_path) }} --spec-vars 'buildName=${{ format('spring-boot-{0}', inputs.plugin-version) }};buildNumber=${{ github.run_number }}'
+    - name: Publish
+      shell: bash
+      run: >
+        ./gradlew publishExisting
+          -p ${{ github.action_path }}
+          -Pgradle.publish.key=${{ inputs.gradle-plugin-publish-key }}
+          -Pgradle.publish.secret=${{ inputs.gradle-plugin-publish-secret }}
+          -PbootVersion=${{ inputs.plugin-version }}
+          -PrepositoryRoot=$(pwd)/repository
