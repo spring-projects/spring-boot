@@ -32,32 +32,11 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Set Up Java
-      uses: actions/setup-java@v4
+    - name: Prepare Gradle Build
+      uses: ./.github/actions/prepare-gradle-build
       with:
-        distribution: 'liberica'
-        java-version: |
-          ${{ inputs.java-version }}
-          ${{ inputs.java-toolchain && '17' || '' }}
-    - name: Set Up Gradle
-      uses: gradle/actions/setup-gradle@6cec5d49d4d6d4bb982fbed7047db31ea6d38f11 #v3.3.0
-      with:
-        cache-read-only: false
-    - name: Configure Gradle Properties
-      shell: bash
-      run: |
-        mkdir -p $HOME/.gradle
-        echo 'systemProp.user.name=spring-builds+github' >> $HOME/.gradle/gradle.properties
-        echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
-        echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
-    - name: Configure Toolchain Properties
-      if: ${{ inputs.java-toolchain }}
-      shell: bash
-      run: |
-        echo toolchainVersion=${{ inputs.java-version }} >> $HOME/.gradle/gradle.properties
-        echo systemProp.org.gradle.java.installations.auto-detect=false >> $HOME/.gradle/gradle.properties
-        echo systemProp.org.gradle.java.installations.auto-download=false >> $HOME/.gradle/gradle.properties
-        echo systemProp.org.gradle.java.installations.paths=${{ format('$JAVA_HOME_{0}_X64', inputs.java-version) }} >> $HOME/.gradle/gradle.properties
+        java-version: ${{ inputs.java-version }}
+        java-toolchain: ${{ inputs.java-toolchain }}
     - name: Build
       id: build
       if: ${{ !inputs.publish }}
