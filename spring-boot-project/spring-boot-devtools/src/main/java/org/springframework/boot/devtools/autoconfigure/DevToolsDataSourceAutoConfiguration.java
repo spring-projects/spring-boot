@@ -57,6 +57,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Andy Wilkinson
  * @since 1.3.3
  */
+@ConditionalOnClass(DataSource.class)
 @Conditional({ OnEnabledDevToolsCondition.class, DevToolsDataSourceCondition.class })
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @Import(DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor.class)
