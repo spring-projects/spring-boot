@@ -29,7 +29,7 @@ public interface WebHttpHandlerBuilderCustomizer {
 
 	/**
 	 * Callback to customize a {@link WebHttpHandlerBuilder} instance.
-	 * @param webHttpHandlerBuilder the handlerBuilder to customize
+	 * @param webHttpHandlerBuilder the {@link WebHttpHandlerBuilder} to customize
 	 */
 	void customize(WebHttpHandlerBuilder webHttpHandlerBuilder);
 

@@ -84,10 +84,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionException;
-import org.springframework.transaction.support.AbstractPlatformTransactionManager;
-import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -517,61 +513,40 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BatchDataSourceConfiguration {
+	static class BatchDataSourceConfiguration {
 
 		@Bean
 		@Primary
-		public DataSource normalDataSource() {
+		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
 		}
 
 		@BatchDataSource
 		@Bean
-		public DataSource batchDataSource() {
+		DataSource batchDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:batchdatasource").username("sa").build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class BatchTransactionManagerConfiguration {
+	static class BatchTransactionManagerConfiguration {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:database").username("sa").build();
 		}
 
 		@Bean
 		@Primary
-		public PlatformTransactionManager normalTransactionManager() {
-			return new TestTransactionManager();
+		PlatformTransactionManager normalTransactionManager() {
+			return mock(PlatformTransactionManager.class);
 		}
 
 		@BatchTransactionManager
 		@Bean
-		public PlatformTransactionManager batchTransactionManager() {
-			return new TestTransactionManager();
-		}
-
-	}
-
-	static class TestTransactionManager extends AbstractPlatformTransactionManager {
-
-		@Override
-		protected Object doGetTransaction() throws TransactionException {
-			return null;
-		}
-
-		@Override
-		protected void doBegin(Object transaction, TransactionDefinition definition) throws TransactionException {
-		}
-
-		@Override
-		protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
-		}
-
-		@Override
-		protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
+		PlatformTransactionManager batchTransactionManager() {
+			return mock(PlatformTransactionManager.class);
 		}
 
 	}

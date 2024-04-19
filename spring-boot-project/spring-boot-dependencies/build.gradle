@@ -1455,7 +1455,7 @@ bom {
 	library("Pulsar", "3.2.2") {
 		group("org.apache.pulsar") {
 			imports = [
-					"pulsar-bom"
+				"pulsar-bom"
 			]
 		}
 		links {

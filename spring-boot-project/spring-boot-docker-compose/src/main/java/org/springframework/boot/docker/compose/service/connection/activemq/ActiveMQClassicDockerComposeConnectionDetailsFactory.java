@@ -43,7 +43,7 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactory
 	}
 
 	/**
-	 * {@link ActiveMQConnectionDetails} backed by a {@code activemq}
+	 * {@link ActiveMQConnectionDetails} backed by an {@code activemq}
 	 * {@link RunningService}.
 	 */
 	static class ActiveMQDockerComposeConnectionDetails extends DockerComposeConnectionDetails
