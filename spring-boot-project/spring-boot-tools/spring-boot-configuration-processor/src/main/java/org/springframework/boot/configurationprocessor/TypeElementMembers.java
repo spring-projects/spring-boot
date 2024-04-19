@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class TypeElementMembers {
 
 	private static final String OBJECT_CLASS_NAME = Object.class.getName();
 
-	private static final String RECORD_CLASS_NAME = "java.lang.Record";
+	private static final String RECORD_CLASS_NAME = Record.class.getName();
 
 	private final MetadataGenerationEnvironment env;
 
@@ -73,11 +73,11 @@ class TypeElementMembers {
 		for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
 			processField(field);
 		}
-		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
-			processMethod(method);
-		}
 		for (RecordComponentElement recordComponent : ElementFilter.recordComponentsIn(element.getEnclosedElements())) {
 			processRecordComponent(recordComponent);
+		}
+		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
+			processMethod(method);
 		}
 		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
 		if (superType instanceof TypeElement && !OBJECT_CLASS_NAME.equals(superType.toString())
@@ -198,9 +198,7 @@ class TypeElementMembers {
 
 	private void processRecordComponent(RecordComponentElement recordComponent) {
 		String name = recordComponent.getSimpleName().toString();
-		if (!this.recordComponents.containsKey(name)) {
-			this.recordComponents.put(name, recordComponent);
-		}
+		this.recordComponents.putIfAbsent(name, recordComponent);
 	}
 
 	Map<String, VariableElement> getFields() {

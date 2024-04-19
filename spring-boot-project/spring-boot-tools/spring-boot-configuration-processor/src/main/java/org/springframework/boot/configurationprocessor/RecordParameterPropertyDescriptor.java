@@ -21,42 +21,41 @@ import java.util.List;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * A {@link PropertyDescriptor} for a constructor parameter.
+ * A {@link PropertyDescriptor} for a record parameter.
  *
  * @author Stephane Nicoll
+ * @author Pavel Anisimov
  * @author Phillip Webb
  */
-class ConstructorParameterPropertyDescriptor extends ParameterPropertyDescriptor {
+class RecordParameterPropertyDescriptor extends ParameterPropertyDescriptor {
 
-	private final ExecutableElement setter;
+	private final RecordComponentElement recordComponent;
 
-	private final VariableElement field;
-
-	ConstructorParameterPropertyDescriptor(String name, TypeMirror type, VariableElement parameter,
-			TypeElement declaringElement, ExecutableElement getter, ExecutableElement setter, VariableElement field) {
+	RecordParameterPropertyDescriptor(String name, TypeMirror type, VariableElement parameter,
+			TypeElement declaringElement, ExecutableElement getter, RecordComponentElement recordComponent) {
 		super(name, type, parameter, declaringElement, getter);
-		this.setter = setter;
-		this.field = field;
+		this.recordComponent = recordComponent;
 	}
 
 	@Override
 	protected List<Element> getDeprecatableElements() {
-		return Arrays.asList(getGetter(), this.setter, this.field);
+		return Arrays.asList(getGetter());
 	}
 
 	@Override
 	protected boolean isMarkedAsNested(MetadataGenerationEnvironment environment) {
-		return environment.getNestedConfigurationPropertyAnnotation(this.field) != null;
+		return false;
 	}
 
 	@Override
 	protected String resolveDescription(MetadataGenerationEnvironment environment) {
-		return environment.getTypeUtils().getJavaDoc(this.field);
+		return environment.getTypeUtils().getJavaDoc(this.recordComponent);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -25,23 +29,54 @@ import javax.lang.model.type.TypeMirror;
  * A {@link PropertyDescriptor} for a standard JavaBean property.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
-class JavaBeanPropertyDescriptor extends PropertyDescriptor<ExecutableElement> {
+class JavaBeanPropertyDescriptor extends PropertyDescriptor {
 
-	JavaBeanPropertyDescriptor(TypeElement ownerElement, ExecutableElement factoryMethod, ExecutableElement getter,
-			String name, TypeMirror type, VariableElement field, ExecutableElement setter) {
-		super(ownerElement, factoryMethod, getter, name, type, field, getter, setter);
+	private final ExecutableElement setter;
+
+	private final VariableElement field;
+
+	private final ExecutableElement factoryMethod;
+
+	JavaBeanPropertyDescriptor(String name, TypeMirror type, TypeElement declaringElement, ExecutableElement getter,
+			ExecutableElement setter, VariableElement field, ExecutableElement factoryMethod) {
+		super(name, type, declaringElement, getter);
+		this.setter = setter;
+		this.field = field;
+		this.factoryMethod = factoryMethod;
+	}
+
+	ExecutableElement getSetter() {
+		return this.setter;
 	}
 
 	@Override
-	protected boolean isProperty(MetadataGenerationEnvironment env) {
-		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
-		return !env.isExcluded(getType()) && getGetter() != null && (getSetter() != null || isCollection);
+	protected boolean isMarkedAsNested(MetadataGenerationEnvironment environment) {
+		return environment.getNestedConfigurationPropertyAnnotation(this.field) != null;
+	}
+
+	@Override
+	protected String resolveDescription(MetadataGenerationEnvironment environment) {
+		return environment.getTypeUtils().getJavaDoc(this.field);
 	}
 
 	@Override
 	protected Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
-		return environment.getFieldDefaultValue(getOwnerElement(), getName());
+		return environment.getFieldDefaultValue(getDeclaringElement(), getName());
+	}
+
+	@Override
+	protected List<Element> getDeprecatableElements() {
+		return Arrays.asList(getGetter(), this.setter, this.field, this.factoryMethod);
+	}
+
+	@Override
+	public boolean isProperty(MetadataGenerationEnvironment env) {
+		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
+		boolean hasGetter = getGetter() != null;
+		boolean hasSetter = getSetter() != null;
+		return !env.isExcluded(getType()) && hasGetter && (hasSetter || isCollection);
 	}
 
 }
