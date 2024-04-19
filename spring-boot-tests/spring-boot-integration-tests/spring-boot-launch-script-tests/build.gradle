@@ -7,7 +7,7 @@ plugins {
 
 description = "Spring Boot Launch Script Integration Tests"
 
-def jdkVersion = "17.0.10+13"
+def jdkVersion = "17.0.11+10"
 def jdkArch = "aarch64".equalsIgnoreCase(System.getProperty("os.arch")) ? "aarch64" : "amd64"
 
 configurations {
