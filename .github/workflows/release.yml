@@ -32,6 +32,8 @@ jobs:
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           uri: 'https://repo.spring.io'
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          artifact-properties: |
+            /**/spring-boot-docs-*.zip::zip.type=docs,zip.deployed=false
     outputs:
       version: ${{ steps.build-and-publish.outputs.version }}
   verify:
