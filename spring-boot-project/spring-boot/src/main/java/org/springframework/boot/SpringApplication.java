@@ -80,6 +80,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.NativeDetector;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.OrderComparator.OrderSourceProvider;
 import org.springframework.core.Ordered;
@@ -848,7 +849,16 @@ public class SpringApplication {
 			// Continue with normal handling of the original failure
 		}
 		if (logger.isErrorEnabled()) {
-			logger.error("Application run failed", failure);
+			if (NativeDetector.inNativeImage()) {
+				// Depending on how early the failure was, logging may not work in a
+				// native image so we output the stack trace directly to System.out
+				// instead.
+				System.out.println("Application run failed");
+				failure.printStackTrace(System.out);
+			}
+			else {
+				logger.error("Application run failed", failure);
+			}
 			registerLoggedException(failure);
 		}
 	}

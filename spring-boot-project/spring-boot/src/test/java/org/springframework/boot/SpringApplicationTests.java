@@ -73,6 +73,7 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -751,6 +752,53 @@ class SpringApplicationTests {
 		then(listener).should(never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
 		assertThat(exitCodeListener.getExitCode()).isEqualTo(11);
 		assertThat(output).contains("Application run failed");
+	}
+
+	@Test
+	void failureOnTheJvmLogsApplicationRunFailed(CapturedOutput output) {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ExitCodeListener exitCodeListener = new ExitCodeListener();
+		application.addListeners(exitCodeListener);
+		@SuppressWarnings("unchecked")
+		ApplicationListener<SpringApplicationEvent> listener = mock(ApplicationListener.class);
+		application.addListeners(listener);
+		ExitStatusException failure = new ExitStatusException();
+		willThrow(failure).given(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(application::run);
+		then(listener).should().onApplicationEvent(isA(ApplicationReadyEvent.class));
+		then(listener).should(never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
+		assertThat(exitCodeListener.getExitCode()).isEqualTo(11);
+		// Leading space only happens when logging
+		assertThat(output).contains(" Application run failed").contains("ExitStatusException");
+	}
+
+	@Test
+	@ForkedClassPath
+	void failureInANativeImageWritesFailureToSystemOut(CapturedOutput output) {
+		System.setProperty("org.graalvm.nativeimage.imagecode", "true");
+		try {
+			SpringApplication application = new SpringApplication(ExampleConfig.class);
+			application.setWebApplicationType(WebApplicationType.NONE);
+			ExitCodeListener exitCodeListener = new ExitCodeListener();
+			application.addListeners(exitCodeListener);
+			@SuppressWarnings("unchecked")
+			ApplicationListener<SpringApplicationEvent> listener = mock(ApplicationListener.class);
+			application.addListeners(listener);
+			ExitStatusException failure = new ExitStatusException();
+			willThrow(failure).given(listener).onApplicationEvent(isA(ApplicationReadyEvent.class));
+			assertThatExceptionOfType(RuntimeException.class).isThrownBy(application::run);
+			then(listener).should().onApplicationEvent(isA(ApplicationReadyEvent.class));
+			then(listener).should(never()).onApplicationEvent(isA(ApplicationFailedEvent.class));
+			assertThat(exitCodeListener.getExitCode()).isEqualTo(11);
+			// Leading space only happens when logging
+			assertThat(output).doesNotContain(" Application run failed")
+				.contains("Application run failed")
+				.contains("ExitStatusException");
+		}
+		finally {
+			System.clearProperty("org.graalvm.nativeimage.imagecode");
+		}
 	}
 
 	@Test
