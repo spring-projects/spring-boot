@@ -35,8 +35,11 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.method.MethodValidationResult;
+import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
@@ -51,6 +54,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Stephane Nicoll
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class DefaultErrorAttributesTests {
 
@@ -269,6 +273,25 @@ class DefaultErrorAttributesTests {
 					+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
 					+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes).containsEntry("errors", bindingResult.getAllErrors());
+	}
+
+	@Test
+	void extractMethodValidationResultErrors() throws Exception {
+		Object target = "test";
+		Method method = String.class.getMethod("substring", int.class);
+		MethodParameter parameter = new MethodParameter(method, 0);
+		MethodValidationResult methodValidationResult = MethodValidationResult.create(target, method,
+				List.of(new ParameterValidationResult(parameter, -1,
+						List.of(new ObjectError("beginIndex", "beginIndex is negative")), null, null, null)));
+		HandlerMethodValidationException ex = new HandlerMethodValidationException(methodValidationResult);
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
+				ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
+		assertThat(attributes.get("message")).asString()
+			.isEqualTo(
+					"Validation failed for method='public java.lang.String java.lang.String.substring(int)'. Error count: 1");
+		assertThat(attributes).containsEntry("errors",
+				methodValidationResult.getAllErrors().stream().filter(ObjectError.class::isInstance).toList());
 	}
 
 	@Test
