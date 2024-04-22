@@ -48,9 +48,6 @@ When this module is included as a dependency Spring Boot will do the following:
 If the Docker Compose services are already running when starting the application, Spring Boot will only create the service connection beans for each supported container.
 It will not call `docker compose up` again and it will not call `docker compose stop` when the application is shutdown.
 
-NOTE: By default, Spring Boot's Docker Compose support is disabled when running tests.
-To enable it, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
-
 
 
 [[features.dev-services.docker-compose.prerequisites]]
@@ -279,6 +276,25 @@ spring:
     compose:
       profiles:
         active: "myprofile"
+----
+
+
+
+[[features.dev-services.docker-compose.tests]]
+=== Using Docker Compose in Tests
+
+By default, Spring Boot's Docker Compose support is disabled when running tests.
+
+To enable Docker Compose support in tests, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
+
+When using Gradle, you also need to change the configuration of the `spring-boot-docker-compose` dependency from `developmentOnly` to `testAndDevelopmentOnly`:
+
+.Gradle
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		testAndDevelopmentOnly("org.springframework.boot:spring-boot-docker-compose")
+	}
 ----
 
 
