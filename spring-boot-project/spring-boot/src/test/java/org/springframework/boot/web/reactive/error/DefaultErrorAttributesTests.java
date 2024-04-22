@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -255,36 +255,16 @@ class DefaultErrorAttributesTests {
 		Object target = "test";
 		Method method = String.class.getMethod("substring", int.class);
 		MethodParameter parameter = new MethodParameter(method, 0);
-		MethodValidationResult methodValidationResult = new MethodValidationResult() {
-
-			@Override
-			public Object getTarget() {
-				return target;
-			}
-
-			@Override
-			public Method getMethod() {
-				return method;
-			}
-
-			@Override
-			public boolean isForReturnValue() {
-				return false;
-			}
-
-			@Override
-			public List<ParameterValidationResult> getAllValidationResults() {
-				return List.of(new ParameterValidationResult(parameter, -1,
-						List.of(new ObjectError("beginIndex", "beginIndex is negative")), null, null, null));
-			}
-		};
+		MethodValidationResult methodValidationResult = MethodValidationResult.create(target, method,
+				List.of(new ParameterValidationResult(parameter, -1,
+						List.of(new ObjectError("beginIndex", "beginIndex is negative")), null, null, null)));
 		HandlerMethodValidationException ex = new HandlerMethodValidationException(methodValidationResult);
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
 				ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
 		assertThat(attributes.get("message")).asString()
 			.isEqualTo(
-					"Validation failed for method: public java.lang.String java.lang.String.substring(int), with 1 error");
+					"Validation failed for method='public java.lang.String java.lang.String.substring(int)'. Error count: 1");
 		assertThat(attributes).containsEntry("errors",
 				methodValidationResult.getAllErrors().stream().filter(ObjectError.class::isInstance).toList());
 	}

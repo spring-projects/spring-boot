@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -53,8 +52,8 @@ import org.springframework.web.servlet.ModelAndView;
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message (if configured)</li>
- * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception (if
- * configured)</li>
+ * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} or
+ * {@link MethodValidationResult} exception (if configured)</li>
  * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * </ul>
@@ -149,20 +148,19 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private void addErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
-		MethodValidationResult methodValidationResult = extractMethodValidationResult(error);
-		if (methodValidationResult != null) {
-			addMethodValidationResultErrorMessage(errorAttributes, methodValidationResult);
+		BindingResult bindingResult = extractBindingResult(error);
+		if (bindingResult != null) {
+			addMessageAndErrorsFromBindingResult(errorAttributes, bindingResult);
 		}
 		else {
-			BindingResult bindingResult = extractBindingResult(error);
-			if (bindingResult != null) {
-				addBindingResultErrorMessage(errorAttributes, bindingResult);
+			MethodValidationResult methodValidationResult = extractMethodValidationResult(error);
+			if (methodValidationResult != null) {
+				addMessageAndErrorsFromMethodValidationResult(errorAttributes, methodValidationResult);
 			}
 			else {
 				addExceptionErrorMessage(errorAttributes, webRequest, error);
 			}
 		}
-
 	}
 
 	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
@@ -194,20 +192,24 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		return "No message available";
 	}
 
-	private void addBindingResultErrorMessage(Map<String, Object> errorAttributes, BindingResult result) {
-		errorAttributes.put("message", "Validation failed for object='" + result.getObjectName() + "'. "
-				+ "Error count: " + result.getErrorCount());
-		errorAttributes.put("errors", result.getAllErrors());
+	private void addMessageAndErrorsFromBindingResult(Map<String, Object> errorAttributes, BindingResult result) {
+		addMessageAndErrorsForValidationFailure(errorAttributes, "object='" + result.getObjectName() + "'",
+				result.getAllErrors());
 	}
 
-	private void addMethodValidationResultErrorMessage(Map<String, Object> errorAttributes,
+	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
 			MethodValidationResult result) {
-		List<? extends MessageSourceResolvable> errors = result.getAllErrors()
+		List<ObjectError> errors = result.getAllErrors()
 			.stream()
 			.filter(ObjectError.class::isInstance)
+			.map(ObjectError.class::cast)
 			.toList();
-		errorAttributes.put("message",
-				"Validation failed for method='" + result.getMethod() + "'. " + "Error count: " + errors.size());
+		addMessageAndErrorsForValidationFailure(errorAttributes, "method='" + result.getMethod() + "'", errors);
+	}
+
+	private void addMessageAndErrorsForValidationFailure(Map<String, Object> errorAttributes, String validated,
+			List<ObjectError> errors) {
+		errorAttributes.put("message", "Validation failed for " + validated + ". Error count: " + errors.size());
 		errorAttributes.put("errors", errors);
 	}
 
