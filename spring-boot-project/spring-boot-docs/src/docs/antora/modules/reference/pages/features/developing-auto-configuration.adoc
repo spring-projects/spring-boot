@@ -120,6 +120,8 @@ Use the `prefix` and `name` attributes to specify the property that should be ch
 By default, any property that exists and is not equal to `false` is matched.
 You can also create more advanced checks by using the `havingValue` and `matchIfMissing` attributes.
 
+If multiple names are given in the `name` attribute, all of the properties have to pass the test for the condition to match.
+
 
 
 [[features.developing-auto-configuration.condition-annotations.resource-conditions]]
