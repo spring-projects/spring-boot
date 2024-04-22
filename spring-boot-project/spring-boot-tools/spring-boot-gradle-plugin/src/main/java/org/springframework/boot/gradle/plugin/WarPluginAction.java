@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class WarPluginAction implements PluginApplicationAction {
 					.provider(() -> (String) bootWar.getManifest().getAttributes().get("Start-Class"));
 				bootWar.getMainClass()
 					.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
-							? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+							? manifestStartClass : resolver.readMainClassName()));
 				bootWar.getTargetJavaVersion()
 					.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
 				bootWar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts());
