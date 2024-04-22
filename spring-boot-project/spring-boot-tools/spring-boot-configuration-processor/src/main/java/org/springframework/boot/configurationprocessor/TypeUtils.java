@@ -24,11 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
@@ -44,6 +46,7 @@ import javax.lang.model.util.Types;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Pavel Anisimov
  */
 class TypeUtils {
 
@@ -176,6 +179,9 @@ class TypeUtils {
 	}
 
 	String getJavaDoc(Element element) {
+		if (element instanceof RecordComponentElement) {
+			return getJavaDoc((RecordComponentElement) element);
+		}
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
 		if (javadoc != null) {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
@@ -245,6 +251,24 @@ class TypeUtils {
 			TypeElement element = (TypeElement) this.types.asElement(type);
 			process(descriptor, element.getSuperclass());
 		}
+	}
+
+	private String getJavaDoc(RecordComponentElement recordComponent) {
+		String recordJavadoc = this.env.getElementUtils().getDocComment(recordComponent.getEnclosingElement());
+		if (recordJavadoc != null) {
+			Pattern paramJavadocPattern = paramJavadocPattern(recordComponent.getSimpleName().toString());
+			Matcher paramJavadocMatcher = paramJavadocPattern.matcher(recordJavadoc);
+			if (paramJavadocMatcher.find()) {
+				String paramJavadoc = NEW_LINE_PATTERN.matcher(paramJavadocMatcher.group()).replaceAll("").trim();
+				return paramJavadoc.isEmpty() ? null : paramJavadoc;
+			}
+		}
+		return null;
+	}
+
+	private Pattern paramJavadocPattern(String paramName) {
+		String pattern = String.format("(?<=@param +%s).*?(?=([\r\n]+ *@)|$)", paramName);
+		return Pattern.compile(pattern, Pattern.DOTALL);
 	}
 
 	/**

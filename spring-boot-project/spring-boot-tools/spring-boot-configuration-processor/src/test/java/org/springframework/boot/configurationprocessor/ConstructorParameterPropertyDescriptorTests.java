@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "theName");
 			assertThat(property.getName()).isEqualTo("theName");
-			assertThat(property.getSource()).hasToString("theName");
+			assertThat(property.getParameter()).hasToString("theName");
 			assertThat(property.getGetter().getSimpleName()).hasToString("getTheName");
 			assertThat(property.isProperty(metadataEnv)).isTrue();
 			assertThat(property.isNested(metadataEnv)).isFalse();
@@ -61,7 +61,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "first");
 			assertThat(property.getName()).isEqualTo("first");
-			assertThat(property.getSource()).hasToString("first");
+			assertThat(property.getParameter()).hasToString("first");
 			assertThat(property.getGetter().getSimpleName()).hasToString("getFirst");
 			assertThat(property.isProperty(metadataEnv)).isFalse();
 			assertThat(property.isNested(metadataEnv)).isTrue();
@@ -74,7 +74,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableInnerClassProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "third");
 			assertThat(property.getName()).isEqualTo("third");
-			assertThat(property.getSource()).hasToString("third");
+			assertThat(property.getParameter()).hasToString("third");
 			assertThat(property.getGetter().getSimpleName()).hasToString("getThird");
 			assertThat(property.isProperty(metadataEnv)).isFalse();
 			assertThat(property.isNested(metadataEnv)).isTrue();
@@ -87,7 +87,7 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			TypeElement ownerElement = roundEnv.getRootElement(ImmutableSimpleProperties.class);
 			ConstructorParameterPropertyDescriptor property = createPropertyDescriptor(ownerElement, "counter");
 			assertThat(property.getName()).isEqualTo("counter");
-			assertThat(property.getSource()).hasToString("counter");
+			assertThat(property.getParameter()).hasToString("counter");
 			assertThat(property.getGetter()).isNull();
 			assertThat(property.isProperty(metadataEnv)).isTrue();
 			assertThat(property.isNested(metadataEnv)).isFalse();
@@ -130,8 +130,8 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 			ExecutableElement getter = getMethod(ownerElement, "isFlag");
 			VariableElement field = getField(ownerElement, "flag");
 			VariableElement constructorParameter = getConstructorParameter(ownerElement, "flag");
-			ConstructorParameterPropertyDescriptor property = new ConstructorParameterPropertyDescriptor(ownerElement,
-					null, constructorParameter, "flag", field.asType(), field, getter, null);
+			ConstructorParameterPropertyDescriptor property = new ConstructorParameterPropertyDescriptor("flag",
+					field.asType(), constructorParameter, ownerElement, getter, null, field);
 			assertItemMetadata(metadataEnv, property).isProperty().isDeprecatedWithNoInformation();
 		});
 	}
@@ -222,8 +222,8 @@ class ConstructorParameterPropertyDescriptorTests extends PropertyDescriptorTest
 		VariableElement field = getField(ownerElement, name);
 		ExecutableElement getter = getMethod(ownerElement, createAccessorMethodName("get", name));
 		ExecutableElement setter = getMethod(ownerElement, createAccessorMethodName("set", name));
-		return new ConstructorParameterPropertyDescriptor(ownerElement, null, constructorParameter, name,
-				field.asType(), field, getter, setter);
+		return new ConstructorParameterPropertyDescriptor(name, field.asType(), constructorParameter, ownerElement,
+				getter, setter, field);
 	}
 
 	private VariableElement getConstructorParameter(TypeElement ownerElement, String name) {

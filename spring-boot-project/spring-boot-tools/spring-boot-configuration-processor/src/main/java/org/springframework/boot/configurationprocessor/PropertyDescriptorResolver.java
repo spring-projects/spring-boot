@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -36,6 +37,7 @@ import javax.lang.model.util.ElementFilter;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Pavel Anisimov
  */
 class PropertyDescriptorResolver {
 
@@ -54,38 +56,46 @@ class PropertyDescriptorResolver {
 	 * or {@code null}
 	 * @return the candidate properties for metadata generation
 	 */
-	Stream<PropertyDescriptor<?>> resolve(TypeElement type, ExecutableElement factoryMethod) {
+	Stream<PropertyDescriptor> resolve(TypeElement type, ExecutableElement factoryMethod) {
 		TypeElementMembers members = new TypeElementMembers(this.environment, type);
 		if (factoryMethod != null) {
-			return resolveJavaBeanProperties(type, factoryMethod, members);
+			return resolveJavaBeanProperties(type, members, factoryMethod);
 		}
-		return resolve(ConfigurationPropertiesTypeElement.of(type, this.environment), members);
+		return resolve(Bindable.of(type, this.environment), members);
 	}
 
-	private Stream<PropertyDescriptor<?>> resolve(ConfigurationPropertiesTypeElement type, TypeElementMembers members) {
-		if (type.isConstructorBindingEnabled()) {
-			ExecutableElement constructor = type.getBindConstructor();
-			if (constructor != null) {
-				return resolveConstructorProperties(type.getType(), members, constructor);
-			}
-			return Stream.empty();
+	private Stream<PropertyDescriptor> resolve(Bindable bindable, TypeElementMembers members) {
+		if (bindable.isConstructorBindingEnabled()) {
+			ExecutableElement bindConstructor = bindable.getBindConstructor();
+			return (bindConstructor != null)
+					? resolveConstructorBoundProperties(bindable.getType(), members, bindConstructor) : Stream.empty();
 		}
-		return resolveJavaBeanProperties(type.getType(), null, members);
+		return resolveJavaBeanProperties(bindable.getType(), members, null);
 	}
 
-	Stream<PropertyDescriptor<?>> resolveConstructorProperties(TypeElement type, TypeElementMembers members,
-			ExecutableElement constructor) {
-		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
-		constructor.getParameters().forEach((parameter) -> {
-			String name = getParameterName(parameter);
-			TypeMirror propertyType = parameter.asType();
-			ExecutableElement getter = members.getPublicGetter(name, propertyType);
-			ExecutableElement setter = members.getPublicSetter(name, propertyType);
-			VariableElement field = members.getFields().get(name);
-			register(candidates, new ConstructorParameterPropertyDescriptor(type, null, parameter, name, propertyType,
-					field, getter, setter));
+	private Stream<PropertyDescriptor> resolveConstructorBoundProperties(TypeElement declaringElement,
+			TypeElementMembers members, ExecutableElement bindConstructor) {
+		Map<String, PropertyDescriptor> candidates = new LinkedHashMap<>();
+		bindConstructor.getParameters().forEach((parameter) -> {
+			PropertyDescriptor descriptor = extracted(declaringElement, members, parameter);
+			register(candidates, descriptor);
 		});
 		return candidates.values().stream();
+	}
+
+	private PropertyDescriptor extracted(TypeElement declaringElement, TypeElementMembers members,
+			VariableElement parameter) {
+		String name = getParameterName(parameter);
+		TypeMirror type = parameter.asType();
+		ExecutableElement getter = members.getPublicGetter(name, type);
+		ExecutableElement setter = members.getPublicSetter(name, type);
+		VariableElement field = members.getFields().get(name);
+		RecordComponentElement recordComponent = members.getRecordComponents().get(name);
+		return (recordComponent != null)
+				? new RecordParameterPropertyDescriptor(name, type, parameter, declaringElement, getter,
+						recordComponent)
+				: new ConstructorParameterPropertyDescriptor(name, type, parameter, declaringElement, getter, setter,
+						field);
 	}
 
 	private String getParameterName(VariableElement parameter) {
@@ -96,24 +106,24 @@ class PropertyDescriptorResolver {
 		return parameter.getSimpleName().toString();
 	}
 
-	Stream<PropertyDescriptor<?>> resolveJavaBeanProperties(TypeElement type, ExecutableElement factoryMethod,
-			TypeElementMembers members) {
+	private Stream<PropertyDescriptor> resolveJavaBeanProperties(TypeElement declaringElement,
+			TypeElementMembers members, ExecutableElement factoryMethod) {
 		// First check if we have regular java bean properties there
-		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
+		Map<String, PropertyDescriptor> candidates = new LinkedHashMap<>();
 		members.getPublicGetters().forEach((name, getters) -> {
 			VariableElement field = members.getFields().get(name);
 			ExecutableElement getter = findMatchingGetter(members, getters, field);
 			TypeMirror propertyType = getter.getReturnType();
-			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name, propertyType, field,
-					members.getPublicSetter(name, propertyType)));
+			register(candidates, new JavaBeanPropertyDescriptor(name, propertyType, declaringElement, getter,
+					members.getPublicSetter(name, propertyType), field, factoryMethod));
 		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
 			TypeMirror propertyType = field.asType();
 			ExecutableElement getter = members.getPublicGetter(name, propertyType);
 			ExecutableElement setter = members.getPublicSetter(name, propertyType);
-			register(candidates,
-					new LombokPropertyDescriptor(type, factoryMethod, field, name, propertyType, getter, setter));
+			register(candidates, new LombokPropertyDescriptor(name, propertyType, declaringElement, getter, setter,
+					field, factoryMethod));
 		});
 		return candidates.values().stream();
 	}
@@ -126,20 +136,20 @@ class PropertyDescriptorResolver {
 		return candidates.get(0);
 	}
 
-	private void register(Map<String, PropertyDescriptor<?>> candidates, PropertyDescriptor<?> descriptor) {
+	private void register(Map<String, PropertyDescriptor> candidates, PropertyDescriptor descriptor) {
 		if (!candidates.containsKey(descriptor.getName()) && isCandidate(descriptor)) {
 			candidates.put(descriptor.getName(), descriptor);
 		}
 	}
 
-	private boolean isCandidate(PropertyDescriptor<?> descriptor) {
+	private boolean isCandidate(PropertyDescriptor descriptor) {
 		return descriptor.isProperty(this.environment) || descriptor.isNested(this.environment);
 	}
 
 	/**
 	 * Wrapper around a {@link TypeElement} that could be bound.
 	 */
-	private static class ConfigurationPropertiesTypeElement {
+	private static class Bindable {
 
 		private final TypeElement type;
 
@@ -147,8 +157,7 @@ class PropertyDescriptorResolver {
 
 		private final List<ExecutableElement> boundConstructors;
 
-		ConfigurationPropertiesTypeElement(TypeElement type, List<ExecutableElement> constructors,
-				List<ExecutableElement> boundConstructors) {
+		Bindable(TypeElement type, List<ExecutableElement> constructors, List<ExecutableElement> boundConstructors) {
 			this.type = type;
 			this.constructors = constructors;
 			this.boundConstructors = boundConstructors;
@@ -185,10 +194,10 @@ class PropertyDescriptorResolver {
 			return boundConstructor;
 		}
 
-		static ConfigurationPropertiesTypeElement of(TypeElement type, MetadataGenerationEnvironment env) {
+		static Bindable of(TypeElement type, MetadataGenerationEnvironment env) {
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
 			List<ExecutableElement> boundConstructors = getBoundConstructors(type, env, constructors);
-			return new ConfigurationPropertiesTypeElement(type, constructors, boundConstructors);
+			return new Bindable(type, constructors, boundConstructors);
 		}
 
 		private static List<ExecutableElement> getBoundConstructors(TypeElement type, MetadataGenerationEnvironment env,
