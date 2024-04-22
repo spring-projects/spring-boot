@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -309,12 +309,11 @@ class RedisAutoConfigurationTests {
 			.withPropertyValues("spring.data.redis.sentinel.master:mymaster",
 					"spring.data.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
 			.run((context) -> {
-				assertThat(context.getBean(LettuceConnectionFactory.class).isRedisSentinelAware()).isTrue();
-				assertThat(context.getBean(LettuceConnectionFactory.class).getSentinelConfiguration()).isNotNull();
-				assertThat(context.getBean(LettuceConnectionFactory.class).getSentinelConfiguration().getSentinels())
-					.isNotNull()
-					.extracting(RedisNode::toString)
-					.containsExactlyInAnyOrder("[0:0:0:0:0:0:0:1]:26379", "[0:0:0:0:0:0:0:1]:26380");
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
+				assertThat(connectionFactory.getSentinelConfiguration().getSentinels()).isNotNull()
+					.containsExactlyInAnyOrder(new RedisNode("[0:0:0:0:0:0:0:1]", 26379),
+							new RedisNode("[0:0:0:0:0:0:0:1]", 26380));
 			});
 	}
 
@@ -409,10 +408,10 @@ class RedisAutoConfigurationTests {
 				RedisClusterConfiguration clusterConfiguration = context.getBean(LettuceConnectionFactory.class)
 					.getClusterConfiguration();
 				assertThat(clusterConfiguration.getClusterNodes()).hasSize(3);
-				assertThat(clusterConfiguration.getClusterNodes()).extracting(RedisNode::asString)
-					.containsExactlyInAnyOrder("127.0.0.1:27379", "127.0.0.1:27380", "[::1]:27381");
+				assertThat(clusterConfiguration.getClusterNodes()).containsExactlyInAnyOrder(
+						new RedisNode("127.0.0.1", 27379), new RedisNode("127.0.0.1", 27380),
+						new RedisNode("[::1]", 27381));
 			});
-
 	}
 
 	@Test

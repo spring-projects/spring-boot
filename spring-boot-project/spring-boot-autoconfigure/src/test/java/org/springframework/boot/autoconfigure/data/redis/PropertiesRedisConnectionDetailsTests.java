@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Node;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -122,9 +124,8 @@ class PropertiesRedisConnectionDetailsTests {
 		cluster.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setCluster(cluster);
 		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
-		assertThat(connectionDetails.getCluster().getNodes()).containsExactly(
-				new RedisConnectionDetails.Node("localhost", 1111), new RedisConnectionDetails.Node("127.0.0.1", 2222),
-				new RedisConnectionDetails.Node("[::1]", 3333));
+		assertThat(connectionDetails.getCluster().getNodes()).containsExactly(new Node("localhost", 1111),
+				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 	}
 
 	@Test
@@ -133,9 +134,8 @@ class PropertiesRedisConnectionDetailsTests {
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setSentinel(sentinel);
 		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
-		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(
-				new RedisConnectionDetails.Node("localhost", 1111), new RedisConnectionDetails.Node("127.0.0.1", 2222),
-				new RedisConnectionDetails.Node("[::1]", 3333));
+		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(new Node("localhost", 1111),
+				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
 	}
 
 }
