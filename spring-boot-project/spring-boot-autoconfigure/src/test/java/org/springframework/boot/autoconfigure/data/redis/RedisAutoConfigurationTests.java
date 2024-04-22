@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -312,8 +312,13 @@ class RedisAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.sentinel.master:mymaster",
 					"spring.data.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
-			.run((context) -> assertThat(context.getBean(LettuceConnectionFactory.class).isRedisSentinelAware())
-				.isTrue());
+			.run((context) -> {
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
+				assertThat(connectionFactory.getSentinelConfiguration().getSentinels()).isNotNull()
+					.containsExactlyInAnyOrder(new RedisNode("[0:0:0:0:0:0:0:1]", 26379),
+							new RedisNode("[0:0:0:0:0:0:0:1]", 26380));
+			});
 	}
 
 	@Test
@@ -398,19 +403,19 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithCluster() {
-		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380", "[::1]:27381");
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-					"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1))
+					"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1),
+					"spring.data.redis.cluster.nodes[2]:" + clusterNodes.get(2))
 			.run((context) -> {
 				RedisClusterConfiguration clusterConfiguration = context.getBean(LettuceConnectionFactory.class)
 					.getClusterConfiguration();
-				assertThat(clusterConfiguration.getClusterNodes()).hasSize(2);
-				assertThat(clusterConfiguration.getClusterNodes())
-					.extracting((node) -> node.getHost() + ":" + node.getPort())
-					.containsExactlyInAnyOrder("127.0.0.1:27379", "127.0.0.1:27380");
+				assertThat(clusterConfiguration.getClusterNodes()).hasSize(3);
+				assertThat(clusterConfiguration.getClusterNodes()).containsExactlyInAnyOrder(
+						new RedisNode("127.0.0.1", 27379), new RedisNode("127.0.0.1", 27380),
+						new RedisNode("[::1]", 27381));
 			});
-
 	}
 
 	@Test
