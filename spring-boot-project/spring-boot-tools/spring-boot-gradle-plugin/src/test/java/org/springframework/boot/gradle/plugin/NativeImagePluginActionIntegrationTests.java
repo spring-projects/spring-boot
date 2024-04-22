@@ -57,7 +57,7 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void reachabilityMetadataConfigurationFilesAreCopiedToJar() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1").build("bootJar");
+		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
@@ -75,7 +75,7 @@ class NativeImagePluginActionIntegrationTests {
 		writeDummySpringApplicationAotProcessorMainClass();
 		FileSystemUtils.copyRecursively(new File("src/test/resources/reachability-metadata-repository"),
 				new File(this.gradleBuild.getProjectDir(), "reachability-metadata-repository"));
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1").build("bootJar");
+		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
@@ -91,8 +91,7 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void bootBuildImageIsConfiguredToBuildANativeImage() {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("bootBuildImageConfiguration");
+		BuildResult result = this.gradleBuild.build("bootBuildImageConfiguration");
 		assertThat(result.getOutput()).contains("paketobuildpacks/builder-jammy-tiny")
 			.contains("BP_NATIVE_IMAGE = true");
 	}
@@ -100,31 +99,27 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void developmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).doesNotContain("commons-lang");
 	}
 
 	@TestTemplate
 	void testAndDevelopmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).doesNotContain("commons-lang");
 	}
 
 	@TestTemplate
 	void classesGeneratedDuringAotProcessingAreOnTheNativeImageClasspath() {
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aot"),
 				projectPath("build/resources/aot"), projectPath("build/generated/aotClasses"));
 	}
 
 	@TestTemplate
 	void classesGeneratedDuringAotTestProcessingAreOnTheTestNativeImageClasspath() {
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("checkTestNativeImageClasspath");
+		BuildResult result = this.gradleBuild.build("checkTestNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aotTest"),
 				projectPath("build/resources/aotTest"), projectPath("build/generated/aotTestClasses"));
 	}
@@ -132,7 +127,7 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void nativeEntryIsAddedToManifest() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1").build("bootJar");
+		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"));
