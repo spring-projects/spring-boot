@@ -73,6 +73,9 @@ public class Saml2RelyingPartyProperties {
 		 */
 		private final AssertingParty assertingparty = new AssertingParty();
 
+		/**
+		 * Name ID format for a relying party registration.
+		 */
 		private String nameIdFormat;
 
 		public String getEntityId() {
