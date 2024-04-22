@@ -39,7 +39,7 @@ public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 	private HttpStatus getStatus(HttpServletRequest request) {
 		Integer code = (Integer) request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 		HttpStatus status = HttpStatus.resolve(code);
-		return (status != null) ? status : HttpStatus.INTERNAL_SERVER_ERROR;
+		return Objects.requireNonNullElse(status, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
