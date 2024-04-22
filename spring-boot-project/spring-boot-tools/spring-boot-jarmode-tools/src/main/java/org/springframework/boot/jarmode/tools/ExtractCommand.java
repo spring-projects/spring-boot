@@ -27,6 +27,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -249,9 +250,10 @@ class ExtractCommand extends Command {
 		Manifest manifest = jarStructure.createLauncherManifest((library) -> librariesDirectory + library);
 		mkdirs(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file), manifest)) {
+			EnumSet<Type> allowedTypes = EnumSet.of(Type.APPLICATION_CLASS_OR_RESOURCE, Type.META_INF);
 			withJarEntries(this.context.getArchiveFile(), ((stream, jarEntry) -> {
 				Entry entry = jarStructure.resolve(jarEntry);
-				if (isType(entry, Type.APPLICATION_CLASS_OR_RESOURCE) && StringUtils.hasLength(entry.location())) {
+				if (entry != null && allowedTypes.contains(entry.type()) && StringUtils.hasLength(entry.location())) {
 					JarEntry newJarEntry = createJarEntry(entry.location(), jarEntry);
 					output.putNextEntry(newJarEntry);
 					StreamUtils.copy(stream, output);

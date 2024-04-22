@@ -24,6 +24,7 @@ import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
@@ -47,6 +48,9 @@ class IndexedJarStructure implements JarStructure {
 
 	private static final List<String> MANIFEST_DENY_LIST = List.of("Start-Class", "Spring-Boot-Classes",
 			"Spring-Boot-Lib", "Spring-Boot-Classpath-Index", "Spring-Boot-Layers-Index");
+
+	private static final Set<String> ENTRY_IGNORE_LIST = Set.of("META-INF/", "META-INF/MANIFEST.MF",
+			"META-INF/services/java.nio.file.spi.FileSystemProvider");
 
 	private final Manifest originalManifest;
 
@@ -89,6 +93,9 @@ class IndexedJarStructure implements JarStructure {
 
 	@Override
 	public Entry resolve(String name) {
+		if (ENTRY_IGNORE_LIST.contains(name)) {
+			return null;
+		}
 		if (this.classpathEntries.contains(name)) {
 			return new Entry(name, toStructureDependency(name), Type.LIBRARY);
 		}
@@ -97,6 +104,9 @@ class IndexedJarStructure implements JarStructure {
 		}
 		if (name.startsWith("org/springframework/boot/loader")) {
 			return new Entry(name, name, Type.LOADER);
+		}
+		if (name.startsWith("META-INF/")) {
+			return new Entry(name, name, Type.META_INF);
 		}
 		return null;
 	}

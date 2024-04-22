@@ -62,7 +62,8 @@ class ExtractCommandTests extends AbstractJarModeTests {
 				"BOOT-INF/lib/dependency-2.jar", "/jar-contents/dependency-2", "BOOT-INF/lib/dependency-3-SNAPSHOT.jar",
 				"/jar-contents/dependency-3-SNAPSHOT", "org/springframework/boot/loader/launch/JarLauncher.class",
 				"/jar-contents/JarLauncher", "BOOT-INF/classes/application.properties",
-				"/jar-contents/application.properties");
+				"/jar-contents/application.properties", "META-INF/build-info.properties",
+				"/jar-contents/build-info.properties");
 	}
 
 	private File file(String name) {
@@ -205,6 +206,14 @@ class ExtractCommandTests extends AbstractJarModeTests {
 				.contains("out/lib/dependency-2.jar")
 				.contains("out/lib/dependency-3-SNAPSHOT.jar")
 				.contains("out/test.jar");
+		}
+
+		@Test
+		void shouldExtractFilesUnderMetaInf() throws IOException {
+			run(ExtractCommandTests.this.archive);
+			File application = file("test/test.jar");
+			List<String> entryNames = getJarEntryNames(application);
+			assertThat(entryNames).contains("META-INF/build-info.properties");
 		}
 
 	}
