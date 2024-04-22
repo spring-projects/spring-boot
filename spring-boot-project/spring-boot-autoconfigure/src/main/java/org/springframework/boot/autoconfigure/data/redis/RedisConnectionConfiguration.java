@@ -123,8 +123,8 @@ abstract class RedisConnectionConfiguration {
 		}
 		RedisProperties.Cluster clusterProperties = this.properties.getCluster();
 		if (this.connectionDetails.getCluster() != null) {
-			RedisClusterConfiguration config = new RedisClusterConfiguration(
-					getNodes(this.connectionDetails.getCluster()));
+			RedisClusterConfiguration config = new RedisClusterConfiguration();
+			config.setClusterNodes(getNodes(this.connectionDetails.getCluster()));
 			if (clusterProperties != null && clusterProperties.getMaxRedirects() != null) {
 				config.setMaxRedirects(clusterProperties.getMaxRedirects());
 			}
@@ -138,8 +138,12 @@ abstract class RedisConnectionConfiguration {
 		return null;
 	}
 
-	private List<String> getNodes(Cluster cluster) {
-		return cluster.getNodes().stream().map((node) -> "%s:%d".formatted(node.host(), node.port())).toList();
+	private List<RedisNode> getNodes(Cluster cluster) {
+		return cluster.getNodes().stream().map(this::asRedisNode).toList();
+	}
+
+	private RedisNode asRedisNode(Node node) {
+		return new RedisNode(node.host(), node.port());
 	}
 
 	protected final RedisProperties getProperties() {
@@ -162,7 +166,7 @@ abstract class RedisConnectionConfiguration {
 	private List<RedisNode> createSentinels(Sentinel sentinel) {
 		List<RedisNode> nodes = new ArrayList<>();
 		for (Node node : sentinel.getNodes()) {
-			nodes.add(new RedisNode(node.host(), node.port()));
+			nodes.add(asRedisNode(node));
 		}
 		return nodes;
 	}
