@@ -127,6 +127,8 @@ class RedisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isTrue();
+			cf.getClientConfiguration().getClientOptions().ifPresent(options ->
+					assertThat(options.isAutoReconnect()).isFalse());
 		});
 	}
 
@@ -631,6 +633,11 @@ class RedisAutoConfigurationTests {
 		@Bean
 		LettuceClientConfigurationBuilderCustomizer customizer() {
 			return LettuceClientConfigurationBuilder::useSsl;
+		}
+
+		@Bean
+		ClientOptionsBuilderCustomizer clientOptionsBuilderCustomizer() {
+			return builder -> builder.autoReconnect(false);
 		}
 
 	}
