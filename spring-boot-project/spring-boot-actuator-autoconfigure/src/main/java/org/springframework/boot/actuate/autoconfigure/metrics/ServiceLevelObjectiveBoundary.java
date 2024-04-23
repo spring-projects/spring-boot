@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.Meter;
+
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 
 /**
  * A boundary for a service-level objective (SLO) for use when configuring Micrometer. Can
@@ -65,6 +69,15 @@ public final class ServiceLevelObjectiveBoundary {
 	 */
 	public static ServiceLevelObjectiveBoundary valueOf(String value) {
 		return new ServiceLevelObjectiveBoundary(MeterValue.valueOf(value));
+	}
+
+	static class ServiceLevelObjectiveBoundaryHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection().registerType(ServiceLevelObjectiveBoundary.class, MemberCategory.INVOKE_PUBLIC_METHODS);
+		}
+
 	}
 
 }
