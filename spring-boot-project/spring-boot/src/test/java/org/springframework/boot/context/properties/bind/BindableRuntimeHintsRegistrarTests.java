@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.ExecutableHint;
@@ -41,9 +42,11 @@ import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegi
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link BindableRuntimeHintsRegistrar}.
@@ -277,6 +280,16 @@ class BindableRuntimeHintsRegistrarTests {
 			.satisfies(javaBeanBinding(Simple.class, "getRetry"));
 		assertThat(runtimeHints.reflection().getTypeHint(ComplexNestedProperties.class))
 			.satisfies(javaBeanBinding(ComplexNestedProperties.class, "getSimple"));
+	}
+
+	@Test
+	void registerHintsDoesNotThrowWhenParameterInformationForConstructorBindingIsNotAvailable()
+			throws NoSuchMethodException, SecurityException {
+		Constructor<?> constructor = PoolProperties.InterceptorProperty.class.getConstructor(String.class,
+				String.class);
+		String[] parameterNames = new StandardReflectionParameterNameDiscoverer().getParameterNames(constructor);
+		assertThat(parameterNames).isNull();
+		assertThatNoException().isThrownBy(() -> registerHints(PoolProperties.class));
 	}
 
 	private Consumer<TypeHint> javaBeanBinding(Class<?> type, String... expectedMethods) {
