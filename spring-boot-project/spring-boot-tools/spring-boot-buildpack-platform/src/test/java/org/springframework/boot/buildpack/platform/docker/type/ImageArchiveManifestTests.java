@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,8 @@ class ImageArchiveManifestTests extends AbstractJsonTests {
 
 	@Test
 	void getLayersReturnsLayers() throws Exception {
-		ImageArchiveManifest manifest = getManifest();
+		String content = getContentAsString("image-archive-manifest.json");
+		ImageArchiveManifest manifest = getManifest(content);
 		List<String> expectedLayers = new ArrayList<>();
 		for (int blankLayersCount = 0; blankLayersCount < 46; blankLayersCount++) {
 			expectedLayers.add("blank_" + blankLayersCount);
@@ -50,7 +51,7 @@ class ImageArchiveManifestTests extends AbstractJsonTests {
 	@Test
 	void getLayersWithNoLayersReturnsEmptyList() throws Exception {
 		String content = "[{\"Layers\": []}]";
-		ImageArchiveManifest manifest = new ImageArchiveManifest(getObjectMapper().readTree(content));
+		ImageArchiveManifest manifest = getManifest(content);
 		assertThat(manifest.getEntries()).hasSize(1);
 		assertThat(manifest.getEntries().get(0).getLayers()).isEmpty();
 	}
@@ -58,12 +59,12 @@ class ImageArchiveManifestTests extends AbstractJsonTests {
 	@Test
 	void getLayersWithEmptyManifestReturnsEmptyList() throws Exception {
 		String content = "[]";
-		ImageArchiveManifest manifest = new ImageArchiveManifest(getObjectMapper().readTree(content));
+		ImageArchiveManifest manifest = getManifest(content);
 		assertThat(manifest.getEntries()).isEmpty();
 	}
 
-	private ImageArchiveManifest getManifest() throws IOException {
-		return new ImageArchiveManifest(getObjectMapper().readTree(getContent("image-archive-manifest.json")));
+	private ImageArchiveManifest getManifest(String content) throws IOException {
+		return new ImageArchiveManifest(getObjectMapper().readTree(content));
 	}
 
 }

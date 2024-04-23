@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,15 @@ package org.springframework.boot.buildpack.platform.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.zip.GZIPInputStream;
+
+import org.springframework.util.StreamUtils;
+import org.springframework.util.function.ThrowingFunction;
 
 /**
  * A TAR archive that can be written to an output stream.
@@ -46,6 +51,15 @@ public interface TarArchive {
 	void writeTo(OutputStream outputStream) throws IOException;
 
 	/**
+	 * Return the compression being used with the tar archive.
+	 * @return the used compression
+	 * @since 3.2.6
+	 */
+	default Compression getCompression() {
+		return Compression.NONE;
+	}
+
+	/**
 	 * Factory method to create a new {@link TarArchive} instance with a specific layout.
 	 * @param layout the TAR layout
 	 * @return a new {@link TarArchive} instance
@@ -66,6 +80,70 @@ public interface TarArchive {
 	 */
 	static TarArchive fromZip(File zip, Owner owner) {
 		return new ZipFileTarArchive(zip, owner);
+	}
+
+	/**
+	 * Factory method to adapt a ZIP file to {@link TarArchive}. Assumes that
+	 * {@link #writeTo(OutputStream)} will only be called once.
+	 * @param inputStream the source input stream
+	 * @param compression the compression used
+	 * @return a new {@link TarArchive} instance
+	 * @since 3.2.6
+	 */
+	static TarArchive fromInputStream(InputStream inputStream, Compression compression) {
+		return new TarArchive() {
+
+			@Override
+			public void writeTo(OutputStream outputStream) throws IOException {
+				StreamUtils.copy(compression.uncompress(inputStream), outputStream);
+			}
+
+			@Override
+			public Compression getCompression() {
+				return compression;
+			}
+
+		};
+	}
+
+	/**
+	 * Compression type applied to the archive.
+	 *
+	 * @since 3.2.6
+	 */
+	enum Compression {
+
+		/**
+		 * The tar file is not compressed.
+		 */
+		NONE((inputStream) -> inputStream),
+
+		/**
+		 * The tar file is compressed using gzip.
+		 */
+		GZIP(GZIPInputStream::new),
+
+		/**
+		 * The tar file is compressed using zstd.
+		 */
+		ZSTD("zstd compression is not supported");
+
+		private final ThrowingFunction<InputStream, InputStream> uncompressor;
+
+		Compression(String uncompressError) {
+			this((inputStream) -> {
+				throw new IllegalStateException(uncompressError);
+			});
+		}
+
+		Compression(ThrowingFunction<InputStream, InputStream> wrapper) {
+			this.uncompressor = wrapper;
+		}
+
+		InputStream uncompress(InputStream inputStream) {
+			return this.uncompressor.apply(inputStream);
+		}
+
 	}
 
 }
