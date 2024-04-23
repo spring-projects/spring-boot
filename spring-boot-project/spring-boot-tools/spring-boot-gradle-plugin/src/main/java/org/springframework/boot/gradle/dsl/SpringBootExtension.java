@@ -29,6 +29,7 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 
+import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
 
 /**
@@ -123,11 +124,11 @@ public class SpringBootExtension {
 	}
 
 	private Jar findArtifactTask() {
-		Jar artifactTask = (Jar) this.project.getTasks().findByName("bootWar");
+		Jar artifactTask = (Jar) this.project.getTasks().findByName(SpringBootPlugin.BOOT_WAR_TASK_NAME);
 		if (artifactTask != null) {
 			return artifactTask;
 		}
-		return (Jar) this.project.getTasks().findByName("bootJar");
+		return (Jar) this.project.getTasks().findByName(SpringBootPlugin.BOOT_JAR_TASK_NAME);
 	}
 
 }
