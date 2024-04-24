@@ -171,6 +171,7 @@ import static org.mockito.Mockito.times;
  * @author Andy Wilkinson
  * @author Raja Kolli
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 @DirtiesUrlFactories
@@ -921,6 +922,23 @@ public abstract class AbstractServletWebServerFactoryTests {
 				(header) -> assertThat(header).contains("relaxed=test").contains("SameSite=Lax"),
 				(header) -> assertThat(header).contains("empty=test").contains("SameSite=None"),
 				(header) -> assertThat(header).contains("controlled=test").contains("SameSite=Strict"));
+	}
+
+	@Test
+	void cookieSameSiteSuppliersShouldNotAffectSessionCookie() throws IOException, URISyntaxException {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.getSession().getCookie().setSameSite(SameSite.LAX);
+		factory.getSession().getCookie().setName("SESSIONCOOKIE");
+		factory.addCookieSameSiteSuppliers(CookieSameSiteSupplier.ofStrict());
+		factory.addInitializers(new ServletRegistrationBean<>(new CookieServlet(false), "/"));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		ClientHttpResponse clientResponse = getClientResponse(getLocalUrl("/"));
+		assertThat(clientResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+		List<String> setCookieHeaders = clientResponse.getHeaders().get("Set-Cookie");
+		assertThat(setCookieHeaders).satisfiesExactlyInAnyOrder(
+				(header) -> assertThat(header).contains("SESSIONCOOKIE").contains("SameSite=Lax"),
+				(header) -> assertThat(header).contains("test=test").contains("SameSite=Strict"));
 	}
 
 	@Test
@@ -1762,7 +1780,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		}
 
 		@Override
-		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
 			req.getSession(true);
 			resp.addCookie(new Cookie("test", "test"));
 			if (this.addSupplierTestCookies) {
