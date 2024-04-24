@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -38,8 +40,14 @@ import static org.mockito.Mockito.times;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class TestcontainersLifecycleApplicationContextInitializerTests {
+
+	@BeforeEach
+	void setUp() {
+		TestcontainersConfiguration.getInstance().updateUserConfig("testcontainers.reuse.enable", "false");
+	}
 
 	@Test
 	void whenStartableBeanInvokesStartOnRefresh() {
@@ -62,7 +70,8 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 	}
 
 	@Test
-	void whenReusableContainerBeanInvokesStartButNotClose() {
+	void whenReusableContainerAndReuseEnabledBeanInvokesStartButNotClose() {
+		TestcontainersConfiguration.getInstance().updateUserConfig("testcontainers.reuse.enable", "true");
 		GenericContainer<?> container = mock(GenericContainer.class);
 		given(container.isShouldBeReused()).willReturn(true);
 		AnnotationConfigApplicationContext applicationContext = createApplicationContext(container);
@@ -74,7 +83,20 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 	}
 
 	@Test
-	void whenReusableContainerBeanFromConfigurationInvokesStartButNotClose() {
+	void whenReusableContainerButReuseNotEnabledBeanInvokesStartAndClose() {
+		GenericContainer<?> container = mock(GenericContainer.class);
+		given(container.isShouldBeReused()).willReturn(true);
+		AnnotationConfigApplicationContext applicationContext = createApplicationContext(container);
+		then(container).shouldHaveNoInteractions();
+		applicationContext.refresh();
+		then(container).should().start();
+		applicationContext.close();
+		then(container).should(times(1)).close();
+	}
+
+	@Test
+	void whenReusableContainerAndReuseEnabledBeanFromConfigurationInvokesStartButNotClose() {
+		TestcontainersConfiguration.getInstance().updateUserConfig("testcontainers.reuse.enable", "true");
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
 		applicationContext.register(ReusableContainerConfiguration.class);
@@ -83,6 +105,18 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 		then(container).should().start();
 		applicationContext.close();
 		then(container).should(never()).close();
+	}
+
+	@Test
+	void whenReusableContainerButReuseNotEnabledBeanFromConfigurationInvokesStartAndClose() {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+		applicationContext.register(ReusableContainerConfiguration.class);
+		applicationContext.refresh();
+		GenericContainer<?> container = applicationContext.getBean(GenericContainer.class);
+		then(container).should().start();
+		applicationContext.close();
+		then(container).should(times(1)).close();
 	}
 
 	@Test

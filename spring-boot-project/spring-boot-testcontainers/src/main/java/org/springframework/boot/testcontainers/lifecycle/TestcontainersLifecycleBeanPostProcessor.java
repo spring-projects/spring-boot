@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -49,6 +50,7 @@ import org.springframework.core.log.LogMessage;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @see TestcontainersLifecycleApplicationContextInitializer
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -124,7 +126,8 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 	}
 
 	private boolean isReusedContainer(Object bean) {
-		return (bean instanceof GenericContainer<?> container) && container.isShouldBeReused();
+		return (bean instanceof GenericContainer<?> container) && container.isShouldBeReused()
+				&& TestcontainersConfiguration.getInstance().environmentSupportsReuse();
 	}
 
 }
