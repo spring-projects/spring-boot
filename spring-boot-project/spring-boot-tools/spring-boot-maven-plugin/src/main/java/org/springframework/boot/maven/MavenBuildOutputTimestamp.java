@@ -91,8 +91,8 @@ class MavenBuildOutputTimestamp {
 				.truncatedTo(ChronoUnit.SECONDS)
 				.toInstant();
 			if (instant.isBefore(DATE_MIN) || instant.isAfter(DATE_MAX)) {
-				throw new IllegalArgumentException(String
-					.format(String.format("'%s' is not within the valid range %s to %s", instant, DATE_MIN, DATE_MAX)));
+				throw new IllegalArgumentException(
+						String.format("'%s' is not within the valid range %s to %s", instant, DATE_MIN, DATE_MAX));
 			}
 			return instant;
 		}
