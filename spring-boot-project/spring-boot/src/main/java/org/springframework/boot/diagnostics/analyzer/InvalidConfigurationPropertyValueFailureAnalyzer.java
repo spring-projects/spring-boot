@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	protected FailureAnalysis analyze(Throwable rootFailure, InvalidConfigurationPropertyValueException cause) {
 		List<Descriptor> descriptors = getDescriptors(cause.getName());
 		if (descriptors.isEmpty()) {
-			return null;
+			descriptors = List.of(new Descriptor(null, cause.getValue(), null));
 		}
 		StringBuilder description = new StringBuilder();
 		appendDetails(description, cause, descriptors);
