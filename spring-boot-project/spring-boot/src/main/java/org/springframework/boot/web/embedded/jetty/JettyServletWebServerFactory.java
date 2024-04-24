@@ -77,6 +77,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.session.DefaultSessionCache;
 import org.eclipse.jetty.session.FileSessionDataStore;
+import org.eclipse.jetty.session.SessionConfig;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.resource.CombinedResource;
 import org.eclipse.jetty.util.resource.Resource;
@@ -237,9 +238,15 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			handler = applyWrapper(handler, JettyHandlerWrappers.createServerHeaderHandlerWrapper(getServerHeader()));
 		}
 		if (!CollectionUtils.isEmpty(getCookieSameSiteSuppliers())) {
-			handler = applyWrapper(handler, new SuppliedSameSiteCookieHandlerWrapper(getCookieSameSiteSuppliers()));
+			handler = applyWrapper(handler,
+					new SuppliedSameSiteCookieHandlerWrapper(getSessionCookieName(), getCookieSameSiteSuppliers()));
 		}
 		return handler;
+	}
+
+	private String getSessionCookieName() {
+		String name = getSession().getCookie().getName();
+		return (name != null) ? name : SessionConfig.__DefaultSessionCookie;
 	}
 
 	private Handler applyWrapper(Handler handler, Handler.Wrapper wrapper) {
@@ -779,9 +786,12 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		private static final SetCookieParser setCookieParser = SetCookieParser.newInstance();
 
+		private final String sessionCookieName;
+
 		private final List<CookieSameSiteSupplier> suppliers;
 
-		SuppliedSameSiteCookieHandlerWrapper(List<CookieSameSiteSupplier> suppliers) {
+		SuppliedSameSiteCookieHandlerWrapper(String sessionCookieName, List<CookieSameSiteSupplier> suppliers) {
+			this.sessionCookieName = sessionCookieName;
 			this.suppliers = suppliers;
 		}
 
@@ -793,7 +803,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 		private class SuppliedSameSiteCookieResponse extends Response.Wrapper {
 
-			private HttpFields.Mutable wrappedHeaders;
+			private final HttpFields.Mutable wrappedHeaders;
 
 			SuppliedSameSiteCookieResponse(Request request, Response wrapped) {
 				super(request, wrapped);
@@ -825,12 +835,19 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 			private HttpField onAddSetCookieField(HttpField field) {
 				HttpCookie cookie = setCookieParser.parse(field.getValue());
-				SameSite sameSite = (cookie != null) ? getSameSite(cookie) : null;
+				if (cookie == null || isSessionCookie(cookie)) {
+					return field;
+				}
+				SameSite sameSite = getSameSite(cookie);
 				if (sameSite == null) {
 					return field;
 				}
 				HttpCookie updatedCookie = buildCookieWithUpdatedSameSite(cookie, sameSite);
 				return new HttpCookieUtils.SetCookieHttpField(updatedCookie, this.compliance);
+			}
+
+			private boolean isSessionCookie(HttpCookie cookie) {
+				return SuppliedSameSiteCookieHandlerWrapper.this.sessionCookieName.equals(cookie.getName());
 			}
 
 			private HttpCookie buildCookieWithUpdatedSameSite(HttpCookie cookie, SameSite sameSite) {
