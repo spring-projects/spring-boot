@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class ConsoleIntegrationTests {
 	private final ToStringConsumer output = new ToStringConsumer().withRemoveAnsiCodes(false);
 
 	@Test
-	void runJarIn17() {
+	void runJarOn17() {
 		try (GenericContainer<?> container = createContainer(JDK_17_RUNTIME)) {
 			container.start();
 			assertThat(this.output.toString(StandardCharsets.ISO_8859_1)).contains("System.console() is null")
@@ -60,7 +60,7 @@ class ConsoleIntegrationTests {
 	}
 
 	@Test
-	void runJarIn22() {
+	void runJarOn22() {
 		try (GenericContainer<?> container = createContainer(JDK_22_RUNTIME)) {
 			container.start();
 			assertThat(this.output.toString(StandardCharsets.ISO_8859_1)).doesNotContain("System.console() is null")
