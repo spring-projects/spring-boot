@@ -53,18 +53,22 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 	@Override
 	protected Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
 			AggregateElementBinder elementBinder) {
-		Map<Object, Object> map = CollectionFactory
-			.createMap((target.getValue() != null) ? Map.class : target.getType().resolve(Object.class), 0);
 		Bindable<?> resolvedTarget = resolveTarget(target);
 		boolean hasDescendants = hasDescendants(name);
-		for (ConfigurationPropertySource source : getContext().getSources()) {
-			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
+		if (!hasDescendants && !ConfigurationPropertyName.EMPTY.equals(name)) {
+			for (ConfigurationPropertySource source : getContext().getSources()) {
 				ConfigurationProperty property = source.getConfigurationProperty(name);
-				if (property != null && !hasDescendants) {
+				if (property != null) {
 					getContext().setConfigurationProperty(property);
 					Object result = getContext().getPlaceholdersResolver().resolvePlaceholders(property.getValue());
 					return getContext().getConverter().convert(result, target);
 				}
+			}
+		}
+		Map<Object, Object> map = CollectionFactory
+			.createMap((target.getValue() != null) ? Map.class : target.getType().resolve(Object.class), 0);
+		for (ConfigurationPropertySource source : getContext().getSources()) {
+			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
 				source = source.filter(name::isAncestorOf);
 			}
 			new EntryBinder(name, resolvedTarget, elementBinder).bindEntries(source, map);
