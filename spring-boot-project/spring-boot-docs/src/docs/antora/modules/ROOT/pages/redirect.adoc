@@ -363,7 +363,7 @@
 * xref:how-to:data-initialization.adoc#howto.data-initialization.migration-tool.liquibase-tests[#howto.data-initialization.migration-tool.liquibase-tests]
 * xref:how-to:data-initialization.adoc#howto.data-initialization.using-basic-sql-scripts[#howto.data-initialization.using-basic-sql-scripts]
 * xref:how-to:data-initialization.adoc#howto.data-initialization.using-hibernate[#howto.data-initialization.using-hibernate]
-* xref:how-to:data-initialization.adoc#howto.data-initialization.using-jpa[#howto.data-initialization.using-jpa]
+* xref:how-to:data-initialization.adoc#howto.data-initialization.using-hibernate[#howto.data-initialization.using-jpa]
 * xref:how-to:docker-compose.adoc#howto.docker-compose[#howto.docker-compose]
 * xref:how-to:docker-compose.adoc#howto.docker-compose.jdbc-url[#howto.docker-compose.jdbc-url]
 * xref:how-to:docker-compose.adoc#howto.docker-compose.sharing-services[#howto.docker-compose.sharing-services]

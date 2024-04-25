@@ -8,7 +8,7 @@ It is recommended to use a single mechanism for schema generation.
 
 
 [[howto.data-initialization.using-hibernate]]
-=== Initialize a Database Using Hibernate
+== Initialize a Database Using Hibernate
 
 You can set configprop:spring.jpa.hibernate.ddl-auto[] to control Hibernate's database initialization.
 Supported values are `none`, `validate`, `update`, `create`, and `create-drop`.
