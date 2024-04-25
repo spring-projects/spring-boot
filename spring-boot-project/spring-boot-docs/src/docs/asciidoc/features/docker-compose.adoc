@@ -30,7 +30,7 @@ Add the module dependency to your build, as shown in the following listings for 
 
 When this module is included as a dependency Spring Boot will do the following:
 
-* Search for a `compose.yml` and other common compose filenames in your application directory
+* Search for a `compose.yml` and other common compose filenames in your working directory
 * Call `docker compose up` with the discovered `compose.yml`
 * Create service connection beans for each supported container
 * Call `docker compose stop` when the application is shutdown
