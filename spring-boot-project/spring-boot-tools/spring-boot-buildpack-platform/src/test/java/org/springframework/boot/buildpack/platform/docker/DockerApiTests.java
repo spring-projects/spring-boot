@@ -313,12 +313,14 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("removal")
 		void exportLayersWhenReferenceIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(null, (name, archive) -> {
 			})).withMessage("Reference must not be null");
 		}
 
 		@Test
+		@SuppressWarnings("removal")
 		void exportLayersWhenExportsIsNullThrowsException() {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(reference, null))
@@ -393,14 +395,15 @@ class DockerApiTests {
 		}
 
 		@Test
+		@SuppressWarnings("removal")
 		void exportLayersWithNoManifestThrowsException() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
 			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-no-manifest.tar"));
-			assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.api.exportLayerFiles(reference, (name, archive) -> {
-				}))
-				.withMessageContaining("Manifest not found in image " + reference);
+			String expectedMessage = "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
+				.formatted(reference);
+			assertThatIllegalStateException().isThrownBy(() -> this.api.exportLayerFiles(reference, (name, archive) -> {
+			})).withMessageContaining(expectedMessage);
 		}
 
 		@Test

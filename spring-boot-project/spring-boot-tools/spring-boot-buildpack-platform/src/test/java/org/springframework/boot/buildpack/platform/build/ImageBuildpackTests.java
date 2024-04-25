@@ -19,10 +19,10 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +37,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.boot.buildpack.platform.io.TarArchive.Compression;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -176,7 +178,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 
 	private Object withMockLayers(InvocationOnMock invocation) {
 		try {
-			IOBiConsumer<String, Path> consumer = invocation.getArgument(1);
+			IOBiConsumer<String, TarArchive> consumer = invocation.getArgument(1);
 			File tarFile = File.createTempFile("create-builder-test-", null);
 			FileOutputStream out = new FileOutputStream(tarFile);
 			try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
@@ -189,7 +191,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 				writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath);
 				tarOut.finish();
 			}
-			consumer.accept("test", tarFile.toPath());
+			consumer.accept("test", TarArchive.fromInputStream(new FileInputStream(tarFile), Compression.NONE));
 			Files.delete(tarFile.toPath());
 		}
 		catch (IOException ex) {

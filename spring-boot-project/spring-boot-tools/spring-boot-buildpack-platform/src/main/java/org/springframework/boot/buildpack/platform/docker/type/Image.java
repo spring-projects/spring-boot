@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.docker.type;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,20 +47,11 @@ public class Image extends MappedObject {
 
 	Image(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.digests = getDigests(getNode().at("/RepoDigests"));
+		this.digests = childrenAt("/RepoDigests", JsonNode::asText);
 		this.config = new ImageConfig(getNode().at("/Config"));
 		this.layers = extractLayers(valueAt("/RootFS/Layers", String[].class));
 		this.os = valueAt("/Os", String.class);
 		this.created = valueAt("/Created", String.class);
-	}
-
-	private List<String> getDigests(JsonNode node) {
-		if (node.isEmpty()) {
-			return Collections.emptyList();
-		}
-		List<String> digests = new ArrayList<>();
-		node.forEach((child) -> digests.add(child.asText()));
-		return Collections.unmodifiableList(digests);
 	}
 
 	private List<LayerId> extractLayers(String[] layers) {
