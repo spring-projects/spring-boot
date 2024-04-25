@@ -52,6 +52,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  * @since 1.4.0
  */
 public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomizer {
@@ -100,7 +101,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			return null;
 		}
 		if (this.print == MockMvcPrint.LOG_DEBUG) {
-			return new LoggingLinesWriter();
+			return (LoggingLinesWriter.isDebugEnabled()) ? new LoggingLinesWriter() : null;
 		}
 		return new SystemLinesWriter(this.print);
 	}
@@ -188,7 +189,12 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 					if (value != null && value.getClass().isArray()) {
 						value = CollectionUtils.arrayToList(value);
 					}
-					this.lines.add(String.format("%17s = %s", label, value));
+					try {
+						this.lines.add("%17s = %s".formatted(label, value));
+					}
+					catch (RuntimeException ex) {
+						this.lines.add("%17s = << Exception '%s' occurred while formatting >>".formatted(label, ex));
+					}
 				}
 
 				List<String> getLines() {
@@ -271,6 +277,10 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				}
 				logger.debug("MvcResult details:\n" + stringWriter);
 			}
+		}
+
+		static boolean isDebugEnabled() {
+			return logger.isDebugEnabled();
 		}
 
 	}
