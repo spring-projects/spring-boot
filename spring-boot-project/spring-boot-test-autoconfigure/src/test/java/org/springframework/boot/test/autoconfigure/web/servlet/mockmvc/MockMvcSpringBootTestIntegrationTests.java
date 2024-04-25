@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} (i.e. full integration test).
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 @SpringBootTest
 @AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_ERR, printOnlyOnFailure = false)
@@ -81,6 +82,13 @@ class MockMvcSpringBootTestIntegrationTests {
 	@Test
 	void shouldTestWithWebTestClient(@Autowired WebTestClient webTestClient) {
 		webTestClient.get().uri("/one").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("one");
+	}
+
+	@Test
+	void shouldNotFailIfFormattingValueThrowsException(CapturedOutput output) throws Exception {
+		this.mvc.perform(get("/formatting")).andExpect(content().string("formatting")).andExpect(status().isOk());
+		assertThat(output).contains(
+				"Session Attrs = << Exception 'java.lang.IllegalStateException: Formatting failed' occurred while formatting >>");
 	}
 
 }
