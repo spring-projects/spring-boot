@@ -198,10 +198,8 @@ public class GradleBuild {
 			if (this.expectDeprecationWarnings == null || (this.gradleVersion != null
 					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0)) {
 				String buildOutput = result.getOutput();
-				if (this.expectedDeprecationMessages != null) {
-					for (String message : this.expectedDeprecationMessages) {
-						buildOutput = buildOutput.replaceAll(message, "");
-					}
+				for (String message : this.expectedDeprecationMessages) {
+					buildOutput = buildOutput.replaceAll(message, "");
 				}
 				assertThat(buildOutput).doesNotContainIgnoringCase("deprecated");
 			}
