@@ -7,26 +7,17 @@ It is recommended to use a single mechanism for schema generation.
 
 
 
-[[howto.data-initialization.using-jpa]]
-== Initialize a Database Using JPA
-
-JPA has features for DDL generation, and these can be set up to run on startup against the database.
-This is controlled through two external properties:
-
-* `spring.jpa.generate-ddl` (boolean) switches the feature on and off and is vendor independent.
-* `spring.jpa.hibernate.ddl-auto` (enum) is a Hibernate feature that controls the behavior in a more fine-grained way.
-  This feature is described in more detail later in this guide.
-
-
-
 [[howto.data-initialization.using-hibernate]]
-== Initialize a Database Using Hibernate
+=== Initialize a Database Using Hibernate
 
-You can set `spring.jpa.hibernate.ddl-auto` explicitly to one of the standard Hibernate property values which are `none`, `validate`, `update`, `create`, and `create-drop`.
-Spring Boot chooses a default value for you based on whether it thinks your database is embedded.
-It defaults to `create-drop` if no schema manager has been detected or `none` in all other cases.
-An embedded database is detected by looking at the `Connection` type and JDBC url.
-`hsqldb`, `h2`, and `derby` are candidates, while others are not.
+You can set configprop:spring.jpa.hibernate.ddl-auto[] to control Hibernate's database initialization.
+Supported values are `none`, `validate`, `update`, `create`, and `create-drop`.
+Spring Boot chooses a default value for you based on whether you are using an embedded database.
+An embedded database is identified by looking at the `Connection` type and JDBC url.
+`hsqldb`, `h2`, or `derby` are embedded databases and others are not.
+If an embedded database is identified and no schema manager (Flyway or Liquibase) has been detected, `ddl-auto` defaults to `create-drop`.
+In all other cases, it defaults to `none`.
+
 Be careful when switching from in-memory to a '`real`' database that you do not make assumptions about the existence of the tables and data in the new platform.
 You either have to set `ddl-auto` explicitly or use one of the other mechanisms to initialize the database.
 
