@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: spring-projects/spring-boot-release-verification
-          ref: 'v0.0.2'
+          ref: 'v0.0.3'
           token: ${{ secrets.token }}
       - name: Check Out Send Notification Action
         uses: actions/checkout@v4
