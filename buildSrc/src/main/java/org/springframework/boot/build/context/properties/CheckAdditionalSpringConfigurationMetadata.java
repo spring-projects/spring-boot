@@ -48,9 +48,12 @@ import org.gradle.api.tasks.TaskAction;
  */
 public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 
+	private final File projectDir;
+
 	private final RegularFileProperty reportLocation;
 
 	public CheckAdditionalSpringConfigurationMetadata() {
+		this.projectDir = getProject().getProjectDir();
 		this.reportLocation = getProject().getObjects().fileProperty();
 	}
 
@@ -82,7 +85,7 @@ public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 		ObjectMapper objectMapper = new ObjectMapper();
 		Report report = new Report();
 		for (File file : getSource().getFiles()) {
-			Analysis analysis = report.analysis(getProject().getProjectDir().toPath().relativize(file.toPath()));
+			Analysis analysis = report.analysis(this.projectDir.toPath().relativize(file.toPath()));
 			Map<String, Object> json = objectMapper.readValue(file, Map.class);
 			check("groups", json, analysis);
 			check("properties", json, analysis);
