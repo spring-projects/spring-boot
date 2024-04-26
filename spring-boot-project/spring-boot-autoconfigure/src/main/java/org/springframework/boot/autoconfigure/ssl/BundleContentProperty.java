@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
  * @param name the configuration property name (excluding any prefix)
  * @param value the configuration property value
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 record BundleContentProperty(String name, String value) {
 
@@ -52,16 +53,17 @@ record BundleContentProperty(String name, String value) {
 	}
 
 	Path toWatchPath() {
-		return toPath();
-	}
-
-	private Path toPath() {
 		try {
 			URL url = toUrl();
-			Assert.state(isFileUrl(url), () -> "Value '%s' is not a file URL".formatted(url));
+			if (!isFileUrl(url)) {
+				throw new BundleContentNotWatchableException(this);
+			}
 			return Path.of(url.toURI()).toAbsolutePath();
 		}
 		catch (Exception ex) {
+			if (ex instanceof BundleContentNotWatchableException bundleContentNotWatchableException) {
+				throw bundleContentNotWatchableException;
+			}
 			throw new IllegalStateException("Unable to convert value of property '%s' to a path".formatted(this.name),
 					ex);
 		}
