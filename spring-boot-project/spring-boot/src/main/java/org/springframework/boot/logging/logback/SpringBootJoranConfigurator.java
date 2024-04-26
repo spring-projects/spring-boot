@@ -107,6 +107,16 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		ruleStore.addTransparentPathPart("springProfile");
 	}
 
+	@Override
+	public void buildModelInterpretationContext() {
+		super.buildModelInterpretationContext();
+		this.modelInterpretationContext.setConfiguratorSupplier(() -> {
+			SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(this.initializationContext);
+			configurator.setContext(this.context);
+			return configurator;
+		});
+	}
+
 	boolean configureUsingAotGeneratedArtifacts() {
 		if (!new PatternRules(getContext()).load()) {
 			return false;

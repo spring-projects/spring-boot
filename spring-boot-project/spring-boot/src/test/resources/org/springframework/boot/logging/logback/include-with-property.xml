@@ -1,0 +1,3 @@
+<included>
+	<springProperty scope="context" name="MINE" source="my.example-property" defaultValue="default-test" />
+</included>
