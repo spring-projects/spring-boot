@@ -25,7 +25,6 @@ import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask;
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.asciidoctor.gradle.jvm.AsciidoctorTask;
-import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
@@ -120,16 +119,14 @@ class AsciidoctorConventions {
 		attributes.put("github-tag", determineGitHubTag(project));
 		attributes.put("artifact-release-type", artifacts.getType());
 		attributes.put("artifact-download-repo", artifacts.getDownloadRepo());
-		attributes.put("revnumber", null);
+		attributes.put("revnumber", project.getVersion());
 		asciidoctorTask.attributes(attributes);
 	}
 
 	// See https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/597
 	private void configureForkOptions(AbstractAsciidoctorTask asciidoctorTask) {
-		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_16)) {
-			asciidoctorTask.forkOptions((options) -> options.jvmArgs("--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
-					"--add-opens", "java.base/java.io=ALL-UNNAMED"));
-		}
+		asciidoctorTask.jvm((options) -> options.jvmArgs("--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED",
+				"--add-opens", "java.base/java.io=ALL-UNNAMED"));
 	}
 
 	private String determineGitHubTag(Project project) {

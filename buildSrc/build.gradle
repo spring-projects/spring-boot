@@ -48,7 +48,7 @@ dependencies {
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("org.apache.maven:maven-embedder:${versions.maven}")
-	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
+	implementation("org.asciidoctor:asciidoctor-gradle-jvm:4.0.2")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${versions.kotlin}")
 	implementation("org.springframework:spring-context")
