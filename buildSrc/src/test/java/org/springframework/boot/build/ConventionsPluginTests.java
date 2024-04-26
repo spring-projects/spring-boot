@@ -55,7 +55,7 @@ class ConventionsPluginTests {
 		File settingsFile = new File(this.projectDir, "settings.gradle");
 		try (PrintWriter out = new PrintWriter(new FileWriter(settingsFile))) {
 			out.println("plugins {");
-			out.println("    id 'com.gradle.enterprise'");
+			out.println("    id 'com.gradle.develocity'");
 			out.println("}");
 			out.println("include ':spring-boot-project:spring-boot-parent'");
 		}

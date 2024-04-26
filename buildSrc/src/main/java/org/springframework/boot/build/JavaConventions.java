@@ -24,8 +24,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import com.gradle.enterprise.gradleplugin.testretry.TestRetryExtension;
-import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionExtension;
+import com.gradle.develocity.agent.gradle.test.DevelocityTestConfiguration;
+import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionConfiguration;
+import com.gradle.develocity.agent.gradle.test.TestRetryConfiguration;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
@@ -178,7 +179,9 @@ class JavaConventions {
 	}
 
 	private void configureTestRetries(Test test) {
-		TestRetryExtension testRetry = test.getExtensions().getByType(TestRetryExtension.class);
+		TestRetryConfiguration testRetry = test.getExtensions()
+			.getByType(DevelocityTestConfiguration.class)
+			.getTestRetry();
 		testRetry.getFailOnPassedAfterRetry().set(false);
 		testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 	}
@@ -189,8 +192,9 @@ class JavaConventions {
 
 	private void configurePredictiveTestSelection(Test test) {
 		if (isPredictiveTestSelectionEnabled()) {
-			PredictiveTestSelectionExtension predictiveTestSelection = test.getExtensions()
-				.getByType(PredictiveTestSelectionExtension.class);
+			PredictiveTestSelectionConfiguration predictiveTestSelection = test.getExtensions()
+				.getByType(DevelocityTestConfiguration.class)
+				.getPredictiveTestSelection();
 			predictiveTestSelection.getEnabled().convention(true);
 		}
 	}
