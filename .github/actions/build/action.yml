@@ -13,15 +13,9 @@ inputs:
     required: false
     default: false
     description: 'Whether to publish artifacts ready for deployment to Artifactory'
-  gradle-enterprise-secret-access-key:
+  develocity-access-key:
     required: false
-    description: 'The secret access key for authentication with ge.spring.io'
-  gradle-enterprise-cache-user:
-    required: false
-    description: 'The username for authentication with the remote build cache'
-  gradle-enterprise-cache-password:
-    required: false
-    description: 'The password for authentication with the remote build cache'
+    description: 'The access key for authentication with ge.spring.io'
 outputs:
   build-scan-url:
     description: 'The URL, if any, of the build scan produced by the build'
@@ -42,20 +36,14 @@ runs:
       if: ${{ !inputs.publish }}
       shell: bash
       env:
-        GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-        GRADLE_ENTERPRISE_ACCESS_KEY: ${{ inputs.gradle-enterprise-secret-access-key }}
-        GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ inputs.gradle-enterprise-cache-user }}
-        GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ inputs.gradle-enterprise-cache-password }}
+        DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
       run: ./gradlew build
     - name: Build and Publish
       id: build-and-publish
       if: ${{ inputs.publish }}
       shell: bash
       env:
-        GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-        GRADLE_ENTERPRISE_ACCESS_KEY: ${{ inputs.gradle-enterprise-secret-access-key }}
-        GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ inputs.gradle-enterprise-cache-user }}
-        GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ inputs.gradle-enterprise-cache-password }}
+        DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
       run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository build publishAllPublicationsToDeploymentRepository
     - name: Read Version From gradle.properties
       id: read-version

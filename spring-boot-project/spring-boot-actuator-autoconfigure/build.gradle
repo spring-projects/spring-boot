@@ -241,8 +241,10 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	}
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	outputs.dir("${buildDir}/generated-snippets")
-	predictiveSelection {
-		enabled = false
+	develocity {
+		predictiveTestSelection {
+			enabled = false
+		}
 	}
 }
 
