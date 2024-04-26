@@ -26,10 +26,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencyConstraint;
 import org.gradle.api.artifacts.DependencyConstraintMetadata;
 import org.gradle.api.artifacts.DependencyConstraintSet;
@@ -69,13 +69,15 @@ public class ExtractVersionConstraints extends DefaultTask {
 	}
 
 	public void enforcedPlatform(String projectPath) {
-		Dependency project = getProject().getDependencies().project(Map.of("path", projectPath));
-		Dependency dependency = getProject().getDependencies().enforcedPlatform(project);
-		this.configuration.getDependencies().add(dependency);
-		getProject().getPlugins().withType(BomPlugin.class).all((plugin) -> {
-			this.boms.add(getProject().getExtensions().getByType(BomExtension.class));
+		this.configuration.getDependencies()
+			.add(getProject().getDependencies()
+				.enforcedPlatform(
+						getProject().getDependencies().project(Collections.singletonMap("path", projectPath))));
+		Project project = getProject().project(projectPath);
+		project.getPlugins().withType(BomPlugin.class).all((plugin) -> {
+			this.boms.add(project.getExtensions().getByType(BomExtension.class));
 			this.dependencyConstraintSets
-				.add(getProject().getConfigurations().getByName("apiElements").getAllDependencyConstraints());
+				.add(project.getConfigurations().getByName("apiElements").getAllDependencyConstraints());
 		});
 	}
 
