@@ -1085,9 +1085,63 @@ bom {
 		}
 	}
 	library("Oracle Database", "21.9.0.0") {
+		alignWith {
+			dependencyManagementDeclaredIn("com.oracle.database.jdbc:ojdbc-bom")
+		}
+		group("com.oracle.database.ha") {
+			modules = [
+				"ons",
+				"simplefan"
+			]
+		}
+		group("com.oracle.database.jdbc.debug") {
+			modules = [
+				"ojdbc11-debug",
+				"ojdbc11-observability-debug",
+				"ojdbc11_g",
+				"ojdbc11dms_g",
+				"ojdbc8-debug",
+				"ojdbc8-observability-debug",
+				"ojdbc8_g",
+				"ojdbc8dms_g"
+			]
+		}
 		group("com.oracle.database.jdbc") {
-			imports = [
-				"ojdbc-bom"
+			modules = [
+				"ojdbc11",
+				"ojdbc11-production",
+				"ojdbc8",
+				"ojdbc8-production",
+				"rsi",
+				"ucp",
+				"ucp11"
+			]
+		}
+		group("com.oracle.database.nls") {
+			modules = [
+				"orai18n"
+			]
+		}
+		group("com.oracle.database.observability") {
+			modules = [
+				"dms",
+				"ojdbc11-observability",
+				"ojdbc11dms",
+				"ojdbc8-observability",
+				"ojdbc8dms"
+			]
+		}
+		group("com.oracle.database.security") {
+			modules = [
+				"oraclepki",
+				"osdt_cert",
+				"osdt_core"
+			]
+		}
+		group("com.oracle.database.xml") {
+			modules = [
+				"xdb",
+				"xmlparserv2"
 			]
 		}
 	}
