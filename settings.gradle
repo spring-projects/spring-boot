@@ -19,8 +19,8 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.15.1"
-	id "io.spring.ge.conventions" version "0.0.16"
+	id "com.gradle.develocity" version "3.17.2"
+	id "io.spring.ge.conventions" version "0.0.17"
 }
 
 rootProject.name="spring-boot-build"
@@ -28,7 +28,7 @@ rootProject.name="spring-boot-build"
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 settings.gradle.projectsLoaded {
-	gradleEnterprise {
+	develocity {
 		buildScan {
 			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
 			if (toolchainVersion != null) {
