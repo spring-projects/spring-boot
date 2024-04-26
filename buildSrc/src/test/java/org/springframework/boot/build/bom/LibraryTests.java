@@ -47,10 +47,11 @@ class LibraryTests {
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
 		boolean considerSnapshots = false;
 		VersionAlignment versionAlignment = null;
+		String alignsWithBom = null;
 		String linkRootName = null;
 		Map<String, Function<LibraryVersion, String>> links = Collections.emptyMap();
 		Library library = new Library(name, calendarName, version, groups, prohibitedVersion, considerSnapshots,
-				versionAlignment, linkRootName, links);
+				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-framework");
 	}
 
@@ -63,10 +64,11 @@ class LibraryTests {
 		List<ProhibitedVersion> prohibitedVersion = Collections.emptyList();
 		boolean considerSnapshots = false;
 		VersionAlignment versionAlignment = null;
+		String alignsWithBom = null;
 		String linkRootName = "spring-data";
 		Map<String, Function<LibraryVersion, String>> links = Collections.emptyMap();
 		Library library = new Library(name, calendarName, version, groups, prohibitedVersion, considerSnapshots,
-				versionAlignment, linkRootName, links);
+				versionAlignment, alignsWithBom, linkRootName, links);
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
 	}
 

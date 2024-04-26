@@ -115,16 +115,18 @@ public class BomExtension {
 
 	public void library(String name, String version, Action<LibraryHandler> action) {
 		ObjectFactory objects = this.project.getObjects();
-		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, (version != null) ? version : "");
+		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class, this.project,
+				(version != null) ? version : "");
 		action.execute(libraryHandler);
 		LibraryVersion libraryVersion = new LibraryVersion(DependencyVersion.parse(libraryHandler.version));
-		VersionAlignment versionAlignment = (libraryHandler.alignWithVersion != null)
-				? new VersionAlignment(libraryHandler.alignWithVersion.from, libraryHandler.alignWithVersion.managedBy,
-						this.project, this.libraries, libraryHandler.groups)
+		VersionAlignment versionAlignment = (libraryHandler.alignWith.version != null)
+				? new VersionAlignment(libraryHandler.alignWith.version.from,
+						libraryHandler.alignWith.version.managedBy, this.project, this.libraries, libraryHandler.groups)
 				: null;
 		addLibrary(new Library(name, libraryHandler.calendarName, libraryVersion, libraryHandler.groups,
 				libraryHandler.prohibitedVersions, libraryHandler.considerSnapshots, versionAlignment,
-				libraryHandler.linkRootName, libraryHandler.links));
+				libraryHandler.alignWith.dependencyManagementDeclaredIn, libraryHandler.linkRootName,
+				libraryHandler.links));
 	}
 
 	public void effectiveBomArtifact() {
@@ -224,21 +226,22 @@ public class BomExtension {
 
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
 
+		private final AlignWithHandler alignWith;
+
 		private boolean considerSnapshots = false;
 
 		private String version;
 
 		private String calendarName;
 
-		private AlignWithVersionHandler alignWithVersion;
-
 		private String linkRootName;
 
 		private final Map<String, Function<LibraryVersion, String>> links = new HashMap<>();
 
 		@Inject
-		public LibraryHandler(String version) {
+		public LibraryHandler(Project project, String version) {
 			this.version = version;
+			this.alignWith = project.getObjects().newInstance(AlignWithHandler.class);
 		}
 
 		public void version(String version) {
@@ -267,9 +270,8 @@ public class BomExtension {
 					handler.endsWith, handler.contains, handler.reason));
 		}
 
-		public void alignWithVersion(Action<AlignWithVersionHandler> action) {
-			this.alignWithVersion = new AlignWithVersionHandler();
-			action.execute(this.alignWithVersion);
+		public void alignWith(Action<AlignWithHandler> action) {
+			action.execute(this.alignWith);
 		}
 
 		public void links(Action<LinksHandler> action) {
@@ -400,18 +402,35 @@ public class BomExtension {
 
 		}
 
-		public static class AlignWithVersionHandler {
+		public static class AlignWithHandler {
 
-			private String from;
+			private VersionHandler version;
 
-			private String managedBy;
+			private String dependencyManagementDeclaredIn;
 
-			public void from(String from) {
-				this.from = from;
+			public void version(Action<VersionHandler> action) {
+				this.version = new VersionHandler();
+				action.execute(this.version);
 			}
 
-			public void managedBy(String managedBy) {
-				this.managedBy = managedBy;
+			public void dependencyManagementDeclaredIn(String bomCoordinates) {
+				this.dependencyManagementDeclaredIn = bomCoordinates;
+			}
+
+			public static class VersionHandler {
+
+				private String from;
+
+				private String managedBy;
+
+				public void from(String from) {
+					this.from = from;
+				}
+
+				public void managedBy(String managedBy) {
+					this.managedBy = managedBy;
+				}
+
 			}
 
 		}
