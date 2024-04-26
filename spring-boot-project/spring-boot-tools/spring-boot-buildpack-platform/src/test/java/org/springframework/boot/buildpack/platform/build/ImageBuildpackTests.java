@@ -180,8 +180,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		try {
 			IOBiConsumer<String, TarArchive> consumer = invocation.getArgument(1);
 			File tarFile = File.createTempFile("create-builder-test-", null);
-			FileOutputStream out = new FileOutputStream(tarFile);
-			try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
+			try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(new FileOutputStream(tarFile))) {
 				tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
 				writeTarEntry(tarOut, "/cnb/");
 				writeTarEntry(tarOut, "/cnb/buildpacks/");
@@ -191,7 +190,9 @@ class ImageBuildpackTests extends AbstractJsonTests {
 				writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath);
 				tarOut.finish();
 			}
-			consumer.accept("test", TarArchive.fromInputStream(new FileInputStream(tarFile), Compression.NONE));
+			try (FileInputStream tarFileStream = new FileInputStream(tarFile)) {
+				consumer.accept("test", TarArchive.fromInputStream(tarFileStream, Compression.NONE));
+			}
 			Files.delete(tarFile.toPath());
 		}
 		catch (IOException ex) {
