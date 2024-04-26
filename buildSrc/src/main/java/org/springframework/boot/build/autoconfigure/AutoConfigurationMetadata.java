@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ public class AutoConfigurationMetadata extends DefaultTask {
 
 	private static final String COMMENT_START = "#";
 
+	private final String moduleName;
+
 	private SourceSet sourceSet;
 
 	private File outputFile;
@@ -66,6 +68,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
 		getProject().getConfigurations()
 			.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
+		this.moduleName = getProject().getName();
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
@@ -107,7 +110,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 			}
 		}
 		autoConfiguration.setProperty("autoConfigurationClassNames", String.join(",", publicClassNames));
-		autoConfiguration.setProperty("module", getProject().getName());
+		autoConfiguration.setProperty("module", this.moduleName);
 		return autoConfiguration;
 	}
 
