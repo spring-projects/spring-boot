@@ -59,6 +59,8 @@ public class Library {
 
 	private final VersionAlignment versionAlignment;
 
+	private final String alignsWithBom;
+
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
 	 * {@code groups}.
@@ -70,9 +72,12 @@ public class Library {
 	 * @param prohibitedVersions version of the library that are prohibited
 	 * @param considerSnapshots whether to consider snapshots
 	 * @param versionAlignment version alignment, if any, for the library
+	 * @param alignsWithBom the coordinates of the bom, if any, that this library should
+	 * inline
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
-			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment) {
+			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment,
+			String alignsWithBom) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -82,6 +87,7 @@ public class Library {
 		this.prohibitedVersions = prohibitedVersions;
 		this.considerSnapshots = considerSnapshots;
 		this.versionAlignment = versionAlignment;
+		this.alignsWithBom = alignsWithBom;
 	}
 
 	public String getName() {
@@ -114,6 +120,10 @@ public class Library {
 
 	public VersionAlignment getVersionAlignment() {
 		return this.versionAlignment;
+	}
+
+	public String getAlignsWithBom() {
+		return this.alignsWithBom;
 	}
 
 	/**
