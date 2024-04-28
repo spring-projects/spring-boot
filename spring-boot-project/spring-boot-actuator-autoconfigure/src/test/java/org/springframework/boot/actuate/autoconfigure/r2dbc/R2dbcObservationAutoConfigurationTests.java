@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.r2dbc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -25,6 +27,7 @@ import io.micrometer.observation.ObservationRegistry;
 import io.r2dbc.spi.ConnectionFactory;
 import org.awaitility.Awaitility;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -33,9 +36,12 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.r2dbc.ConnectionFactoryBuilder;
 import org.springframework.boot.r2dbc.ConnectionFactoryDecorator;
+import org.springframework.boot.r2dbc.ProxyConnectionFactoryCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link R2dbcObservationAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Tadaya Tsuyukubo
  */
 class R2dbcObservationAutoConfigurationTests {
 
@@ -78,7 +85,20 @@ class R2dbcObservationAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfObservationRegistryIsNotPresent() {
 		this.runnerWithoutObservationRegistry
-			.run((context) -> assertThat(context).doesNotHaveBean(ConnectionFactoryDecorator.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ProxyConnectionFactoryCustomizer.class));
+	}
+
+	@Test
+	void shouldApplyCustomizers() {
+		this.runner.withUserConfiguration(ProxyConnectionFactoryCustomizerConfig.class).run((context) -> {
+			ConnectionFactoryDecorator decorator = context.getBean(ConnectionFactoryDecorator.class);
+			ConnectionFactory connectionFactory = ConnectionFactoryBuilder
+				.withUrl("r2dbc:h2:mem:///" + UUID.randomUUID())
+				.build();
+			decorator.decorate(connectionFactory);
+			assertThat(context.getBean(ProxyConnectionFactoryCustomizerConfig.class).called).containsExactly("first",
+					"second");
+		});
 	}
 
 	@Test
@@ -124,6 +144,25 @@ class R2dbcObservationAutoConfigurationTests {
 
 		Context awaitContext() {
 			return Awaitility.await().untilAtomic(this.context, Matchers.notNullValue());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static final class ProxyConnectionFactoryCustomizerConfig {
+
+		private final List<String> called = new ArrayList<>();
+
+		@Bean
+		@Order(R2dbcObservationAutoConfiguration.R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER - 1)
+		ProxyConnectionFactoryCustomizer first() {
+			return (builder) -> this.called.add("first");
+		}
+
+		@Bean
+		@Order(R2dbcObservationAutoConfiguration.R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER + 1)
+		ProxyConnectionFactoryCustomizer second() {
+			return (builder) -> this.called.add("second");
 		}
 
 	}

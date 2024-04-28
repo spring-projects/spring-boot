@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,12 +33,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.r2dbc.ConnectionFactoryDecorator;
 import org.springframework.boot.r2dbc.OptionsCapableConnectionFactory;
+import org.springframework.boot.r2dbc.ProxyConnectionFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for R2DBC observability support.
  *
  * @author Moritz Halbritter
+ * @author Tadaya Tsuyukubo
  * @since 3.2.0
  */
 @AutoConfiguration(after = ObservationAutoConfiguration.class)
@@ -46,20 +49,37 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(R2dbcObservationProperties.class)
 public class R2dbcObservationAutoConfiguration {
 
+	/**
+	 * {@code @Order} value of observation customizer.
+	 */
+	public static final int R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER = 1000;
+
 	@Bean
+	ConnectionFactoryDecorator connectionFactoryDecorator(
+			ObjectProvider<ProxyConnectionFactoryCustomizer> customizers) {
+		return (connectionFactory) -> {
+			ProxyConnectionFactory.Builder builder = ProxyConnectionFactory.builder(connectionFactory);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			return builder.build();
+		};
+	}
+
+	@Bean
+	@Order(R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER)
 	@ConditionalOnBean(ObservationRegistry.class)
-	ConnectionFactoryDecorator connectionFactoryDecorator(R2dbcObservationProperties properties,
+	ProxyConnectionFactoryCustomizer proxyConnectionFactoryObservationCustomizer(R2dbcObservationProperties properties,
 			ObservationRegistry observationRegistry,
 			ObjectProvider<QueryObservationConvention> queryObservationConvention,
 			ObjectProvider<QueryParametersTagProvider> queryParametersTagProvider) {
-		return (connectionFactory) -> {
+		return (builder) -> {
+			ConnectionFactory connectionFactory = builder.getConnectionFactory();
 			HostAndPort hostAndPort = extractHostAndPort(connectionFactory);
 			ObservationProxyExecutionListener listener = new ObservationProxyExecutionListener(observationRegistry,
 					connectionFactory, hostAndPort.host(), hostAndPort.port());
 			listener.setIncludeParameterValues(properties.isIncludeParameterValues());
 			queryObservationConvention.ifAvailable(listener::setQueryObservationConvention);
 			queryParametersTagProvider.ifAvailable(listener::setQueryParametersTagProvider);
-			return ProxyConnectionFactory.builder(connectionFactory).listener(listener).build();
+			builder.listener(listener);
 		};
 	}
 
