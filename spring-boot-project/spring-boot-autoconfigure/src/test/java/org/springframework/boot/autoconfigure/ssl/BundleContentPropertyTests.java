@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -81,6 +82,13 @@ class BundleContentPropertyTests {
 		Path file = Path.of(resource.toURI()).toAbsolutePath();
 		BundleContentProperty property = new BundleContentProperty("name", file.toString());
 		assertThat(property.toWatchPath()).isEqualTo(file);
+	}
+
+	@Test
+	void shouldThrowBundleContentNotWatchableExceptionIfContentIsNotWatchable() {
+		BundleContentProperty property = new BundleContentProperty("name", "https://example.com/");
+		assertThatExceptionOfType(BundleContentNotWatchableException.class).isThrownBy(property::toWatchPath)
+			.withMessageContaining("Only 'file:' resources are watchable");
 	}
 
 }
