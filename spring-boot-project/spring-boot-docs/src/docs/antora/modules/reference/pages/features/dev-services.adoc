@@ -48,6 +48,11 @@ When this module is included as a dependency Spring Boot will do the following:
 If the Docker Compose services are already running when starting the application, Spring Boot will only create the service connection beans for each supported container.
 It will not call `docker compose up` again and it will not call `docker compose stop` when the application is shutdown.
 
+TIP: Repackaged archives do not contain Spring Boot's Docker Compose by default.
+If you want to use this support, you need to include it.
+When using the Maven plugin, set the `excludeDockerCompose` property to `false`.
+When using the Gradle plugin, xref:gradle-plugin:packaging.adoc#packaging-executable.configuring.including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
+
 
 
 [[features.dev-services.docker-compose.prerequisites]]
