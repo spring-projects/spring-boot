@@ -41,6 +41,11 @@ It will not call `docker compose up` again and it will not call `docker compose 
 NOTE: By default, Spring Boot's Docker Compose support is disabled when running tests.
 To enable it, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
 
+TIP: Repackaged archives do not contain Spring Boot's Docker Compose by default.
+If you want to use this support, you need to include it.
+When using the Maven plugin, set the `excludeDockerCompose` property to `false`.
+When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executable-configuring-including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
+
 
 
 [[features.docker-compose.prerequisites]]
