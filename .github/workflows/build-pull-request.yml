@@ -18,9 +18,9 @@ jobs:
       - name: Check Out
         uses: actions/checkout@v4
       - name: Validate Gradle Wrapper
-        uses: gradle/actions/wrapper-validation@750cdda3edd6d51b7fdfc069d2e2818cf3c44f4c #v3.3.1
+        uses: gradle/actions/wrapper-validation@db19848a5fa7950289d3668fb053140cf3028d43 #v3.3.2
       - name: Set Up Gradle
-        uses: gradle/actions/setup-gradle@750cdda3edd6d51b7fdfc069d2e2818cf3c44f4c # v3.3.1
+        uses: gradle/actions/setup-gradle@db19848a5fa7950289d3668fb053140cf3028d43 # v3.3.2
       - name: Build
         env:
           CI: 'true'
