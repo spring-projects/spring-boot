@@ -12,7 +12,7 @@ extra["slf4j.version"] = "1.7.20"
 
 repositories {
 	maven {
-		url = uri("file:repository")
+		url = uri("repository")
 	}
 }
 
