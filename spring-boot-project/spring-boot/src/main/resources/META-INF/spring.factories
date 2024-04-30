@@ -64,6 +64,7 @@ org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.context.config.ConfigDataNotFoundFailureAnalyzer,\
 org.springframework.boot.context.properties.IncompatibleConfigurationFailureAnalyzer,\
 org.springframework.boot.context.properties.NotConstructorBoundInjectionFailureAnalyzer,\
+org.springframework.boot.diagnostics.analyzer.AotInitializerNotFoundFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BeanCurrentlyInCreationFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BeanDefinitionOverrideFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyzer,\

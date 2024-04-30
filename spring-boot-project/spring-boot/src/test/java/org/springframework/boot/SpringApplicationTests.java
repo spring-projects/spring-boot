@@ -1445,8 +1445,8 @@ class SpringApplicationTests {
 		application.setMainApplicationClass(TestSpringApplication.class);
 		System.setProperty(AotDetector.AOT_ENABLED, "true");
 		try {
-			assertThatIllegalStateException().isThrownBy(application::run)
-				.withMessageContaining("but AOT processing hasn't happened");
+			assertThatExceptionOfType(AotInitializerNotFoundException.class).isThrownBy(application::run)
+				.withMessageMatching("^.+AOT initializer .+ could not be found$");
 		}
 		finally {
 			System.clearProperty(AotDetector.AOT_ENABLED);
