@@ -2259,6 +2259,12 @@
       ]
     },
     {
+      "name": "management.zipkin.tracing.encoding",
+      "defaultValue": [
+        "JSON"
+      ]
+    },
+    {
       "name": "micrometer.observations.annotations.enabled",
       "type": "java.lang.Boolean",
       "deprecation": {
