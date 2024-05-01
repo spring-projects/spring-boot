@@ -39,6 +39,8 @@ class SecureMongoContainer extends MongoDBContainer {
 
 	@Override
 	public void configure() {
+		// test-server.pem is a single PEM file containing server certificate and key
+		// content combined
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-server.pem"), "/ssl/server.pem");
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-ca.crt"), "/ssl/ca.crt");
 		withCommand("mongod --tlsMode requireTLS --tlsCertificateKeyFile /ssl/server.pem --tlsCAFile /ssl/ca.crt");
