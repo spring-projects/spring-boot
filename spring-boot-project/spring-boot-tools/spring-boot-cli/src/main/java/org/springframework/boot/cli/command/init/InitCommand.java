@@ -165,7 +165,7 @@ public class InitCommand extends OptionParsingCommand {
 			this.packaging = option(Arrays.asList("packaging", "p"), "Project packaging (for example 'jar')")
 				.withRequiredArg();
 			this.build = option("build", "Build system to use (for example 'maven' or 'gradle')").withRequiredArg()
-				.defaultsTo("maven");
+				.defaultsTo("gradle");
 			this.format = option("format", "Format of the generated content (for example 'build' for a build file, "
 					+ "'project' for a project archive)")
 				.withRequiredArg()
