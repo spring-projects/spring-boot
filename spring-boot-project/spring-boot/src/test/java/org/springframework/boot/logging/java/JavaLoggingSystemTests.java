@@ -185,4 +185,12 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 			.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
+	@Test
+	void shouldNotContainAnsiEscapeCodes(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(null, null, null);
+		this.logger.info("Hello world");
+		assertThat(output).doesNotContain("\033[");
+	}
+
 }

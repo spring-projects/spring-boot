@@ -876,6 +876,14 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).doesNotContain("WARN");
 	}
 
+	@Test
+	void shouldNotContainAnsiEscapeCodes(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(output).doesNotContain("\033[");
+	}
+
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {
 		this.loggingSystem.getSystemProperties((ConfigurableEnvironment) context.getEnvironment()).apply(logFile);
 		this.loggingSystem.beforeInitialize();
