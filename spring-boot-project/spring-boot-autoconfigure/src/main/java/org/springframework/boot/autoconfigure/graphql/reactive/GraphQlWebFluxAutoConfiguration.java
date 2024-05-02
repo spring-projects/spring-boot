@@ -112,14 +112,14 @@ public class GraphQlWebFluxAutoConfiguration {
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
 		builder.route(GraphQlRequestPredicates.graphQlSse(path), sseHandler::handleRequest);
-		builder = builder.GET(path, this::onlyAllowPost);
+		builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphQlHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
-			builder = builder.GET(properties.getGraphiql().getPath(), graphQlHandler::handleRequest);
+			builder.GET(properties.getGraphiql().getPath(), graphQlHandler::handleRequest);
 		}
 		if (properties.getSchema().getPrinter().isEnabled()) {
 			SchemaHandler schemaHandler = new SchemaHandler(graphQlSource);
-			builder = builder.GET(path + "/schema", schemaHandler::handleRequest);
+			builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
 		return builder.build();
 	}
