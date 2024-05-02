@@ -83,7 +83,6 @@ class MavenPublishingConventions {
 		project.getPlugins()
 			.withType(JavaPlugin.class)
 			.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
-		suppressMavenOptionalFeatureWarnings(publication);
 	}
 
 	private void customizePom(MavenPom pom, Project project) {
@@ -102,7 +101,10 @@ class MavenPublishingConventions {
 	}
 
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
-		addMavenOptionalFeature(project);
+		addMavenOptionalFeature(publication, project);
+		if (publication.getName().equals("pluginMaven")) {
+			return;
+		}
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
 			.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
 		publication.versionMapping(
@@ -112,9 +114,10 @@ class MavenPublishingConventions {
 	/**
 	 * Add a feature that allows maven plugins to declare optional dependencies that
 	 * appear in the POM. This is required to make m2e in Eclipse happy.
+	 * @param publication the project's Maven publication
 	 * @param project the project to add the feature to
 	 */
-	private void addMavenOptionalFeature(Project project) {
+	private void addMavenOptionalFeature(MavenPublication publication, Project project) {
 		JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
 		extension.registerFeature("mavenOptional",
 				(feature) -> feature.usingSourceSet(extension.getSourceSets().getByName("main")));
@@ -123,6 +126,7 @@ class MavenPublishingConventions {
 		javaComponent.addVariantsFromConfiguration(
 				project.getConfigurations().findByName("mavenOptionalRuntimeElements"),
 				ConfigurationVariantDetails::mapToOptional);
+		suppressMavenOptionalFeatureWarnings(publication);
 	}
 
 	private void suppressMavenOptionalFeatureWarnings(MavenPublication publication) {
