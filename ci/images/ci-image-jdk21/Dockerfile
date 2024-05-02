@@ -1,5 +1,5 @@
 ARG  DOCKER_PROXY_CACHE=
-FROM ${DOCKER_PROXY_CACHE}ubuntu:jammy-20240405
+FROM ${DOCKER_PROXY_CACHE}ubuntu:jammy-20240416
 
 ADD setup.sh /setup.sh
 ADD get-jdk-url.sh /get-jdk-url.sh
