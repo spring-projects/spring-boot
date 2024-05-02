@@ -651,6 +651,14 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			.doesNotContain("myapp");
 	}
 
+	@Test
+	void shouldNotContainAnsiEscapeCodes(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(output).doesNotContain("\033[");
+	}
+
 	private String getRelativeClasspathLocation(String fileName) {
 		String defaultPath = ClassUtils.getPackageName(getClass());
 		defaultPath = defaultPath.replace('.', '/');
