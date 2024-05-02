@@ -344,7 +344,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void parseTypeOnly() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("-t=ant-project");
-		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("maven");
+		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("gradle");
 		assertThat(this.handler.lastRequest.getFormat()).isEqualTo("project");
 		assertThat(this.handler.lastRequest.isDetectType()).isFalse();
 		assertThat(this.handler.lastRequest.getType()).isEqualTo("ant-project");
@@ -364,7 +364,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void parseFormatOnly() throws Exception {
 		this.handler.disableProjectGeneration();
 		this.command.run("--format=web");
-		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("maven");
+		assertThat(this.handler.lastRequest.getBuild()).isEqualTo("gradle");
 		assertThat(this.handler.lastRequest.getFormat()).isEqualTo("web");
 		assertThat(this.handler.lastRequest.isDetectType()).isTrue();
 		assertThat(this.handler.lastRequest.getType()).isNull();
