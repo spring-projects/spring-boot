@@ -8,6 +8,7 @@ antora:
   - require: '@springio/antora-xref-extension'
   - require: '@springio/antora-zip-contents-collector-extension'
     version_file: gradle.properties
+    on_missing_snapshot_zip: drop_content
     username: '${env.ARTIFACTORY_USERNAME}'
     password: '${env.ARTIFACTORY_PASSWORD}'
     locations:
