@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,7 +162,18 @@ class NestedPathTests {
 
 	@Test
 	void toUriReturnsUri() throws Exception {
-		assertThat(this.path.toUri()).isEqualTo(new URI("nested:" + this.jarPath.toUri().getPath() + "/!nested.jar"));
+		assertThat(this.path.toUri())
+			.isEqualTo(new URI("nested:" + this.jarPath.toUri().getRawPath() + "/!nested.jar"));
+	}
+
+	@Test
+	void toUriWhenHasSpecialCharsReturnsEncodedUri() throws Exception {
+		this.jarPath = new File(this.temp, "te st.jar").toPath();
+		this.provider = new NestedFileSystemProvider();
+		this.fileSystem = new NestedFileSystem(this.provider, this.jarPath);
+		this.path = new NestedPath(this.fileSystem, "ne sted.jar");
+		assertThat(this.path.toUri())
+			.isEqualTo(new URI("nested:" + this.jarPath.toUri().getRawPath() + "/!ne%20sted.jar"));
 	}
 
 	@Test
