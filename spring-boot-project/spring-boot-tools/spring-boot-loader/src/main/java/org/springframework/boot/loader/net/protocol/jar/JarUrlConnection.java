@@ -172,7 +172,7 @@ final class JarUrlConnection extends java.net.JarURLConnection {
 
 	@Override
 	public Permission getPermission() throws IOException {
-		return this.jarFileConnection.getPermission();
+		return (this.jarFileConnection != null) ? this.jarFileConnection.getPermission() : null;
 	}
 
 	@Override
