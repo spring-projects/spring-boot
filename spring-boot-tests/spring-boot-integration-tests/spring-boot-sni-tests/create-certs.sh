@@ -23,7 +23,7 @@ generate_ca_cert() {
 
     openssl genrsa -out ${location}/test-ca.key 4096
     openssl req -key ${location}/test-ca.key -out ${location}/test-ca.crt \
-        -x509 -new -nodes -sha256 -days 365 \
+        -x509 -new -nodes -sha256 -days 3650 \
         -subj "/O=Spring Boot Test/CN=Certificate Authority" \
         -addext "subjectAltName=DNS:hello.example.com,DNS:hello-alt.example.com"
 }
@@ -45,7 +45,7 @@ generate_cert() {
         -addext "subjectAltName=DNS:${hostname}.example.com" | \
     openssl x509 -req -out ${certfile} \
         -CA ${caLocation}/test-ca.crt -CAkey ${caLocation}/test-ca.key -CAserial ${caLocation}/test-ca.txt -CAcreateserial \
-        -sha256 -days 365 \
+        -sha256 -days 3650 \
         -extfile openssl.cnf \
         -extensions server_cert
 }
