@@ -181,7 +181,7 @@ class TypeUtils {
 			return getJavaDoc((RecordComponentElement) element);
 		}
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
-		javadoc = (javadoc != null) ? cleanupJavaDoc(javadoc) : null;
+		javadoc = (javadoc != null) ? cleanUpJavaDoc(javadoc) : null;
 		return (javadoc == null || javadoc.isEmpty()) ? null : javadoc;
 	}
 
@@ -255,7 +255,7 @@ class TypeUtils {
 			Pattern paramJavadocPattern = paramJavadocPattern(recordComponent.getSimpleName().toString());
 			Matcher paramJavadocMatcher = paramJavadocPattern.matcher(recordJavadoc);
 			if (paramJavadocMatcher.find()) {
-				String paramJavadoc = cleanupJavaDoc(paramJavadocMatcher.group());
+				String paramJavadoc = cleanUpJavaDoc(paramJavadocMatcher.group());
 				return paramJavadoc.isEmpty() ? null : paramJavadoc;
 			}
 		}
@@ -267,7 +267,7 @@ class TypeUtils {
 		return Pattern.compile(pattern, Pattern.DOTALL);
 	}
 
-	private String cleanupJavaDoc(String javadoc) {
+	private String cleanUpJavaDoc(String javadoc) {
 		StringBuilder result = new StringBuilder(javadoc.length());
 		char lastChar = '.';
 		for (int i = 0; i < javadoc.length(); i++) {
