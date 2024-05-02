@@ -157,13 +157,13 @@ public abstract class AnsiOutput {
 				return false;
 			}
 			if (consoleAvailable == null) {
-				Console c = System.console();
-				if (c == null) {
+				Console console = System.console();
+				if (console == null) {
 					return false;
 				}
 				Method isTerminalMethod = ClassUtils.getMethodIfAvailable(Console.class, "isTerminal");
 				if (isTerminalMethod != null) {
-					Boolean isTerminal = (Boolean) isTerminalMethod.invoke(c);
+					Boolean isTerminal = (Boolean) isTerminalMethod.invoke(console);
 					if (Boolean.FALSE.equals(isTerminal)) {
 						return false;
 					}

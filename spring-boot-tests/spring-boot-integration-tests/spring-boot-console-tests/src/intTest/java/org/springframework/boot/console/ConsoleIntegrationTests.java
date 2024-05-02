@@ -54,7 +54,7 @@ class ConsoleIntegrationTests {
 	void runJarOn17() {
 		try (GenericContainer<?> container = createContainer(JDK_17_RUNTIME)) {
 			container.start();
-			assertThat(this.output.toString(StandardCharsets.ISO_8859_1)).contains("System.console() is null")
+			assertThat(this.output.toString(StandardCharsets.UTF_8)).contains("System.console() is null")
 				.doesNotContain(ENCODE_START);
 		}
 	}
@@ -63,7 +63,7 @@ class ConsoleIntegrationTests {
 	void runJarOn22() {
 		try (GenericContainer<?> container = createContainer(JDK_22_RUNTIME)) {
 			container.start();
-			assertThat(this.output.toString(StandardCharsets.ISO_8859_1)).doesNotContain("System.console() is null")
+			assertThat(this.output.toString(StandardCharsets.UTF_8)).doesNotContain("System.console() is null")
 				.doesNotContain(ENCODE_START);
 		}
 	}
