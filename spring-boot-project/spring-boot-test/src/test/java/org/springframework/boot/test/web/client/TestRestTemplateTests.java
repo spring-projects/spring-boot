@@ -38,7 +38,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -86,10 +85,10 @@ class TestRestTemplateTests {
 
 	@Test
 	void doNotReplaceCustomRequestFactory() {
-		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(OkHttp3ClientHttpRequestFactory.class);
+		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(TestClientHttpRequestFactory.class);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
 		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
-			.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+			.isInstanceOf(TestClientHttpRequestFactory.class);
 	}
 
 	@Test
