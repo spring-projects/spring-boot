@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,19 @@
 
 package org.springframework.boot.ansi;
 
+import java.io.Console;
+import java.lang.reflect.Method;
 import java.util.Locale;
 
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Generates ANSI encoded output, automatically attempting to detect if the terminal
  * supports ANSI.
  *
  * @author Phillip Webb
+ * @author Yong-Hyun Kim
  * @since 1.0.0
  */
 public abstract class AnsiOutput {
@@ -152,8 +156,18 @@ public abstract class AnsiOutput {
 			if (Boolean.FALSE.equals(consoleAvailable)) {
 				return false;
 			}
-			if ((consoleAvailable == null) && (System.console() == null)) {
-				return false;
+			if (consoleAvailable == null) {
+				Console console = System.console();
+				if (console == null) {
+					return false;
+				}
+				Method isTerminalMethod = ClassUtils.getMethodIfAvailable(Console.class, "isTerminal");
+				if (isTerminalMethod != null) {
+					Boolean isTerminal = (Boolean) isTerminalMethod.invoke(console);
+					if (Boolean.FALSE.equals(isTerminal)) {
+						return false;
+					}
+				}
 			}
 			return !(OPERATING_SYSTEM_NAME.contains("win"));
 		}
