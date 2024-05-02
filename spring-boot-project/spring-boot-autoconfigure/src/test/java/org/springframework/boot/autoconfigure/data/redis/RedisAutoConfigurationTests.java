@@ -636,7 +636,7 @@ class RedisAutoConfigurationTests {
 		}
 
 		@Bean
-		ClientOptionsBuilderCustomizer clientOptionsBuilderCustomizer() {
+		LettuceClientOptionsBuilderCustomizer clientOptionsBuilderCustomizer() {
 			return builder -> builder.autoReconnect(false);
 		}
 

@@ -26,7 +26,7 @@ import io.lettuce.core.ClientOptions;
  * @author Soohyun Lim
  */
 @FunctionalInterface
-public interface ClientOptionsBuilderCustomizer {
+public interface LettuceClientOptionsBuilderCustomizer {
 
 	/**
 	 * Customize the {@link ClientOptions.Builder}.
