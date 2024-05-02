@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,6 @@ class TypeUtils {
 	}
 
 	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
-
-	private static final Pattern NEW_LINE_PATTERN = Pattern.compile("[\r\n]+");
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
@@ -183,9 +181,7 @@ class TypeUtils {
 			return getJavaDoc((RecordComponentElement) element);
 		}
 		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
-		if (javadoc != null) {
-			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
-		}
+		javadoc = (javadoc != null) ? cleanupJavaDoc(javadoc) : null;
 		return (javadoc == null || javadoc.isEmpty()) ? null : javadoc;
 	}
 
@@ -259,7 +255,7 @@ class TypeUtils {
 			Pattern paramJavadocPattern = paramJavadocPattern(recordComponent.getSimpleName().toString());
 			Matcher paramJavadocMatcher = paramJavadocPattern.matcher(recordJavadoc);
 			if (paramJavadocMatcher.find()) {
-				String paramJavadoc = NEW_LINE_PATTERN.matcher(paramJavadocMatcher.group()).replaceAll("").trim();
+				String paramJavadoc = cleanupJavaDoc(paramJavadocMatcher.group());
 				return paramJavadoc.isEmpty() ? null : paramJavadoc;
 			}
 		}
@@ -269,6 +265,20 @@ class TypeUtils {
 	private Pattern paramJavadocPattern(String paramName) {
 		String pattern = String.format("(?<=@param +%s).*?(?=([\r\n]+ *@)|$)", paramName);
 		return Pattern.compile(pattern, Pattern.DOTALL);
+	}
+
+	private String cleanupJavaDoc(String javadoc) {
+		StringBuilder result = new StringBuilder(javadoc.length());
+		char lastChar = '.';
+		for (int i = 0; i < javadoc.length(); i++) {
+			char ch = javadoc.charAt(i);
+			boolean repeatedSpace = ch == ' ' && lastChar == ' ';
+			if (ch != '\r' && ch != '\n' && !repeatedSpace) {
+				result.append(ch);
+				lastChar = ch;
+			}
+		}
+		return result.toString().trim();
 	}
 
 	/**

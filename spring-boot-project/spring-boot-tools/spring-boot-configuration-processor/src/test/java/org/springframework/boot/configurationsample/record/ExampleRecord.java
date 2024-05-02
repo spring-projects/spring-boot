@@ -16,10 +16,13 @@
 
 package org.springframework.boot.configurationsample.record;
 
+// @formatter:off
+
 /**
  * Example Record Javadoc sample
  *
- * @param someString very long description that doesn't fit single line
+ * @param someString very long description that
+ *                   doesn't fit single line and is indented
  * @param someInteger description with @param and @ pitfalls
  * @param someBoolean description with extra spaces
  * @param someLong description without space after asterisk
@@ -30,3 +33,5 @@ package org.springframework.boot.configurationsample.record;
 @org.springframework.boot.configurationsample.ConfigurationProperties("record.descriptions")
 public record ExampleRecord(String someString, Integer someInteger, Boolean someBoolean, Long someLong, Byte someByte) {
 }
+
+//@formatter:on

@@ -521,7 +521,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void recordPropertiesWithDescriptions() {
 		ConfigurationMetadata metadata = compile(ExampleRecord.class);
 		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-string", String.class)
-			.withDescription("very long description that doesn't fit single line"));
+			.withDescription("very long description that doesn't fit single line and is indented"));
 		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-integer", Integer.class)
 			.withDescription("description with @param and @ pitfalls"));
 		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-boolean", Boolean.class)
