@@ -34,4 +34,10 @@ class UriPathEncoderTests {
 		assertThat(UriPathEncoder.encode("/Z\u00fcrich")).isEqualTo("/Z%C3%BCrich");
 	}
 
+	@Test
+	void encodePathWhenNoEncodingIsRequiredReturnsSameInstance() {
+		String path = "/foo/bar";
+		assertThat(UriPathEncoder.encode(path)).isSameAs(path);
+	}
+
 }
