@@ -36,7 +36,7 @@ final class UriPathEncoder {
 	static String encode(String path) {
 		byte[] bytes = path.getBytes(StandardCharsets.UTF_8);
 		for (byte b : bytes) {
-			if (isAllowed(b)) {
+			if (!isAllowed(b)) {
 				return encode(bytes);
 			}
 		}
