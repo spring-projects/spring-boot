@@ -177,6 +177,17 @@ include-code::MyApplication[]
 
 
 
+[[howto.data-access.filter-scanned-entity-definitions]]
+== Filter Scanned @Entity Definitions
+
+It is possible to filter the `@Entity` definitions using a `ManagedClassNameFilter` bean.
+This can be useful in tests when only a sub-set of the available entities should be considered.
+In the following example, only entities from the `com.example.app.customer` package are included:
+
+include-code::MyEntityScanConfiguration[]
+
+
+
 [[howto.data-access.jpa-properties]]
 == Configure JPA Properties
 
