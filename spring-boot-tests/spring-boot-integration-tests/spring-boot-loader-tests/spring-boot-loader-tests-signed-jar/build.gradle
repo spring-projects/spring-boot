@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.bouncycastle:bcprov-jdk18on:1.76")
+	implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
 }
 
 tasks.register("bootJarUnpack", BootJar.class) {
