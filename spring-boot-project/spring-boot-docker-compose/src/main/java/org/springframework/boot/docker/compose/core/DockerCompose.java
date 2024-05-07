@@ -45,6 +45,14 @@ public interface DockerCompose {
 	void up(LogLevel logLevel);
 
 	/**
+	 * Run {@code docker compose up} to create and start services with extra flags. Waits until all
+	 * contains are started and healthy.
+	 * @param logLevel the log level used to report progress
+	 * @param extraArgs list of startup flags 
+	 */
+	void up(LogLevel logLevel, String... extraArgs);
+
+	/**
 	 * Run {@code docker compose down} to stop and remove any running services.
 	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
 	 * waiting.

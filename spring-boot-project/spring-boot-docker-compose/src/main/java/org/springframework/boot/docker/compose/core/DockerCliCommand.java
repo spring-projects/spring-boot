@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.core;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -163,6 +164,17 @@ abstract sealed class DockerCliCommand<R> {
 
 		ComposeUp(LogLevel logLevel) {
 			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "up", "--no-color", "--detach", "--wait");
+		}
+
+	}
+
+	/**
+	 * The {@code docker compose up with flags} command.
+	 */
+	static final class ComposeUpWithFlags extends DockerCliCommand<Void> {
+
+		ComposeUpWithFlags(LogLevel logLevel, String... extraArgs) {
+			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, startUpFlags);
 		}
 
 	}

@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.core;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,14 @@ class DefaultDockerCompose implements DockerCompose {
 	@Override
 	public void up(LogLevel logLevel) {
 		this.cli.run(new DockerCliCommand.ComposeUp(logLevel));
+	}
+
+	@Override
+	public void up(LogLevel logLevel, String... flags) {
+		String[] extraArgs = {"up", "--no-color", "--detach", "--wait"};
+		String[] combinedArgs = Stream.concat(Arrays.stream(flags), Arrays.stream(extraArgs))
+									   .toArray(String[]::new);
+		this.cli.run(new DockerCliCommand.ComposeUpWithFlags(logLevel, flags));
 	}
 
 	@Override
