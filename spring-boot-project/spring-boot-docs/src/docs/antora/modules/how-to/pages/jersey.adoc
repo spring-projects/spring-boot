@@ -23,4 +23,4 @@ To use Jersey alongside another web framework, such as Spring MVC, it should be 
 First, configure Jersey to use a filter rather than a servlet by configuring the configprop:spring.jersey.type[] application property with a value of `filter`.
 Second, configure your `ResourceConfig` to forward requests that would have resulted in a 404, as shown in the following example.
 
-includ-code::alongsideanotherwebframework/JerseyConfig[]
+include-code::JerseyConfig[]
