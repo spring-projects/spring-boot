@@ -53,7 +53,9 @@ import org.springframework.boot.loader.net.util.UrlDecoder;
  */
 public record NestedLocation(Path path, String nestedEntryName) {
 
-	private static final Map<String, NestedLocation> cache = new ConcurrentHashMap<>();
+	private static final Map<String, NestedLocation> locationCache = new ConcurrentHashMap<>();
+
+	private static final Map<String, Path> pathCache = new ConcurrentHashMap<>();
 
 	public NestedLocation(Path path, String nestedEntryName) {
 		if (path == null) {
@@ -89,35 +91,37 @@ public record NestedLocation(Path path, String nestedEntryName) {
 		return parse(uri.getSchemeSpecificPart());
 	}
 
-	static NestedLocation parse(String path) {
-		if (path == null || path.isEmpty()) {
-			throw new IllegalArgumentException("'path' must not be empty");
+	static NestedLocation parse(String location) {
+		if (location == null || location.isEmpty()) {
+			throw new IllegalArgumentException("'location' must not be empty");
 		}
-		int index = path.lastIndexOf("/!");
-		return cache.computeIfAbsent(path, (l) -> create(index, l));
+		return locationCache.computeIfAbsent(location, (key) -> create(location));
 	}
 
-	private static NestedLocation create(int index, String location) {
+	private static NestedLocation create(String location) {
+		int index = location.lastIndexOf("/!");
 		String locationPath = (index != -1) ? location.substring(0, index) : location;
-		if (isWindows() && !isUncPath(location)) {
-			while (locationPath.startsWith("/")) {
-				locationPath = locationPath.substring(1, locationPath.length());
-			}
-		}
 		String nestedEntryName = (index != -1) ? location.substring(index + 2) : null;
-		return new NestedLocation((!locationPath.isEmpty()) ? Path.of(locationPath) : null, nestedEntryName);
+		return new NestedLocation((!locationPath.isEmpty()) ? asPath(locationPath) : null, nestedEntryName);
+	}
+
+	private static Path asPath(String locationPath) {
+		return pathCache.computeIfAbsent(locationPath, (key) -> {
+			if (isWindows() && locationPath.length() > 2 && locationPath.charAt(2) == ':') {
+				// Use the same logic as Java's internal WindowsUriSupport class
+				return Path.of(locationPath.substring(1));
+			}
+			return Path.of(locationPath);
+		});
 	}
 
 	private static boolean isWindows() {
 		return File.separatorChar == '\\';
 	}
 
-	private static boolean isUncPath(String input) {
-		return !input.contains(":");
-	}
-
 	static void clearCache() {
-		cache.clear();
+		locationCache.clear();
+		pathCache.clear();
 	}
 
 }

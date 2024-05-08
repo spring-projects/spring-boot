@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Set;
@@ -107,11 +108,10 @@ public interface Archive extends AutoCloseable {
 	static Archive create(ProtectionDomain protectionDomain) throws Exception {
 		CodeSource codeSource = protectionDomain.getCodeSource();
 		URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;
-		String path = (location != null) ? location.getSchemeSpecificPart() : null;
-		if (path == null) {
+		if (location == null) {
 			throw new IllegalStateException("Unable to determine code source archive");
 		}
-		return create(new File(path));
+		return create(Path.of(location).toFile());
 	}
 
 	/**
