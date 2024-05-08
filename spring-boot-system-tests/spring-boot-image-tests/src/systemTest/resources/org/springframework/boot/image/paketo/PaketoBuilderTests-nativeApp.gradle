@@ -34,5 +34,7 @@ bootJar {
 }
 
 bootBuildImage {
-	environment = ['BP_NATIVE_IMAGE': 'true']
+	environment = ['BP_NATIVE_IMAGE': 'true',
+					//see https://github.com/paketo-buildpacks/native-image/issues/321
+				   'BP_NATIVE_IMAGE_BUILD_ARGUMENTS': '-H:-AddAllFileSystemProviders']
 }
