@@ -1,5 +1,4 @@
 :navtitle: Documentation
-:navicon: book
 [[documentation]]
 = Documentation Overview
 

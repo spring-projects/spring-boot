@@ -1,4 +1,3 @@
-:navicon: server
 [[getting-started.system-requirements]]
 = System Requirements
 

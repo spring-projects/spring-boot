@@ -1,4 +1,3 @@
-:navicon: gift
 [[getting-started.installing]]
 = Installing Spring Boot
 

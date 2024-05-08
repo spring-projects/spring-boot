@@ -1,5 +1,4 @@
 :navtitle: Overview
-:navicon: home
 = Spring Boot
 
 Spring Boot helps you to create stand-alone, production-grade Spring-based applications that you can run.

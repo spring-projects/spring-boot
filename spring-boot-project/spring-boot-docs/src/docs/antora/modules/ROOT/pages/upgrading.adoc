@@ -1,4 +1,3 @@
-:navicon: rocket
 [[upgrading]]
 = Upgrading Spring Boot
 

@@ -1,4 +1,3 @@
-:navicon: question
 [[community]]
 = Community
 
