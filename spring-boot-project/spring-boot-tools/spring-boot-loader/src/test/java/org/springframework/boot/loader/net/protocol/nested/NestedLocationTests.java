@@ -85,7 +85,7 @@ class NestedLocationTests {
 	@Test
 	void fromUrlWhenNoPathThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NestedLocation.fromUrl(new URL("nested:")))
-			.withMessageContaining("'path' must not be empty");
+			.withMessageContaining("'location' must not be empty");
 	}
 
 	@Test
