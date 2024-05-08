@@ -84,7 +84,7 @@ import org.springframework.util.StringUtils;
  * <ul>
  * <li>Use {@code -parameters}.
  * <li>Treat warnings as errors
- * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and {@code varags}
+ * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and {@code varargs}
  * warnings
  * </ul>
  * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
