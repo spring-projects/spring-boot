@@ -27,6 +27,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -101,6 +102,26 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 		assertThat(readTimeout((T) requestFactory)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
 
+	@Test
+	void shouldSetConnectTimeoutsWhenUsingReflective() {
+		Assumptions.assumeTrue(supportsSettingConnectTimeout());
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+			.withConnectTimeout(Duration.ofSeconds(1));
+		T requestFactory = ClientHttpRequestFactories
+			.get(() -> ClientHttpRequestFactories.get(this.requestFactoryType, settings), settings);
+		assertThat(connectTimeout(requestFactory)).isEqualTo(1000);
+	}
+
+	@Test
+	void shouldSetReadTimeoutsWhenUsingReflective() {
+		Assumptions.assumeTrue(supportsSettingReadTimeout());
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+			.withReadTimeout(Duration.ofSeconds(2));
+		T requestFactory = ClientHttpRequestFactories
+			.get(() -> ClientHttpRequestFactories.get(this.requestFactoryType, settings), settings);
+		assertThat(readTimeout(requestFactory)).isEqualTo(2000);
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST" })
 	void connectWithSslBundle(String httpMethod) throws Exception {
@@ -136,7 +157,11 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 		}
 	}
 
+	protected abstract boolean supportsSettingConnectTimeout();
+
 	protected abstract long connectTimeout(T requestFactory);
+
+	protected abstract boolean supportsSettingReadTimeout();
 
 	protected abstract long readTimeout(T requestFactory);
 
