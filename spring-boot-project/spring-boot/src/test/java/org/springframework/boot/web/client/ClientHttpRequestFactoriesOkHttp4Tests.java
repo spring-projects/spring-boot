@@ -59,4 +59,14 @@ class ClientHttpRequestFactoriesOkHttp4Tests
 		return ((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client")).readTimeoutMillis();
 	}
 
+	@Override
+	protected boolean supportsSettingConnectTimeout() {
+		return true;
+	}
+
+	@Override
+	protected boolean supportsSettingReadTimeout() {
+		return true;
+	}
+
 }

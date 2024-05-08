@@ -329,7 +329,7 @@ public final class ClientHttpRequestFactories {
 		 */
 		private static class SimpleClientHttpsRequestFactory extends SimpleClientHttpRequestFactory {
 
-			private SslBundle sslBundle;
+			private final SslBundle sslBundle;
 
 			SimpleClientHttpsRequestFactory(SslBundle sslBundle) {
 				this.sslBundle = sslBundle;
@@ -385,13 +385,23 @@ public final class ClientHttpRequestFactories {
 		}
 
 		private static void setConnectTimeout(ClientHttpRequestFactory factory, Duration connectTimeout) {
-			Method method = findMethod(factory, "setConnectTimeout", int.class);
+			Method method = tryFindMethod(factory, "setConnectTimeout", Duration.class);
+			if (method != null) {
+				invoke(factory, method, connectTimeout);
+				return;
+			}
+			method = findMethod(factory, "setConnectTimeout", int.class);
 			int timeout = Math.toIntExact(connectTimeout.toMillis());
 			invoke(factory, method, timeout);
 		}
 
 		private static void setReadTimeout(ClientHttpRequestFactory factory, Duration readTimeout) {
-			Method method = findMethod(factory, "setReadTimeout", int.class);
+			Method method = tryFindMethod(factory, "setReadTimeout", Duration.class);
+			if (method != null) {
+				invoke(factory, method, readTimeout);
+				return;
+			}
+			method = findMethod(factory, "setReadTimeout", int.class);
 			int timeout = Math.toIntExact(readTimeout.toMillis());
 			invoke(factory, method, timeout);
 		}
@@ -404,6 +414,18 @@ public final class ClientHttpRequestFactories {
 			Assert.state(!method.isAnnotationPresent(Deprecated.class),
 					() -> "Request factory %s has the %s method marked as deprecated"
 						.formatted(requestFactory.getClass().getName(), methodName));
+			return method;
+		}
+
+		private static Method tryFindMethod(ClientHttpRequestFactory requestFactory, String methodName,
+				Class<?>... parameters) {
+			Method method = ReflectionUtils.findMethod(requestFactory.getClass(), methodName, parameters);
+			if (method == null) {
+				return null;
+			}
+			if (method.isAnnotationPresent(Deprecated.class)) {
+				return null;
+			}
 			return method;
 		}
 
