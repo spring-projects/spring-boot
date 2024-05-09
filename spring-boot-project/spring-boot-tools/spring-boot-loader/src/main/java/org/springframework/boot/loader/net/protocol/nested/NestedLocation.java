@@ -106,9 +106,8 @@ public record NestedLocation(Path path, String nestedEntryName) {
 	}
 
 	private static Path asPath(String locationPath) {
-		return pathCache.computeIfAbsent(locationPath, (key) -> {
-			return Path.of((!isWindows()) ? locationPath : fixWindowsLocationPath(locationPath));
-		});
+		return pathCache.computeIfAbsent(locationPath,
+				(key) -> Path.of((!isWindows()) ? locationPath : fixWindowsLocationPath(locationPath)));
 	}
 
 	private static boolean isWindows() {
