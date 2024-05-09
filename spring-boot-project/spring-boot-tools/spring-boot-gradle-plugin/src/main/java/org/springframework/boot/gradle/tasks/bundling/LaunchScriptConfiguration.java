@@ -30,6 +30,8 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Encapsulates the configuration of the launch script for an executable jar or war.
  *
@@ -111,7 +113,7 @@ public class LaunchScriptConfiguration implements Serializable {
 	private void putIfMissing(Map<String, String> properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
-				if (candidate != null && !candidate.isEmpty()) {
+				if (StringUtils.hasLength(candidate)) {
 					properties.put(key, candidate);
 					return;
 				}
