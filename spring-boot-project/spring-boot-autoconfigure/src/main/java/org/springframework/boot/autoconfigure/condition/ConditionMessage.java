@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -388,7 +389,7 @@ public final class ConditionMessage {
 			else if (StringUtils.hasLength(this.plural)) {
 				message.append(" ").append(this.plural);
 			}
-			if (items != null && !items.isEmpty()) {
+			if (!CollectionUtils.isEmpty(items)) {
 				message.append(" ").append(StringUtils.collectionToDelimitedString(items, ", "));
 			}
 			return this.condition.because(message.toString());
