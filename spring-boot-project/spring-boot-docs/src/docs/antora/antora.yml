@@ -14,7 +14,7 @@ ext:
     attributes: { icon: home }
   - path: "Documentation"
     attributes: { icon: book }
-  - path: "Community":
+  - path: "Community"
     attributes: { icon: question }
   - path: "System Requirements"
     attributes: { icon: server }
