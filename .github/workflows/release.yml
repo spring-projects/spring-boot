@@ -9,7 +9,7 @@ jobs:
   build-and-stage-release:
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     name: Build and Stage Release
-    runs-on: ubuntu22-8-32
+    runs-on: ubuntu22-8-32-OSS
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
