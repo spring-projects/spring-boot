@@ -107,16 +107,24 @@ public record NestedLocation(Path path, String nestedEntryName) {
 
 	private static Path asPath(String locationPath) {
 		return pathCache.computeIfAbsent(locationPath, (key) -> {
-			if (isWindows() && locationPath.length() > 2 && locationPath.charAt(2) == ':') {
-				// Use the same logic as Java's internal WindowsUriSupport class
-				return Path.of(locationPath.substring(1));
-			}
-			return Path.of(locationPath);
+			return Path.of((!isWindows()) ? locationPath : fixWindowsLocationPath(locationPath));
 		});
 	}
 
 	private static boolean isWindows() {
 		return File.separatorChar == '\\';
+	}
+
+	private static String fixWindowsLocationPath(String locationPath) {
+		// Same logic as Java's internal WindowsUriSupport class
+		if (locationPath.length() > 2 && locationPath.charAt(2) == ':') {
+			return locationPath.substring(1);
+		}
+		// Deal with Jetty's org.eclipse.jetty.util.URIUtil#correctURI(URI)
+		if (locationPath.startsWith("///") && locationPath.charAt(4) == ':') {
+			return locationPath.substring(3);
+		}
+		return locationPath;
 	}
 
 	static void clearCache() {
