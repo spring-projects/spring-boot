@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - id: ubuntu22-8-32
+          - id: ubuntu22-8-32-OSS
             name: Linux
           - id: windows-latest
             name: Windows
