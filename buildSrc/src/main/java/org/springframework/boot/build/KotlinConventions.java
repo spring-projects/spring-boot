@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ package org.springframework.boot.build;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.adamko.dokkatoo.DokkatooExtension;
+import dev.adamko.dokkatoo.formats.DokkatooHtmlPlugin;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.SourceSet;
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions;
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 
@@ -44,9 +47,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 class KotlinConventions {
 
 	void apply(Project project) {
-		project.getPlugins()
-			.withId("org.jetbrains.kotlin.jvm",
-					(plugin) -> project.getTasks().withType(KotlinCompile.class, this::configure));
+		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
+			project.getTasks().withType(KotlinCompile.class, this::configure);
+			configureDokkatoo(project);
+		});
 	}
 
 	private void configure(KotlinCompile compile) {
@@ -58,6 +62,14 @@ class KotlinConventions {
 		List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
 		freeCompilerArgs.add("-Xsuppress-version-warnings");
 		compile.getKotlinOptions().setFreeCompilerArgs(freeCompilerArgs);
+	}
+
+	private void configureDokkatoo(Project project) {
+		project.getPlugins().apply(DokkatooHtmlPlugin.class);
+		DokkatooExtension dokkatoo = project.getExtensions().getByType(DokkatooExtension.class);
+		dokkatoo.getDokkatooSourceSets()
+			.named(SourceSet.MAIN_SOURCE_SET_NAME)
+			.configure((spec) -> spec.getSourceRoots().setFrom(project.file("src/main/kotlin")));
 	}
 
 }

@@ -54,6 +54,9 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-testcontainers", configuration: "configurationPropertiesMetadata"))
 
+	dokkatoo(project(path: ":spring-boot-project:spring-boot"))
+	dokkatoo(project(path: ":spring-boot-project:spring-boot-test"))
+
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
@@ -181,6 +184,10 @@ dependencies {
 	testRuntimeOnly("org.springframework:spring-jdbc")
 
 	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
+}
+
+dokkatoo {
+	moduleName.set("Spring Boot Kotlin API")
 }
 
 task aggregatedJavadoc(type: Javadoc) {
@@ -344,6 +351,9 @@ def antoraApiCatalogContent = tasks.register("antoraApiCatalogContent", Zip) {
 	from(aggregatedJavadoc) {
 		into "java"
 	}
+	from(tasks.named("dokkatooGeneratePublicationHtml")) {
+		into "kotlin"
+	}
 }
 
 def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencies", Copy) {
@@ -363,6 +373,12 @@ gradle.projectsEvaluated {
 	configurations.antoraContent.dependencies.forEach { dependency ->
 		dependency.dependencyProject.configurations.getByName(dependency.targetConfiguration)
 			.artifacts.forEach(mavenPublication::artifact)
+	}
+}
+
+dokkatoo {
+	dokkatooPublications.configureEach {
+		includes.from("src/docs/dokkatoo/dokka-overview.md")
 	}
 }
 

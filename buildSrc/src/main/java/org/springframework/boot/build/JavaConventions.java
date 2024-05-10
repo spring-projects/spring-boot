@@ -261,8 +261,9 @@ class JavaConventions {
 			configuration.setCanBeResolved(false);
 		});
 		configurations
-			.matching((configuration) -> configuration.getName().endsWith("Classpath")
+			.matching((configuration) -> (configuration.getName().endsWith("Classpath")
 					|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
+					&& (!configuration.getName().contains("dokkatoo")))
 			.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		Dependency springBootParent = project.getDependencies()
 			.enforcedPlatform(project.getDependencies()

@@ -28,3 +28,5 @@ ext:
     attributes: { external: true}
   - path: [ "Java APIs", "Gradle Plugin" ]
     attributes: { external: true }
+  - path: [ "Kotlin APIs", "Spring Boot" ]
+    attributes: { external: true }
