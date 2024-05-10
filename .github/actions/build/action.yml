@@ -19,7 +19,7 @@ inputs:
 outputs:
   build-scan-url:
     description: 'The URL, if any, of the build scan produced by the build'
-    value: ${{ (inputs.publish && steps.build-and-publish.outputs.build-scan-url) || steps.build.outputs.build-scan-url }}
+    value: ${{ (inputs.publish == 'true' && steps.build-and-publish.outputs.build-scan-url) || steps.build.outputs.build-scan-url }}
   version:
     description: 'The version that was built'
     value: ${{ steps.read-version.outputs.version }}
@@ -33,14 +33,14 @@ runs:
         java-toolchain: ${{ inputs.java-toolchain }}
     - name: Build
       id: build
-      if: ${{ !inputs.publish }}
+      if: ${{ inputs.publish == 'false' }}
       shell: bash
       env:
         DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
       run: ./gradlew build
     - name: Build and Publish
       id: build-and-publish
-      if: ${{ inputs.publish }}
+      if: ${{ inputs.publish == 'true' }}
       shell: bash
       env:
         DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
