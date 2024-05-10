@@ -26,6 +26,7 @@ import org.asciidoctor.gradle.jvm.AsciidoctorJExtension;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.asciidoctor.gradle.jvm.AsciidoctorTask;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
 
@@ -54,6 +55,9 @@ import org.springframework.util.StringUtils;
  * <li>{@link AbstractAsciidoctorTask#baseDirFollowsSourceDir() baseDirFollowsSourceDir()}
  * is enabled.
  * <li>{@code asciidoctorExtensions} is added to the task's configurations.
+ * <li>The task is configured to depend on the {@code asciidoctorExtensions} configuraion
+ * to ensure that any extensions are built before the task runs. This works around
+ * https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/721.
  * </ul>
  * </ul>
  *
@@ -64,16 +68,14 @@ class AsciidoctorConventions {
 
 	private static final String ASCIIDOCTORJ_VERSION = "2.4.3";
 
-	private static final String EXTENSIONS_CONFIGURATION_NAME = "asciidoctorExtensions";
-
 	void apply(Project project) {
 		project.getPlugins().withType(AsciidoctorJPlugin.class, (asciidoctorPlugin) -> {
 			makeAllWarningsFatal(project);
 			upgradeAsciidoctorJVersion(project);
-			createAsciidoctorExtensionsConfiguration(project);
+			Configuration asciidoctorExtensions = createAsciidoctorExtensionsConfiguration(project);
 			project.getTasks()
 				.withType(AbstractAsciidoctorTask.class,
-						(asciidoctorTask) -> configureAsciidoctorTask(project, asciidoctorTask));
+						(asciidoctorTask) -> configureAsciidoctorTask(project, asciidoctorTask, asciidoctorExtensions));
 		});
 	}
 
@@ -85,8 +87,8 @@ class AsciidoctorConventions {
 		project.getExtensions().getByType(AsciidoctorJExtension.class).setVersion(ASCIIDOCTORJ_VERSION);
 	}
 
-	private void createAsciidoctorExtensionsConfiguration(Project project) {
-		project.getConfigurations().create(EXTENSIONS_CONFIGURATION_NAME, (configuration) -> {
+	private Configuration createAsciidoctorExtensionsConfiguration(Project project) {
+		return project.getConfigurations().create("asciidoctorExtensions", (configuration) -> {
 			project.getConfigurations()
 				.matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
 				.all(configuration::extendsFrom);
@@ -98,8 +100,10 @@ class AsciidoctorConventions {
 		});
 	}
 
-	private void configureAsciidoctorTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
-		asciidoctorTask.configurations(EXTENSIONS_CONFIGURATION_NAME);
+	private void configureAsciidoctorTask(Project project, AbstractAsciidoctorTask asciidoctorTask,
+			Configuration asciidoctorExtensions) {
+		asciidoctorTask.configurations(asciidoctorExtensions);
+		asciidoctorTask.dependsOn(asciidoctorExtensions);
 		configureCommonAttributes(project, asciidoctorTask);
 		configureOptions(asciidoctorTask);
 		configureForkOptions(asciidoctorTask);
