@@ -27,7 +27,7 @@ runs:
           -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}", "url": "${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/{0}/spring-boot-cli-{0}-bin.zip', inputs.spring-boot-version) }}"}' \
           https://vendors.sdkman.io/release
     - shell: bash
-      if: ${{ inputs.make-default }}
+      if: ${{ inputs.make-default == 'true' }}
       run: >
         curl -X POST \
           -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \
