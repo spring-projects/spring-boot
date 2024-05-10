@@ -18,7 +18,7 @@ runs:
         distribution: 'liberica'
         java-version: |
           ${{ inputs.java-version }}
-          ${{ inputs.java-toolchain && '17' || '' }}
+          ${{ inputs.java-toolchain == 'true' && '17' || '' }}
     - name: Set Up Gradle
       uses: gradle/actions/setup-gradle@db19848a5fa7950289d3668fb053140cf3028d43 # v3.3.2
       with:
@@ -31,7 +31,7 @@ runs:
         echo 'systemProp.org.gradle.internal.launcher.welcomeMessageEnabled=false' >> $HOME/.gradle/gradle.properties
         echo 'org.gradle.daemon=false' >> $HOME/.gradle/gradle.properties
     - name: Configure Toolchain Properties
-      if: ${{ inputs.java-toolchain }}
+      if: ${{ inputs.java-toolchain == 'true' }}
       shell: bash
       run: |
         echo toolchainVersion=${{ inputs.java-version }} >> $HOME/.gradle/gradle.properties
