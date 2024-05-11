@@ -30,6 +30,8 @@ public final class DockerImageNames {
 
 	private static final String ACTIVE_MQ_VERSION = "5.18.3";
 
+	private static final String APACHE_KAFKA_VERSION = "3.7.0";
+
 	private static final String ARTEMIS_VERSION = "2.31.2";
 
 	private static final String CASSANDRA_VERSION = "3.11.10";
@@ -89,6 +91,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName activeMqClassic() {
 		return DockerImageName.parse("apache/activemq-classic").withTag(ACTIVE_MQ_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Apache Kafka.
+	 * @return a docker image name for running Apache Kafka
+	 */
+	public static DockerImageName apacheKafka() {
+		return DockerImageName.parse("apache/kafka").withTag(APACHE_KAFKA_VERSION);
 	}
 
 	/**
