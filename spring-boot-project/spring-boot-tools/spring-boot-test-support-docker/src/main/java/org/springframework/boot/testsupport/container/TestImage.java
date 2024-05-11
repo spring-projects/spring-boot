@@ -65,6 +65,11 @@ public enum TestImage {
 	ACTIVE_MQ_CLASSIC("apache/activemq-classic", "5.18.3", () -> ActiveMQContainer.class),
 
 	/**
+	 * A container image suitable for testing Apache Kafka.
+	 */
+	APACHE_KAFKA("apache/kafka", "3.7.0", () -> org.testcontainers.kafka.KafkaContainer.class),
+
+	/**
 	 * A container image suitable for testing Artemis.
 	 */
 	ARTEMIS("apache/activemq-artemis", "2.34.0", () -> ArtemisContainer.class),
