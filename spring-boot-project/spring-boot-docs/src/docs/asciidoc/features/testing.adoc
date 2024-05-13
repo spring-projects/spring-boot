@@ -999,7 +999,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type `JdbcDatabaseContainer`
 
 | `KafkaConnectionDetails`
-| Containers of type `KafkaContainer` or `RedpandaContainer`
+| Containers of type `org.testcontainers.containers.KafkaContainer` or `RedpandaContainer`
 
 | `LiquibaseConnectionDetails`
 | Containers of type `JdbcDatabaseContainer`
