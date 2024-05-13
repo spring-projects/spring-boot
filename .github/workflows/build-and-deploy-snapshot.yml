@@ -8,7 +8,7 @@ concurrency:
 jobs:
   build-and-deploy-snapshot:
     name: Build and Deploy Snapshot
-    runs-on: ubuntu22-8-32-OSS
+    runs-on: ubuntu-latest
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
       - name: Check Out Code
