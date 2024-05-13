@@ -1611,7 +1611,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Proxy", "1.1.4.RELEASE") {
+	library("R2DBC Proxy", "1.1.5.RELEASE") {
 		considerSnapshots()
 		group("io.r2dbc") {
 			modules = [
