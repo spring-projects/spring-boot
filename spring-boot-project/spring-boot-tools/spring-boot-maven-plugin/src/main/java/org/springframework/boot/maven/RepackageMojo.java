@@ -38,6 +38,7 @@ import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.util.StringUtils;
 
 /**
  * Repackage existing JAR and WAR archives so that they can be executed from the command
@@ -271,7 +272,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private void putIfMissing(Properties properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
-				if (candidate != null && !candidate.isEmpty()) {
+				if (StringUtils.hasLength(candidate)) {
 					properties.put(key, candidate);
 					return;
 				}
