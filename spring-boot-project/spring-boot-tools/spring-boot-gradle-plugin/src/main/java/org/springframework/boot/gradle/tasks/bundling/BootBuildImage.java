@@ -49,6 +49,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
 import org.springframework.boot.gradle.util.VersionExtractor;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -382,7 +383,7 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customizeEnvironment(BuildRequest request) {
 		Map<String, String> environment = getEnvironment().getOrNull();
-		if (environment != null && !environment.isEmpty()) {
+		if (!CollectionUtils.isEmpty(environment)) {
 			request = request.withEnv(environment);
 		}
 		return request;
@@ -411,7 +412,7 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customizeBuildpacks(BuildRequest request) {
 		List<String> buildpacks = getBuildpacks().getOrNull();
-		if (buildpacks != null && !buildpacks.isEmpty()) {
+		if (!CollectionUtils.isEmpty(buildpacks)) {
 			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).toList());
 		}
 		return request;
@@ -419,7 +420,7 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customizeBindings(BuildRequest request) {
 		List<String> bindings = getBindings().getOrNull();
-		if (bindings != null && !bindings.isEmpty()) {
+		if (!CollectionUtils.isEmpty(bindings)) {
 			return request.withBindings(bindings.stream().map(Binding::of).toList());
 		}
 		return request;
@@ -427,7 +428,7 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customizeTags(BuildRequest request) {
 		List<String> tags = getTags().getOrNull();
-		if (tags != null && !tags.isEmpty()) {
+		if (!CollectionUtils.isEmpty(tags)) {
 			return request.withTags(tags.stream().map(ImageReference::of).toList());
 		}
 		return request;

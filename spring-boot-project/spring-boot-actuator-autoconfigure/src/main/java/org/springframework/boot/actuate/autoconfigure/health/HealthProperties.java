@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Properties used to configure the health endpoint and endpoint groups.
@@ -92,7 +93,7 @@ public abstract class HealthProperties {
 		}
 
 		public void setOrder(List<String> statusOrder) {
-			if (statusOrder != null && !statusOrder.isEmpty()) {
+			if (!CollectionUtils.isEmpty(statusOrder)) {
 				this.order = statusOrder;
 			}
 		}

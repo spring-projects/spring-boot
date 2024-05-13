@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -71,7 +72,7 @@ public class ContainerConfig {
 		}
 		ArrayNode bindsNode = hostConfigNode.putArray("Binds");
 		bindings.forEach((binding) -> bindsNode.add(binding.toString()));
-		if (securityOptions != null && !securityOptions.isEmpty()) {
+		if (!CollectionUtils.isEmpty(securityOptions)) {
 			ArrayNode securityOptsNode = hostConfigNode.putArray("SecurityOpt");
 			securityOptions.forEach(securityOptsNode::add);
 		}
