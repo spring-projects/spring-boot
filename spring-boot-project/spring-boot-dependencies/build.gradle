@@ -1020,7 +1020,7 @@ bom {
 			releaseNotes("https://github.com/JetBrains/kotlin/releases/tag/v{version}")
 		}
 	}
-	library("Kotlin Coroutines", "1.8.0") {
+	library("Kotlin Coroutines", "1.8.1") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
