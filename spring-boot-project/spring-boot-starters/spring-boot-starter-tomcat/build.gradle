@@ -12,5 +12,6 @@ dependencies {
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.apache.tomcat.embed:tomcat-embed-websocket") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
+		exclude group: "org.apache.tomcat", module: "tomcat-websocket-api"
 	}
 }
