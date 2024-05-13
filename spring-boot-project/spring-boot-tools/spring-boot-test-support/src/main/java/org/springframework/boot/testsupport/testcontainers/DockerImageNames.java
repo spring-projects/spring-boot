@@ -42,7 +42,7 @@ public final class DockerImageNames {
 
 	private static final String KAFKA_VERSION = "7.4.0";
 
-	private static final String MAILPIT_VERSION = "v1.15.0";
+	private static final String MAILPIT_VERSION = "v1.18.1";
 
 	private static final String MARIADB_VERSION = "10.10";
 
