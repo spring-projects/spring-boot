@@ -16,6 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
+import org.springframework.util.StringUtils;
+
 /**
  * Exception thrown to indicate a Builder error.
  *
@@ -52,7 +54,7 @@ public class BuilderException extends RuntimeException {
 
 	private static String buildMessage(String operation, int statusCode) {
 		StringBuilder message = new StringBuilder("Builder");
-		if (operation != null && !operation.isEmpty()) {
+		if (StringUtils.hasLength(operation)) {
 			message.append(" lifecycle '").append(operation).append("'");
 		}
 		message.append(" failed with status code ").append(statusCode);
