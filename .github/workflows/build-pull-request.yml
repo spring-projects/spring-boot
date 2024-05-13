@@ -7,9 +7,14 @@ permissions:
 jobs:
   build:
     name: Build Pull Request
-    runs-on: ubuntu22-8-32-OSS
+    runs-on: ubuntu-latest
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          large-packages: false
+          docker-images: false
       - name: Set Up JDK 17
         uses: actions/setup-java@v4
         with:
