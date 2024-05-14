@@ -40,80 +40,74 @@ import org.springframework.context.annotation.ImportRuntimeHints;
  * @since 2.4.0
  */
 @Endpoint(id = "startup")
-@ImportRuntimeHints(StartupEndpointRuntimeHints.class)
+@ImportRuntimeHints(StartupEndpoint.StartupEndpointRuntimeHints.class)
 public class StartupEndpoint {
 
-	private final BufferingApplicationStartup applicationStartup;
+    private final BufferingApplicationStartup applicationStartup;
 
-	/**
-	 * Creates a new {@code StartupEndpoint} that will describe the timeline of buffered
-	 * application startup events.
-	 * @param applicationStartup the application startup
-	 */
-	public StartupEndpoint(BufferingApplicationStartup applicationStartup) {
-		this.applicationStartup = applicationStartup;
-	}
+    /**
+     * Creates a new {@code StartupEndpoint} that will describe the timeline of buffered
+     * application startup events.
+     * @param applicationStartup the application startup
+     */
+    public StartupEndpoint(BufferingApplicationStartup applicationStartup) {
+        this.applicationStartup = applicationStartup;
+    }
 
-	@ReadOperation
-	public StartupDescriptor startupSnapshot() {
-		StartupTimeline startupTimeline = this.applicationStartup.getBufferedTimeline();
-		return new StartupDescriptor(startupTimeline);
-	}
+    @ReadOperation
+    public StartupDescriptor startupSnapshot() {
+        StartupTimeline startupTimeline = this.applicationStartup.getBufferedTimeline();
+        return new StartupDescriptor(startupTimeline);
+    }
 
-	@WriteOperation
-	public StartupDescriptor startup() {
-		StartupTimeline startupTimeline = this.applicationStartup.drainBufferedTimeline();
-		return new StartupDescriptor(startupTimeline);
-	}
+    @WriteOperation
+    public StartupDescriptor startup() {
+        StartupTimeline startupTimeline = this.applicationStartup.drainBufferedTimeline();
+        return new StartupDescriptor(startupTimeline);
+    }
 
-	/**
-	 * Description of an application startup.
-	 */
-	public static final class StartupDescriptor implements OperationResponseBody {
+    /**
+     * Description of an application startup.
+     */
+    public static final class StartupDescriptor implements OperationResponseBody {
 
-		private final String springBootVersion;
+        private final String springBootVersion;
+        private final StartupTimeline timeline;
 
-		private final StartupTimeline timeline;
+        private StartupDescriptor(StartupTimeline timeline) {
+            this.timeline = timeline;
+            this.springBootVersion = SpringBootVersion.getVersion();
+        }
 
-		private StartupDescriptor(StartupTimeline timeline) {
-			this.timeline = timeline;
-			this.springBootVersion = SpringBootVersion.getVersion();
-		}
+        public String getSpringBootVersion() {
+            return this.springBootVersion;
+        }
 
-		public String getSpringBootVersion() {
-			return this.springBootVersion;
-		}
+        public StartupTimeline getTimeline() {
+            return this.timeline;
+        }
 
-		public StartupTimeline getTimeline() {
-			return this.timeline;
-		}
+    }
 
-	}
+    static class StartupEndpointRuntimeHints implements RuntimeHintsRegistrar {
 
-	static class StartupEndpointRuntimeHints implements RuntimeHintsRegistrar {
+        private static final TypeReference DEFAULT_TAG = TypeReference.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag");
+        private static final TypeReference BUFFERED_STARTUP_STEP = TypeReference.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep");
+        private static final TypeReference FLIGHT_RECORDER_TAG = TypeReference.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag");
+        private static final TypeReference FLIGHT_RECORDER_STARTUP_STEP = TypeReference.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep");
 
-		private static final TypeReference DEFAULT_TAG = TypeReference
-			.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag");
+        @Override
+        public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+            // Register reflection hints
+            hints.reflection()
+                    .registerType(DEFAULT_TAG, typeHint -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)
+                            .withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+            hints.reflection()
+                    .registerType(FLIGHT_RECORDER_TAG, typeHint -> typeHint.onReachableType(FLIGHT_RECORDER_STARTUP_STEP)
+                            .withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+        }
 
-		private static final TypeReference BUFFERED_STARTUP_STEP = TypeReference
-			.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep");
-
-		private static final TypeReference FLIGHT_RECORDER_TAG = TypeReference
-			.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag");
-
-		private static final TypeReference FLIGHT_RECORDER_STARTUP_STEP = TypeReference
-			.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep");
-
-		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection()
-				.registerType(DEFAULT_TAG, (typeHint) -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)
-					.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
-			hints.reflection()
-				.registerType(FLIGHT_RECORDER_TAG, (typeHint) -> typeHint.onReachableType(FLIGHT_RECORDER_STARTUP_STEP)
-					.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
-		}
-
-	}
+    }
 
 }
+
