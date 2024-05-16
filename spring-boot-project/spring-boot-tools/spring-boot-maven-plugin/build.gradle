@@ -158,7 +158,7 @@ task xsdResources(type: Sync) {
 }
 
 prepareMavenBinaries {
-	versions "3.9.0", "3.8.5", "3.6.3"
+	versions "3.9.6", "3.6.3"
 }
 
 artifacts {
