@@ -114,9 +114,9 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 				String locationName = getProject().getName() + "-${version}-${name}-${classifier}.zip";
 				Path antoraContent = getRelativeProjectPath()
 					.resolve(GENERATED_DOCS + "antora-content/" + locationName);
-				Path antoraDepenencies = getRelativeProjectPath()
+				Path antoraDependencies = getRelativeProjectPath()
 					.resolve(GENERATED_DOCS + "antora-dependencies-content/" + locationName);
-				zipContentsCollector.locations(antoraContent, antoraDepenencies);
+				zipContentsCollector.locations(antoraContent, antoraDependencies);
 				zipContentsCollector.alwaysInclude(getAlwaysInclude().getOrNull());
 			});
 			extensions.rootComponent((rootComponent) -> rootComponent.name("boot"));
