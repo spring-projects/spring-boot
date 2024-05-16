@@ -580,7 +580,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta XML SOAP", "3.0.1") {
+	library("Jakarta XML SOAP", "3.0.2") {
 		group("jakarta.xml.soap") {
 			modules = [
 					"jakarta.xml.soap-api"
