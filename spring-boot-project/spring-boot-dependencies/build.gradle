@@ -2046,7 +2046,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
-	library("Spring Retry", "2.0.5") {
+	library("Spring Retry", "2.0.6") {
 		considerSnapshots()
 		group("org.springframework.retry") {
 			modules = [
