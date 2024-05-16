@@ -115,6 +115,13 @@ public interface BuildLog {
 	void taggedImage(ImageReference tag);
 
 	/**
+	 * Log that a cache cleanup step was not completed successfully.
+	 * @param cache the cache
+	 * @param exception any exception that caused the failure
+	 */
+	void failedCleaningWorkDir(Cache cache, Exception exception);
+
+	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.
 	 * @return a build log instance that logs to system out
 	 */

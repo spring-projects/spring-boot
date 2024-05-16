@@ -102,6 +102,17 @@ public abstract class AbstractBuildLog implements BuildLog {
 		log();
 	}
 
+	@Override
+	public void failedCleaningWorkDir(Cache cache, Exception exception) {
+		StringBuilder message = new StringBuilder("Warning: Working location " + cache + " could not be cleaned");
+		if (exception != null) {
+			message.append(": ").append(exception.getMessage());
+		}
+		log();
+		log(message.toString());
+		log();
+	}
+
 	private String getDigest(Image image) {
 		List<String> digests = image.getDigests();
 		return (digests.isEmpty() ? "" : digests.get(0));
