@@ -9,24 +9,3 @@ ext:
       classifier: catalog-content
       module: api
       destination: content-catalog
-  nav-attributes:
-  - path: "Overview"
-    attributes: { icon: home }
-  - path: "Documentation"
-    attributes: { icon: book }
-  - path: "Community"
-    attributes: { icon: question }
-  - path: "System Requirements"
-    attributes: { icon: server }
-  - path: "Installing Spring Boot"
-    attributes: { icon: gift }
-  - path: "Upgrading Spring Boot"
-    attributes: { icon: rocket }
-  - path: [ "Java APIs", "Spring Boot" ]
-    attributes: { external: true }
-  - path: [ "Java APIs", "Maven Plugin" ]
-    attributes: { external: true}
-  - path: [ "Java APIs", "Gradle Plugin" ]
-    attributes: { external: true }
-  - path: [ "Kotlin APIs", "Spring Boot" ]
-    attributes: { external: true }
