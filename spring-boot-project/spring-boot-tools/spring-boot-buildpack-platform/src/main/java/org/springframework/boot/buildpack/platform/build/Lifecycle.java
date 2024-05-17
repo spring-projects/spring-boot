@@ -323,7 +323,7 @@ class Lifecycle implements Closeable {
 		try {
 			FileSystemUtils.deleteRecursively(Path.of(bind.getSource()));
 		}
-		catch (IOException ex) {
+		catch (Exception ex) {
 			this.log.failedCleaningWorkDir(bind, ex);
 		}
 	}
