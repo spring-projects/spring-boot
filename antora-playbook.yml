@@ -2,6 +2,7 @@ antora:
   extensions:
   - require: '@antora/atlas-extension'
   - require: '@springio/antora-extensions/latest-version-extension'
+  - require: '@springio/antora-extensions/override-navigation-builder-extension'
   - require: '@springio/antora-extensions/partial-build-extension'
   - require: '@springio/antora-extensions/publish-docsearch-config-extension'
   - require: '@springio/antora-extensions/static-page-extension'
