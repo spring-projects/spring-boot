@@ -4,7 +4,7 @@ plugins {
 }
 
 bootBuildImage {
-	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2"
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
 	pullPolicy = "IF_NOT_PRESENT"
 	buildpacks = [ "file://${projectDir}/buildpack/hello-world" as String ]
 }
