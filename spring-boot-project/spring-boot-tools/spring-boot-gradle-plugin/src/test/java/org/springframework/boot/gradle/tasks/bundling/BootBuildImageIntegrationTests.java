@@ -317,8 +317,17 @@ class BootBuildImageIntegrationTests {
 		Path launchCachePath = Paths.get(tempDir, "junit-image-cache-" + projectName + "-launch");
 		assertThat(buildCachePath).exists().isDirectory();
 		assertThat(launchCachePath).exists().isDirectory();
-		FileSystemUtils.deleteRecursively(buildCachePath);
-		FileSystemUtils.deleteRecursively(launchCachePath);
+		cleanupCache(buildCachePath);
+		cleanupCache(launchCachePath);
+	}
+
+	private static void cleanupCache(Path buildCachePath) {
+		try {
+			FileSystemUtils.deleteRecursively(buildCachePath);
+		}
+		catch (Exception ex) {
+			// ignore
+		}
 	}
 
 	@TestTemplate
