@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import org.flywaydb.core.api.configuration.FluentConfiguration;
@@ -24,26 +26,63 @@ import org.flywaydb.core.internal.scanner.LocationScannerCache;
 import org.flywaydb.core.internal.scanner.ResourceNameCache;
 import org.flywaydb.core.internal.scanner.Scanner;
 
+import org.springframework.util.ClassUtils;
+
 /**
  * Registers {@link NativeImageResourceProvider} as a Flyway
  * {@link org.flywaydb.core.api.ResourceProvider}.
  *
  * @author Moritz Halbritter
+ * @author Maziz Esa
  */
 class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 
 	@Override
 	public void customize(FluentConfiguration configuration) {
 		if (configuration.getResourceProvider() == null) {
-			Scanner<JavaMigration> scanner = new Scanner<>(JavaMigration.class,
-					Arrays.asList(configuration.getLocations()), configuration.getClassLoader(),
-					configuration.getEncoding(), configuration.isDetectEncoding(), false, new ResourceNameCache(),
-					new LocationScannerCache(), configuration.isFailOnMissingLocations());
+			final var scanner = getFlyway9OrFallbackTo10ScannerObject(configuration);
 			NativeImageResourceProvider resourceProvider = new NativeImageResourceProvider(scanner,
 					configuration.getClassLoader(), Arrays.asList(configuration.getLocations()),
 					configuration.getEncoding(), configuration.isFailOnMissingLocations());
 			configuration.resourceProvider(resourceProvider);
 		}
+	}
+
+	private static Scanner getFlyway9OrFallbackTo10ScannerObject(FluentConfiguration configuration) {
+		Scanner scanner;
+		try {
+			scanner = getFlyway9Scanner(configuration);
+		}
+		catch (NoSuchMethodError noSuchMethodError) {
+			// happens when scanner is flyway version 10, which the constructor accepts
+			// different number of parameters.
+			scanner = getFlyway10Scanner(configuration);
+		}
+		return scanner;
+	}
+
+	private static Scanner getFlyway10Scanner(FluentConfiguration configuration) {
+		final Constructor<?> scannerConstructor;
+		final Scanner scanner;
+		try {
+			scannerConstructor = ClassUtils.forName("org.flywaydb.core.internal.scanner.Scanner", null)
+				.getDeclaredConstructors()[0];
+			scanner = (Scanner) scannerConstructor.newInstance(JavaMigration.class, false, new ResourceNameCache(),
+					new LocationScannerCache(), configuration);
+		}
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| InvocationTargetException ex) {
+			throw new RuntimeException(ex);
+		}
+		return scanner;
+	}
+
+	private static Scanner getFlyway9Scanner(FluentConfiguration configuration) {
+		Scanner scanner;
+		scanner = new Scanner<>(JavaMigration.class, Arrays.asList(configuration.getLocations()),
+				configuration.getClassLoader(), configuration.getEncoding(), configuration.isDetectEncoding(), false,
+				new ResourceNameCache(), new LocationScannerCache(), configuration.isFailOnMissingLocations());
+		return scanner;
 	}
 
 }
