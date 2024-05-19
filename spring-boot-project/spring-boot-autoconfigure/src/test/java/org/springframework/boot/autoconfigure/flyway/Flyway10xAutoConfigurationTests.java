@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link FlywayAutoConfiguration} with Flyway 10.x.
  *
  * @author Andy Wilkinson
+ * @author Maziz
  */
 @ClassPathExclusions({ "flyway-core-*.jar", "flyway-sqlserver-*.jar" })
 @ClassPathOverrides({ "org.flywaydb:flyway-core:10.0.0", "com.h2database:h2:2.1.210" })

@@ -33,6 +33,7 @@ import org.springframework.util.ClassUtils;
  * {@link org.flywaydb.core.api.ResourceProvider}.
  *
  * @author Moritz Halbritter
+ * @author Maziz
  */
 class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 
