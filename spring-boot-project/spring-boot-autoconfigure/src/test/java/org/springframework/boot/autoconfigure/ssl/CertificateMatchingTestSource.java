@@ -82,10 +82,10 @@ record CertificateMatchingTestSource(CertificateMatchingTestSource.Algorithm alg
 			keyPairs.put(algorithm, algorithm.generateKeyPair());
 		}
 		List<CertificateMatchingTestSource> parameters = new ArrayList<>();
-		keyPairs.forEach((algorith, matchingKeyPair) -> {
+		keyPairs.forEach((algorithm, matchingKeyPair) -> {
 			List<KeyPair> nonMatchingKeyPairs = new ArrayList<>(keyPairs.values());
 			nonMatchingKeyPairs.remove(matchingKeyPair);
-			parameters.add(new CertificateMatchingTestSource(algorith, matchingKeyPair, nonMatchingKeyPairs));
+			parameters.add(new CertificateMatchingTestSource(algorithm, matchingKeyPair, nonMatchingKeyPairs));
 		});
 		return List.copyOf(parameters);
 	}
