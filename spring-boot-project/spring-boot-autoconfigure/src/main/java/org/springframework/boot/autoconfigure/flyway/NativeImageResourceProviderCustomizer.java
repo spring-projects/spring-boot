@@ -33,7 +33,7 @@ import org.springframework.util.ClassUtils;
  * {@link org.flywaydb.core.api.ResourceProvider}.
  *
  * @author Moritz Halbritter
- * @author Maziz
+ * @author Maziz Esa
  */
 class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 
@@ -47,12 +47,7 @@ class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 			try {
 				scannerConstructor = ClassUtils.forName("org.flywaydb.core.internal.scanner.Scanner", null)
 					.getDeclaredConstructors()[0];
-				if (scannerConstructor.getParameters().length > NUM_FLYWAY10_SCANNER_PARAMETERS) {
-					scanner = getFlyway9Scanner(configuration);
-				}
-				else {
-					scanner = getFlyway10Scanner(configuration, scannerConstructor);
-				}
+				scanner = getFlyway9Or10ScannerObject(configuration, scannerConstructor);
 				NativeImageResourceProvider resourceProvider = new NativeImageResourceProvider(scanner,
 						configuration.getClassLoader(), Arrays.asList(configuration.getLocations()),
 						configuration.getEncoding(), configuration.isFailOnMissingLocations());
@@ -70,6 +65,19 @@ class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 					configuration.getEncoding(), configuration.isFailOnMissingLocations());
 			configuration.resourceProvider(resourceProvider);
 		}
+	}
+
+	private static Scanner getFlyway9Or10ScannerObject(FluentConfiguration configuration,
+			Constructor<?> scannerConstructor)
+			throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		Scanner scanner;
+		if (scannerConstructor.getParameters().length > NUM_FLYWAY10_SCANNER_PARAMETERS) {
+			scanner = getFlyway9Scanner(configuration);
+		}
+		else {
+			scanner = getFlyway10Scanner(configuration, scannerConstructor);
+		}
+		return scanner;
 	}
 
 	private static Scanner getFlyway10Scanner(FluentConfiguration configuration, Constructor<?> scannerConstructor)
