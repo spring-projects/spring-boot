@@ -1512,7 +1512,7 @@ bom {
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
 		}
 	}
-	library("Pulsar", "3.2.2") {
+	library("Pulsar", "3.2.3") {
 		group("org.apache.pulsar") {
 			imports = [
 				"pulsar-bom"
