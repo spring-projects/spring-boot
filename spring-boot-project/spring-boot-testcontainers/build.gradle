@@ -44,7 +44,6 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	testImplementation("com.couchbase.client:java-client")
-	testImplementation("com.datastax.oss:java-driver-core")
 	testImplementation("io.micrometer:micrometer-registry-otlp")
 	testImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -52,6 +51,9 @@ dependencies {
 	testImplementation("org.apache.activemq:activemq-client")
 	testImplementation("org.apache.activemq:artemis-jakarta-client")  {
 		exclude group: "commons-logging", module: "commons-logging"
+	}
+	testImplementation("org.apache.cassandra:java-driver-core") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
@@ -79,5 +81,6 @@ dependencies {
 	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	testRuntimeOnly("com.zaxxer:HikariCP")
 	testRuntimeOnly("io.lettuce:lettuce-core")
+	testRuntimeOnly("org.flywaydb:flyway-database-postgresql")
 	testRuntimeOnly("org.postgresql:postgresql")
 }
