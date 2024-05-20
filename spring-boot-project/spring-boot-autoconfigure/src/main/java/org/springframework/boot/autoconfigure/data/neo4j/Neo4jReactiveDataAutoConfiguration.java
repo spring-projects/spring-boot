@@ -71,7 +71,7 @@ public class Neo4jReactiveDataAutoConfiguration {
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
 	@ConditionalOnMissingBean(ReactiveTransactionManager.class)
-	ReactiveNeo4jTransactionManager rectiveNeo4jTransactionManager(Driver driver,
+	ReactiveNeo4jTransactionManager reactiveNeo4jTransactionManager(Driver driver,
 			ReactiveDatabaseSelectionProvider databaseNameProvider) {
 		return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
 	}
