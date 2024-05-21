@@ -39,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
+	private static final String HTTP_LOCALHOST = "http://localhost:";
+	
 	private final TestRestTemplate template = new TestRestTemplate(new RestTemplateBuilder()
 		.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
 			.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
@@ -48,12 +50,12 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@MethodSource("parameters")
 	void addARequestMappingToAnExistingController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
-		String urlBase = "http://localhost:" + awaitServerPort();
+		String urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("two").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 	}
@@ -62,10 +64,10 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@MethodSource("parameters")
 	void removeARequestMappingFromAnExistingController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
-		String urlBase = "http://localhost:" + awaitServerPort();
+		String urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		controller("com.example.ControllerOne").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/one", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 	}
@@ -74,12 +76,12 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@MethodSource("parameters")
 	void createAController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
-		String urlBase = "http://localhost:" + awaitServerPort();
+		String urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 
@@ -89,16 +91,16 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@MethodSource("parameters")
 	void createAControllerAndThenAddARequestMapping(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
-		String urlBase = "http://localhost:" + awaitServerPort();
+		String urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 		controller("com.example.ControllerTwo").withRequestMapping("two").withRequestMapping("three").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/three", String.class)).isEqualTo("three");
 	}
 
@@ -107,16 +109,16 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	void createAControllerAndThenAddARequestMappingToAnExistingController(ApplicationLauncher applicationLauncher)
 			throws Exception {
 		launchApplication(applicationLauncher);
-		String urlBase = "http://localhost:" + awaitServerPort();
+		String urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("three").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 		assertThat(this.template.getForObject(urlBase + "/three", String.class)).isEqualTo("three");
@@ -126,11 +128,11 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@MethodSource("parameters")
 	void deleteAController(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
-		String urlBase = "http://localhost:" + awaitServerPort();
+		String urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(new File(this.launchedApplication.getClassesDirectory(), "com/example/ControllerOne.class").delete())
 			.isTrue();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/one", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 
@@ -140,17 +142,17 @@ class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 	@MethodSource("parameters")
 	void createAControllerAndThenDeleteIt(ApplicationLauncher applicationLauncher) throws Exception {
 		launchApplication(applicationLauncher);
-		String urlBase = "http://localhost:" + awaitServerPort();
+		String urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerTwo").withRequestMapping("two").build();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(this.template.getForObject(urlBase + "/two", String.class)).isEqualTo("two");
 		assertThat(new File(this.launchedApplication.getClassesDirectory(), "com/example/ControllerTwo.class").delete())
 			.isTrue();
-		urlBase = "http://localhost:" + awaitServerPort();
+		urlBase = HTTP_LOCALHOST + awaitServerPort();
 		assertThat(this.template.getForEntity(urlBase + "/two", String.class).getStatusCode())
 			.isEqualTo(HttpStatus.NOT_FOUND);
 	}
