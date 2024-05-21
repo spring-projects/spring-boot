@@ -79,6 +79,7 @@ public class TestcontainersPropertySource extends EnumerablePropertySource<Map<S
 		return (valueSupplier != null) ? getProperty(name, valueSupplier) : null;
 	}
 
+	@SuppressWarnings({ "removal", "deprecation" })
 	private Object getProperty(String name, Supplier<Object> valueSupplier) {
 		BeforeTestcontainersPropertySuppliedEvent event = new BeforeTestcontainersPropertySuppliedEvent(this, name);
 		this.eventPublishers.forEach((eventPublisher) -> eventPublisher.publishEvent(event));
