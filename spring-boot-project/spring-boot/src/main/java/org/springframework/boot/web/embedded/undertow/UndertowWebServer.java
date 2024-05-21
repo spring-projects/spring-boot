@@ -298,6 +298,14 @@ public class UndertowWebServer implements WebServer {
 		return ports.get(0).getNumber();
 	}
 
+	/**
+	 * Initiates a graceful shutdown of the Undertow web server. Handling of new requests
+	 * is prevented and the given {@code callback} is invoked at the end of the attempt.
+	 * The attempt can be explicitly ended by invoking {@link #stop}.
+	 * <p>
+	 * Once shutdown has been initiated Undertow will return an {@code HTTP 503} response
+	 * for any new or existing connections.
+	 */
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {
