@@ -254,9 +254,8 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 		Class<?> type = resolvableType.resolve(Object.class);
 		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class, true, false)) {
 			beanName = BeanFactoryUtils.transformedBeanName(beanName);
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			Object attribute = beanDefinition.getAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE);
-			if (resolvableType.equals(attribute) || type.equals(attribute)) {
+			Class<?> producedType = beanFactory.getType(beanName, false);
+			if (type.equals(producedType)) {
 				beans.add(beanName);
 			}
 		}
