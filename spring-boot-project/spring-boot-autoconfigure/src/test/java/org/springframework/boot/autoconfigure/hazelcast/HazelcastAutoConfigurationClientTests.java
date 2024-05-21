@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
+import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.assertj.core.api.Condition;
@@ -64,7 +65,9 @@ class HazelcastAutoConfigurationClientTests {
 	@BeforeAll
 	static void init() {
 		Config config = Config.load();
-		config.getNetworkConfig().setPort(0);
+		NetworkConfig networkConfig = config.getNetworkConfig();
+		networkConfig.setPort(0);
+		networkConfig.setPublicAddress("localhost");
 		hazelcastServer = Hazelcast.newHazelcastInstance(config);
 		InetSocketAddress inetSocketAddress = (InetSocketAddress) hazelcastServer.getLocalEndpoint().getSocketAddress();
 		endpointAddress = inetSocketAddress.getHostString() + ":" + inetSocketAddress.getPort();
