@@ -30,8 +30,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * {@link JettyServerCustomizer} that:
  * <ul>
- * <li>Approves all aliases (Used for Windows CI on
- * Concourse)
+ * <li>Approves all aliases to allow access to unusually named static resources
  * <li>Relaxes URI compliance to allow access to static resources with {@code %} in their file name.
  * </ul>
  *
@@ -47,7 +46,7 @@ public class JettyServerCustomizerConfig {
 		return (server) -> {
 			ContextHandler handler = (ContextHandler) server.getHandler();
 			handler.addAliasCheck((path, resource) -> true);
-			
+
 			for (Connector connector : server.getConnectors()) {
 				connector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration()
 						.setUriCompliance(UriCompliance.LEGACY);
