@@ -509,11 +509,7 @@ bom {
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
-	library("Hibernate", "6.5.0.Final") {
-		prohibit {
-			versionRange "[6.5.1.Final,6.5.1.Final]"
-			because "it contains a regression (https://hibernate.atlassian.net/browse/HHH-18108)"
-		}
+	library("Hibernate", "6.5.2.Final") {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
