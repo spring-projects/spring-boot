@@ -27,6 +27,7 @@ import org.springframework.core.env.PropertySourcesPropertyResolver;
  * underlying sources if the name is a value {@link ConfigurationPropertyName}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResolver {
 
@@ -76,8 +77,16 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		if (value == null) {
 			return null;
 		}
-		if (resolveNestedPlaceholders && value instanceof String string) {
-			value = resolveNestedPlaceholders(string);
+		if (resolveNestedPlaceholders) {
+			if (value instanceof String string) {
+				value = resolveNestedPlaceholders(string);
+			}
+			else if (value instanceof CharSequence cs && !targetValueType.isInstance(value)) {
+				// keep value as it is if value is instance of targetValueType
+				// to avoid potential ConverterNotFoundException while converting String
+				// back to value's type
+				value = resolveNestedPlaceholders(cs.toString());
+			}
 		}
 		return convertValueIfNecessary(value, targetValueType);
 	}

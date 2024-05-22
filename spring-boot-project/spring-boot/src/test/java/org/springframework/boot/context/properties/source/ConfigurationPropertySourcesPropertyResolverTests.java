@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ConfigurationPropertySourcesPropertyResolver}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConfigurationPropertySourcesPropertyResolverTests {
 
@@ -111,6 +112,45 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		environment.getPropertySources().addFirst(propertySource);
 		assertThat(environment.getProperty("v2")).isEqualTo("1");
 		assertThat(environment.getProperty("v2", Integer.class)).isOne();
+	}
+
+	@Test // gh-34195
+	void resolveNestedPlaceholdersIfValueIsCharSequence() {
+		CharSequence cs = new CharSequence() {
+
+			static final String underlying = "${v1}";
+
+			@Override
+			public int length() {
+				return underlying.length();
+			}
+
+			@Override
+			public char charAt(int index) {
+				return underlying.charAt(index);
+			}
+
+			@Override
+			public CharSequence subSequence(int start, int end) {
+				return underlying.subSequence(start, end);
+			}
+
+			@Override
+			public String toString() {
+				return underlying;
+			}
+		};
+		ResolverEnvironment environment = new ResolverEnvironment();
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.withProperty("v1", "1");
+		propertySource.withProperty("v2", cs);
+		environment.getPropertySources().addFirst(propertySource);
+		assertThat(environment.getProperty("v2")).isEqualTo("1");
+		assertThat(environment.getProperty("v2", Integer.class)).isOne();
+
+		// do not resolve to avoid ConverterNotFoundException
+		assertThat(environment.getProperty("v2", CharSequence.class)).isSameAs(cs);
+		assertThat(environment.getProperty("v2", cs.getClass())).isSameAs(cs);
 	}
 
 	private CountingMockPropertySource createMockPropertySource(StandardEnvironment environment, boolean attach) {
