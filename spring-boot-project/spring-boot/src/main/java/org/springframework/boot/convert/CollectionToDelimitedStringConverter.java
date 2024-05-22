@@ -55,7 +55,7 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (source == null) {
+		if (Objects.isNull(source)) {
 			return null;
 		}
 		Collection<?> sourceCollection = (Collection<?>) source;
