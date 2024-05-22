@@ -26,7 +26,8 @@ import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsed
  *
  * @author Phillip Webb
  * @since 3.2.2
- * @deprecated since 3.2.6 in favor of {@link BeforeTestcontainerUsedEvent}
+ * @deprecated since 3.2.6 for removal in 3.4.0 in favor of
+ * {@link BeforeTestcontainerUsedEvent}
  */
 @Deprecated(since = "3.2.6", forRemoval = true)
 public class BeforeTestcontainersPropertySuppliedEvent extends BeforeTestcontainerUsedEvent {
