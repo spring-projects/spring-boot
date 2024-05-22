@@ -95,6 +95,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.RequestToViewNameTranslator;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -468,6 +469,15 @@ public class WebMvcAutoConfiguration {
 		public FlashMapManager flashMapManager() {
 			return super.flashMapManager();
 		}
+
+
+		@Override
+		@Bean
+		@ConditionalOnMissingBean(name = DispatcherServlet.REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME)
+		public RequestToViewNameTranslator viewNameTranslator() {
+			return super.viewNameTranslator();
+		}
+
 
 		private Resource getIndexHtmlResource() {
 			for (String location : this.resourceProperties.getStaticLocations()) {
