@@ -34,6 +34,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -1007,6 +1008,23 @@ public abstract class AbstractServletWebServerFactoryTests {
 			.map((entry) -> new MimeMappings.Mapping(entry.getKey(), entry.getValue()))
 			.toList();
 		Collection<MimeMappings.Mapping> expectedMimeMappings = MimeMappings.DEFAULT.getAll();
+		assertThat(configuredMimeMappings).containsExactlyInAnyOrderElementsOf(expectedMimeMappings);
+	}
+
+	@Test
+	void additionalMimeMappingsCanBeConfigured() {
+		AbstractServletWebServerFactory factory = getFactory();
+		MimeMappings additionalMimeMappings = new MimeMappings();
+		additionalMimeMappings.add("a", "alpha");
+		additionalMimeMappings.add("b", "bravo");
+		factory.addMimeMappings(additionalMimeMappings);
+		this.webServer = factory.getWebServer();
+		Collection<MimeMappings.Mapping> configuredMimeMappings = getActualMimeMappings().entrySet()
+			.stream()
+			.map((entry) -> new MimeMappings.Mapping(entry.getKey(), entry.getValue()))
+			.toList();
+		List<MimeMappings.Mapping> expectedMimeMappings = new ArrayList<>(MimeMappings.DEFAULT.getAll());
+		expectedMimeMappings.addAll(additionalMimeMappings.getAll());
 		assertThat(configuredMimeMappings).containsExactlyInAnyOrderElementsOf(expectedMimeMappings);
 	}
 

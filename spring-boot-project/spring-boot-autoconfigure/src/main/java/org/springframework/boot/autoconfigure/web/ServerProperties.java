@@ -120,7 +120,7 @@ public class ServerProperties {
 	/**
 	 * Custom MIME mappings in addition to the default MIME mappings.
 	 */
-	private final MimeMappings mimeMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
+	private final MimeMappings mimeMappings = new MimeMappings();
 
 	@NestedConfigurationProperty
 	private final Http2 http2 = new Http2();

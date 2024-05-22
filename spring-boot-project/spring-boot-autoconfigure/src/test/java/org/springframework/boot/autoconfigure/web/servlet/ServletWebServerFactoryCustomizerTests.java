@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -29,6 +30,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.web.server.Cookie;
+import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -74,10 +76,25 @@ class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void testCustomMimeMappings() {
+	void withNoCustomMimeMappingsThenEmptyMimeMappingsIsAdded() {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		then(factory).should().setMimeMappings(this.properties.getMimeMappings());
+		ArgumentCaptor<MimeMappings> mimeMappingsCaptor = ArgumentCaptor.forClass(MimeMappings.class);
+		then(factory).should().addMimeMappings(mimeMappingsCaptor.capture());
+		MimeMappings mimeMappings = mimeMappingsCaptor.getValue();
+		assertThat(mimeMappings.getAll()).isEmpty();
+	}
+
+	@Test
+	void withCustomMimeMappingsThenPopulatedMimeMappingsIsAdded() {
+		this.properties.getMimeMappings().add("a", "alpha");
+		this.properties.getMimeMappings().add("b", "bravo");
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		ArgumentCaptor<MimeMappings> mimeMappingsCaptor = ArgumentCaptor.forClass(MimeMappings.class);
+		then(factory).should().addMimeMappings(mimeMappingsCaptor.capture());
+		MimeMappings mimeMappings = mimeMappingsCaptor.getValue();
+		assertThat(mimeMappings.getAll()).hasSize(2);
 	}
 
 	@Test
