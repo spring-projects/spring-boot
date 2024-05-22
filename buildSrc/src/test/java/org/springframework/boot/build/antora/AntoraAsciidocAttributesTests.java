@@ -92,21 +92,21 @@ class AntoraAsciidocAttributesTests {
 	}
 
 	@Test
-	void urlArtifactReposiroryWhenRelease() {
+	void urlArtifactRepositoryWhenRelease() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.maven.apache.org/maven2");
 	}
 
 	@Test
-	void urlArtifactReposiroryWhenMilestone() {
+	void urlArtifactRepositoryWhenMilestone() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/milestone");
 	}
 
 	@Test
-	void urlArtifactReposiroryWhenSnapshot() {
+	void urlArtifactRepositoryWhenSnapshot() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/snapshot");

@@ -100,7 +100,7 @@ class BindFailureAnalyzerTests {
 	}
 
 	@Test
-	void bindExceptionWithSupressedMissingParametersException() {
+	void bindExceptionWithSuppressedMissingParametersException() {
 		BeanCreationException failure = createFailure(GenericFailureConfiguration.class, "test.foo.value=alpha");
 		failure.addSuppressed(new IllegalStateException(
 				"Missing parameter names. Ensure that the compiler uses the '-parameters' flag"));

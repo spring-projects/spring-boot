@@ -64,7 +64,7 @@ class ConnectionDetailsFactoriesTests {
 	}
 
 	@Test
-	void getRequiredConnectionDetailsWhenSourceHasNoMatchTheowsException() {
+	void getRequiredConnectionDetailsWhenSourceHasNoMatchThrowsException() {
 		this.loader.addInstance(ConnectionDetailsFactory.class, new NullResultTestConnectionDetailsFactory());
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
 		assertThatExceptionOfType(ConnectionDetailsNotFoundException.class)

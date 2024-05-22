@@ -54,7 +54,7 @@ class DefaultGraphQlSchemaConditionTests {
 				didMatch(context);
 				assertThat(conditionReportMessage(context)).contains(
 						"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
-					.contains("@ConditionalOnGraphQlSchema found customizer myBuilderCuystomizer");
+					.contains("@ConditionalOnGraphQlSchema found customizer myBuilderCustomizer");
 			});
 	}
 
@@ -98,7 +98,7 @@ class DefaultGraphQlSchemaConditionTests {
 	static class CustomCustomizerConfiguration {
 
 		@Bean
-		GraphQlSourceBuilderCustomizer myBuilderCuystomizer() {
+		GraphQlSourceBuilderCustomizer myBuilderCustomizer() {
 			return (builder) -> {
 
 			};
