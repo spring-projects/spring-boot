@@ -1670,7 +1670,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session", "3.2.3-SNAPSHOT") {
+	library("Spring Session", "3.2.3") {
 		considerSnapshots()
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
