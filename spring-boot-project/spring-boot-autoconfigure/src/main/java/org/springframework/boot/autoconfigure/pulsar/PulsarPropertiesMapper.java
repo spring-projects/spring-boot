@@ -137,12 +137,23 @@ final class PulsarPropertiesMapper {
 		try {
 			return sortedParams.entrySet()
 				.stream()
-				.map((entry) -> "\"%s\":\"%s\"".formatted(entry.getKey(), entry.getValue()))
+				.map((entry) -> "\"%s\":\"%s\"".formatted(entry.getKey(), escapeJson(entry.getValue())))
 				.collect(Collectors.joining(",", "{", "}"));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not convert auth parameters to encoded string", ex);
 		}
+	}
+
+	private String escapeJson(String raw) {
+		return raw.replace("\\", "\\\\")
+			.replace("\"", "\\\"")
+			.replace("/", "\\/")
+			.replace("\b", "\\b")
+			.replace("\t", "\\t")
+			.replace("\n", "\\n")
+			.replace("\f", "\\f")
+			.replace("\r", "\\r");
 	}
 
 	<T> void customizeProducerBuilder(ProducerBuilder<T> producerBuilder) {

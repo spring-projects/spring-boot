@@ -81,8 +81,10 @@ class PulsarPropertiesMapperTests {
 	@Test
 	void customizeClientBuilderWhenHasAuthentication() throws UnsupportedAuthenticationException {
 		PulsarProperties properties = new PulsarProperties();
-		Map<String, String> params = Map.of("param", "name");
-		String authParamString = "{\"param\":\"name\"}";
+		Map<String, String> params = Map.of("simpleParam", "foo", "complexParam",
+				"{\n\t\"k1\" : \"v1\",\n\t\"k2\":\"v2\"\n}");
+		String authParamString = "{\"complexParam\":\"{\\n\\t\\\"k1\\\" : \\\"v1\\\",\\n\\t\\\"k2\\\":\\\"v2\\\"\\n}\""
+				+ ",\"simpleParam\":\"foo\"}";
 		properties.getClient().getAuthentication().setPluginClassName("myclass");
 		properties.getClient().getAuthentication().setParam(params);
 		ClientBuilder builder = mock(ClientBuilder.class);
@@ -166,8 +168,10 @@ class PulsarPropertiesMapperTests {
 	@Test
 	void customizeAdminBuilderWhenHasAuthentication() throws UnsupportedAuthenticationException {
 		PulsarProperties properties = new PulsarProperties();
-		Map<String, String> params = Map.of("param", "name");
-		String authParamString = "{\"param\":\"name\"}";
+		Map<String, String> params = Map.of("simpleParam", "foo", "complexParam",
+				"{\n\t\"k1\" : \"v1\",\n\t\"k2\":\"v2\"\n}");
+		String authParamString = "{\"complexParam\":\"{\\n\\t\\\"k1\\\" : \\\"v1\\\",\\n\\t\\\"k2\\\":\\\"v2\\\"\\n}\""
+				+ ",\"simpleParam\":\"foo\"}";
 		properties.getAdmin().getAuthentication().setPluginClassName("myclass");
 		properties.getAdmin().getAuthentication().setParam(params);
 		PulsarAdminBuilder builder = mock(PulsarAdminBuilder.class);
