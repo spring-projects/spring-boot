@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,6 +99,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
 		this.pullPolicy = getProject().getObjects().property(PullPolicy.class);
+		getSecurityOptions().convention((Iterable<? extends String>) null);
 	}
 
 	/**
@@ -464,9 +465,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeSecurityOptions(BuildRequest request) {
-		List<String> securityOptions = getSecurityOptions().getOrNull();
-		if (securityOptions != null) {
-			return request.withSecurityOptions(securityOptions);
+		if (getSecurityOptions().isPresent()) {
+			List<String> securityOptions = getSecurityOptions().getOrNull();
+			if (securityOptions != null) {
+				return request.withSecurityOptions(securityOptions);
+			}
 		}
 		return request;
 	}

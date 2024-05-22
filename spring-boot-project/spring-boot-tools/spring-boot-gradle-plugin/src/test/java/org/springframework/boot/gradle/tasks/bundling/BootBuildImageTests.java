@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -292,6 +293,25 @@ class BootBuildImageTests {
 		this.buildImage.getTags().add("example.com/my-app:latest");
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
+	}
+
+	@Test
+	void whenSecurityOptionsAreNotConfiguredThenRequestHasNoSecurityOptions() {
+		assertThat(this.buildImage.createRequest().getSecurityOptions()).isNull();
+	}
+
+	@Test
+	void whenSecurityOptionsAreEmptyThenRequestHasEmptySecurityOptions() {
+		this.buildImage.getSecurityOptions().set(Collections.emptyList());
+		assertThat(this.buildImage.createRequest().getSecurityOptions()).isEmpty();
+	}
+
+	@Test
+	void whenSecurityOptionsAreConfiguredThenRequestHasSecurityOptions() {
+		this.buildImage.getSecurityOptions().add("label=user:USER");
+		this.buildImage.getSecurityOptions().add("label=role:ROLE");
+		assertThat(this.buildImage.createRequest().getSecurityOptions()).containsExactly("label=user:USER",
+				"label=role:ROLE");
 	}
 
 }
