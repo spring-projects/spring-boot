@@ -134,6 +134,7 @@ class TestcontainersPropertySourceTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void getPropertyPublishesEvent() {
 		try (GenericApplicationContext applicationContext = new GenericApplicationContext()) {
 			List<ApplicationEvent> events = new ArrayList<>();

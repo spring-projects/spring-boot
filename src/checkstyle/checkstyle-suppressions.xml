@@ -83,4 +83,5 @@
 	<suppress files="MyContainers\.java" checks="InterfaceIsType" />
 	<suppress files="CertificateMatchingTest\.java" checks="SpringTestFileName" />
 	<suppress files="SpringBootBanner\.java" checks="SpringLeadingWhitespace" />
+	<suppress files="LoadTimeWeaverAwareConsumerContainers\.java" checks="InterfaceIsType" />
 </suppressions>

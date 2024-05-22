@@ -39,7 +39,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
-import org.springframework.boot.testcontainers.properties.BeforeTestcontainersPropertySuppliedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -61,7 +60,7 @@ import org.springframework.core.log.LogMessage;
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class TestcontainersLifecycleBeanPostProcessor
-		implements DestructionAwareBeanPostProcessor, ApplicationListener<BeforeTestcontainersPropertySuppliedEvent> {
+		implements DestructionAwareBeanPostProcessor, ApplicationListener<BeforeTestcontainerUsedEvent> {
 
 	private static final Log logger = LogFactory.getLog(TestcontainersLifecycleBeanPostProcessor.class);
 
@@ -80,7 +79,7 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	@Override
-	public void onApplicationEvent(BeforeTestcontainersPropertySuppliedEvent event) {
+	public void onApplicationEvent(BeforeTestcontainerUsedEvent event) {
 		initializeContainers();
 	}
 

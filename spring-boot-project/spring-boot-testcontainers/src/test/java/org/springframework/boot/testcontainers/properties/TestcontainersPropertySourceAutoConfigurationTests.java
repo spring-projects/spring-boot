@@ -49,6 +49,7 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(TestcontainersPropertySourceAutoConfiguration.class));
 
 	@Test
+	@SuppressWarnings("removal")
 	void containerBeanMethodContributesProperties() {
 		List<ApplicationEvent> events = new ArrayList<>();
 		this.contextRunner.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
