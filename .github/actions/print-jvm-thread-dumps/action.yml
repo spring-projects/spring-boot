@@ -7,7 +7,7 @@ runs:
       shell: bash
       run: |
         for jvm_pid in $(jps -q -J-XX:+PerfDisableSharedMem); do
-          jcmd $java_pid Thread.print
+          jcmd $jvm_pid Thread.print
         done
     - if: ${{ runner.os == 'Windows' }}
       shell: powershell
