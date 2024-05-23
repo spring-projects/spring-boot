@@ -29,7 +29,7 @@ runs:
     - shell: bash
       if: ${{ inputs.make-default == 'true' }}
       run: >
-        curl -X POST \
+        curl -X PUT \
           -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \
           -H "Consumer-Token: ${{ inputs.sdkman-consumer-token }}" \
           -H "Content-Type: application/json" \
