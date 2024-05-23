@@ -45,6 +45,7 @@ class SpringBootBanner implements Banner {
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream printStream) {
+		printStream.println();
 		printStream.println(BANNER);
 		String version = String.format(" (v%s)", SpringBootVersion.getVersion());
 		StringBuilder padding = new StringBuilder();
