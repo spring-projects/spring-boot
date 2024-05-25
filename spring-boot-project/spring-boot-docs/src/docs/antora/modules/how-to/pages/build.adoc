@@ -161,7 +161,7 @@ This means that they cannot be found when the executable jar is used as a depend
 To produce the two artifacts, one that can be used as a dependency and one that is executable, a classifier must be specified.
 This classifier is applied to the name of the executable archive, leaving the default archive for use as a dependency.
 
-To configure a classifier for `exec` in Maven, you can use the following configuration:
+To configure a classifier of `exec` in Maven, you can use the following configuration:
 
 [source,xml]
 ----
