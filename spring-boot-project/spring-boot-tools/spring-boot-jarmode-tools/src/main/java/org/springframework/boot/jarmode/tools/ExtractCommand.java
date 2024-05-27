@@ -29,6 +29,7 @@ import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.util.EnumSet;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -251,13 +252,22 @@ class ExtractCommand extends Command {
 		mkdirs(file.getParentFile());
 		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file), manifest)) {
 			EnumSet<Type> allowedTypes = EnumSet.of(Type.APPLICATION_CLASS_OR_RESOURCE, Type.META_INF);
+			Set<String> writtenEntries = new HashSet<>();
 			withJarEntries(this.context.getArchiveFile(), ((stream, jarEntry) -> {
 				Entry entry = jarStructure.resolve(jarEntry);
 				if (entry != null && allowedTypes.contains(entry.type()) && StringUtils.hasLength(entry.location())) {
 					JarEntry newJarEntry = createJarEntry(entry.location(), jarEntry);
-					output.putNextEntry(newJarEntry);
-					StreamUtils.copy(stream, output);
-					output.closeEntry();
+					if (writtenEntries.add(newJarEntry.getName())) {
+						output.putNextEntry(newJarEntry);
+						StreamUtils.copy(stream, output);
+						output.closeEntry();
+					}
+					else {
+						if (!newJarEntry.isDirectory()) {
+							throw new IllegalStateException("Duplicate jar entry '%s' from original location '%s'"
+								.formatted(newJarEntry.getName(), entry.originalLocation()));
+						}
+					}
 				}
 			}));
 		}
