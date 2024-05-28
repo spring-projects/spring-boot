@@ -22,7 +22,7 @@ configurations {
 				// Downgrade Spring Framework as Gradle cannot cope with 6.1.0-M1's
 				// multi-version jar files with bytecode in META-INF/versions/21
 				if (dependency.requested.group.equals("org.springframework")) {
-					dependency.useVersion("6.0.10")
+					dependency.useVersion("$springFramework60xVersion")
 				}
 			}
 		}
