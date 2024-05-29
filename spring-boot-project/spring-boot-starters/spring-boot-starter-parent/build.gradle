@@ -162,13 +162,13 @@ publishing.publications.withType(MavenPublication) {
 									goals {
 										delegate.goal('makeAggregateBom')
 									}
+									configuration {
+										delegate.projectType('application')
+										delegate.outputDirectory('${project.build.outputDirectory}/META-INF/sbom')
+										delegate.outputFormat('json')
+										delegate.outputName('application.cdx')
+									}
 								}
-							}
-							configuration {
-								delegate.projectType('application')
-								delegate.outputDirectory('${project.build.outputDirectory}/META-INF/sbom')
-								delegate.outputFormat('json')
-                        		delegate.outputName('application.cdx')
 							}
 						}
 						plugin {
