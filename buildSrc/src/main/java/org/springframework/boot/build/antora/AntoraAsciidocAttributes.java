@@ -126,7 +126,7 @@ public class AntoraAsciidocAttributes {
 
 	private void addSpringDataDependencyVersion(Map<String, String> attributes, String name, String artifactId) {
 		String version = this.dependencyVersions.get("org.springframework.data:" + artifactId);
-		Assert.notNull(version, () -> "No version found for Spring Data artificat " + artifactId);
+		Assert.notNull(version, () -> "No version found for Spring Data artifact " + artifactId);
 		attributes.put("version-" + name, version);
 	}
 
