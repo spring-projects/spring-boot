@@ -55,7 +55,7 @@ For example, if you want to configure the issuer url for the `AuthenticationOAut
 If you use other forms, such as `issuerurl` or `issuer-url`, the setting will not be applied to the plugin.
 
 This lack of relaxed binding also makes using environment variables for authentication parameters problematic because the case sensitivity is lost during translation.
-If you use environment variables for the parameters then you will need to follow {url-spring-pulsar-docs}/reference/pulsar.html#client-authentication-env-vars[these steps] in the Spring for Apache Pulsar reference documentation for it to work properly.
+If you use environment variables for the parameters then you will need to follow {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html#client-authentication-env-vars[these steps] in the Spring for Apache Pulsar reference documentation for it to work properly.
 ====
 
 
@@ -64,11 +64,9 @@ If you use environment variables for the parameters then you will need to follow
 === SSL
 
 By default, Pulsar clients communicate with Pulsar services in plain text.
-You can follow {url-spring-pulsar-docs}reference/pulsar.html#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
+You can follow {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
 
-For complete details on the client and authentication see the Spring for Apache Pulsar {url-spring-pulsar-docs}reference/pulsar.html#pulsar-client[reference documentation].
-
-
+For complete details on the client and authentication see the Spring for Apache Pulsar {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html[reference documentation].
 
 [[messaging.pulsar.connecting-reactive]]
 == Connecting to Pulsar Reactively
