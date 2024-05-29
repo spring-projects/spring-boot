@@ -40,6 +40,6 @@ include-code::MySecurityConfiguration[]
 
 include-code::MyDatasourceConfiguration[]
 
-Having a single configuration class can be inefficient when beans of a certain domain need to be included in slice tests.
+Having a single configuration class can be inefficient when beans from a certain domain need to be included in slice tests.
 Instead, structuring the application's configuration as multiple granular classes with beans for a specific domain can enable importing them only for specific slice tests.
 
