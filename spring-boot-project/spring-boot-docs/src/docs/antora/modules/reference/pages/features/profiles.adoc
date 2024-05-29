@@ -32,7 +32,7 @@ spring:
     default: "none"
 ----
 
-`spring.profiles.active` and `spring.profiles.default` can only be used in non-profile specific documents.
+`spring.profiles.active` and `spring.profiles.default` can only be used in non-profile-specific documents.
 This means they cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
 
 For example, the second document configuration is invalid:
@@ -77,7 +77,7 @@ spring:
       - "local"
 ----
 
-WARNING: Similar to `spring.profiles.active`, `spring.profiles.include` can only be used in non-profile specific documents.
+WARNING: Similar to `spring.profiles.active`, `spring.profiles.include` can only be used in non-profile-specific documents.
 This means it cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
 
 Profile groups, which are described in the xref:features/profiles.adoc#features.profiles.groups[next section] can also be used to add active profiles if a given profile is active.
@@ -107,6 +107,8 @@ spring:
 
 Our application can now be started using `--spring.profiles.active=production` to activate the `production`, `proddb` and `prodmq` profiles in one hit.
 
+WARNING: Similar to `spring.profiles.active` and `spring.profiles.include`, `spring.profiles.group` can only be used in non-profile-specific documents.
+This means it cannot be included in xref:features/external-config.adoc#features.external-config.files.profile-specific[profile specific files] or xref:features/external-config.adoc#features.external-config.files.activation-properties[documents activated] by `spring.config.activate.on-profile`.
 
 
 [[features.profiles.programmatically-setting-profiles]]
