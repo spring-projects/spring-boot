@@ -90,8 +90,7 @@ public class LiquibaseAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(LiquibaseConnectionDetails.class)
-		PropertiesLiquibaseConnectionDetails liquibaseConnectionDetails(LiquibaseProperties properties,
-				ObjectProvider<JdbcConnectionDetails> jdbcConnectionDetails) {
+		PropertiesLiquibaseConnectionDetails liquibaseConnectionDetails(LiquibaseProperties properties) {
 			return new PropertiesLiquibaseConnectionDetails(properties);
 		}
 

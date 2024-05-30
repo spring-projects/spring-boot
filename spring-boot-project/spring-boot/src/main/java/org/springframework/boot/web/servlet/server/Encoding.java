@@ -60,7 +60,7 @@ public class Encoding {
 	private Boolean forceResponse;
 
 	/**
-	 * Mapping of locale to charset for response encoding..
+	 * Mapping of locale to charset for response encoding.
 	 */
 	private Map<Locale, Charset> mapping;
 
