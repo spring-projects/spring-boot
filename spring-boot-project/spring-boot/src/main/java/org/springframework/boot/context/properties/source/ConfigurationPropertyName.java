@@ -28,9 +28,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * A configuration property name composed of elements separated by dots. User created
- * names may contain the characters "{@code a-z}" "{@code 0-9}") and "{@code -}", they
- * must be lower-case and must start with an alphanumeric character. The "{@code -}" is
- * used purely for formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered
+ * names may contain the characters "{@code a-z}" "{@code 0-9}" and "{@code -}", they must
+ * be lower-case and must start with an alphanumeric character. The "{@code -}" is used
+ * purely for formatting, i.e. "{@code foo-bar}" and "{@code foobar}" are considered
  * equivalent.
  * <p>
  * The "{@code [}" and "{@code ]}" characters may be used to indicate an associative
