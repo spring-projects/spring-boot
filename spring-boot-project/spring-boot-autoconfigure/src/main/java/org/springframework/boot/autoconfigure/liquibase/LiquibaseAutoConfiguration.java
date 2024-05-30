@@ -18,9 +18,11 @@ package org.springframework.boot.autoconfigure.liquibase;
 
 import javax.sql.DataSource;
 
+import liquibase.Liquibase;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
 import liquibase.change.DatabaseChange;
+import liquibase.integration.spring.Customizer;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.ui.UIServiceEnum;
 
@@ -66,6 +68,7 @@ import org.springframework.util.StringUtils;
  * @author Ferenc Gratzer
  * @author Evgeniy Cheban
  * @author Moritz Halbritter
+ * @author Ahmed Ashour
  * @since 1.1.0
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
@@ -97,7 +100,7 @@ public class LiquibaseAutoConfiguration {
 		@Bean
 		public SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
-				LiquibaseConnectionDetails connectionDetails) {
+				ObjectProvider<Customizer<Liquibase>> customizer, LiquibaseConnectionDetails connectionDetails) {
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
@@ -125,6 +128,7 @@ public class LiquibaseAutoConfiguration {
 			if (properties.getUiService() != null) {
 				liquibase.setUiService(UIServiceEnum.valueOf(properties.getUiService().name()));
 			}
+			customizer.ifAvailable(liquibase::setCustomizer);
 			return liquibase;
 		}
 
