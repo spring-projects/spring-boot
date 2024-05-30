@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import liquibase.Liquibase;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
 import liquibase.command.core.helpers.ShowSummaryArgument;
@@ -68,6 +69,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
+import liquibase.integration.spring.*;
 
 /**
  * Tests for {@link LiquibaseAutoConfiguration}.
@@ -83,6 +85,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Evgeniy Cheban
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Ahmed Ashour
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LiquibaseAutoConfigurationTests {
@@ -532,6 +535,14 @@ class LiquibaseAutoConfigurationTests {
 		assertThat(RuntimeHintsPredicates.resource().forResource("db/changelog/tables/init.sql")).accepts(hints);
 	}
 
+	@Test
+	void customizer() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomizerConfiguration.class)
+				.run(assertLiquibase((liquibase) -> {
+					assertThat(liquibase.getCustomizer()).isNotNull();
+				}));
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(SpringLiquibase.class);
@@ -664,6 +675,16 @@ class LiquibaseAutoConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomizerConfiguration {
+
+		@Bean
+		Customizer<Liquibase> customizer() {
+			return liquibase -> liquibase.setChangeLogParameter("some key", "some value");
 		}
 
 	}
