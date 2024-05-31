@@ -3,7 +3,7 @@
 
 The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
-Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
+Testcontainers are especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
 
 Testcontainers can be used in a Spring Boot test as follows:
 

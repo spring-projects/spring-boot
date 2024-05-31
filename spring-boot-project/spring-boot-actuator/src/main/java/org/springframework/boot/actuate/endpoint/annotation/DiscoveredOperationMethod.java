@@ -44,11 +44,11 @@ public class DiscoveredOperationMethod extends OperationMethod {
 		Assert.notNull(annotationAttributes, "AnnotationAttributes must not be null");
 		List<String> producesMediaTypes = new ArrayList<>();
 		producesMediaTypes.addAll(Arrays.asList(annotationAttributes.getStringArray("produces")));
-		producesMediaTypes.addAll(getProducesFromProducable(annotationAttributes));
+		producesMediaTypes.addAll(getProducesFromProducible(annotationAttributes));
 		this.producesMediaTypes = Collections.unmodifiableList(producesMediaTypes);
 	}
 
-	private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducable(
+	private <E extends Enum<E> & Producible<E>> List<String> getProducesFromProducible(
 			AnnotationAttributes annotationAttributes) {
 		Class<?> type = getProducesFrom(annotationAttributes);
 		if (type == Producible.class) {
