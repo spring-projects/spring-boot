@@ -234,7 +234,7 @@ If you need to export metrics to a different backend as part of an integration t
 
 
 [[features.testing.spring-boot-applications.mocking-beans]]
-==== Mocking and Spying Beans
+==== Mocking and Spring Beans
 When running tests, it is sometimes necessary to mock certain components within your application context.
 For example, you may have a facade over some remote service that is unavailable during development.
 Mocking can also be useful when you want to simulate failures that might be hard to trigger in a real environment.
