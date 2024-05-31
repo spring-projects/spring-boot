@@ -460,6 +460,14 @@
       }
     },
     {
+      "name": "management.metrics.export.atlas.aggrConfig",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error",
+        "replacement": "management.atlas.metrics.export.aggrConfig"
+      }
+    },
+    {
       "name": "management.metrics.export.atlas.batch-size",
       "type": "java.lang.Integer",
       "deprecation": {
