@@ -1,7 +1,7 @@
 [[actuator.metrics]]
 = Metrics
 
-Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports {url-micrometer-docs}[numerous monitoring systems], including:
+Spring Boot Actuator provides dependency management and auto-configuration for {url-micrometer-site}[Micrometer], an application metrics facade that supports {url-micrometer-docs}[numerous monitoring systems], including:
 
 - xref:actuator/metrics.adoc#actuator.metrics.export.appoptics[AppOptics]
 - xref:actuator/metrics.adoc#actuator.metrics.export.atlas[Atlas]
