@@ -14,7 +14,7 @@ dependencies {
 }
 
 repositories {
-	maven { url 'file:repository' }
+	maven { url 'repository' }
 }
 
 configurations.all {

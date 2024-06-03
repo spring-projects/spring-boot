@@ -609,7 +609,11 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	@TestTemplate
 	void dirModeAndFileModeAreApplied() throws IOException {
-		BuildResult result = this.gradleBuild.build(this.taskName);
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.8-rc-1")
+			.expectDeprecationMessages("The CopyProcessingSpec.setDirMode(Integer) method has been deprecated",
+					"The CopyProcessingSpec.setFileMode(Integer) method has been deprecated",
+					"upgrading_version_8.html#unix_file_permissions_deprecated")
+			.build(this.taskName);
 		assertThat(result.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		try (ZipFile jarFile = new ZipFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			Enumeration<ZipArchiveEntry> entries = jarFile.getEntries();
