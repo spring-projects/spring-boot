@@ -46,6 +46,7 @@ import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.quartz.utils.Key;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
@@ -100,7 +101,7 @@ public class QuartzEndpoint {
 		for (String groupName : this.scheduler.getJobGroupNames()) {
 			List<String> jobs = this.scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))
 				.stream()
-				.map((key) -> key.getName())
+				.map(Key::getName)
 				.toList();
 			result.put(groupName, Collections.singletonMap("jobs", jobs));
 		}
@@ -121,7 +122,7 @@ public class QuartzEndpoint {
 			groupDetails.put("triggers",
 					this.scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName))
 						.stream()
-						.map((key) -> key.getName())
+						.map(Key::getName)
 						.toList());
 			result.put(groupName, groupDetails);
 		}

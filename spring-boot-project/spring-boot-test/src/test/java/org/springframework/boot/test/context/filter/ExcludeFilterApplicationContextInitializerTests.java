@@ -40,7 +40,7 @@ class ExcludeFilterApplicationContextInitializerTests {
 	void testConfigurationIsExcluded() {
 		SpringApplication application = new SpringApplication(TestApplication.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		AssertableApplicationContext applicationContext = AssertableApplicationContext.get(() -> application.run());
+		AssertableApplicationContext applicationContext = AssertableApplicationContext.get(application::run);
 		assertThat(applicationContext).hasSingleBean(TestApplication.class);
 		assertThat(applicationContext).doesNotHaveBean(ExcludedTestConfiguration.class);
 	}

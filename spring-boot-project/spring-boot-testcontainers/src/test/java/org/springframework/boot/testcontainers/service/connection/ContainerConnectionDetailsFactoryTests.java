@@ -111,7 +111,7 @@ class ContainerConnectionDetailsFactoryTests {
 	void getContainerWhenNotInitializedThrowsException() {
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		TestContainerConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
-		assertThatIllegalStateException().isThrownBy(() -> connectionDetails.callGetContainer())
+		assertThatIllegalStateException().isThrownBy(connectionDetails::callGetContainer)
 			.withMessage("Container cannot be obtained before the connection details bean has been initialized");
 	}
 

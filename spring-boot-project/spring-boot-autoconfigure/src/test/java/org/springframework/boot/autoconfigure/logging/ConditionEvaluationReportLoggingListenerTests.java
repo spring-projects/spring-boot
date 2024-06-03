@@ -58,7 +58,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
-		withDebugLogging(() -> context.refresh());
+		withDebugLogging(context::refresh);
 		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
 	}
 

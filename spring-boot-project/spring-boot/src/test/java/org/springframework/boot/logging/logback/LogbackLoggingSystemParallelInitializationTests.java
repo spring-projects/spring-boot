@@ -53,7 +53,7 @@ class LogbackLoggingSystemParallelInitializationTests {
 		List<Thread> threads = new ArrayList<>();
 		List<Throwable> exceptions = new CopyOnWriteArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			Thread thread = new Thread(() -> this.loggingSystem.beforeInitialize());
+			Thread thread = new Thread(this.loggingSystem::beforeInitialize);
 			thread.setUncaughtExceptionHandler((t, ex) -> exceptions.add(ex));
 			threads.add(thread);
 		}

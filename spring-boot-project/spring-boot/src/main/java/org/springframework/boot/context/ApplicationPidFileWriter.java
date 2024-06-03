@@ -70,20 +70,15 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 	private static final List<Property> FILE_PROPERTIES;
 
 	static {
-		List<Property> properties = new ArrayList<>();
-		properties.add(new SpringProperty("spring.pid.", "file"));
-		properties.add(new SpringProperty("spring.", "pidfile"));
-		properties.add(new SystemProperty("PIDFILE"));
-		FILE_PROPERTIES = Collections.unmodifiableList(properties);
+		FILE_PROPERTIES = List.of(new SpringProperty("spring.pid.", "file"), new SpringProperty("spring.", "pidfile"),
+				new SystemProperty("PIDFILE"));
 	}
 
 	private static final List<Property> FAIL_ON_WRITE_ERROR_PROPERTIES;
 
 	static {
-		List<Property> properties = new ArrayList<>();
-		properties.add(new SpringProperty("spring.pid.", "fail-on-write-error"));
-		properties.add(new SystemProperty("PID_FAIL_ON_WRITE_ERROR"));
-		FAIL_ON_WRITE_ERROR_PROPERTIES = Collections.unmodifiableList(properties);
+		FAIL_ON_WRITE_ERROR_PROPERTIES = List.of(new SpringProperty("spring.pid.", "fail-on-write-error"),
+				new SystemProperty("PID_FAIL_ON_WRITE_ERROR"));
 	}
 
 	private static final AtomicBoolean created = new AtomicBoolean();

@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -35,7 +36,7 @@ public class SecurityConfig {
 
 	@Bean
 	public DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf((csrf) -> csrf.disable())
+		return http.csrf(AbstractHttpConfigurer::disable)
 			// Demonstrate that method security works
 			// Best practice to use both for defense in depth
 			.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll())

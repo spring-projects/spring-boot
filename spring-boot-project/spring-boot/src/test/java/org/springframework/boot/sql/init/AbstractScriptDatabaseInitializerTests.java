@@ -17,6 +17,7 @@
 package org.springframework.boot.sql.init;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -57,9 +58,9 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 	@Test
 	void whenContinueOnErrorIsFalseThenInitializationFailsOnError() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
-		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setDataLocations(List.of("data.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
-		assertThatExceptionOfType(DataAccessException.class).isThrownBy(() -> initializer.initializeDatabase());
+		assertThatExceptionOfType(DataAccessException.class).isThrownBy(initializer::initializeDatabase);
 		assertThatDatabaseWasAccessed(initializer);
 	}
 

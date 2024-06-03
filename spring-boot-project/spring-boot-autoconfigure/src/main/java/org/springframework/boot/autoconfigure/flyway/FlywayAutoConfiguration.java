@@ -232,95 +232,94 @@ public class FlywayAutoConfiguration {
 				.toArray(new String[0]);
 			configuration.locations(locations);
 			map.from(properties.isFailOnMissingLocations())
-				.to((failOnMissingLocations) -> configuration.failOnMissingLocations(failOnMissingLocations));
-			map.from(properties.getEncoding()).to((encoding) -> configuration.encoding(encoding));
+				.to(configuration::failOnMissingLocations);
+			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries())
-				.to((connectRetries) -> configuration.connectRetries(connectRetries));
+				.to(configuration::connectRetries);
 			map.from(properties.getConnectRetriesInterval())
 				.as(Duration::getSeconds)
 				.as(Long::intValue)
-				.to((connectRetriesInterval) -> configuration.connectRetriesInterval(connectRetriesInterval));
+				.to(configuration::connectRetriesInterval);
 			map.from(properties.getLockRetryCount())
-				.to((lockRetryCount) -> configuration.lockRetryCount(lockRetryCount));
-			map.from(properties.getDefaultSchema()).to((schema) -> configuration.defaultSchema(schema));
+				.to(configuration::lockRetryCount);
+			map.from(properties.getDefaultSchema()).to(configuration::defaultSchema);
 			map.from(properties.getSchemas())
 				.as(StringUtils::toStringArray)
-				.to((schemas) -> configuration.schemas(schemas));
-			map.from(properties.isCreateSchemas()).to((createSchemas) -> configuration.createSchemas(createSchemas));
-			map.from(properties.getTable()).to((table) -> configuration.table(table));
-			map.from(properties.getTablespace()).to((tablespace) -> configuration.tablespace(tablespace));
+				.to(configuration::schemas);
+			map.from(properties.isCreateSchemas()).to(configuration::createSchemas);
+			map.from(properties.getTable()).to(configuration::table);
+			map.from(properties.getTablespace()).to(configuration::tablespace);
 			map.from(properties.getBaselineDescription())
-				.to((baselineDescription) -> configuration.baselineDescription(baselineDescription));
+				.to(configuration::baselineDescription);
 			map.from(properties.getBaselineVersion())
-				.to((baselineVersion) -> configuration.baselineVersion(baselineVersion));
-			map.from(properties.getInstalledBy()).to((installedBy) -> configuration.installedBy(installedBy));
-			map.from(properties.getPlaceholders()).to((placeholders) -> configuration.placeholders(placeholders));
+				.to(configuration::baselineVersion);
+			map.from(properties.getInstalledBy()).to(configuration::installedBy);
+			map.from(properties.getPlaceholders()).to(configuration::placeholders);
 			map.from(properties.getPlaceholderPrefix())
-				.to((placeholderPrefix) -> configuration.placeholderPrefix(placeholderPrefix));
+				.to(configuration::placeholderPrefix);
 			map.from(properties.getPlaceholderSuffix())
-				.to((placeholderSuffix) -> configuration.placeholderSuffix(placeholderSuffix));
+				.to(configuration::placeholderSuffix);
 			map.from(properties.getPlaceholderSeparator())
-				.to((placeHolderSeparator) -> configuration.placeholderSeparator(placeHolderSeparator));
+				.to(configuration::placeholderSeparator);
 			map.from(properties.isPlaceholderReplacement())
-				.to((placeholderReplacement) -> configuration.placeholderReplacement(placeholderReplacement));
+				.to(configuration::placeholderReplacement);
 			map.from(properties.getSqlMigrationPrefix())
-				.to((sqlMigrationPrefix) -> configuration.sqlMigrationPrefix(sqlMigrationPrefix));
+				.to(configuration::sqlMigrationPrefix);
 			map.from(properties.getSqlMigrationSuffixes())
 				.as(StringUtils::toStringArray)
-				.to((sqlMigrationSuffixes) -> configuration.sqlMigrationSuffixes(sqlMigrationSuffixes));
+				.to(configuration::sqlMigrationSuffixes);
 			map.from(properties.getSqlMigrationSeparator())
-				.to((sqlMigrationSeparator) -> configuration.sqlMigrationSeparator(sqlMigrationSeparator));
+				.to(configuration::sqlMigrationSeparator);
 			map.from(properties.getRepeatableSqlMigrationPrefix())
-				.to((repeatableSqlMigrationPrefix) -> configuration
-					.repeatableSqlMigrationPrefix(repeatableSqlMigrationPrefix));
-			map.from(properties.getTarget()).to((target) -> configuration.target(target));
+				.to(configuration::repeatableSqlMigrationPrefix);
+			map.from(properties.getTarget()).to(configuration::target);
 			map.from(properties.isBaselineOnMigrate())
-				.to((baselineOnMigrate) -> configuration.baselineOnMigrate(baselineOnMigrate));
-			map.from(properties.isCleanDisabled()).to((cleanDisabled) -> configuration.cleanDisabled(cleanDisabled));
+				.to(configuration::baselineOnMigrate);
+			map.from(properties.isCleanDisabled()).to(configuration::cleanDisabled);
 			map.from(properties.isCleanOnValidationError())
-				.to((cleanOnValidationError) -> configuration.cleanOnValidationError(cleanOnValidationError));
-			map.from(properties.isGroup()).to((group) -> configuration.group(group));
-			map.from(properties.isMixed()).to((mixed) -> configuration.mixed(mixed));
-			map.from(properties.isOutOfOrder()).to((outOfOrder) -> configuration.outOfOrder(outOfOrder));
+				.to(configuration::cleanOnValidationError);
+			map.from(properties.isGroup()).to(configuration::group);
+			map.from(properties.isMixed()).to(configuration::mixed);
+			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
 			map.from(properties.isSkipDefaultCallbacks())
-				.to((skipDefaultCallbacks) -> configuration.skipDefaultCallbacks(skipDefaultCallbacks));
+				.to(configuration::skipDefaultCallbacks);
 			map.from(properties.isSkipDefaultResolvers())
-				.to((skipDefaultResolvers) -> configuration.skipDefaultResolvers(skipDefaultResolvers));
+				.to(configuration::skipDefaultResolvers);
 			map.from(properties.isValidateMigrationNaming())
-				.to((validateMigrationNaming) -> configuration.validateMigrationNaming(validateMigrationNaming));
+				.to(configuration::validateMigrationNaming);
 			map.from(properties.isValidateOnMigrate())
-				.to((validateOnMigrate) -> configuration.validateOnMigrate(validateOnMigrate));
+				.to(configuration::validateOnMigrate);
 			map.from(properties.getInitSqls())
 				.whenNot(CollectionUtils::isEmpty)
 				.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
-				.to((initSql) -> configuration.initSql(initSql));
+				.to(configuration::initSql);
 			map.from(properties.getScriptPlaceholderPrefix())
-				.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
+				.to(configuration::scriptPlaceholderPrefix);
 			map.from(properties.getScriptPlaceholderSuffix())
-				.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
+				.to(configuration::scriptPlaceholderSuffix);
 			configureExecuteInTransaction(configuration, properties, map);
-			map.from(properties::getLoggers).to((loggers) -> configuration.loggers(loggers));
+			map.from(properties::getLoggers).to(configuration::loggers);
 			// Flyway Teams properties
-			map.from(properties.getBatch()).to((batch) -> configuration.batch(batch));
-			map.from(properties.getDryRunOutput()).to((dryRunOutput) -> configuration.dryRunOutput(dryRunOutput));
+			map.from(properties.getBatch()).to(configuration::batch);
+			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
 			map.from(properties.getErrorOverrides())
-				.to((errorOverrides) -> configuration.errorOverrides(errorOverrides));
-			map.from(properties.getStream()).to((stream) -> configuration.stream(stream));
+				.to(configuration::errorOverrides);
+			map.from(properties.getStream()).to(configuration::stream);
 			map.from(properties.getJdbcProperties())
 				.whenNot(Map::isEmpty)
-				.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
+				.to(configuration::jdbcProperties);
 			map.from(properties.getKerberosConfigFile())
-				.to((configFile) -> configuration.kerberosConfigFile(configFile));
+				.to(configuration::kerberosConfigFile);
 			map.from(properties.getOutputQueryResults())
-				.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
+				.to(configuration::outputQueryResults);
 			map.from(properties.getSkipExecutingMigrations())
-				.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
+				.to(configuration::skipExecutingMigrations);
 			map.from(properties.getIgnoreMigrationPatterns())
 				.whenNot(List::isEmpty)
 				.to((ignoreMigrationPatterns) -> configuration
 					.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
 			map.from(properties.getDetectEncoding())
-				.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
+				.to(configuration::detectEncoding);
 		}
 
 		private void configureExecuteInTransaction(FluentConfiguration configuration, FlywayProperties properties,
@@ -509,13 +508,13 @@ public class FlywayAutoConfiguration {
 					OracleConfigurationExtension.class, "Oracle");
 			Oracle properties = this.properties.getOracle();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(properties::getSqlplus).to(extension.via((ext, sqlplus) -> ext.setSqlplus(sqlplus)));
+			map.from(properties::getSqlplus).to(extension.via(OracleConfigurationExtension::setSqlplus));
 			map.from(properties::getSqlplusWarn)
-				.to(extension.via((ext, sqlplusWarn) -> ext.setSqlplusWarn(sqlplusWarn)));
+				.to(extension.via(OracleConfigurationExtension::setSqlplusWarn));
 			map.from(properties::getWalletLocation)
-				.to(extension.via((ext, walletLocation) -> ext.setWalletLocation(walletLocation)));
+				.to(extension.via(OracleConfigurationExtension::setWalletLocation));
 			map.from(properties::getKerberosCacheFile)
-				.to(extension.via((ext, kerberosCacheFile) -> ext.setKerberosCacheFile(kerberosCacheFile)));
+				.to(extension.via(OracleConfigurationExtension::setKerberosCacheFile));
 		}
 
 	}
@@ -536,7 +535,7 @@ public class FlywayAutoConfiguration {
 			Postgresql properties = this.properties.getPostgresql();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties::getTransactionalLock)
-				.to(extension.via((ext, transactionalLock) -> ext.setTransactionalLock(transactionalLock)));
+				.to(extension.via(PostgreSQLConfigurationExtension::setTransactionalLock));
 		}
 
 	}
@@ -572,7 +571,7 @@ public class FlywayAutoConfiguration {
 	 */
 	static class Extension<E extends ConfigurationExtension> {
 
-		private SingletonSupplier<E> extension;
+		private final SingletonSupplier<E> extension;
 
 		Extension(FluentConfiguration configuration, Class<E> type, String name) {
 			this.extension = SingletonSupplier.of(() -> {

@@ -69,7 +69,7 @@ class ServletRegistrationBeanTests {
 
 	@Test
 	void failsWithDoubleRegistration() {
-		assertThatIllegalStateException().isThrownBy(() -> doubleRegistration())
+		assertThatIllegalStateException().isThrownBy(this::doubleRegistration)
 			.withMessage("Failed to register 'servlet double-registration' on "
 					+ "the servlet context. Possibly already registered?");
 	}

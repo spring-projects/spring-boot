@@ -719,7 +719,7 @@ class JarFileTests {
 		Iterator<JarEntry> iterator = this.jarFile.iterator();
 		iterator.next();
 		this.jarFile.close();
-		assertThatZipFileClosedIsThrownBy(() -> iterator.hasNext());
+		assertThatZipFileClosedIsThrownBy(iterator::hasNext);
 	}
 
 	@Test

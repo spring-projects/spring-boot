@@ -79,7 +79,7 @@ class PropertySourcesDeducerTests {
 		Environment environment = mock(Environment.class);
 		given(applicationContext.getEnvironment()).willReturn(environment);
 		PropertySourcesDeducer deducer = new PropertySourcesDeducer(applicationContext);
-		assertThatIllegalStateException().isThrownBy(() -> deducer.getPropertySources())
+		assertThatIllegalStateException().isThrownBy(deducer::getPropertySources)
 			.withMessage("Unable to obtain PropertySources from PropertySourcesPlaceholderConfigurer or Environment");
 	}
 

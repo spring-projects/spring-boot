@@ -242,7 +242,7 @@ class JarUrlConnectionTests {
 	@Test
 	void getInputStreamWhenNotNestedAndHasNoEntryThrowsException() throws Exception {
 		JarUrlConnection connection = JarUrlConnection.open(JarUrl.create(this.file));
-		assertThatIOException().isThrownBy(() -> connection.getInputStream()).withMessage("no entry name specified");
+		assertThatIOException().isThrownBy(connection::getInputStream).withMessage("no entry name specified");
 	}
 
 	@Test

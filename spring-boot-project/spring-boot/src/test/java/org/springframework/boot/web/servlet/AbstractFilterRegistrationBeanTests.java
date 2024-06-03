@@ -131,7 +131,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void addServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
+			.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean<?>[]) null))
 			.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
@@ -205,7 +205,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 
 	@Test
 	void failsWithDoubleRegistration() {
-		assertThatIllegalStateException().isThrownBy(() -> doubleRegistration())
+		assertThatIllegalStateException().isThrownBy(this::doubleRegistration)
 			.withMessage("Failed to register 'filter double-registration' on the "
 					+ "servlet context. Possibly already registered?");
 	}
