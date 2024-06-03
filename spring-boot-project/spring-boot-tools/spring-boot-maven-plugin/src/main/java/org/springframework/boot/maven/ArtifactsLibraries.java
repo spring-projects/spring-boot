@@ -50,7 +50,12 @@ public class ArtifactsLibraries implements Libraries {
 	private static final Map<String, LibraryScope> SCOPES;
 
 	static {
-		SCOPES = Map.of(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE, Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME, Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED, Artifact.SCOPE_SYSTEM, LibraryScope.PROVIDED);
+		Map<String, LibraryScope> libraryScopes = new HashMap<>();
+		libraryScopes.put(Artifact.SCOPE_COMPILE, LibraryScope.COMPILE);
+		libraryScopes.put(Artifact.SCOPE_RUNTIME, LibraryScope.RUNTIME);
+		libraryScopes.put(Artifact.SCOPE_PROVIDED, LibraryScope.PROVIDED);
+		libraryScopes.put(Artifact.SCOPE_SYSTEM, LibraryScope.PROVIDED);
+		SCOPES = Collections.unmodifiableMap(libraryScopes);
 	}
 
 	private final Set<Artifact> artifacts;
