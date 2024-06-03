@@ -76,7 +76,7 @@ public final class SanitizableData {
 	}
 
 	/**
-	 * Return a new {@link SanitizableData} instance with sanatized value.
+	 * Return a new {@link SanitizableData} instance with sanitized value.
 	 * @return a new sanitizable data instance.
 	 * @since 3.1.0
 	 */
