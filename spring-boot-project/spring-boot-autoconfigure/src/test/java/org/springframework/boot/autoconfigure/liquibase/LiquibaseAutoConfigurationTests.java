@@ -33,6 +33,7 @@ import liquibase.Liquibase;
 import liquibase.UpdateSummaryEnum;
 import liquibase.UpdateSummaryOutputEnum;
 import liquibase.command.core.helpers.ShowSummaryArgument;
+import liquibase.integration.spring.Customizer;
 import liquibase.integration.spring.SpringLiquibase;
 import liquibase.ui.UIServiceEnum;
 import org.junit.jupiter.api.Test;
@@ -69,7 +70,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
-import liquibase.integration.spring.*;
 
 /**
  * Tests for {@link LiquibaseAutoConfiguration}.
@@ -538,9 +538,9 @@ class LiquibaseAutoConfigurationTests {
 	@Test
 	void customizer() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomizerConfiguration.class)
-				.run(assertLiquibase((liquibase) -> {
-					assertThat(liquibase.getCustomizer()).isNotNull();
-				}));
+			.run(assertLiquibase((liquibase) -> {
+				assertThat(liquibase.getCustomizer()).isNotNull();
+			}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {

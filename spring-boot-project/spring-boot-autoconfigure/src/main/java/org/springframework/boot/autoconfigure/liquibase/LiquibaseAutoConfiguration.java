@@ -100,8 +100,7 @@ public class LiquibaseAutoConfiguration {
 		@Bean
 		public SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
-				ObjectProvider<Customizer<Liquibase>> customizer,
-				LiquibaseConnectionDetails connectionDetails) {
+				ObjectProvider<Customizer<Liquibase>> customizer, LiquibaseConnectionDetails connectionDetails) {
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
