@@ -128,7 +128,7 @@ public class LiquibaseAutoConfiguration {
 			if (properties.getUiService() != null) {
 				liquibase.setUiService(UIServiceEnum.valueOf(properties.getUiService().name()));
 			}
-			liquibase.setCustomizer(customizer.getIfAvailable());
+			customizer.ifAvailable(liquibase::setCustomizer);
 			return liquibase;
 		}
 

@@ -536,7 +536,7 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void customizer() {
+	void whenCustomizerBeanIsDefinedThenItIsConfiguredOnSpringLiquibase() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomizerConfiguration.class)
 			.run(assertLiquibase((liquibase) -> {
 				assertThat(liquibase.getCustomizer()).isNotNull();
