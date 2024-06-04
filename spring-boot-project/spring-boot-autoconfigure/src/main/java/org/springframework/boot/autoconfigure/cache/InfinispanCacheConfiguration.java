@@ -82,7 +82,10 @@ public class InfinispanCacheConfiguration {
 
 	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration(
 			ConfigurationBuilder defaultConfigurationBuilder) {
-		return Objects.requireNonNullElseGet(defaultConfigurationBuilder, ConfigurationBuilder::new).build();
+		if (defaultConfigurationBuilder != null) {
+			return defaultConfigurationBuilder.build();
+		}
+		return new ConfigurationBuilder().build();
 	}
 
 }
