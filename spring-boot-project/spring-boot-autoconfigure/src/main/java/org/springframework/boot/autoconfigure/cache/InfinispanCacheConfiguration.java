@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.cache;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
@@ -81,10 +82,7 @@ public class InfinispanCacheConfiguration {
 
 	private org.infinispan.configuration.cache.Configuration getDefaultCacheConfiguration(
 			ConfigurationBuilder defaultConfigurationBuilder) {
-		if (defaultConfigurationBuilder != null) {
-			return defaultConfigurationBuilder.build();
-		}
-		return new ConfigurationBuilder().build();
+		return Objects.requireNonNullElseGet(defaultConfigurationBuilder, ConfigurationBuilder::new).build();
 	}
 
 }

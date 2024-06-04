@@ -128,7 +128,7 @@ class NestedJarResourceSet extends AbstractSingleArchiveResourceSet {
 				}
 			}
 		}
-		return this.multiRelease.booleanValue();
+		return this.multiRelease;
 	}
 
 	@Override
