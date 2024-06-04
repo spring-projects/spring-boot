@@ -70,13 +70,20 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 
 	private boolean prohibited(ModuleVersionIdentifier id) {
 		String group = id.getGroup();
-		switch (group) {
-			case "javax.batch", "javax.cache", "javax.money" -> {
-				return false;
-			}
-			case "org.codehaus.groovy", "org.eclipse.jetty.toolchain" -> {
-				return true;
-			}
+		if (group.equals("javax.batch")) {
+			return false;
+		}
+		if (group.equals("javax.cache")) {
+			return false;
+		}
+		if (group.equals("javax.money")) {
+			return false;
+		}
+		if (group.equals("org.codehaus.groovy")) {
+			return true;
+		}
+		if (group.equals("org.eclipse.jetty.toolchain")) {
+			return true;
 		}
 		if (group.startsWith("javax")) {
 			return true;

@@ -131,7 +131,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void addServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean<?>[]) null))
+			.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
 			.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
