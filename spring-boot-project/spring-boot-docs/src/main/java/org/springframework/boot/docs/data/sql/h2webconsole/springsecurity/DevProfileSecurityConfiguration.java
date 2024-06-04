@@ -24,7 +24,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -37,7 +37,7 @@ public class DevProfileSecurityConfiguration {
 	SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.securityMatcher(PathRequest.toH2Console());
 		http.authorizeHttpRequests(yourCustomAuthorization());
-		http.csrf(AbstractHttpConfigurer::disable);
+		http.csrf(CsrfConfigurer::disable);
 		http.headers((headers) -> headers.frameOptions(FrameOptionsConfig::sameOrigin));
 		return http.build();
 	}

@@ -28,7 +28,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -76,7 +76,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.csrf(AbstractHttpConfigurer::disable);
+			http.csrf(CsrfConfigurer::disable);
 			http.authorizeHttpRequests((requests) -> {
 				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
 				requests.anyRequest().fullyAuthenticated();
@@ -95,7 +95,7 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 
 		@Bean
 		SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {
-			http.csrf(AbstractHttpConfigurer::disable);
+			http.csrf(CsrfConfigurer::disable);
 			http.securityMatcher(EndpointRequest.toAnyEndpoint());
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.httpBasic(withDefaults());
