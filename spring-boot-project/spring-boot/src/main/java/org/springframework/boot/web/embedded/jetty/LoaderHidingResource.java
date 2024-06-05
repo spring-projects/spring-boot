@@ -41,6 +41,8 @@ final class LoaderHidingResource extends Resource {
 
 	private static final String LOADER_RESOURCE_PATH_PREFIX = "/org/springframework/boot/";
 
+	private final Path loaderBasePath;
+
 	private final Resource base;
 
 	private final Resource delegate;
@@ -48,6 +50,7 @@ final class LoaderHidingResource extends Resource {
 	LoaderHidingResource(Resource base, Resource delegate) {
 		this.base = base;
 		this.delegate = delegate;
+		this.loaderBasePath = base.getPath().getFileSystem().getPath("/", "org", "springframework", "boot");
 	}
 
 	@Override
@@ -141,12 +144,19 @@ final class LoaderHidingResource extends Resource {
 
 	@Override
 	public List<Resource> list() {
-		return this.delegate.list().stream().filter(this::nonLoaderResource).toList();
+		return asLoaderHidingResources(this.delegate.list());
 	}
 
 	private boolean nonLoaderResource(Resource resource) {
-		Path prefix = this.base.getPath().resolve(Path.of("org", "springframework", "boot"));
-		return !resource.getPath().startsWith(prefix);
+		return !resource.getPath().startsWith(this.loaderBasePath);
+	}
+
+	private List<Resource> asLoaderHidingResources(Collection<Resource> resources) {
+		return resources.stream().filter(this::nonLoaderResource).map(this::asLoaderHidingResource).toList();
+	}
+
+	private Resource asLoaderHidingResource(Resource resource) {
+		return (resource instanceof LoaderHidingResource) ? resource : new LoaderHidingResource(this.base, resource);
 	}
 
 	@Override
@@ -175,7 +185,7 @@ final class LoaderHidingResource extends Resource {
 
 	@Override
 	public Collection<Resource> getAllResources() {
-		return this.delegate.getAllResources().stream().filter(this::nonLoaderResource).toList();
+		return asLoaderHidingResources(this.delegate.getAllResources());
 	}
 
 	@Override
