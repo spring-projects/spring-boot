@@ -1,0 +1,7 @@
+[[howto.native-image]]
+= GraalVM Native Applications
+
+This section contains details on developing and testing Spring Boot applications as GraalVM native images.
+
+TIP: For an overview of GraalVM native image concepts, see the xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[Introducing GraalVM Native Images] section.
+

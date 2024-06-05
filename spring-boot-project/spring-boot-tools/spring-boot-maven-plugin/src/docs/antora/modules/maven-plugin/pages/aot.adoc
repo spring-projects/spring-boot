@@ -4,7 +4,7 @@
 Spring AOT is a process that analyzes your application at build-time and generate an optimized version of it.
 It is a mandatory step to run a Spring `ApplicationContext` in a native image.
 
-NOTE: For an overview of GraalVM Native Images support in Spring Boot, check the xref:reference:native-image/index.adoc[reference documentation].
+NOTE: For an overview of GraalVM Native Images support in Spring Boot, check the xref:reference:packaging/native-image/index.adoc[reference documentation].
 
 The Spring Boot Maven plugin offers goals that can be used to perform AOT processing on both application and test code.
 
@@ -48,7 +48,7 @@ To benefit from the `native` profile, a module that represents an application sh
 include::example$aot-native/pom.xml[tags=aot-native]
 ----
 
-A single project can trigger the generation of a native image on the command-line using either xref:reference:native-image/developing-your-first-application.adoc#native-image.developing-your-first-application.buildpacks.maven[Cloud Native Buildpacks] or xref:reference:native-image/developing-your-first-application.adoc#native-image.developing-your-first-application.native-build-tools.maven[Native Image Build Tools].
+A single project can trigger the generation of a native image on the command-line using either xref:how-to:native-image/developing-your-first-application.adoc#howto.native-image.developing-your-first-application.buildpacks.maven[Cloud Native Buildpacks] or xref:how-to:native-image/developing-your-first-application.adoc#howto.native-image.developing-your-first-application.native-build-tools.maven[Native Image Build Tools].
 
 To use the `native` profile with a multi-modules project, you can create a customization of the `native` profile so that it invokes your preferred technique.
 

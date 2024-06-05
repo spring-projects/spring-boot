@@ -115,9 +115,9 @@ If your application needs IO capabilities, see one or more of the following sect
 
 Spring Boot provides first-class support for building efficient container images. You can read more about it here:
 
-* *Efficient Container Images:* xref:reference:container-images/efficient-images.adoc[Tips to optimize container images such as Docker images]
-* *Dockerfiles:* xref:reference:container-images/dockerfiles.adoc[Building container images using dockerfiles]
-* *Cloud Native Buildpacks:* xref:reference:container-images/cloud-native-buildpacks.adoc[Support for Cloud Native Buildpacks with Maven and Gradle]
+* *Efficient Container Images:* xref:reference:packaging/container-images/efficient-images.adoc[Tips to optimize container images such as Docker images]
+* *Dockerfiles:* xref:reference:packaging/container-images/dockerfiles.adoc[Building container images using dockerfiles]
+* *Cloud Native Buildpacks:* xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[Support for Cloud Native Buildpacks with Maven and Gradle]
 
 
 
@@ -132,17 +132,15 @@ When you are ready to push your Spring Boot application to production, we have x
 
 
 
-[[documentation.native-images]]
-== GraalVM Native Images
+[[documentation.packaging]]
+== Optimizing for Production
 
-Spring Boot applications can be converted into native executables using GraalVM.
-You can read more about our native image support here:
+Spring Boot applications can be optimized for production using technologies described in these sections:
 
-* *GraalVM Native Images:* xref:reference:native-image/introducing-graalvm-native-images.adoc[Introduction] | xref:reference:native-image/introducing-graalvm-native-images.adoc#native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments[Key Differences with the JVM] | xref:reference:native-image/introducing-graalvm-native-images.adoc#native-image.introducing-graalvm-native-images.understanding-aot-processing[Ahead-of-Time Processing]
-* *Getting Started:* xref:reference:native-image/developing-your-first-application.adoc#native-image.developing-your-first-application.buildpacks[Buildpacks] | xref:reference:native-image/developing-your-first-application.adoc#native-image.developing-your-first-application.native-build-tools[Native Build Tools]
-* *Testing:* xref:reference:native-image/testing-native-applications.adoc#native-image.testing.with-the-jvm[JVM] | xref:reference:native-image/testing-native-applications.adoc#native-image.testing.with-native-build-tools[Native Build Tools]
-* *Advanced Topics:* xref:reference:native-image/advanced-topics.adoc#native-image.advanced.nested-configuration-properties[Nested Configuration Properties] | xref:reference:native-image/advanced-topics.adoc#native-image.advanced.converting-executable-jars[Converting JARs] | xref:reference:native-image/advanced-topics.adoc#native-image.advanced.known-limitations[Known Limitations]
-
+* *Efficient Deployments:* xref:reference:packaging/efficient.adoc#packaging.efficient.unpacking[Unpacking the Executable JAR]
+* *GraalVM Native Images:* xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[Introduction] | xref:reference:packaging/native-image/advanced-topics.adoc[Advanced Topics] | xref:how-to:native-image/developing-your-first-application.adoc[Getting Started] | xref:how-to:native-image/testing-native-applications.adoc[Testing]
+* *Class Data Sharing:* xref:reference:packaging/class-data-sharing.adoc[Overview]
+* *Checkpoint and Restore* xref:reference:packaging/checkpoint-restore.adoc[Overview]
 
 
 [[documentation.advanced]]
@@ -150,6 +148,6 @@ You can read more about our native image support here:
 
 Finally, we have a few topics for more advanced users:
 
-* *Spring Boot Applications Deployment:* xref:reference:deployment/cloud.adoc[Cloud Deployment] | xref:reference:deployment/installing.adoc[OS Service]
+* *Spring Boot Applications Deployment:* xref:how-to:deployment/cloud.adoc[Cloud Deployment] | xref:how-to:deployment/installing.adoc[OS Service]
 * *Build tool plugins:* xref:maven-plugin:index.adoc[Maven] | xref:gradle-plugin:index.adoc[Gradle]
 * *Appendix:* xref:appendix:application-properties/index.adoc[Application Properties] | xref:specification:configuration-metadata/index.adoc[Configuration Metadata] | xref:appendix:auto-configuration-classes/index.adoc[Auto-configuration Classes] | xref:appendix:test-auto-configuration/index.adoc[Test Auto-configuration Annotations] | xref:specification:executable-jar/index.adoc[Executable Jars] | xref:appendix:dependency-versions/index.adoc[Dependency Versions]

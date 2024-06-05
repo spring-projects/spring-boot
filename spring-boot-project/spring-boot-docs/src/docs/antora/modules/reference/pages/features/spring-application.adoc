@@ -230,7 +230,7 @@ We can also update the state of the application, when the application breaks and
 include-code::MyLocalCacheVerifier[]
 
 Spring Boot provides xref:actuator/endpoints.adoc#actuator.endpoints.kubernetes-probes[Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints].
-You can get more guidance about xref:deployment/cloud.adoc#deployment.cloud.kubernetes[deploying Spring Boot applications on Kubernetes in the dedicated section].
+You can get more guidance about xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes[deploying Spring Boot applications on Kubernetes in the dedicated section].
 
 
 

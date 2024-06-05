@@ -155,7 +155,7 @@ def antoraMavenPluginCatalogContent = tasks.register("antoraMavenPluginCatalogCo
 }
 
 tasks.named("generateAntoraPlaybook") {
-	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
 	alwaysInclude = [name: "maven-plugin", classifier: "local-aggregate-content"]
 	dependsOn antoraMavenPluginLocalAggregateContent
 }
