@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,15 +82,17 @@ final class MetaInfVersionsInfo {
 			if (contentEntry.hasNameStartingWith(META_INF_VERSIONS) && !contentEntry.isDirectory()) {
 				String name = contentEntry.getName();
 				int slash = name.indexOf('/', META_INF_VERSIONS.length());
-				String version = name.substring(META_INF_VERSIONS.length(), slash);
-				try {
-					int versionNumber = Integer.parseInt(version);
-					if (versionNumber >= NestedJarFile.BASE_VERSION) {
-						versions.add(versionNumber);
+				if (slash > -1) {
+					String version = name.substring(META_INF_VERSIONS.length(), slash);
+					try {
+						int versionNumber = Integer.parseInt(version);
+						if (versionNumber >= NestedJarFile.BASE_VERSION) {
+							versions.add(versionNumber);
+						}
 					}
-				}
-				catch (NumberFormatException ex) {
-					// Ignore
+					catch (NumberFormatException ex) {
+						// Ignore
+					}
 				}
 			}
 		}
