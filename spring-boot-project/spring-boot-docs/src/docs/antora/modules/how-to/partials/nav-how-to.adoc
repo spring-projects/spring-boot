@@ -21,6 +21,7 @@
 ** xref:how-to:native-image/index.adoc[]
 *** xref:how-to:native-image/developing-your-first-application.adoc[]
 *** xref:how-to:native-image/testing-native-applications.adoc[]
+** xref:how-to:class-data-sharing.adoc[]
 ** xref:how-to:deployment/index.adoc[]
 *** xref:how-to:deployment/traditional-deployment.adoc[]
 *** xref:how-to:deployment/cloud.adoc[]

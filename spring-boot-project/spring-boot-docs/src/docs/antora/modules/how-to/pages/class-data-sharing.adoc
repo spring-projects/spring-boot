@@ -1,0 +1,20 @@
+[[howto.class-data-sharing]]
+= Class Data Sharing
+
+This section includes information about using Class Data Sharing (CDS) with Spring Boot applications.
+For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[Class Data Sharing].
+
+
+[[howto.class-data-sharing.buildpacks]]
+== Packaging an Application Using CDS and Buildpacks
+
+Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[support for Cloud Native Buildpacks] along with the https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] and its https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot support] can be used to generate a Docker image containing a CDS-optimized application.
+
+To enable CDS optimization in a generated Docker image, the buildpack environment variable `BP_JVM_CDS_ENABLED` should be set to `true` when building the image as described in the xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven plugin] and xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle plugin] documentation.
+This will cause the buildpack to do a training run of the application, save the CDS archive in the image, and use the CDS archive when launching the application.
+
+The buildpack environment variable `BP_SPRING_AOT_ENABLED` can also be set to `true` to enable AOT mode along with CDS when running an application that has been xref:reference:packaging/aot.adoc[built with Ahead-of-Time processed].
+
+The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables.
+
+
