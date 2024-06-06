@@ -18,7 +18,7 @@ new File(projectDir.parentFile, "gradle.properties").withInputStream {
 	def properties = new Properties()
 	properties.load(it)
 	["assertj", "commonsCodec", "hamcrest", "jackson", "junitJupiter",
-		"kotlin", "maven"].each {
+		"kotlin", "maven","xiaogong"].each {
 		versions[it] = properties[it + "Version"]
 	}
 }
@@ -58,6 +58,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:${versions.assertj}")
 	testImplementation("org.hamcrest:hamcrest:${versions.hamcrest}")
 	testImplementation("org.junit.jupiter:junit-jupiter:${versions.junitJupiter}")
+	testImplementation("org.junit.platform:junit-platform-launcher:${versions.xiaogong}")
 	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
