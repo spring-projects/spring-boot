@@ -30,7 +30,7 @@ public final class DockerImageNames {
 
 	private static final String ACTIVE_MQ_VERSION = "5.18.3";
 
-	private static final String ARTEMIS_VERSION = "2.31.2";
+	private static final String ARTEMIS_VERSION = "2.34.0";
 
 	private static final String CASSANDRA_VERSION = "3.11.10";
 
