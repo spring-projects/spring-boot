@@ -178,8 +178,8 @@ For simplicity, we continue to use a plain text editor for this example.
 [[getting-started.first-application.dependencies]]
 == Adding Classpath Dependencies
 
-Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
-"`Starters`" provide dependencies that you are likely to need when developing a specific type of application.
+Spring Boot provides a number of starters that let you add jars to your classpath.
+Starters provide dependencies that you are likely to need when developing a specific type of application.
 
 
 
@@ -297,7 +297,7 @@ Since `spring-boot-starter-web` added Tomcat and Spring MVC, the auto-configurat
 
 .Starters and Auto-configuration
 ****
-Auto-configuration is designed to work well with "`Starters`", but the two concepts are not directly tied.
+Auto-configuration is designed to work well with starters, but the two concepts are not directly tied.
 You are free to pick and choose jar dependencies outside of the starters.
 Spring Boot still does its best to auto-configure your application.
 ****

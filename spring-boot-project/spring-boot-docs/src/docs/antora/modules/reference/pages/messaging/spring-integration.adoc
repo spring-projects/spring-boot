@@ -1,7 +1,7 @@
 [[messaging.spring-integration]]
 = Spring Integration
 
-Spring Boot offers several conveniences for working with {url-spring-integration-site}[Spring Integration], including the `spring-boot-starter-integration` "`Starter`".
+Spring Boot offers several conveniences for working with {url-spring-integration-site}[Spring Integration], including the `spring-boot-starter-integration` starter.
 Spring Integration provides abstractions over messaging and also other transports such as HTTP, TCP, and others.
 If Spring Integration is available on your classpath, it is initialized through the `@EnableIntegration` annotation.
 

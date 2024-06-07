@@ -506,7 +506,7 @@ Both the servlet and the filter registrations can be given init parameters by us
 == Embedded Servlet Container Support
 
 For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
-Most developers use the appropriate "`Starter`" to obtain a fully configured instance.
+Most developers use the appropriate starter to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port `8080`.
 
 

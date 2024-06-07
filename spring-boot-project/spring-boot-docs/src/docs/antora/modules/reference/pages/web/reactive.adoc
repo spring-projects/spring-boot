@@ -273,7 +273,7 @@ When it does so, the orders shown in the following table will be used:
 == Embedded Reactive Server Support
 
 Spring Boot includes support for the following embedded reactive web servers: Reactor Netty, Tomcat, Jetty, and Undertow.
-Most developers use the appropriate “Starter” to obtain a fully configured instance.
+Most developers use the appropriate starter to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port 8080.
 
 
