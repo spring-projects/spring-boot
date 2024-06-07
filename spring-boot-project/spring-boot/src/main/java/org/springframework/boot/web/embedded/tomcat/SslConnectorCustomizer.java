@@ -22,7 +22,6 @@ import org.apache.catalina.connector.Connector;
 import org.apache.commons.logging.Log;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
-import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
@@ -117,7 +116,7 @@ class SslConnectorCustomizer {
 			String ciphers = StringUtils.arrayToCommaDelimitedString(options.getCiphers());
 			sslHostConfig.setCiphers(ciphers);
 		}
-		configureSslStoreProvider(protocol, sslHostConfig, certificate, stores);
+		configureSslStores(sslHostConfig, certificate, stores);
 		configureEnabledProtocols(sslHostConfig, options);
 	}
 
@@ -132,10 +131,8 @@ class SslConnectorCustomizer {
 		config.setCertificateVerification(ClientAuth.map(this.clientAuth, "none", "optional", "required"));
 	}
 
-	private void configureSslStoreProvider(AbstractHttp11JsseProtocol<?> protocol, SSLHostConfig sslHostConfig,
-			SSLHostConfigCertificate certificate, SslStoreBundle stores) {
-		Assert.isInstanceOf(Http11NioProtocol.class, protocol,
-				"SslStoreProvider can only be used with Http11NioProtocol");
+	private void configureSslStores(SSLHostConfig sslHostConfig, SSLHostConfigCertificate certificate,
+			SslStoreBundle stores) {
 		try {
 			if (stores.getKeyStore() != null) {
 				certificate.setCertificateKeystore(stores.getKeyStore());
