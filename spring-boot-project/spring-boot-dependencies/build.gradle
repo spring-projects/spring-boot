@@ -1258,9 +1258,8 @@ bom {
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
 	}
-	library("Micrometer Tracing", "1.3.0") {
+	library("Micrometer Tracing", "1.3.1-SNAPSHOT") {
 		considerSnapshots()
-		calendarName = "Tracing"
 		group("io.micrometer") {
 			imports = [
 				"micrometer-tracing-bom"
