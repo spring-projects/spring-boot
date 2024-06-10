@@ -26,6 +26,7 @@ import com.sun.jna.Platform;
 import org.apache.hc.client5.http.DnsResolver;
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
@@ -73,8 +74,13 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalConnectionManager extends BasicHttpClientConnectionManager {
 
+		private static final ConnectionConfig CONNECTION_CONFIG = ConnectionConfig.copy(ConnectionConfig.DEFAULT)
+			.setValidateAfterInactivity(TimeValue.NEG_ONE_MILLISECOND)
+			.build();
+
 		LocalConnectionManager(String host) {
 			super(getRegistry(host), null, null, new LocalDnsResolver());
+			setConnectionConfig(CONNECTION_CONFIG);
 		}
 
 		private static Registry<ConnectionSocketFactory> getRegistry(String host) {
