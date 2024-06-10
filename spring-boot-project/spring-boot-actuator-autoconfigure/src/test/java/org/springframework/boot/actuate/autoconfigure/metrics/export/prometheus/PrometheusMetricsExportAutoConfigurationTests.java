@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import io.prometheus.metrics.tracer.common.SpanContext;
@@ -207,8 +208,9 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class CustomEndpointConfiguration {
 
 		@Bean
-		PrometheusScrapeEndpoint customEndpoint(PrometheusRegistry prometheusRegistry) {
-			return new PrometheusScrapeEndpoint(prometheusRegistry);
+		PrometheusScrapeEndpoint customEndpoint(PrometheusRegistry prometheusRegistry,
+				PrometheusConfig prometheusConfig) {
+			return new PrometheusScrapeEndpoint(prometheusRegistry, prometheusConfig.prometheusProperties());
 		}
 
 	}

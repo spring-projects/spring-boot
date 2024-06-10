@@ -43,8 +43,9 @@ public enum PrometheusOutputFormat implements Producible<PrometheusOutputFormat>
 	CONTENT_TYPE_004(PrometheusTextFormatWriter.CONTENT_TYPE) {
 
 		@Override
-		void write(OutputStream outputStream, MetricSnapshots snapshots) throws IOException {
-			EXPOSITION_FORMATS.getPrometheusTextFormatWriter().write(outputStream, snapshots);
+		void write(ExpositionFormats expositionFormats, OutputStream outputStream, MetricSnapshots snapshots)
+				throws IOException {
+			expositionFormats.getPrometheusTextFormatWriter().write(outputStream, snapshots);
 		}
 
 		@Override
@@ -60,8 +61,9 @@ public enum PrometheusOutputFormat implements Producible<PrometheusOutputFormat>
 	CONTENT_TYPE_OPENMETRICS_100(OpenMetricsTextFormatWriter.CONTENT_TYPE) {
 
 		@Override
-		void write(OutputStream outputStream, MetricSnapshots snapshots) throws IOException {
-			EXPOSITION_FORMATS.getOpenMetricsTextFormatWriter().write(outputStream, snapshots);
+		void write(ExpositionFormats expositionFormats, OutputStream outputStream, MetricSnapshots snapshots)
+				throws IOException {
+			expositionFormats.getOpenMetricsTextFormatWriter().write(outputStream, snapshots);
 		}
 
 	},
@@ -72,13 +74,12 @@ public enum PrometheusOutputFormat implements Producible<PrometheusOutputFormat>
 	CONTENT_TYPE_PROTOBUF(PrometheusProtobufWriter.CONTENT_TYPE) {
 
 		@Override
-		void write(OutputStream outputStream, MetricSnapshots snapshots) throws IOException {
-			EXPOSITION_FORMATS.getPrometheusProtobufWriter().write(outputStream, snapshots);
+		void write(ExpositionFormats expositionFormats, OutputStream outputStream, MetricSnapshots snapshots)
+				throws IOException {
+			expositionFormats.getPrometheusProtobufWriter().write(outputStream, snapshots);
 		}
 
 	};
-
-	private static final ExpositionFormats EXPOSITION_FORMATS = ExpositionFormats.init();
 
 	private final MimeType mimeType;
 
@@ -91,6 +92,7 @@ public enum PrometheusOutputFormat implements Producible<PrometheusOutputFormat>
 		return this.mimeType;
 	}
 
-	abstract void write(OutputStream outputStream, MetricSnapshots snapshots) throws IOException;
+	abstract void write(ExpositionFormats expositionFormats, OutputStream outputStream, MetricSnapshots snapshots)
+			throws IOException;
 
 }

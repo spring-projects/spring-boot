@@ -82,8 +82,9 @@ public class PrometheusMetricsExportAutoConfiguration {
 		@SuppressWarnings("removal")
 		@Bean
 		@ConditionalOnMissingBean({ PrometheusScrapeEndpoint.class, PrometheusSimpleclientScrapeEndpoint.class })
-		PrometheusScrapeEndpoint prometheusEndpoint(PrometheusRegistry prometheusRegistry) {
-			return new PrometheusScrapeEndpoint(prometheusRegistry);
+		PrometheusScrapeEndpoint prometheusEndpoint(PrometheusRegistry prometheusRegistry,
+				PrometheusConfig prometheusConfig) {
+			return new PrometheusScrapeEndpoint(prometheusRegistry, prometheusConfig.prometheusProperties());
 		}
 
 	}

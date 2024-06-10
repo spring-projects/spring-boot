@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
+import java.util.Properties;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
@@ -78,7 +80,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 			PrometheusMeterRegistry meterRegistry = new PrometheusMeterRegistry((key) -> null, prometheusRegistry,
 					Clock.SYSTEM);
 			new JvmMemoryMetrics().bindTo(meterRegistry);
-			return new PrometheusScrapeEndpoint(prometheusRegistry);
+			return new PrometheusScrapeEndpoint(prometheusRegistry, new Properties());
 		}
 
 	}
