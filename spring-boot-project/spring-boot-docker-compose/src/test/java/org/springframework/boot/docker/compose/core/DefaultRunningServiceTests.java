@@ -115,7 +115,7 @@ class DefaultRunningServiceTests {
 	}
 
 	private DefaultRunningService createRunningService(boolean psResponseHasImage) {
-		DockerHost host = DockerHost.get("192.168.1.1", () -> Collections.emptyList());
+		DockerHost host = DockerHost.get("192.168.1.1", Collections::emptyList);
 		String id = "123";
 		String name = "my-service";
 		String image = "redis";

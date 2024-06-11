@@ -58,14 +58,14 @@ class TcpConnectServiceReadinessCheckTests {
 
 	@Test
 	void checkWhenServerWritesData() throws Exception {
-		withServer((socket) -> socket.getOutputStream().write('!'), (port) -> check(port));
+		withServer((socket) -> socket.getOutputStream().write('!'), this::check);
 	}
 
 	@Test
 	void checkWhenNoSocketOutput() throws Exception {
 		// Simulate waiting for traffic from client to server. The sleep duration must
 		// be longer than the read timeout of the ready check!
-		withServer((socket) -> sleep(Duration.ofSeconds(10)), (port) -> check(port));
+		withServer((socket) -> sleep(Duration.ofSeconds(10)), this::check);
 	}
 
 	@Test

@@ -52,7 +52,7 @@ class DockerHostTests {
 
 	private static final Function<String, String> NO_SYSTEM_ENV = (key) -> null;
 
-	private static final Supplier<List<DockerCliContextResponse>> NO_CONTEXT = () -> Collections.emptyList();
+	private static final Supplier<List<DockerCliContextResponse>> NO_CONTEXT = Collections::emptyList;
 
 	@Test
 	void getWhenHasHost() {

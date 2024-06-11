@@ -297,7 +297,7 @@ class FileSystemWatcherTests {
 	private void setupWatcher(long pollingInterval, long quietPeriod, SnapshotStateRepository snapshotStateRepository) {
 		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval), Duration.ofMillis(quietPeriod),
 				snapshotStateRepository);
-		this.watcher.addListener((changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
+		this.watcher.addListener(FileSystemWatcherTests.this.changes::add);
 	}
 
 	private File startWithNewDirectory() {

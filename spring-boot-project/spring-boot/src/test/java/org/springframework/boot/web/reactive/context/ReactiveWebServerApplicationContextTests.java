@@ -59,7 +59,7 @@ class ReactiveWebServerApplicationContextTests {
 
 	@Test
 	void whenThereIsNoWebServerFactoryBeanThenContextRefreshWillFail() {
-		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(this.context::refresh)
 			.havingRootCause()
 			.withMessageContaining(
 					"Unable to start ReactiveWebServerApplicationContext due to missing ReactiveWebServerFactory bean");
@@ -68,7 +68,7 @@ class ReactiveWebServerApplicationContextTests {
 	@Test
 	void whenThereIsNoHttpHandlerBeanThenContextRefreshWillFail() {
 		addWebServerFactoryBean();
-		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(this.context::refresh)
 			.havingRootCause()
 			.withMessageContaining("Unable to start ReactiveWebApplicationContext due to missing HttpHandler bean");
 	}
@@ -77,7 +77,7 @@ class ReactiveWebServerApplicationContextTests {
 	void whenThereAreMultipleWebServerFactoryBeansThenContextRefreshWillFail() {
 		addWebServerFactoryBean();
 		addWebServerFactoryBean("anotherWebServerFactory");
-		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(this.context::refresh)
 			.havingRootCause()
 			.withMessageContaining(
 					"Unable to start ReactiveWebApplicationContext due to multiple ReactiveWebServerFactory beans");
@@ -88,7 +88,7 @@ class ReactiveWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		addHttpHandlerBean("httpHandler1");
 		addHttpHandlerBean("httpHandler2");
-		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(this.context::refresh)
 			.havingRootCause()
 			.withMessageContaining("Unable to start ReactiveWebApplicationContext due to multiple HttpHandler beans");
 	}
@@ -164,7 +164,7 @@ class ReactiveWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		addHttpHandlerBean();
 		this.context.refresh();
-		assertThatIllegalStateException().isThrownBy(() -> this.context.refresh())
+		assertThatIllegalStateException().isThrownBy(this.context::refresh)
 			.withMessageContaining("multiple refresh attempts");
 	}
 

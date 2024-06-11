@@ -34,6 +34,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -96,7 +97,7 @@ class SampleWebSecureApplicationTests {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.csrf((csrf) -> csrf.disable());
+			http.csrf(CsrfConfigurer::disable);
 			http.authorizeHttpRequests((requests) -> {
 				requests.requestMatchers("/public/**").permitAll();
 				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();

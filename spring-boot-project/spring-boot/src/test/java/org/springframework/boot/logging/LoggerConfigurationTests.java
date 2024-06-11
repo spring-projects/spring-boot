@@ -160,7 +160,7 @@ class LoggerConfigurationTests {
 		@Test
 		void getLevelWhenCustomThrowsException() {
 			LevelConfiguration configuration = LevelConfiguration.ofCustom("FINE");
-			assertThatIllegalStateException().isThrownBy(() -> configuration.getLevel())
+			assertThatIllegalStateException().isThrownBy(configuration::getLevel)
 				.withMessage("Unable to provide LogLevel for 'FINE'");
 		}
 

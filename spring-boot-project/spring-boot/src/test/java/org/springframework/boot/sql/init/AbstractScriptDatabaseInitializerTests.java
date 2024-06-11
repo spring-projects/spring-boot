@@ -59,7 +59,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("data.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
-		assertThatExceptionOfType(DataAccessException.class).isThrownBy(() -> initializer.initializeDatabase());
+		assertThatExceptionOfType(DataAccessException.class).isThrownBy(initializer::initializeDatabase);
 		assertThatDatabaseWasAccessed(initializer);
 	}
 
