@@ -71,8 +71,7 @@ public class ToolchainPlugin implements Plugin<Project> {
 	}
 
 	private void configureTestToolchain(Project project, ToolchainExtension toolchain) {
-		List<String> jvmArgs = new ArrayList<>();
-		jvmArgs.addAll(toolchain.getTestJvmArgs().getOrElse(Collections.emptyList()));
+		List<String> jvmArgs = new ArrayList<>(toolchain.getTestJvmArgs().getOrElse(Collections.emptyList()));
 		project.getTasks().withType(Test.class, (test) -> test.jvmArgs(jvmArgs));
 	}
 
