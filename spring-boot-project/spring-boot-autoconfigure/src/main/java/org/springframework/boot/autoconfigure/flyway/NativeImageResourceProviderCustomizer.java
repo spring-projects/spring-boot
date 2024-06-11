@@ -54,16 +54,15 @@ class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 					configuration.isFailOnMissingLocations());
 		}
 		catch (NoSuchMethodError ex) {
-			// Flyway 10
 			return createFlyway10Scanner(configuration);
 		}
 	}
 
 	private static Scanner<?> createFlyway10Scanner(FluentConfiguration configuration) throws LinkageError {
 		try {
-			Constructor<?> scannerConstructor = Scanner.class.getDeclaredConstructor(Class.class, boolean.class,
+			Constructor<?> constructor = Scanner.class.getDeclaredConstructor(Class.class, boolean.class,
 					ResourceNameCache.class, LocationScannerCache.class, Configuration.class);
-			return (Scanner<?>) scannerConstructor.newInstance(JavaMigration.class, false, new ResourceNameCache(),
+			return (Scanner<?>) constructor.newInstance(JavaMigration.class, false, new ResourceNameCache(),
 					new LocationScannerCache(), configuration);
 		}
 		catch (Exception ex) {

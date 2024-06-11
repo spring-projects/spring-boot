@@ -34,9 +34,12 @@ class MyIntegrationTests {
 	}
 
 	companion object {
+
 		@Container
 		@ServiceConnection
 		@JvmStatic
 		val neo4j = Neo4jContainer("neo4j:5");
+
 	}
+
 }
