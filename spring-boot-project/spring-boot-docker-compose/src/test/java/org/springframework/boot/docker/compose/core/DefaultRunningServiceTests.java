@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ class DefaultRunningServiceTests {
 	}
 
 	private DefaultRunningService createRunningService(boolean psResponseHasImage) {
-		DockerHost host = DockerHost.get("192.168.1.1", () -> Collections.emptyList());
+		DockerHost host = DockerHost.get("192.168.1.1", Collections::emptyList);
 		String id = "123";
 		String name = "my-service";
 		String image = "redis";

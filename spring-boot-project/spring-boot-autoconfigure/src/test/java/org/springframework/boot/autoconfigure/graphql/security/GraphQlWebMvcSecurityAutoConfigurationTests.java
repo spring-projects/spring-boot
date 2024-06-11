@@ -41,6 +41,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -154,7 +155,7 @@ class GraphQlWebMvcSecurityAutoConfigurationTests {
 
 		@Bean
 		DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
-			return http.csrf((c) -> c.disable())
+			return http.csrf(CsrfConfigurer::disable)
 				// Demonstrate that method security works
 				// Best practice to use both for defense in depth
 				.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll())
