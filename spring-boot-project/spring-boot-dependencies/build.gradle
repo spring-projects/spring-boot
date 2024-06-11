@@ -404,7 +404,7 @@ bom {
 			site("https://documentation.red-gate.com/flyway")
 		}
 	}
-	library("FreeMarker", "2.3.32") {
+	library("FreeMarker", "2.3.33") {
 		group("org.freemarker") {
 			modules = [
 				"freemarker"
