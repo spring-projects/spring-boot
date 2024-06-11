@@ -93,7 +93,7 @@ public class SpringBootExtension {
 			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
 			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
 				.getArtifact()
-				.convention(this.project.provider(() -> determineArtifactBaseName())));
+				.convention(this.project.provider(this::determineArtifactBaseName)));
 		});
 		if (configurer != null) {
 			bootBuildInfo.configure(configurer);

@@ -35,12 +35,12 @@ public enum UpgradePolicy implements BiPredicate<DependencyVersion, DependencyVe
 	/**
 	 * Minor versions of the current major version.
 	 */
-	SAME_MAJOR_VERSION((candidate, current) -> candidate.isSameMajor(current)),
+	SAME_MAJOR_VERSION(DependencyVersion::isSameMajor),
 
 	/**
 	 * Patch versions of the current minor version.
 	 */
-	SAME_MINOR_VERSION((candidate, current) -> candidate.isSameMinor(current));
+	SAME_MINOR_VERSION(DependencyVersion::isSameMinor);
 
 	private final BiPredicate<DependencyVersion, DependencyVersion> delegate;
 

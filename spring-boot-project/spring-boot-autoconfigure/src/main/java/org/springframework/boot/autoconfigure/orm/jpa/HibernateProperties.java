@@ -148,9 +148,9 @@ public class HibernateProperties {
 
 		private void applyNamingStrategies(Map<String, Object> properties) {
 			applyNamingStrategy(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, this.implicitStrategy,
-					() -> SpringImplicitNamingStrategy.class.getName());
+					SpringImplicitNamingStrategy.class::getName);
 			applyNamingStrategy(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, this.physicalStrategy,
-					() -> CamelCaseToUnderscoresNamingStrategy.class.getName());
+					CamelCaseToUnderscoresNamingStrategy.class::getName);
 		}
 
 		private void applyNamingStrategy(Map<String, Object> properties, String key, Object strategy,

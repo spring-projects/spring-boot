@@ -152,7 +152,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		task.getClassesOutput()
 			.set(project.getLayout().getBuildDirectory().dir("generated/" + sourceSet.getName() + "Classes"));
 		task.getGroupId().set(project.provider(() -> String.valueOf(project.getGroup())));
-		task.getArtifactId().set(project.provider(() -> project.getName()));
+		task.getArtifactId().set(project.provider(project::getName));
 		configureToolchainConvention(project, task);
 	}
 
