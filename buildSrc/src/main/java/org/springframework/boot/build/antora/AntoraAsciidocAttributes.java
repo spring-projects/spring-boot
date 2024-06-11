@@ -56,7 +56,7 @@ public class AntoraAsciidocAttributes {
 	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom,
 			Map<String, String> dependencyVersions) {
 		this.version = String.valueOf(project.getVersion());
-		this.latestVersion = Boolean.valueOf(String.valueOf(project.findProperty("latestVersion")));
+		this.latestVersion = Boolean.parseBoolean(String.valueOf(project.findProperty("latestVersion")));
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
 		this.dependencyVersions = dependencyVersions;
