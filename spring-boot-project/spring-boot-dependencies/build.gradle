@@ -664,7 +664,7 @@ bom {
 			]
 		}
 	}
-	library("Jersey", "3.1.6") {
+	library("Jersey", "3.1.7") {
 		group("org.glassfish.jersey") {
 			imports = [
 				"jersey-bom"
