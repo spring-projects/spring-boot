@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,25 +70,16 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 
 	private boolean prohibited(ModuleVersionIdentifier id) {
 		String group = id.getGroup();
-		if (group.equals("javax.batch")) {
-			return false;
-		}
-		if (group.equals("javax.cache")) {
-			return false;
-		}
-		if (group.equals("javax.money")) {
-			return false;
-		}
-		if (group.equals("org.codehaus.groovy")) {
-			return true;
-		}
-		if (group.equals("org.eclipse.jetty.toolchain")) {
-			return true;
+		switch (group) {
+			case "javax.batch", "javax.cache", "javax.money" -> {
+				return false;
+			}
+			case "commons-logging", "org.codehaus.groovy", "org.eclipse.jetty.toolchain",
+					"org.apache.geronimo.specs" -> {
+				return true;
+			}
 		}
 		if (group.startsWith("javax")) {
-			return true;
-		}
-		if (group.equals("commons-logging")) {
 			return true;
 		}
 		if (group.equals("org.slf4j") && id.getName().equals("jcl-over-slf4j")) {
@@ -100,10 +91,7 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 		if (group.equals("org.apache.geronimo.specs")) {
 			return true;
 		}
-		if (group.equals("com.sun.activation")) {
-			return true;
-		}
-		return false;
+		return group.equals("com.sun.activation");
 	}
 
 }
