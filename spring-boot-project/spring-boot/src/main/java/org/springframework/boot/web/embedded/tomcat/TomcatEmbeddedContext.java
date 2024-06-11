@@ -128,8 +128,7 @@ class TomcatEmbeddedContext extends StandardContext {
 
 	@Override
 	public String[] findMimeMappings() {
-		List<String> mappings = new ArrayList<>();
-		mappings.addAll(Arrays.asList(super.findMimeMappings()));
+		List<String> mappings = new ArrayList<>(Arrays.asList(super.findMimeMappings()));
 		if (this.mimeMappings != null) {
 			this.mimeMappings.forEach((mapping) -> mappings.add(mapping.getExtension()));
 		}

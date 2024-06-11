@@ -240,8 +240,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 				this.key = Collections.unmodifiableSet(synthesize(annotations));
 			}
 			else {
-				Set<Object> key = new HashSet<>();
-				key.addAll(determinedImports);
+				Set<Object> key = new HashSet<>(determinedImports);
 				Set<Annotation> componentScanning = annotations.stream()
 					.filter((annotation) -> annotation.getType().equals(ComponentScan.class))
 					.map(MergedAnnotation::synthesize)

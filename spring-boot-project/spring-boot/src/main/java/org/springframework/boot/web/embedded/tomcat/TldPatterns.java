@@ -195,8 +195,7 @@ final class TldPatterns {
 	static final Set<String> DEFAULT_SCAN;
 
 	static {
-		Set<String> scanPatterns = new LinkedHashSet<>();
-		scanPatterns.addAll(TOMCAT_SCAN);
+		Set<String> scanPatterns = new LinkedHashSet<>(TOMCAT_SCAN);
 		DEFAULT_SCAN = Collections.unmodifiableSet(scanPatterns);
 	}
 

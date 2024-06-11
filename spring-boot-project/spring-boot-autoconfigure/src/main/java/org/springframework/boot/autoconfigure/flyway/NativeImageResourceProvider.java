@@ -96,8 +96,7 @@ class NativeImageResourceProvider implements ResourceProvider {
 		ensureInitialized();
 		Predicate<LocatedResource> matchesPrefixAndSuffixes = (locatedResource) -> StringUtils
 			.startsAndEndsWith(locatedResource.resource.getFilename(), prefix, suffixes);
-		List<LoadableResource> result = new ArrayList<>();
-		result.addAll(this.scanner.getResources(prefix, suffixes));
+		List<LoadableResource> result = new ArrayList<>(this.scanner.getResources(prefix, suffixes));
 		this.locatedResources.stream()
 			.filter(matchesPrefixAndSuffixes)
 			.map(this::asClassPathResource)
