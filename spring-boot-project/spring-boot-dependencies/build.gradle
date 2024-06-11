@@ -837,7 +837,7 @@ bom {
 			releaseNotes("https://github.com/redis/jedis/releases/tag/v{version}")
 		}
 	}
-	library("Jersey", "3.1.6") {
+	library("Jersey", "3.1.7") {
 		group("org.glassfish.jersey") {
 			imports = [
 				"jersey-bom"
