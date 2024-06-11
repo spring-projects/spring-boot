@@ -37,10 +37,14 @@ class ModifiedClassPathExtensionForkParameterizedTests {
 	@ParameterizedTest
 	@ValueSource(strings = { "one", "two", "three" })
 	void testIsInvokedOnceForEachArgument(String argument) {
-		switch (argument) {
-			case "one" -> assertThat(arguments).isEmpty();
-			case "two" -> assertThat(arguments).doesNotContain("two", "three");
-			case "three" -> assertThat(arguments).doesNotContain("three");
+		if (argument.equals("one")) {
+			assertThat(arguments).isEmpty();
+		}
+		else if (argument.equals("two")) {
+			assertThat(arguments).doesNotContain("two", "three");
+		}
+		else if (argument.equals("three")) {
+			assertThat(arguments).doesNotContain("three");
 		}
 		arguments.add(argument);
 	}

@@ -240,7 +240,7 @@ class NestedJarFileTests {
 	void getCommentWhenClosedThrowsException() throws IOException {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
-			assertThatIllegalStateException().isThrownBy(() -> jar.getComment()).withMessage("Zip file closed");
+			assertThatIllegalStateException().isThrownBy(jar::getComment).withMessage("Zip file closed");
 		}
 	}
 
@@ -269,7 +269,7 @@ class NestedJarFileTests {
 	void sizeWhenClosedThrowsException() throws Exception {
 		try (NestedJarFile jar = new NestedJarFile(this.file)) {
 			jar.close();
-			assertThatIllegalStateException().isThrownBy(() -> jar.size()).withMessage("Zip file closed");
+			assertThatIllegalStateException().isThrownBy(jar::size).withMessage("Zip file closed");
 		}
 	}
 
