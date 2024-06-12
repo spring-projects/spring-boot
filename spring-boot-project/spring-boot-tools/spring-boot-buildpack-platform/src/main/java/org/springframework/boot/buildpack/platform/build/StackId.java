@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.build;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * A Stack ID.
@@ -46,6 +45,10 @@ class StackId {
 			return false;
 		}
 		return this.value.equals(((StackId) obj).value);
+	}
+
+	boolean hasId() {
+		return this.value != null;
 	}
 
 	@Override
@@ -75,7 +78,6 @@ class StackId {
 	 */
 	private static StackId fromImageConfig(ImageConfig imageConfig) {
 		String value = imageConfig.getLabels().get(LABEL_NAME);
-		Assert.state(StringUtils.hasText(value), () -> "Missing '" + LABEL_NAME + "' stack label");
 		return new StackId(value);
 	}
 

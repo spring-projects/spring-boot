@@ -186,6 +186,26 @@ class BuilderTests {
 	}
 
 	@Test
+	void buildInvokesBuilderWithNoStack() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image-with-empty-stack.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of("gcr.io/paketo-buildpacks/builder:latest")), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		BuildRequest request = getTestRequest().withBuilder(ImageReference.of("gcr.io/paketo-buildpacks/builder"));
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+	}
+
+	@Test
 	void buildInvokesBuilderWithRunImageFromRequest() throws Exception {
 		TestPrintStream out = new TestPrintStream();
 		DockerApi docker = mockDockerApi();
