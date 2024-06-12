@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-import org.springframework.boot.buildpack.platform.build.BuilderMetadata.Stack;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
@@ -103,7 +102,7 @@ public class Builder {
 		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy);
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
-		request = withRunImageIfNeeded(request, builderMetadata.getStack());
+		request = withRunImageIfNeeded(request, builderMetadata);
 		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage());
 		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
@@ -124,24 +123,30 @@ public class Builder {
 		}
 	}
 
-	private BuildRequest withRunImageIfNeeded(BuildRequest request, Stack builderStack) {
+	private BuildRequest withRunImageIfNeeded(BuildRequest request, BuilderMetadata metadata) {
 		if (request.getRunImage() != null) {
 			return request;
 		}
-		return request.withRunImage(getRunImageReferenceForStack(builderStack));
+		return request.withRunImage(getRunImageReference(metadata));
 	}
 
-	private ImageReference getRunImageReferenceForStack(Stack stack) {
-		String name = stack.getRunImage().getImage();
-		Assert.state(StringUtils.hasText(name), "Run image must be specified in the builder image stack");
-		return ImageReference.of(name).inTaggedOrDigestForm();
+	private ImageReference getRunImageReference(BuilderMetadata metadata) {
+		if (metadata.getRunImages() != null && !metadata.getRunImages().isEmpty()) {
+			String runImageName = metadata.getRunImages().get(0).getImage();
+			return ImageReference.of(runImageName).inTaggedOrDigestForm();
+		}
+		String runImageName = metadata.getStack().getRunImage().getImage();
+		Assert.state(StringUtils.hasText(runImageName), "Run image must be specified in the builder image metadata");
+		return ImageReference.of(runImageName).inTaggedOrDigestForm();
 	}
 
 	private void assertStackIdsMatch(Image runImage, Image builderImage) {
 		StackId runImageStackId = StackId.fromImage(runImage);
 		StackId builderImageStackId = StackId.fromImage(builderImage);
-		Assert.state(runImageStackId.equals(builderImageStackId), () -> "Run image stack '" + runImageStackId
-				+ "' does not match builder stack '" + builderImageStackId + "'");
+		if (runImageStackId.hasId() && builderImageStackId.hasId()) {
+			Assert.state(runImageStackId.equals(builderImageStackId), () -> "Run image stack '" + runImageStackId
+					+ "' does not match builder stack '" + builderImageStackId + "'");
+		}
 	}
 
 	private Buildpacks getBuildpacks(BuildRequest request, ImageFetcher imageFetcher, BuilderMetadata builderMetadata,
