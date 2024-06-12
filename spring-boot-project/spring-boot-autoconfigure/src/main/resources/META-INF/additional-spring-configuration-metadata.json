@@ -2173,6 +2173,15 @@
       }
     },
     {
+      "name": "spring.reactor.netty.shutdownQuietPeriod",
+      "type": "java.time.Duration"
+    },
+    {
+      "name": "spring.reactor.netty.maxConnection",
+      "type": "java.lang.Integer",
+      "defaultValue": "500"
+    },
+    {
       "name": "spring.redis.client-name",
       "type": "java.lang.String",
       "deprecation": {

@@ -24,6 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for Reactor Netty.
  *
  * @author Moritz Halbritter
+ * @author Huseyin Aydin
  * @since 2.7.9
  */
 @ConfigurationProperties(prefix = "spring.reactor.netty")
@@ -34,6 +35,8 @@ public class ReactorNettyProperties {
 	 */
 	private Duration shutdownQuietPeriod;
 
+	private Integer maxConnection = 500;
+
 	public Duration getShutdownQuietPeriod() {
 		return this.shutdownQuietPeriod;
 	}
@@ -42,4 +45,11 @@ public class ReactorNettyProperties {
 		this.shutdownQuietPeriod = shutdownQuietPeriod;
 	}
 
+	public Integer getMaxConnection() {
+		return this.maxConnection;
+	}
+
+	public void setMaxConnection(Integer maxConnection) {
+		this.maxConnection = maxConnection;
+	}
 }

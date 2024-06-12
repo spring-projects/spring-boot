@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.reactor.netty;
 
+import reactor.netty.resources.ConnectionProvider;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +29,7 @@ import org.springframework.http.client.ReactorResourceFactory;
  * auto-configuration class.
  *
  * @author Moritz Halbritter
+ * @author Huseyin Aydin
  * @since 2.7.9
  */
 public final class ReactorNettyConfigurations {
@@ -45,6 +48,8 @@ public final class ReactorNettyConfigurations {
 			if (configurationProperties.getShutdownQuietPeriod() != null) {
 				reactorResourceFactory.setShutdownQuietPeriod(configurationProperties.getShutdownQuietPeriod());
 			}
+			reactorResourceFactory.setUseGlobalResources(false);
+			reactorResourceFactory.setConnectionProvider(ConnectionProvider.create("http", configurationProperties.getMaxConnection()));
 			return reactorResourceFactory;
 		}
 
