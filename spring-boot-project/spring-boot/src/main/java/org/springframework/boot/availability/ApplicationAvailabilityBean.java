@@ -84,7 +84,7 @@ public class ApplicationAvailabilityBean
 		StringBuilder message = new StringBuilder(
 				"Application availability state " + type.getSimpleName() + " changed");
 		message.append((lastChangeEvent != null) ? " from " + lastChangeEvent.getState() : "");
-		message.append(" to " + event.getState());
+		message.append(" to ").append(event.getState());
 		message.append(getSourceDescription(event.getSource()));
 		return message;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package org.springframework.boot.context.config;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 
@@ -71,11 +70,7 @@ class ConfigDataLoaders {
 
 	@SuppressWarnings("rawtypes")
 	private List<Class<?>> getResourceTypes(List<ConfigDataLoader> loaders) {
-		List<Class<?>> resourceTypes = new ArrayList<>(loaders.size());
-		for (ConfigDataLoader<?> loader : loaders) {
-			resourceTypes.add(getResourceType(loader));
-		}
-		return Collections.unmodifiableList(resourceTypes);
+		return loaders.stream().map(this::getResourceType).collect(Collectors.toUnmodifiableList());
 	}
 
 	private Class<?> getResourceType(ConfigDataLoader<?> loader) {

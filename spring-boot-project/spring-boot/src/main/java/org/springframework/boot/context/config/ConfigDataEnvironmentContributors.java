@@ -134,7 +134,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			return "Nothing imported";
 		}
 		StringBuilder message = new StringBuilder();
-		message.append("Imported " + results.size() + " resource" + ((results.size() != 1) ? "s " : " "));
+		message.append("Imported ").append(results.size()).append(" resource").append((results.size() != 1) ? "s " : " ");
 		message.append(results.stream().map(ConfigDataResolutionResult::getResource).toList());
 		return message;
 	}
