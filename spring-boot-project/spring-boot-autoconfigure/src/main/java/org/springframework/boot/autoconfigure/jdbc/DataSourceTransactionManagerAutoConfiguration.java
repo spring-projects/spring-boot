@@ -49,7 +49,7 @@ import org.springframework.transaction.TransactionManager;
  */
 @AutoConfiguration(before = TransactionAutoConfiguration.class,
 		after = TransactionManagerCustomizationAutoConfiguration.class)
-@ConditionalOnClass({ JdbcTemplate.class, TransactionManager.class })
+@ConditionalOnClass({ DataSource.class, JdbcTemplate.class, TransactionManager.class })
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceTransactionManagerAutoConfiguration {
