@@ -8,13 +8,13 @@ The plugin includes a run goal which can be used to launch your application from
 $ mvn spring-boot:run
 ----
 
-Application arguments can be specified using the `arguments` parameter, see xref:run#run.examples.using-application-arguments[using application arguments] for more details.
+Application arguments can be specified using the `arguments` parameter, see xref:run.adoc#run.examples.using-application-arguments[using application arguments] for more details.
 
 The application is executed in a forked process and setting properties on the command-line will not affect the application.
-If you need to specify some JVM arguments (that is for debugging purposes), you can use the `jvmArguments` parameter, see xref:run#run.examples.debug[Debug the application] for more details.
-There is also explicit support for xref:run#run.examples.system-properties[system properties] and xref:run#run.examples.environment-variables[environment variables].
+If you need to specify some JVM arguments (that is for debugging purposes), you can use the `jvmArguments` parameter, see xref:run.adoc#run.examples.debug[Debug the application] for more details.
+There is also explicit support for xref:run.adoc#run.examples.system-properties[system properties] and xref:run.adoc#run.examples.environment-variables[environment variables].
 
-As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see xref:run#run.examples.specify-active-profiles[Specify active profiles].
+As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see xref:run.adoc#run.examples.specify-active-profiles[Specify active profiles].
 
 Spring Boot `devtools` is a module to improve the development-time experience when working on Spring Boot applications.
 To enable it, just add the following dependency to your project:
