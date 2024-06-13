@@ -4,5 +4,6 @@ services:
     ports:
       - '27017'
     environment:
-      - 'MONGO_ROOT_USERNAME=root'
-      - 'MONGO_ROOT_PASSWORD=secret'
+      - 'MONGODB_ROOT_USERNAME=root'
+      - 'MONGODB_ROOT_PASSWORD=secret'
+      - 'MONGODB_DATABASE=testdb'

@@ -46,7 +46,7 @@ class MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends 
 		assertThat(connectionString.getCredential().getUserName()).isEqualTo("root");
 		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());
 		assertThat(connectionString.getCredential().getSource()).isEqualTo("admin");
-		assertThat(connectionString.getDatabase()).isEqualTo("test");
+		assertThat(connectionString.getDatabase()).isEqualTo("testdb");
 		assertThat(connectionDetails.getGridFs()).isNull();
 	}
 
