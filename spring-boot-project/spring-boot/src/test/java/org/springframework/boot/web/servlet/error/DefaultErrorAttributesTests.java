@@ -294,4 +294,20 @@ class DefaultErrorAttributesTests {
 		assertThat(attributes).containsEntry("message", "custom message");
 	}
 
+	@Test
+	void excludeStatus() {
+		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.defaults().excluding(Include.STATUS));
+		assertThat(attributes).doesNotContainKey("status");
+	}
+
+	@Test
+	void excludeError() {
+		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.defaults().excluding(Include.ERROR));
+		assertThat(attributes).doesNotContainKey("error");
+	}
+
 }

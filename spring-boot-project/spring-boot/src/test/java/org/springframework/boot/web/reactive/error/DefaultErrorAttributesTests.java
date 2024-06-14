@@ -106,7 +106,7 @@ class DefaultErrorAttributesTests {
 		Exception error = new CustomException("Test Message");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
-				ErrorAttributeOptions.of(Include.MESSAGE));
+				ErrorAttributeOptions.of(Include.MESSAGE, Include.STATUS, Include.ERROR));
 		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
 		assertThat(attributes).containsEntry("message", "Test Message");
 		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
@@ -117,7 +117,7 @@ class DefaultErrorAttributesTests {
 		Exception error = new Custom2Exception();
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
-				ErrorAttributeOptions.of(Include.MESSAGE));
+				ErrorAttributeOptions.of(Include.MESSAGE, Include.STATUS, Include.ERROR));
 		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
 		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
 		assertThat(attributes).containsEntry("message", "Nope!");
@@ -176,7 +176,7 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
-				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
+				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE, Include.STATUS));
 		assertThat(attributes).containsEntry("status", 400);
 		assertThat(attributes).containsEntry("message", "invalid request");
 		assertThat(attributes).containsEntry("exception", RuntimeException.class.getName());
@@ -191,7 +191,7 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
-				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
+				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE, Include.STATUS));
 		assertThat(attributes).containsEntry("status", 406);
 		assertThat(attributes).containsEntry("message", "could not process request");
 		assertThat(attributes).containsEntry("exception", ResponseStatusException.class.getName());
@@ -281,6 +281,30 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).doesNotContainKey("message");
 		assertThat(attributes).doesNotContainKey("errors");
+	}
+
+	@Test
+	void excludeStatus() {
+		ResponseStatusException error = new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
+				"could not process request");
+		this.errorAttributes = new DefaultErrorAttributes();
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, error);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.defaults().excluding(Include.STATUS));
+		assertThat(attributes).doesNotContainKey("status");
+	}
+
+	@Test
+	void excludeError() {
+		ResponseStatusException error = new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
+				"could not process request");
+		this.errorAttributes = new DefaultErrorAttributes();
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, error);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.defaults().excluding(Include.ERROR));
+		assertThat(attributes).doesNotContainKey("error");
 	}
 
 	private ServerRequest buildServerRequest(MockServerHttpRequest request, Throwable error) {
