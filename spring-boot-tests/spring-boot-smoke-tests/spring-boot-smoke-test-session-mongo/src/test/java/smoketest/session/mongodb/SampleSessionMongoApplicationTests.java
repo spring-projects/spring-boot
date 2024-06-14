@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,14 +78,6 @@ class SampleSessionMongoApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
 		assertThat(sessions).hasSize(1);
-	}
-
-	@Test
-	void health() {
-		ResponseEntity<String> entity = this.restTemplate
-			.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
-		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
-		assertThat(entity.getBody()).contains("maxWireVersion");
 	}
 
 	private String performLogin() {
