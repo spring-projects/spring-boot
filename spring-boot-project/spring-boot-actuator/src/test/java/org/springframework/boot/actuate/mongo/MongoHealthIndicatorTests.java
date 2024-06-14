@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,24 +42,24 @@ class MongoHealthIndicatorTests {
 		Document commandResult = mock(Document.class);
 		given(commandResult.getInteger("maxWireVersion")).willReturn(10);
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ isMaster: 1 }")).willReturn(commandResult);
+		given(mongoTemplate.executeCommand("{ hello: 1 }")).willReturn(commandResult);
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("maxWireVersion", 10);
 		then(commandResult).should().getInteger("maxWireVersion");
-		then(mongoTemplate).should().executeCommand("{ isMaster: 1 }");
+		then(mongoTemplate).should().executeCommand("{ hello: 1 }");
 	}
 
 	@Test
 	void mongoIsDown() {
 		MongoTemplate mongoTemplate = mock(MongoTemplate.class);
-		given(mongoTemplate.executeCommand("{ isMaster: 1 }")).willThrow(new MongoException("Connection failed"));
+		given(mongoTemplate.executeCommand("{ hello: 1 }")).willThrow(new MongoException("Connection failed"));
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		then(mongoTemplate).should().executeCommand("{ isMaster: 1 }");
+		then(mongoTemplate).should().executeCommand("{ hello: 1 }");
 	}
 
 }
