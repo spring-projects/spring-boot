@@ -67,13 +67,13 @@ public class PrometheusScrapeEndpoint {
 	/**
 	 * Creates a new {@link PrometheusScrapeEndpoint}.
 	 * @param prometheusRegistry the Prometheus registry to use
-	 * @param expositionFormatsProperties the properties used to configure Prometheus'
+	 * @param exporterProperties the properties used to configure Prometheus'
 	 * {@link ExpositionFormats}
 	 */
-	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry, Properties expositionFormatsProperties) {
+	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry, Properties exporterProperties) {
 		this.prometheusRegistry = prometheusRegistry;
-		PrometheusProperties prometheusProperties = (expositionFormatsProperties != null)
-				? PrometheusPropertiesLoader.load(expositionFormatsProperties) : PrometheusPropertiesLoader.load();
+		PrometheusProperties prometheusProperties = (exporterProperties != null)
+				? PrometheusPropertiesLoader.load(exporterProperties) : PrometheusPropertiesLoader.load();
 		this.expositionFormats = ExpositionFormats.init(prometheusProperties.getExporterProperties());
 	}
 
