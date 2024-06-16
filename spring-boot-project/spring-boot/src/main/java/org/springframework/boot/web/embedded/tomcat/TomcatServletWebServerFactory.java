@@ -236,45 +236,53 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
-		File documentRoot = getValidDocumentRoot();
-		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
-		if (documentRoot != null) {
-			context.setResources(new LoaderHidingResourceRoot(context));
-		}
-		context.setName(getContextPath());
-		context.setDisplayName(getDisplayName());
-		context.setPath(getContextPath());
-		File docBase = (documentRoot != null) ? documentRoot : createTempDir("tomcat-docbase");
-		context.setDocBase(docBase.getAbsolutePath());
-		context.addLifecycleListener(new FixContextListener());
-		ClassLoader parentClassLoader = (this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
-				: ClassUtils.getDefaultClassLoader();
-		context.setParentClassLoader(parentClassLoader);
-		resetDefaultLocaleMapping(context);
-		addLocaleMappings(context);
-		try {
-			context.setCreateUploadTargets(true);
-		}
-		catch (NoSuchMethodError ex) {
-			// Tomcat is < 8.5.39. Continue.
-		}
-		configureTldPatterns(context);
-		WebappLoader loader = new WebappLoader();
-		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
-		loader.setDelegate(true);
-		context.setLoader(loader);
-		if (isRegisterDefaultServlet()) {
-			addDefaultServlet(context);
-		}
-		if (shouldRegisterJspServlet()) {
-			addJspServlet(context);
-			addJasperInitializer(context);
-		}
-		context.addLifecycleListener(new StaticResourceConfigurer(context));
-		ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
-		host.addChild(context);
-		configureContext(context, initializersToUse);
-		postProcessContext(context);
+	    File documentRoot = getValidDocumentRoot();
+	    TomcatEmbeddedContext context = new TomcatEmbeddedContext();
+	    setupContext(context, documentRoot);
+	    configureContextSettings(context, initializers, host);
+	}
+	
+	private void setupContext(TomcatEmbeddedContext context, File documentRoot) {
+	    if (documentRoot != null) {
+	        context.setResources(new LoaderHidingResourceRoot(context));
+	    }
+	    context.setName(getContextPath());
+	    context.setDisplayName(getDisplayName());
+	    context.setPath(getContextPath());
+	    File docBase = (documentRoot != null) ? documentRoot : createTempDir("tomcat-docbase");
+	    context.setDocBase(docBase.getAbsolutePath());
+	    context.addLifecycleListener(new FixContextListener());
+	    ClassLoader parentClassLoader = (this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
+	            : ClassUtils.getDefaultClassLoader();
+	    context.setParentClassLoader(parentClassLoader);
+	    resetDefaultLocaleMapping(context);
+	    addLocaleMappings(context);
+	    try {
+	        context.setCreateUploadTargets(true);
+	    }
+	    catch (NoSuchMethodError ex) {
+	        // Tomcat is < 8.5.39. Continue.
+	    }
+	    configureTldPatterns(context);
+	    WebappLoader loader = new WebappLoader();
+	    loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
+	    loader.setDelegate(true);
+	    context.setLoader(loader);
+	}
+	
+	private void configureContextSettings(TomcatEmbeddedContext context, ServletContextInitializer[] initializers, Host host) {
+	    if (isRegisterDefaultServlet()) {
+	        addDefaultServlet(context);
+	    }
+	    if (shouldRegisterJspServlet()) {
+	        addJspServlet(context);
+	        addJasperInitializer(context);
+	    }
+	    context.addLifecycleListener(new StaticResourceConfigurer(context));
+	    ServletContextInitializer[] initializersToUse = mergeInitializers(initializers);
+	    host.addChild(context);
+	    configureContext(context, initializersToUse);
+	    postProcessContext(context);
 	}
 
 	/**
