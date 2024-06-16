@@ -302,12 +302,24 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	private DeploymentManager createManager(ServletContextInitializer... initializers) {
+		DeploymentInfo deployment = initializeDeployment(initializers);
+		configureDeployment(deployment);
+		DeploymentManager manager = deployDeployment(deployment);
+		configureSessionManager(manager);
+		return manager;
+	}
+
+	private DeploymentInfo initializeDeployment(ServletContextInitializer... initializers) {
 		DeploymentInfo deployment = Servlets.deployment();
 		registerServletContainerInitializerToDriveServletContextInitializers(deployment, initializers);
 		deployment.setClassLoader(getServletClassLoader());
 		deployment.setContextPath(getContextPath());
 		deployment.setDisplayName(getDisplayName());
 		deployment.setDeploymentName("spring-boot");
+		return deployment;
+	}
+
+	private void configureDeployment(DeploymentInfo deployment) {
 		if (isRegisterDefaultServlet()) {
 			deployment.addServlet(Servlets.servlet("default", DefaultServlet.class));
 		}
@@ -327,17 +339,24 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			deployment.setSessionPersistenceManager(new FileSessionPersistence(dir));
 		}
 		addLocaleMappings(deployment);
+	}
+
+	private DeploymentManager deployDeployment(DeploymentInfo deployment) {
 		DeploymentManager manager = Servlets.newContainer().addDeployment(deployment);
 		manager.deploy();
 		if (manager.getDeployment() instanceof DeploymentImpl managerDeployment) {
 			removeSuperfluousMimeMappings(managerDeployment, deployment);
 		}
+		return manager;
+	}
+
+	private void configureSessionManager(DeploymentManager manager) {
 		SessionManager sessionManager = manager.getDeployment().getSessionManager();
 		Duration timeoutDuration = getSession().getTimeout();
 		int sessionTimeout = (isZeroOrLess(timeoutDuration) ? -1 : (int) timeoutDuration.getSeconds());
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
-		return manager;
 	}
+
 
 	private void configureWebListeners(DeploymentInfo deployment) {
 		for (String className : getWebListenerClassNames()) {
