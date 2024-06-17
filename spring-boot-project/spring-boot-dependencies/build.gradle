@@ -806,6 +806,10 @@ bom {
 		}
 	}
 	library("Jaybird", "5.0.4.java11") {
+		prohibit {
+			endsWith ".java8"
+			because "we use the .java11 version"
+		}
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird"
