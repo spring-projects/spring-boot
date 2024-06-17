@@ -1,19 +1,3 @@
-/*
- * Copyright 2012-2022 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.springframework.boot.jackson;
 
 import java.io.IOException;
@@ -88,6 +72,23 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 		if (jsonNode == null) {
 			return null;
 		}
+		return convertJsonNodeToType(jsonNode, type);
+	}
+
+	/**
+	 * Helper method to return a {@link JsonNode} from the tree.
+	 * @param tree the source tree
+	 * @param fieldName the field name to extract
+	 * @return the {@link JsonNode}
+	 */
+	protected final JsonNode getRequiredNode(JsonNode tree, String fieldName) {
+		Assert.notNull(tree, "Tree must not be null");
+		JsonNode node = tree.get(fieldName);
+		Assert.state(node != null && !(node instanceof NullNode), () -> "Missing JSON field '" + fieldName + "'");
+		return node;
+	}
+
+	private <D> D convertJsonNodeToType(JsonNode jsonNode, Class<D> type) {
 		if (type == String.class) {
 			return (D) jsonNode.textValue();
 		}
@@ -117,18 +118,4 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 		}
 		throw new IllegalArgumentException("Unsupported value type " + type.getName());
 	}
-
-	/**
-	 * Helper method to return a {@link JsonNode} from the tree.
-	 * @param tree the source tree
-	 * @param fieldName the field name to extract
-	 * @return the {@link JsonNode}
-	 */
-	protected final JsonNode getRequiredNode(JsonNode tree, String fieldName) {
-		Assert.notNull(tree, "Tree must not be null");
-		JsonNode node = tree.get(fieldName);
-		Assert.state(node != null && !(node instanceof NullNode), () -> "Missing JSON field '" + fieldName + "'");
-		return node;
-	}
-
 }
