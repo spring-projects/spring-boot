@@ -27,7 +27,6 @@ import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.boot.testcontainers.lifecycle.TestContainersParallelStartupWithImportTestcontainersIntegrationTests.Containers;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -40,7 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "spring.testcontainers.beans.startup=parallel")
-@DirtiesContext
 @DisabledIfDockerUnavailable
 @ExtendWith(OutputCaptureExtension.class)
 @ImportTestcontainers(Containers.class)
