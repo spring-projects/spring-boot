@@ -23,18 +23,13 @@ jobs:
       - name: Prepare Gradle Build
         uses: ./.github/actions/prepare-gradle-build
         with:
+          develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
           java-version: ${{ matrix.java.version }}
           java-toolchain: ${{ matrix.java.toolchain }}
       - name: Run System Tests
         id: run-system-tests
         shell: bash
-        env:
-          GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-          GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
-          GRADLE_ENTERPRISE_CACHE_USERNAME: ${{ secrets.GRADLE_ENTERPRISE_CACHE_USER }}
-          GRADLE_ENTERPRISE_CACHE_PASSWORD: ${{ secrets.GRADLE_ENTERPRISE_CACHE_PASSWORD }}
-        run: |
-          ./gradlew systemTest
+        run: ./gradlew systemTest
       - name: Send Notification
         uses: ./.github/actions/send-notification
         if: always()

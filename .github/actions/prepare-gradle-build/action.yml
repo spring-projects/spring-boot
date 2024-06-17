@@ -9,6 +9,9 @@ inputs:
     required: false
     default: false
     description: 'Whether a Java toolchain should be used'
+  develocity-access-key:
+    required: false
+    description: 'The access key for authentication with ge.spring.io'
 runs:
   using: composite
   steps:
@@ -28,6 +31,7 @@ runs:
       uses: gradle/actions/setup-gradle@31ae3562f68c96d481c31bc1a8a55cc1be162f83 # v3.4.1
       with:
         cache-read-only: false
+        develocity-access-key: ${{ inputs.develocity-access-key }}
     - name: Configure Gradle Properties
       shell: bash
       run: |

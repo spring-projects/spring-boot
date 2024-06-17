@@ -35,15 +35,11 @@ runs:
       id: build
       if: ${{ inputs.publish == 'false' }}
       shell: bash
-      env:
-        DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
       run: ./gradlew build
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}
       shell: bash
-      env:
-        DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
       run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository ${{ !startsWith(github.event.head_commit.message, 'Next development version') && 'build' || '' }} publishAllPublicationsToDeploymentRepository
     - name: Read Version From gradle.properties
       id: read-version
