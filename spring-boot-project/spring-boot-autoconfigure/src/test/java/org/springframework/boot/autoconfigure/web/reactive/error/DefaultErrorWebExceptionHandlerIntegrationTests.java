@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
@@ -36,12 +39,17 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
+import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.test.web.reactive.server.HttpHandlerConnector.FailureAfterResponseCompletedException;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,6 +58,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -573,6 +582,21 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		});
 	}
 
+	@Test
+	void customErrorWebExceptionHandlerWithoutStatus() {
+		this.contextRunner.withUserConfiguration(CustomErrorWebExceptionHandlerWithoutStatus.class).run((context) -> {
+			WebTestClient client = getWebClient(context);
+			client.get()
+				.uri("/badRequest")
+				.exchange()
+				.expectStatus()
+				.isBadRequest()
+				.expectBody()
+				.jsonPath("status")
+				.doesNotExist();
+		});
+	}
+
 	private String getErrorTemplatesLocation() {
 		String packageName = getClass().getPackage().getName();
 		return "classpath:/" + packageName.replace('.', '/') + "/templates/";
@@ -671,6 +695,31 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 				}
 
 			};
+		}
+
+	}
+
+	static class CustomErrorWebExceptionHandlerWithoutStatus {
+
+		@Bean
+		@Order(-1)
+		ErrorWebExceptionHandler errorWebExceptionHandler(ServerProperties serverProperties,
+				ErrorAttributes errorAttributes, WebProperties webProperties,
+				ObjectProvider<ViewResolver> viewResolvers, ServerCodecConfigurer serverCodecConfigurer,
+				ApplicationContext applicationContext) {
+			DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
+					webProperties.getResources(), serverProperties.getError(), applicationContext) {
+
+				@Override
+				protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
+					return super.getErrorAttributeOptions(request, mediaType).excluding(Include.STATUS, Include.ERROR);
+				}
+
+			};
+			exceptionHandler.setViewResolvers(viewResolvers.orderedStream().toList());
+			exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
+			exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());
+			return exceptionHandler;
 		}
 
 	}
