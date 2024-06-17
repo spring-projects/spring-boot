@@ -21,4 +21,4 @@ To use the cache, you need to add an extra parameter when starting the applicati
 $ java -XX:SharedArchiveFile=application.jsa -jar my-app.jar
 ----
 
-NOTE: For more details about CDS, refer to the {url-spring-framework-docs}/integration/cds.html[Spring Framework reference documentation].
+NOTE: For more details about CDS, refer to the xref:how-to:class-data-sharing.adoc[CDS how-to guide] and the {url-spring-framework-docs}/integration/cds.html[Spring Framework reference documentation].
