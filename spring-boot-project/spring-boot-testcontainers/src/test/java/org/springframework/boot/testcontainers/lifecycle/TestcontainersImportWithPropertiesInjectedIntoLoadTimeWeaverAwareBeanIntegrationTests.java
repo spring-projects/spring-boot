@@ -31,7 +31,6 @@ import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.weaving.LoadTimeWeaverAware;
 import org.springframework.instrument.classloading.LoadTimeWeaver;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -40,7 +39,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)
-@DirtiesContext
 @DisabledIfDockerUnavailable
 @ImportTestcontainers(Containers.class)
 class TestcontainersImportWithPropertiesInjectedIntoLoadTimeWeaverAwareBeanIntegrationTests {
