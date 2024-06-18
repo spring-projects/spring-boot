@@ -77,7 +77,7 @@ class DockerCliIntegrationTests {
 			DockerCliComposeConfigResponse config = cli.run(new ComposeConfig());
 			assertThat(config.services()).containsOnlyKeys("redis");
 			// Run up
-			cli.run(new ComposeUp(LogLevel.INFO));
+			cli.run(new ComposeUp(LogLevel.INFO, Collections.emptyList()));
 			// Run ps and use id to run inspect on the id
 			ps = cli.run(new ComposePs());
 			assertThat(ps).hasSize(1);
@@ -86,14 +86,14 @@ class DockerCliIntegrationTests {
 			assertThat(inspect).isNotEmpty();
 			assertThat(inspect.get(0).id()).startsWith(id);
 			// Run stop, then run ps and verify the services are stopped
-			cli.run(new ComposeStop(Duration.ofSeconds(10)));
+			cli.run(new ComposeStop(Duration.ofSeconds(10), Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).isEmpty();
 			// Run start, verify service is there, then run down and verify they are gone
-			cli.run(new ComposeStart(LogLevel.INFO));
+			cli.run(new ComposeStart(LogLevel.INFO, Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).hasSize(1);
-			cli.run(new ComposeDown(Duration.ofSeconds(10)));
+			cli.run(new ComposeDown(Duration.ofSeconds(10), Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).isEmpty();
 		}
@@ -105,7 +105,7 @@ class DockerCliIntegrationTests {
 
 	private static void quietComposeDown(DockerCli cli) {
 		try {
-			cli.run(new ComposeDown(Duration.ZERO));
+			cli.run(new ComposeDown(Duration.ZERO, Collections.emptyList()));
 		}
 		catch (RuntimeException ex) {
 			// Ignore

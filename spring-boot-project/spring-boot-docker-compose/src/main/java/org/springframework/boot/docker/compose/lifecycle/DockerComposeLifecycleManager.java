@@ -125,13 +125,14 @@ class DockerComposeLifecycleManager {
 				logger.info(skip.getLogMessage());
 			}
 			else {
-				start.getCommand().applyTo(dockerCompose, start.getLogLevel());
+				start.getCommand().applyTo(dockerCompose, start.getLogLevel(), start.getArguments());
 				runningServices = dockerCompose.getRunningServices();
 				if (wait == Wait.ONLY_IF_STARTED) {
 					wait = Wait.ALWAYS;
 				}
 				if (lifecycleManagement.shouldStop()) {
-					this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
+					this.shutdownHandlers
+						.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout(), stop.getArguments()));
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.docker.compose.lifecycle;
 
 import java.time.Duration;
-import java.util.function.BiConsumer;
+import java.util.List;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
 
@@ -34,21 +34,23 @@ public enum StopCommand {
 	/**
 	 * Stop using {@code docker compose down}.
 	 */
-	DOWN(DockerCompose::down),
+	DOWN {
+		@Override
+		void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments) {
+			dockerCompose.down(timeout, arguments);
+		}
+	},
 
 	/**
 	 * Stop using {@code docker compose stop}.
 	 */
-	STOP(DockerCompose::stop);
+	STOP {
+		@Override
+		void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments) {
+			dockerCompose.stop(timeout, arguments);
+		}
+	};
 
-	private final BiConsumer<DockerCompose, Duration> action;
-
-	StopCommand(BiConsumer<DockerCompose, Duration> action) {
-		this.action = action;
-	}
-
-	void applyTo(DockerCompose dockerCompose, Duration timeout) {
-		this.action.accept(dockerCompose, timeout);
-	}
+	abstract void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments);
 
 }
