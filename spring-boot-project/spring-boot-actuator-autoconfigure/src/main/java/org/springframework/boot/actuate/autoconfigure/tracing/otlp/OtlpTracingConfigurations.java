@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class OtlpTracingConfigurations {
 		@ConditionalOnMissingBean(value = OtlpHttpSpanExporter.class,
 				type = "io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter")
 		@ConditionalOnBean(OtlpTracingConnectionDetails.class)
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracing("otlp")
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
