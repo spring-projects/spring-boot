@@ -100,7 +100,7 @@ There is a bean definition for the `myConfiguration` bean, and one for `myBean`.
 When a `myBean` instance is required, a `BeanInstanceSupplier` is called.
 This supplier will invoke the `myBean()` method on the `myConfiguration` bean.
 
-NOTE: During Spring AOT processing your application is started up to the point that bean definitions are available.
+NOTE: During Spring AOT processing, your application is started up to the point that bean definitions are available.
 Bean instances are not created during the AOT processing phase.
 
 Spring AOT will generate code like this for all your bean definitions.
