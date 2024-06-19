@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.neo4j.driver.GraphDatabase;
 
 import org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 class Neo4jDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	Neo4jDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("neo4j-compose.yaml", DockerImageNames.neo4j());
+		super("neo4j-compose.yaml", TestImage.NEO4J);
 	}
 
 	@Test

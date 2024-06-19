@@ -17,7 +17,6 @@
 package org.springframework.boot.testcontainers.service.connection.elasticsearch;
 
 import java.io.IOException;
-import java.time.Duration;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientA
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -48,10 +47,7 @@ class ElasticsearchContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-		.withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
-		.withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10));
+	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
 
 	@Autowired(required = false)
 	private ElasticsearchConnectionDetails connectionDetails;

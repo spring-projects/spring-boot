@@ -25,8 +25,8 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.boot.testcontainers.lifecycle.TestContainersParallelStartupWithImportTestcontainersIntegrationTests.Containers;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -52,13 +52,13 @@ public class TestContainersParallelStartupWithImportTestcontainersIntegrationTes
 	static class Containers {
 
 		@Container
-		static PostgreSQLContainer<?> container1 = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		static PostgreSQLContainer<?> container1 = TestImage.container(PostgreSQLContainer.class);
 
 		@Container
-		static PostgreSQLContainer<?> container2 = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		static PostgreSQLContainer<?> container2 = TestImage.container(PostgreSQLContainer.class);
 
 		@Container
-		static PostgreSQLContainer<?> container3 = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		static PostgreSQLContainer<?> container3 = TestImage.container(PostgreSQLContainer.class);
 
 	}
 

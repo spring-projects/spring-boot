@@ -16,8 +16,6 @@
 
 package org.springframework.boot.testcontainers.service.connection.couchbase;
 
-import java.time.Duration;
-
 import com.couchbase.client.java.Cluster;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.couchbase.BucketDefinition;
@@ -31,7 +29,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -48,10 +46,8 @@ class CouchbaseContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
+	static final CouchbaseContainer couchbase = TestImage.container(CouchbaseContainer.class)
 		.withEnabledServices(CouchbaseService.KV, CouchbaseService.INDEX, CouchbaseService.QUERY)
-		.withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10))
 		.withBucket(new BucketDefinition("cbbucket"));
 
 	@Autowired(required = false)

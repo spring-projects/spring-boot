@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testsupport.testcontainers;
-
-import org.testcontainers.containers.GenericContainer;
-
 /**
- * A {@link GenericContainer} for Redis.
- *
- * @author Andy Wilkinson
- * @author Madhura Bhave
+ * Support for testing with Testcontainers.
  */
-public class RedisContainer extends GenericContainer<RedisContainer> {
-
-	public RedisContainer() {
-		super(DockerImageNames.redis());
-		addExposedPorts(6379);
-	}
-
-}
+package org.springframework.boot.testsupport.container;

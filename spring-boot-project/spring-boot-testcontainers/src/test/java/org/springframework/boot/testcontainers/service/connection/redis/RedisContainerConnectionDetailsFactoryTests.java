@@ -25,7 +25,8 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.boot.testsupport.container.RedisContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -44,7 +45,7 @@ class RedisContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final RedisContainer redis = new RedisContainer();
+	static final RedisContainer redis = TestImage.container(RedisContainer.class);
 
 	@Autowired(required = false)
 	private RedisConnectionDetails connectionDetails;

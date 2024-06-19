@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package smoketest.data.couchbase;
 
-import java.time.Duration;
 import java.util.Base64;
 
 import com.github.dockerjava.api.command.InspectContainerResponse;
@@ -26,9 +25,8 @@ import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.testcontainers.couchbase.CouchbaseContainer;
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
-
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 /**
  * A {@link CouchbaseContainer} for Couchbase with SSL configuration.
@@ -46,10 +44,8 @@ public class SecureCouchbaseContainer extends CouchbaseContainer {
 
 	private static final String ADMIN_PASSWORD = "password";
 
-	public SecureCouchbaseContainer() {
-		super(DockerImageNames.couchbase());
-		withStartupAttempts(5);
-		withStartupTimeout(Duration.ofMinutes(10));
+	public SecureCouchbaseContainer(DockerImageName dockerImageName) {
+		super(dockerImageName);
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-server.crt"),
 				"/opt/couchbase/var/lib/couchbase/inbox/chain.pem");
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-server.key"),

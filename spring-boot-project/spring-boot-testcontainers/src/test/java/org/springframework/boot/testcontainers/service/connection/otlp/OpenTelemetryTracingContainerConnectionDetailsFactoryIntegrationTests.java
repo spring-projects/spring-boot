@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfi
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -43,8 +43,7 @@ class OpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = new GenericContainer<>(DockerImageNames.opentelemetry())
-		.withExposedPorts(4318);
+	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer().withExposedPorts(4318);
 
 	@Autowired
 	private OtlpTracingConnectionDetails connectionDetails;

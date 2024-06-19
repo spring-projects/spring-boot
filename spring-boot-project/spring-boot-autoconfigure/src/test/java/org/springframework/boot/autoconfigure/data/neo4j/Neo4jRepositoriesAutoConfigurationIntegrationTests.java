@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import java.time.Duration;
-
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -28,7 +26,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -46,15 +44,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
-	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
-		.withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10));
+	static final Neo4jContainer<?> neo4j = TestImage.container(Neo4jContainer.class);
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
+		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 		registry.add("spring.neo4j.authentication.username", () -> "neo4j");
-		registry.add("spring.neo4j.authentication.password", neo4jServer::getAdminPassword);
+		registry.add("spring.neo4j.authentication.password", neo4j::getAdminPassword);
 	}
 
 	@Autowired

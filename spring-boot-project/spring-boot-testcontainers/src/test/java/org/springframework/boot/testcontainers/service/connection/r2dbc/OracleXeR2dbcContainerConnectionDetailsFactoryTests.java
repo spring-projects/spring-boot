@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryHints;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -55,8 +55,7 @@ class OracleXeR2dbcContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final OracleContainer oracle = new OracleContainer(DockerImageNames.oracleXe())
-		.withStartupTimeout(Duration.ofMinutes(2));
+	static final OracleContainer oracle = TestImage.container(OracleContainer.class);
 
 	@Autowired
 	ConnectionFactory connectionFactory;

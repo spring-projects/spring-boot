@@ -29,7 +29,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -48,7 +48,7 @@ class JdbcContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+	static final PostgreSQLContainer<?> postgres = TestImage.container(PostgreSQLContainer.class);
 
 	@Autowired(required = false)
 	private JdbcConnectionDetails connectionDetails;

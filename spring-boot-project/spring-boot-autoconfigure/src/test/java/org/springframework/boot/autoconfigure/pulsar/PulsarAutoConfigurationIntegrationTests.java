@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
-import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -36,7 +35,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.pulsar.annotation.PulsarListener;
@@ -59,18 +58,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PulsarAutoConfigurationIntegrationTests {
 
 	@Container
-	private static final PulsarContainer PULSAR_CONTAINER = new PulsarContainer(DockerImageNames.pulsar())
-		.withStartupAttempts(2)
-		.withStartupTimeout(Duration.ofMinutes(3));
+	static final PulsarContainer pulsar = TestImage.container(PulsarContainer.class);
 
-	private static final CountDownLatch LISTEN_LATCH = new CountDownLatch(1);
+	private static final CountDownLatch listenLatch = new CountDownLatch(1);
 
 	private static final String TOPIC = "pacit-hello-topic";
 
 	@DynamicPropertySource
 	static void pulsarProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.pulsar.client.service-url", PULSAR_CONTAINER::getPulsarBrokerUrl);
-		registry.add("spring.pulsar.admin.service-url", PULSAR_CONTAINER::getHttpServiceUrl);
+		registry.add("spring.pulsar.client.service-url", pulsar::getPulsarBrokerUrl);
+		registry.add("spring.pulsar.admin.service-url", pulsar::getHttpServiceUrl);
 	}
 
 	@Test
@@ -82,7 +79,7 @@ class PulsarAutoConfigurationIntegrationTests {
 	@Test
 	void templateCanBeAccessedDuringWebRequest(@Autowired TestRestTemplate restTemplate) throws InterruptedException {
 		assertThat(restTemplate.getForObject("/hello", String.class)).startsWith("Hello World -> ");
-		assertThat(LISTEN_LATCH.await(5, TimeUnit.SECONDS)).isTrue();
+		assertThat(listenLatch.await(5, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -94,7 +91,7 @@ class PulsarAutoConfigurationIntegrationTests {
 
 		@PulsarListener(subscriptionName = TOPIC + "-sub", topics = TOPIC)
 		void listen(String ignored) {
-			LISTEN_LATCH.countDown();
+			listenLatch.countDown();
 		}
 
 	}

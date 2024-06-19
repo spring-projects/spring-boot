@@ -17,7 +17,6 @@
 package smoketest.session.mongodb;
 
 import java.net.URI;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -66,8 +65,7 @@ class SampleSessionMongoApplicationTests {
 
 	@Container
 	@ServiceConnection
-	static MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
-		.withStartupTimeout(Duration.ofMinutes(2));
+	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class);
 
 	@Test
 	@SuppressWarnings("unchecked")

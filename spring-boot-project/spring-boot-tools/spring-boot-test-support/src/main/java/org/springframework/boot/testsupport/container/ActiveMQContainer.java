@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testsupport.testcontainers;
+package org.springframework.boot.testsupport.container;
 
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * A {@link GenericContainer} for ActiveMQ.
  *
  * @author Stephane Nicoll
  */
-public class ActiveMQContainer extends GenericContainer<ActiveMQContainer> {
+public final class ActiveMQContainer extends GenericContainer<ActiveMQContainer> {
 
 	private static final int DEFAULT_PORT = 61616;
 
-	public ActiveMQContainer() {
-		super(DockerImageNames.activeMq());
+	public ActiveMQContainer(DockerImageName dockerImageName) {
+		super(dockerImageName);
 		addExposedPorts(DEFAULT_PORT);
-	}
-
-	/**
-	 * Return the broker URL to use.
-	 * @return the broker url of the ActiveMQ instance
-	 */
-	public String getBrokerUrl() {
-		return String.format("tcp://" + getHost() + ":" + getMappedPort(DEFAULT_PORT));
 	}
 
 }

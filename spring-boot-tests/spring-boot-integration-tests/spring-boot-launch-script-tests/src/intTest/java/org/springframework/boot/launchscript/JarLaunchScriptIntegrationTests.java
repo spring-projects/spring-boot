@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

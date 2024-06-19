@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.ActiveMQContainer;
+import org.springframework.boot.testsupport.container.ActiveMQContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +47,7 @@ class SampleActiveMqTests {
 
 	@Container
 	@ServiceConnection
-	private static final ActiveMQContainer container = new ActiveMQContainer();
+	private static final ActiveMQContainer container = TestImage.container(ActiveMQContainer.class);
 
 	@Autowired
 	private Producer producer;

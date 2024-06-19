@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -126,7 +126,7 @@ class ImportTestcontainersTests {
 	static class ImportWithoutValue {
 
 		@ContainerAnnotation
-		static PostgreSQLContainer<?> container = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		static PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
 
 	}
 
@@ -150,14 +150,14 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class NonStaticContainer {
 
-		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
 
 	}
 
 	interface ContainerDefinitions {
 
 		@ContainerAnnotation
-		PostgreSQLContainer<?> container = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
 
 	}
 
@@ -169,7 +169,7 @@ class ImportTestcontainersTests {
 	@ImportTestcontainers
 	static class ContainerDefinitionsWithDynamicPropertySource {
 
-		static PostgreSQLContainer<?> container = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		static PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
 
 		@DynamicPropertySource
 		static void containerProperties(DynamicPropertyRegistry registry) {

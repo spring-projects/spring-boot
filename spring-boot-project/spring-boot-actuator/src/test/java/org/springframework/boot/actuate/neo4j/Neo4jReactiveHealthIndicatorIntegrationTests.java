@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -49,9 +49,7 @@ class Neo4jReactiveHealthIndicatorIntegrationTests {
 	// gh-33428
 
 	@Container
-	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
-		.withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10));
+	private static final Neo4jContainer<?> neo4jServer = TestImage.container(Neo4jContainer.class);
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {

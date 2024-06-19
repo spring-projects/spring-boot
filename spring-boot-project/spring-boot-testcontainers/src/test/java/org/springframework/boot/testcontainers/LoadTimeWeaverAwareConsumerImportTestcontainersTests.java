@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.weaving.LoadTimeWeaverAware;
