@@ -60,9 +60,18 @@ class GitPropertiesTests {
 	}
 
 	@Test
-	void coerceDateString() {
+	void coerceLegacyDateString() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefg", null, "2016-03-04T14:36:33+0100"));
+		assertThat(properties.getCommitTime()).isNotNull();
+		assertThat(properties.get("commit.time")).isEqualTo("1457098593000");
+		assertThat(properties.getCommitTime().toEpochMilli()).isEqualTo(1457098593000L);
+	}
+
+	@Test
+	void coerceDateString() {
+		GitProperties properties = new GitProperties(
+				createProperties("master", "abcdefg", null, "2016-03-04T14:36:33+01:00"));
 		assertThat(properties.getCommitTime()).isNotNull();
 		assertThat(properties.get("commit.time")).isEqualTo("1457098593000");
 		assertThat(properties.getCommitTime().toEpochMilli()).isEqualTo(1457098593000L);
