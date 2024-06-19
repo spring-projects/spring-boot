@@ -265,7 +265,7 @@ See "`xref:reference:features/profiles.adoc[Profiles]`" in the "`Spring Boot fea
 Spring Boot supports multi-document YAML and Properties files (see xref:reference:features/external-config.adoc#features.external-config.files.multi-document[Working With Multi-Document Files] for details) which can be activated conditionally based on the active profiles.
 
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
-If the profile expression matches then that document is included in the final merge (otherwise, it is not), as shown in the following example:
+If the profile expression matches, then that document is included in the final merge (otherwise, it is not), as shown in the following example:
 
 [configprops,yaml]
 ----
