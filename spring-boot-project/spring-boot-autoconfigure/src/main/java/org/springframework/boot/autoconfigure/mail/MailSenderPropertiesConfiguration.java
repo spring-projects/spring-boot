@@ -19,8 +19,11 @@ package org.springframework.boot.autoconfigure.mail;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
@@ -37,6 +40,12 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "spring.mail", name = "host")
 class MailSenderPropertiesConfiguration {
+
+	private final ObjectProvider<SslBundles> sslBundles;
+
+	MailSenderPropertiesConfiguration(ObjectProvider<SslBundles> sslBundles) {
+		this.sslBundles = sslBundles;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(JavaMailSender.class)
@@ -57,8 +66,21 @@ class MailSenderPropertiesConfiguration {
 		if (properties.getDefaultEncoding() != null) {
 			sender.setDefaultEncoding(properties.getDefaultEncoding().name());
 		}
-		if (!properties.getProperties().isEmpty()) {
-			sender.setJavaMailProperties(asProperties(properties.getProperties()));
+		Properties javaMailProperties = asProperties(properties.getProperties());
+		String protocol = properties.getProtocol();
+		if (protocol == null || protocol.isEmpty()) {
+			protocol = "smtp";
+		}
+		if (properties.getSsl().isEnabled()) {
+			javaMailProperties.setProperty("mail." + protocol + ".ssl.enable", "true");
+		}
+		if (properties.getSsl().getBundle() != null) {
+			SslBundle sslBundle = this.sslBundles.getObject().getBundle(properties.getSsl().getBundle());
+			javaMailProperties.put("mail." + protocol + ".ssl.socketFactory",
+					sslBundle.createSslContext().getSocketFactory());
+		}
+		if (!javaMailProperties.isEmpty()) {
+			sender.setJavaMailProperties(javaMailProperties);
 		}
 	}
 
