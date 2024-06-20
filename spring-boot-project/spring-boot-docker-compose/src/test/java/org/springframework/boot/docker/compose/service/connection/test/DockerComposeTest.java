@@ -27,7 +27,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
 
 /**
  * A {@link Test test} that exercises Spring Boot's Docker Compose support.
@@ -48,6 +50,8 @@ import org.springframework.boot.testsupport.container.TestImage;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtendWith(DockerComposeTestExtension.class)
+@DisabledIfDockerUnavailable
+@DisabledIfProcessUnavailable({ "docker", "compose" })
 public @interface DockerComposeTest {
 
 	/**
