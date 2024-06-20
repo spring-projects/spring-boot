@@ -16,10 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.flyway;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,15 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-class JdbcAdaptingFlywayConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class JdbcAdaptingFlywayConnectionDetailsFactoryIntegrationTests {
 
-	JdbcAdaptingFlywayConnectionDetailsFactoryIntegrationTests() {
-		super("flyway-compose.yaml", TestImage.POSTGRESQL);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		FlywayConnectionDetails connectionDetails = run(FlywayConnectionDetails.class);
+	@DockerComposeTest(composeFile = "flyway-compose.yaml", image = TestImage.POSTGRESQL)
+	void runCreatesConnectionDetails(FlywayConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");

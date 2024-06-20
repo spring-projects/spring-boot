@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.pulsar;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,15 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Chris Bono
  */
-class PulsarDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class PulsarDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	PulsarDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("pulsar-compose.yaml", TestImage.PULSAR);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		PulsarConnectionDetails connectionDetails = run(PulsarConnectionDetails.class);
+	@DockerComposeTest(composeFile = "pulsar-compose.yaml", image = TestImage.PULSAR)
+	void runCreatesConnectionDetails(PulsarConnectionDetails connectionDetails) {
 		assertThat(connectionDetails).isNotNull();
 		assertThat(connectionDetails.getBrokerUrl()).matches("^pulsar://\\S+:\\d+");
 		assertThat(connectionDetails.getAdminUrl()).matches("^http://\\S+:\\d+");

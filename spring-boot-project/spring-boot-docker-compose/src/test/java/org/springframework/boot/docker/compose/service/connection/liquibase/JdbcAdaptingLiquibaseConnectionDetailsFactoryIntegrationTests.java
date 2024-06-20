@@ -16,10 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.liquibase;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,15 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-class JdbcAdaptingLiquibaseConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class JdbcAdaptingLiquibaseConnectionDetailsFactoryIntegrationTests {
 
-	JdbcAdaptingLiquibaseConnectionDetailsFactoryIntegrationTests() {
-		super("liquibase-compose.yaml", TestImage.POSTGRESQL);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		LiquibaseConnectionDetails connectionDetails = run(LiquibaseConnectionDetails.class);
+	@DockerComposeTest(composeFile = "liquibase-compose.yaml", image = TestImage.POSTGRESQL)
+	void runCreatesConnectionDetails(LiquibaseConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");

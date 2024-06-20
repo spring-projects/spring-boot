@@ -16,10 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.mysql;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,15 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MySqlJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class MySqlJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	MySqlJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mysql-compose.yaml", TestImage.MYSQL);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mysql-compose.yaml", image = TestImage.MYSQL)
+	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");

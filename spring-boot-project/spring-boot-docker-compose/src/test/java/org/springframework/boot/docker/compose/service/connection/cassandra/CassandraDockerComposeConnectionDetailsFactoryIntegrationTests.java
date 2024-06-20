@@ -18,11 +18,9 @@ package org.springframework.boot.docker.compose.service.connection.cassandra;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails.Node;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,15 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class CassandraDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class CassandraDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	CassandraDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("cassandra-compose.yaml", TestImage.CASSANDRA);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		CassandraConnectionDetails connectionDetails = run(CassandraConnectionDetails.class);
+	@DockerComposeTest(composeFile = "cassandra-compose.yaml", image = TestImage.CASSANDRA)
+	void runCreatesConnectionDetails(CassandraConnectionDetails connectionDetails) {
 		List<Node> contactPoints = connectionDetails.getContactPoints();
 		assertThat(contactPoints).hasSize(1);
 		Node node = contactPoints.get(0);

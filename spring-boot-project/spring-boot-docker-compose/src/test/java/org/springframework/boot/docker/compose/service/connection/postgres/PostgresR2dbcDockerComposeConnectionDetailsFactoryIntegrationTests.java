@@ -17,10 +17,9 @@
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,15 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("postgres-compose.yaml", TestImage.POSTGRESQL);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "postgres-compose.yaml", image = TestImage.POSTGRESQL)
+	void runCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=postgresql",
 				"password=REDACTED", "user=myuser");
