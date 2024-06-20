@@ -2,7 +2,7 @@ name: Build and Deploy Snapshot
 on:
   push:
     branches:
-      - main
+      - '3.3.x'
 permissions:
   actions: write
 concurrency:
