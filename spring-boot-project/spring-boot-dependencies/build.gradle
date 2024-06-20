@@ -1257,7 +1257,7 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
-			docs { version -> "https://docs.micrometer.io/micrometer/reference/%s.%s"
+			docs { version -> "https://docs.micrometer.io/micrometer/reference"
 				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
 		}
@@ -1271,7 +1271,7 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
-			docs { version -> "https://docs.micrometer.io/tracing/reference/%s.%s"
+			docs { version -> "https://docs.micrometer.io/tracing/reference"
 				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/micrometer-metrics/tracing/releases/tag/v{version}")
 		}
