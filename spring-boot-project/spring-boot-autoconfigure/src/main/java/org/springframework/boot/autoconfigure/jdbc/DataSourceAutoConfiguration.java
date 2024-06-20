@@ -157,6 +157,7 @@ public class DataSourceAutoConfiguration {
 					return StringUtils.hasText(environment.getProperty(DATASOURCE_URL_PROPERTY));
 				}
 				catch (IllegalArgumentException ex) {
+					// NOTE: This should be PlaceholderResolutionException
 					// Ignore unresolvable placeholder errors
 				}
 			}
