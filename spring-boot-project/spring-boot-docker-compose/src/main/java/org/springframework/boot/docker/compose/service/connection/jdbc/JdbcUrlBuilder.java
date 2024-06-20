@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,20 +68,33 @@ public class JdbcUrlBuilder {
 
 	private String urlFor(RunningService service, String database) {
 		Assert.notNull(service, "Service must not be null");
-		String parameters = getParameters(service);
 		StringBuilder url = new StringBuilder("jdbc:%s://%s:%d".formatted(this.driverProtocol, service.host(),
 				service.ports().get(this.containerPort)));
 		if (StringUtils.hasLength(database)) {
 			url.append("/");
 			url.append(database);
 		}
-		url.append(parameters);
+		String parameters = getParameters(service);
+		if (StringUtils.hasLength(parameters)) {
+			appendParameters(url, parameters);
+		}
 		return url.toString();
 	}
 
+	/**
+	 * Appends to the given {@code url} the given {@code parameters}.
+	 * <p>
+	 * The default implementation appends a {@code ?} followed by the {@code parameters}.
+	 * @param url the url
+	 * @param parameters the parameters
+	 * @since 3.2.7
+	 */
+	protected void appendParameters(StringBuilder url, String parameters) {
+		url.append("?").append(parameters);
+	}
+
 	private String getParameters(RunningService service) {
-		String parameters = service.labels().get(PARAMETERS_LABEL);
-		return (StringUtils.hasLength(parameters)) ? "?" + parameters : "";
+		return service.labels().get(PARAMETERS_LABEL);
 	}
 
 }

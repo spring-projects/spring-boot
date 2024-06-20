@@ -40,13 +40,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 		disabledReason = "The SQL server image has no ARM support")
 class SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@SuppressWarnings("unchecked")
 	@DockerComposeTest(composeFile = "mssqlserver-compose.yaml", image = TestImage.SQL_SERVER)
 	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase(JdbcConnectionDetails connectionDetails)
 			throws ClassNotFoundException, LinkageError {
 		assertThat(connectionDetails.getUsername()).isEqualTo("SA");
 		assertThat(connectionDetails.getPassword()).isEqualTo("verYs3cret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:sqlserver://");
+		checkDatabaseAccess(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "mssqlserver-with-jdbc-parameters-compose.yaml", image = TestImage.SQL_SERVER)
+	void runWithJdbcParametersCreatesConnectionDetailsThatCanBeUsedToAccessDatabase(
+			JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
+		assertThat(connectionDetails.getUsername()).isEqualTo("SA");
+		assertThat(connectionDetails.getPassword()).isEqualTo("verYs3cret");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:sqlserver://")
+			.contains(";sendStringParametersAsUnicode=false;");
+		checkDatabaseAccess(connectionDetails);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void checkDatabaseAccess(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());
