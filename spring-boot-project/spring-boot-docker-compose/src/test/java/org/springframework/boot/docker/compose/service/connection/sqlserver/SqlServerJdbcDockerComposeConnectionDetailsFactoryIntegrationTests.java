@@ -18,11 +18,10 @@ package org.springframework.boot.docker.compose.service.connection.sqlserver;
 
 import java.sql.Driver;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
@@ -39,16 +38,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The SQL server image has no ARM support")
-class SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mssqlserver-compose.yaml", TestImage.SQL_SERVER);
-	}
-
-	@Test
 	@SuppressWarnings("unchecked")
-	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() throws ClassNotFoundException, LinkageError {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mssqlserver-compose.yaml", image = TestImage.SQL_SERVER)
+	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase(JdbcConnectionDetails connectionDetails)
+			throws ClassNotFoundException, LinkageError {
 		assertThat(connectionDetails.getUsername()).isEqualTo("SA");
 		assertThat(connectionDetails.getPassword()).isEqualTo("verYs3cret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:sqlserver://");

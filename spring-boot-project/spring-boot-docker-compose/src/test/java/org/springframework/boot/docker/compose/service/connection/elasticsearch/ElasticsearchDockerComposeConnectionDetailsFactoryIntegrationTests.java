@@ -16,12 +16,10 @@
 
 package org.springframework.boot.docker.compose.service.connection.elasticsearch;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,15 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("elasticsearch-compose.yaml", TestImage.ELASTICSEARCH_8);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		ElasticsearchConnectionDetails connectionDetails = run(ElasticsearchConnectionDetails.class);
+	@DockerComposeTest(composeFile = "elasticsearch-compose.yaml", image = TestImage.ELASTICSEARCH_8)
+	void runCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("elastic");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getPathPrefix()).isNull();

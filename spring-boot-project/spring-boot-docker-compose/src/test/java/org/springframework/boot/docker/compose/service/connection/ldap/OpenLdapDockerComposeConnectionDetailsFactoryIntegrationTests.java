@@ -16,10 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.ldap;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,15 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Philipp Kessler
  */
-class OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("ldap-compose.yaml", TestImage.OPEN_LDAP);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		LdapConnectionDetails connectionDetails = run(LdapConnectionDetails.class);
+	@DockerComposeTest(composeFile = "ldap-compose.yaml", image = TestImage.OPEN_LDAP)
+	void runCreatesConnectionDetails(LdapConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("cn=admin,dc=ldap,dc=example,dc=org");
 		assertThat(connectionDetails.getPassword()).isEqualTo("somepassword");
 		assertThat(connectionDetails.getBase()).isEqualTo("dc=ldap,dc=example,dc=org");

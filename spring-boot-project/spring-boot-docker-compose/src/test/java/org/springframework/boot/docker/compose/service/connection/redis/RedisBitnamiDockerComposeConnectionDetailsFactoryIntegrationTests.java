@@ -16,11 +16,9 @@
 
 package org.springframework.boot.docker.compose.service.connection.redis;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,15 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class RedisBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class RedisBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	RedisBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("redis-bitnami-compose.yaml", TestImage.BITNAMI_REDIS);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		RedisConnectionDetails connectionDetails = run(RedisConnectionDetails.class);
+	@DockerComposeTest(composeFile = "redis-bitnami-compose.yaml", image = TestImage.BITNAMI_REDIS)
+	void runCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
 		Standalone standalone = connectionDetails.getStandalone();
 		assertThat(connectionDetails.getUsername()).isNull();
 		assertThat(connectionDetails.getPassword()).isNull();

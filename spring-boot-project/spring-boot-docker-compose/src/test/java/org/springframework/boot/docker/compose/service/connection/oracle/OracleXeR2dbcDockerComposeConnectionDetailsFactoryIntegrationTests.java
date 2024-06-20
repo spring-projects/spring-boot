@@ -21,11 +21,10 @@ import java.time.Duration;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
@@ -40,15 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The Oracle image has no ARM support")
-class OracleXeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class OracleXeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	OracleXeR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("oracle-compose.yaml", TestImage.ORACLE_XE);
-	}
-
-	@Test
-	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() {
-		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "oracle-compose.yaml", image = TestImage.ORACLE_XE)
+	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=xepdb1", "driver=oracle",
 				"password=REDACTED", "user=app_user");

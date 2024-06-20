@@ -16,10 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.mysql;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,16 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class MySqlBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class MySqlBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	MySqlBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mysql-bitnami-compose.yaml", TestImage.BITNAMI_MYSQL);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mysql-bitnami-compose.yaml", image = TestImage.BITNAMI_MYSQL)
+	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");

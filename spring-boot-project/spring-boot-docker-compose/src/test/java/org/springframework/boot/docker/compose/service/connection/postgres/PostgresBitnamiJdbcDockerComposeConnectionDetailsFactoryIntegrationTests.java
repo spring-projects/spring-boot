@@ -19,7 +19,7 @@ package org.springframework.boot.docker.compose.service.connection.postgres;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,16 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class PostgresBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
-
-	PostgresBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("postgres-bitnami-compose.yaml", TestImage.BITNAMI_POSTGRESQL);
-	}
+class PostgresBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@Test
-	void runCreatesConnectionDetails() {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
+	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");

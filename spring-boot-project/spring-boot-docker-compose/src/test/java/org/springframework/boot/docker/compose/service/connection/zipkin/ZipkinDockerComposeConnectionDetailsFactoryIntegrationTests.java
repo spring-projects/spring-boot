@@ -16,10 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.zipkin;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,15 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ZipkinDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class ZipkinDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	ZipkinDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("zipkin-compose.yaml", TestImage.ZIPKIN);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		ZipkinConnectionDetails connectionDetails = run(ZipkinConnectionDetails.class);
+	@DockerComposeTest(composeFile = "zipkin-compose.yaml", image = TestImage.ZIPKIN)
+	void runCreatesConnectionDetails(ZipkinConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getSpanEndpoint()).startsWith("http://").endsWith("/api/v2/spans");
 	}
 

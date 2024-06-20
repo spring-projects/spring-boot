@@ -17,10 +17,9 @@
 package org.springframework.boot.docker.compose.service.connection.mariadb;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,16 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class MariaDbBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class MariaDbBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	MariaDbBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mariadb-bitnami-compose.yaml", TestImage.BITNAMI_MARIADB);
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mariadb-bitnami-compose.yaml", image = TestImage.BITNAMI_MARIADB)
+	void runCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=mariadb",
 				"password=REDACTED", "user=myuser");
