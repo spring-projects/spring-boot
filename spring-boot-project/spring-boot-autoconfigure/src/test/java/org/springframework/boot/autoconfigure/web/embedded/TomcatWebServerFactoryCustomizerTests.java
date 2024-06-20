@@ -17,12 +17,10 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.util.Locale;
-import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Valve;
-import org.apache.catalina.core.StandardThreadExecutor;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
@@ -572,12 +570,10 @@ class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.threads.max=10", "server.tomcat.threads.min-spare=2",
 				"server.tomcat.threads.max-queue-capacity=20");
 		customizeAndRunServer((server) -> {
-			Executor executor = server.getTomcat().getConnector().getProtocolHandler().getExecutor();
-			assertThat(executor).isInstanceOf(StandardThreadExecutor.class);
-			StandardThreadExecutor standardThreadExecutor = (StandardThreadExecutor) executor;
-			assertThat(standardThreadExecutor.getMaxThreads()).isEqualTo(10);
-			assertThat(standardThreadExecutor.getMinSpareThreads()).isEqualTo(2);
-			assertThat(standardThreadExecutor.getMaxQueueSize()).isEqualTo(20);
+			AbstractProtocol<?> protocol = (AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler();
+			assertThat(protocol.getMaxThreads()).isEqualTo(10);
+			assertThat(protocol.getMinSpareThreads()).isEqualTo(2);
+			assertThat(protocol.getMaxQueueSize()).isEqualTo(20);
 		});
 	}
 
