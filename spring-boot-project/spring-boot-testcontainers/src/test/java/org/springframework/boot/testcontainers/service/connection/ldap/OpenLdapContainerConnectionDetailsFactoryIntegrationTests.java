@@ -26,7 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.OpenLdapContainer;
+import org.springframework.boot.testsupport.container.OpenLdapContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
@@ -46,7 +47,7 @@ class OpenLdapContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final OpenLdapContainer openLdap = new OpenLdapContainer().withEnv("LDAP_TLS", "false");
+	static final OpenLdapContainer openLdap = TestImage.container(OpenLdapContainer.class).withEnv("LDAP_TLS", "false");
 
 	@Autowired
 	private LdapTemplate ldapTemplate;

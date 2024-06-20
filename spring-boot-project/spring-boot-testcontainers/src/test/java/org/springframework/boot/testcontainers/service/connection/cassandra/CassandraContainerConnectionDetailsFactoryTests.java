@@ -18,6 +18,7 @@ package org.springframework.boot.testcontainers.service.connection.cassandra;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -26,7 +27,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -43,7 +44,7 @@ class CassandraContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final CassandraContainer cassandra = new CassandraContainer();
+	static final CassandraContainer<?> cassandra = TestImage.container(CassandraContainer.class);
 
 	@Autowired(required = false)
 	private CassandraConnectionDetails connectionDetails;

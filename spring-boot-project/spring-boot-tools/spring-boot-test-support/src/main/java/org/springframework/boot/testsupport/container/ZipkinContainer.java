@@ -14,30 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker;
+package org.springframework.boot.testsupport.container;
 
-import java.io.IOException;
-
-import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
-import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
- * Integration tests for {@link DockerApi}.
+ * A {@link GenericContainer} for Zipkin.
  *
  * @author Phillip Webb
  */
-@DisabledIfDockerUnavailable
-class DockerApiIntegrationTests {
+public class ZipkinContainer extends GenericContainer<ZipkinContainer> {
 
-	private final DockerApi docker = new DockerApi();
-
-	@Test
-	void pullImage() throws IOException {
-		this.docker.image()
-			.pull(ImageReference.of("gcr.io/paketo-buildpacks/builder:base"),
-					new TotalProgressPullListener(new TotalProgressBar("Pulling: ")));
+	public ZipkinContainer(DockerImageName dockerImageName) {
+		super(dockerImageName);
+		withExposedPorts(9411);
 	}
 
 }

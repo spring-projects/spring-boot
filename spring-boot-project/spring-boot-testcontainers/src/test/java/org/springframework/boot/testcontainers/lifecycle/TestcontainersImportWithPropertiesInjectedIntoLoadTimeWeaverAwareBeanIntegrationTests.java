@@ -26,8 +26,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersImportWithPropertiesInjectedIntoLoadTimeWeaverAwareBeanIntegrationTests.Containers;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.weaving.LoadTimeWeaverAware;
 import org.springframework.instrument.classloading.LoadTimeWeaver;
@@ -86,7 +86,7 @@ class TestcontainersImportWithPropertiesInjectedIntoLoadTimeWeaverAwareBeanInteg
 	static class Containers {
 
 		@Container
-		static PostgreSQLContainer<?> container = new PostgreSQLContainer<>(DockerImageNames.postgresql());
+		static PostgreSQLContainer<?> container = TestImage.container(PostgreSQLContainer.class);
 
 		@DynamicPropertySource
 		static void setConnectionProperties(DynamicPropertyRegistry registry) {

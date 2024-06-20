@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.mongo;
 
-import java.time.Duration;
-
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
@@ -33,7 +31,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.boot.actuate.data.mongo.MongoHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,8 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoHealthIndicatorIntegrationTests {
 
 	@Container
-	static MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
-		.withStartupTimeout(Duration.ofMinutes(2));
+	static MongoDBContainer mongo = TestImage.container(MongoDBContainer.class);
 
 	@Test
 	void standardApi() {

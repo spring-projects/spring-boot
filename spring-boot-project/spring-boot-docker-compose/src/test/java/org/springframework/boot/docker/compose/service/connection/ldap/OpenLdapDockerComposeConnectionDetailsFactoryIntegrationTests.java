@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ldap.LdapConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	OpenLdapDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("ldap-compose.yaml", DockerImageNames.openLdap());
+		super("ldap-compose.yaml", TestImage.OPEN_LDAP);
 	}
 
 	@Test

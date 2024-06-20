@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +33,7 @@ class MySqlBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
 	MySqlBitnamiJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mysql-bitnami-compose.yaml", BitnamiImageNames.mysql());
+		super("mysql-bitnami-compose.yaml", TestImage.BITNAMI_MYSQL);
 	}
 
 	@Test

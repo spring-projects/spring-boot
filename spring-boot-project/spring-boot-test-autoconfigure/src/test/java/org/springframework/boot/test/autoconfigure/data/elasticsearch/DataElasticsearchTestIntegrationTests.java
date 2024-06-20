@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.autoconfigure.data.elasticsearch;
 
-import java.time.Duration;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 
@@ -50,10 +49,7 @@ class DataElasticsearchTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-		.withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
-		.withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10));
+	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
 
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;

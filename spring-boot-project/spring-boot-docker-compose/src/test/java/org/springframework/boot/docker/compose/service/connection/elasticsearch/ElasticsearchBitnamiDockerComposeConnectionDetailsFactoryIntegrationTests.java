@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnect
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,7 +35,7 @@ class ElasticsearchBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
 	ElasticsearchBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("elasticsearch-bitnami-compose.yaml", BitnamiImageNames.elasticsearch());
+		super("elasticsearch-bitnami-compose.yaml", TestImage.BITNAMI_ELASTICSEARCH);
 	}
 
 	@Test

@@ -31,7 +31,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.JmsListener;
@@ -51,7 +51,7 @@ class ActiveMQClassicContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ActiveMQContainer activemq = new ActiveMQContainer(DockerImageNames.activeMqClassic());
+	static final ActiveMQContainer activemq = TestImage.container(ActiveMQContainer.class);
 
 	@Autowired
 	private JmsMessagingTemplate jmsTemplate;

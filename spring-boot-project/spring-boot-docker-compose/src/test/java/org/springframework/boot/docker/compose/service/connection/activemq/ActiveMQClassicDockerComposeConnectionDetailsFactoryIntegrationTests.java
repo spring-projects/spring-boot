@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +34,7 @@ class ActiveMQClassicDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
 	ActiveMQClassicDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("activemq-classic-compose.yaml", DockerImageNames.activeMqClassic());
+		super("activemq-classic-compose.yaml", TestImage.ACTIVE_MQ_CLASSIC);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testsupport.testcontainers;
+package org.springframework.boot.testsupport.container;
 
-import java.time.Duration;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
- * Custom {@link org.testcontainers.containers.CassandraContainer} tuned for stability in
- * heavily contended environments such as CI.
+ * A {@link GenericContainer} for Docker Registry.
  *
- * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-public class CassandraContainer extends org.testcontainers.containers.CassandraContainer<CassandraContainer> {
+public class RegistryContainer extends GenericContainer<RegistryContainer> {
 
-	public CassandraContainer() {
-		super(DockerImageNames.cassandra());
-		withStartupTimeout(Duration.ofMinutes(10));
+	public RegistryContainer(DockerImageName dockerImageName) {
+		super(dockerImageName);
+		addExposedPorts(5000);
+		addEnv("SERVER_NAME", "localhost");
 	}
 
 }

@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RedisBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	RedisBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("redis-bitnami-compose.yaml", BitnamiImageNames.redis());
+		super("redis-bitnami-compose.yaml", TestImage.BITNAMI_REDIS);
 	}
 
 	@Test

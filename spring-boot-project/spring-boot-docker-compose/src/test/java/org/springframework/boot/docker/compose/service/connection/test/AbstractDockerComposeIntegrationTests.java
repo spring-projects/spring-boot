@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -64,9 +65,9 @@ public abstract class AbstractDockerComposeIntegrationTests {
 		((Runnable) shutdownHandlers).run();
 	}
 
-	protected AbstractDockerComposeIntegrationTests(String composeResource, DockerImageName dockerImageName) {
+	protected AbstractDockerComposeIntegrationTests(String composeResource, TestImage testImage) {
 		this.composeResource = new ClassPathResource(composeResource, getClass());
-		this.dockerImageName = dockerImageName;
+		this.dockerImageName = DockerImageName.parse(testImage.toString());
 	}
 
 	protected final <T extends ConnectionDetails> T run(Class<T> type) {

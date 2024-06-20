@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ArtemisDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	ArtemisDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("artemis-compose.yaml", DockerImageNames.artemis());
+		super("artemis-compose.yaml", TestImage.ARTEMIS);
 	}
 
 	@Test

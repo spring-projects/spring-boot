@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RabbitBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	RabbitBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("rabbit-bitnami-compose.yaml", BitnamiImageNames.rabbit());
+		super("rabbit-bitnami-compose.yaml", TestImage.BITNAMI_RABBITMQ);
 	}
 
 	@Test

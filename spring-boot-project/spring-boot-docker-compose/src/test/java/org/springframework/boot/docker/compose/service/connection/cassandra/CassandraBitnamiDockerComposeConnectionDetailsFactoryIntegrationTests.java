@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails.Node;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +36,7 @@ class CassandraBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
 	CassandraBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("cassandra-bitnami-compose.yaml", BitnamiImageNames.cassandra());
+		super("cassandra-bitnami-compose.yaml", TestImage.BITNAMI_CASSANDRA);
 	}
 
 	@Test

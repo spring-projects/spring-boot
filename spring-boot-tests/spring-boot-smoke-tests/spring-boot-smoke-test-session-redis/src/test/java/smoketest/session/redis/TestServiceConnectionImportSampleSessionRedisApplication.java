@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package smoketest.session.redis;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.boot.testsupport.container.RedisContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 
 public class TestServiceConnectionImportSampleSessionRedisApplication {
 
@@ -31,7 +32,7 @@ public class TestServiceConnectionImportSampleSessionRedisApplication {
 	static class ContainerConfiguration {
 
 		@ServiceConnection // We don't need a name here because we have the container
-		static RedisContainer redisContainer = new RedisContainer();
+		static RedisContainer redisContainer = TestImage.container(RedisContainer.class);
 
 	}
 

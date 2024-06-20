@@ -22,8 +22,8 @@ import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mongo-bitnami-compose.yaml", BitnamiImageNames.mongo());
+		super("mongo-bitnami-compose.yaml", TestImage.BITNAMI_MONGODB);
 	}
 
 	@Test

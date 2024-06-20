@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.neo4j;
 
 import java.net.URI;
-import java.time.Duration;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,7 +35,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -54,9 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Neo4jAutoConfigurationIntegrationTests {
 
 	@Container
-	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
-		.withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10));
+	private static final Neo4jContainer<?> neo4j = TestImage.container(Neo4jContainer.class);
 
 	@SpringBootTest
 	@Nested
@@ -64,9 +61,9 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 		@DynamicPropertySource
 		static void neo4jProperties(DynamicPropertyRegistry registry) {
-			registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
+			registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 			registry.add("spring.neo4j.authentication.username", () -> "neo4j");
-			registry.add("spring.neo4j.authentication.password", neo4jServer::getAdminPassword);
+			registry.add("spring.neo4j.authentication.password", neo4j::getAdminPassword);
 		}
 
 		@Autowired
@@ -95,7 +92,7 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 		@DynamicPropertySource
 		static void neo4jProperties(DynamicPropertyRegistry registry) {
-			registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
+			registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 			registry.add("spring.neo4j.authentication.username", () -> "wrong");
 			registry.add("spring.neo4j.authentication.password", () -> "alsowrong");
 		}
@@ -118,7 +115,7 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 			@Bean
 			AuthTokenManager authTokenManager() {
-				return AuthTokenManagers.bearer(() -> AuthTokens.basic("neo4j", neo4jServer.getAdminPassword())
+				return AuthTokenManagers.bearer(() -> AuthTokens.basic("neo4j", neo4j.getAdminPassword())
 					.expiringAt(System.currentTimeMillis() + 5_000));
 			}
 
@@ -132,7 +129,7 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 		@DynamicPropertySource
 		static void neo4jProperties(DynamicPropertyRegistry registry) {
-			registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
+			registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 			registry.add("spring.neo4j.authentication.username", () -> "wrong");
 			registry.add("spring.neo4j.authentication.password", () -> "alsowrong");
 		}
@@ -165,12 +162,12 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 					@Override
 					public URI getUri() {
-						return URI.create(neo4jServer.getBoltUrl());
+						return URI.create(neo4j.getBoltUrl());
 					}
 
 					@Override
 					public AuthToken getAuthToken() {
-						return AuthTokens.basic("neo4j", neo4jServer.getAdminPassword());
+						return AuthTokens.basic("neo4j", neo4j.getAdminPassword());
 					}
 
 				};

@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.elasticsearch;
 
-import java.time.Duration;
-
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -33,7 +31,7 @@ import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientA
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.config.EnableElasticsearchAuditing;
@@ -53,10 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
-	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-		.withEnv("ES_JAVA_OPTS", "-Xms32m -Xmx512m")
-		.withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10));
+	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ElasticsearchClientAutoConfiguration.class,

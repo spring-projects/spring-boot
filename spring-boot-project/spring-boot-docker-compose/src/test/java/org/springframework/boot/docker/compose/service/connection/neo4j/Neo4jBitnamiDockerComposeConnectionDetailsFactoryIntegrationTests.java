@@ -23,7 +23,7 @@ import org.neo4j.driver.GraphDatabase;
 
 import org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 class Neo4jBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	Neo4jBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("neo4j-bitnami-compose.yaml", BitnamiImageNames.neo4j());
+		super("neo4j-bitnami-compose.yaml", TestImage.BITNAMI_NEO4J);
 	}
 
 	@Test

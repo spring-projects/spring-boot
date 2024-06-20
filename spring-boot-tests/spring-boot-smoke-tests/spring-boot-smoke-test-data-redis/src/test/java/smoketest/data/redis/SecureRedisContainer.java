@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package smoketest.data.redis;
 
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.boot.testsupport.container.RedisContainer;
 
 /**
  * A {@link RedisContainer} for Redis with SSL configuration.
@@ -27,7 +28,8 @@ import org.springframework.boot.testsupport.testcontainers.RedisContainer;
  */
 class SecureRedisContainer extends RedisContainer {
 
-	SecureRedisContainer() {
+	SecureRedisContainer(DockerImageName dockerImageName) {
+		super(dockerImageName);
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-server.crt"), "/ssl/server.crt");
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-server.key"), "/ssl/server.key");
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-ca.crt"), "/ssl/ca.crt");
