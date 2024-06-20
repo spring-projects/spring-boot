@@ -106,6 +106,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -525,10 +526,9 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedShouldFail() {
-		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-			.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class, "properties.description="))
-			.withCauseInstanceOf(BindException.class);
+	void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotAnnotatedWithValidShouldNotFail() {
+		assertThatNoException()
+			.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class, "properties.description="));
 	}
 
 	@Test
@@ -1837,7 +1837,7 @@ class ConfigurationPropertiesTests {
 	@Validated
 	static class ValidatedNestedJsr303Properties {
 
-		private Jsr303Properties properties;
+		private final Jsr303Properties properties = new Jsr303Properties();
 
 		Jsr303Properties getProperties() {
 			return this.properties;
@@ -1851,9 +1851,9 @@ class ConfigurationPropertiesTests {
 	static class ValidatedValidNestedJsr303Properties {
 
 		@Valid
-		private final List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
+		private final Jsr303Properties properties = new Jsr303Properties();
 
-		List<Jsr303Properties> getProperties() {
+		Jsr303Properties getProperties() {
 			return this.properties;
 		}
 

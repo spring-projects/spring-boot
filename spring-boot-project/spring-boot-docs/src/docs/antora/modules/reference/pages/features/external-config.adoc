@@ -1178,7 +1178,7 @@ include-code::MyProperties[]
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
 
-To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with `@Valid`.
+To cascade validation to nested properties the associated field must be annotated with `@Valid`.
 The following example builds on the preceding `MyProperties` example:
 
 include-code::nested/MyProperties[]

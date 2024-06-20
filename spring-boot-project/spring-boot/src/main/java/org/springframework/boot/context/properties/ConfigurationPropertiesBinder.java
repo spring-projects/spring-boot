@@ -76,8 +76,6 @@ class ConfigurationPropertiesBinder {
 
 	private final boolean jsr303Present;
 
-	private volatile Validator jsr303Validator;
-
 	private volatile Binder binder;
 
 	ConfigurationPropertiesBinder(ApplicationContext applicationContext) {
@@ -141,7 +139,7 @@ class ConfigurationPropertiesBinder {
 			validators.add(this.configurationPropertiesValidator);
 		}
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
-			validators.add(getJsr303Validator());
+			validators.add(getJsr303Validator(target.getType().resolve()));
 		}
 		Validator selfValidator = getSelfValidator(target);
 		if (selfValidator != null) {
@@ -162,11 +160,8 @@ class ConfigurationPropertiesBinder {
 		return null;
 	}
 
-	private Validator getJsr303Validator() {
-		if (this.jsr303Validator == null) {
-			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
-		}
-		return this.jsr303Validator;
+	private Validator getJsr303Validator(Class<?> type) {
+		return new ConfigurationPropertiesJsr303Validator(this.applicationContext, type);
 	}
 
 	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
