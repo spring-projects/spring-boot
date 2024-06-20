@@ -45,6 +45,7 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
+import org.springframework.web.client.NoOpResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
@@ -223,13 +224,12 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void withBasicAuthShouldUseNoOpErrorHandler() throws Exception {
+	void withBasicAuthShouldUseNoOpErrorHandler() {
 		TestRestTemplate originalTemplate = new TestRestTemplate("foo", "bar");
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		originalTemplate.getRestTemplate().setErrorHandler(errorHandler);
 		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user", "password");
-		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler()).isInstanceOf(
-				Class.forName("org.springframework.boot.test.web.client.TestRestTemplate$NoOpResponseErrorHandler"));
+		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler()).isInstanceOf(NoOpResponseErrorHandler.class);
 	}
 
 	@Test
