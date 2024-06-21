@@ -187,6 +187,8 @@ If any of the three properties has not been set, the value of its equivalent `sp
 
 See xref:api:java/org/springframework/boot/autoconfigure/liquibase/LiquibaseProperties.html[`LiquibaseProperties`] for details about available settings such as contexts, the default schema, and others.
 
+You can also use a `Customizer<Liquibase>` bean if you want to customize the `Liquibase` instance before it is being used.
+
 
 
 [[howto.data-initialization.migration-tool.flyway-tests]]
