@@ -102,9 +102,6 @@ class MavenPublishingConventions {
 
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
 		addMavenOptionalFeature(publication, project);
-		if (publication.getName().equals("pluginMaven")) {
-			return;
-		}
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
 			.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
 		publication.versionMapping(
