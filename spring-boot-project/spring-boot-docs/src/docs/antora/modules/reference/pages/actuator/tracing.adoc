@@ -157,8 +157,6 @@ Tracing with OpenZipkin Brave and reporting to Zipkin requires the following dep
 * `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
 * `io.zipkin.reporter2:zipkin-reporter-brave` - reports traces to Zipkin.
 
-NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.reporter2:zipkin-sender-urlconnection` dependency is needed, too.
-
 Use the `management.zipkin.tracing.*` configuration properties to configure reporting to Zipkin.
 
 
