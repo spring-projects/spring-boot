@@ -11,7 +11,7 @@ runs:
   using: composite
   steps:
     - name: Generate Changelog
-      uses: spring-io/github-changelog-generator@052892c62af51f8af87a9da6de55e70864b7df12
+      uses: spring-io/github-changelog-generator@185319ad7eaa75b0e8e72e4b6db19c8b2cb8c4c1 #v0.0.11
       with:
         milestone: ${{ inputs.milestone }}
         token: ${{ inputs.token }}
