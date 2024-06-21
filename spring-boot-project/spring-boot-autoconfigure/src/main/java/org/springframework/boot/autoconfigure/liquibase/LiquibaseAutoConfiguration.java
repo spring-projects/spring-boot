@@ -98,9 +98,9 @@ public class LiquibaseAutoConfiguration {
 		}
 
 		@Bean
-		public SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
+		SpringLiquibase liquibase(ObjectProvider<DataSource> dataSource,
 				@LiquibaseDataSource ObjectProvider<DataSource> liquibaseDataSource, LiquibaseProperties properties,
-				ObjectProvider<Customizer<Liquibase>> customizer, LiquibaseConnectionDetails connectionDetails) {
+				ObjectProvider<SpringLiquibaseCustomizer> customizers, LiquibaseConnectionDetails connectionDetails) {
 			SpringLiquibase liquibase = createSpringLiquibase(liquibaseDataSource.getIfAvailable(),
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
@@ -128,7 +128,7 @@ public class LiquibaseAutoConfiguration {
 			if (properties.getUiService() != null) {
 				liquibase.setUiService(UIServiceEnum.valueOf(properties.getUiService().name()));
 			}
-			customizer.ifAvailable(liquibase::setCustomizer);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(liquibase));
 			return liquibase;
 		}
 
@@ -173,6 +173,17 @@ public class LiquibaseAutoConfiguration {
 			if (StringUtils.hasText(driverClassName)) {
 				builder.driverClassName(driverClassName);
 			}
+		}
+
+	}
+
+	@ConditionalOnClass(Customizer.class)
+	static class CustomizerConfiguration {
+
+		@Bean
+		@ConditionalOnBean(Customizer.class)
+		SpringLiquibaseCustomizer customizerSpringLiquibaseCustomizer(Customizer<Liquibase> customizer) {
+			return (springLiquibase) -> springLiquibase.setCustomizer(customizer);
 		}
 
 	}
@@ -240,6 +251,17 @@ public class LiquibaseAutoConfiguration {
 			String driverClassName = this.properties.getDriverClassName();
 			return (driverClassName != null) ? driverClassName : LiquibaseConnectionDetails.super.getDriverClassName();
 		}
+
+	}
+
+	@FunctionalInterface
+	private interface SpringLiquibaseCustomizer {
+
+		/**
+		 * Customize the given {@link SpringLiquibase} instance.
+		 * @param springLiquibase the instance to configure
+		 */
+		void customize(SpringLiquibase springLiquibase);
 
 	}
 
