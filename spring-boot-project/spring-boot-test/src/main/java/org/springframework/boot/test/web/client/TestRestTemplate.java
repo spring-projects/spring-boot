@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.web.client;
 
-import java.io.IOException;
 import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -58,10 +57,9 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.RequestEntity.UriTemplateRequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.Assert;
-import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.NoOpResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
@@ -1074,14 +1072,6 @@ public class TestRestTemplate {
 			builder.setAuthenticationEnabled(false);
 			builder.setRedirectsEnabled(this.enableRedirects);
 			return builder.build();
-		}
-
-	}
-
-	private static final class NoOpResponseErrorHandler extends DefaultResponseErrorHandler {
-
-		@Override
-		public void handleError(ClientHttpResponse response) throws IOException {
 		}
 
 	}
