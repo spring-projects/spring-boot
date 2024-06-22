@@ -138,8 +138,8 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	@Test
 	void scrapeEndpointCanBeDisabled() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
-			.withPropertyValues("management.endpoints.web.exposure.include=prometheus")
-			.withPropertyValues("management.endpoint.prometheus.enabled=false")
+			.withPropertyValues("management.endpoints.web.exposure.include=prometheus",
+					"management.endpoint.prometheus.enabled=false")
 			.withUserConfiguration(BaseConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusScrapeEndpoint.class));
 	}
