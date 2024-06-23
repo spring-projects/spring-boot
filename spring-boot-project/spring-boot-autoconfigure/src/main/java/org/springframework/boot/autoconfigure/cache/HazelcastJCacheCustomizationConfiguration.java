@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,27 +32,33 @@ import org.springframework.core.io.Resource;
  * JCache customization for Hazelcast.
  *
  * @author Stephane Nicoll
+ * @author Hayoon Lee
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HazelcastInstance.class)
 class HazelcastJCacheCustomizationConfiguration {
 
 	@Bean
-	HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(ObjectProvider<HazelcastInstance> hazelcastInstance) {
-		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique());
+	HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(ObjectProvider<HazelcastInstance> hazelcastInstance,
+			CacheProperties cacheProperties) {
+		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique(), cacheProperties);
 	}
 
 	static class HazelcastPropertiesCustomizer implements JCachePropertiesCustomizer {
 
 		private final HazelcastInstance hazelcastInstance;
 
-		HazelcastPropertiesCustomizer(HazelcastInstance hazelcastInstance) {
+		private final CacheProperties cacheProperties;
+
+		HazelcastPropertiesCustomizer(HazelcastInstance hazelcastInstance, CacheProperties cacheProperties) {
 			this.hazelcastInstance = hazelcastInstance;
+			this.cacheProperties = cacheProperties;
 		}
 
 		@Override
-		public void customize(CacheProperties cacheProperties, Properties properties) {
-			Resource configLocation = cacheProperties.resolveConfigLocation(cacheProperties.getJcache().getConfig());
+		public void customize(Properties properties) {
+			Resource configLocation = this.cacheProperties
+					.resolveConfigLocation(this.cacheProperties.getJcache().getConfig());
 			if (configLocation != null) {
 				// Hazelcast does not use the URI as a mean to specify a custom config.
 				properties.setProperty("hazelcast.config.location", toUri(configLocation).toString());
@@ -61,7 +67,6 @@ class HazelcastJCacheCustomizationConfiguration {
 				properties.put("hazelcast.instance.itself", this.hazelcastInstance);
 			}
 		}
-
 		private static URI toUri(Resource config) {
 			try {
 				return config.getURI();
@@ -70,7 +75,5 @@ class HazelcastJCacheCustomizationConfiguration {
 				throw new IllegalArgumentException("Could not get URI from " + config, ex);
 			}
 		}
-
 	}
-
 }
