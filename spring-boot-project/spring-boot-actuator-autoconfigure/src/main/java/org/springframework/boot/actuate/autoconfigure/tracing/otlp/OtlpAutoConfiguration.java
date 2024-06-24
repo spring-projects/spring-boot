@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Import;
  * "https://github.com/open-telemetry/opentelemetry-java/issues/3651">opentelemetry-java#3651</a>.
  * Because this class configures components from the OTel SDK, it can't support HTTP/JSON.
  * By default, we auto-configure HTTP/protobuf. If you want to use gRPC, you need to set
- * {@code management.otlp.tracing.exporter=grpc}. If you define a
+ * {@code management.otlp.tracing.transport=grpc}. If you define a
  * {@link OtlpHttpSpanExporter} or {@link OtlpGrpcSpanExporter}, this auto-configuration
  * will back off.
  *
