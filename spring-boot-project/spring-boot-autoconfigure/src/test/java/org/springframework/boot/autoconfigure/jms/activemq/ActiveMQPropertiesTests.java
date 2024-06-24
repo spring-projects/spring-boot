@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import java.util.Collections;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ActiveMQProperties} and {@link ActiveMQConnectionFactoryFactory}.
+ * Tests for {@link ActiveMQProperties} and {@link ActiveMQConnectionFactoryConfigurer}.
  *
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
@@ -50,25 +48,21 @@ class ActiveMQPropertiesTests {
 
 	@Test
 	void setTrustAllPackages() {
+		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
 		this.properties.getPackages().setTrustAll(true);
-		assertThat(createFactory(this.properties).createConnectionFactory(ActiveMQConnectionFactory.class)
-			.isTrustAllPackages()).isTrue();
+		new ActiveMQConnectionFactoryConfigurer(this.properties, null).configure(factory);
+		assertThat(factory.isTrustAllPackages()).isTrue();
 	}
 
 	@Test
 	void setTrustedPackages() {
+		ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory();
 		this.properties.getPackages().setTrustAll(false);
 		this.properties.getPackages().getTrusted().add("trusted.package");
-		ActiveMQConnectionFactory factory = createFactory(this.properties)
-			.createConnectionFactory(ActiveMQConnectionFactory.class);
+		new ActiveMQConnectionFactoryConfigurer(this.properties, null).configure(factory);
 		assertThat(factory.isTrustAllPackages()).isFalse();
 		assertThat(factory.getTrustedPackages()).hasSize(1);
 		assertThat(factory.getTrustedPackages().get(0)).isEqualTo("trusted.package");
-	}
-
-	private ActiveMQConnectionFactoryFactory createFactory(ActiveMQProperties properties) {
-		return new ActiveMQConnectionFactoryFactory(properties, Collections.emptyList(),
-				new ActiveMQAutoConfiguration.PropertiesActiveMQConnectionDetails(properties));
 	}
 
 }
