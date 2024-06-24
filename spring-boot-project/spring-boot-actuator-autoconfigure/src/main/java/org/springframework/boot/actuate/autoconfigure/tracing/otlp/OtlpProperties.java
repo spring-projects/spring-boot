@@ -75,11 +75,11 @@ public class OtlpProperties {
 		this.timeout = timeout;
 	}
 
-	public Transport getExporter() {
+	public Transport getTransport() {
 		return this.transport;
 	}
 
-	public void setExporter(Transport transport) {
+	public void setTransport(Transport transport) {
 		this.transport = transport;
 	}
 
