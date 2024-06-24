@@ -17,11 +17,15 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.tracing.Tracer;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import okhttp3.mockwebserver.MockResponse;
@@ -29,6 +33,16 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okio.Buffer;
 import okio.GzipSource;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
+import org.eclipse.jetty.io.Content;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.Callback;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +50,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfigurationIntegrationTests.MockGrpcServer.RecordedGrpcRequest;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,14 +73,26 @@ class OtlpAutoConfigurationIntegrationTests {
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 
+	private final MockGrpcServer mockGrpcServer = new MockGrpcServer();
+
 	@BeforeEach
-	void setUp() throws IOException {
+	void startMockWebServer() throws IOException {
 		this.mockWebServer.start();
 	}
 
+	@BeforeEach
+	void startMockGrpcServer() throws Exception {
+		this.mockGrpcServer.start();
+	}
+
 	@AfterEach
-	void tearDown() throws IOException {
+	void stopMockWebServer() throws IOException {
 		this.mockWebServer.close();
+	}
+
+	@AfterEach
+	void stopMockGrpcServer() throws Exception {
+		this.mockGrpcServer.stop();
 	}
 
 	@Test
@@ -111,6 +139,90 @@ class OtlpAutoConfigurationIntegrationTests {
 					assertThat(uncompressed.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
 				}
 			});
+	}
+
+	@Test
+	void grpcSpanExporter() {
+		this.contextRunner
+			.withPropertyValues(
+					"management.otlp.tracing.endpoint=http://localhost:%d".formatted(this.mockGrpcServer.getPort()),
+					"management.otlp.tracing.headers.custom=42", "management.otlp.tracing.transport=grpc")
+			.run((context) -> {
+				context.getBean(Tracer.class).nextSpan().name("test").end();
+				assertThat(context.getBean(OtlpGrpcSpanExporter.class).flush())
+					.isSameAs(CompletableResultCode.ofSuccess());
+				RecordedGrpcRequest request = this.mockGrpcServer.takeRequest(10, TimeUnit.SECONDS);
+				assertThat(request).isNotNull();
+				assertThat(request.headers().get("Content-Type")).isEqualTo("application/grpc");
+				assertThat(request.headers().get("custom")).isEqualTo("42");
+				assertThat(request.body()).contains("org.springframework.boot");
+			});
+	}
+
+	static class MockGrpcServer {
+
+		private final Server server = createServer();
+
+		private final BlockingQueue<RecordedGrpcRequest> recordedRequests = new LinkedBlockingQueue<>();
+
+		void start() throws Exception {
+			this.server.start();
+		}
+
+		void stop() throws Exception {
+			this.server.stop();
+		}
+
+		int getPort() {
+			return this.server.getURI().getPort();
+		}
+
+		RecordedGrpcRequest takeRequest(int timeout, TimeUnit unit) throws InterruptedException {
+			return this.recordedRequests.poll(timeout, unit);
+		}
+
+		void recordRequest(RecordedGrpcRequest request) {
+			this.recordedRequests.add(request);
+		}
+
+		private Server createServer() {
+			Server server = new Server();
+			server.addConnector(createConnector(server));
+			server.setHandler(new GrpcHandler());
+
+			return server;
+		}
+
+		private ServerConnector createConnector(Server server) {
+			ServerConnector connector = new ServerConnector(server,
+					new HTTP2CServerConnectionFactory(new HttpConfiguration()));
+			connector.setPort(0);
+
+			return connector;
+		}
+
+		class GrpcHandler extends Handler.Abstract {
+
+			@Override
+			public boolean handle(Request request, Response response, Callback callback) throws Exception {
+				try (InputStream in = Content.Source.asInputStream(request)) {
+					recordRequest(new RecordedGrpcRequest(request.getHeaders(),
+							StreamUtils.copyToString(in, StandardCharsets.UTF_8)));
+				}
+
+				response.getHeaders().add("Content-Type", "application/grpc");
+				response.getHeaders().add("Grpc-Status", "0");
+
+				callback.succeeded();
+
+				return true;
+			}
+
+		}
+
+		record RecordedGrpcRequest(HttpFields headers, String body) {
+		}
+
 	}
 
 }

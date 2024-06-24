@@ -20,6 +20,8 @@ import java.util.Map.Entry;
 
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporterBuilder;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -69,13 +71,31 @@ class OtlpTracingConfigurations {
 	static class Exporters {
 
 		@Bean
-		@ConditionalOnMissingBean(value = OtlpHttpSpanExporter.class,
-				type = "io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter")
+		@ConditionalOnMissingBean({ OtlpGrpcSpanExporter.class, OtlpHttpSpanExporter.class })
 		@ConditionalOnBean(OtlpTracingConnectionDetails.class)
 		@ConditionalOnEnabledTracing("otlp")
+		@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "transport", havingValue = "http",
+				matchIfMissing = true)
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
+				.setEndpoint(connectionDetails.getUrl())
+				.setTimeout(properties.getTimeout())
+				.setCompression(properties.getCompression().name().toLowerCase());
+			for (Entry<String, String> header : properties.getHeaders().entrySet()) {
+				builder.addHeader(header.getKey(), header.getValue());
+			}
+			return builder.build();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean({ OtlpGrpcSpanExporter.class, OtlpHttpSpanExporter.class })
+		@ConditionalOnBean(OtlpTracingConnectionDetails.class)
+		@ConditionalOnEnabledTracing("otlp")
+		@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "transport", havingValue = "grpc")
+		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpProperties properties,
+				OtlpTracingConnectionDetails connectionDetails) {
+			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl())
 				.setTimeout(properties.getTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase());
