@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,10 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper,
 			ActiveMQConnectionDetails connectionDetails) throws Exception {
-		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().toList(), connectionDetails)
-			.createConnectionFactory(ActiveMQXAConnectionFactory.class);
+		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQXAConnectionFactory(connectionDetails.getUser(),
+				connectionDetails.getPassword(), connectionDetails.getBrokerUrl());
+		new ActiveMQConnectionFactoryConfigurer(properties, factoryCustomizers.orderedStream().toList())
+			.configure(connectionFactory);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
 
@@ -61,9 +62,11 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 			ActiveMQConnectionDetails connectionDetails) {
-		return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.orderedStream().toList(),
-				connectionDetails)
-			.createConnectionFactory(ActiveMQConnectionFactory.class);
+		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(connectionDetails.getUser(),
+				connectionDetails.getPassword(), connectionDetails.getBrokerUrl());
+		new ActiveMQConnectionFactoryConfigurer(properties, factoryCustomizers.orderedStream().toList())
+			.configure(connectionFactory);
+		return connectionFactory;
 	}
 
 }
