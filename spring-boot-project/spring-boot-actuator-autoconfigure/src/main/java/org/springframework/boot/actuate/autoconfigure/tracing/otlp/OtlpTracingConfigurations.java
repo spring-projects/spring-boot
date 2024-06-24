@@ -96,9 +96,9 @@ class OtlpTracingConfigurations {
 		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
-					.setEndpoint(connectionDetails.getUrl())
-					.setTimeout(properties.getTimeout())
-					.setCompression(properties.getCompression().name().toLowerCase());
+				.setEndpoint(connectionDetails.getUrl())
+				.setTimeout(properties.getTimeout())
+				.setCompression(properties.getCompression().name().toLowerCase());
 			for (Entry<String, String> header : properties.getHeaders().entrySet()) {
 				builder.addHeader(header.getKey(), header.getValue());
 			}
