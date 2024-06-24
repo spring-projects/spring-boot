@@ -48,7 +48,7 @@ class SpringEnvironmentPropertySource implements PropertySource {
 	@Override
 	public boolean containsProperty(String key) {
 		Environment environment = this.environment;
-		return (environment != null) ? environment.containsProperty(key) : false;
+		return environment != null && environment.containsProperty(key);
 	}
 
 	void setEnvironment(Environment environment) {
