@@ -156,7 +156,7 @@ class LoaderIntegrationTests {
 
 		static JavaRuntime oracleJdk17() {
 			ImageFromDockerfile image = new ImageFromDockerfile("spring-boot-loader/oracle-jdk");
-			image.withFileFromFile("Dockerfile", new File("src/intTest/resources/conf/oracle-jdk-17/Dockerfile"));
+			image.withFileFromFile("Dockerfile", new File("src/dockerTest/resources/conf/oracle-jdk-17/Dockerfile"));
 			for (File file : new File("build/downloads/jdk/oracle").listFiles()) {
 				image.withFileFromFile("downloads/" + file.getName(), file);
 			}
