@@ -116,6 +116,8 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalConnectionSocketFactory implements ConnectionSocketFactory {
 
+		private static final String NPIPE_PREFIX = "npipe://";
+
 		private final String host;
 
 		LocalConnectionSocketFactory(String host) {
@@ -124,10 +126,10 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 		@Override
 		public Socket createSocket(HttpContext context) throws IOException {
-			if (Platform.isWindows()) {
-				return NamedPipeSocket.get(this.host);
+			if (this.host.startsWith(NPIPE_PREFIX)) {
+				return NamedPipeSocket.get(this.host.substring(NPIPE_PREFIX.length()));
 			}
-			return DomainSocket.get(this.host);
+			return (!Platform.isWindows()) ? DomainSocket.get(this.host) : NamedPipeSocket.get(this.host);
 		}
 
 		@Override
