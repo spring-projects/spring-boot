@@ -3,6 +3,7 @@ plugins {
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.deployed"
 }
 
@@ -10,6 +11,17 @@ description = "Spring Boot Actuator"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+	
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.springframework:spring-test")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:mongodb")
+	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional("com.datastax.oss:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
@@ -98,10 +110,6 @@ dependencies {
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:mongodb")
-	testImplementation("org.testcontainers:neo4j")
-	testImplementation("org.testcontainers:testcontainers")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
