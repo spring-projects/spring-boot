@@ -36,6 +36,9 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
+ * Tests for {@link ImportTestcontainers} when properties are being injected into a
+ * {@link LoadTimeWeaverAware} bean.
+ *
  * @author Phillip Webb
  */
 @ExtendWith(SpringExtension.class)

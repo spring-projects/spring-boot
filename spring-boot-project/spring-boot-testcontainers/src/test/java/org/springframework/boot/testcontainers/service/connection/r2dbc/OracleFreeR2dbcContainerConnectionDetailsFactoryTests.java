@@ -16,29 +16,12 @@
 
 package org.springframework.boot.testcontainers.service.connection.r2dbc;
 
-import java.time.Duration;
-
-import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.OS;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.oracle.OracleContainer;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryHints;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,39 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@SpringJUnitConfig
-@Testcontainers(disabledWithoutDocker = true)
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The Oracle image has no ARM support")
 class OracleFreeR2dbcContainerConnectionDetailsFactoryTests {
-
-	@Container
-	@ServiceConnection
-	static final OracleContainer oracle = TestImage.container(OracleContainer.class);
-
-	@Autowired
-	ConnectionFactory connectionFactory;
-
-	@Test
-	void connectionCanBeMadeToOracleContainer() {
-		Object result = DatabaseClient.create(this.connectionFactory)
-			.sql(DatabaseDriver.ORACLE.getValidationQuery())
-			.map((row, metadata) -> row.get(0))
-			.first()
-			.block(Duration.ofSeconds(30));
-		assertThat(result).isEqualTo("Hello");
-	}
 
 	@Test
 	void shouldRegisterHints() {
 		RuntimeHints hints = ContainerConnectionDetailsFactoryHints.getRegisteredHints(getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(ConnectionFactoryOptions.class)).accepts(hints);
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(R2dbcAutoConfiguration.class)
-	static class TestConfiguration {
-
 	}
 
 }
