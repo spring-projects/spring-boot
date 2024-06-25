@@ -130,7 +130,7 @@ class LoaderIntegrationTests {
 			String arch = System.getProperty("os.arch");
 			String dockerFile = ("aarch64".equals(arch)) ? "Dockerfile-aarch64" : "Dockerfile";
 			ImageFromDockerfile image = new ImageFromDockerfile("spring-boot-loader/oracle-jdk-17")
-				.withFileFromFile("Dockerfile", new File("src/intTest/resources/conf/oracle-jdk-17/" + dockerFile));
+				.withFileFromFile("Dockerfile", new File("src/dockerTest/resources/conf/oracle-jdk-17/" + dockerFile));
 			return new JavaRuntime("Oracle JDK 17", JavaVersion.SEVENTEEN, () -> new GenericContainer<>(image));
 		}
 
