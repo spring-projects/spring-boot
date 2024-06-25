@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.elasticsearch;
-
-import java.util.UUID;
+package org.springframework.boot.test.autoconfigure.data.mongo;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -29,30 +27,30 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.springframework.boot.test.autoconfigure.AutoConfigurationImportedCondition.importedAutoConfiguration;
 
 /**
- * Sample test for {@link DataElasticsearchTest @DataElasticsearchTest}
+ * Sample test for {@link DataMongoTest @DataMongoTest}.
  *
- * @author Eddú Meléndez
+ * @author Michael Simons
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@DataElasticsearchTest
+@DataMongoTest
 @Testcontainers(disabledWithoutDocker = true)
-class DataElasticsearchTestIntegrationTests {
+class DataMongoTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final ElasticsearchContainer elasticsearch = TestImage.container(ElasticsearchContainer.class);
+	static final MongoDBContainer mongoDb = TestImage.container(MongoDBContainer.class);
 
 	@Autowired
-	private ElasticsearchTemplate elasticsearchTemplate;
+	private MongoTemplate mongoTemplate;
 
 	@Autowired
 	private ExampleRepository exampleRepository;
@@ -61,23 +59,18 @@ class DataElasticsearchTestIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	void didNotInjectExampleService() {
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+	void testRepository() {
+		ExampleDocument exampleDocument = new ExampleDocument();
+		exampleDocument.setText("Look, new @DataMongoTest!");
+		exampleDocument = this.exampleRepository.save(exampleDocument);
+		assertThat(exampleDocument.getId()).isNotNull();
+		assertThat(this.mongoTemplate.collectionExists("exampleDocuments")).isTrue();
 	}
 
 	@Test
-	void testRepository() {
-		ExampleDocument document = new ExampleDocument();
-		document.setText("Look, new @DataElasticsearchTest!");
-		String id = UUID.randomUUID().toString();
-		document.setId(id);
-		ExampleDocument savedDocument = this.exampleRepository.save(document);
-		ExampleDocument getDocument = this.elasticsearchTemplate.get(id, ExampleDocument.class);
-		assertThat(getDocument).isNotNull();
-		assertThat(getDocument.getId()).isNotNull();
-		assertThat(getDocument.getId()).isEqualTo(savedDocument.getId());
-		this.exampleRepository.deleteAll();
+	void didNotInjectExampleService() {
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 	@Test

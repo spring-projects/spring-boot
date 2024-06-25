@@ -2,6 +2,7 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -11,6 +12,22 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+	
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation("io.projectreactor:reactor-test")
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:cassandra")
+	dockerTestImplementation("org.testcontainers:couchbase")
+	dockerTestImplementation("org.testcontainers:elasticsearch")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:mongodb")
+	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+	
+	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
+	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")
 
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
@@ -62,13 +79,12 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
-	testImplementation("io.lettuce:lettuce-core")
 	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("io.projectreactor:reactor-core")
@@ -96,13 +112,6 @@ dependencies {
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
-	testImplementation("org.testcontainers:cassandra")
-	testImplementation("org.testcontainers:couchbase")
-	testImplementation("org.testcontainers:elasticsearch")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:mongodb")
-	testImplementation("org.testcontainers:neo4j")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.thymeleaf:thymeleaf")
 }
 
