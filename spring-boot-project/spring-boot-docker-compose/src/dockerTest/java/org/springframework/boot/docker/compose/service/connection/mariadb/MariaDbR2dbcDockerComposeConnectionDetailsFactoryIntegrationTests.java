@@ -25,7 +25,7 @@ import org.springframework.boot.testsupport.container.TestImage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link MariaDbR2dbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link MariaDbR2dbcDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

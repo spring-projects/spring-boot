@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.service.connection.mysql;
+package org.springframework.boot.docker.compose.service.connection.mariadb;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -23,19 +23,19 @@ import org.springframework.boot.testsupport.container.TestImage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link MySqlJdbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link MariaDbJdbcDockerComposeConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MySqlJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
+class MariaDbJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "mysql-compose.yaml", image = TestImage.MYSQL)
+	@DockerComposeTest(composeFile = "mariadb-compose.yaml", image = TestImage.MARIADB)
 	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mariadb://").endsWith("/mydatabase");
 	}
 
 }
