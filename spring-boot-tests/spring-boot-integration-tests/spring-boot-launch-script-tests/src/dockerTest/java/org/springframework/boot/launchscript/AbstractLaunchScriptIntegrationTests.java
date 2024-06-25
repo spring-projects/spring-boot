@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 
 	static List<Object[]> filterParameters(Predicate<File> osFilter) {
 		List<Object[]> parameters = new ArrayList<>();
-		for (File os : new File("src/intTest/resources/conf").listFiles()) {
+		for (File os : new File("src/dockerTest/resources/conf").listFiles()) {
 			if (osFilter.test(os)) {
 				for (File version : os.listFiles()) {
 					parameters.add(new Object[] { os.getName(), version.getName() });
@@ -103,10 +103,10 @@ abstract class AbstractLaunchScriptIntegrationTests {
 			super(createImage(os, version));
 			withCopyFileToContainer(MountableFile.forHostPath(findApplication().getAbsolutePath()), "/app.jar");
 			withCopyFileToContainer(
-					MountableFile.forHostPath("src/intTest/resources/scripts/" + scriptsDir + "test-functions.sh"),
+					MountableFile.forHostPath("src/dockerTest/resources/scripts/" + scriptsDir + "test-functions.sh"),
 					"/test-functions.sh");
 			withCopyFileToContainer(
-					MountableFile.forHostPath("src/intTest/resources/scripts/" + scriptsDir + testScript),
+					MountableFile.forHostPath("src/dockerTest/resources/scripts/" + scriptsDir + testScript),
 					"/" + testScript);
 			withCommand("/bin/bash", "-c",
 					"chown root:root *.sh && chown root:root *.jar && chmod +x " + testScript + " && ./" + testScript);
@@ -117,7 +117,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 			ImageFromDockerfile image = new ImageFromDockerfile(
 					"spring-boot-launch-script/" + os.toLowerCase() + "-" + version);
 			image.withFileFromFile("Dockerfile",
-					new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile"));
+					new File("src/dockerTest/resources/conf/" + os + "/" + version + "/Dockerfile"));
 			for (File file : new File("build/downloads/jdk/bellsoft").listFiles()) {
 				image.withFileFromFile("downloads/" + file.getName(), file);
 			}
