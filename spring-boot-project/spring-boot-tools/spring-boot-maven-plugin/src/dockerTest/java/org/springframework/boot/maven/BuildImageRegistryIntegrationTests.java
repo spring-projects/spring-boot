@@ -61,7 +61,7 @@ class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests
 	void whenBuildImageIsInvokedWithPublish(MavenBuild mavenBuild) {
 		String repoName = "test-image";
 		String imageName = this.registryAddress + "/" + repoName;
-		mavenBuild.project("build-image-publish")
+		mavenBuild.project("dockerTest", "build-image-publish")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.imageName", imageName)
 			.execute((project) -> {

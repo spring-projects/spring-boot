@@ -57,7 +57,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image")
+		mavenBuild.project("dockerTest", "build-image")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -77,7 +77,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedOnTheCommandLineWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-cmd-line")
+		mavenBuild.project("dockerTest", "build-image-cmd-line")
 			.goals("spring-boot:build-image")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -97,7 +97,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier")
+		mavenBuild.project("dockerTest", "build-image-classifier")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -118,7 +118,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierSourceWithoutRepackageTheArchiveIsRepackagedOnTheFly(
 			MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier-source")
+		mavenBuild.project("dockerTest", "build-image-classifier-source")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -139,7 +139,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-with-repackage")
+		mavenBuild.project("dockerTest", "build-image-with-repackage")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -160,7 +160,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierAndRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier-with-repackage")
+		mavenBuild.project("dockerTest", "build-image-classifier-with-repackage")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -181,7 +181,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierSourceAndRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier-source-with-repackage")
+		mavenBuild.project("dockerTest", "build-image-classifier-source-with-repackage")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -203,7 +203,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithWarPackaging(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-war-packaging")
+		mavenBuild.project("dockerTest", "build-image-war-packaging")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -223,7 +223,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCustomImageName(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-custom-name")
+		mavenBuild.project("dockerTest", "build-image-custom-name")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("spring-boot.build-image.imageName", "example.com/test/property-ignored:pom-preferred")
@@ -243,7 +243,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCommandLineParameters(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image")
+		mavenBuild.project("dockerTest", "build-image")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
@@ -266,7 +266,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCustomBuilderImageAndRunImage(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-custom-builder")
+		mavenBuild.project("dockerTest", "build-image-custom-builder")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.execute((project) -> {
@@ -281,7 +281,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithEmptyEnvEntry(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-empty-env-entry")
+		mavenBuild.project("dockerTest", "build-image-empty-env-entry")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.prepare(this::writeLongNameResource)
@@ -297,7 +297,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithZipPackaging(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-zip-packaging")
+		mavenBuild.project("dockerTest", "build-image-zip-packaging")
 			.goals("package")
 			.prepare(this::writeLongNameResource)
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
@@ -314,7 +314,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithBuildpacks(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-custom-buildpacks")
+		mavenBuild.project("dockerTest", "build-image-custom-buildpacks")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.execute((project) -> {
@@ -327,7 +327,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithBinding(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-bindings")
+		mavenBuild.project("dockerTest", "build-image-bindings")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.execute((project) -> {
@@ -342,7 +342,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithNetworkModeNone(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-network")
+		mavenBuild.project("dockerTest", "build-image-network")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.execute((project) -> {
@@ -356,7 +356,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedOnMultiModuleProjectWithPackageGoal(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-multi-module")
+		mavenBuild.project("dockerTest", "build-image-multi-module")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.execute((project) -> {
@@ -369,7 +369,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithTags(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-tags")
+		mavenBuild.project("dockerTest", "build-image-tags")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.execute((project) -> {
@@ -386,7 +386,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithVolumeCaches(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-volume-caches")
+		mavenBuild.project("dockerTest", "build-image-volume-caches")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("test-build-id", testBuildId)
@@ -404,7 +404,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 			+ "Docker Desktop on other OSs")
 	void whenBuildImageIsInvokedWithBindCaches(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-bind-caches")
+		mavenBuild.project("dockerTest", "build-image-bind-caches")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("test-build-id", testBuildId)
@@ -435,7 +435,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCreatedDate(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-created-date")
+		mavenBuild.project("dockerTest", "build-image-created-date")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("test-build-id", testBuildId)
@@ -453,7 +453,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCurrentCreatedDate(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-current-created-date")
+		mavenBuild.project("dockerTest", "build-image-current-created-date")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("test-build-id", testBuildId)
@@ -476,7 +476,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithApplicationDirectory(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-app-dir")
+		mavenBuild.project("dockerTest", "build-image-app-dir")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("test-build-id", testBuildId)
@@ -491,7 +491,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithEmptySecurityOptions(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-security-opts")
+		mavenBuild.project("dockerTest", "build-image-security-opts")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("test-build-id", testBuildId)
@@ -505,7 +505,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void failsWhenBuildImageIsInvokedOnMultiModuleProjectWithBuildImageGoal(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-multi-module")
+		mavenBuild.project("dockerTest", "build-image-multi-module")
 			.goals("spring-boot:build-image")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.executeAndFail((project) -> assertThat(buildLog(project)).contains("Error packaging archive for image"));
@@ -513,7 +513,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void failsWhenBuilderFails(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-builder-error")
+		mavenBuild.project("dockerTest", "build-image-builder-error")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.executeAndFail((project) -> assertThat(buildLog(project)).contains("Building image")
@@ -524,7 +524,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void failsWithBuildpackNotInBuilder(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-bad-buildpack")
+		mavenBuild.project("dockerTest", "build-image-bad-buildpack")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.executeAndFail((project) -> assertThat(buildLog(project))
@@ -533,7 +533,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void failsWhenFinalNameIsMisconfigured(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-final-name")
+		mavenBuild.project("dockerTest", "build-image-final-name")
 			.goals("package")
 			.executeAndFail((project) -> assertThat(buildLog(project)).contains("final-name.jar.original")
 				.contains("is required for building an image"));
@@ -541,7 +541,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void failsWhenCachesAreConfiguredTwice(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-caches-multiple")
+		mavenBuild.project("dockerTest", "build-image-caches-multiple")
 			.goals("package")
 			.executeAndFail((project) -> assertThat(buildLog(project))
 				.contains("Each image building cache can be configured only once"));

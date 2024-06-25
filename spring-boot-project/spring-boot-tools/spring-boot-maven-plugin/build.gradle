@@ -3,6 +3,7 @@ plugins {
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Maven Plugin"
@@ -25,6 +26,15 @@ dependencies {
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
+	
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation("org.apache.maven.shared:maven-invoker") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -47,8 +57,6 @@ dependencies {
 	}
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
-	intTestImplementation("org.testcontainers:testcontainers")
-	intTestImplementation("org.testcontainers:junit-jupiter")
 
 	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
@@ -95,6 +103,9 @@ sourceSets {
 		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
 	}
 	intTest {
+		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
+	}
+	dockerTest {
 		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
 	}
 }
@@ -179,4 +190,8 @@ tasks.named("documentPluginGoals") {
 		"stop": "integration-tests",
 		"test-run": "run"
 	]
+}
+
+tasks.named("dockerTest").configure {
+	dependsOn tasks.named("prepareMavenBinaries")
 }
