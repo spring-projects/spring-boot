@@ -16,7 +16,6 @@ dependencies {
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
-	compileOnly("org.sonatype.plexus:plexus-build-api")
 	compileOnly("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
@@ -33,6 +32,9 @@ dependencies {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	implementation("org.sonatype.plexus:plexus-build-api") {
+		exclude(group: "org.codehaus.plexus:plexus-utils")
 	}
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-context")
@@ -58,8 +60,6 @@ dependencies {
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
-
-	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
 	testImplementation("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
