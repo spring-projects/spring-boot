@@ -5,7 +5,8 @@
 Various properties can be specified inside your `application.properties` file, inside your `application.yaml` file, or as command line switches.
 This appendix provides a list of common Spring Boot properties and references to the underlying classes that consume them.
 
-TIP: Spring Boot provides various conversion mechanism with advanced value formatting, make sure to review xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.conversion[the properties conversion section].
+TIP: Spring Boot provides various conversion mechanisms with advanced value formatting.
+Make sure to review xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.conversion[the properties conversion section].
 
 NOTE: Property contributions can come from additional jar files on your classpath, so you should not consider this an exhaustive list.
 Also, you can define your own properties.
