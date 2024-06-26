@@ -226,6 +226,8 @@ public class FlywayAutoConfiguration {
 		 * @param properties the properties
 		 */
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
+			// NOTE: Using method references in the mapper methods can break
+			// back-compatibilty (see gh-38164)
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 				.resolveLocations(properties.getLocations())
@@ -300,6 +302,8 @@ public class FlywayAutoConfiguration {
 				.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
 			configureExecuteInTransaction(configuration, properties, map);
 			map.from(properties::getLoggers).to((loggers) -> configuration.loggers(loggers));
+			map.from(properties::getCommunityDbSupportEnabled)
+				.to((communityDbSupportEnabled) -> configuration.communityDBSupportEnabled(communityDbSupportEnabled));
 			// Flyway Teams properties
 			map.from(properties.getBatch()).to((batch) -> configuration.batch(batch));
 			map.from(properties.getDryRunOutput()).to((dryRunOutput) -> configuration.dryRunOutput(dryRunOutput));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class LogbackLoggingSystemParallelInitializationTests {
 		List<Thread> threads = new ArrayList<>();
 		List<Throwable> exceptions = new CopyOnWriteArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			Thread thread = new Thread(() -> this.loggingSystem.beforeInitialize());
+			Thread thread = new Thread(this.loggingSystem::beforeInitialize);
 			thread.setUncaughtExceptionHandler((t, ex) -> exceptions.add(ex));
 			threads.add(thread);
 		}

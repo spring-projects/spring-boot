@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.time.Duration;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +29,8 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.redis.city.City;
 import org.springframework.boot.autoconfigure.data.redis.city.CityRepository;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.boot.testsupport.container.RedisContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
@@ -47,8 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RedisRepositoriesAutoConfigurationTests {
 
 	@Container
-	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(10));
+	public static RedisContainer redis = TestImage.container(RedisContainer.class);
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 

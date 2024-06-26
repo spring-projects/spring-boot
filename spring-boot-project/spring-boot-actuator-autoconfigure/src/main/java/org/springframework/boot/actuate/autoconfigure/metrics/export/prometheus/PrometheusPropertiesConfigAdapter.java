@@ -63,13 +63,15 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 	}
 
 	private Properties fromPropertiesMap(PrometheusProperties prometheusProperties) {
-		Map<String, String> map = prometheusProperties.getProperties();
-		if (map.isEmpty()) {
+		Map<String, String> additionalProperties = prometheusProperties.getProperties();
+		if (additionalProperties.isEmpty()) {
 			return null;
 		}
 		Properties properties = PrometheusConfig.super.prometheusProperties();
-		properties = (properties != null) ? properties : new Properties();
-		properties.putAll(map);
+		if (properties == null) {
+			properties = new Properties();
+		}
+		properties.putAll(additionalProperties);
 		return properties;
 	}
 

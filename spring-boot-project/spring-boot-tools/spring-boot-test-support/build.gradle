@@ -1,6 +1,7 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Testing Support"
@@ -19,8 +20,23 @@ dependencies {
 	compileOnly("org.mockito:mockito-core")
 	compileOnly("org.springframework:spring-context")
 	compileOnly("org.springframework.data:spring-data-redis")
-	compileOnly("org.testcontainers:cassandra")
 	compileOnly("org.testcontainers:testcontainers")
+
+	optional("org.testcontainers:activemq")
+	optional("org.testcontainers:cassandra")
+	optional("org.testcontainers:cassandra")
+	optional("org.testcontainers:couchbase")
+	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:junit-jupiter")
+	optional("org.testcontainers:kafka")
+	optional("org.testcontainers:mongodb")
+	optional("org.testcontainers:neo4j")
+	optional("org.testcontainers:oracle-xe")
+	optional("org.testcontainers:oracle-free")
+	optional("org.testcontainers:postgresql")
+	optional("org.testcontainers:pulsar")
+	optional("org.testcontainers:rabbitmq")
+	optional("org.testcontainers:redpanda")
 
 	implementation("jakarta.inject:jakarta.inject-api")
 	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")

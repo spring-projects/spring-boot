@@ -71,21 +71,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
-		if (!options.isIncluded(Include.EXCEPTION)) {
-			errorAttributes.remove("exception");
-		}
-		if (!options.isIncluded(Include.STACK_TRACE)) {
-			errorAttributes.remove("trace");
-		}
-		if (!options.isIncluded(Include.MESSAGE) && errorAttributes.get("message") != null) {
-			errorAttributes.remove("message");
-		}
-		if (!options.isIncluded(Include.BINDING_ERRORS)) {
-			errorAttributes.remove("errors");
-		}
-		if (!options.isIncluded(Include.PATH)) {
-			errorAttributes.remove("path");
-		}
+		options.retainIncluded(errorAttributes);
 		return errorAttributes;
 	}
 

@@ -35,15 +35,20 @@ import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -343,6 +348,18 @@ class BasicErrorControllerIntegrationTests {
 		assertThat(entity.getBody()).isNull();
 	}
 
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	void customErrorControllerWithoutStatusConfiguration() {
+		load(CustomErrorControllerWithoutStatusConfiguration.class);
+		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.body("{}");
+		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
+		assertThat(entity.getBody()).doesNotContainKey("status");
+	}
+
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error, Class<?> exception,
 			String message, String path) {
 		assertThat(content.get("status")).as("Wrong status").hasToString(status);
@@ -363,12 +380,16 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	private void load(String... arguments) {
+		load(TestConfiguration.class, arguments);
+	}
+
+	private void load(Class<?> configuration, String... arguments) {
 		List<String> args = new ArrayList<>();
 		args.add("--server.port=0");
 		if (arguments != null) {
 			args.addAll(Arrays.asList(arguments));
 		}
-		this.context = SpringApplication.run(TestConfiguration.class, StringUtils.toStringArray(args));
+		this.context = SpringApplication.run(configuration, StringUtils.toStringArray(args));
 	}
 
 	@Target(ElementType.TYPE)
@@ -394,11 +415,13 @@ class BasicErrorControllerIntegrationTests {
 		@Bean
 		View error() {
 			return new AbstractView() {
+
 				@Override
 				protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
 						HttpServletResponse response) throws Exception {
 					response.getWriter().write("ERROR_BEAN");
 				}
+
 			};
 		}
 
@@ -494,6 +517,25 @@ class BasicErrorControllerIntegrationTests {
 
 			}
 
+		}
+
+	}
+
+	static class CustomErrorControllerWithoutStatusConfiguration extends TestConfiguration {
+
+		@Bean
+		BasicErrorController basicErrorController(ServerProperties serverProperties, ErrorAttributes errorAttributes,
+				ObjectProvider<ErrorViewResolver> errorViewResolvers) {
+			return new BasicErrorController(errorAttributes, serverProperties.getError(),
+					errorViewResolvers.orderedStream().toList()) {
+
+				@Override
+				protected ErrorAttributeOptions getErrorAttributeOptions(HttpServletRequest request,
+						MediaType mediaType) {
+					return super.getErrorAttributeOptions(request, mediaType).excluding(Include.STATUS);
+				}
+
+			};
 		}
 
 	}

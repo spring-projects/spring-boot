@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import io.micrometer.core.instrument.Clock;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
@@ -358,8 +359,9 @@ class DualPrometheusMetricsExportAutoConfigurationTests {
 	static class CustomSecondEndpointConfiguration {
 
 		@Bean
-		PrometheusScrapeEndpoint prometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry) {
-			return new PrometheusScrapeEndpoint(prometheusRegistry);
+		PrometheusScrapeEndpoint prometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry,
+				PrometheusConfig prometheusConfig) {
+			return new PrometheusScrapeEndpoint(prometheusRegistry, prometheusConfig.prometheusProperties());
 		}
 
 		@Bean

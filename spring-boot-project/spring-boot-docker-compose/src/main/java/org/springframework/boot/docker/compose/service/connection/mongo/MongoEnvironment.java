@@ -41,9 +41,9 @@ class MongoEnvironment {
 				"MONGO_INITDB_ROOT_USERNAME_FILE is not supported");
 		Assert.state(!env.containsKey("MONGO_INITDB_ROOT_PASSWORD_FILE"),
 				"MONGO_INITDB_ROOT_PASSWORD_FILE is not supported");
-		this.username = env.getOrDefault("MONGO_INITDB_ROOT_USERNAME", env.get("MONGO_ROOT_USERNAME"));
-		this.password = env.getOrDefault("MONGO_INITDB_ROOT_PASSWORD", env.get("MONGO_ROOT_PASSWORD"));
-		this.database = env.get("MONGO_INITDB_DATABASE");
+		this.username = env.getOrDefault("MONGO_INITDB_ROOT_USERNAME", env.get("MONGODB_ROOT_USERNAME"));
+		this.password = env.getOrDefault("MONGO_INITDB_ROOT_PASSWORD", env.get("MONGODB_ROOT_PASSWORD"));
+		this.database = env.getOrDefault("MONGO_INITDB_DATABASE", env.get("MONGODB_DATABASE"));
 	}
 
 	String getUsername() {

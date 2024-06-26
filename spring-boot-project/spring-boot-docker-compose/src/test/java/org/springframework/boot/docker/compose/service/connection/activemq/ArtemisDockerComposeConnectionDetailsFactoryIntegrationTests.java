@@ -16,12 +16,10 @@
 
 package org.springframework.boot.docker.compose.service.connection.activemq;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisMode;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,15 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-class ArtemisDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class ArtemisDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	ArtemisDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("artemis-compose.yaml", DockerImageNames.artemis());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		ArtemisConnectionDetails connectionDetails = run(ArtemisConnectionDetails.class);
+	@DockerComposeTest(composeFile = "artemis-compose.yaml", image = TestImage.ARTEMIS)
+	void runCreatesConnectionDetails(ArtemisConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getMode()).isEqualTo(ArtemisMode.NATIVE);
 		assertThat(connectionDetails.getBrokerUrl()).isNotNull().startsWith("tcp://");
 		assertThat(connectionDetails.getUser()).isEqualTo("root");

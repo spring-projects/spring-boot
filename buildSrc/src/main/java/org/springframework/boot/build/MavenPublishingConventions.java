@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,9 +102,6 @@ class MavenPublishingConventions {
 
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
 		addMavenOptionalFeature(publication, project);
-		if (publication.getName().equals("pluginMaven")) {
-			return;
-		}
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
 			.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
 		publication.versionMapping(

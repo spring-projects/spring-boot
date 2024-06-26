@@ -30,7 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +47,7 @@ class SampleActiveMqTests {
 
 	@Container
 	@ServiceConnection
-	private static final ActiveMQContainer container = new ActiveMQContainer(DockerImageNames.activeMqClassic());
+	private static final ActiveMQContainer container = TestImage.container(ActiveMQContainer.class);
 
 	@Autowired
 	private Producer producer;

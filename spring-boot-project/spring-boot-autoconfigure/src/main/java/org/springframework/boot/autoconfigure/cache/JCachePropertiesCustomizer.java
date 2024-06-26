@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,16 @@ import javax.cache.spi.CachingProvider;
  * used by the {@link CachingProvider} to create the {@link CacheManager}.
  *
  * @author Stephane Nicoll
+ * @since 3.4.0
+ * @see CachingProvider#getCacheManager(java.net.URI, ClassLoader, Properties)
  */
-interface JCachePropertiesCustomizer {
+public interface JCachePropertiesCustomizer {
 
 	/**
 	 * Customize the properties.
-	 * @param cacheProperties the cache properties
 	 * @param properties the current properties
-	 * @see CachingProvider#getCacheManager(java.net.URI, ClassLoader, Properties)
+	 *
 	 */
-	void customize(CacheProperties cacheProperties, Properties properties);
+	void customize(Properties properties);
 
 }

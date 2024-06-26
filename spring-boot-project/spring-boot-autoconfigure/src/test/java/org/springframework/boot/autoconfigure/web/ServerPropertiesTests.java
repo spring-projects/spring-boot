@@ -187,13 +187,12 @@ class ServerPropertiesTests {
 
 	@Test
 	void testDefaultMimeMapping() {
-		assertThat(this.properties.getMimeMappings())
-			.containsExactly(MimeMappings.DEFAULT.getAll().toArray(new Mapping[0]));
+		assertThat(this.properties.getMimeMappings()).isEmpty();
 	}
 
 	@Test
 	void testCustomizedMimeMapping() {
-		MimeMappings expectedMappings = MimeMappings.lazyCopy(MimeMappings.DEFAULT);
+		MimeMappings expectedMappings = new MimeMappings();
 		expectedMappings.add("mjs", "text/javascript");
 		bind("server.mime-mappings.mjs", "text/javascript");
 		assertThat(this.properties.getMimeMappings())

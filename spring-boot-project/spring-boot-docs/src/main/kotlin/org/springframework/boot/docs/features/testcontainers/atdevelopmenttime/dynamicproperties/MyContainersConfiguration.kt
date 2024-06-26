@@ -25,7 +25,7 @@ import org.testcontainers.containers.MongoDBContainer
 class MyContainersConfiguration {
 
 	@Bean
-	fun monogDbContainer(properties: DynamicPropertyRegistry): MongoDBContainer {
+	fun mongoDbContainer(properties: DynamicPropertyRegistry): MongoDBContainer {
 		var container = MongoDBContainer("mongo:5.0")
 		properties.add("spring.data.mongodb.host", container::getHost)
 		properties.add("spring.data.mongodb.port", container::getFirstMappedPort)

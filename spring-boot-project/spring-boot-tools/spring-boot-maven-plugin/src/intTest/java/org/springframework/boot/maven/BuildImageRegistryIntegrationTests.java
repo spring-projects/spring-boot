@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package org.springframework.boot.maven;
 
-import java.time.Duration;
-
 import com.github.dockerjava.api.DockerClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -31,7 +28,8 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.RegistryContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,8 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests {
 
 	@Container
-	static final RegistryContainer registry = new RegistryContainer().withStartupAttempts(5)
-		.withStartupTimeout(Duration.ofMinutes(3));
+	static final RegistryContainer registry = TestImage.container(RegistryContainer.class);
 
 	DockerClient dockerClient;
 
@@ -78,16 +75,6 @@ class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests
 				assertThat(pulledImage).isNotNull();
 				imageApi.remove(imageReference, false);
 			});
-	}
-
-	private static class RegistryContainer extends GenericContainer<RegistryContainer> {
-
-		RegistryContainer() {
-			super(DockerImageNames.registry());
-			addExposedPorts(5000);
-			addEnv("SERVER_NAME", "localhost");
-		}
-
 	}
 
 }

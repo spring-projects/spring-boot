@@ -23,10 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.sbom.SbomEndpoint.SbomEndpointRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StringUtils;
@@ -38,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @since 3.3.0
  */
 @Endpoint(id = "sbom")
+@ImportRuntimeHints(SbomEndpointRuntimeHints.class)
 public class SbomEndpoint {
 
 	private static final List<String> DEFAULT_APPLICATION_SBOM_LOCATIONS = List.of("classpath:META-INF/sbom/bom.json",
@@ -139,6 +144,21 @@ public class SbomEndpoint {
 		private static String stripOptionalPrefix(String location) {
 			return location.substring(OPTIONAL_PREFIX.length());
 		}
+	}
+
+	static class SbomEndpointRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			for (String defaultLocation : DEFAULT_APPLICATION_SBOM_LOCATIONS) {
+				hints.resources().registerPattern(stripClasspathPrefix(defaultLocation));
+			}
+		}
+
+		private String stripClasspathPrefix(String location) {
+			return location.substring("classpath:".length());
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,35 +68,37 @@ class DockerCliCommandTests {
 
 	@Test
 	void composeUp() {
-		DockerCliCommand<?> command = new DockerCliCommand.ComposeUp(LogLevel.INFO);
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeUp(LogLevel.INFO, List.of("--renew-anon-volumes"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
-		assertThat(command.getCommand()).containsExactly("up", "--no-color", "--detach", "--wait");
+		assertThat(command.getCommand()).containsExactly("up", "--no-color", "--detach", "--wait",
+				"--renew-anon-volumes");
 		assertThat(command.deserialize("[]")).isNull();
 	}
 
 	@Test
 	void composeDown() {
-		DockerCliCommand<?> command = new DockerCliCommand.ComposeDown(Duration.ofSeconds(1));
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeDown(Duration.ofSeconds(1),
+				List.of("--remove-orphans"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand()).containsExactly("down", "--timeout", "1");
+		assertThat(command.getCommand()).containsExactly("down", "--timeout", "1", "--remove-orphans");
 		assertThat(command.deserialize("[]")).isNull();
 	}
 
 	@Test
 	void composeStart() {
-		DockerCliCommand<?> command = new DockerCliCommand.ComposeStart(LogLevel.INFO);
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeStart(LogLevel.INFO, List.of("--dry-run"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
 		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
-		assertThat(command.getCommand()).containsExactly("start");
+		assertThat(command.getCommand()).containsExactly("start", "--dry-run");
 		assertThat(command.deserialize("[]")).isNull();
 	}
 
 	@Test
 	void composeStop() {
-		DockerCliCommand<?> command = new DockerCliCommand.ComposeStop(Duration.ofSeconds(1));
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeStop(Duration.ofSeconds(1), List.of("--dry-run"));
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand()).containsExactly("stop", "--timeout", "1");
+		assertThat(command.getCommand()).containsExactly("stop", "--timeout", "1", "--dry-run");
 		assertThat(command.deserialize("[]")).isNull();
 	}
 

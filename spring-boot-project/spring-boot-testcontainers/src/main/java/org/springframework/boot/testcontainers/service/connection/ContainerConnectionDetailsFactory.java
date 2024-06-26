@@ -25,11 +25,16 @@ import org.testcontainers.containers.Container;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader.FailureHandler;
@@ -123,9 +128,11 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 * @param <C> the container type
 	 */
 	protected static class ContainerConnectionDetails<C extends Container<?>>
-			implements ConnectionDetails, OriginProvider, InitializingBean {
+			implements ConnectionDetails, OriginProvider, InitializingBean, ApplicationContextAware {
 
 		private final ContainerConnectionSource<C> source;
+
+		private volatile ApplicationEventPublisher eventPublisher;
 
 		private volatile C container;
 
@@ -151,12 +158,18 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		protected final C getContainer() {
 			Assert.state(this.container != null,
 					"Container cannot be obtained before the connection details bean has been initialized");
+			this.eventPublisher.publishEvent(new BeforeTestcontainerUsedEvent(this));
 			return this.container;
 		}
 
 		@Override
 		public Origin getOrigin() {
 			return this.source.getOrigin();
+		}
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+			this.eventPublisher = applicationContext;
 		}
 
 	}

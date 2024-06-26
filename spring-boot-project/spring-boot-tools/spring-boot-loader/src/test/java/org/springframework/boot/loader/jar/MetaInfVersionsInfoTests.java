@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,20 @@ class MetaInfVersionsInfoTests {
 		assertThat(info.versions()).isEmpty();
 		assertThat(info.directories()).isEmpty();
 		assertThat(info).isSameAs(MetaInfVersionsInfo.NONE);
+	}
+
+	@Test
+	void toleratesUnexpectedFileEntryInMetaInfVersions() {
+		List<ZipContent.Entry> entries = new ArrayList<>();
+		entries.add(mockEntry("META-INF/"));
+		entries.add(mockEntry("META-INF/MANIFEST.MF"));
+		entries.add(mockEntry("META-INF/versions/"));
+		entries.add(mockEntry("META-INF/versions/unexpected"));
+		entries.add(mockEntry("META-INF/versions/9/"));
+		entries.add(mockEntry("META-INF/versions/9/Foo.class"));
+		MetaInfVersionsInfo info = MetaInfVersionsInfo.get(entries.size(), entries::get);
+		assertThat(info.versions()).containsExactly(9);
+		assertThat(info.directories()).containsExactly("META-INF/versions/9/");
 	}
 
 	private ZipContent.Entry mockEntry(String name) {

@@ -32,8 +32,10 @@ class MyIntegrationTests {
 	}
 
 	companion object {
+
 		@Container
 		val neo4j = Neo4jContainer("neo4j:5")
+
 	}
 
 }

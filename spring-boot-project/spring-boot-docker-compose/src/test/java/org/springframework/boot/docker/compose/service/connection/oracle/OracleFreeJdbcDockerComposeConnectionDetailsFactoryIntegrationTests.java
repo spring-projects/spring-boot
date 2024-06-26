@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import java.sql.Driver;
 import java.time.Duration;
 
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.ClassUtils;
@@ -41,17 +40,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The Oracle image has no ARM support")
-class OracleFreeJdbcDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class OracleFreeJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	OracleFreeJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("oracle-compose.yaml", DockerImageNames.oracleFree());
-	}
-
-	@Test
 	@SuppressWarnings("unchecked")
-	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() throws Exception {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "oracle-compose.yaml", image = TestImage.ORACLE_FREE)
+	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase(JdbcConnectionDetails connectionDetails)
+			throws Exception {
 		assertThat(connectionDetails.getUsername()).isEqualTo("app_user");
 		assertThat(connectionDetails.getPassword()).isEqualTo("app_user_secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:oracle:thin:@").endsWith("/freepdb1");

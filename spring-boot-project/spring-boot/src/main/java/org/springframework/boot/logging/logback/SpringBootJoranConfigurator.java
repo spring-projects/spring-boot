@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import ch.qos.logback.core.joran.spi.RuleStore;
 import ch.qos.logback.core.joran.util.PropertySetter;
 import ch.qos.logback.core.joran.util.beans.BeanDescription;
 import ch.qos.logback.core.model.ComponentModel;
+import ch.qos.logback.core.model.IncludeModel;
 import ch.qos.logback.core.model.Model;
 import ch.qos.logback.core.model.ModelUtil;
 import ch.qos.logback.core.model.processor.DefaultProcessor;
@@ -326,12 +327,22 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 				try (ObjectInputStream input = new ObjectInputStream(modelInput)) {
 					Model model = (Model) input.readObject();
 					ModelUtil.resetForReuse(model);
+					markIncludesAsHandled(model);
 					return model;
 				}
 			}
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to load model from '" + ModelWriter.MODEL_RESOURCE_LOCATION + "'",
 						ex);
+			}
+		}
+
+		private void markIncludesAsHandled(Model model) {
+			if (model instanceof IncludeModel) {
+				model.markAsHandled();
+			}
+			for (Model submodel : model.getSubModels()) {
+				markIncludesAsHandled(submodel);
 			}
 		}
 

@@ -1,9 +1,9 @@
 [[actuator.micrometer-tracing]]
 = Tracing
 
-Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io/docs/tracing[Micrometer Tracing], a facade for popular tracer libraries.
+Spring Boot Actuator provides dependency management and auto-configuration for {url-micrometer-tracing-docs}[Micrometer Tracing], a facade for popular tracer libraries.
 
-TIP: To learn more about Micrometer Tracing capabilities, see its https://micrometer.io/docs/tracing[reference documentation].
+TIP: To learn more about Micrometer Tracing capabilities, see its {url-micrometer-tracing-docs}[reference documentation].
 
 
 
@@ -34,7 +34,7 @@ Now we have to add the following dependencies:
 
 * `org.springframework.boot:spring-boot-starter-actuator`
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
-* `io.opentelemetry:opentelemetry-exporter-zipkin` - reports https://micrometer.io/docs/tracing#_glossary[traces] to Zipkin.
+* `io.opentelemetry:opentelemetry-exporter-zipkin` - reports {url-micrometer-tracing-docs}/glossary[traces] to Zipkin.
 
 Add the following application properties:
 
@@ -98,9 +98,9 @@ It's also worth mentioning that configprop:logging.pattern.correlation[] contain
 [[actuator.micrometer-tracing.propagating-traces]]
 == Propagating Traces
 
-To automatically propagate traces over the network, use the auto-configured xref:io/rest-client.adoc#io.rest-client.resttemplate[`RestTemplateBuilder`] or xref:io/rest-client.adoc#io.rest-client.webclient[`WebClient.Builder`] to construct the client.
+To automatically propagate traces over the network, use the auto-configured xref:io/rest-client.adoc#io.rest-client.resttemplate[`RestTemplateBuilder`], xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient.Builder`] or xref:io/rest-client.adoc#io.rest-client.webclient[`WebClient.Builder`] to construct the client.
 
-WARNING: If you create the `WebClient` or the `RestTemplate` without using the auto-configured builders, automatic trace propagation won't work!
+WARNING: If you create the `RestTemplate`, the `RestClient` or the `WebClient` without using the auto-configured builders, automatic trace propagation won't work!
 
 
 
@@ -157,8 +157,6 @@ Tracing with OpenZipkin Brave and reporting to Zipkin requires the following dep
 * `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
 * `io.zipkin.reporter2:zipkin-reporter-brave` - reports traces to Zipkin.
 
-NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.reporter2:zipkin-sender-urlconnection` dependency is needed, too.
-
 Use the `management.zipkin.tracing.*` configuration properties to configure reporting to Zipkin.
 
 
@@ -192,7 +190,7 @@ include-code::CustomObservation[]
 
 This will create an observation named "some-operation" with the tag "some-tag=some-value".
 
-TIP: If you want to create a span without creating a metric, you need to use the https://micrometer.io/docs/tracing#_using_micrometer_tracing_directly[lower-level `Tracer` API] from Micrometer.
+TIP: If you want to create a span without creating a metric, you need to use the {url-micrometer-tracing-docs}/api[lower-level `Tracer` API] from Micrometer.
 
 
 

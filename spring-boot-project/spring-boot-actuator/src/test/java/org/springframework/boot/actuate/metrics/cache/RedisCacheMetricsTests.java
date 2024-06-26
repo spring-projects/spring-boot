@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.boot.testsupport.container.RedisContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCache;
@@ -49,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RedisCacheMetricsTests {
 
 	@Container
-	static final RedisContainer redis = new RedisContainer();
+	static final RedisContainer redis = TestImage.container(RedisContainer.class);
 
 	private static final Tags TAGS = Tags.of("app", "test").and("cache", "test");
 

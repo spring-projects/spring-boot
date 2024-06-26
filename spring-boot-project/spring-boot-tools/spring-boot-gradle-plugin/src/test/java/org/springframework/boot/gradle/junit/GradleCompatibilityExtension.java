@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.gradle.junit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.gradle.util.GradleVersion;
@@ -47,10 +49,14 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		Stream<String> gradleVersions = GRADLE_VERSIONS.stream();
+		GradleVersion highestVersion = GRADLE_VERSIONS.stream()
+			.map(GradleVersion::version)
+			.collect(Collectors.toCollection(TreeSet::new))
+			.last();
 		GradleCompatibility gradleCompatibility = AnnotationUtils
 			.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class)
 			.get();
+		Stream<String> gradleVersions = GRADLE_VERSIONS.stream();
 		if (StringUtils.hasText(gradleCompatibility.versionsLessThan())) {
 			GradleVersion upperExclusive = GradleVersion.version(gradleCompatibility.versionsLessThan());
 			gradleVersions = gradleVersions
@@ -60,7 +66,7 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 			List<TestTemplateInvocationContext> invocationContexts = new ArrayList<>();
 			invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, false));
 			boolean configurationCache = gradleCompatibility.configurationCache();
-			if (configurationCache) {
+			if (configurationCache && GradleVersion.version(version).equals(highestVersion)) {
 				invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, true));
 			}
 			return invocationContexts.stream();

@@ -18,7 +18,7 @@ package org.springframework.boot.testcontainers.properties;
 
 import java.util.function.Supplier;
 
-import org.springframework.context.ApplicationEvent;
+import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 
 /**
  * Event published just before the {@link Supplier value supplier} of a
@@ -26,8 +26,11 @@ import org.springframework.context.ApplicationEvent;
  *
  * @author Phillip Webb
  * @since 3.2.2
+ * @deprecated since 3.2.6 for removal in 3.4.0 in favor of
+ * {@link BeforeTestcontainerUsedEvent}
  */
-public class BeforeTestcontainersPropertySuppliedEvent extends ApplicationEvent {
+@Deprecated(since = "3.2.6", forRemoval = true)
+public class BeforeTestcontainersPropertySuppliedEvent extends BeforeTestcontainerUsedEvent {
 
 	private final String propertyName;
 

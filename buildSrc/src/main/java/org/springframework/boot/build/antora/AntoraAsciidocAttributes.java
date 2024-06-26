@@ -56,7 +56,7 @@ public class AntoraAsciidocAttributes {
 	public AntoraAsciidocAttributes(Project project, BomExtension dependencyBom,
 			Map<String, String> dependencyVersions) {
 		this.version = String.valueOf(project.getVersion());
-		this.latestVersion = Boolean.valueOf(String.valueOf(project.findProperty("latestVersion")));
+		this.latestVersion = Boolean.parseBoolean(String.valueOf(project.findProperty("latestVersion")));
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
 		this.dependencyVersions = dependencyVersions;
@@ -126,7 +126,7 @@ public class AntoraAsciidocAttributes {
 
 	private void addSpringDataDependencyVersion(Map<String, String> attributes, String name, String artifactId) {
 		String version = this.dependencyVersions.get("org.springframework.data:" + artifactId);
-		Assert.notNull(version, () -> "No version found for Spring Data artificat " + artifactId);
+		Assert.notNull(version, () -> "No version found for Spring Data artifact " + artifactId);
 		attributes.put("version-" + name, version);
 	}
 

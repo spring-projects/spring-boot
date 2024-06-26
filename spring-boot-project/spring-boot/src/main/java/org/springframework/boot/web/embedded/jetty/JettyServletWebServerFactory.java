@@ -17,27 +17,18 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URL;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventListener;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Spliterator;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import jakarta.servlet.http.Cookie;
 import org.eclipse.jetty.ee10.servlet.ErrorHandler;
@@ -79,7 +70,6 @@ import org.eclipse.jetty.session.DefaultSessionCache;
 import org.eclipse.jetty.session.FileSessionDataStore;
 import org.eclipse.jetty.session.SessionConfig;
 import org.eclipse.jetty.util.Callback;
-import org.eclipse.jetty.util.resource.CombinedResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.eclipse.jetty.util.resource.URLResourceFactory;
@@ -592,154 +582,6 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 				}
 			}
 		}
-	}
-
-	private static final class LoaderHidingResource extends Resource {
-
-		private static final String LOADER_RESOURCE_PATH_PREFIX = "/org/springframework/boot/";
-
-		private final Resource base;
-
-		private final Resource delegate;
-
-		private LoaderHidingResource(Resource base, Resource delegate) {
-			this.base = base;
-			this.delegate = delegate;
-		}
-
-		@Override
-		public void forEach(Consumer<? super Resource> action) {
-			this.delegate.forEach(action);
-		}
-
-		@Override
-		public Path getPath() {
-			return this.delegate.getPath();
-		}
-
-		@Override
-		public boolean isContainedIn(Resource r) {
-			return this.delegate.isContainedIn(r);
-		}
-
-		@Override
-		public Iterator<Resource> iterator() {
-			if (this.delegate instanceof CombinedResource) {
-				return list().iterator();
-			}
-			return List.<Resource>of(this).iterator();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return this.delegate.equals(obj);
-		}
-
-		@Override
-		public int hashCode() {
-			return this.delegate.hashCode();
-		}
-
-		@Override
-		public boolean exists() {
-			return this.delegate.exists();
-		}
-
-		@Override
-		public Spliterator<Resource> spliterator() {
-			return this.delegate.spliterator();
-		}
-
-		@Override
-		public boolean isDirectory() {
-			return this.delegate.isDirectory();
-		}
-
-		@Override
-		public boolean isReadable() {
-			return this.delegate.isReadable();
-		}
-
-		@Override
-		public Instant lastModified() {
-			return this.delegate.lastModified();
-		}
-
-		@Override
-		public long length() {
-			return this.delegate.length();
-		}
-
-		@Override
-		public URI getURI() {
-			return this.delegate.getURI();
-		}
-
-		@Override
-		public String getName() {
-			return this.delegate.getName();
-		}
-
-		@Override
-		public String getFileName() {
-			return this.delegate.getFileName();
-		}
-
-		@Override
-		public InputStream newInputStream() throws IOException {
-			return this.delegate.newInputStream();
-		}
-
-		@Override
-		@SuppressWarnings({ "deprecation", "removal" })
-		public ReadableByteChannel newReadableByteChannel() throws IOException {
-			return this.delegate.newReadableByteChannel();
-		}
-
-		@Override
-		public List<Resource> list() {
-			return this.delegate.list().stream().filter(this::nonLoaderResource).toList();
-		}
-
-		private boolean nonLoaderResource(Resource resource) {
-			Path prefix = this.base.getPath().resolve(Path.of("org", "springframework", "boot"));
-			return !resource.getPath().startsWith(prefix);
-		}
-
-		@Override
-		public Resource resolve(String subUriPath) {
-			if (subUriPath.startsWith(LOADER_RESOURCE_PATH_PREFIX)) {
-				return null;
-			}
-			Resource resolved = this.delegate.resolve(subUriPath);
-			return (resolved != null) ? new LoaderHidingResource(this.base, resolved) : null;
-		}
-
-		@Override
-		public boolean isAlias() {
-			return this.delegate.isAlias();
-		}
-
-		@Override
-		public URI getRealURI() {
-			return this.delegate.getRealURI();
-		}
-
-		@Override
-		public void copyTo(Path destination) throws IOException {
-			this.delegate.copyTo(destination);
-		}
-
-		@Override
-		public Collection<Resource> getAllResources() {
-			return this.delegate.getAllResources().stream().filter(this::nonLoaderResource).toList();
-		}
-
-		@Override
-		public String toString() {
-			return this.delegate.toString();
-		}
-
 	}
 
 	/**

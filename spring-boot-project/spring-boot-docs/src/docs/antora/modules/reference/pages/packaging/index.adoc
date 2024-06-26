@@ -1,0 +1,7 @@
+[[packaging]]
+= Packaging Spring Boot Applications
+
+Spring Boot supports several technologies for optimizing applications for deployment, including xref:packaging/native-image/index.adoc[GraalVM native images], xref:packaging/class-data-sharing.adoc[Class Data Sharing], and xref:packaging/checkpoint-restore.adoc[Checkpoint and Restore].
+
+Spring Boot applications can be packaged in Docker containers using techniques described in xref:packaging/container-images/index.adoc[Container Images].
+

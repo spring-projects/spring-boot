@@ -16,11 +16,9 @@
 
 package org.springframework.boot.docker.compose.service.connection.activemq;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,16 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  */
-class ActiveMQClassicDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class ActiveMQClassicDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	ActiveMQClassicDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("activemq-classic-compose.yaml", DockerImageNames.activeMqClassic());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		ActiveMQConnectionDetails connectionDetails = run(ActiveMQConnectionDetails.class);
+	@DockerComposeTest(composeFile = "activemq-classic-compose.yaml", image = TestImage.ACTIVE_MQ_CLASSIC)
+	void runCreatesConnectionDetails(ActiveMQConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getBrokerUrl()).isNotNull().startsWith("tcp://");
 		assertThat(connectionDetails.getUser()).isEqualTo("root");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -71,7 +72,7 @@ public class ContainerConfig {
 		}
 		ArrayNode bindsNode = hostConfigNode.putArray("Binds");
 		bindings.forEach((binding) -> bindsNode.add(binding.toString()));
-		if (securityOptions != null && !securityOptions.isEmpty()) {
+		if (!CollectionUtils.isEmpty(securityOptions)) {
 			ArrayNode securityOptsNode = hostConfigNode.putArray("SecurityOpt");
 			securityOptions.forEach(securityOptsNode::add);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ package org.springframework.boot.docker.compose.service.connection.sqlserver;
 
 import java.sql.Driver;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.ClassUtils;
@@ -39,19 +38,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The SQL server image has no ARM support")
-class SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mssqlserver-compose.yaml", DockerImageNames.sqlserver());
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() throws ClassNotFoundException, LinkageError {
-		JdbcConnectionDetails connectionDetails = run(JdbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mssqlserver-compose.yaml", image = TestImage.SQL_SERVER)
+	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase(JdbcConnectionDetails connectionDetails)
+			throws ClassNotFoundException, LinkageError {
 		assertThat(connectionDetails.getUsername()).isEqualTo("SA");
 		assertThat(connectionDetails.getPassword()).isEqualTo("verYs3cret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:sqlserver://");
+		checkDatabaseAccess(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "mssqlserver-with-jdbc-parameters-compose.yaml", image = TestImage.SQL_SERVER)
+	void runWithJdbcParametersCreatesConnectionDetailsThatCanBeUsedToAccessDatabase(
+			JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
+		assertThat(connectionDetails.getUsername()).isEqualTo("SA");
+		assertThat(connectionDetails.getPassword()).isEqualTo("verYs3cret");
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:sqlserver://")
+			.contains(";sendStringParametersAsUnicode=false;");
+		checkDatabaseAccess(connectionDetails);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void checkDatabaseAccess(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
 		dataSource.setUsername(connectionDetails.getUsername());

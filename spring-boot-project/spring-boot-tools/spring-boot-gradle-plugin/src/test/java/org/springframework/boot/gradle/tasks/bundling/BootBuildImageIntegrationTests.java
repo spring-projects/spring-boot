@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.FilePermissions;
 import org.springframework.boot.gradle.junit.GradleCompatibility;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -145,9 +145,8 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT",
-				"--imageName=example/test-image-cmd",
-				"--builder=projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2",
-				"--runImage=projects.registry.vmware.com/springboot/run:tiny-cnb", "--createdDate=2020-07-01T12:34:56Z",
+				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1",
+				"--runImage=paketobuildpacks/run-jammy-tiny", "--createdDate=2020-07-01T12:34:56Z",
 				"--applicationDirectory=/application");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-cmd");
@@ -317,8 +316,17 @@ class BootBuildImageIntegrationTests {
 		Path launchCachePath = Paths.get(tempDir, "junit-image-cache-" + projectName + "-launch");
 		assertThat(buildCachePath).exists().isDirectory();
 		assertThat(launchCachePath).exists().isDirectory();
-		FileSystemUtils.deleteRecursively(buildCachePath);
-		FileSystemUtils.deleteRecursively(launchCachePath);
+		cleanupCache(buildCachePath);
+		cleanupCache(launchCachePath);
+	}
+
+	private static void cleanupCache(Path buildCachePath) {
+		try {
+			FileSystemUtils.deleteRecursively(buildCachePath);
+		}
+		catch (Exception ex) {
+			// ignore
+		}
 	}
 
 	@TestTemplate
@@ -480,14 +488,14 @@ class BootBuildImageIntegrationTests {
 		Files.createDirectories(binDir.toPath(), dirAttribute);
 		File descriptor = new File(buildpackDir, "buildpack.toml");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(descriptor))) {
-			writer.println("api = \"0.2\"");
+			writer.println("api = \"0.10\"");
 			writer.println("[buildpack]");
 			writer.println("id = \"example/hello-world\"");
 			writer.println("version = \"0.0.1\"");
 			writer.println("name = \"Hello World Buildpack\"");
 			writer.println("homepage = \"https://github.com/buildpacks/samples/tree/main/buildpacks/hello-world\"");
 			writer.println("[[stacks]]\n");
-			writer.println("id = \"io.buildpacks.stacks.bionic\"");
+			writer.println("id = \"*\"");
 		}
 		File detect = Files.createFile(Paths.get(binDir.getAbsolutePath(), "detect"), execFileAttribute).toFile();
 		try (PrintWriter writer = new PrintWriter(new FileWriter(detect))) {

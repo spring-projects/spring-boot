@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.buildpack.platform.build.BuilderMetadata.RunImage;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
@@ -46,6 +47,29 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		BuilderMetadata metadata = BuilderMetadata.fromImage(image);
 		assertThat(metadata.getStack().getRunImage().getImage()).isEqualTo("cloudfoundry/run:base-cnb");
 		assertThat(metadata.getStack().getRunImage().getMirrors()).isEmpty();
+		assertThat(metadata.getRunImages()).isEmpty();
+		assertThat(metadata.getLifecycle().getVersion()).isEqualTo("0.7.2");
+		assertThat(metadata.getLifecycle().getApi().getBuildpack()).isEqualTo("0.2");
+		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.3");
+		assertThat(metadata.getCreatedBy().getName()).isEqualTo("Pack CLI");
+		assertThat(metadata.getCreatedBy().getVersion())
+			.isEqualTo("v0.9.0 (git sha: d42c384a39f367588f2653f2a99702db910e5ad7)");
+		assertThat(metadata.getBuildpacks()).extracting(BuildpackMetadata::getId, BuildpackMetadata::getVersion)
+			.contains(tuple("paketo-buildpacks/java", "4.10.0"))
+			.contains(tuple("paketo-buildpacks/spring-boot", "3.5.0"))
+			.contains(tuple("paketo-buildpacks/executable-jar", "3.1.3"))
+			.contains(tuple("paketo-buildpacks/graalvm", "4.1.0"))
+			.contains(tuple("paketo-buildpacks/java-native-image", "4.7.0"))
+			.contains(tuple("paketo-buildpacks/spring-boot-native-image", "2.0.1"))
+			.contains(tuple("paketo-buildpacks/bellsoft-liberica", "6.2.0"));
+	}
+
+	@Test
+	void fromImageWithoutStackLoadsMetadata() throws IOException {
+		Image image = Image.of(getContent("image-with-empty-stack.json"));
+		BuilderMetadata metadata = BuilderMetadata.fromImage(image);
+		assertThat(metadata.getRunImages()).extracting(RunImage::getImage, RunImage::getMirrors)
+			.contains(tuple("cloudfoundry/run:base-cnb", Collections.emptyList()));
 		assertThat(metadata.getLifecycle().getVersion()).isEqualTo("0.7.2");
 		assertThat(metadata.getLifecycle().getApi().getBuildpack()).isEqualTo("0.2");
 		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.3");

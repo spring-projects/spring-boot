@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,6 +113,13 @@ public interface BuildLog {
 	 * @param tag the tag reference
 	 */
 	void taggedImage(ImageReference tag);
+
+	/**
+	 * Log that a cache cleanup step was not completed successfully.
+	 * @param cache the cache
+	 * @param exception any exception that caused the failure
+	 */
+	void failedCleaningWorkDir(Cache cache, Exception exception);
 
 	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.

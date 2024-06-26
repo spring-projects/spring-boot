@@ -80,7 +80,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getCron()).hasSize(1);
 			CronTaskDescriptor description = (CronTaskDescriptor) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/6 1/1 * ?");
-			assertThat(description.getRunnable().getTarget()).isEqualTo(CronTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(CronTriggerRunnable.class.getName());
 		});
 	}
 
@@ -109,7 +109,7 @@ class ScheduledTasksEndpointTests {
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2000);
 			assertThat(description.getInterval()).isEqualTo(1000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedDelayTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedDelayTriggerRunnable.class.getName());
 		});
 	}
 
@@ -123,7 +123,7 @@ class ScheduledTasksEndpointTests {
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(0);
 			assertThat(description.getInterval()).isEqualTo(1000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedDelayTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedDelayTriggerRunnable.class.getName());
 		});
 	}
 
@@ -152,7 +152,7 @@ class ScheduledTasksEndpointTests {
 			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(3000);
 			assertThat(description.getInterval()).isEqualTo(2000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedRateTriggerRunnable.class.getName());
 		});
 	}
 
@@ -166,7 +166,7 @@ class ScheduledTasksEndpointTests {
 			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(0);
 			assertThat(description.getInterval()).isEqualTo(2000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedRateTriggerRunnable.class.getName());
 		});
 	}
 
@@ -178,7 +178,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).hasSize(1);
 			CustomTriggerTaskDescriptor description = (CustomTriggerTaskDescriptor) tasks.getCustom().get(0);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(CustomTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(CustomTriggerRunnable.class.getName());
 			assertThat(description.getTrigger()).isEqualTo(CustomTriggerTask.trigger.toString());
 		});
 	}

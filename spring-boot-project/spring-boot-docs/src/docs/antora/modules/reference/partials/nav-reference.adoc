@@ -63,10 +63,18 @@
 *** xref:reference:testing/testcontainers.adoc[]
 *** xref:reference:testing/test-utilities.adoc[]
 
-** xref:reference:container-images/index.adoc[]
-*** xref:reference:container-images/efficient-images.adoc[]
-*** xref:reference:container-images/dockerfiles.adoc[]
-*** xref:reference:container-images/cloud-native-buildpacks.adoc[]
+** xref:reference:packaging/index.adoc[]
+*** xref:reference:packaging/efficient.adoc[]
+*** xref:reference:packaging/class-data-sharing.adoc[]
+*** xref:reference:packaging/aot.adoc[]
+*** xref:reference:packaging/native-image/index.adoc[]
+**** xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[]
+**** xref:reference:packaging/native-image/advanced-topics.adoc[]
+*** xref:reference:packaging/checkpoint-restore.adoc[]
+*** xref:reference:packaging/container-images/index.adoc[]
+**** xref:reference:packaging/container-images/efficient-images.adoc[]
+**** xref:reference:packaging/container-images/dockerfiles.adoc[]
+**** xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[]
 
 ** xref:reference:actuator/index.adoc[]
 *** xref:reference:actuator/enabling.adoc[]
@@ -82,14 +90,4 @@
 *** xref:reference:actuator/process-monitoring.adoc[]
 *** xref:reference:actuator/cloud-foundry.adoc[]
 
-** xref:reference:deployment/index.adoc[]
-*** xref:reference:deployment/cloud.adoc[]
-*** xref:reference:deployment/installing.adoc[]
-*** xref:reference:deployment/efficient.adoc[]
-
-** xref:reference:native-image/index.adoc[]
-*** xref:reference:native-image/introducing-graalvm-native-images.adoc[]
-*** xref:reference:native-image/developing-your-first-application.adoc[]
-*** xref:reference:native-image/testing-native-applications.adoc[]
-*** xref:reference:native-image/advanced-topics.adoc[]
 

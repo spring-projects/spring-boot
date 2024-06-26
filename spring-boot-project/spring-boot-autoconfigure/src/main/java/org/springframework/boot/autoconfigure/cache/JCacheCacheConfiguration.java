@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	private CacheManager createCacheManager(CacheProperties cacheProperties,
 			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers) throws IOException {
 		CachingProvider cachingProvider = getCachingProvider(cacheProperties.getJcache().getProvider());
-		Properties properties = createCacheManagerProperties(cachePropertiesCustomizers, cacheProperties);
+		Properties properties = createCacheManagerProperties(cachePropertiesCustomizers);
 		Resource configLocation = cacheProperties.resolveConfigLocation(cacheProperties.getJcache().getConfig());
 		if (configLocation != null) {
 			return cachingProvider.getCacheManager(configLocation.getURI(), this.beanClassLoader, properties);
@@ -111,10 +111,9 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 	}
 
 	private Properties createCacheManagerProperties(
-			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers, CacheProperties cacheProperties) {
+			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers) {
 		Properties properties = new Properties();
-		cachePropertiesCustomizers.orderedStream()
-			.forEach((customizer) -> customizer.customize(cacheProperties, properties));
+		cachePropertiesCustomizers.orderedStream().forEach((customizer) -> customizer.customize(properties));
 		return properties;
 	}
 

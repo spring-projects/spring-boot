@@ -4,9 +4,15 @@
 Graceful shutdown is supported with all four embedded web servers (Jetty, Reactor Netty, Tomcat, and Undertow) and with both reactive and servlet-based web applications.
 It occurs as part of closing the application context and is performed in the earliest phase of stopping `SmartLifecycle` beans.
 This stop processing uses a timeout which provides a grace period during which existing requests will be allowed to complete but no new requests will be permitted.
+
 The exact way in which new requests are not permitted varies depending on the web server that is being used.
-Jetty, Reactor Netty, and Tomcat will stop accepting requests at the network layer.
-Undertow will accept requests but respond immediately with a service unavailable (503) response.
+Implementations may stop accepting requests at the network layer, or they may return a response with a specific HTTP status code or HTTP header.
+The use of persistent connections can also change the way that requests stop being accepted.
+
+TIP: To learn about more the specific method used with your web server, see the `shutDownGracefully` javadoc for xref:api:java/org/springframework/boot/web/embedded/tomcat/TomcatWebServer.html#shutDownGracefully(org.springframework.boot.web.server.GracefulShutdownCallback)[TomcatWebServer], xref:api:java/org/springframework/boot/web/embedded/netty/NettyWebServer.html#shutDownGracefully(org.springframework.boot.web.server.GracefulShutdownCallback)[NettyWebServer], xref:api:java/org/springframework/boot/web/embedded/jetty/JettyWebServer.html#shutDownGracefully(org.springframework.boot.web.server.GracefulShutdownCallback)[JettyWebServer] or xref:api:java/org/springframework/boot/web/embedded/undertow/UndertowWebServer.html#shutDownGracefully(org.springframework.boot.web.server.GracefulShutdownCallback)[UndertowWebServer].
+
+Jetty, Reactor Netty, and Tomcat will stop accepting new requests at the network layer.
+Undertow will accept new connections but respond immediately with a service unavailable (503) response.
 
 NOTE: Graceful shutdown with Tomcat requires Tomcat 9.0.33 or later.
 

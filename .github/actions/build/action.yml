@@ -19,7 +19,7 @@ inputs:
 outputs:
   build-scan-url:
     description: 'The URL, if any, of the build scan produced by the build'
-    value: ${{ (inputs.publish == 'true' && steps.build-and-publish.outputs.build-scan-url) || steps.build.outputs.build-scan-url }}
+    value: ${{ (inputs.publish == 'true' && steps.publish.outputs.build-scan-url) || steps.build.outputs.build-scan-url }}
   version:
     description: 'The version that was built'
     value: ${{ steps.read-version.outputs.version }}
@@ -29,22 +29,19 @@ runs:
     - name: Prepare Gradle Build
       uses: ./.github/actions/prepare-gradle-build
       with:
+        develocity-access-key: ${{ inputs.develocity-access-key }}
         java-version: ${{ inputs.java-version }}
         java-toolchain: ${{ inputs.java-toolchain }}
     - name: Build
       id: build
       if: ${{ inputs.publish == 'false' }}
       shell: bash
-      env:
-        DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
       run: ./gradlew build
-    - name: Build and Publish
-      id: build-and-publish
+    - name: Publish
+      id: publish
       if: ${{ inputs.publish == 'true' }}
       shell: bash
-      env:
-        DEVELOCITY_ACCESS_KEY: ${{ inputs.develocity-access-key }}
-      run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository build publishAllPublicationsToDeploymentRepository
+      run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository ${{ !startsWith(github.event.head_commit.message, 'Next development version') && 'build' || '' }} publishAllPublicationsToDeploymentRepository
     - name: Read Version From gradle.properties
       id: read-version
       shell: bash

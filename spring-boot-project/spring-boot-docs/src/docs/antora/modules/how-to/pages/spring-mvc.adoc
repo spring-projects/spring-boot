@@ -140,7 +140,7 @@ It has some useful methods to access the default and user-enhanced message conve
 
 As in normal MVC usage, any `WebMvcConfigurer` beans that you provide can also contribute converters by overriding the `configureMessageConverters` method.
 However, unlike with normal MVC, you can supply only additional converters that you need (because Spring Boot uses the same mechanism to contribute its defaults).
-Finally, if you opt out of the Spring Boot default MVC configuration by providing your own `@EnableWebMvc` configuration, you can take control completely and do everything manually by using `getMessageConverters` from `WebMvcConfigurationSupport`.
+Finally, if you opt out of the default Spring Boot MVC configuration by providing your own `@EnableWebMvc` configuration, you can take control completely and do everything manually by using `getMessageConverters` from `WebMvcConfigurationSupport`.
 
 See the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
@@ -158,7 +158,7 @@ The multipart support is helpful when you want to receive multipart encoded file
 
 See the {code-spring-boot-autoconfigure-src}/web/servlet/MultipartAutoConfiguration.java[`MultipartAutoConfiguration`] source for more details.
 
-NOTE: It is recommended to use the container's built-in support for multipart uploads rather than introducing an additional dependency such as Apache Commons File Upload.
+NOTE: It is recommended to use the container's built-in support for multipart uploads rather than introduce an additional dependency such as Apache Commons File Upload.
 
 
 

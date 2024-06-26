@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 package org.springframework.boot.docker.compose.service.connection.mongo;
 
 import com.mongodb.ConnectionString;
-import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,15 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Scott Frederick
  */
-class MongoDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class MongoDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	MongoDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mongo-compose.yaml", DockerImageNames.mongo());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		MongoConnectionDetails connectionDetails = run(MongoConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mongo-compose.yaml", image = TestImage.MONGODB)
+	void runCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
 		ConnectionString connectionString = connectionDetails.getConnectionString();
 		assertThat(connectionString.getCredential().getUserName()).isEqualTo("root");
 		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());

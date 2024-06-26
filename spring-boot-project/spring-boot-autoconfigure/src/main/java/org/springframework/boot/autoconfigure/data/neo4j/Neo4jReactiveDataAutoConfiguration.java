@@ -30,7 +30,6 @@ import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jOperations;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
-import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
 import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension;
 import org.springframework.transaction.ReactiveTransactionManager;
 
@@ -67,13 +66,6 @@ public class Neo4jReactiveDataAutoConfiguration {
 	public ReactiveNeo4jTemplate reactiveNeo4jTemplate(ReactiveNeo4jClient neo4jClient,
 			Neo4jMappingContext neo4jMappingContext) {
 		return new ReactiveNeo4jTemplate(neo4jClient, neo4jMappingContext);
-	}
-
-	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
-	@ConditionalOnMissingBean(ReactiveTransactionManager.class)
-	ReactiveNeo4jTransactionManager rectiveNeo4jTransactionManager(Driver driver,
-			ReactiveDatabaseSelectionProvider databaseNameProvider) {
-		return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
 	}
 
 }

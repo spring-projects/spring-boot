@@ -16,9 +16,9 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.springmvctests
 
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.HtmlPage
 import org.assertj.core.api.Assertions.assertThat
+import org.htmlunit.WebClient
+import org.htmlunit.html.HtmlPage
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired

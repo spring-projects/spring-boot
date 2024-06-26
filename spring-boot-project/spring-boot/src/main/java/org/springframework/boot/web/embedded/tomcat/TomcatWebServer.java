@@ -441,6 +441,14 @@ public class TomcatWebServer implements WebServer {
 		return this.tomcat;
 	}
 
+	/**
+	 * Initiates a graceful shutdown of the Tomcat web server. Handling of new requests is
+	 * prevented and the given {@code callback} is invoked at the end of the attempt. The
+	 * attempt can be explicitly ended by invoking {@link #stop}.
+	 * <p>
+	 * Once shutdown has been initiated Tomcat will reject any new connections. Requests
+	 * on existing idle connections will also be rejected.
+	 */
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {

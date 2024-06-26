@@ -26,6 +26,7 @@ import com.sun.jna.Platform;
 import org.apache.hc.client5.http.DnsResolver;
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
@@ -39,8 +40,8 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
-import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
+import org.springframework.boot.buildpack.platform.socket.UnixDomainSocket;
 
 /**
  * {@link HttpClientTransport} that talks to local Docker.
@@ -73,8 +74,13 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalConnectionManager extends BasicHttpClientConnectionManager {
 
+		private static final ConnectionConfig CONNECTION_CONFIG = ConnectionConfig.copy(ConnectionConfig.DEFAULT)
+			.setValidateAfterInactivity(TimeValue.NEG_ONE_MILLISECOND)
+			.build();
+
 		LocalConnectionManager(String host) {
 			super(getRegistry(host), null, null, new LocalDnsResolver());
+			setConnectionConfig(CONNECTION_CONFIG);
 		}
 
 		private static Registry<ConnectionSocketFactory> getRegistry(String host) {
@@ -110,6 +116,8 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalConnectionSocketFactory implements ConnectionSocketFactory {
 
+		private static final String NPIPE_PREFIX = "npipe://";
+
 		private final String host;
 
 		LocalConnectionSocketFactory(String host) {
@@ -118,10 +126,10 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 		@Override
 		public Socket createSocket(HttpContext context) throws IOException {
-			if (Platform.isWindows()) {
-				return NamedPipeSocket.get(this.host);
+			if (this.host.startsWith(NPIPE_PREFIX)) {
+				return NamedPipeSocket.get(this.host.substring(NPIPE_PREFIX.length()));
 			}
-			return DomainSocket.get(this.host);
+			return (!Platform.isWindows()) ? UnixDomainSocket.get(this.host) : NamedPipeSocket.get(this.host);
 		}
 
 		@Override

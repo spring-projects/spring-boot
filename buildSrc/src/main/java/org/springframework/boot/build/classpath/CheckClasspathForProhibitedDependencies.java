@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build.classpath;
 
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,11 @@ import org.gradle.api.tasks.TaskAction;
  * @author Andy Wilkinson
  */
 public class CheckClasspathForProhibitedDependencies extends DefaultTask {
+
+	private static final Set<String> PROHIBITED_GROUPS = Set.of("org.codehaus.groovy", "org.eclipse.jetty.toolchain",
+			"commons-logging", "org.apache.geronimo.specs", "com.sun.activation");
+
+	private static final Set<String> PERMITTED_JAVAX_GROUPS = Set.of("javax.batch", "javax.cache", "javax.money");
 
 	private Configuration classpath;
 
@@ -69,38 +75,20 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 	}
 
 	private boolean prohibited(ModuleVersionIdentifier id) {
-		String group = id.getGroup();
-		if (group.equals("javax.batch")) {
-			return false;
-		}
-		if (group.equals("javax.cache")) {
-			return false;
-		}
-		if (group.equals("javax.money")) {
-			return false;
-		}
-		if (group.equals("org.codehaus.groovy")) {
-			return true;
-		}
-		if (group.equals("org.eclipse.jetty.toolchain")) {
-			return true;
-		}
-		if (group.startsWith("javax")) {
-			return true;
-		}
-		if (group.equals("commons-logging")) {
-			return true;
-		}
-		if (group.equals("org.slf4j") && id.getName().equals("jcl-over-slf4j")) {
-			return true;
-		}
-		if (group.startsWith("org.jboss.spec")) {
-			return true;
-		}
-		if (group.equals("org.apache.geronimo.specs")) {
-			return true;
-		}
-		return group.equals("com.sun.activation");
+		return PROHIBITED_GROUPS.contains(id.getGroup()) || prohibitedJavax(id) || prohibitedSlf4j(id)
+				|| prohibitedJbossSpec(id);
+	}
+
+	private boolean prohibitedSlf4j(ModuleVersionIdentifier id) {
+		return id.getGroup().equals("org.slf4j") && id.getName().equals("jcl-over-slf4j");
+	}
+
+	private boolean prohibitedJbossSpec(ModuleVersionIdentifier id) {
+		return id.getGroup().startsWith("org.jboss.spec");
+	}
+
+	private boolean prohibitedJavax(ModuleVersionIdentifier id) {
+		return id.getGroup().startsWith("javax.") && !PERMITTED_JAVAX_GROUPS.contains(id.getGroup());
 	}
 
 }

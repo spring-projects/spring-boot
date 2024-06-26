@@ -91,12 +91,15 @@ Sensible defaults are included out of the box.
 For example, objects can be automatically converted to JSON (by using the Jackson library) or XML (by using the Jackson XML extension, if available, or by using JAXB if the Jackson XML extension is not available).
 By default, strings are encoded in `UTF-8`.
 
+Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
+You can also override default converters in the same way.
+
 If you need to add or customize converters, you can use Spring Boot's `HttpMessageConverters` class, as shown in the following listing:
 
 include-code::MyHttpMessageConvertersConfiguration[]
 
-Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
-You can also override default converters in the same way.
+For further control, you can also sub-class `HttpMessageConverters` and override its `postProcessConverters` and/or `postProcessPartConverters` methods.
+This can be useful when you want to re-order or remove some of the converters that Spring MVC configures by default.
 
 
 
@@ -475,7 +478,7 @@ To get started with Jersey, include the `spring-boot-starter-jersey` as a depend
 include-code::MyJerseyConfig[]
 
 WARNING: Jersey's support for scanning executable archives is rather limited.
-For example, it cannot scan for endpoints in a package found in a xref:deployment/installing.adoc[fully executable jar file] or in `WEB-INF/classes` when running an executable war file.
+For example, it cannot scan for endpoints in a package found in a xref:how-to:deployment/installing.adoc[fully executable jar file] or in `WEB-INF/classes` when running an executable war file.
 To avoid this limitation, the `packages` method should not be used, and endpoints should be registered individually by using the `register` method, as shown in the preceding example.
 
 For more advanced customizations, you can also register an arbitrary number of beans that implement `ResourceConfigCustomizer`.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 package smoketest.data.cassandra;
 
+import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
-
-import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 
 /**
  * A {@link CassandraContainer} for Cassandra with SSL configuration.
  *
  * @author Scott Frederick
  */
-class SecureCassandraContainer extends CassandraContainer {
+class SecureCassandraContainer extends CassandraContainer<SecureCassandraContainer> {
 
-	SecureCassandraContainer() {
+	SecureCassandraContainer(DockerImageName dockerImageName) {
+		super(dockerImageName);
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/cassandra.yaml"),
 				"/etc/cassandra/cassandra.yaml");
 		withCopyFileToContainer(MountableFile.forClasspathResource("/ssl/test-server.p12"),

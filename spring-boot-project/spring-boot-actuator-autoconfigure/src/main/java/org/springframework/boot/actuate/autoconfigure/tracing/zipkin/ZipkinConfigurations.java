@@ -187,7 +187,7 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(BytesMessageSender.class)
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracing("zipkin")
 		AsyncZipkinSpanHandler asyncZipkinSpanHandler(BytesMessageSender sender,
 				BytesEncoder<MutableSpan> mutableSpanBytesEncoder) {
 			return AsyncZipkinSpanHandler.newBuilder(sender).build(mutableSpanBytesEncoder);
@@ -208,7 +208,7 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(BytesMessageSender.class)
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracing("zipkin")
 		ZipkinSpanExporter zipkinSpanExporter(BytesMessageSender sender, BytesEncoder<Span> spanBytesEncoder) {
 			return ZipkinSpanExporter.builder().setSender(sender).setEncoder(spanBytesEncoder).build();
 		}

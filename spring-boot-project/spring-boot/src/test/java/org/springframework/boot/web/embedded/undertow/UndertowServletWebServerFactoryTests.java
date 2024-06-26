@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ import io.undertow.Undertow.Builder;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.ServletContainer;
 import jakarta.servlet.ServletRegistration.Dynamic;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;
@@ -213,17 +215,44 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	}
 
 	@Test
+	void whenServerIsShuttingDownARequestOnAnIdleConnectionAreRejectedWithServiceUnavailable() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory.getWebServer((context) -> {
+			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
+			registration.addMapping("/blocking");
+			registration.setAsyncSupported(true);
+		});
+		HttpClient httpClient = HttpClients.createMinimal();
+		this.webServer.start();
+		int port = this.webServer.getPort();
+		Future<Object> keepAliveRequest = initiateGetRequest(httpClient, port, "/blocking");
+		blockingServlet.awaitQueue();
+		blockingServlet.admitOne();
+		assertThat(keepAliveRequest.get()).isInstanceOf(HttpResponse.class);
+		Future<Object> request = initiateGetRequest(port, "/blocking");
+		blockingServlet.awaitQueue();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		HttpResponse idleConnectionResponse = (HttpResponse) initiateGetRequest(httpClient, port, "/").get();
+		assertThat(idleConnectionResponse.getCode()).isEqualTo(503);
+		blockingServlet.admitOne();
+		Object response = request.get();
+		assertThat(response).isInstanceOf(HttpResponse.class);
+		this.webServer.stop();
+	}
+
+	@Test
 	@Override
 	@Disabled("Restart after stop is not supported with Undertow")
 	protected void restartAfterStop() {
-
 	}
 
 	@Test
 	@Override
 	@Disabled("Undertow's architecture prevents separating stop and destroy")
 	protected void servletContextListenerContextDestroyedIsNotCalledWhenContainerIsStopped() {
-
 	}
 
 	private void testAccessLog(String prefix, String suffix, String expectedFile)

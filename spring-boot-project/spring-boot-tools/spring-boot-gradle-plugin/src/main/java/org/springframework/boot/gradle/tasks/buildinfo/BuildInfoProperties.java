@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 
-import org.springframework.util.function.SingletonSupplier;
-
 /**
  * The properties that are written into the {@code build-info.properties} file.
  *
@@ -49,7 +47,7 @@ public abstract class BuildInfoProperties implements Serializable {
 
 	private final SetProperty<String> excludes;
 
-	private final Supplier<String> creationTime = SingletonSupplier.of(new CurrentIsoInstantSupplier());
+	private final Supplier<String> creationTime = () -> DateTimeFormatter.ISO_INSTANT.format(Instant.now());
 
 	@Inject
 	public BuildInfoProperties(Project project, SetProperty<String> excludes) {
@@ -170,15 +168,6 @@ public abstract class BuildInfoProperties implements Serializable {
 		Set<String> exclusions = this.excludes.getOrElse(Collections.emptySet());
 		input.forEach((key, value) -> output.put(key, (!exclusions.contains(key)) ? value : null));
 		return output;
-	}
-
-	private static final class CurrentIsoInstantSupplier implements Supplier<String> {
-
-		@Override
-		public String get() {
-			return DateTimeFormatter.ISO_INSTANT.format(Instant.now());
-		}
-
 	}
 
 }

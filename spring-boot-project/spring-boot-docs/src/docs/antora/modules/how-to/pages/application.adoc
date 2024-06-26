@@ -44,7 +44,7 @@ When reading the code, remember the following rules of thumb:
 
 * Look for classes called `+*AutoConfiguration+` and read their sources.
   Pay special attention to the `+@Conditional*+` annotations to find out what features they enable and when.
-  Add `--debug` to the command line or a System property `-Ddebug` to get a log on the console of all the auto-configuration decisions that were made in your app.
+  Add `--debug` to the command line or the System property `-Ddebug` to get a log on the console of all the auto-configuration decisions that were made in your app.
   In a running application with actuator enabled, look at the `conditions` endpoint (`/actuator/conditions` or the JMX equivalent) for the same information.
 * Look for classes that are `@ConfigurationProperties` (such as xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`]) and read from there the available external configuration options.
   The `@ConfigurationProperties` annotation has a `name` attribute that acts as a prefix to external properties.
@@ -109,5 +109,5 @@ Not all Spring applications have to be web applications (or web services).
 If you want to execute some code in a `main` method but also bootstrap a Spring application to set up the infrastructure to use, you can use the `SpringApplication` features of Spring Boot.
 A `SpringApplication` changes its `ApplicationContext` class, depending on whether it thinks it needs a web application or not.
 The first thing you can do to help it is to leave server-related dependencies (such as the servlet API) off the classpath.
-If you cannot do that (for example, you run two applications from the same code base) then you can explicitly call `setWebApplicationType(WebApplicationType.NONE)` on your `SpringApplication` instance or set the `applicationContextClass` property (through the Java API or with external properties).
+If you cannot do that (for example, if you run two applications from the same code base) then you can explicitly call `setWebApplicationType(WebApplicationType.NONE)` on your `SpringApplication` instance or set the `applicationContextClass` property (through the Java API or with external properties).
 Application code that you want to run as your business logic can be implemented as a `CommandLineRunner` and dropped into the context as a `@Bean` definition.

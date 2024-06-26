@@ -17,7 +17,7 @@ The following example shows how to define a data source in a bean:
 
 include-code::custom/MyDataSourceConfiguration[]
 
-The following example shows how to define a data source by setting properties:
+The following example shows how to define a data source by setting its properties:
 
 [configprops%novalidate,yaml]
 ----
@@ -31,7 +31,7 @@ app:
 Assuming that `SomeDataSource` has regular JavaBean properties for the URL, the username, and the pool size, these settings are bound automatically before the `DataSource` is made available to other components.
 
 Spring Boot also provides a utility builder class, called `DataSourceBuilder`, that can be used to create one of the standard data sources (if it is on the classpath).
-The builder can detect the one to use based on what is available on the classpath.
+The builder can detect which one to use based on what is available on the classpath.
 It also auto-detects the driver based on the JDBC URL.
 
 The following example shows how to create a data source by using a `DataSourceBuilder`:
@@ -72,7 +72,7 @@ app:
 You can fix that by forcing the connection pool to use and return a dedicated implementation rather than `DataSource`.
 You cannot change the implementation at runtime, but the list of options will be explicit.
 
-The following example shows how create a `HikariDataSource` with `DataSourceBuilder`:
+The following example shows how to create a `HikariDataSource` with `DataSourceBuilder`:
 
 include-code::simple/MyDataSourceConfiguration[]
 
@@ -110,7 +110,7 @@ See "`xref:reference:data/sql.adoc#data.sql.datasource[Configure a DataSource]`"
 [[howto.data-access.configure-two-datasources]]
 == Configure Two DataSources
 
-If you need to configure multiple data sources, you can apply the same tricks that are described in the previous section.
+If you need to configure multiple data sources, you can apply the same tricks that were described in the previous section.
 You must, however, mark one of the `DataSource` instances as `@Primary`, because various auto-configurations down the road expect to be able to get one by type.
 
 If you create your own `DataSource`, the auto-configuration backs off.
@@ -225,7 +225,7 @@ If you use other forms, such as `batchSize` or `batch-size`, Hibernate will not 
 ====
 
 TIP: If you need to apply advanced customization to Hibernate properties, consider registering a `HibernatePropertiesCustomizer` bean that will be invoked prior to creating the `EntityManagerFactory`.
-This takes precedence to anything that is applied by the auto-configuration.
+This takes precedence over anything that is applied by the auto-configuration.
 
 
 
@@ -311,7 +311,7 @@ It scans entities located in the same package as `Order`.
 It is possible to map additional JPA properties using the `app.first.jpa` namespace.
 
 NOTE: When you create a bean for `LocalContainerEntityManagerFactoryBean` yourself, any customization that was applied during the creation of the auto-configured `LocalContainerEntityManagerFactoryBean` is lost.
-For example, in case of Hibernate, any properties under the `spring.jpa.hibernate` prefix will not be automatically applied to your `LocalContainerEntityManagerFactoryBean`.
+For example, in the case of Hibernate, any properties under the `spring.jpa.hibernate` prefix will not be automatically applied to your `LocalContainerEntityManagerFactoryBean`.
 If you were relying on these properties for configuring things like the naming strategy or the DDL mode, you will need to explicitly configure that when creating the `LocalContainerEntityManagerFactoryBean` bean.
 
 You should provide a similar configuration for any additional data sources for which you need JPA access.
@@ -379,7 +379,7 @@ If you need to specify an order, make sure it is higher than 0.
 
 If you want to configure a component that JPA uses, then you need to ensure that the component is initialized before JPA.
 When the component is auto-configured, Spring Boot takes care of this for you.
-For example, when Flyway is auto-configured, Hibernate is configured to depend upon Flyway so that Flyway has a chance to initialize the database before Hibernate tries to use it.
+For example, when Flyway is auto-configured, Hibernate is configured to depend on Flyway so that Flyway has a chance to initialize the database before Hibernate tries to use it.
 
 If you are configuring a component yourself, you can use an `EntityManagerFactoryDependsOnPostProcessor` subclass as a convenient way of setting up the necessary dependencies.
 For example, if you use Hibernate Search with Elasticsearch as its index manager, any `EntityManagerFactory` beans must be configured to depend on the `elasticsearchClient` bean, as shown in the following example:

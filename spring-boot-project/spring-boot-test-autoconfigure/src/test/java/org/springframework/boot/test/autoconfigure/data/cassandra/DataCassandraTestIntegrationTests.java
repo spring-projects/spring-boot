@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.UUID;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -30,7 +31,7 @@ import org.springframework.boot.test.autoconfigure.data.redis.ExampleService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration;
-import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.cassandra.core.CassandraTemplate;
@@ -55,7 +56,7 @@ class DataCassandraTestIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final CassandraContainer cassandra = new CassandraContainer();
+	static final CassandraContainer<?> cassandra = TestImage.container(CassandraContainer.class);
 
 	@Autowired
 	private CassandraTemplate cassandraTemplate;

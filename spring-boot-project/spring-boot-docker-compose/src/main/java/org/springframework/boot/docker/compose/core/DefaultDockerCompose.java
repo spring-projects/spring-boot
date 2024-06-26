@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,22 +48,42 @@ class DefaultDockerCompose implements DockerCompose {
 
 	@Override
 	public void up(LogLevel logLevel) {
-		this.cli.run(new DockerCliCommand.ComposeUp(logLevel));
+		up(logLevel, Collections.emptyList());
+	}
+
+	@Override
+	public void up(LogLevel logLevel, List<String> arguments) {
+		this.cli.run(new DockerCliCommand.ComposeUp(logLevel, arguments));
 	}
 
 	@Override
 	public void down(Duration timeout) {
-		this.cli.run(new DockerCliCommand.ComposeDown(timeout));
+		down(timeout, Collections.emptyList());
+	}
+
+	@Override
+	public void down(Duration timeout, List<String> arguments) {
+		this.cli.run(new DockerCliCommand.ComposeDown(timeout, arguments));
 	}
 
 	@Override
 	public void start(LogLevel logLevel) {
-		this.cli.run(new DockerCliCommand.ComposeStart(logLevel));
+		start(logLevel, Collections.emptyList());
+	}
+
+	@Override
+	public void start(LogLevel logLevel, List<String> arguments) {
+		this.cli.run(new DockerCliCommand.ComposeStart(logLevel, arguments));
 	}
 
 	@Override
 	public void stop(Duration timeout) {
-		this.cli.run(new DockerCliCommand.ComposeStop(timeout));
+		stop(timeout, Collections.emptyList());
+	}
+
+	@Override
+	public void stop(Duration timeout, List<String> arguments) {
+		this.cli.run(new DockerCliCommand.ComposeStop(timeout, arguments));
 	}
 
 	@Override

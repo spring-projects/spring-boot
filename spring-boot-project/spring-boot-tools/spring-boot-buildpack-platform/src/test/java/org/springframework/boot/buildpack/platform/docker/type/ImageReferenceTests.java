@@ -255,7 +255,7 @@ class ImageReferenceTests {
 	void inTaggedFormWhenHasDigestThrowsException() {
 		ImageReference reference = ImageReference
 			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThatIllegalStateException().isThrownBy(() -> reference.inTaggedForm())
+		assertThatIllegalStateException().isThrownBy(reference::inTaggedForm)
 			.withMessage(
 					"Image reference 'docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d' cannot contain a digest");
 	}

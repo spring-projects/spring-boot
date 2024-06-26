@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
  * @author Davin Byeon
+ * @author Moritz Halbritter
  */
 class DataSourceTransactionManagerAutoConfigurationTests {
 
@@ -122,6 +124,12 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 			assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
 				.isSameAs(context.getBean("test1DataSource"));
 		});
+	}
+
+	@Test
+	void shouldNotUseDataSourcePropertiesIfDataSourceIsNotOnTheClasspath() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(DataSource.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(DataSourceProperties.class));
 	}
 
 }

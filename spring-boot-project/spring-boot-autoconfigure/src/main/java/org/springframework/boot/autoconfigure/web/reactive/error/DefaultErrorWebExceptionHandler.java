@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicate;
@@ -91,6 +92,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		SERIES_VIEWS = Collections.unmodifiableMap(views);
 	}
 
+	private static final ErrorAttributeOptions ONLY_STATUS = ErrorAttributeOptions.of(Include.STATUS);
+
 	private final ErrorProperties errorProperties;
 
 	/**
@@ -118,13 +121,13 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorView(ServerRequest request) {
-		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML));
-		int errorStatus = getHttpStatus(error);
-		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
-		return Flux.just(getData(errorStatus).toArray(new String[] {}))
-			.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
+		int status = getHttpStatus(getErrorAttributes(request, ONLY_STATUS));
+		Map<String, Object> errorAttributes = getErrorAttributes(request, MediaType.TEXT_HTML);
+		ServerResponse.BodyBuilder responseBody = ServerResponse.status(status).contentType(TEXT_HTML_UTF8);
+		return Flux.just(getData(status).toArray(new String[] {}))
+			.flatMap((viewName) -> renderErrorView(viewName, responseBody, errorAttributes))
 			.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
-					? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
+					? renderDefaultErrorView(responseBody, errorAttributes) : Mono.error(getError(request)))
 			.next();
 	}
 
@@ -145,10 +148,15 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
-		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
-		return ServerResponse.status(getHttpStatus(error))
+		int status = getHttpStatus(getErrorAttributes(request, ONLY_STATUS));
+		Map<String, Object> errorAttributes = getErrorAttributes(request, MediaType.ALL);
+		return ServerResponse.status(status)
 			.contentType(MediaType.APPLICATION_JSON)
-			.body(BodyInserters.fromValue(error));
+			.body(BodyInserters.fromValue(errorAttributes));
+	}
+
+	private Map<String, Object> getErrorAttributes(ServerRequest request, MediaType mediaType) {
+		return getErrorAttributes(request, getErrorAttributeOptions(request, mediaType));
 	}
 
 	protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
@@ -232,7 +240,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return the error HTTP status
 	 */
 	protected int getHttpStatus(Map<String, Object> errorAttributes) {
-		return (int) errorAttributes.get("status");
+		Object status = errorAttributes.get("status");
+		Assert.state(status instanceof Integer, "ErrorAttributes must contain a status integer");
+		return (int) status;
 	}
 
 	/**

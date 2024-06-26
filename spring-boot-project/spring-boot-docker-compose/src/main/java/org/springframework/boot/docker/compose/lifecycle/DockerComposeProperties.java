@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -155,6 +156,11 @@ public class DockerComposeProperties {
 		 */
 		private Skip skip = Skip.IF_RUNNING;
 
+		/**
+		 * Arguments to pass to the start command.
+		 */
+		private final List<String> arguments = new ArrayList<>();
+
 		public StartCommand getCommand() {
 			return this.command;
 		}
@@ -177,6 +183,10 @@ public class DockerComposeProperties {
 
 		public void setSkip(Skip skip) {
 			this.skip = skip;
+		}
+
+		public List<String> getArguments() {
+			return this.arguments;
 		}
 
 		/**
@@ -233,6 +243,11 @@ public class DockerComposeProperties {
 		 */
 		private Duration timeout = Duration.ofSeconds(10);
 
+		/**
+		 * Arguments to pass to the stop command.
+		 */
+		private final List<String> arguments = new ArrayList<>();
+
 		public StopCommand getCommand() {
 			return this.command;
 		}
@@ -247,6 +262,10 @@ public class DockerComposeProperties {
 
 		public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
+		}
+
+		public List<String> getArguments() {
+			return this.arguments;
 		}
 
 	}

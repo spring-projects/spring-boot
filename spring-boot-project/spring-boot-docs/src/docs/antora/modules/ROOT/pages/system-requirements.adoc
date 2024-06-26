@@ -13,7 +13,7 @@ Explicit build support is provided for the following build tools:
 | 3.6.3 or later
 
 | Gradle
-| 7.x (7.5 or later) and 8.x
+| Gradle 7.x (7.6.4 or later) or 8.x (8.3 or later)
 |===
 
 
@@ -43,7 +43,7 @@ You can also deploy Spring Boot applications to any servlet 5.0+ compatible cont
 [[getting-started.system-requirements.graal]]
 == GraalVM Native Images
 
-Spring Boot applications can be xref:reference:native-image/introducing-graalvm-native-images.adoc[converted into a Native Image] using GraalVM {version-graal} or above.
+Spring Boot applications can be xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[converted into a Native Image] using GraalVM {version-graal} or above.
 
 Images can be created using the https://github.com/graalvm/native-build-tools[native build tools] Gradle/Maven plugins or `native-image` tool provided by GraalVM.
 You can also create native images using the https://github.com/paketo-buildpacks/native-image[native-image Paketo buildpack].

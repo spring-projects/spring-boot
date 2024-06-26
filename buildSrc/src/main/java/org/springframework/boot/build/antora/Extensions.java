@@ -40,7 +40,8 @@ public final class Extensions {
 	static {
 		List<Extension> extensions = new ArrayList<>();
 		extensions.add(new Extension("@springio/antora-extensions", ROOT_COMPONENT_EXTENSION,
-				"@springio/antora-extensions/static-page-extension"));
+				"@springio/antora-extensions/static-page-extension",
+				"@springio/antora-extensions/override-navigation-builder-extension"));
 		extensions.add(new Extension("@springio/antora-xref-extension"));
 		extensions.add(new Extension("@springio/antora-zip-contents-collector-extension"));
 		antora = List.copyOf(extensions);

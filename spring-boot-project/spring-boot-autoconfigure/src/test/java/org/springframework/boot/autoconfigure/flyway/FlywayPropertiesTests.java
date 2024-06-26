@@ -93,6 +93,7 @@ class FlywayPropertiesTests {
 		assertThat(properties.getScriptPlaceholderPrefix()).isEqualTo(configuration.getScriptPlaceholderPrefix());
 		assertThat(properties.getScriptPlaceholderSuffix()).isEqualTo(configuration.getScriptPlaceholderSuffix());
 		assertThat(properties.isExecuteInTransaction()).isEqualTo(configuration.isExecuteInTransaction());
+		assertThat(properties.getCommunityDbSupportEnabled()).isNull();
 	}
 
 	@Test
@@ -140,6 +141,7 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "failOnMissingTarget");
 		// Properties managed by a proprietary extension
 		ignoreProperties(configuration, "cherryPick");
+		aliasProperty(configuration, "communityDBSupportEnabled", "communityDbSupportEnabled");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());
@@ -152,6 +154,12 @@ class FlywayPropertiesTests {
 			assertThat(index.remove(propertyName)).describedAs("Property to ignore should be present " + propertyName)
 				.isNotNull();
 		}
+	}
+
+	private void aliasProperty(Map<String, PropertyDescriptor> index, String originalName, String alias) {
+		PropertyDescriptor descriptor = index.remove(originalName);
+		assertThat(descriptor).describedAs("Property to alias should be present " + originalName).isNotNull();
+		index.put(alias, descriptor);
 	}
 
 	private Map<String, PropertyDescriptor> indexProperties(BeanWrapper beanWrapper) {

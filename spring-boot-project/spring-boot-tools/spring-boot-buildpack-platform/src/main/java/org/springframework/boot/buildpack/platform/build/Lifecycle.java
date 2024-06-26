@@ -311,7 +311,7 @@ class Lifecycle implements Closeable {
 			deleteVolume(cache.getVolume().getVolumeName());
 		}
 		if (cache.getBind() != null) {
-			deleteBind(cache.getBind().getSource());
+			deleteBind(cache.getBind());
 		}
 	}
 
@@ -319,12 +319,12 @@ class Lifecycle implements Closeable {
 		this.docker.volume().delete(name, true);
 	}
 
-	private void deleteBind(String source) {
+	private void deleteBind(Cache.Bind bind) {
 		try {
-			FileSystemUtils.deleteRecursively(Path.of(source));
+			FileSystemUtils.deleteRecursively(Path.of(bind.getSource()));
 		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Error cleaning bind mount directory '" + source + "'", ex);
+		catch (Exception ex) {
+			this.log.failedCleaningWorkDir(bind, ex);
 		}
 	}
 

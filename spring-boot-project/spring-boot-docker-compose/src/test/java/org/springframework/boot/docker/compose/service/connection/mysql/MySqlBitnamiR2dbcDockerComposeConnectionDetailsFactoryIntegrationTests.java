@@ -17,11 +17,10 @@
 package org.springframework.boot.docker.compose.service.connection.mysql;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,16 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class MySqlBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class MySqlBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	MySqlBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mysql-bitnami-compose.yaml", BitnamiImageNames.mysql());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mysql-bitnami-compose.yaml", image = TestImage.BITNAMI_MYSQL)
+	void runCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=mysql",
 				"password=REDACTED", "user=myuser");

@@ -17,11 +17,10 @@
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,16 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class PostgresBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class PostgresBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	PostgresBitnamiR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("postgres-bitnami-compose.yaml", BitnamiImageNames.postgresql());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
+	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
+	void runCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=postgresql",
 				"password=REDACTED", "user=myuser");

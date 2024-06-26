@@ -2,9 +2,9 @@
 = Observability
 
 Observability is the ability to observe the internal state of a running system from the outside.
-It consists of the three pillars logging, metrics and traces.
+It consists of the three pillars: logging, metrics and traces.
 
-For metrics and traces, Spring Boot uses https://micrometer.io/docs/observation[Micrometer Observation].
+For metrics and traces, Spring Boot uses {url-micrometer-docs}/observation[Micrometer Observation].
 To create your own observations (which will lead to metrics and traces), you can inject an `ObservationRegistry`.
 
 include-code::MyCustomObservation[]
@@ -18,7 +18,7 @@ Observability support relies on the https://github.com/micrometer-metrics/contex
 By default, `ThreadLocal` values are not automatically reinstated in reactive operators.
 This behavior is controlled with the configprop:spring.reactor.context-propagation[] property, which can be set to `auto` to enable automatic propagation.
 
-For more details about observations please see the https://micrometer.io/docs/observation[Micrometer Observation documentation].
+For more details about observations please see the {url-micrometer-docs}/observation[Micrometer Observation documentation].
 
 TIP: Observability for JDBC can be configured using a separate project.
 The https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project] provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.

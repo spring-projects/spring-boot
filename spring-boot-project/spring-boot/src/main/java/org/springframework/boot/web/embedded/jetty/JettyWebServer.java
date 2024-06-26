@@ -299,6 +299,15 @@ public class JettyWebServer implements WebServer {
 		return 0;
 	}
 
+	/**
+	 * Initiates a graceful shutdown of the Jetty web server. Handling of new requests is
+	 * prevented and the given {@code callback} is invoked at the end of the attempt. The
+	 * attempt can be explicitly ended by invoking {@link #stop}.
+	 * <p>
+	 * Once shutdown has been initiated Jetty will reject any new connections. Requests on
+	 * existing connections will be accepted, however, a {@code Connection: close} header
+	 * will be returned in the response.
+	 */
 	@Override
 	public void shutDownGracefully(GracefulShutdownCallback callback) {
 		if (this.gracefulShutdown == null) {

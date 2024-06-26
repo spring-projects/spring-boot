@@ -1,0 +1,16 @@
+[[packaging.checkpoint-restore]]
+= Checkpoint and Restore With the JVM
+
+https://wiki.openjdk.org/display/crac/Main[Coordinated Restore at Checkpoint] (CRaC) is an OpenJDK project that defines a new Java API to allow you to checkpoint and restore an application on the HotSpot JVM.
+It is based on https://github.com/checkpoint-restore/criu[CRIU], a project that implements checkpoint/restore functionality on Linux.
+
+The principle is the following: you start your application almost as usual but with a CRaC enabled version of the JDK like https://bell-sw.com/pages/downloads/?package=jdk-crac[BellSoft Liberica JDK with CRaC] or https://www.azul.com/downloads/?package=jdk-crac#zulu[Azul Zulu JDK with CRaC].
+Then at some point, potentially after some workloads that will warm up your JVM by executing all common code paths, you trigger a checkpoint using an API call, a `jcmd` command, an HTTP endpoint, or a different mechanism.
+
+A memory representation of the running JVM, including its warmness, is then serialized to disk, allowing a fast restoration at a later point, potentially on another machine with a similar operating system and CPU architecture.
+The restored process retains all the capabilities of the HotSpot JVM, including further JIT optimizations at runtime.
+
+Based on the foundations provided by Spring Framework, Spring Boot provides support for checkpointing and restoring your application, and manages out-of-the-box the lifecycle of resources such as socket, files and thread pools https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/main/STATUS.adoc[on a limited scope].
+Additional lifecycle management is expected for other dependencies and potentially for the application code dealing with such resources.
+
+You can find more details about the two modes supported ("on demand checkpoint/restore of a running application" and "automatic checkpoint/restore at startup"), how to enable checkpoint and restore support and some guidelines in {url-spring-framework-docs}/integration/checkpoint-restore.html[the Spring Framework JVM Checkpoint Restore support documentation].

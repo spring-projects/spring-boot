@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 
@@ -51,7 +52,7 @@ class SampleCassandraApplicationSslTests {
 
 	@Container
 	@ServiceConnection
-	static final SecureCassandraContainer secureCassandra = new SecureCassandraContainer();
+	static final SecureCassandraContainer cassandra = TestImage.container(SecureCassandraContainer.class);
 
 	@Autowired
 	private CassandraTemplate cassandraTemplate;

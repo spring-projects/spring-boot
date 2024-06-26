@@ -27,7 +27,7 @@ class MyContainersConfiguration {
 	@Bean
 	@RestartScope
 	@ServiceConnection
-	fun monogDbContainer(): MongoDBContainer {
+	fun mongoDbContainer(): MongoDBContainer {
 		return MongoDBContainer("mongo:5.0")
 	}
 

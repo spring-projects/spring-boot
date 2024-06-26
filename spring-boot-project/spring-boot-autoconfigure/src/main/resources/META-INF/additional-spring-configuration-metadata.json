@@ -1346,6 +1346,9 @@
         "level": "error",
         "reason": "Removed in Flyway 10"
       }
+    },{
+      "name": "spring.flyway.community-db-support-enabled",
+      "defaultValue": false
     },
     {
       "name": "spring.flyway.dry-run-output",
@@ -2005,7 +2008,8 @@
     {
       "name": "spring.mvc.converters.preferred-json-mapper",
       "type": "java.lang.String",
-      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment."
+      "defaultValue": "jackson",
+      "description": "Preferred JSON mapper to use for HTTP message conversion. By default, auto-detected according to the environment. Supported values are 'jackson', 'gson', and 'jsonb'. When other json mapping libraries (such as kotlinx.serialization) are present, use a custom HttpMessageConverters bean to control the preferred mapper."
     },
     {
       "name": "spring.mvc.date-format",

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import smoketest.kafka.SampleMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -55,7 +55,7 @@ import static org.hamcrest.Matchers.not;
 class SampleKafkaSslApplicationTests {
 
 	@Container
-	public static KafkaContainer kafka = new KafkaContainer(DockerImageNames.kafka())
+	public static KafkaContainer kafka = TestImage.container(KafkaContainer.class)
 		.withEnv("KAFKA_LISTENER_SECURITY_PROTOCOL_MAP", "PLAINTEXT:SSL,BROKER:PLAINTEXT")
 		.withEnv("KAFKA_AUTO_CREATE_TOPICS_ENABLE", "true")
 		.withEnv("KAFKA_SSL_CLIENT_AUTH", "required")

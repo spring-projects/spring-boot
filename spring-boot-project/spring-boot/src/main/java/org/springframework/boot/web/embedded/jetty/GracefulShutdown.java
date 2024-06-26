@@ -29,7 +29,6 @@ import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
-import org.springframework.core.log.LogMessage;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -46,7 +45,7 @@ final class GracefulShutdown {
 
 	private final Supplier<Integer> activeRequests;
 
-	private volatile boolean shuttingDown = false;
+	private volatile boolean aborted = false;
 
 	GracefulShutdown(Server server, Supplier<Integer> activeRequests) {
 		this.server = server;
@@ -55,12 +54,11 @@ final class GracefulShutdown {
 
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
+		new Thread(() -> awaitShutdown(callback), "jetty-shutdown").start();
 		boolean jetty10 = isJetty10();
 		for (Connector connector : this.server.getConnectors()) {
 			shutdown(connector, !jetty10);
 		}
-		this.shuttingDown = true;
-		new Thread(() -> awaitShutdown(callback), "jetty-shutdown").start();
 
 	}
 
@@ -97,19 +95,16 @@ final class GracefulShutdown {
 	}
 
 	private void awaitShutdown(GracefulShutdownCallback callback) {
-		while (this.shuttingDown && this.activeRequests.get() > 0) {
+		while (!this.aborted && this.activeRequests.get() > 0) {
 			sleep(100);
 		}
-		this.shuttingDown = false;
-		long activeRequests = this.activeRequests.get();
-		if (activeRequests == 0) {
-			logger.info("Graceful shutdown complete");
-			callback.shutdownComplete(GracefulShutdownResult.IDLE);
+		if (this.aborted) {
+			logger.info("Graceful shutdown aborted with one or more requests still active");
+			callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
 		}
 		else {
-			logger.info(LogMessage.format("Graceful shutdown aborted with %d request%s still active", activeRequests,
-					(activeRequests == 1) ? "" : "s"));
-			callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
+			logger.info("Graceful shutdown complete");
+			callback.shutdownComplete(GracefulShutdownResult.IDLE);
 		}
 	}
 
@@ -123,7 +118,7 @@ final class GracefulShutdown {
 	}
 
 	void abort() {
-		this.shuttingDown = false;
+		this.aborted = true;
 	}
 
 }

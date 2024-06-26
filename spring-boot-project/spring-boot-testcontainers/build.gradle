@@ -40,6 +40,10 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("ch.qos.logback:logback-classic")
+	testImplementation("co.elastic.clients:elasticsearch-java") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	testImplementation("com.couchbase.client:java-client")
 	testImplementation("io.micrometer:micrometer-registry-otlp")
 	testImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -48,22 +52,35 @@ dependencies {
 	testImplementation("org.apache.activemq:artemis-jakarta-client")  {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
+	testImplementation("org.apache.cassandra:java-driver-core") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.flywaydb:flyway-core")
 	testImplementation("org.influxdb:influxdb-java")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.liquibase:liquibase-core") {
+		exclude(group: "javax.xml.bind", module: "jaxb-api")
+	}
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.springframework:spring-jdbc")
 	testImplementation("org.springframework:spring-jms")
 	testImplementation("org.springframework:spring-r2dbc")
 	testImplementation("org.springframework.amqp:spring-rabbit")
+	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.kafka:spring-kafka")
 	testImplementation("org.springframework.ldap:spring-ldap-core")
 	testImplementation("org.springframework.pulsar:spring-pulsar")
 	testImplementation("org.testcontainers:junit-jupiter")
 
 	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
+	testRuntimeOnly("com.zaxxer:HikariCP")
+	testRuntimeOnly("io.lettuce:lettuce-core")
+	testRuntimeOnly("org.flywaydb:flyway-database-postgresql")
+	testRuntimeOnly("org.postgresql:postgresql")
 }

@@ -42,9 +42,6 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, OpenTelemetryConfiguration.class));
 
-	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
-		.withPropertyValues("management.tracing.enabled=false");
-
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class, CustomEncoderConfiguration.class)
@@ -92,8 +89,16 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyZipkinSpanExporterIfTracingIsDisabled() {
-		this.tracingDisabledContextRunner.withUserConfiguration(SenderConfiguration.class)
+	void shouldNotSupplyZipkinSpanExporterIfGlobalTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+			.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
+	}
+
+	@Test
+	void shouldNotSupplyZipkinSpanExporterIfZipkinTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.zipkin.tracing.export.enabled=false")
+			.withUserConfiguration(SenderConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
 	}
 

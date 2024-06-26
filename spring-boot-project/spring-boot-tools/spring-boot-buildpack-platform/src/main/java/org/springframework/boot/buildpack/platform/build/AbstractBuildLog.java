@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,6 +99,17 @@ public abstract class AbstractBuildLog implements BuildLog {
 	@Override
 	public void taggedImage(ImageReference tag) {
 		log("Successfully created image tag '" + tag + "'");
+		log();
+	}
+
+	@Override
+	public void failedCleaningWorkDir(Cache cache, Exception exception) {
+		StringBuilder message = new StringBuilder("Warning: Working location " + cache + " could not be cleaned");
+		if (exception != null) {
+			message.append(": ").append(exception.getMessage());
+		}
+		log();
+		log(message.toString());
 		log();
 	}
 

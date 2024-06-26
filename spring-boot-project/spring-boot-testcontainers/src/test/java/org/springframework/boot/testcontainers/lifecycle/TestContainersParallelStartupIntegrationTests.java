@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.lifecycle.TestContainersParallelStartupIntegrationTests.ContainerConfig;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -42,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ContainerConfig.class)
 @TestPropertySource(properties = "spring.testcontainers.beans.startup=parallel")
-@DirtiesContext
 @DisabledIfDockerUnavailable
 @ExtendWith(OutputCaptureExtension.class)
 public class TestContainersParallelStartupIntegrationTests {
@@ -57,17 +55,17 @@ public class TestContainersParallelStartupIntegrationTests {
 
 		@Bean
 		static PostgreSQLContainer<?> container1() {
-			return new PostgreSQLContainer<>(DockerImageNames.postgresql());
+			return TestImage.container(PostgreSQLContainer.class);
 		}
 
 		@Bean
 		static PostgreSQLContainer<?> container2() {
-			return new PostgreSQLContainer<>(DockerImageNames.postgresql());
+			return TestImage.container(PostgreSQLContainer.class);
 		}
 
 		@Bean
 		static PostgreSQLContainer<?> container3() {
-			return new PostgreSQLContainer<>(DockerImageNames.postgresql());
+			return TestImage.container(PostgreSQLContainer.class);
 		}
 
 	}

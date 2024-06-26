@@ -22,6 +22,9 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.actuate.sbom.SbomEndpoint.SbomEndpointRuntimeHints;
 import org.springframework.boot.actuate.sbom.SbomEndpoint.Sboms;
 import org.springframework.boot.actuate.sbom.SbomProperties.Sbom;
 import org.springframework.context.support.GenericApplicationContext;
@@ -79,6 +82,14 @@ class SbomEndpointTests {
 	void shouldNotFailIfNonExistingOptionalLocationIsGiven() {
 		this.properties.getApplication().setLocation("optional:classpath:does-not-exist.json");
 		assertThat(createEndpoint().sbom("application")).isNull();
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new SbomEndpointRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("META-INF/sbom/bom.json")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("META-INF/sbom/application.cdx.json")).accepts(hints);
 	}
 
 	private Sbom sbom(String location) {

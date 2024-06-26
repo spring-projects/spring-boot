@@ -746,7 +746,7 @@ include-code::MyProperties[]
 In this setup, the presence of a single parameterized constructor implies that constructor binding should be used.
 This means that the binder will find a constructor with the parameters that you wish to have bound.
 If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
-To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
+To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired` or made `private`.
 Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
@@ -1178,7 +1178,7 @@ include-code::MyProperties[]
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
 
-To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with `@Valid`.
+To cascade validation to nested properties the associated field must be annotated with `@Valid`.
 The following example builds on the preceding `MyProperties` example:
 
 include-code::nested/MyProperties[]

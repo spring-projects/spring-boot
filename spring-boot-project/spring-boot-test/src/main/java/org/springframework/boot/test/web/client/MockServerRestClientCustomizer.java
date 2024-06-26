@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	}
 
 	/**
-	 * Crate a new {@link MockServerRestClientCustomizer} instance.
+	 * Create a new {@link MockServerRestClientCustomizer} instance.
 	 * @param expectationManager the expectation manager class to use
 	 */
 	public MockServerRestClientCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
@@ -79,7 +79,7 @@ public class MockServerRestClientCustomizer implements RestClientCustomizer {
 	}
 
 	/**
-	 * Crate a new {@link MockServerRestClientCustomizer} instance.
+	 * Create a new {@link MockServerRestClientCustomizer} instance.
 	 * @param expectationManagerSupplier a supplier that provides the
 	 * {@link RequestExpectationManager} to use
 	 * @since 3.0.0

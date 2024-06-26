@@ -95,7 +95,7 @@ public class ServletWebServerFactoryCustomizer
 		map.from(() -> this.cookieSameSiteSuppliers)
 			.whenNot(CollectionUtils::isEmpty)
 			.to(factory::setCookieSameSiteSuppliers);
-		map.from(this.serverProperties::getMimeMappings).to(factory::setMimeMappings);
+		map.from(this.serverProperties::getMimeMappings).to(factory::addMimeMappings);
 		this.webListenerRegistrars.forEach((registrar) -> registrar.register(factory));
 	}
 

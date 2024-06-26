@@ -1,7 +1,7 @@
 [[actuator.metrics]]
 = Metrics
 
-Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io[Micrometer], an application metrics facade that supports {url-micrometer-docs}[numerous monitoring systems], including:
+Spring Boot Actuator provides dependency management and auto-configuration for {url-micrometer-site}[Micrometer], an application metrics facade that supports {url-micrometer-docs}[numerous monitoring systems], including:
 
 - xref:actuator/metrics.adoc#actuator.metrics.export.appoptics[AppOptics]
 - xref:actuator/metrics.adoc#actuator.metrics.export.atlas[Atlas]
@@ -545,11 +545,14 @@ scrape_configs:
 https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported.
 To enable this feature, a `SpanContext` bean should be present.
 If you're using the deprecated Prometheus simpleclient support and want to enable that feature, a `SpanContextSupplier` bean should be present.
-If you use https://micrometer.io/docs/tracing[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
+If you use {url-micrometer-tracing-docs}[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
 Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Docs], since this feature needs to be explicitly enabled on Prometheus' side, and it is only supported using the https://github.com/OpenObservability/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#exemplars[OpenMetrics] format.
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
-The Prometheus Pushgateway only works with the deprecated Prometheus simpleclient for now, until the Prometheus client 1.x adds support for it.
+
+NOTE: The Prometheus Pushgateway only works with the deprecated Prometheus simpleclient for now, until the Prometheus 1.x client adds support for it.
+To switch to the simpleclient, remove `io.micrometer:micrometer-registry-prometheus` from your project and add `io.micrometer:micrometer-registry-prometheus-simpleclient` instead.
+
 To enable Prometheus Pushgateway support, add the following dependency to your project:
 
 [source,xml]

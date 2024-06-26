@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,9 +36,9 @@ import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeStop
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeUp;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.Inspect;
 import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 
@@ -77,7 +77,7 @@ class DockerCliIntegrationTests {
 			DockerCliComposeConfigResponse config = cli.run(new ComposeConfig());
 			assertThat(config.services()).containsOnlyKeys("redis");
 			// Run up
-			cli.run(new ComposeUp(LogLevel.INFO));
+			cli.run(new ComposeUp(LogLevel.INFO, Collections.emptyList()));
 			// Run ps and use id to run inspect on the id
 			ps = cli.run(new ComposePs());
 			assertThat(ps).hasSize(1);
@@ -86,14 +86,14 @@ class DockerCliIntegrationTests {
 			assertThat(inspect).isNotEmpty();
 			assertThat(inspect.get(0).id()).startsWith(id);
 			// Run stop, then run ps and verify the services are stopped
-			cli.run(new ComposeStop(Duration.ofSeconds(10)));
+			cli.run(new ComposeStop(Duration.ofSeconds(10), Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).isEmpty();
 			// Run start, verify service is there, then run down and verify they are gone
-			cli.run(new ComposeStart(LogLevel.INFO));
+			cli.run(new ComposeStart(LogLevel.INFO, Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).hasSize(1);
-			cli.run(new ComposeDown(Duration.ofSeconds(10)));
+			cli.run(new ComposeDown(Duration.ofSeconds(10), Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).isEmpty();
 		}
@@ -105,7 +105,7 @@ class DockerCliIntegrationTests {
 
 	private static void quietComposeDown(DockerCli cli) {
 		try {
-			cli.run(new ComposeDown(Duration.ZERO));
+			cli.run(new ComposeDown(Duration.ZERO, Collections.emptyList()));
 		}
 		catch (RuntimeException ex) {
 			// Ignore
@@ -116,8 +116,7 @@ class DockerCliIntegrationTests {
 		File composeFile = new ClassPathResource("redis-compose.yaml", DockerCliIntegrationTests.class).getFile();
 		File tempComposeFile = Path.of(tempDir.toString(), composeFile.getName()).toFile();
 		String composeFileContent = FileCopyUtils.copyToString(new FileReader(composeFile));
-		composeFileContent = composeFileContent.replace("{imageName}",
-				DockerImageNames.redis().asCanonicalNameString());
+		composeFileContent = composeFileContent.replace("{imageName}", TestImage.REDIS.toString());
 		FileCopyUtils.copy(composeFileContent, new FileWriter(tempComposeFile));
 		return tempComposeFile;
 	}

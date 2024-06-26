@@ -60,7 +60,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type `JdbcDatabaseContainer`
 
 | `KafkaConnectionDetails`
-| Containers of type `KafkaContainer` or `RedpandaContainer`
+| Containers of type `org.testcontainers.containers.KafkaContainer` or `RedpandaContainer`
 
 | `LiquibaseConnectionDetails`
 | Containers of type `JdbcDatabaseContainer`
@@ -101,7 +101,8 @@ For example, a `PostgreSQLContainer` will create both `JdbcConnectionDetails` an
 If you want to create only a subset of the applicable types, you can use the `type` attribute of `@ServiceConnection`.
 ====
 
-By default `Container.getDockerImageName()` is used to obtain the name used to find connection details.
+By default `Container.getDockerImageName().getRepository()` is used to obtain the name used to find connection details.
+The repository portion of the Docker image name ignores any registry and the version.
 This works as long as Spring Boot is able to get the instance of the `Container`, which is the case when using a `static` field like in the example above.
 
 If you're using a `@Bean` method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.

@@ -17,13 +17,12 @@
 package org.springframework.boot.docker.compose.service.connection.mongo;
 
 import com.mongodb.ConnectionString;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,20 +32,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64", disabledReason = "The image has no ARM support")
-class MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	MongoBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mongo-bitnami-compose.yaml", BitnamiImageNames.mongo());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		MongoConnectionDetails connectionDetails = run(MongoConnectionDetails.class);
+	@DockerComposeTest(composeFile = "mongo-bitnami-compose.yaml", image = TestImage.BITNAMI_MONGODB)
+	void runCreatesConnectionDetails(MongoConnectionDetails connectionDetails) {
 		ConnectionString connectionString = connectionDetails.getConnectionString();
 		assertThat(connectionString.getCredential().getUserName()).isEqualTo("root");
 		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());
 		assertThat(connectionString.getCredential().getSource()).isEqualTo("admin");
-		assertThat(connectionString.getDatabase()).isEqualTo("test");
+		assertThat(connectionString.getDatabase()).isEqualTo("testdb");
 		assertThat(connectionDetails.getGridFs()).isNull();
 	}
 

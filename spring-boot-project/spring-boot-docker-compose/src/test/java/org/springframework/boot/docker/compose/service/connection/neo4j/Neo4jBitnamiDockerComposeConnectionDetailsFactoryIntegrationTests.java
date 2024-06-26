@@ -16,14 +16,13 @@
 
 package org.springframework.boot.docker.compose.service.connection.neo4j;
 
-import org.junit.jupiter.api.Test;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 
 import org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -33,15 +32,10 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  *
  * @author Scott Frederick
  */
-class Neo4jBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class Neo4jBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	Neo4jBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("neo4j-bitnami-compose.yaml", BitnamiImageNames.neo4j());
-	}
-
-	@Test
-	void runCreatesConnectionDetailsThatCanAccessNeo4j() {
-		Neo4jConnectionDetails connectionDetails = run(Neo4jConnectionDetails.class);
+	@DockerComposeTest(composeFile = "neo4j-bitnami-compose.yaml", image = TestImage.BITNAMI_NEO4J)
+	void runCreatesConnectionDetailsThatCanAccessNeo4j(Neo4jConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("neo4j", "bitnami2"));
 		try (Driver driver = GraphDatabase.driver(connectionDetails.getUri(), connectionDetails.getAuthToken())) {
 			assertThatNoException().isThrownBy(driver::verifyConnectivity);

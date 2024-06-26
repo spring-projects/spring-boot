@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.buildpack.platform.docker;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Utility to render a simple progress bar based on consumed {@link TotalProgressEvent}
@@ -63,7 +65,7 @@ public class TotalProgressBar implements Consumer<TotalProgressEvent> {
 	public TotalProgressBar(String prefix, char progressChar, boolean bookend, PrintStream out) {
 		this.progressChar = progressChar;
 		this.bookend = bookend;
-		if (prefix != null && !prefix.isEmpty()) {
+		if (StringUtils.hasLength(prefix)) {
 			out.print(prefix);
 			out.print(" ");
 		}

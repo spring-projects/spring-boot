@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoC
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.boot.testsupport.container.ZipkinContainer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -44,7 +45,7 @@ class ZipkinContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> zipkin = new GenericContainer<>(DockerImageNames.zipkin()).withExposedPorts(9411);
+	static final GenericContainer<?> zipkin = TestImage.container(ZipkinContainer.class);
 
 	@Autowired(required = false)
 	private ZipkinConnectionDetails connectionDetails;

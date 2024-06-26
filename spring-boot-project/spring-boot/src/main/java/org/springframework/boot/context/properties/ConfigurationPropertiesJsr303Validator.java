@@ -37,13 +37,16 @@ final class ConfigurationPropertiesJsr303Validator implements Validator {
 
 	private final Delegate delegate;
 
-	ConfigurationPropertiesJsr303Validator(ApplicationContext applicationContext) {
+	private final Class<?> validatedType;
+
+	ConfigurationPropertiesJsr303Validator(ApplicationContext applicationContext, Class<?> validatedType) {
 		this.delegate = new Delegate(applicationContext);
+		this.validatedType = validatedType;
 	}
 
 	@Override
 	public boolean supports(Class<?> type) {
-		return this.delegate.supports(type);
+		return this.validatedType.equals(type) && this.delegate.supports(type);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,10 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
+import org.springframework.boot.testsupport.container.RedisContainer;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,6 +83,7 @@ class ServiceConnectionAutoConfigurationTests {
 	}
 
 	@Test
+	@ClassPathExclusions("lettuce-core-*.jar")
 	void whenHasUserConfigurationDoesNotRegisterReplacement() {
 		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
 			applicationContext.register(UserConfiguration.class, WithRedisAutoConfiguration.class,
@@ -133,7 +136,7 @@ class ServiceConnectionAutoConfigurationTests {
 		@Bean
 		@ServiceConnection("redis")
 		RedisContainer redisContainer() {
-			return new RedisContainer();
+			return TestImage.container(RedisContainer.class);
 		}
 
 	}
@@ -166,7 +169,7 @@ class ServiceConnectionAutoConfigurationTests {
 
 	static class TestcontainersRootBeanDefinition extends RootBeanDefinition implements TestcontainerBeanDefinition {
 
-		private final RedisContainer container = new RedisContainer();
+		private final RedisContainer container = TestImage.container(RedisContainer.class);
 
 		TestcontainersRootBeanDefinition() {
 			setBeanClass(RedisContainer.class);

@@ -37,10 +37,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -58,7 +57,6 @@ import static org.hamcrest.Matchers.matchesPattern;
 @TestPropertySource(properties = { "management.otlp.metrics.export.resource-attributes.service.name=test",
 		"management.otlp.metrics.export.step=1s" })
 @Testcontainers(disabledWithoutDocker = true)
-@DirtiesContext
 class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 
 	private static final String OPENMETRICS_001 = "application/openmetrics-text; version=0.0.1; charset=utf-8";
@@ -67,7 +65,7 @@ class OpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = new GenericContainer<>(DockerImageNames.opentelemetry())
+	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer()
 		.withCommand("--config=/etc/" + CONFIG_FILE_NAME)
 		.withCopyToContainer(MountableFile.forClasspathResource(CONFIG_FILE_NAME), "/etc/" + CONFIG_FILE_NAME)
 		.withExposedPorts(4318, 9090);

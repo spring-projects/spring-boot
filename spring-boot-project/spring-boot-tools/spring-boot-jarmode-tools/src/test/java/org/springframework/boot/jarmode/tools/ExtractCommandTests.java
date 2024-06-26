@@ -48,15 +48,17 @@ class ExtractCommandTests extends AbstractJarModeTests {
 
 	private static final Instant LAST_ACCESS_TIME = Instant.parse("2022-01-01T00:00:00Z");
 
+	private Manifest manifest;
+
 	private File archive;
 
 	@BeforeEach
 	void setUp() throws IOException {
-		Manifest manifest = createManifest("Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx",
+		this.manifest = createManifest("Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx",
 				"Spring-Boot-Lib: BOOT-INF/lib/", "Spring-Boot-Classes: BOOT-INF/classes/",
 				"Start-Class: org.example.Main", "Spring-Boot-Layers-Index: BOOT-INF/layers.idx",
 				"Some-Attribute: Some-Value");
-		this.archive = createArchive(manifest, CREATION_TIME, LAST_MODIFIED_TIME, LAST_ACCESS_TIME,
+		this.archive = createArchive(this.manifest, CREATION_TIME, LAST_MODIFIED_TIME, LAST_ACCESS_TIME,
 				"BOOT-INF/classpath.idx", "/jar-contents/classpath.idx", "BOOT-INF/layers.idx",
 				"/jar-contents/layers.idx", "BOOT-INF/lib/dependency-1.jar", "/jar-contents/dependency-1",
 				"BOOT-INF/lib/dependency-2.jar", "/jar-contents/dependency-2", "BOOT-INF/lib/dependency-3-SNAPSHOT.jar",
@@ -86,7 +88,7 @@ class ExtractCommandTests extends AbstractJarModeTests {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	};
+	}
 
 	@Nested
 	class Extract {
@@ -214,6 +216,28 @@ class ExtractCommandTests extends AbstractJarModeTests {
 			File application = file("test/test.jar");
 			List<String> entryNames = getJarEntryNames(application);
 			assertThat(entryNames).contains("META-INF/build-info.properties");
+		}
+
+		@Test
+		void shouldNotFailOnDuplicateDirectories() throws IOException {
+			File file = createArchive(ExtractCommandTests.this.manifest, "BOOT-INF/classpath.idx",
+					"/jar-contents/classpath.idx", "META-INF/native-image/", "/jar-contents/empty-file",
+					"BOOT-INF/classes/META-INF/native-image/", "/jar-contents/empty-file");
+			run(file);
+			File application = file("test/test.jar");
+			List<String> entryNames = getJarEntryNames(application);
+			assertThat(entryNames).containsExactlyInAnyOrder("META-INF/native-image/", "META-INF/MANIFEST.MF");
+		}
+
+		@Test
+		void shouldFailOnDuplicateFiles() throws IOException {
+			File file = createArchive(ExtractCommandTests.this.manifest, "BOOT-INF/classpath.idx",
+					"/jar-contents/classpath.idx", "META-INF/native-image/native-image.properties",
+					"/jar-contents/empty-file", "BOOT-INF/classes/META-INF/native-image/native-image.properties",
+					"/jar-contents/empty-file");
+			assertThatIllegalStateException().isThrownBy(() -> run(file))
+				.withMessage(
+						"Duplicate jar entry 'META-INF/native-image/native-image.properties' from original location 'BOOT-INF/classes/META-INF/native-image/native-image.properties'");
 		}
 
 	}

@@ -26,6 +26,6 @@ the<DependencyManagementExtension>().apply {
 
 repositories {
 	maven {
-		url = uri("file:repository")
+		url = uri("repository")
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,11 +45,29 @@ public interface DockerCompose {
 	void up(LogLevel logLevel);
 
 	/**
+	 * Run {@code docker compose up} to create and start services. Waits until all
+	 * contains are started and healthy.
+	 * @param logLevel the log level used to report progress
+	 * @param arguments the arguments to pass to the up command
+	 * @since 3.4.0
+	 */
+	void up(LogLevel logLevel, List<String> arguments);
+
+	/**
 	 * Run {@code docker compose down} to stop and remove any running services.
 	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
 	 * waiting.
 	 */
 	void down(Duration timeout);
+
+	/**
+	 * Run {@code docker compose down} to stop and remove any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
+	 * waiting.
+	 * @param arguments the arguments to pass to the down command
+	 * @since 3.4.0
+	 */
+	void down(Duration timeout, List<String> arguments);
 
 	/**
 	 * Run {@code docker compose start} to start services. Waits until all containers are
@@ -59,11 +77,29 @@ public interface DockerCompose {
 	void start(LogLevel logLevel);
 
 	/**
+	 * Run {@code docker compose start} to start services. Waits until all containers are
+	 * started and healthy.
+	 * @param logLevel the log level used to report progress
+	 * @param arguments the arguments to pass to the start command
+	 * @since 3.4.0
+	 */
+	void start(LogLevel logLevel, List<String> arguments);
+
+	/**
 	 * Run {@code docker compose stop} to stop any running services.
 	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
 	 * waiting.
 	 */
 	void stop(Duration timeout);
+
+	/**
+	 * Run {@code docker compose stop} to stop any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
+	 * waiting.
+	 * @param arguments the arguments to pass to the stop command
+	 * @since 3.4.0
+	 */
+	void stop(Duration timeout, List<String> arguments);
 
 	/**
 	 * Return if services have been defined in the {@link DockerComposeFile} for the

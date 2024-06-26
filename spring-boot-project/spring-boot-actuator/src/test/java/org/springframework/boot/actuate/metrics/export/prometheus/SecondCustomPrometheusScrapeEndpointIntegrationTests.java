@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
+import java.util.Properties;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
@@ -183,7 +185,7 @@ class SecondCustomPrometheusScrapeEndpointIntegrationTests {
 
 		@Bean
 		PrometheusScrapeEndpoint prometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry) {
-			return new PrometheusScrapeEndpoint(prometheusRegistry);
+			return new PrometheusScrapeEndpoint(prometheusRegistry, new Properties());
 		}
 
 		@Bean

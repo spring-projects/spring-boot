@@ -16,7 +16,7 @@ This is possible in both Maven and Gradle.
 [[howto.properties-and-configuration.expand-properties.maven]]
 === Automatic Property Expansion Using Maven
 
-You can automatically expand properties from the Maven project by using resource filtering.
+You can automatically expand properties in the Maven project by using resource filtering.
 If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
 [configprops%novalidate,yaml]
@@ -131,7 +131,7 @@ spring:
     banner-mode: "console"
 ----
 
-The actual application will show the banner (as overridden by configuration) and uses three sources for the `ApplicationContext`.
+The actual application will show the banner (as overridden by configuration) and use three sources for the `ApplicationContext`.
 The application sources are:
 
 . `MyApplication` (from the code)
@@ -152,7 +152,7 @@ You can also provide the following System properties (or environment variables) 
   A separate `Environment` property source is set up for this document and it can be overridden by system properties, environment variables, or the command line.
 
 No matter what you set in the environment, Spring Boot always loads `application.properties` as described above.
-By default, if YAML is used, then files with the '`.yaml`' and '`.yml`' extension are also added to the list.
+By default, if YAML is used, then files with the '`.yaml`' and '`.yml`' extensions are also added to the list.
 
 TIP: If you want detailed information about the files that are being loaded you can xref:reference:features/logging.adoc#features.logging.log-levels[set the logging level] of `org.springframework.boot.context.config` to `trace`.
 
@@ -174,7 +174,7 @@ TIP: If you inherit from the `spring-boot-starter-parent` POM, the default filte
 If you have enabled Maven filtering for the `application.properties` directly, you may want to also change the default filter token to use https://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters[other delimiters].
 
 NOTE: In this specific case, the port binding works in a PaaS environment such as Heroku or Cloud Foundry.
-In those two platforms, the `PORT` environment variable is set automatically and Spring can bind to capitalized synonyms for `Environment` properties.
+On those two platforms, the `PORT` environment variable is set automatically and Spring can bind to capitalized synonyms for `Environment` properties.
 
 
 
@@ -265,7 +265,7 @@ See "`xref:reference:features/profiles.adoc[Profiles]`" in the "`Spring Boot fea
 Spring Boot supports multi-document YAML and Properties files (see xref:reference:features/external-config.adoc#features.external-config.files.multi-document[Working With Multi-Document Files] for details) which can be activated conditionally based on the active profiles.
 
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
-If the profile expression matches then that document is included in the final merge (otherwise, it is not), as shown in the following example:
+If the profile expression matches, then that document is included in the final merge (otherwise, it is not), as shown in the following example:
 
 [configprops,yaml]
 ----

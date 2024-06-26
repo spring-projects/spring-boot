@@ -1,5 +1,6 @@
 antora:
   extensions:
+  - require: '@springio/antora-extensions/override-navigation-builder-extension'
   - require: '@springio/antora-extensions/static-page-extension'
   - require: '@springio/antora-xref-extension'
     stub:

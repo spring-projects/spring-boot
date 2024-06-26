@@ -16,12 +16,10 @@
 
 package org.springframework.boot.docker.compose.service.connection.rabbit;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.BitnamiImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,15 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-class RabbitBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
+class RabbitBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	RabbitBitnamiDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("rabbit-bitnami-compose.yaml", BitnamiImageNames.rabbit());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		RabbitConnectionDetails connectionDetails = run(RabbitConnectionDetails.class);
+	@DockerComposeTest(composeFile = "rabbit-bitnami-compose.yaml", image = TestImage.BITNAMI_RABBITMQ)
+	void runCreatesConnectionDetails(RabbitConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getVirtualHost()).isEqualTo("/");

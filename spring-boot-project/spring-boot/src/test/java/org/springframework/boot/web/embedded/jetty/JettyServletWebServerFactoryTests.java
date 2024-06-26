@@ -45,7 +45,6 @@ import org.awaitility.Awaitility;
 import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
-import org.eclipse.jetty.ee10.webapp.ClassMatcher;
 import org.eclipse.jetty.ee10.webapp.Configuration;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -55,6 +54,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.util.ClassMatcher;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -196,8 +196,8 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	Configuration mockConfiguration(Class<? extends Configuration> type) {
 		Configuration mock = mock(type);
 		ClassMatcher classMatcher = new ClassMatcher();
-		given(mock.getSystemClasses()).willReturn(classMatcher);
-		given(mock.getServerClasses()).willReturn(classMatcher);
+		given(mock.getProtectedClasses()).willReturn(classMatcher);
+		given(mock.getHiddenClasses()).willReturn(classMatcher);
 		return mock;
 	}
 

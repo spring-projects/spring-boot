@@ -14,7 +14,6 @@ configurations {
 
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
-	compileOnly("org.sonatype.plexus:plexus-build-api")
 	compileOnly("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
@@ -31,6 +30,9 @@ dependencies {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	implementation("org.sonatype.plexus:plexus-build-api") {
+		exclude(group: "org.codehaus.plexus:plexus-utils")
 	}
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-context")
@@ -72,8 +74,6 @@ dependencies {
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
 
-	runtimeOnly("org.sonatype.plexus:plexus-build-api")
-
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
 
@@ -111,7 +111,7 @@ task xsdResources(type: Sync) {
 }
 
 prepareMavenBinaries {
-	versions "3.9.0", "3.8.5", "3.6.3"
+	versions "3.9.6", "3.6.3"
 }
 
 tasks.named("documentPluginGoals") {
@@ -155,7 +155,7 @@ def antoraMavenPluginCatalogContent = tasks.register("antoraMavenPluginCatalogCo
 }
 
 tasks.named("generateAntoraPlaybook") {
-	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+	xrefStubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
 	alwaysInclude = [name: "maven-plugin", classifier: "local-aggregate-content"]
 	dependsOn antoraMavenPluginLocalAggregateContent
 }

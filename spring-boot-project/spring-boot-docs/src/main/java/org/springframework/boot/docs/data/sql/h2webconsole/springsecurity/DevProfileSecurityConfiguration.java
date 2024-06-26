@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Profile("dev")
@@ -35,8 +37,8 @@ public class DevProfileSecurityConfiguration {
 	SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.securityMatcher(PathRequest.toH2Console());
 		http.authorizeHttpRequests(yourCustomAuthorization());
-		http.csrf((csrf) -> csrf.disable());
-		http.headers((headers) -> headers.frameOptions((frame) -> frame.sameOrigin()));
+		http.csrf(CsrfConfigurer::disable);
+		http.headers((headers) -> headers.frameOptions(FrameOptionsConfig::sameOrigin));
 		return http.build();
 	}
 

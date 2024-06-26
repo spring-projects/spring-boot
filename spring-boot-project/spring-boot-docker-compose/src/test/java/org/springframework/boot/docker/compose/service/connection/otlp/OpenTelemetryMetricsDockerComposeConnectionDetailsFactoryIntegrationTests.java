@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails;
-import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
-import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,16 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-class OpenTelemetryMetricsDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class OpenTelemetryMetricsDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	OpenTelemetryMetricsDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("otlp-compose.yaml", DockerImageNames.opentelemetry());
-	}
-
-	@Test
-	void runCreatesConnectionDetails() {
-		OtlpMetricsConnectionDetails connectionDetails = run(OtlpMetricsConnectionDetails.class);
+	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OPENTELEMETRY)
+	void runCreatesConnectionDetails(OtlpMetricsConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/metrics");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class SqlServerJdbcDockerComposeConnectionDetailsFactory
 	static class SqlServerJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
-		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("sqlserver", 1433);
+		private static final JdbcUrlBuilder jdbcUrlBuilder = new SqlServerJdbcUrlBuilder("sqlserver", 1433);
 
 		private final SqlServerEnvironment environment;
 
@@ -56,7 +56,7 @@ class SqlServerJdbcDockerComposeConnectionDetailsFactory
 		SqlServerJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.environment = new SqlServerEnvironment(service.env());
-			this.jdbcUrl = disableEncryptionIfNecessary(jdbcUrlBuilder.build(service, ""));
+			this.jdbcUrl = disableEncryptionIfNecessary(jdbcUrlBuilder.build(service));
 		}
 
 		private String disableEncryptionIfNecessary(String jdbcUrl) {
@@ -84,6 +84,19 @@ class SqlServerJdbcDockerComposeConnectionDetailsFactory
 		@Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
+		}
+
+		private static final class SqlServerJdbcUrlBuilder extends JdbcUrlBuilder {
+
+			private SqlServerJdbcUrlBuilder(String driverProtocol, int containerPort) {
+				super(driverProtocol, containerPort);
+			}
+
+			@Override
+			protected void appendParameters(StringBuilder url, String parameters) {
+				url.append(";").append(parameters);
+			}
+
 		}
 
 	}

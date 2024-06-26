@@ -935,7 +935,7 @@ readinessProbe:
 NOTE: `<actuator-port>` should be set to the port that the actuator endpoints are available on.
 It could be the main web server port or a separate management port if the `"management.server.port"` property has been set.
 
-These health groups are automatically enabled only if the application xref:deployment/cloud.adoc#deployment.cloud.kubernetes[runs in a Kubernetes environment].
+These health groups are automatically enabled only if the application xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes[runs in a Kubernetes environment].
 You can enable them in any environment by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mentions the `"startupProbe"` as a possible solution.
@@ -1062,7 +1062,7 @@ When a Spring Boot application shuts down:
 |The application context is closed and the application is shut down.
 |===
 
-TIP: See xref:deployment/cloud.adoc#deployment.cloud.kubernetes.container-lifecycle[Kubernetes container lifecycle section] for more information about Kubernetes deployment.
+TIP: See xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes.container-lifecycle[Kubernetes container lifecycle section] for more information about Kubernetes deployment.
 
 
 

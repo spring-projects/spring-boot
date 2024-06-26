@@ -10,7 +10,7 @@ dependencies {
 
 repositories {
 	maven {
-		url = uri("file:repository")
+		url = uri("repository")
 	}
 }
 

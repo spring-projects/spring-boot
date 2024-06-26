@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -159,6 +161,14 @@ class MongoReactiveDataAutoConfigurationTests {
 	void contextFailsWhenDatabaseNotSet() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/")
 			.run((context) -> assertThat(context).getFailure().hasMessageContaining("Database name must not be empty"));
+	}
+
+	@Test
+	void mappingMongoConverterHasANoOpDbRefResolver() {
+		this.contextRunner.run((context) -> {
+			MappingMongoConverter converter = context.getBean(MappingMongoConverter.class);
+			assertThat(converter).extracting("dbRefResolver").isInstanceOf(NoOpDbRefResolver.class);
+		});
 	}
 
 	@SuppressWarnings("unchecked")
