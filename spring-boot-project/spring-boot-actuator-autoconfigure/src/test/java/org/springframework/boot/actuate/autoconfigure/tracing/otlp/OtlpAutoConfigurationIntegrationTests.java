@@ -18,10 +18,20 @@ package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
 import io.micrometer.tracing.Tracer;
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
+import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceResponse;
+import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import okhttp3.mockwebserver.MockResponse;
@@ -57,14 +67,27 @@ class OtlpAutoConfigurationIntegrationTests {
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 
+	private final MockGrpcService mockGrpcService = new MockGrpcService();
+	private final Server mockGrpcServer = ServerBuilder.forPort(0).addService(this.mockGrpcService).build();
+
 	@BeforeEach
-	void setUp() throws IOException {
+	void startMockWebServer() throws IOException {
 		this.mockWebServer.start();
 	}
 
+	@BeforeEach
+	void startMockGrpcServer() throws IOException {
+		this.mockGrpcServer.start();
+	}
+
 	@AfterEach
-	void tearDown() throws IOException {
+	void stopMockWebServer() throws IOException {
 		this.mockWebServer.close();
+	}
+
+	@AfterEach
+	void stopMockGrpcServer() throws InterruptedException {
+		this.mockGrpcServer.shutdown().awaitTermination(10, TimeUnit.SECONDS);
 	}
 
 	@Test
@@ -111,6 +134,40 @@ class OtlpAutoConfigurationIntegrationTests {
 					assertThat(uncompressed.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
 				}
 			});
+	}
+
+	@Test
+	void grpcSpanExporter() {
+		this.contextRunner
+			.withPropertyValues(
+					"management.otlp.tracing.endpoint=http://localhost:%d".formatted(this.mockGrpcServer.getPort()),
+					"management.otlp.tracing.transport=grpc")
+			.run((context) -> {
+				context.getBean(Tracer.class).nextSpan().name("test").end();
+				assertThat(context.getBean(OtlpGrpcSpanExporter.class).flush())
+					.isSameAs(CompletableResultCode.ofSuccess());
+				ExportTraceServiceRequest request = this.mockGrpcService.takeRequest(10, TimeUnit.SECONDS);
+				assertThat(request).isNotNull();
+				assertThat(request.getResourceSpansCount()).isEqualTo(1);
+			});
+	}
+
+	private static final class MockGrpcService extends TraceServiceGrpc.TraceServiceImplBase {
+
+		private final BlockingQueue<ExportTraceServiceRequest> recordedRequests = new LinkedBlockingQueue<>();
+
+		@Override
+		public void export(ExportTraceServiceRequest request,
+				StreamObserver<ExportTraceServiceResponse> responseObserver) {
+			this.recordedRequests.add(request);
+			responseObserver.onNext(ExportTraceServiceResponse.getDefaultInstance());
+			responseObserver.onCompleted();
+		}
+
+		private ExportTraceServiceRequest takeRequest(int timeout, TimeUnit unit) throws InterruptedException {
+			return this.recordedRequests.poll(timeout, unit);
+		}
+
 	}
 
 }
