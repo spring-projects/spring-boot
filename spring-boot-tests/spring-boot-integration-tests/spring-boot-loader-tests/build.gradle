@@ -21,7 +21,7 @@ dependencies {
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
 	app("org.bouncycastle:bcprov-jdk18on:1.78.1")
 
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")

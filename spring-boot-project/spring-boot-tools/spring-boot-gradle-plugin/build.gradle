@@ -80,13 +80,13 @@ dependencies {
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation(gradleTestKit())
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
-	
+
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("io.spring.gradle:dependency-management-plugin")

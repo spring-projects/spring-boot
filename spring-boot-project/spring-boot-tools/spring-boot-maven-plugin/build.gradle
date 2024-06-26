@@ -27,7 +27,7 @@ dependencies {
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 	
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("org.apache.maven.shared:maven-invoker") {
 		exclude(group: "javax.inject", module: "javax.inject")
 	}

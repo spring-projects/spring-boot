@@ -27,13 +27,13 @@ dependencies {
 
 	couchbase(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	couchbase(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-couchbase"))
-	
+
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("org.testcontainers:junit-jupiter")
-	
+
 	ehcache(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	ehcache("javax.cache:cache-api")
 	ehcache("org.ehcache:ehcache::jakarta")

@@ -15,7 +15,7 @@ dependencies {
 	api("org.testcontainers:testcontainers")
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("ch.qos.logback:logback-classic")
 	dockerTestImplementation("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"

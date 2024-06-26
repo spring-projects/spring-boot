@@ -1,10 +1,10 @@
 plugins {
-    id "java-library"
+	id "java-library"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
-    id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Docker Compose Support"
@@ -12,7 +12,7 @@ description = "Spring Boot Docker Compose Support"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
@@ -21,7 +21,7 @@ dependencies {
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("io.r2dbc:r2dbc-mssql")
-	
+
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 
