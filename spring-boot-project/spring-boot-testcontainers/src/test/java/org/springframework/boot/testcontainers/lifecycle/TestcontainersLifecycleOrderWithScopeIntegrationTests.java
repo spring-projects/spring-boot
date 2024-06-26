@@ -187,7 +187,7 @@ class TestcontainersLifecycleOrderWithScopeIntegrationTests {
 			return null;
 		}
 
-		public void destroy() {
+		void destroy() {
 			synchronized (this) {
 				this.destructors.forEach((name, actions) -> actions.forEach(Runnable::run));
 				this.destructors.clear();
