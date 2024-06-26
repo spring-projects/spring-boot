@@ -45,6 +45,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -231,8 +232,17 @@ public class StandardConfigDataLocationResolver
 		if (configDataLocation.isOptional()) {
 			return Collections.emptySet();
 		}
-		throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
-				+ "If the location is meant to reference a directory, it must end in '/' or File.separator");
+		if (configDataLocation.hasPrefix(PREFIX) || configDataLocation.hasPrefix(ResourceUtils.FILE_URL_PREFIX)
+				|| configDataLocation.hasPrefix(ResourceUtils.CLASSPATH_URL_PREFIX)
+				|| configDataLocation.toString().indexOf(':') == -1) {
+			throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
+					+ "If the location is meant to reference a directory, it must end in '/' or File.separator");
+		}
+		throw new IllegalStateException(
+				"Incorrect ConfigDataLocationResolver chosen or file extension is not known to any PropertySourceLoader. "
+						+ "If the location is meant to reference a directory, it must end in '/' or File.separator. "
+						+ "The location is being resolved using the StandardConfigDataLocationResolver, "
+						+ "check the location prefix if a different resolver is expected");
 	}
 
 	private String getLoadableFileExtension(PropertySourceLoader loader, String file) {
