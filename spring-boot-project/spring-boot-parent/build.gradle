@@ -159,8 +159,8 @@ bom {
 			]
 		}
 	}
-	library("Plexus Build API", "0.0.7") {
-		group("org.sonatype.plexus") {
+	library("Plexus Build API", "1.2.0") {
+		group("org.codehaus.plexus") {
 			modules = [
 				"plexus-build-api"
 			]
