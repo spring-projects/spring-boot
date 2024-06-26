@@ -15,6 +15,7 @@ configurations {
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.codehaus.plexus:plexus-build-api")
+	compileOnly("org.codehaus.plexus:plexus-xml")
 	compileOnly("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
@@ -73,6 +74,7 @@ dependencies {
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
 
 	runtimeOnly("org.codehaus.plexus:plexus-build-api")
+	runtimeOnly("org.codehaus.plexus:plexus-xml")
 
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
