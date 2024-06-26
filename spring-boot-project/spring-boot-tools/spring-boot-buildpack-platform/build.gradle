@@ -7,13 +7,13 @@ plugins {
 description = "Spring Boot Buildpack Platform"
 
 dependencies {
-	api("com.fasterxml.jackson.core:jackson-databind")
-	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
-	api("net.java.dev.jna:jna-platform")
-	api("org.apache.commons:commons-compress")
-	api("org.apache.httpcomponents.client5:httpclient5")
-	api("org.springframework:spring-core")
-	api("org.tomlj:tomlj:1.0.0")
+	implementation("com.fasterxml.jackson.core:jackson-databind")
+	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
+	implementation("net.java.dev.jna:jna-platform")
+	implementation("org.apache.commons:commons-compress")
+	implementation("org.apache.httpcomponents.client5:httpclient5")
+	implementation("org.springframework:spring-core")
+	implementation("org.tomlj:tomlj:1.0.0")
 	
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.jayway.jsonpath:json-path")
