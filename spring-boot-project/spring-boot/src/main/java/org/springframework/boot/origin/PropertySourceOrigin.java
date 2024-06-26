@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,13 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.0.0
  */
-public class PropertySourceOrigin implements Origin {
+public class PropertySourceOrigin implements Origin, OriginProvider {
 
 	private final PropertySource<?> propertySource;
 
 	private final String propertyName;
+
+	private final Origin origin;
 
 	/**
 	 * Create a new {@link PropertySourceOrigin} instance.
@@ -37,10 +39,22 @@ public class PropertySourceOrigin implements Origin {
 	 * @param propertyName the name from the property source
 	 */
 	public PropertySourceOrigin(PropertySource<?> propertySource, String propertyName) {
+		this(propertySource, propertyName, null);
+	}
+
+	/**
+	 * Create a new {@link PropertySourceOrigin} instance.
+	 * @param propertySource the property source
+	 * @param propertyName the name from the property source
+	 * @param origin the actual origin for the source if known
+	 * @since 3.2.8
+	 */
+	public PropertySourceOrigin(PropertySource<?> propertySource, String propertyName, Origin origin) {
 		Assert.notNull(propertySource, "PropertySource must not be null");
 		Assert.hasLength(propertyName, "PropertyName must not be empty");
 		this.propertySource = propertySource;
 		this.propertyName = propertyName;
+		this.origin = origin;
 	}
 
 	/**
@@ -60,9 +74,25 @@ public class PropertySourceOrigin implements Origin {
 		return this.propertyName;
 	}
 
+	/**
+	 * Return the actual origin for the source if known.
+	 * @return the actual source origin
+	 * @since 3.2.8
+	 */
+	@Override
+	public Origin getOrigin() {
+		return this.origin;
+	}
+
+	@Override
+	public Origin getParent() {
+		return (this.origin != null) ? this.origin.getParent() : null;
+	}
+
 	@Override
 	public String toString() {
-		return "\"" + this.propertyName + "\" from property source \"" + this.propertySource.getName() + "\"";
+		return (this.origin != null) ? this.origin.toString()
+				: "\"" + this.propertyName + "\" from property source \"" + this.propertySource.getName() + "\"";
 	}
 
 	/**
@@ -75,7 +105,8 @@ public class PropertySourceOrigin implements Origin {
 	 */
 	public static Origin get(PropertySource<?> propertySource, String name) {
 		Origin origin = OriginLookup.getOrigin(propertySource, name);
-		return (origin != null) ? origin : new PropertySourceOrigin(propertySource, name);
+		return (origin instanceof PropertySourceOrigin) ? origin
+				: new PropertySourceOrigin(propertySource, name, origin);
 	}
 
 }
