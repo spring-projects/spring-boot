@@ -92,7 +92,8 @@ class NativeImagePluginActionIntegrationTests {
 	void bootBuildImageIsConfiguredToBuildANativeImage() {
 		writeDummySpringApplicationAotProcessorMainClass();
 		BuildResult result = this.gradleBuild.build("bootBuildImageConfiguration");
-		assertThat(result.getOutput()).contains("BP_NATIVE_IMAGE = true");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder-jammy-tiny")
+			.contains("BP_NATIVE_IMAGE = true");
 	}
 
 	@TestTemplate
