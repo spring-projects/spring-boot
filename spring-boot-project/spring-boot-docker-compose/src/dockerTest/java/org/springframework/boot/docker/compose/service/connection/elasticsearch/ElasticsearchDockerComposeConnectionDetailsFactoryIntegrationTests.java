@@ -30,11 +30,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ElasticsearchDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "elasticsearch-compose.yaml", image = TestImage.ELASTICSEARCH_8)
 	void runCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "elasticsearch-bitnami-compose.yaml", image = TestImage.BITNAMI_ELASTICSEARCH)
+	void runWithBitnamiImageCreatesConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	private void assertConnectionDetails(ElasticsearchConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("elastic");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getPathPrefix()).isNull();

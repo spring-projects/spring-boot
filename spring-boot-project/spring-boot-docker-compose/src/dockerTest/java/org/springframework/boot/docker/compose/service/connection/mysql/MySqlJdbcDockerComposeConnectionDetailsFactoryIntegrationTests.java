@@ -28,11 +28,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MySqlJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "mysql-compose.yaml", image = TestImage.MYSQL)
 	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "mysql-bitnami-compose.yaml", image = TestImage.BITNAMI_MYSQL)
+	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mysql://").endsWith("/mydatabase");

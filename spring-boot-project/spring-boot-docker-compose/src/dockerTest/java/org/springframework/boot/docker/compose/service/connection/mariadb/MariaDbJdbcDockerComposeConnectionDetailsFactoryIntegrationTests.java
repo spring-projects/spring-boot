@@ -28,11 +28,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MariaDbJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "mariadb-compose.yaml", image = TestImage.MARIADB)
 	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "mariadb-bitnami-compose.yaml", image = TestImage.BITNAMI_MARIADB)
+	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:mariadb://").endsWith("/mydatabase");

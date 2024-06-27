@@ -31,12 +31,22 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  * Integration tests for {@link Neo4jDockerComposeConnectionDetailsFactory}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class Neo4jDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "neo4j-compose.yaml", image = TestImage.NEO4J)
 	void runCreatesConnectionDetailsThatCanAccessNeo4j(Neo4jConnectionDetails connectionDetails) {
-		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("neo4j", "secret"));
+		assertConnectionDetailsWithPassword(connectionDetails, "secret");
+	}
+
+	@DockerComposeTest(composeFile = "neo4j-bitnami-compose.yaml", image = TestImage.BITNAMI_NEO4J)
+	void runWithBitnamiImageCreatesConnectionDetailsThatCanAccessNeo4j(Neo4jConnectionDetails connectionDetails) {
+		assertConnectionDetailsWithPassword(connectionDetails, "bitnami2");
+	}
+
+	private void assertConnectionDetailsWithPassword(Neo4jConnectionDetails connectionDetails, String password) {
+		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("neo4j", password));
 		try (Driver driver = GraphDatabase.driver(connectionDetails.getUri(), connectionDetails.getAuthToken())) {
 			assertThatNoException().isThrownBy(driver::verifyConnectivity);
 		}
