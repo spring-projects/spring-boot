@@ -470,14 +470,12 @@ public class WebMvcAutoConfiguration {
 			return super.flashMapManager();
 		}
 
-
 		@Override
 		@Bean
 		@ConditionalOnMissingBean(name = DispatcherServlet.REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME)
 		public RequestToViewNameTranslator viewNameTranslator() {
 			return super.viewNameTranslator();
 		}
-
 
 		private Resource getIndexHtmlResource() {
 			for (String location : this.resourceProperties.getStaticLocations()) {

@@ -65,7 +65,6 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebSe
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -90,7 +89,6 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
@@ -139,6 +137,7 @@ import org.springframework.web.servlet.support.AbstractFlashMapManager;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
 import org.springframework.web.util.UrlPathHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -408,21 +407,23 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	public void customViewNameTranslatorWithDifferentNameDoesNotReplaceDefaultViewNameTranslator() {
+	void customViewNameTranslatorWithMatchingNameReplacesDefaultViewNameTranslator() {
 		this.contextRunner.withBean("viewNameTranslator", CustomViewNameTranslator.class, CustomViewNameTranslator::new)
 			.run((context) -> {
-				assertThat(context.getBean("customViewNameTranslator")).isInstanceOf(CustomViewNameTranslator.class);
-				assertThat(context.getBean("viewNameTranslator")).isInstanceOf(SessionFlashMapManager.class);
+				assertThat(context).hasSingleBean(RequestToViewNameTranslator.class);
+				assertThat(context.getBean("viewNameTranslator")).isInstanceOf(CustomViewNameTranslator.class);
 			});
 	}
 
 	@Test
-	void customViewNameTranslatorWithDifferentNameReplaceDefaultViewNameTranslator() {
-		this.contextRunner.withBean("viewNameTranslator", CustomViewNameTranslator.class, CustomViewNameTranslator::new)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RequestToViewNameTranslator.class);
-					assertThat(context.getBean("viewNameTranslator")).isInstanceOf(CustomViewNameTranslator.class);
-				});
+	void customViewNameTranslatorWithDifferentNameDoesNotReplaceDefaultViewNameTranslator() {
+		this.contextRunner
+			.withBean("customViewNameTranslator", CustomViewNameTranslator.class, CustomViewNameTranslator::new)
+			.run((context) -> {
+				assertThat(context.getBean("customViewNameTranslator")).isInstanceOf(CustomViewNameTranslator.class);
+				assertThat(context.getBean("viewNameTranslator"))
+					.isInstanceOf(DefaultRequestToViewNameTranslator.class);
+			});
 	}
 
 	@Test
