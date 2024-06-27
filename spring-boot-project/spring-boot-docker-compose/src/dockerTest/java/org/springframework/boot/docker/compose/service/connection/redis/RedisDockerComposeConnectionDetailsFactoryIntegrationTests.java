@@ -29,16 +29,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class RedisDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "redis-compose.yaml", image = TestImage.REDIS)
 	void runCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
-		Standalone standalone = connectionDetails.getStandalone();
+		assertConnectionDetails(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "redis-bitnami-compose.yaml", image = TestImage.BITNAMI_REDIS)
+	void runWithBitnamiImageCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	private void assertConnectionDetails(RedisConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUsername()).isNull();
 		assertThat(connectionDetails.getPassword()).isNull();
 		assertThat(connectionDetails.getCluster()).isNull();
 		assertThat(connectionDetails.getSentinel()).isNull();
+		Standalone standalone = connectionDetails.getStandalone();
 		assertThat(standalone).isNotNull();
 		assertThat(standalone.getDatabase()).isZero();
 		assertThat(standalone.getPort()).isGreaterThan(0);
