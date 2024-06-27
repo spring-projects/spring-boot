@@ -68,6 +68,7 @@ class OtlpAutoConfigurationIntegrationTests {
 	private final MockWebServer mockWebServer = new MockWebServer();
 
 	private final MockGrpcService mockGrpcService = new MockGrpcService();
+
 	private final Server mockGrpcServer = ServerBuilder.forPort(0).addService(this.mockGrpcService).build();
 
 	@BeforeEach
