@@ -19,7 +19,6 @@ package org.springframework.boot.docs.testing.springbootapplications.springwebfl
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.docs.features.testing.springbootapplications.springwebfluxtests.UserVehicleController;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
