@@ -105,6 +105,10 @@ gradlePlugin {
 			id = "org.springframework.boot.deployed"
 			implementationClass = "org.springframework.boot.build.DeployedPlugin"
 		}
+		dockerTestPlugin {
+			id = "org.springframework.boot.docker-test"
+			implementationClass = "org.springframework.boot.build.test.DockerTestPlugin"
+		}
 		integrationTestPlugin {
 			id = "org.springframework.boot.integration-test"
 			implementationClass = "org.springframework.boot.build.test.IntegrationTestPlugin"
