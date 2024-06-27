@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logs.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,25 +32,26 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.logs.OpenTelemetryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.OpenTelemetryLoggingAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OtlpLogsAutoConfiguration}.
+ * Integration tests for {@link OtlpLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
  */
-public class OtlpLogsAutoConfigurationIntegrationTests {
+public class OtlpLoggingAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("spring.application.name=otlp-logs-test",
-				"management.otlp.logs.headers.Authorization=Bearer my-token")
-		.withConfiguration(AutoConfigurations.of(
-				org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration.class,
-				OpenTelemetryAutoConfiguration.class, OtlpLogsAutoConfiguration.class));
+				"management.otlp.logging.headers.Authorization=Bearer my-token")
+		.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class,
+				OpenTelemetryLoggingAutoConfiguration.class, OtlpLoggingAutoConfiguration.class));
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 
@@ -68,17 +69,10 @@ public class OtlpLogsAutoConfigurationIntegrationTests {
 	void httpLogRecordExporterShouldUseProtobufAndNoCompressionByDefault() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
-			.withPropertyValues(
-					"management.otlp.logs.endpoint=http://localhost:%d/v1/logs".formatted(this.mockWebServer.getPort()))
+			.withPropertyValues("management.otlp.logging.endpoint=http://localhost:%d/v1/logs"
+				.formatted(this.mockWebServer.getPort()))
 			.run((context) -> {
-				SdkLoggerProvider loggerProvider = context.getBean(SdkLoggerProvider.class);
-				loggerProvider.get("test")
-					.logRecordBuilder()
-					.setSeverity(Severity.INFO)
-					.setSeverityText("INFO")
-					.setBody("Hello")
-					.setTimestamp(Instant.now())
-					.emit();
+				logMessage(context);
 				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
 				assertThat(request).isNotNull();
 				assertThat(request.getRequestLine()).contains("/v1/logs");
@@ -86,12 +80,7 @@ public class OtlpLogsAutoConfigurationIntegrationTests {
 				assertThat(request.getHeader("Content-Encoding")).isNull();
 				assertThat(request.getBodySize()).isPositive();
 				try (Buffer body = request.getBody()) {
-					String bodyString = body.readString(StandardCharsets.UTF_8);
-					assertThat(bodyString).contains("otlp-logs-test");
-					assertThat(bodyString).contains("test");
-					assertThat(bodyString).contains("INFO");
-
-					assertThat(bodyString).contains("Hello");
+					assertLogMessage(body);
 				}
 			});
 	}
@@ -100,18 +89,10 @@ public class OtlpLogsAutoConfigurationIntegrationTests {
 	void httpLogRecordExporterCanBeConfiguredToUseGzipCompression() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
-			.withPropertyValues(
-					"management.otlp.logs.endpoint=http://localhost:%d/v1/logs".formatted(this.mockWebServer.getPort()),
-					"management.otlp.logs.compression=gzip")
+			.withPropertyValues("management.otlp.logging.endpoint=http://localhost:%d/v1/logs"
+				.formatted(this.mockWebServer.getPort()), "management.otlp.logging.compression=gzip")
 			.run((context) -> {
-				SdkLoggerProvider loggerProvider = context.getBean(SdkLoggerProvider.class);
-				loggerProvider.get("test")
-					.logRecordBuilder()
-					.setBody("Hello")
-					.setSeverity(Severity.INFO)
-					.setSeverityText("INFO")
-					.setTimestamp(Instant.now())
-					.emit();
+				logMessage(context);
 				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
 				assertThat(request).isNotNull();
 				assertThat(request.getRequestLine()).contains("/v1/logs");
@@ -120,13 +101,28 @@ public class OtlpLogsAutoConfigurationIntegrationTests {
 				assertThat(request.getBodySize()).isPositive();
 				try (Buffer uncompressed = new Buffer(); Buffer body = request.getBody()) {
 					uncompressed.writeAll(new GzipSource(body));
-					String bodyString = uncompressed.readString(StandardCharsets.UTF_8);
-					assertThat(bodyString).contains("otlp-logs-test");
-					assertThat(bodyString).contains("test");
-					assertThat(bodyString).contains("INFO");
-					assertThat(bodyString).contains("Hello");
+					assertLogMessage(uncompressed);
 				}
 			});
+	}
+
+	private static void logMessage(ApplicationContext context) {
+		SdkLoggerProvider loggerProvider = context.getBean(SdkLoggerProvider.class);
+		loggerProvider.get("test")
+			.logRecordBuilder()
+			.setSeverity(Severity.INFO)
+			.setSeverityText("INFO")
+			.setBody("Hello")
+			.setTimestamp(Instant.now())
+			.emit();
+	}
+
+	private static void assertLogMessage(Buffer body) {
+		String string = body.readString(StandardCharsets.UTF_8);
+		assertThat(string).contains("otlp-logs-test");
+		assertThat(string).contains("test");
+		assertThat(string).contains("INFO");
+		assertThat(string).contains("Hello");
 	}
 
 }

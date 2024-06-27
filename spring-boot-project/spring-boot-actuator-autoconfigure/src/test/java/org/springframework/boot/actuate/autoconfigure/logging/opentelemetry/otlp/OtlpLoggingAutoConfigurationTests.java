@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logs.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
 
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import org.springframework.boot.actuate.autoconfigure.logs.otlp.OtlpLogsConfigurations.ConnectionDetails.PropertiesOtlpLogsConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -34,28 +34,30 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OtlpLogsAutoConfiguration}.
+ * Tests for {@link OtlpLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
  */
-class OtlpLogsAutoConfigurationTests {
+class OtlpLoggingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(OtlpLogsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(OtlpLoggingAutoConfiguration.class));
 
 	@Test
 	void shouldNotSupplyBeansIfPropertyIsNotSet() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).doesNotHaveBean(OtlpLogsConnectionDetails.class);
+			assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 			assertThat(context).doesNotHaveBean(OtlpHttpLogRecordExporter.class);
 		});
 	}
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.withPropertyValues("management.otlp.logs.endpoint=http://localhost:4318/v1/logs")
+		this.contextRunner.withPropertyValues("management.otlp.logging.endpoint=http://localhost:4318/v1/logs")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(OtlpLogsConnectionDetails.class);
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				OtlpLoggingConnectionDetails connectionDetails = context.getBean(OtlpLoggingConnectionDetails.class);
+				assertThat(connectionDetails.getEndpoint()).isEqualTo("http://localhost:4318/v1/logs");
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class)
 					.hasSingleBean(LogRecordExporter.class);
 			});
@@ -66,7 +68,7 @@ class OtlpLogsAutoConfigurationTests {
 			"io.opentelemetry.exporter.otlp.http.logs" })
 	void shouldNotSupplyBeansIfDependencyIsMissing(String packageName) {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(packageName)).run((context) -> {
-			assertThat(context).doesNotHaveBean(OtlpLogsConnectionDetails.class);
+			assertThat(context).doesNotHaveBean(OtlpLoggingConnectionDetails.class);
 			assertThat(context).doesNotHaveBean(OtlpHttpLogRecordExporter.class);
 		});
 	}
@@ -88,8 +90,8 @@ class OtlpLogsAutoConfigurationTests {
 	@Test
 	void shouldBackOffWhenCustomOtlpLogsConnectionDetailsIsDefined() {
 		this.contextRunner.withUserConfiguration(CustomOtlpLogsConnectionDetails.class).run((context) -> {
-			assertThat(context).hasSingleBean(OtlpLogsConnectionDetails.class)
-				.doesNotHaveBean(PropertiesOtlpLogsConnectionDetails.class);
+			assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class)
+				.doesNotHaveBean(PropertiesOtlpLoggingConnectionDetails.class);
 			OtlpHttpLogRecordExporter otlpHttpLogRecordExporter = context.getBean(OtlpHttpLogRecordExporter.class);
 			assertThat(otlpHttpLogRecordExporter).extracting("delegate.httpSender.url")
 				.isEqualTo(HttpUrl.get("https://otel.example.com/v1/logs"));
@@ -121,7 +123,7 @@ class OtlpLogsAutoConfigurationTests {
 	public static class CustomOtlpLogsConnectionDetails {
 
 		@Bean
-		public OtlpLogsConnectionDetails customOtlpLogsConnectionDetails() {
+		public OtlpLoggingConnectionDetails customOtlpLogsConnectionDetails() {
 			return () -> "https://otel.example.com/v1/logs";
 		}
 

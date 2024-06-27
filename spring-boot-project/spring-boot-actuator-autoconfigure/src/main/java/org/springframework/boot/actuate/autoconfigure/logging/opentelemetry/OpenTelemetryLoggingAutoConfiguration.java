@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logs;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.sdk.logs.LogRecordProcessor;
@@ -32,26 +32,25 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry Logs.
+ * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry logging.
  *
  * @author Toshiaki Maki
  * @since 3.4.0
  */
-@AutoConfiguration("openTelemetryLogsAutoConfiguration")
+@AutoConfiguration
 @ConditionalOnClass({ SdkLoggerProvider.class, OpenTelemetry.class })
-public class OpenTelemetryAutoConfiguration {
+public class OpenTelemetryLoggingAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public BatchLogRecordProcessor batchLogRecordProcessor(ObjectProvider<LogRecordExporter> logRecordExporters) {
+	BatchLogRecordProcessor batchLogRecordProcessor(ObjectProvider<LogRecordExporter> logRecordExporters) {
 		return BatchLogRecordProcessor.builder(LogRecordExporter.composite(logRecordExporters.orderedStream().toList()))
 			.build();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SdkLoggerProvider otelSdkLoggerProvider(Resource resource,
-			ObjectProvider<LogRecordProcessor> logRecordProcessors,
+	SdkLoggerProvider otelSdkLoggerProvider(Resource resource, ObjectProvider<LogRecordProcessor> logRecordProcessors,
 			ObjectProvider<SdkLoggerProviderBuilderCustomizer> customizers) {
 		SdkLoggerProviderBuilder builder = SdkLoggerProvider.builder().setResource(resource);
 		logRecordProcessors.orderedStream().forEach(builder::addLogRecordProcessor);

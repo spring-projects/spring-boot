@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for OpenTelemetry Logs.
+ * Auto-configuration for OpenTelemetry logging.
  */
-package org.springframework.boot.actuate.autoconfigure.logs;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;

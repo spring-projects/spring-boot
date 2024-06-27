@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logs.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
 
 import java.util.Locale;
 
@@ -28,36 +28,38 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configurations imported by {@link OtlpLogsAutoConfiguration}.
+ * Configurations imported by {@link OtlpLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
- * @since 3.4.0
  */
-public class OtlpLogsConfigurations {
+final class OtlpLoggingConfigurations {
+
+	private OtlpLoggingConfigurations() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class ConnectionDetails {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "management.otlp.logs", name = "endpoint")
-		OtlpLogsConnectionDetails otlpLogsConnectionDetails(OtlpProperties properties) {
-			return new PropertiesOtlpLogsConnectionDetails(properties);
+		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "endpoint")
+		OtlpLoggingConnectionDetails otlpLogsConnectionDetails(OtlpLoggingProperties properties) {
+			return new PropertiesOtlpLoggingConnectionDetails(properties);
 		}
 
 		/**
-		 * Adapts {@link OtlpProperties} to {@link OtlpLogsConnectionDetails}.
+		 * Adapts {@link OtlpLoggingProperties} to {@link OtlpLoggingConnectionDetails}.
 		 */
-		static class PropertiesOtlpLogsConnectionDetails implements OtlpLogsConnectionDetails {
+		static class PropertiesOtlpLoggingConnectionDetails implements OtlpLoggingConnectionDetails {
 
-			private final OtlpProperties properties;
+			private final OtlpLoggingProperties properties;
 
-			PropertiesOtlpLogsConnectionDetails(OtlpProperties properties) {
+			PropertiesOtlpLoggingConnectionDetails(OtlpLoggingProperties properties) {
 				this.properties = properties;
 			}
 
 			@Override
-			public String getUrl() {
+			public String getEndpoint() {
 				return this.properties.getEndpoint();
 			}
 
@@ -70,12 +72,12 @@ public class OtlpLogsConfigurations {
 
 		@ConditionalOnMissingBean(value = OtlpHttpLogRecordExporter.class,
 				type = "io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter")
-		@ConditionalOnBean(OtlpLogsConnectionDetails.class)
+		@ConditionalOnBean(OtlpLoggingConnectionDetails.class)
 		@Bean
-		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpProperties properties,
-				OtlpLogsConnectionDetails connectionDetails) {
+		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
+				OtlpLoggingConnectionDetails connectionDetails) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
-				.setEndpoint(connectionDetails.getUrl())
+				.setEndpoint(connectionDetails.getEndpoint())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.US))
 				.setTimeout(properties.getTimeout());
 			properties.getHeaders().forEach(builder::addHeader);

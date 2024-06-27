@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logs.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -28,8 +28,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jonatan Ivanov
  * @since 3.4.0
  */
-@ConfigurationProperties("management.otlp.logs")
-public class OtlpProperties {
+@ConfigurationProperties("management.otlp.logging")
+public class OtlpLoggingProperties {
 
 	/**
 	 * URL to the OTel collector's HTTP API.
@@ -52,7 +52,7 @@ public class OtlpProperties {
 	/**
 	 * Custom HTTP headers you want to pass to the collector, for example auth headers.
 	 */
-	private Map<String, String> headers = new HashMap<>();
+	private final Map<String, String> headers = new HashMap<>();
 
 	public String getEndpoint() {
 		return this.endpoint;
@@ -80,10 +80,6 @@ public class OtlpProperties {
 
 	public Map<String, String> getHeaders() {
 		return this.headers;
-	}
-
-	public void setHeaders(Map<String, String> headers) {
-		this.headers = headers;
 	}
 
 	public enum Compression {

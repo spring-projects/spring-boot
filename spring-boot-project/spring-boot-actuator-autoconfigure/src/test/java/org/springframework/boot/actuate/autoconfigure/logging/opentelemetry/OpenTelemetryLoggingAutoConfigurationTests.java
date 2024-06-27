@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logs;
+package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,18 +41,18 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OpenTelemetryAutoConfiguration}.
+ * Tests for {@link OpenTelemetryLoggingAutoConfiguration}.
  *
  * @author Toshiaki Maki
  */
-class OpenTelemetryAutoConfigurationTests {
+class OpenTelemetryLoggingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner;
 
-	OpenTelemetryAutoConfigurationTests() {
+	OpenTelemetryLoggingAutoConfigurationTests() {
 		this.contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(
 				org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration.class,
-				OpenTelemetryAutoConfiguration.class));
+				OpenTelemetryLoggingAutoConfiguration.class));
 	}
 
 	@Test
