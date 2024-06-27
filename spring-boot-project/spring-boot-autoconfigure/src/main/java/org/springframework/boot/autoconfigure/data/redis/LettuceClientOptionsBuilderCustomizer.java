@@ -16,27 +16,27 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ClientOptions.Builder;
+
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link LettuceClientConfiguration} through a {@link LettuceClientConfigurationBuilder
- * LettuceClientConfiguration.LettuceClientConfigurationBuilder} whilst retaining default
- * auto-configuration. To customize only the
- * {@link LettuceClientConfiguration#getClientOptions() client options} of the
- * configuration, use {@link LettuceClientOptionsBuilderCustomizer} instead.
+ * {@link ClientOptions} of the {@link LettuceClientConfiguration} through a
+ * {@link Builder} whilst retaining default auto-configuration. To customize the entire
+ * configuration, use {@link LettuceClientConfigurationBuilderCustomizer} instead.
  *
- * @author Mark Paluch
- * @since 2.0.0
+ * @author Soohyun Lim
+ * @since 3.4.0
  */
 @FunctionalInterface
-public interface LettuceClientConfigurationBuilderCustomizer {
+public interface LettuceClientOptionsBuilderCustomizer {
 
 	/**
-	 * Customize the {@link LettuceClientConfigurationBuilder}.
-	 * @param clientConfigurationBuilder the builder to customize
+	 * Customize the {@link Builder}.
+	 * @param clientOptionsBuilder the builder to customize
 	 */
-	void customize(LettuceClientConfigurationBuilder clientConfigurationBuilder);
+	void customize(Builder clientOptionsBuilder);
 
 }
