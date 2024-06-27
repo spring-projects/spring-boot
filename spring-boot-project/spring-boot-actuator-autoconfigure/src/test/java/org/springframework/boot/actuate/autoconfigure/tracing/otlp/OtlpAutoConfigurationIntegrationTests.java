@@ -26,7 +26,6 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import io.micrometer.tracing.Tracer;
-import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
