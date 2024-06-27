@@ -65,6 +65,11 @@ public enum TestImage {
 	ACTIVE_MQ_CLASSIC("apache/activemq-classic", "5.18.3", () -> ActiveMQContainer.class),
 
 	/**
+	 * A container image suitable for testing Apache Kafka.
+	 */
+	APACHE_KAFKA("apache/kafka", "3.7.0", () -> org.testcontainers.kafka.KafkaContainer.class),
+
+	/**
 	 * A container image suitable for testing Artemis.
 	 */
 	ARTEMIS("apache/activemq-artemis", "2.34.0", () -> ArtemisContainer.class),
@@ -96,9 +101,9 @@ public enum TestImage {
 	ELASTICSEARCH_8("elasticsearch", "8.6.1"),
 
 	/**
-	 * A container image suitable for testing Kafka.
+	 * A container image suitable for testing Confluent's distribution of Kafka.
 	 */
-	KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),
+	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),
 
 	/**
 	 * A container image suitable for testing OpenLDAP.

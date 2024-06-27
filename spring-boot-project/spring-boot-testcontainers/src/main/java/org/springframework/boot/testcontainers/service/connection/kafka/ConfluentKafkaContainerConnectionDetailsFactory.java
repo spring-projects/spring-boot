@@ -33,21 +33,21 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class KafkaContainerConnectionDetailsFactory
+class ConfluentKafkaContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
-		return new KafkaContainerConnectionDetails(source);
+		return new ConfluentKafkaContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class KafkaContainerConnectionDetails extends ContainerConnectionDetails<KafkaContainer>
-			implements KafkaConnectionDetails {
+	private static final class ConfluentKafkaContainerConnectionDetails
+			extends ContainerConnectionDetails<KafkaContainer> implements KafkaConnectionDetails {
 
-		private KafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+		private ConfluentKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
 		}
 
