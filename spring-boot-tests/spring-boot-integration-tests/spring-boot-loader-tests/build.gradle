@@ -1,7 +1,7 @@
 plugins {
 	id "java"
 	id "org.springframework.boot.conventions"
-	id "org.springframework.boot.integration-test"
+	id "org.springframework.boot.docker-test"
 	id "de.undercouch.download"
 }
 
@@ -21,16 +21,15 @@ dependencies {
 	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
 	app("org.bouncycastle:bcprov-jdk18on:1.78.1")
 
-	intTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
-	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	intTestImplementation("org.testcontainers:junit-jupiter")
-	intTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
 }
 
 task syncMavenRepository(type: Sync) {
 	from configurations.app
-	into "${buildDir}/int-test-maven-repository"
+	into "${buildDir}/docker-test-maven-repository"
 }
 
 task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
@@ -74,10 +73,10 @@ task syncJdkDownloads(type: Sync) {
 	into "${project.buildDir}/downloads/jdk/oracle/"
 }
 
-processIntTestResources {
+tasks.named("processDockerTestResources").configure {
 	dependsOn syncJdkDownloads
 }
 
-intTest {
+tasks.named("dockerTest").configure {
 	dependsOn buildApp, buildSignedJarApp
 }

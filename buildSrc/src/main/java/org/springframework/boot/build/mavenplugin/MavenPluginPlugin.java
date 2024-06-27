@@ -87,6 +87,7 @@ import org.xml.sax.SAXException;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
+import org.springframework.boot.build.test.DockerTestPlugin;
 import org.springframework.boot.build.test.IntegrationTestPlugin;
 import org.springframework.core.CollectionFactory;
 import org.springframework.util.Assert;
@@ -138,11 +139,15 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			.set(new File(project.getBuildDir(), "runtime-classpath-repository"));
 		project.getDependencies()
 			.components((components) -> components.all(MavenRepositoryComponentMetadataRule.class));
-		Sync task = project.getTasks().create("populateIntTestMavenRepository", Sync.class);
-		task.setDestinationDir(new File(project.getBuildDir(), "int-test-maven-repository"));
+		Sync task = project.getTasks().create("populateTestMavenRepository", Sync.class);
+		task.setDestinationDir(new File(project.getBuildDir(), "test-maven-repository"));
 		task.with(copyIntTestMavenRepositoryFiles(project, runtimeClasspathMavenRepository));
 		task.dependsOn(project.getTasks().getByName(MavenRepositoryPlugin.PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME));
 		project.getTasks().getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME).dependsOn(task);
+		project.getPlugins()
+			.withType(DockerTestPlugin.class)
+			.all((dockerTestPlugin) -> project.getTasks()
+				.named(DockerTestPlugin.DOCKER_TEST_TASK_NAME, (dockerTest) -> dockerTest.dependsOn(task)));
 	}
 
 	private CopySpec copyIntTestMavenRepositoryFiles(Project project,
