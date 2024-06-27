@@ -41,7 +41,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link KafkaContainerConnectionDetailsFactory}.
+ * Tests for {@link ConfluentKafkaContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=test-group",
 		"spring.kafka.consumer.auto-offset-reset=earliest" })
-class KafkaContainerConnectionDetailsFactoryIntegrationTests {
+class ConfluentKafkaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection

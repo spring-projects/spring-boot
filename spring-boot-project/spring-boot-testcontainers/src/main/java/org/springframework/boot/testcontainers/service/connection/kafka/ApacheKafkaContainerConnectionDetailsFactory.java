@@ -39,16 +39,16 @@ class ApacheKafkaContainerConnectionDetailsFactory
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
-		return new KafkaContainerConnectionDetails(source);
+		return new ApacheKafkaContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class KafkaContainerConnectionDetails extends ContainerConnectionDetails<KafkaContainer>
+	private static final class ApacheKafkaContainerConnectionDetails extends ContainerConnectionDetails<KafkaContainer>
 			implements KafkaConnectionDetails {
 
-		private KafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
+		private ApacheKafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
 		}
 

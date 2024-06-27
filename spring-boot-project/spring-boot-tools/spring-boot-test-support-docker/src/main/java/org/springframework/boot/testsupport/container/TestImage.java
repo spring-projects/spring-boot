@@ -101,9 +101,9 @@ public enum TestImage {
 	ELASTICSEARCH_8("elasticsearch", "8.6.1"),
 
 	/**
-	 * A container image suitable for testing Kafka.
+	 * A container image suitable for testing Confluent's distribution of Kafka.
 	 */
-	KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),
+	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),
 
 	/**
 	 * A container image suitable for testing OpenLDAP.
