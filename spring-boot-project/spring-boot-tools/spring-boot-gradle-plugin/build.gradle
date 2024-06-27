@@ -1,3 +1,7 @@
+import org.gradle.plugins.ide.eclipse.EclipsePlugin
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.Library
+
 plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
@@ -215,6 +219,22 @@ publishing {
 		versionMapping {
 			variant(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, project.objects.named(GradlePluginApiVersion, "8.7")) {
 				fromResolutionOf("modernGradleRuntimeClasspath")
+			}
+		}
+	}
+}
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath.file { merger ->
+			merger.whenMerged { content ->
+				if (content instanceof Classpath) {
+					content.entries.each { entry ->
+						if (entry instanceof Library && (entry.path.contains("gradle-api-") || entry.path.contains("groovy-"))) {
+							entry.entryAttributes.remove("test")
+						}
+					}
+				}
 			}
 		}
 	}
