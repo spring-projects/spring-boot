@@ -2,6 +2,7 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Buildpack Platform"
@@ -42,11 +43,15 @@ dependencies {
 	api("org.apache.httpcomponents.client5:httpclient5")
 	api("org.springframework:spring-core")
 	api("org.tomlj:tomlj:1.0.0")
-	
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+
+	dockerTestRuntimeOnly("org.testcontainers:testcontainers")
+
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.hamcrest:hamcrest")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")

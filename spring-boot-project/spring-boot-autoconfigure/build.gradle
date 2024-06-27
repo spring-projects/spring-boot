@@ -5,6 +5,7 @@ plugins {
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -12,6 +13,21 @@ description = "Spring Boot AutoConfigure"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.mockito:mockito-core")
+	dockerTestImplementation("org.springframework:spring-test")
+	dockerTestImplementation("org.testcontainers:cassandra")
+	dockerTestImplementation("org.testcontainers:couchbase")
+	dockerTestImplementation("org.testcontainers:elasticsearch")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:mongodb")
+	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:pulsar")
+	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -245,14 +261,6 @@ dependencies {
 	}
 	testImplementation("org.springframework.pulsar:spring-pulsar-cache-provider-caffeine")
 	testImplementation("org.springframework.security:spring-security-test")
-	testImplementation("org.testcontainers:cassandra")
-	testImplementation("org.testcontainers:couchbase")
-	testImplementation("org.testcontainers:elasticsearch")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:mongodb")
-	testImplementation("org.testcontainers:neo4j")
-	testImplementation("org.testcontainers:pulsar")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.yaml:snakeyaml")
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
