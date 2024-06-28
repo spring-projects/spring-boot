@@ -80,7 +80,7 @@ class PrometheusExemplarsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(SpanContext.class)
 				.getBean(SpanContext.class)
-				.isSameAs(CustomConfiguration.SUPPLIER));
+				.isSameAs(CustomConfiguration.SPAN_CONTEXT));
 	}
 
 	@Test
@@ -145,11 +145,11 @@ class PrometheusExemplarsAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	private static final class CustomConfiguration {
 
-		static final SpanContext SUPPLIER = mock(SpanContext.class);
+		static final SpanContext SPAN_CONTEXT = mock(SpanContext.class);
 
 		@Bean
 		SpanContext customSpanContext() {
-			return SUPPLIER;
+			return SPAN_CONTEXT;
 		}
 
 	}

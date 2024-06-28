@@ -1508,12 +1508,12 @@ bom {
 	library("Prometheus Client", "1.2.1") {
 		group("io.prometheus") {
 			imports = [
-					"prometheus-metrics-bom"
+				"prometheus-metrics-bom"
 			]
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
-			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
+			releaseNotes("https://github.com/prometheus/client_java/releases/tag/v{version}")
 		}
 	}
 	library("Prometheus Simpleclient", "0.16.0") {

@@ -47,20 +47,14 @@ class SecondCustomPrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapeHasContentTypeText004ByDefault(WebTestClient client) {
+		scrapeHasContentTypeText004ByDefault(client, "/actuator/prometheus");
+		scrapeHasContentTypeText004ByDefault(client, "/actuator/prometheussc");
+	}
+
+	private void scrapeHasContentTypeText004ByDefault(WebTestClient client, String uri) {
 		String expectedContentType = PrometheusTextFormatWriter.CONTENT_TYPE;
 		client.get()
-			.uri("/actuator/prometheus")
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(MediaType.parseMediaType(expectedContentType))
-			.expectBody(String.class)
-			.value((body) -> assertThat(body).contains("counter1_total")
-				.contains("counter2_total")
-				.contains("counter3_total"));
-		client.get()
-			.uri("/actuator/prometheussc")
+			.uri(uri)
 			.exchange()
 			.expectStatus()
 			.isOk()
@@ -74,22 +68,16 @@ class SecondCustomPrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapeHasContentTypeText004ByDefaultWhenClientAcceptsWildcardWithParameter(WebTestClient client) {
+		scrapeHasContentTypeText004ByDefaultWhenClientAcceptsWildcardWithParameter(client, "/actuator/prometheus");
+		scrapeHasContentTypeText004ByDefaultWhenClientAcceptsWildcardWithParameter(client, "/actuator/prometheussc");
+	}
+
+	private void scrapeHasContentTypeText004ByDefaultWhenClientAcceptsWildcardWithParameter(WebTestClient client,
+			String uri) {
 		String expectedContentType = PrometheusTextFormatWriter.CONTENT_TYPE;
 		String accept = "*/*;q=0.8";
 		client.get()
-			.uri("/actuator/prometheus")
-			.accept(MediaType.parseMediaType(accept))
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(MediaType.parseMediaType(expectedContentType))
-			.expectBody(String.class)
-			.value((body) -> assertThat(body).contains("counter1_total")
-				.contains("counter2_total")
-				.contains("counter3_total"));
-		client.get()
-			.uri("/actuator/prometheussc")
+			.uri(uri)
 			.accept(MediaType.parseMediaType(accept))
 			.exchange()
 			.expectStatus()
@@ -104,21 +92,14 @@ class SecondCustomPrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapeCanProduceOpenMetrics100(WebTestClient client) {
+		scrapeCanProduceOpenMetrics100(client, "/actuator/prometheus");
+		scrapeCanProduceOpenMetrics100(client, "/actuator/prometheussc");
+	}
+
+	private void scrapeCanProduceOpenMetrics100(WebTestClient client, String uri) {
 		MediaType openMetrics = MediaType.parseMediaType(OpenMetricsTextFormatWriter.CONTENT_TYPE);
 		client.get()
-			.uri("/actuator/prometheus")
-			.accept(openMetrics)
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(openMetrics)
-			.expectBody(String.class)
-			.value((body) -> assertThat(body).contains("counter1_total")
-				.contains("counter2_total")
-				.contains("counter3_total"));
-		client.get()
-			.uri("/actuator/prometheussc")
+			.uri(uri)
 			.accept(openMetrics)
 			.exchange()
 			.expectStatus()
@@ -133,18 +114,15 @@ class SecondCustomPrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapePrefersToProduceOpenMetrics100(WebTestClient client) {
+		scrapePrefersToProduceOpenMetrics100(client, "/actuator/prometheus");
+		scrapePrefersToProduceOpenMetrics100(client, "/actuator/prometheussc");
+	}
+
+	private void scrapePrefersToProduceOpenMetrics100(WebTestClient client, String uri) {
 		MediaType openMetrics = MediaType.parseMediaType(OpenMetricsTextFormatWriter.CONTENT_TYPE);
 		MediaType textPlain = MediaType.parseMediaType(PrometheusTextFormatWriter.CONTENT_TYPE);
 		client.get()
-			.uri("/actuator/prometheus")
-			.accept(openMetrics, textPlain)
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(openMetrics);
-		client.get()
-			.uri("/actuator/prometheussc")
+			.uri(uri)
 			.accept(openMetrics, textPlain)
 			.exchange()
 			.expectStatus()
@@ -155,19 +133,13 @@ class SecondCustomPrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
 	void scrapeWithIncludedNames(WebTestClient client) {
+		scrapeWithIncludedNames(client, "/actuator/prometheus?includedNames=counter1,counter2");
+		scrapeWithIncludedNames(client, "/actuator/prometheussc?includedNames=counter1_total,counter2_total");
+	}
+
+	private void scrapeWithIncludedNames(WebTestClient client, String uri) {
 		client.get()
-			.uri("/actuator/prometheus?includedNames=counter1,counter2")
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(MediaType.parseMediaType(PrometheusTextFormatWriter.CONTENT_TYPE))
-			.expectBody(String.class)
-			.value((body) -> assertThat(body).contains("counter1_total")
-				.contains("counter2_total")
-				.doesNotContain("counter3_total"));
-		client.get()
-			.uri("/actuator/prometheussc?includedNames=counter1_total,counter2_total")
+			.uri(uri)
 			.exchange()
 			.expectStatus()
 			.isOk()
