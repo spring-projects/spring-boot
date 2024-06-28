@@ -54,6 +54,8 @@ import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.attributes.DocsType;
 import org.gradle.api.attributes.Usage;
+import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
@@ -65,6 +67,7 @@ import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.publish.tasks.GenerateModuleMetadata;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
@@ -82,11 +85,14 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.test.DockerTestPlugin;
 import org.springframework.boot.build.test.IntegrationTestPlugin;
 import org.springframework.core.CollectionFactory;
@@ -116,6 +122,33 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		addDocumentPluginGoalsTask(project, generatePluginDescriptorTask);
 		addPrepareMavenBinariesTask(project);
 		addExtractVersionPropertiesTask(project);
+		publishOptionalDependenciesInPom(project);
+		project.getTasks().withType(GenerateModuleMetadata.class).configureEach((task) -> task.setEnabled(false));
+	}
+
+	private void publishOptionalDependenciesInPom(Project project) {
+		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> {
+			SoftwareComponent component = project.getComponents().findByName("java");
+			if (component instanceof AdhocComponentWithVariants componentWithVariants) {
+				componentWithVariants.addVariantsFromConfiguration(
+						project.getConfigurations().getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME),
+						(variant) -> variant.mapToOptional());
+			}
+		});
+		MavenPublication publication = (MavenPublication) project.getExtensions()
+			.getByType(PublishingExtension.class)
+			.getPublications()
+			.getByName("maven");
+		publication.getPom().withXml((xml) -> {
+			Element root = xml.asElement();
+			NodeList children = root.getChildNodes();
+			for (int i = 0; i < children.getLength(); i++) {
+				Node child = children.item(i);
+				if ("dependencyManagement".equals(child.getNodeName())) {
+					root.removeChild(child);
+				}
+			}
+		});
 	}
 
 	private void configurePomPackaging(Project project) {
