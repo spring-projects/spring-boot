@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-public class CheckLinks extends DefaultTask {
+public abstract class CheckLinks extends DefaultTask {
 
 	private final BomExtension bom;
 

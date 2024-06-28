@@ -34,7 +34,7 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class CheckClasspathForProhibitedDependencies extends DefaultTask {
+public abstract class CheckClasspathForProhibitedDependencies extends DefaultTask {
 
 	private static final Set<String> PROHIBITED_GROUPS = Set.of("org.codehaus.groovy", "org.eclipse.jetty.toolchain",
 			"commons-logging", "org.apache.geronimo.specs", "com.sun.activation");
