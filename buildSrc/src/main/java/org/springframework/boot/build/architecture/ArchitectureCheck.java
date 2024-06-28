@@ -168,21 +168,23 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.and()
 			.haveRawReturnType(
 					Predicates.assignableTo("org.springframework.beans.factory.config.BeanFactoryPostProcessor"))
-			.should(haveNoParameters())
+			.should(onlyInjectEnvironment())
 			.andShould()
 			.beStatic()
 			.allowEmptyShould(true);
 	}
 
-	private ArchCondition<JavaMethod> haveNoParameters() {
-		return new ArchCondition<>("have no parameters") {
+	private ArchCondition<JavaMethod> onlyInjectEnvironment() {
+		return new ArchCondition<>("only inject Environment") {
 
 			@Override
 			public void check(JavaMethod item, ConditionEvents events) {
 				List<JavaParameter> parameters = item.getParameters();
-				if (!parameters.isEmpty()) {
-					events
-						.add(SimpleConditionEvent.violated(item, item.getDescription() + " should have no parameters"));
+				for (JavaParameter parameter : parameters) {
+					if (!"org.springframework.core.env.Environment".equals(parameter.getType().getName())) {
+						events.add(SimpleConditionEvent.violated(item,
+								item.getDescription() + " should only inject Environment"));
+					}
 				}
 			}
 

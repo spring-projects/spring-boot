@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import org.testcontainers.containers.Container;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -65,7 +66,9 @@ class ContainerFieldsImporter {
 	}
 
 	private void registerBeanDefinition(BeanDefinitionRegistry registry, Field field, Container<?> container) {
+		ContainerImageMetadata containerMetadata = new ContainerImageMetadata(container.getDockerImageName());
 		TestcontainerFieldBeanDefinition beanDefinition = new TestcontainerFieldBeanDefinition(field, container);
+		containerMetadata.addTo(beanDefinition);
 		String beanName = generateBeanName(field);
 		registry.registerBeanDefinition(beanName, beanDefinition);
 	}

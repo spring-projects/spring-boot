@@ -52,6 +52,8 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private final Class<C> containerType;
 
+	private final String containerImageName;
+
 	private final String connectionName;
 
 	private final Set<Class<?>> connectionDetailsTypes;
@@ -63,6 +65,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
+		this.containerImageName = containerImageName;
 		this.connectionName = getOrDeduceConnectionName(annotation.getString("name"), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.getClassArray("type"));
 		this.containerSupplier = containerSupplier;
@@ -73,6 +76,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
+		this.containerImageName = containerImageName;
 		this.connectionName = getOrDeduceConnectionName(annotation.name(), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.type());
 		this.containerSupplier = containerSupplier;
@@ -134,6 +138,10 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 	@Override
 	public Origin getOrigin() {
 		return this.origin;
+	}
+
+	String getContainerImageName() {
+		return this.containerImageName;
 	}
 
 	String getConnectionName() {
