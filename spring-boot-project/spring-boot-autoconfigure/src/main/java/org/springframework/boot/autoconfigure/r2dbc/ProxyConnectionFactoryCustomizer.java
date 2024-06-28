@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.r2dbc;
+package org.springframework.boot.autoconfigure.r2dbc;
 
 import io.r2dbc.proxy.ProxyConnectionFactory;
 
@@ -23,7 +23,7 @@ import io.r2dbc.proxy.ProxyConnectionFactory;
  * {@link ProxyConnectionFactory.Builder}.
  *
  * @author Tadaya Tsuyukubo
- * @since 3.3
+ * @since 3.4.0
  */
 public interface ProxyConnectionFactoryCustomizer {
 

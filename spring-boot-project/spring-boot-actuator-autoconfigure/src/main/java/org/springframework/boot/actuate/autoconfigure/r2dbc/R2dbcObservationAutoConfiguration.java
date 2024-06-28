@@ -30,10 +30,9 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.r2dbc.ProxyConnectionFactoryCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.r2dbc.ConnectionFactoryDecorator;
 import org.springframework.boot.r2dbc.OptionsCapableConnectionFactory;
-import org.springframework.boot.r2dbc.ProxyConnectionFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 
@@ -50,24 +49,14 @@ import org.springframework.core.annotation.Order;
 public class R2dbcObservationAutoConfiguration {
 
 	/**
-	 * {@code @Order} value of observation customizer.
+	 * {@code @Order} value of the observation customizer.
 	 */
-	public static final int R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER = 1000;
-
-	@Bean
-	ConnectionFactoryDecorator connectionFactoryDecorator(
-			ObjectProvider<ProxyConnectionFactoryCustomizer> customizers) {
-		return (connectionFactory) -> {
-			ProxyConnectionFactory.Builder builder = ProxyConnectionFactory.builder(connectionFactory);
-			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			return builder.build();
-		};
-	}
+	public static final int R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER = 0;
 
 	@Bean
 	@Order(R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER)
 	@ConditionalOnBean(ObservationRegistry.class)
-	ProxyConnectionFactoryCustomizer proxyConnectionFactoryObservationCustomizer(R2dbcObservationProperties properties,
+	ProxyConnectionFactoryCustomizer observationProxyConnectionFactoryCustomizer(R2dbcObservationProperties properties,
 			ObservationRegistry observationRegistry,
 			ObjectProvider<QueryObservationConvention> queryObservationConvention,
 			ObjectProvider<QueryParametersTagProvider> queryParametersTagProvider) {
