@@ -2086,6 +2086,10 @@
       "defaultValue": false
     },
     {
+      "name": "management.otlp.logging.compression",
+      "defaultValue": "none"
+    },
+    {
       "name": "management.otlp.metrics.export.base-time-unit",
       "defaultValue": "milliseconds"
     },
