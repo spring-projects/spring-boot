@@ -28,11 +28,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
@@ -48,47 +52,45 @@ import org.springframework.core.CollectionFactory;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
-public class AutoConfigurationMetadata extends DefaultTask {
+public abstract class AutoConfigurationMetadata extends DefaultTask {
 
 	private static final String COMMENT_START = "#";
 
 	private final String moduleName;
 
-	private SourceSet sourceSet;
-
-	private File outputFile;
+	private FileCollection classesDirectories;
 
 	public AutoConfigurationMetadata() {
-		getInputs()
-			.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
-					"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"))
-			.withPathSensitivity(PathSensitivity.RELATIVE)
-			.withPropertyName("org.springframework.boot.autoconfigure.AutoConfiguration");
-
-		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
 		getProject().getConfigurations()
 			.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
 		this.moduleName = getProject().getName();
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
-		this.sourceSet = sourceSet;
+		getAutoConfigurationImports().set(new File(sourceSet.getOutput().getResourcesDir(),
+				"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"));
+		this.classesDirectories = sourceSet.getOutput().getClassesDirs();
+		dependsOn(sourceSet.getOutput());
 	}
+
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
+	abstract RegularFileProperty getAutoConfigurationImports();
 
 	@OutputFile
-	public File getOutputFile() {
-		return this.outputFile;
-	}
+	public abstract RegularFileProperty getOutputFile();
 
-	public void setOutputFile(File outputFile) {
-		this.outputFile = outputFile;
+	@Classpath
+	FileCollection getClassesDirectories() {
+		return this.classesDirectories;
 	}
 
 	@TaskAction
 	void documentAutoConfiguration() throws IOException {
 		Properties autoConfiguration = readAutoConfiguration();
-		getOutputFile().getParentFile().mkdirs();
-		try (FileWriter writer = new FileWriter(getOutputFile())) {
+		File outputFile = getOutputFile().get().getAsFile();
+		outputFile.getParentFile().mkdirs();
+		try (FileWriter writer = new FileWriter(outputFile)) {
 			autoConfiguration.store(writer, null);
 		}
 	}
@@ -120,8 +122,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 	 * @return auto-configurations
 	 */
 	private List<String> readAutoConfigurationsFile() throws IOException {
-		File file = new File(this.sourceSet.getOutput().getResourcesDir(),
-				"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports");
+		File file = getAutoConfigurationImports().getAsFile().get();
 		if (!file.exists()) {
 			return Collections.emptyList();
 		}
@@ -140,7 +141,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 
 	private File findClassFile(String className) {
 		String classFileName = className.replace(".", "/") + ".class";
-		for (File classesDir : this.sourceSet.getOutput().getClassesDirs()) {
+		for (File classesDir : this.classesDirectories) {
 			File classFile = new File(classesDir, classFileName);
 			if (classFile.isFile()) {
 				return classFile;

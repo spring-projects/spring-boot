@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
@@ -47,28 +48,16 @@ import org.gradle.internal.jvm.Jvm;
  *
  * @author Andy Wilkinson
  */
-public class ApplicationRunner extends DefaultTask {
-
-	private final RegularFileProperty output = getProject().getObjects().fileProperty();
-
-	private final ListProperty<String> args = getProject().getObjects().listProperty(String.class);
-
-	private final Property<String> mainClass = getProject().getObjects().property(String.class);
-
-	private final Property<String> expectedLogging = getProject().getObjects().property(String.class);
-
-	private final Property<String> applicationJar = getProject().getObjects()
-		.property(String.class)
-		.convention("/opt/apps/myapp.jar");
-
-	private final Map<String, String> normalizations = new HashMap<>();
+public abstract class ApplicationRunner extends DefaultTask {
 
 	private FileCollection classpath;
 
-	@OutputFile
-	public RegularFileProperty getOutput() {
-		return this.output;
+	public ApplicationRunner() {
+		getApplicationJar().convention("/opt/apps/myapp.jar");
 	}
+
+	@OutputFile
+	public abstract RegularFileProperty getOutput();
 
 	@Classpath
 	public FileCollection getClasspath() {
@@ -80,37 +69,27 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	@Input
-	public ListProperty<String> getArgs() {
-		return this.args;
-	}
+	public abstract ListProperty<String> getArgs();
 
 	@Input
-	public Property<String> getMainClass() {
-		return this.mainClass;
-	}
+	public abstract Property<String> getMainClass();
 
 	@Input
-	public Property<String> getExpectedLogging() {
-		return this.expectedLogging;
-	}
+	public abstract Property<String> getExpectedLogging();
 
 	@Input
-	Map<String, String> getNormalizations() {
-		return this.normalizations;
-	}
+	abstract MapProperty<String, String> getNormalizations();
 
 	@Input
-	public Property<String> getApplicationJar() {
-		return this.applicationJar;
-	}
+	abstract Property<String> getApplicationJar();
 
 	public void normalizeTomcatPort() {
-		this.normalizations.put("(Tomcat started on port )[\\d]+( \\(http\\))", "$18080$2");
-		this.normalizations.put("(Tomcat initialized with port )[\\d]+( \\(http\\))", "$18080$2");
+		getNormalizations().put("(Tomcat started on port )[\\d]+( \\(http\\))", "$18080$2");
+		getNormalizations().put("(Tomcat initialized with port )[\\d]+( \\(http\\))", "$18080$2");
 	}
 
 	public void normalizeLiveReloadPort() {
-		this.normalizations.put("(LiveReload server is running on port )[\\d]+", "$135729");
+		getNormalizations().put("(LiveReload server is running on port )[\\d]+", "$135729");
 	}
 
 	@TaskAction
@@ -123,9 +102,9 @@ public class ApplicationRunner extends DefaultTask {
 			.stream()
 			.map(File::getAbsolutePath)
 			.collect(Collectors.joining(File.pathSeparator)));
-		command.add(this.mainClass.get());
-		command.addAll(this.args.get());
-		File outputFile = this.output.getAsFile().get();
+		command.add(getMainClass().get());
+		command.addAll(getArgs().get());
+		File outputFile = getOutput().getAsFile().get();
 		Process process = new ProcessBuilder().redirectOutput(outputFile)
 			.redirectError(outputFile)
 			.command(command)
@@ -137,7 +116,7 @@ public class ApplicationRunner extends DefaultTask {
 
 	private void awaitLogging(Process process) {
 		long end = System.currentTimeMillis() + 60000;
-		String expectedLogging = this.expectedLogging.get();
+		String expectedLogging = getExpectedLogging().get();
 		while (System.currentTimeMillis() < end) {
 			for (String line : outputLines()) {
 				if (line.contains(expectedLogging)) {
@@ -152,7 +131,7 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	private List<String> outputLines() {
-		Path outputPath = this.output.get().getAsFile().toPath();
+		Path outputPath = getOutput().get().getAsFile().toPath();
 		try {
 			return Files.readAllLines(outputPath);
 		}
@@ -164,7 +143,7 @@ public class ApplicationRunner extends DefaultTask {
 	private void normalizeLogging() {
 		List<String> outputLines = outputLines();
 		List<String> normalizedLines = normalize(outputLines);
-		Path outputPath = this.output.get().getAsFile().toPath();
+		Path outputPath = getOutput().get().getAsFile().toPath();
 		try {
 			Files.write(outputPath, normalizedLines);
 		}
@@ -175,9 +154,9 @@ public class ApplicationRunner extends DefaultTask {
 
 	private List<String> normalize(List<String> lines) {
 		List<String> normalizedLines = lines;
-		Map<String, String> normalizations = new HashMap<>(this.normalizations);
+		Map<String, String> normalizations = new HashMap<>(getNormalizations().get());
 		normalizations.put("(Starting .* using Java .* with PID [\\d]+ \\().*( started by ).*( in ).*(\\))",
-				"$1" + this.applicationJar.get() + "$2myuser$3/opt/apps/$4");
+				"$1" + getApplicationJar().get() + "$2myuser$3/opt/apps/$4");
 		for (Entry<String, String> normalization : normalizations.entrySet()) {
 			Pattern pattern = Pattern.compile(normalization.getKey());
 			normalizedLines = normalize(normalizedLines, pattern, normalization.getValue());

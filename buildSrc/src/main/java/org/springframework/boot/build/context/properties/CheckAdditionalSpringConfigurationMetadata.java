@@ -46,21 +46,16 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
+public abstract class CheckAdditionalSpringConfigurationMetadata extends SourceTask {
 
 	private final File projectDir;
 
-	private final RegularFileProperty reportLocation;
-
 	public CheckAdditionalSpringConfigurationMetadata() {
 		this.projectDir = getProject().getProjectDir();
-		this.reportLocation = getProject().getObjects().fileProperty();
 	}
 
 	@OutputFile
-	public RegularFileProperty getReportLocation() {
-		return this.reportLocation;
-	}
+	public abstract RegularFileProperty getReportLocation();
 
 	@Override
 	@InputFiles

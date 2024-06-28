@@ -48,7 +48,7 @@ import org.springframework.boot.build.bom.Library;
  *
  * @author Andy Wilkinson
  */
-public class ExtractVersionConstraints extends DefaultTask {
+public abstract class ExtractVersionConstraints extends DefaultTask {
 
 	private final Configuration configuration;
 
