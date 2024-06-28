@@ -42,7 +42,7 @@ dependencies {
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 	implementation("org.sonatype.plexus:plexus-build-api") {
-		exclude(group: "org.codehaus.plexus:plexus-utils")
+		exclude(group: "org.codehaus.plexus", module: "plexus-utils")
 	}
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-context")
