@@ -62,23 +62,23 @@ class BaggagePropagationIntegrationTests {
 		autoConfig.get().run((context) -> {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
+			BaggageManager baggageManager = baggageManager(context);
 			assertThatTracingContextIsInitialized(autoConfig);
 			try (Tracer.SpanInScope scope = tracer.withSpan(span.start())) {
-				BaggageManager baggageManager = baggageManager(context);
+				assertMdcValue("traceId", span.context().traceId());
 				try (BaggageInScope fo = baggageManager.createBaggageInScope(span.context(), COUNTRY_CODE, "FO");
 						BaggageInScope alm = baggageManager.createBaggageInScope(span.context(), BUSINESS_PROCESS,
 								"ALM")) {
-					assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
-					assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
-					assertThat(MDC.get(BUSINESS_PROCESS)).isEqualTo("ALM");
+					assertMdcValue(COUNTRY_CODE, "FO");
+					assertMdcValue(BUSINESS_PROCESS, "ALM");
 				}
 			}
 			finally {
 				span.end();
 			}
 			assertThatMdcContainsUnsetTraceId(autoConfig);
-			assertThat(MDC.get(COUNTRY_CODE)).isNull();
-			assertThat(MDC.get(BUSINESS_PROCESS)).isNull();
+			assertUnsetMdc(COUNTRY_CODE);
+			assertUnsetMdc(BUSINESS_PROCESS);
 		});
 	}
 
@@ -88,25 +88,25 @@ class BaggagePropagationIntegrationTests {
 		autoConfig.get().run((context) -> {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
+			BaggageManager baggageManager = baggageManager(context);
 			assertThatTracingContextIsInitialized(autoConfig);
 			try (Tracer.SpanInScope scope = tracer.withSpan(span.start())) {
-				try (BaggageInScope fo = baggageManager(context).createBaggageInScope(span.context(), COUNTRY_CODE,
-						"FO")) {
-					assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
-					assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
+				assertMdcValue("traceId", span.context().traceId());
+				try (BaggageInScope fo = baggageManager.createBaggageInScope(span.context(), COUNTRY_CODE, "FO")) {
+					assertMdcValue(COUNTRY_CODE, "FO");
 					try (Tracer.SpanInScope scope2 = tracer.withSpan(null)) {
 						assertThatMdcContainsUnsetTraceId(autoConfig);
-						assertThat(MDC.get(COUNTRY_CODE)).isNull();
+						assertUnsetMdc(COUNTRY_CODE);
 					}
-					assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
-					assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
+					assertMdcValue("traceId", span.context().traceId());
+					assertMdcValue(COUNTRY_CODE, "FO");
 				}
 			}
 			finally {
 				span.end();
 			}
 			assertThatMdcContainsUnsetTraceId(autoConfig);
-			assertThat(MDC.get(COUNTRY_CODE)).isNull();
+			assertUnsetMdc(COUNTRY_CODE);
 		});
 	}
 
@@ -140,6 +140,14 @@ class BaggagePropagationIntegrationTests {
 		if (autoConfig.isBrave()) {
 			assertThat(MDC.get("traceId")).isNull();
 		}
+	}
+
+	private void assertUnsetMdc(String key) {
+		assertThat(MDC.get(key)).as("MDC[%s]", key).isNull();
+	}
+
+	private void assertMdcValue(String key, String expected) {
+		assertThat(MDC.get(key)).as("MDC[%s]", key).isEqualTo(expected);
 	}
 
 	enum AutoConfig implements Supplier<ApplicationContextRunner> {
