@@ -15,7 +15,7 @@ The included `HELP.md` file will provide getting started hints.
 == Sample Application
 
 We need an example application that we can use to create our native image.
-For our purposes, the simple "Hello World!" web application that's covered in the xref:tutorial:first-application/index.adoc[Developing Your First Spring Boot Application] section will suffice.
+For our purposes, the simple "Hello World!" web application that's covered in the xref:tutorial:first-application/index.adoc[] section will suffice.
 
 To recap, our main application code looks like this:
 

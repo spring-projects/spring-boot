@@ -12,8 +12,8 @@ If you are more than one release behind, please make sure that you also review t
 [[upgrading.from-1x]]
 == Upgrading From 1.x
 
-If you are upgrading from the `1.x` release of Spring Boot, check the {url-github-wiki}/Spring-Boot-2.0-Migration-Guide["`migration guide`" on the project wiki] that provides detailed upgrade instructions.
-Check also the {url-github-wiki}["`release notes`"] for a list of "`new and noteworthy`" features for each release.
+If you are upgrading from the `1.x` release of Spring Boot, check the {url-github-wiki}/Spring-Boot-2.0-Migration-Guide[migration guide] on the project wiki that provides detailed upgrade instructions.
+Check also the {url-github-wiki}[release notes] for a list of "`new and noteworthy`" features for each release.
 
 
 

@@ -36,10 +36,10 @@ The Spring Boot auto-configuration tries its best to "`do the right thing`", but
 
 There is a really useful `ConditionEvaluationReport` available in any Spring Boot `ApplicationContext`.
 You can see it if you enable `DEBUG` logging output.
-If you use the `spring-boot-actuator` (see xref:actuator.adoc[the Actuator chapter]), there is also a `conditions` endpoint that renders the report in JSON.
+If you use the `spring-boot-actuator` (see the xref:actuator.adoc[] section), there is also a `conditions` endpoint that renders the report in JSON.
 Use that endpoint to debug the application and see what features have been added (and which have not been added) by Spring Boot at runtime.
 
-Many more questions can be answered by looking at the source code and the Javadoc.
+Many more questions can be answered by looking at the source code and the API documentation.
 When reading the code, remember the following rules of thumb:
 
 * Look for classes called `+*AutoConfiguration+` and read their sources.
@@ -68,7 +68,7 @@ There is more than one way to register additional customizations:
 * Declaratively, for all applications, by adding a `META-INF/spring.factories` and packaging a jar file that the applications all use as a library.
 
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (some even before the context is created) and then registers the listeners for events published by the `ApplicationContext` as well.
-See "`xref:reference:features/spring-application.adoc#features.spring-application.application-events-and-listeners[Application Events and Listeners]`" in the '`Spring Boot features`' section for a complete list.
+See xref:reference:features/spring-application.adoc#features.spring-application.application-events-and-listeners[] in the "`Spring Boot Features`" section for a complete list.
 
 It is also possible to customize the `Environment` before the application context is refreshed by using `EnvironmentPostProcessor`.
 Each implementation should be registered in `META-INF/spring.factories`, as shown in the following example:
@@ -98,7 +98,7 @@ This is too late to configure certain properties such as `+logging.*+` and `+spr
 == Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
 
 You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext` hierarchies.
-See "`xref:reference:features/spring-application.adoc#features.spring-application.fluent-builder-api[Fluent Builder API]`" in the '`Spring Boot features`' section for more information.
+See xref:reference:features/spring-application.adoc#features.spring-application.fluent-builder-api[] in the "`Spring Boot Features`" section for more information.
 
 
 

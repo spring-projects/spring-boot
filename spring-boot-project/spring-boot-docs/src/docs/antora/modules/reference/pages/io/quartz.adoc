@@ -1,7 +1,7 @@
 [[io.quartz]]
 = Quartz Scheduler
 
-Spring Boot offers several conveniences for working with the https://www.quartz-scheduler.org/[Quartz scheduler], including the `spring-boot-starter-quartz` "`Starter`".
+Spring Boot offers several conveniences for working with the https://www.quartz-scheduler.org/[Quartz scheduler], including the `spring-boot-starter-quartz` starter.
 If Quartz is available, a `Scheduler` is auto-configured (through the `SchedulerFactoryBean` abstraction).
 
 Beans of the following types are automatically picked up and associated with the `Scheduler`:

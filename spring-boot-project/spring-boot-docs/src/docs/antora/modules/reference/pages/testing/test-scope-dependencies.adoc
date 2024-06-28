@@ -1,7 +1,7 @@
 [[testing.test-scope-dependencies]]
 = Test Scope Dependencies
 
-The `spring-boot-starter-test` "`Starter`" (in the `test` `scope`) contains the following provided libraries:
+The `spring-boot-starter-test` starter (in the `test` `scope`) contains the following provided libraries:
 
 * https://junit.org/junit5/[JUnit 5]: The de-facto standard for unit testing Java applications.
 * {url-spring-framework-docs}/testing/integration.html[Spring Test] & Spring Boot Test: Utilities and integration test support for Spring Boot applications.

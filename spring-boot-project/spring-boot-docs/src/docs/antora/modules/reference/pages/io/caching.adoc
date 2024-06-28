@@ -38,22 +38,22 @@ The cache abstraction does not provide an actual store and relies on abstraction
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {url-spring-framework-javadoc}/org/springframework/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
-. xref:io/caching.adoc#io.caching.provider.generic[Generic]
-. xref:io/caching.adoc#io.caching.provider.jcache[JCache (JSR-107)] (EhCache 3, Hazelcast, Infinispan, and others)
-. xref:io/caching.adoc#io.caching.provider.hazelcast[Hazelcast]
-. xref:io/caching.adoc#io.caching.provider.infinispan[Infinispan]
-. xref:io/caching.adoc#io.caching.provider.couchbase[Couchbase]
-. xref:io/caching.adoc#io.caching.provider.redis[Redis]
-. xref:io/caching.adoc#io.caching.provider.caffeine[Caffeine]
-. xref:io/caching.adoc#io.caching.provider.cache2k[Cache2k]
-. xref:io/caching.adoc#io.caching.provider.simple[Simple]
+. xref:io/caching.adoc#io.caching.provider.generic[]
+. xref:io/caching.adoc#io.caching.provider.jcache[] (EhCache 3, Hazelcast, Infinispan, and others)
+. xref:io/caching.adoc#io.caching.provider.hazelcast[]
+. xref:io/caching.adoc#io.caching.provider.infinispan[]
+. xref:io/caching.adoc#io.caching.provider.couchbase[]
+. xref:io/caching.adoc#io.caching.provider.redis[]
+. xref:io/caching.adoc#io.caching.provider.caffeine[]
+. xref:io/caching.adoc#io.caching.provider.cache2k[]
+. xref:io/caching.adoc#io.caching.provider.simple[]
 
 Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
 
 TIP: If the `CacheManager` is auto-configured by Spring Boot, it is possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
 Use this property if you need to xref:io/caching.adoc#io.caching.provider.none[use no-op caches] in certain environments (such as tests).
 
-TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching dependencies.
+TIP: Use the `spring-boot-starter-cache` starter to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
 If you add dependencies manually, you must include `spring-context-support` in order to use the JCache or Caffeine support.
 
@@ -79,7 +79,7 @@ A `CacheManager` wrapping all beans of that type is created.
 [[io.caching.provider.jcache]]
 === JCache (JSR-107)
 
-https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a `javax.cache.spi.CachingProvider` on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the `JCacheCacheManager` is provided by the `spring-boot-starter-cache` "`Starter`".
+https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a `javax.cache.spi.CachingProvider` on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the `JCacheCacheManager` is provided by the `spring-boot-starter-cache` starter.
 Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3, Hazelcast, and Infinispan.
 Any other compliant library can be added as well.
 
@@ -204,7 +204,7 @@ include-code::MyRedisCacheManagerConfiguration[]
 === Caffeine
 
 https://github.com/ben-manes/caffeine[Caffeine] is a Java 8 rewrite of Guava's cache that supersedes support for Guava.
-If Caffeine is present, a `CaffeineCacheManager` (provided by the `spring-boot-starter-cache` "`Starter`") is auto-configured.
+If Caffeine is present, a `CaffeineCacheManager` (provided by the `spring-boot-starter-cache` starter) is auto-configured.
 Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property and can be customized by one of the following (in the indicated order):
 
 . A cache spec defined by `spring.cache.caffeine.spec`

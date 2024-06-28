@@ -40,7 +40,7 @@ NOTE: It is recommended to stick with one format for your entire application.
 If you have configuration files with both `.properties` and YAML format in the same location, `.properties` takes precedence.
 
 NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
-See xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Binding From Environment Variables] for details.
+See xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[] for details.
 
 NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
 
@@ -54,7 +54,7 @@ For one-off testing, you can launch with a specific command line switch (for exa
 
 TIP: The `env` and `configprops` endpoints can be useful in determining why a property has a particular value.
 You can use these two endpoints to diagnose unexpected property values.
-See the "xref:actuator/endpoints.adoc[Production ready features]" section for details.
+See the xref:actuator/endpoints.adoc[Production ready features] section for details.
 
 
 
@@ -162,7 +162,7 @@ If you have a complex location setup, and you use profile-specific configuration
 A location group is a collection of locations that are all considered at the same level.
 For example, you might want to group all classpath locations, then all external locations.
 Items within a location group should be separated with `;`.
-See the example in the "`xref:features/external-config.adoc#features.external-config.files.profile-specific[Profile Specific Files]`" section for more details.
+See the example in the xref:features/external-config.adoc#features.external-config.files.profile-specific[] section for more details.
 
 Locations configured by using `spring.config.location` replace the default locations.
 For example, if `spring.config.location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
@@ -325,7 +325,7 @@ The example above would import both `my.properties` as well as any `my-<profile>
 [TIP]
 ====
 Spring Boot includes pluggable API that allows various different location addresses to be supported.
-By default you can import Java Properties, YAML and "`xref:features/external-config.adoc#features.external-config.files.configtree[configuration trees]`".
+By default you can import Java Properties, YAML and xref:features/external-config.adoc#features.external-config.files.configtree[configuration trees].
 
 Third-party jars can offer support for additional technologies (there is no requirement for files to be local).
 For example, you can imagine config data being from external stores such as Consul, Apache ZooKeeper or Netflix Archaius.
@@ -479,7 +479,7 @@ If you used `${demo.itemPrice}` instead, `demo.item-price` and `DEMO_ITEMPRICE` 
 ====
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
-See the _xref:how-to:properties-and-configuration.adoc#howto.properties-and-configuration.short-command-line-arguments[Use '`Short`' Command Line Arguments]_ how-to for details.
+See the xref:how-to:properties-and-configuration.adoc#howto.properties-and-configuration.short-command-line-arguments[] section in "`How-to Guides`" for details.
 
 
 
@@ -573,7 +573,7 @@ myotherprop: "sometimes-set"
 
 Spring Boot does not provide any built-in support for encrypting property values, however, it does provide the hook points necessary to modify values contained in the Spring `Environment`.
 The `EnvironmentPostProcessor` interface allows you to manipulate the `Environment` before the application starts.
-See xref:how-to:application.adoc#howto.application.customize-the-environment-or-application-context[Customize the Environment or ApplicationContext Before It Starts] for details.
+See xref:how-to:application.adoc#howto.application.customize-the-environment-or-application-context[] for details.
 
 If you need a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
 
@@ -585,7 +585,7 @@ If you need a secure way to store credentials and passwords, the https://cloud.s
 https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
 The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://github.com/snakeyaml/snakeyaml[SnakeYAML] library on your classpath.
 
-NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
+NOTE: If you use starters, SnakeYAML is automatically provided by `spring-boot-starter`.
 
 
 
@@ -637,7 +637,7 @@ my.servers[1]=another.example.com
 ----
 
 TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
-For more details see the "`xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties[Type-safe Configuration Properties]`" section below.
+For more details see the xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties[] section below.
 
 WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
 So, in the case that you need to load values that way, you need to use a properties file.
@@ -892,8 +892,8 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 | Standard YAML list syntax or comma-separated values
 
 | Environment Variables
-| Upper case format with underscore as the delimiter (see xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Binding From Environment Variables]).
-| Numeric values surrounded by underscores (see xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Binding From Environment Variables])
+| Upper case format with underscore as the delimiter (see xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[]).
+| Numeric values surrounded by underscores (see xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[])
 
 | System properties
 | Camel case, kebab case, or underscore notation
@@ -1190,7 +1190,7 @@ Doing so avoids any problems that may be caused by early instantiation.
 
 TIP: The `spring-boot-actuator` module includes an endpoint that exposes all `@ConfigurationProperties` beans.
 Point your web browser to `/actuator/configprops` or use the equivalent JMX endpoint.
-See the "xref:actuator/endpoints.adoc[Production ready features]" section for details.
+See the xref:actuator/endpoints.adoc[Production ready features] section for details.
 
 
 

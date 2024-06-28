@@ -155,7 +155,7 @@ The following component creates a listener endpoint on the `someQueue` destinati
 
 include-code::MyBean[]
 
-TIP: See {url-spring-framework-javadoc}/org/springframework/jms/annotation/EnableJms.html[the Javadoc of `@EnableJms`] for more details.
+TIP: See the {url-spring-framework-javadoc}/org/springframework/jms/annotation/EnableJms.html[`@EnableJms`] API documentation for more details.
 
 If you need to create more `JmsListenerContainerFactory` instances or if you want to override the default, Spring Boot provides a `DefaultJmsListenerContainerFactoryConfigurer` that you can use to initialize a `DefaultJmsListenerContainerFactory` with the same settings as the one that is auto-configured.
 

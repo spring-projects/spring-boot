@@ -26,7 +26,7 @@ dependencies {
 ----
 
 CAUTION: Devtools might cause classloading issues, in particular in multi-module projects.
-xref:using/devtools.adoc#using.devtools.diagnosing-classloading-issues[Diagnosing Classloading Issues] explains how to diagnose and solve them.
+xref:using/devtools.adoc#using.devtools.diagnosing-classloading-issues[] explains how to diagnose and solve them.
 
 NOTE: Developer tools are automatically disabled when running a fully packaged application.
 If your application is launched from `java -jar` or if it is started from a special classloader, then it is considered a "`production application`".
@@ -105,7 +105,7 @@ NOTE: If you are restarting with Maven or Gradle using the build plugin you must
 If you disable forking, the isolated application classloader used by devtools will not be created and restarts will not operate properly.
 
 TIP: Automatic restart works very well when used with LiveReload.
-xref:using/devtools.adoc#using.devtools.livereload[See the LiveReload section] for details.
+See the xref:using/devtools.adoc#using.devtools.livereload[] section for details.
 If you use JRebel, automatic restarts are disabled in favor of dynamic class reloading.
 Other devtools features (such as LiveReload and property overrides) can still be used.
 
@@ -293,7 +293,7 @@ NOTE: You can only run one LiveReload server at a time.
 Before starting your application, ensure that no other LiveReload servers are running.
 If you start multiple applications from your IDE, only the first has LiveReload support.
 
-WARNING: To trigger LiveReload when a file changes, xref:using/devtools.adoc#using.devtools.restart[Automatic Restart] must be enabled.
+WARNING: To trigger LiveReload when a file changes, xref:using/devtools.adoc#using.devtools.restart[] must be enabled.
 
 
 
@@ -437,7 +437,7 @@ The next batch can’t be sent to the application, since the server is restartin
 This is typically manifested by a warning in the `RemoteSpringApplication` logs about failing to upload some of the classes, and a consequent retry.
 But it may also lead to application code inconsistency and failure to restart after the first batch of changes is uploaded.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment.
-See the xref:using/devtools.adoc#using.devtools.globalsettings.configuring-file-system-watcher[Configuring File System Watcher] section for configuring these properties.
+See the xref:using/devtools.adoc#using.devtools.globalsettings.configuring-file-system-watcher[] section for configuring these properties.
 
 NOTE: Files are only monitored when the remote client is running.
 If you change a file before starting the remote client, it is not pushed to the remote server.
