@@ -125,7 +125,7 @@ If you provide any `@Beans` of type `MappingJackson2HttpMessageConverter`, they 
 Also, a convenience bean of type `HttpMessageConverters` is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
-See the "`xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[Customize the @ResponseBody Rendering]`" section and the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the xref:spring-mvc.adoc#howto.spring-mvc.customize-responsebody-rendering[] section and the {code-spring-boot-autoconfigure-src}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 

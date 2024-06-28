@@ -2,7 +2,7 @@
 = Class Data Sharing
 
 This section includes information about using Class Data Sharing (CDS) with Spring Boot applications.
-For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[Class Data Sharing].
+For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[].
 
 
 [[howto.class-data-sharing.buildpacks]]

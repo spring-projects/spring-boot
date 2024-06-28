@@ -38,15 +38,15 @@ The cache abstraction does not provide an actual store and relies on abstraction
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {url-spring-framework-javadoc}/org/springframework/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
-. xref:io/caching.adoc#io.caching.provider.generic[Generic]
-. xref:io/caching.adoc#io.caching.provider.jcache[JCache (JSR-107)] (EhCache 3, Hazelcast, Infinispan, and others)
-. xref:io/caching.adoc#io.caching.provider.hazelcast[Hazelcast]
-. xref:io/caching.adoc#io.caching.provider.infinispan[Infinispan]
-. xref:io/caching.adoc#io.caching.provider.couchbase[Couchbase]
-. xref:io/caching.adoc#io.caching.provider.redis[Redis]
-. xref:io/caching.adoc#io.caching.provider.caffeine[Caffeine]
-. xref:io/caching.adoc#io.caching.provider.cache2k[Cache2k]
-. xref:io/caching.adoc#io.caching.provider.simple[Simple]
+. xref:io/caching.adoc#io.caching.provider.generic[]
+. xref:io/caching.adoc#io.caching.provider.jcache[] (EhCache 3, Hazelcast, Infinispan, and others)
+. xref:io/caching.adoc#io.caching.provider.hazelcast[]
+. xref:io/caching.adoc#io.caching.provider.infinispan[]
+. xref:io/caching.adoc#io.caching.provider.couchbase[]
+. xref:io/caching.adoc#io.caching.provider.redis[]
+. xref:io/caching.adoc#io.caching.provider.caffeine[]
+. xref:io/caching.adoc#io.caching.provider.cache2k[]
+. xref:io/caching.adoc#io.caching.provider.simple[]
 
 Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
 

@@ -236,7 +236,7 @@ You can also define a `PulsarAwareTransactionManager` bean if the default auto-c
 [[messaging.pulsar.additional-properties]]
 == Additional Pulsar Properties
 
-The properties supported by auto-configuration are shown in the xref:appendix:application-properties/index.adoc#appendix.application-properties.integration["`Integration Properties`"] section of the Appendix.
+The properties supported by auto-configuration are shown in the xref:appendix:application-properties/index.adoc#appendix.application-properties.integration[Integration Properties] section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.
 

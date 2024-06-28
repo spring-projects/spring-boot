@@ -42,7 +42,7 @@ Spring Boot dependencies use the `org.springframework.boot` group id.
 Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more xref:reference:using/build-systems.adoc#using.build-systems.starters[starters].
 Spring Boot also provides an optional xref:maven-plugin:index.adoc[Maven plugin] to create executable jars.
 
-More details on getting started with Spring Boot and Maven can be found in the xref:maven-plugin:getting-started.adoc[Getting Started section] of the Maven plugin's reference guide.
+More details on getting started with Spring Boot and Maven can be found in the xref:maven-plugin:getting-started.adoc[] section of the Maven plugin's reference guide.
 
 
 
@@ -63,7 +63,7 @@ It is a small script and library that you commit alongside your code to bootstra
 See {url-gradle-docs}/gradle_wrapper.html for details.
 ****
 
-More details on getting started with Spring Boot and Gradle can be found in the xref:gradle-plugin:getting-started.adoc[Getting Started section] of the Gradle plugin's reference guide.
+More details on getting started with Spring Boot and Gradle can be found in the xref:gradle-plugin:getting-started.adoc[] section of the Gradle plugin's reference guide.
 
 
 

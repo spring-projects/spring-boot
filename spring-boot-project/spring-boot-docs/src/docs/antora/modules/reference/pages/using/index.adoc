@@ -6,5 +6,5 @@ It covers topics such as build systems, auto-configuration, and how to run your 
 We also cover some Spring Boot best practices.
 Although there is nothing particularly special about Spring Boot (it is just another library that you can consume), there are a few recommendations that, when followed, make your development process a little easier.
 
-If you are starting out with Spring Boot, you should probably read the xref:tutorial:first-application/index.adoc[_Developing your first Spring Boot application_] tutorial before diving into this section.
+If you are starting out with Spring Boot, you should probably read the xref:tutorial:first-application/index.adoc[] tutorial before diving into this section.
 

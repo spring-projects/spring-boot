@@ -96,9 +96,9 @@ The Spring Boot plugins for Maven and Gradle allow these managed dependency vers
 WARNING: Each Spring Boot release is designed and tested against this specific set of third-party dependencies.
 Overriding versions may cause compatibility issues.
 
-To override dependency versions with Maven, see xref:maven-plugin:using.adoc[this section] of the Maven plugin's documentation.
+To override dependency versions with Maven, see xref:maven-plugin:using.adoc[] in the Maven plugin's documentation.
 
-To override dependency versions in Gradle, see xref:gradle-plugin:managing-dependencies.adoc#managing-dependencies.dependency-management-plugin.customizing[this section] of the Gradle plugin's documentation.
+To override dependency versions in Gradle, see xref:gradle-plugin:managing-dependencies.adoc#managing-dependencies.dependency-management-plugin.customizing[] in the Gradle plugin's documentation.
 
 
 

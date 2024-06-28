@@ -64,7 +64,7 @@ dependencies {
 TIP: `providedRuntime` is preferred to Gradle's `compileOnly` configuration.
 Among other limitations, `compileOnly` dependencies are not on the test classpath, so any web-based integration tests fail.
 
-If you use the xref:build-tool-plugin:index.adoc[Spring Boot build tools], marking the embedded servlet container dependency as provided produces an executable war file with the provided dependencies packaged in a `lib-provided` directory.
+If you use the Spring Boot xref:build-tool-plugin:index.adoc[], marking the embedded servlet container dependency as provided produces an executable war file with the provided dependencies packaged in a `lib-provided` directory.
 This means that, in addition to being deployable to a servlet container, you can also run your application by using `java -jar` on the command line.
 
 

@@ -6,7 +6,7 @@ The sample applies to debugging Spring Boot applications.
 You do not need any special IDE plugins or extensions.
 
 NOTE: The options below are best suited for running an application locally for development.
-For production deployment, see xref:reference:using/packaging-for-production.adoc[Packaging for Production].
+For production deployment, see xref:reference:using/packaging-for-production.adoc[].
 
 NOTE: This section only covers jar-based packaging.
 If you choose to package your application as a war file, see your server and IDE documentation.
@@ -101,4 +101,4 @@ JVM hot swapping is somewhat limited with the bytecode that it can replace.
 For a more complete solution, https://www.jrebel.com/products/jrebel[JRebel] can be used.
 
 The `spring-boot-devtools` module also includes support for quick application restarts.
-See the xref:how-to:hotswapping.adoc[Hot swapping "`How-to`"] for details.
+See the xref:how-to:hotswapping.adoc[] section in  "`How-to Guides`" for details.

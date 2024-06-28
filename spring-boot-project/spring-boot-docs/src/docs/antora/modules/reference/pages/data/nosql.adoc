@@ -193,7 +193,7 @@ As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the
 
 include-code::MyBean[]
 
-See the {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
+See the {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoOperations.html[`MongoOperations`] API documentation for complete details.
 
 
 
@@ -375,7 +375,7 @@ as shown in the following example:
 
 include-code::MyBean[]
 
-In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a xref:data/nosql.adoc#data.nosql.elasticsearch.connecting-using-rest.reactiveclient[ReactiveElasticsearchClient] and a `ReactiveElasticsearchTemplate` as beans.
+In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a xref:data/nosql.adoc#data.nosql.elasticsearch.connecting-using-rest.reactiveclient[`ReactiveElasticsearchClient`] and a `ReactiveElasticsearchTemplate` as beans.
 They are the reactive equivalent of the other REST clients.
 
 

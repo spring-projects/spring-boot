@@ -12,7 +12,7 @@ This ahead-of-time processing involves statically analyzing your application cod
 A GraalVM Native Image is a complete, platform-specific executable.
 You do not need to ship a Java Virtual Machine in order to run a native image.
 
-TIP: If you just want to get started and experiment with GraalVM you can jump to the xref:how-to:native-image/developing-your-first-application.adoc[Developing Your First GraalVM Native Application] section and return to this section later.
+TIP: If you just want to get started and experiment with GraalVM you can jump to the xref:how-to:native-image/developing-your-first-application.adoc[] section and return to this section later.
 
 
 

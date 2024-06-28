@@ -32,4 +32,4 @@ It implies the following restrictions:
 - The Spring `@Profile` annotation and profile-specific configuration xref:how-to:aot.adoc#howto.aot.conditions[have limitations].
 - Properties that change if a bean is created are not supported (for example, `@ConditionalOnProperty` and `.enable` properties).
 
-To learn more about ahead-of-time processing, please see the xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[Understanding Spring Ahead-of-Time Processing] section.
+To learn more about ahead-of-time processing, please see the xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[] section.

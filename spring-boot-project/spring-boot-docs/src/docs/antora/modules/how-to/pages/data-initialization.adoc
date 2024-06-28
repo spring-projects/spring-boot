@@ -60,7 +60,7 @@ This will defer data source initialization until after any `EntityManagerFactory
 NOTE: The initialization scripts support `--` for single line comments and `/++*++ ++*++/` for block comments.
 Other comment formats are not supported.
 
-If you are using a xref:data-initialization.adoc#howto.data-initialization.migration-tool[Higher-level Database Migration Tool], like Flyway or Liquibase, you should use them alone to create and initialize the schema.
+If you are using a xref:data-initialization.adoc#howto.data-initialization.migration-tool[higher-level database migration tool], like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
 
 If you need to initialize test data using a higher-level database migration tool, please see the sections about xref:data-initialization.adoc#howto.data-initialization.migration-tool.flyway-tests[Flyway] and xref:data-initialization.adoc#howto.data-initialization.migration-tool.liquibase-tests[Liquibase].

@@ -16,7 +16,7 @@ include::ROOT:partial$application/spring-application.txt[]
 
 
 By default, `INFO` logging messages are shown, including some relevant startup details, such as the user that launched the application.
-If you need a log level other than `INFO`, you can set it, as described in xref:features/logging.adoc#features.logging.log-levels[Log Levels].
+If you need a log level other than `INFO`, you can set it, as described in xref:features/logging.adoc#features.logging.log-levels[].
 The application version is determined using the implementation version from the main application class's package.
 Startup information logging can be turned off by setting `spring.main.log-startup-info` to `false`.
 This will also turn off logging of the application's active profiles.
@@ -155,16 +155,16 @@ NOTE: The constructor arguments passed to `SpringApplication` are configuration 
 In most cases, these are references to `@Configuration` classes, but they could also be direct references `@Component` classes.
 
 It is also possible to configure the `SpringApplication` by using an `application.properties` file.
-See _xref:features/external-config.adoc[Externalized Configuration]_ for details.
+See xref:features/external-config.adoc[] for details.
 
-For a complete list of the configuration options, see the xref:api:java/org/springframework/boot/SpringApplication.html[`SpringApplication` Javadoc].
+For a complete list of the configuration options, see the xref:api:java/org/springframework/boot/SpringApplication.html[`SpringApplication`] API documentation.
 
 
 
 [[features.spring-application.fluent-builder-api]]
 == Fluent Builder API
 
-If you need to build an `ApplicationContext` hierarchy (multiple contexts with a parent/child relationship) or if you prefer using a "`fluent`" builder API, you can use the `SpringApplicationBuilder`.
+If you need to build an `ApplicationContext` hierarchy (multiple contexts with a parent/child relationship) or if you prefer using a fluent builder API, you can use the `SpringApplicationBuilder`.
 
 The `SpringApplicationBuilder` lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
 
@@ -172,7 +172,7 @@ include-code::MyApplication[tag=*]
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
 For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.
-See the xref:api:java/org/springframework/boot/builder/SpringApplicationBuilder.html[`SpringApplicationBuilder` Javadoc] for full details.
+See the xref:api:java/org/springframework/boot/builder/SpringApplicationBuilder.html[`SpringApplicationBuilder`] API documentation for full details.
 
 
 
@@ -193,7 +193,7 @@ In addition, you can also obtain availability states by injecting the `Applicati
 The "`Liveness`" state of an application tells whether its internal state allows it to work correctly, or recover by itself if it is currently failing.
 A broken "`Liveness`" state means that the application is in a state that it cannot recover from, and the infrastructure should restart the application.
 
-NOTE: In general, the "Liveness" state should not be based on external checks, such as xref:actuator/endpoints.adoc#actuator.endpoints.health[Health checks].
+NOTE: In general, the "Liveness" state should not be based on external checks, such as xref:actuator/endpoints.adoc#actuator.endpoints.health[health checks].
 If it did, a failing external system (a database, a Web API, an external cache) would trigger massive restarts and cascading failures across the platform.
 
 The internal state of Spring Boot applications is mostly represented by the Spring `ApplicationContext`.

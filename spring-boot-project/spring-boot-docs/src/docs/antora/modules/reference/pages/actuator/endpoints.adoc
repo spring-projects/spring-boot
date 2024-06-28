@@ -294,7 +294,7 @@ Information returned by the `/env`, `/configprops` and `/quartz` endpoints can b
 Values can only be viewed in an unsanitized form when:
 
 - The `show-values` property has been set to something other than `NEVER`
-- No custom `xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[SanitizingFunction]` beans apply
+- No custom xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[`SanitizingFunction`] beans apply
 
 The `show-values` property can be configured for sanitizable endpoints to one of the following values:
 
@@ -319,7 +319,7 @@ management:
       roles: "admin"
 ----
 
-NOTE: This example assumes that no `xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[SanitizingFunction]` beans have been defined.
+NOTE: This example assumes that no xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[`SanitizingFunction`] beans have been defined.
 
 
 
@@ -908,7 +908,7 @@ If you prefer not to include routing data sources in the indicator's output, set
 Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
 Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet calls those probes and reacts to the result.
 
-By default, Spring Boot manages your xref:features/spring-application.adoc#features.spring-application.application-availability[Application Availability State].
+By default, Spring Boot manages your xref:features/spring-application.adoc#features.spring-application.application-availability[Application Availability] state.
 If deployed in a Kubernetes environment, actuator gathers the "`Liveness`" and "`Readiness`" information from the `ApplicationAvailability` interface and uses that information in dedicated xref:actuator/endpoints.adoc#actuator.endpoints.health.auto-configured-health-indicators[health indicators]: `LivenessStateHealthIndicator` and `ReadinessStateHealthIndicator`.
 These indicators are shown on the global health endpoint (`"/actuator/health"`).
 They are also exposed as separate HTTP Probes by using xref:actuator/endpoints.adoc#actuator.endpoints.health.groups[health groups]: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
@@ -1062,7 +1062,7 @@ When a Spring Boot application shuts down:
 |The application context is closed and the application is shut down.
 |===
 
-TIP: See xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes.container-lifecycle[Kubernetes container lifecycle section] for more information about Kubernetes deployment.
+TIP: See xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes.container-lifecycle[] for more information about Kubernetes deployment.
 
 
 
@@ -1170,7 +1170,7 @@ Another useful feature of the `info` endpoint is its ability to publish informat
 If a `GitProperties` bean is available, you can use the `info` endpoint to expose these properties.
 
 TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
-See "xref:how-to:build.adoc#howto.build.generate-git-info[how to generate git information]" for more detail.
+See xref:how-to:build.adoc#howto.build.generate-git-info[] for more detail.
 
 By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.time` properties, if present.
 If you do not want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
@@ -1203,7 +1203,7 @@ If a `BuildProperties` bean is available, the `info` endpoint can also publish i
 This happens if a `META-INF/build-info.properties` file is available in the classpath.
 
 TIP: The Maven and Gradle plugins can both generate that file.
-See "xref:how-to:build.adoc#howto.build.generate-info[how to generate build information]" for more details.
+See xref:how-to:build.adoc#howto.build.generate-info[] for more details.
 
 
 

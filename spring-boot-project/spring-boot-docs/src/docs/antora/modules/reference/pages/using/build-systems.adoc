@@ -1,7 +1,7 @@
 [[using.build-systems]]
 = Build Systems
 
-It is strongly recommended that you choose a build system that supports xref:using/build-systems.adoc#using.build-systems.dependency-management[_dependency management_] and that can consume artifacts published to the "`Maven Central`" repository.
+It is strongly recommended that you choose a build system that supports xref:using/build-systems.adoc#using.build-systems.dependency-management[dependency management] and that can consume artifacts published to the Maven Central repository.
 We would recommend that you choose Maven or Gradle.
 It is possible to get Spring Boot to work with other build systems (Ant, for example), but they are not particularly well supported.
 
@@ -106,7 +106,7 @@ A typical `build.xml` looks like the following example:
 </project>
 ----
 
-TIP: If you do not want to use the `spring-boot-antlib` module, see the _xref:how-to:build.adoc#howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib[Build an Executable Archive From Ant without Using spring-boot-antlib]_ "`How-to`" .
+TIP: If you do not want to use the `spring-boot-antlib` module, see the xref:how-to:build.adoc#howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib[] section of "`How-to Guides`".
 
 
 
@@ -126,7 +126,7 @@ This naming structure is intended to help when you need to find a starter.
 The Maven integration in many IDEs lets you search dependencies by name.
 For example, with the appropriate Eclipse or Spring Tools plugin installed, you can press `ctrl-space` in the POM editor and type "`spring-boot-starter`" for a complete list.
 
-As explained in the "`xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.custom-starter[Creating Your Own Starter]`" section, third party starters should not start with `spring-boot`, as it is reserved for official Spring Boot artifacts.
+As explained in the xref:features/developing-auto-configuration.adoc#features.developing-auto-configuration.custom-starter[] section, third party starters should not start with `spring-boot`, as it is reserved for official Spring Boot artifacts.
 Rather, a third-party starter typically starts with the name of the project.
 For example, a third-party starter project called `thirdpartyproject` would typically be named `thirdpartyproject-spring-boot-starter`.
 ****
@@ -136,7 +136,7 @@ The following application starters are provided by Spring Boot under the `org.sp
 .Spring Boot application starters
 include::ROOT:partial$starters/application-starters.adoc[]
 
-In addition to the application starters, the following starters can be used to add _xref:how-to:actuator.adoc[production ready]_ features:
+In addition to the application starters, the following starters can be used to add xref:how-to:actuator.adoc[production ready] features:
 
 .Spring Boot production starters
 include::ROOT:partial$starters/production-starters.adoc[]
