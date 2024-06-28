@@ -98,6 +98,7 @@ org.springframework.boot.autoconfigure.pulsar.PulsarAutoConfiguration
 org.springframework.boot.autoconfigure.pulsar.PulsarReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+org.springframework.boot.autoconfigure.r2dbc.R2dbcProxyAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
 org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration
