@@ -274,13 +274,9 @@ class PaketoBuilderTests {
 							"paketo-buildpacks/apache-tomcat", "paketo-buildpacks/dist-zip",
 							"paketo-buildpacks/spring-boot");
 				metadata.processOfType("web")
-					.satisfiesExactly((command) -> assertThat(command).endsWith("sh"),
-							(arg) -> assertThat(arg).endsWith("catalina.sh"),
-							(arg) -> assertThat(arg).isEqualTo("run"));
+					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
 				metadata.processOfType("tomcat")
-					.satisfiesExactly((command) -> assertThat(command).endsWith("sh"),
-							(arg) -> assertThat(arg).endsWith("catalina.sh"),
-							(arg) -> assertThat(arg).isEqualTo("run"));
+					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "apache-tomcat");
