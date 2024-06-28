@@ -168,7 +168,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 				project.getObjects().named(DocsType.class, "maven-repository")));
 		RuntimeClasspathMavenRepository runtimeClasspathMavenRepository = project.getTasks()
 			.create("runtimeClasspathMavenRepository", RuntimeClasspathMavenRepository.class);
-		runtimeClasspathMavenRepository.getOutputDirectory()
+		runtimeClasspathMavenRepository.getOutputDir()
 			.set(new File(project.getBuildDir(), "runtime-classpath-repository"));
 		project.getDependencies()
 			.components((components) -> components.all(MavenRepositoryComponentMetadataRule.class));
@@ -195,8 +195,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	private void addDocumentPluginGoalsTask(Project project, MavenExec generatePluginDescriptorTask) {
 		DocumentPluginGoals task = project.getTasks().create("documentPluginGoals", DocumentPluginGoals.class);
 		File pluginXml = new File(generatePluginDescriptorTask.getOutputs().getFiles().getSingleFile(), "plugin.xml");
-		task.setPluginXml(pluginXml);
-		task.setOutputDir(new File(project.getBuildDir(), "generated/docs/maven-plugin-goals/"));
+		task.getPluginXml().set(pluginXml);
+		task.getOutputDir().set(new File(project.getBuildDir(), "generated/docs/maven-plugin-goals/"));
 		task.dependsOn(generatePluginDescriptorTask);
 	}
 
@@ -210,7 +210,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	private MavenExec createGenerateHelpMojoTask(Project project, File helpMojoDir) {
 		MavenExec task = project.getTasks().create("generateHelpMojo", MavenExec.class);
-		task.setProjectDir(helpMojoDir);
+		task.getProjectDir().set(helpMojoDir);
 		task.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.1:helpmojo");
 		task.getOutputs().dir(new File(helpMojoDir, "target/generated-sources/plugin"));
 		return task;
@@ -261,7 +261,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		FormatHelpMojoSource formatHelpMojoSource = project.getTasks()
 			.create("formatHelpMojoSource", FormatHelpMojoSource.class);
 		formatHelpMojoSource.setGenerator(generateHelpMojoTask);
-		formatHelpMojoSource.setOutputDir(generatedHelpMojoDir);
+		formatHelpMojoSource.getOutputDir().set(generatedHelpMojoDir);
 		return formatHelpMojoSource;
 	}
 
@@ -284,7 +284,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			.dir(new File(mavenDir, "target/classes/org"))
 			.withPathSensitivity(PathSensitivity.RELATIVE)
 			.withPropertyName("plugin classes");
-		generatePluginDescriptor.setProjectDir(mavenDir);
+		generatePluginDescriptor.getProjectDir().set(mavenDir);
 		return generatePluginDescriptor;
 	}
 
@@ -295,8 +295,9 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	private void addPrepareMavenBinariesTask(Project project) {
 		TaskProvider<PrepareMavenBinaries> task = project.getTasks()
-			.register("prepareMavenBinaries", PrepareMavenBinaries.class, (prepareMavenBinaries) -> prepareMavenBinaries
-				.setOutputDir(new File(project.getBuildDir(), "maven-binaries")));
+			.register("prepareMavenBinaries", PrepareMavenBinaries.class,
+					(prepareMavenBinaries) -> prepareMavenBinaries.getOutputDir()
+						.set(new File(project.getBuildDir(), "maven-binaries")));
 		project.getTasks()
 			.getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME)
 			.getInputs()
@@ -324,11 +325,9 @@ public class MavenPluginPlugin implements Plugin<Project> {
 				.map((dir) -> dir.file("extracted-versions.properties")));
 	}
 
-	public static class FormatHelpMojoSource extends DefaultTask {
+	public abstract static class FormatHelpMojoSource extends DefaultTask {
 
 		private Task generator;
-
-		private File outputDir;
 
 		void setGenerator(Task generator) {
 			this.generator = generator;
@@ -338,13 +337,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		}
 
 		@OutputDirectory
-		public File getOutputDir() {
-			return this.outputDir;
-		}
-
-		void setOutputDir(File outputDir) {
-			this.outputDir = outputDir;
-		}
+		public abstract DirectoryProperty getOutputDir();
 
 		@TaskAction
 		void syncAndFormat() {
@@ -357,7 +350,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		private void save(File output, FileEdit edit) {
 			Path relativePath = output.toPath().relativize(edit.getFile().toPath());
-			Path outputLocation = this.outputDir.toPath().resolve(relativePath);
+			Path outputLocation = getOutputDir().getAsFile().get().toPath().resolve(relativePath);
 			try {
 				Files.createDirectories(outputLocation.getParent());
 				Files.writeString(outputLocation, edit.getFormattedContent());
@@ -401,21 +394,16 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	}
 
-	public static class RuntimeClasspathMavenRepository extends DefaultTask {
+	public abstract static class RuntimeClasspathMavenRepository extends DefaultTask {
 
 		private final Configuration runtimeClasspath;
 
-		private final DirectoryProperty outputDirectory;
-
 		public RuntimeClasspathMavenRepository() {
 			this.runtimeClasspath = getProject().getConfigurations().getByName("runtimeClasspathWithMetadata");
-			this.outputDirectory = getProject().getObjects().directoryProperty();
 		}
 
 		@OutputDirectory
-		public DirectoryProperty getOutputDirectory() {
-			return this.outputDirectory;
-		}
+		public abstract DirectoryProperty getOutputDir();
 
 		@Classpath
 		public Configuration getRuntimeClasspath() {
@@ -429,7 +417,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 					String fileName = result.getFile()
 						.getName()
 						.replace(identifier.getVersion() + "-" + identifier.getVersion(), identifier.getVersion());
-					File repositoryLocation = this.outputDirectory
+					File repositoryLocation = getOutputDir()
 						.dir(identifier.getGroup().replace('.', '/') + "/" + identifier.getModule() + "/"
 								+ identifier.getVersion() + "/" + fileName)
 						.get()
@@ -448,15 +436,9 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	}
 
-	public static class ExtractVersionProperties extends DefaultTask {
-
-		private final RegularFileProperty destination;
+	public abstract static class ExtractVersionProperties extends DefaultTask {
 
 		private FileCollection effectiveBoms;
-
-		public ExtractVersionProperties() {
-			this.destination = getProject().getObjects().fileProperty();
-		}
 
 		@InputFiles
 		@PathSensitive(PathSensitivity.RELATIVE)
@@ -469,9 +451,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		}
 
 		@OutputFile
-		public RegularFileProperty getDestination() {
-			return this.destination;
-		}
+		public abstract RegularFileProperty getDestination();
 
 		@TaskAction
 		public void extractVersionProperties() {
@@ -481,7 +461,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		}
 
 		private void writeProperties(Properties versions) {
-			File outputFile = this.destination.getAsFile().get();
+			File outputFile = getDestination().getAsFile().get();
 			outputFile.getParentFile().mkdirs();
 			try (Writer writer = new FileWriter(outputFile)) {
 				versions.store(writer, null);

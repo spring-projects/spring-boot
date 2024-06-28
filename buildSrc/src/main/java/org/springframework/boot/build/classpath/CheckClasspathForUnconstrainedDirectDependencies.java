@@ -34,7 +34,7 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class CheckClasspathForUnconstrainedDirectDependencies extends DefaultTask {
+public abstract class CheckClasspathForUnconstrainedDirectDependencies extends DefaultTask {
 
 	private Configuration classpath;
 

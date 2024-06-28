@@ -48,7 +48,7 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
+public abstract class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 
 	private static final Map<String, String> SPRING_BOOT_DEPENDENCIES_PROJECT = Collections.singletonMap("path",
 			":spring-boot-project:spring-boot-dependencies");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,12 @@ import java.nio.file.Path;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.process.internal.ExecException;
@@ -37,29 +41,29 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andy Wilkinson
  */
-public class MavenExec extends JavaExec {
+public abstract class MavenExec extends JavaExec {
 
 	private final Logger log = LoggerFactory.getLogger(MavenExec.class);
-
-	private File projectDir;
 
 	public MavenExec() {
 		setClasspath(mavenConfiguration(getProject()));
 		args("--batch-mode");
 		getMainClass().set("org.apache.maven.cli.MavenCli");
+		getPom().set(getProjectDir().file("pom.xml"));
 	}
 
-	public void setProjectDir(File projectDir) {
-		this.projectDir = projectDir;
-		getInputs().file(new File(projectDir, "pom.xml"))
-			.withPathSensitivity(PathSensitivity.RELATIVE)
-			.withPropertyName("pom");
-	}
+	@Internal
+	public abstract DirectoryProperty getProjectDir();
+
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
+	abstract RegularFileProperty getPom();
 
 	@Override
 	public void exec() {
-		workingDir(this.projectDir);
-		systemProperty("maven.multiModuleProjectDirectory", this.projectDir.getAbsolutePath());
+		File workingDir = getProjectDir().getAsFile().get();
+		workingDir(workingDir);
+		systemProperty("maven.multiModuleProjectDirectory", workingDir.getAbsolutePath());
 		try {
 			Path logFile = Files.createTempFile(getName(), ".log");
 			try {
@@ -95,11 +99,6 @@ public class MavenExec extends JavaExec {
 			maven.getDependencies()
 				.add(project.getDependencies().create("org.apache.maven.resolver:maven-resolver-transport-http:1.4.1"));
 		});
-	}
-
-	@Internal
-	public File getProjectDir() {
-		return this.projectDir;
 	}
 
 }

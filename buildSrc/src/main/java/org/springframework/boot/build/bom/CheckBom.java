@@ -45,7 +45,7 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
  *
  * @author Andy Wilkinson
  */
-public class CheckBom extends DefaultTask {
+public abstract class CheckBom extends DefaultTask {
 
 	private final BomExtension bom;
 

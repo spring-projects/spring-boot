@@ -129,8 +129,8 @@ class JavaConventions {
 		ExtractResources extractLegalResources = project.getTasks()
 			.create("extractLegalResources", ExtractResources.class);
 		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
-		extractLegalResources.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
-		extractLegalResources.property("version", project.getVersion().toString());
+		extractLegalResources.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
+		extractLegalResources.getProperties().put("version", project.getVersion().toString());
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 		Set<String> sourceJarTaskNames = sourceSets.stream()
 			.map(SourceSet::getSourcesJarTaskName)
