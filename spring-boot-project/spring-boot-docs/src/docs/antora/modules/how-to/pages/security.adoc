@@ -8,7 +8,7 @@ For more about Spring Security, see the {url-spring-security-site}[Spring Securi
 
 
 [[howto.security.switch-off-spring-boot-configuration]]
-== Switch off the Spring Boot Security Configuration
+== Switch Off the Spring Boot Security Configuration
 
 If you define a `@Configuration` with a `SecurityFilterChain` bean in your application, this action switches off the default webapp security settings in Spring Boot.
 
@@ -25,7 +25,7 @@ The easiest way to add user accounts is by providing your own `UserDetailsServic
 
 
 [[howto.security.enable-https]]
-== Enable HTTPS When Running behind a Proxy Server
+== Enable HTTPS When Running Behind a Proxy Server
 
 Ensuring that all your main endpoints are only available over HTTPS is an important chore for any application.
 If you use Tomcat as a servlet container, then Spring Boot adds Tomcat's own `RemoteIpValve` automatically if it detects some environment settings, allowing you to rely on the `HttpServletRequest` to report whether it is secure or not (even downstream of a proxy server that handles the real SSL termination).

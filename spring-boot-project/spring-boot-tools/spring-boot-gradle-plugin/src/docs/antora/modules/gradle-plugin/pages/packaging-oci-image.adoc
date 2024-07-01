@@ -245,7 +245,7 @@ Applications that require a shell to run a start script, as might be the case wh
 
 
 [[build-image.customization.tags]]
-=== Tags format
+=== Tags Format
 
 The values provided to the `tags` option should be *full* image references.
 The accepted format is `[domainHost:port/][path/]name[:tag][@digest]`.

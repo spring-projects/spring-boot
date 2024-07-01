@@ -1,5 +1,5 @@
 [[packaging.aot]]
-= Ahead-of-time Processing With the JVM
+= Ahead-of-Time Processing With the JVM
 
 It's beneficial for the startup time to run your application using the AOT generated initialization code.
 First, you need to ensure that the jar you are building includes AOT generated code.

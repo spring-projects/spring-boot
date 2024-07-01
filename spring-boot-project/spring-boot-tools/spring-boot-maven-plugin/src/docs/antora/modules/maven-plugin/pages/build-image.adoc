@@ -250,7 +250,7 @@ For more details, see also xref:build-image.adoc#build-image.examples[examples].
 
 
 [[build-image.customization.tags]]
-=== Tags format
+=== Tags Format
 
 The values provided to the `tags` option should be *full* image references.
 The accepted format is `[domainHost:port/][path/]name[:tag][@digest]`.

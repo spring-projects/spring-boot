@@ -184,7 +184,7 @@ Configuring the `DispatcherServlet` yourself is unusual but if you really need t
 
 
 [[howto.spring-mvc.switch-off-default-configuration]]
-== Switch off the Default MVC Configuration
+== Switch Off the Default MVC Configuration
 
 The easiest way to take complete control over MVC configuration is to provide your own `@Configuration` with the `@EnableWebMvc` annotation.
 Doing so leaves all MVC configuration in your hands.

@@ -28,7 +28,7 @@ TIP: To learn more about Micrometer's capabilities, see its {url-micrometer-docs
 
 
 [[actuator.metrics.getting-started]]
-== Getting started
+== Getting Started
 
 Spring Boot auto-configures a composite `MeterRegistry` and adds a registry to the composite for each of the supported implementations that it finds on the classpath.
 Having a dependency on `micrometer-registry-\{system}` in your runtime classpath is enough for Spring Boot to configure the registry.
@@ -206,7 +206,7 @@ This is the default behavior and requires no special setup beyond a dependency o
 
 
 [[actuator.metrics.export.dynatrace.v2-api.manual-config]]
-===== Manual configuration
+===== Manual Configuration
 
 If no auto-configuration is available, the endpoint of the {url-dynatrace-docs-shortlink}/api-metrics-v2-post-datapoints[Metrics v2 API] and an API token are required.
 The {url-dynatrace-docs-shortlink}/api-authentication[API token] must have the "`Ingest metrics`" (`metrics.ingest`) permission set.

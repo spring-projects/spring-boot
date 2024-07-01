@@ -22,7 +22,7 @@ For additional details on Spring Security's testing support, see Spring Security
 
 
 [[howto.testing.slice-tests]]
-== Structure `@Configuration` classes for inclusion in slice tests
+== Structure `@Configuration` Classes for Inclusion in Slice Tests
 
 Slice tests work by restricting Spring Framework's component scanning to a limited set of components based on their type.
 For any beans that are not created through component scanning, for example, beans that are created using the `@Bean` annotation, slice tests will not be able to include/exclude them from the application context.

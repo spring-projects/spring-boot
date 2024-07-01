@@ -192,7 +192,7 @@ You can also use a `Customizer<Liquibase>` bean if you want to customize the `Li
 
 
 [[howto.data-initialization.migration-tool.flyway-tests]]
-=== Use Flyway for test-only migrations
+=== Use Flyway for Test-only Migrations
 
 If you want to create Flyway migrations which populate your test database, place them in `src/test/resources/db/migration`.
 A file named, for example, `src/test/resources/db/migration/V9999__test-data.sql` will be executed after your production migrations and only if you're running the tests.
@@ -202,7 +202,7 @@ This file will not be packaged in your uber jar or your container.
 
 
 [[howto.data-initialization.migration-tool.liquibase-tests]]
-=== Use Liquibase for test-only migrations
+=== Use Liquibase for Test-only Migrations
 
 If you want to create Liquibase migrations which populate your test database, you have to create a test changelog which also includes the production changelog.
 
