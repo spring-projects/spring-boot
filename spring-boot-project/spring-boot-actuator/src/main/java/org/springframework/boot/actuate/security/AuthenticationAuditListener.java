@@ -52,6 +52,12 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	 */
 	public static final String AUTHENTICATION_SWITCH = "AUTHENTICATION_SWITCH";
 
+	/**
+	 * This constant is used to indicate that the logout process
+	 * has been completed successfully.
+	 *
+	 * @since 3.4.0
+	 */
 	public static final String LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 
 	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
@@ -76,7 +82,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 		else if (event instanceof AuthenticationSuccessEvent successEvent) {
 			onAuthenticationSuccessEvent(successEvent);
 		}
-		else if(event instanceof LogoutSuccessEvent logoutSuccessEvent) {
+		else if (event instanceof LogoutSuccessEvent logoutSuccessEvent) {
 			onLogoutSuccessEvent(logoutSuccessEvent);
 		}
 	}
@@ -101,11 +107,8 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 	private void onLogoutSuccessEvent(LogoutSuccessEvent event) {
 		Map<String, Object> data = new LinkedHashMap<>();
-		if(event.getAuthentication() != null) {
-			if(event.getAuthentication().getDetails() != null) {
-				data.put("details", event.getAuthentication().getDetails());
-			}
-			data.put("username", event.getAuthentication().getName());
+		if (event.getAuthentication().getDetails() != null) {
+			data.put("details", event.getAuthentication().getDetails());
 		}
 		publish(new AuditEvent(event.getAuthentication().getName(), LOGOUT_SUCCESS, data));
 
