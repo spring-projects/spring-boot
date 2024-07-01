@@ -4,6 +4,7 @@ plugins {
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -13,6 +14,50 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api("org.testcontainers:testcontainers")
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("ch.qos.logback:logback-classic")
+	dockerTestImplementation("co.elastic.clients:elasticsearch-java") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	dockerTestImplementation("com.couchbase.client:java-client")
+	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
+	dockerTestImplementation("io.rest-assured:rest-assured") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	dockerTestImplementation("org.apache.activemq:activemq-client")
+	dockerTestImplementation("org.apache.activemq:artemis-jakarta-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	dockerTestImplementation("org.apache.cassandra:java-driver-core") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.flywaydb:flyway-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
+	dockerTestImplementation("org.liquibase:liquibase-core") {
+		exclude(group: "javax.xml.bind", module: "jaxb-api")
+	}
+	dockerTestImplementation("org.mockito:mockito-core")
+	dockerTestImplementation("org.springframework:spring-core-test")
+	dockerTestImplementation("org.springframework:spring-jdbc")
+	dockerTestImplementation("org.springframework:spring-jms")
+	dockerTestImplementation("org.springframework:spring-r2dbc")
+	dockerTestImplementation("org.springframework.amqp:spring-rabbit")
+	dockerTestImplementation("org.springframework.data:spring-data-redis")
+	dockerTestImplementation("org.springframework.kafka:spring-kafka")
+	dockerTestImplementation("org.springframework.ldap:spring-ldap-core")
+	dockerTestImplementation("org.springframework.pulsar:spring-pulsar")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+
+	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
+	dockerTestRuntimeOnly("com.zaxxer:HikariCP")
+	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
+	dockerTestRuntimeOnly("org.flywaydb:flyway-database-postgresql")
+	dockerTestRuntimeOnly("org.postgresql:postgresql")
+
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
@@ -21,7 +66,6 @@ dependencies {
 	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
-	optional("org.testcontainers:influxdb")
 	optional("org.testcontainers:jdbc")
 	optional("org.testcontainers:kafka")
 	optional("org.testcontainers:mariadb")
@@ -37,34 +81,10 @@ dependencies {
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
 
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
-	testImplementation("ch.qos.logback:logback-classic")
-	testImplementation("co.elastic.clients:elasticsearch-java") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	testImplementation("com.couchbase.client:java-client")
-	testImplementation("io.micrometer:micrometer-registry-otlp")
-	testImplementation("io.rest-assured:rest-assured") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	testImplementation("org.apache.activemq:activemq-client")
-	testImplementation("org.apache.activemq:artemis-jakarta-client")  {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
-	testImplementation("org.apache.cassandra:java-driver-core") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.awaitility:awaitility")
-	testImplementation("org.flywaydb:flyway-core")
-	testImplementation("org.influxdb:influxdb-java")
 	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.junit.platform:junit-platform-engine")
-	testImplementation("org.junit.platform:junit-platform-launcher")
-	testImplementation("org.liquibase:liquibase-core") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-core-test")
@@ -74,13 +94,6 @@ dependencies {
 	testImplementation("org.springframework.amqp:spring-rabbit")
 	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.kafka:spring-kafka")
-	testImplementation("org.springframework.ldap:spring-ldap-core")
 	testImplementation("org.springframework.pulsar:spring-pulsar")
 	testImplementation("org.testcontainers:junit-jupiter")
-
-	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
-	testRuntimeOnly("com.zaxxer:HikariCP")
-	testRuntimeOnly("io.lettuce:lettuce-core")
-	testRuntimeOnly("org.flywaydb:flyway-database-postgresql")
-	testRuntimeOnly("org.postgresql:postgresql")
 }

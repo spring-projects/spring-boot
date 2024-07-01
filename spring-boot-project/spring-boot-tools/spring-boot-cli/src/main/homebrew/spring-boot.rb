@@ -2,8 +2,8 @@ require 'formula'
 
 class SpringBoot < Formula
   homepage 'https://spring.io/projects/spring-boot'
-  url '${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.tar.gz'
-  version '${project.version}'
+  url '${repo}/org/springframework/boot/spring-boot-cli/${version}/spring-boot-cli-${version}-bin.tar.gz'
+  version '${version}'
   sha256 '${hash}'
   head 'https://github.com/spring-projects/spring-boot.git', :branch => "main"
 

@@ -11,7 +11,7 @@ This section answers questions related to doing so.
 
 To configure your own `DataSource`, define a `@Bean` of that type in your configuration.
 Spring Boot reuses your `DataSource` anywhere one is required, including database initialization.
-If you need to externalize some settings, you can bind your `DataSource` to the environment (see "`xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.third-party-configuration[Third-party Configuration]`").
+If you need to externalize some settings, you can bind your `DataSource` to the environment (see xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.third-party-configuration[]).
 
 The following example shows how to define a data source in a bean:
 
@@ -103,7 +103,7 @@ This example uses a more generic `configuration` sub namespace as the example do
 NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type` has no effect.
 In practice, the builder is initialized with whatever value you might set there and then overridden by the call to `.type()`.
 
-See "`xref:reference:data/sql.adoc#data.sql.datasource[Configure a DataSource]`" in the "`Spring Boot features`" section and the {code-spring-boot-autoconfigure-src}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
+See xref:reference:data/sql.adoc#data.sql.datasource[] in the "`Spring Boot Features`" section and the {code-spring-boot-autoconfigure-src}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
 
 
 

@@ -65,7 +65,7 @@ The former can be configured using `spring.kafka.streams.application-id`, defaul
 The latter can be set globally or specifically overridden only for streams.
 
 Several additional properties are available using dedicated properties; other arbitrary Kafka properties can be set using the `spring.kafka.streams.properties` namespace.
-See also xref:messaging/kafka.adoc#messaging.kafka.additional-properties[Additional Kafka Properties] for more information.
+See also xref:messaging/kafka.adoc#messaging.kafka.additional-properties[] for more information.
 
 To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the following example:
 
@@ -79,7 +79,7 @@ You can customize this behavior using the configprop:spring.kafka.streams.auto-s
 [[messaging.kafka.additional-properties]]
 == Additional Kafka Properties
 
-The properties supported by auto configuration are shown in the xref:appendix:application-properties/index.adoc#appendix.application-properties.integration["`Integration Properties`"] section of the Appendix.
+The properties supported by auto configuration are shown in the xref:appendix:application-properties/index.adoc#appendix.application-properties.integration[Integration Properties] section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties.
 See the Apache Kafka documentation for details.
 

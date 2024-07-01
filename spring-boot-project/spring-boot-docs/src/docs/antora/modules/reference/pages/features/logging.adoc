@@ -5,7 +5,7 @@ Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all int
 Default configurations are provided for {apiref-openjdk}/java.logging/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4j2], and https://logback.qos.ch/[Logback].
 In each case, loggers are pre-configured to use console output with optional file output also available.
 
-By default, if you use the "`Starters`", Logback is used for logging.
+By default, if you use the starters, Logback is used for logging.
 Appropriate Logback routing is also included to ensure that dependent libraries that use Java Util Logging, Commons Logging, Log4J, or SLF4J all work correctly.
 
 TIP: There are a lot of logging frameworks available for Java.

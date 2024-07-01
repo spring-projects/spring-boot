@@ -21,7 +21,7 @@ Spring Boot ships auto-configuration for the following tracers:
 == Getting Started
 
 We need an example application that we can use to get started with tracing.
-For our purposes, the simple "`Hello World!`" web application that's covered in the "`xref:tutorial:first-application/index.adoc[Developing Your First Spring Boot Application]`" section will suffice.
+For our purposes, the simple "`Hello World!`" web application that's covered in the xref:tutorial:first-application/index.adoc[] section will suffice.
 We're going to use the OpenTelemetry tracer with Zipkin as trace backend.
 
 To recap, our main application code looks like this:
@@ -216,4 +216,4 @@ For the example above, setting this property to `baggage1` results in an MDC ent
 == Tests
 
 Tracing components which are reporting data are not auto-configured when using `@SpringBootTest`.
-See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.tracing[the testing section] for more details.
+See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.tracing[] for more details.

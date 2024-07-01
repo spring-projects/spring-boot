@@ -6,7 +6,7 @@ https://pulsar.apache.org/[Apache Pulsar] is supported by providing auto-configu
 Spring Boot will auto-configure and register the classic (imperative) Spring for Apache Pulsar components when `org.springframework.pulsar:spring-pulsar` is on the classpath.
 It will do the same for the reactive components when `org.springframework.pulsar:spring-pulsar-reactive` is on the classpath.
 
-There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive` "`Starters`" for conveniently collecting the dependencies for imperative and reactive use, respectively.
+There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive` starters for conveniently collecting the dependencies for imperative and reactive use, respectively.
 
 
 
@@ -236,7 +236,7 @@ You can also define a `PulsarAwareTransactionManager` bean if the default auto-c
 [[messaging.pulsar.additional-properties]]
 == Additional Pulsar Properties
 
-The properties supported by auto-configuration are shown in the xref:appendix:application-properties/index.adoc#appendix.application-properties.integration["`Integration Properties`"] section of the Appendix.
+The properties supported by auto-configuration are shown in the xref:appendix:application-properties/index.adoc#appendix.application-properties.integration[Integration Properties] section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.
 

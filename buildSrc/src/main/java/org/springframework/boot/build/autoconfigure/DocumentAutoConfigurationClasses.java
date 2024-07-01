@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -42,11 +43,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-public class DocumentAutoConfigurationClasses extends DefaultTask {
+public abstract class DocumentAutoConfigurationClasses extends DefaultTask {
 
 	private FileCollection autoConfiguration;
-
-	private File outputDir;
 
 	@InputFiles
 	public FileCollection getAutoConfiguration() {
@@ -58,13 +57,7 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	@OutputDirectory
-	public File getOutputDir() {
-		return this.outputDir;
-	}
-
-	public void setOutputDir(File outputDir) {
-		this.outputDir = outputDir;
-	}
+	public abstract RegularFileProperty getOutputDir();
 
 	@TaskAction
 	void documentAutoConfigurationClasses() throws IOException {
@@ -80,9 +73,10 @@ public class DocumentAutoConfigurationClasses extends DefaultTask {
 	}
 
 	private void writeTable(AutoConfiguration autoConfigurationClasses) throws IOException {
-		this.outputDir.mkdirs();
+		File outputDir = getOutputDir().getAsFile().get();
+		outputDir.mkdirs();
 		try (PrintWriter writer = new PrintWriter(
-				new FileWriter(new File(this.outputDir, autoConfigurationClasses.module + ".adoc")))) {
+				new FileWriter(new File(outputDir, autoConfigurationClasses.module + ".adoc")))) {
 			writer.println("[cols=\"4,1\"]");
 			writer.println("|===");
 			writer.println("| Configuration Class | Links");

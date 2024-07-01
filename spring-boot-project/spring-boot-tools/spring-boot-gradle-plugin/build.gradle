@@ -1,8 +1,13 @@
+import org.gradle.plugins.ide.eclipse.EclipsePlugin
+import org.gradle.plugins.ide.eclipse.model.Classpath
+import org.gradle.plugins.ide.eclipse.model.Library
+
 plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
 	id "org.antora"
 	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.maven-repository"
 	id "org.springframework.boot.optional-dependencies"
 }
@@ -18,6 +23,14 @@ configurations {
 }
 
 dependencies {
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(gradleTestKit())
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("io.spring.gradle:dependency-management-plugin")
@@ -32,14 +45,12 @@ dependencies {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
 
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.tngtech.archunit:archunit-junit5:0.22.0")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:testcontainers")
 }
 
 repositories {
@@ -130,4 +141,20 @@ artifacts {
 
 toolchain {
 	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
+}
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath.file { merger ->
+			merger.whenMerged { content ->
+				if (content instanceof Classpath) {
+					content.entries.each { entry ->
+						if (entry instanceof Library && (entry.path.contains("gradle-api-") || entry.path.contains("groovy-"))) {
+							entry.entryAttributes.remove("test")
+						}
+					}
+				}
+			}
+		}
+	}
 }

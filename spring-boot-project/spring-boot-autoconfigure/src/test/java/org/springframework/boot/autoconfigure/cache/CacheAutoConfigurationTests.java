@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.cache;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.function.Consumer;
 
 import javax.cache.Caching;
@@ -76,8 +77,10 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
@@ -457,6 +460,23 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 			.run((context) -> {
 				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
 				assertThat(cacheManager.getCacheManager().getClassLoader()).isEqualTo(context.getClassLoader());
+			});
+	}
+
+	@Test
+	void jCacheCacheWithPropertiesCustomizer() {
+		JCachePropertiesCustomizer customizer = mock(JCachePropertiesCustomizer.class);
+		willAnswer((invocation) -> {
+			invocation.getArgument(0, Properties.class).setProperty("customized", "true");
+			return null;
+		}).given(customizer).customize(any(Properties.class));
+		String cachingProviderFqn = MockCachingProvider.class.getName();
+		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
+			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn)
+			.withBean(JCachePropertiesCustomizer.class, () -> customizer)
+			.run((context) -> {
+				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
+				assertThat(cacheManager.getCacheManager().getProperties()).containsEntry("customized", "true");
 			});
 	}
 

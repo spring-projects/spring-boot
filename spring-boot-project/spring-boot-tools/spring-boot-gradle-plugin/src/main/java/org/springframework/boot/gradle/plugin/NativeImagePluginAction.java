@@ -105,10 +105,7 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	private void configureBootBuildImageToProduceANativeImage(Project project) {
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
-			.configure((bootBuildImage) -> {
-				bootBuildImage.getBuilder().convention("paketobuildpacks/builder-jammy-tiny:latest");
-				bootBuildImage.getEnvironment().put("BP_NATIVE_IMAGE", "true");
-			});
+			.configure((bootBuildImage) -> bootBuildImage.getEnvironment().put("BP_NATIVE_IMAGE", "true"));
 	}
 
 	private void configureJarManifestNativeAttribute(Project project) {

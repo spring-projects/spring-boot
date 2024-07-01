@@ -13,7 +13,7 @@ In a standalone application, the Actuator HTTP port defaults to the same as the 
 To make the application listen on a different port, set the external property: configprop:management.server.port[].
 To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
 
-For more detail, see the xref:api:java/org/springframework/boot/actuate/autoconfigure/web/server/ManagementServerProperties.html[`ManagementServerProperties`] source code and "`xref:reference:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port]`" in the "`Production-ready features`" section.
+For more detail, see the xref:api:java/org/springframework/boot/actuate/autoconfigure/web/server/ManagementServerProperties.html[`ManagementServerProperties`] source code and xref:reference:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port] in the "`Production-Ready Features`" section.
 
 
 
@@ -33,7 +33,7 @@ In general, you need a `View` that resolves with a name of `error` or a `@Contro
 Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
 See {code-spring-boot-autoconfigure-src}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
-See also the section on "`xref:reference:web/servlet.adoc#web.servlet.spring-mvc.error-handling[Error Handling]`" for details of how to register handlers in the servlet container.
+See also the section on xref:reference:web/servlet.adoc#web.servlet.spring-mvc.error-handling[] for details of how to register handlers in the servlet container.
 
 
 

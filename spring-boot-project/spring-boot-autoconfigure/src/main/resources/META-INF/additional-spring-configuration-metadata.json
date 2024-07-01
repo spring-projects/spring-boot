@@ -1346,6 +1346,9 @@
         "level": "error",
         "reason": "Removed in Flyway 10"
       }
+    },{
+      "name": "spring.flyway.community-db-support-enabled",
+      "defaultValue": false
     },
     {
       "name": "spring.flyway.dry-run-output",

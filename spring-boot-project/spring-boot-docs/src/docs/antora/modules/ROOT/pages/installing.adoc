@@ -39,10 +39,10 @@ Ubuntu users can run `sudo apt-get install maven`.
 Windows users with https://chocolatey.org/[Chocolatey] can run `choco install maven` from an elevated (administrator) prompt.
 
 Spring Boot dependencies use the `org.springframework.boot` group id.
-Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more xref:reference:using/build-systems.adoc#using.build-systems.starters["`Starters`"].
+Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more xref:reference:using/build-systems.adoc#using.build-systems.starters[starters].
 Spring Boot also provides an optional xref:maven-plugin:index.adoc[Maven plugin] to create executable jars.
 
-More details on getting started with Spring Boot and Maven can be found in the xref:maven-plugin:getting-started.adoc[Getting Started section] of the Maven plugin's reference guide.
+More details on getting started with Spring Boot and Maven can be found in the xref:maven-plugin:getting-started.adoc[] section of the Maven plugin's reference guide.
 
 
 
@@ -53,7 +53,7 @@ Spring Boot is compatible with Gradle 7.x (7.6.4 or later) or 8.x (8.3 or later)
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
-Typically, your project declares dependencies to one or more xref:reference:using/build-systems.adoc#using.build-systems.starters["`Starters`"].
+Typically, your project declares dependencies to one or more xref:reference:using/build-systems.adoc#using.build-systems.starters[starters].
 Spring Boot provides a useful xref:gradle-plugin:index.adoc[Gradle plugin] that can be used to simplify dependency declarations and to create executable jars.
 
 .Gradle Wrapper
@@ -63,7 +63,7 @@ It is a small script and library that you commit alongside your code to bootstra
 See {url-gradle-docs}/gradle_wrapper.html for details.
 ****
 
-More details on getting started with Spring Boot and Gradle can be found in the xref:gradle-plugin:getting-started.adoc[Getting Started section] of the Gradle plugin's reference guide.
+More details on getting started with Spring Boot and Gradle can be found in the xref:gradle-plugin:getting-started.adoc[] section of the Gradle plugin's reference guide.
 
 
 

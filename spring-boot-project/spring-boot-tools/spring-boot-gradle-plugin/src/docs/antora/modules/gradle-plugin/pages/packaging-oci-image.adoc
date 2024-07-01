@@ -119,7 +119,7 @@ The following table summarizes the available properties and their default values
 | `builder`
 | `--builder`
 | Name of the Builder image to use.
-| `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-tiny:latest` when {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied.
+| `paketobuildpacks/builder-jammy-tiny:latest`
 
 | `runImage`
 | `--runImage`
@@ -237,7 +237,10 @@ Application contents will also be in this location in the generated image.
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
-You can override this behaviour as shown in the xref:packaging-oci-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
+You can override this behavior as shown in the xref:packaging-oci-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
+
+NOTE: The default builder `paketobuildpacks/builder-jammy-tiny:latest` does not include a shell.
+Applications that require a shell to run a start script, as might be the case when the {url-gradle-docs-application-plugin}[`application` plugin] has been applied to generate a distribution zip archive, should override the `builder` configuration to use one that includes a shell, such as `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-full:latest`.
 
 
 

@@ -1,7 +1,7 @@
 [[messaging.spring-integration]]
 = Spring Integration
 
-Spring Boot offers several conveniences for working with {url-spring-integration-site}[Spring Integration], including the `spring-boot-starter-integration` "`Starter`".
+Spring Boot offers several conveniences for working with {url-spring-integration-site}[Spring Integration], including the `spring-boot-starter-integration` starter.
 Spring Integration provides abstractions over messaging and also other transports such as HTTP, TCP, and others.
 If Spring Integration is available on your classpath, it is initialized through the `@EnableIntegration` annotation.
 
@@ -20,8 +20,8 @@ spring:
       initialize-schema: "always"
 ----
 
-If `spring-integration-rsocket` is available, developers can configure an RSocket server using `"spring.rsocket.server.*"` properties and let it use `IntegrationRSocketEndpoint` or `RSocketOutboundGateway` components to handle incoming RSocket messages.
-This infrastructure can handle Spring Integration RSocket channel adapters and `@MessageMapping` handlers (given `"spring.integration.rsocket.server.message-mapping-enabled"` is configured).
+If `spring-integration-rsocket` is available, developers can configure an RSocket server using `spring.rsocket.server.*` properties and let it use `IntegrationRSocketEndpoint` or `RSocketOutboundGateway` components to handle incoming RSocket messages.
+This infrastructure can handle Spring Integration RSocket channel adapters and `@MessageMapping` handlers (given `spring.integration.rsocket.server.message-mapping-enabled` is configured).
 
 Spring Boot can also auto-configure an `ClientRSocketConnector` using configuration properties:
 

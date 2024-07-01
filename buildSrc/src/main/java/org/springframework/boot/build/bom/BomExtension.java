@@ -154,7 +154,7 @@ public class BomExtension {
 				}
 				MavenExec generateEffectiveBom = this.project.getTasks()
 					.create("generateEffectiveBom", MavenExec.class);
-				generateEffectiveBom.setProjectDir(generatedBomDir);
+				generateEffectiveBom.getProjectDir().set(generatedBomDir);
 				File effectiveBom = new File(this.project.getBuildDir(),
 						"generated/effective-bom/" + this.project.getName() + "-effective-bom.xml");
 				generateEffectiveBom.args("--settings", "settings.xml", "help:effective-pom",

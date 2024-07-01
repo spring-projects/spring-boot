@@ -3,6 +3,7 @@ plugins {
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Maven Plugin"
@@ -14,7 +15,6 @@ configurations {
 
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
-	compileOnly("org.sonatype.plexus:plexus-build-api")
 	compileOnly("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
@@ -25,6 +25,15 @@ dependencies {
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.apache.maven.shared:maven-invoker") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
@@ -32,8 +41,17 @@ dependencies {
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
+	implementation("org.sonatype.plexus:plexus-build-api") {
+		exclude(group: "org.codehaus.plexus", module: "plexus-utils")
+	}
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-context")
+
+	optional("org.apache.maven.plugins:maven-shade-plugin") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 
 	testImplementation("org.apache.maven:maven-core") {
 		exclude(group: "javax.annotation", module: "javax.annotation-api")
@@ -58,21 +76,11 @@ dependencies {
 	}
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
-	intTestImplementation("org.testcontainers:testcontainers")
-	intTestImplementation("org.testcontainers:junit-jupiter")
-
-	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin") {
-		exclude(group: "javax.annotation", module: "javax.annotation-api")
-		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
 
 	mavenRepository(project(path: ":spring-boot-project:spring-boot", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
-
-	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
@@ -87,6 +95,9 @@ sourceSets {
 		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
 	}
 	intTest {
+		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
+	}
+	dockerTest {
 		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
 	}
 }
@@ -111,7 +122,7 @@ task xsdResources(type: Sync) {
 }
 
 prepareMavenBinaries {
-	versions "3.9.6", "3.6.3"
+	versions = [ "3.9.6", "3.6.3" ]
 }
 
 tasks.named("documentPluginGoals") {
@@ -168,4 +179,8 @@ tasks.named("antora") {
 artifacts {
 	antoraContent antoraMavenPluginAggregateContent
 	antoraContent antoraMavenPluginCatalogContent
+}
+
+tasks.named("dockerTest").configure {
+	dependsOn tasks.named("prepareMavenBinaries")
 }

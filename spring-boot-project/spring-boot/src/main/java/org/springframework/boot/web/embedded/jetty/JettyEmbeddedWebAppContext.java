@@ -38,7 +38,8 @@ class JettyEmbeddedWebAppContext extends WebAppContext {
 	}
 
 	void deferredInitialize() throws Exception {
-		((JettyEmbeddedServletHandler) getServletHandler()).deferredInitialize();
+		JettyEmbeddedServletHandler handler = (JettyEmbeddedServletHandler) getServletHandler();
+		getContext().call(handler::deferredInitialize, null);
 	}
 
 	private static final class JettyEmbeddedServletHandler extends ServletHandler {

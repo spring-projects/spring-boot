@@ -96,7 +96,11 @@ class MavenBuild {
 	}
 
 	MavenBuild project(String project) {
-		this.projectDir = new File("src/intTest/projects/" + project);
+		return project("intTest", project);
+	}
+
+	MavenBuild project(String root, String project) {
+		this.projectDir = new File("src/" + root + "/projects/" + project);
 		return this;
 	}
 
@@ -157,7 +161,7 @@ class MavenBuild {
 
 			});
 			String settingsXml = Files.readString(Paths.get("src", "intTest", "projects", "settings.xml"))
-				.replace("@localCentralUrl@", new File("build/int-test-maven-repository").toURI().toURL().toString())
+				.replace("@localCentralUrl@", new File("build/test-maven-repository").toURI().toURL().toString())
 				.replace("@localRepositoryPath@", new File("build/local-maven-repository").getAbsolutePath());
 			Files.writeString(destination.resolve("settings.xml"), settingsXml, StandardOpenOption.CREATE_NEW);
 			request.setBaseDirectory(this.temp);

@@ -330,6 +330,11 @@ public class FlywayProperties {
 	 */
 	private Boolean detectEncoding;
 
+	/**
+	 * Whether to enable community database support.
+	 */
+	private Boolean communityDbSupportEnabled;
+
 	private final Oracle oracle = new Oracle();
 
 	private final Postgresql postgresql = new Postgresql();
@@ -821,6 +826,14 @@ public class FlywayProperties {
 
 	public void setDetectEncoding(final Boolean detectEncoding) {
 		this.detectEncoding = detectEncoding;
+	}
+
+	public Boolean getCommunityDbSupportEnabled() {
+		return this.communityDbSupportEnabled;
+	}
+
+	public void setCommunityDbSupportEnabled(Boolean communityDbSupportEnabled) {
+		this.communityDbSupportEnabled = communityDbSupportEnabled;
 	}
 
 	public Oracle getOracle() {

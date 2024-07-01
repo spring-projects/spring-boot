@@ -3,25 +3,25 @@
 
 Spring Boot Actuator provides dependency management and auto-configuration for {url-micrometer-site}[Micrometer], an application metrics facade that supports {url-micrometer-docs}[numerous monitoring systems], including:
 
-- xref:actuator/metrics.adoc#actuator.metrics.export.appoptics[AppOptics]
-- xref:actuator/metrics.adoc#actuator.metrics.export.atlas[Atlas]
-- xref:actuator/metrics.adoc#actuator.metrics.export.datadog[Datadog]
-- xref:actuator/metrics.adoc#actuator.metrics.export.dynatrace[Dynatrace]
-- xref:actuator/metrics.adoc#actuator.metrics.export.elastic[Elastic]
-- xref:actuator/metrics.adoc#actuator.metrics.export.ganglia[Ganglia]
-- xref:actuator/metrics.adoc#actuator.metrics.export.graphite[Graphite]
-- xref:actuator/metrics.adoc#actuator.metrics.export.humio[Humio]
-- xref:actuator/metrics.adoc#actuator.metrics.export.influx[Influx]
-- xref:actuator/metrics.adoc#actuator.metrics.export.jmx[JMX]
-- xref:actuator/metrics.adoc#actuator.metrics.export.kairos[KairosDB]
-- xref:actuator/metrics.adoc#actuator.metrics.export.newrelic[New Relic]
-- xref:actuator/metrics.adoc#actuator.metrics.export.otlp[OpenTelemetry]
-- xref:actuator/metrics.adoc#actuator.metrics.export.prometheus[Prometheus]
-- xref:actuator/metrics.adoc#actuator.metrics.export.signalfx[SignalFx]
-- xref:actuator/metrics.adoc#actuator.metrics.export.simple[Simple (in-memory)]
-- xref:actuator/metrics.adoc#actuator.metrics.export.stackdriver[Stackdriver]
-- xref:actuator/metrics.adoc#actuator.metrics.export.statsd[StatsD]
-- xref:actuator/metrics.adoc#actuator.metrics.export.wavefront[Wavefront]
+- xref:actuator/metrics.adoc#actuator.metrics.export.appoptics[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.atlas[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.datadog[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.dynatrace[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.elastic[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.ganglia[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.graphite[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.humio[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.influx[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.jmx[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.kairos[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.newrelic[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.otlp[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.prometheus[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.signalfx[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.simple[] (in-memory)
+- xref:actuator/metrics.adoc#actuator.metrics.export.stackdriver[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.statsd[D]
+- xref:actuator/metrics.adoc#actuator.metrics.export.wavefront[]
 
 TIP: To learn more about Micrometer's capabilities, see its {url-micrometer-docs}[reference documentation], in particular the {url-micrometer-docs-concepts}[concepts section].
 
@@ -1236,7 +1236,7 @@ configurable buffer length.
 | Publish a cumulative histogram with buckets defined by your service-level objectives.
 |===
 
-For more details on the concepts behind `percentiles-histogram`, `percentiles`, and `slo`, see the {url-micrometer-docs-concepts}#_histograms_and_percentiles["`Histograms and percentiles`" section] of the Micrometer documentation.
+For more details on the concepts behind `percentiles-histogram`, `percentiles`, and `slo`, see the {url-micrometer-docs-concepts}#_histograms_and_percentiles[Histograms and percentiles] section of the Micrometer documentation.
 
 
 

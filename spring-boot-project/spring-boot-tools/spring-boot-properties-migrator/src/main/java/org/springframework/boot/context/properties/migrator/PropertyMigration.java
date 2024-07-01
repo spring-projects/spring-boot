@@ -25,6 +25,7 @@ import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -67,6 +68,9 @@ class PropertyMigration {
 
 	private static Integer determineLineNumber(ConfigurationProperty property) {
 		Origin origin = property.getOrigin();
+		if (origin instanceof PropertySourceOrigin propertySourceOrigin) {
+			origin = propertySourceOrigin.getOrigin();
+		}
 		if (origin instanceof TextResourceOrigin textOrigin) {
 			if (textOrigin.getLocation() != null) {
 				return textOrigin.getLocation().getLine() + 1;

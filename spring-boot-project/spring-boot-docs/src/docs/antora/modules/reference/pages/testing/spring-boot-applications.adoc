@@ -118,7 +118,7 @@ You can then import the class explicitly where it is required, as shown in the f
 include-code::MyTests[]
 
 NOTE: If you directly use `@ComponentScan` (that is, not through `@SpringBootApplication`) you need to register the `TypeExcludeFilter` with it.
-See xref:api:java/org/springframework/boot/context/TypeExcludeFilter.html[the Javadoc] for details.
+See the xref:api:java/org/springframework/boot/context/TypeExcludeFilter.html[`TypeExcludeFilter`] API documentation for details.
 
 NOTE: An imported `@TestConfiguration` is processed earlier than an inner-class `@TestConfiguration` and an imported `@TestConfiguration` will be processed before any configuration found through component scanning.
 Generally speaking, this difference in ordering has no noticeable effect but it is something to be aware of if you're relying on bean overriding.
@@ -263,7 +263,7 @@ By the time the test is executed, the application context refresh has completed 
 We recommend using a `@Bean` method to create and configure the mock in this situation.
 
 Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
-See the xref:api:java/org/springframework/boot/test/mock/mockito/SpyBean.html[Javadoc] for full details.
+See the xref:api:java/org/springframework/boot/test/mock/mockito/SpyBean.html[`SpyBean`] API documentation for full details.
 
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 
@@ -366,7 +366,7 @@ If you define your own `webDriver` scope you may find it stops working when you 
 
 If you have Spring Security on the classpath, `@WebMvcTest` will also scan `WebSecurityConfigurer` beans.
 Instead of disabling security completely for such tests, you can use Spring Security's test support.
-More details on how to use Spring Security's `MockMvc` support can be found in this _xref:how-to:testing.adoc#howto.testing.with-spring-security[Testing With Spring Security]_ how-to section.
+More details on how to use Spring Security's `MockMvc` support can be found in this xref:how-to:testing.adoc#howto.testing.with-spring-security[] "`How-to Guides`" section.
 
 TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-running-server[full end-to-end tests with an actual server].
 
@@ -472,7 +472,7 @@ You can use `@DataCassandraTest` to test Cassandra applications.
 By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCassandraTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Cassandra with Spring Boot, see "xref:data/nosql.adoc#data.nosql.cassandra[Cassandra]".)
+(For more about using Cassandra with Spring Boot, see xref:data/nosql.adoc#data.nosql.cassandra[].)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -489,7 +489,7 @@ You can use `@DataCouchbaseTest` to test Couchbase applications.
 By default, it configures a `CouchbaseTemplate` or `ReactiveCouchbaseTemplate`, scans for `@Document` classes, and configures Spring Data Couchbase repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCouchbaseTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Couchbase with Spring Boot, see "xref:data/nosql.adoc#data.nosql.couchbase[Couchbase]", earlier in this chapter.)
+(For more about using Couchbase with Spring Boot, see xref:data/nosql.adoc#data.nosql.couchbase[], earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataCouchbaseTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -506,7 +506,7 @@ You can use `@DataElasticsearchTest` to test Elasticsearch applications.
 By default, it configures an `ElasticsearchRestTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataElasticsearchTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Elasticsearch with Spring Boot, see "xref:data/nosql.adoc#data.nosql.elasticsearch[Elasticsearch]", earlier in this chapter.)
+(For more about using Elasticsearch with Spring Boot, see xref:data/nosql.adoc#data.nosql.elasticsearch[], earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataElasticsearchTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -570,7 +570,7 @@ If that is not what you want, you can disable transaction management for a test 
 include-code::MyTransactionalTests[]
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `@DataJpaTest`.
-(See "xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[Auto-configured Data JPA Tests]".)
+(See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[].)
 
 
 
@@ -589,7 +589,7 @@ See the {url-spring-framework-docs}/testing/testcontext-framework/tx.html#testco
 If that is not what you want, you can disable transaction management for a test or for the whole test class as xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-jdbc[shown in the JDBC example].
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `@DataJpaTest`.
-(See "xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[Auto-configured Data JPA Tests]".)
+(See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[].)
 
 
 
@@ -606,7 +606,7 @@ TIP: A list of the auto-configurations that are enabled by `@DataR2dbcTest` can 
 By default, Data R2DBC tests are not transactional.
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `@DataJpaTest`.
-(See "xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[Auto-configured Data JPA Tests]".)
+(See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-spring-data-jpa[].)
 
 
 
@@ -616,7 +616,7 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related tests.
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing `DataSource` is used.
 If you want to replace it with an in-memory database, you can use `@AutoConfigureTestDatabase` to override those settings.
-(For more about using jOOQ with Spring Boot, see "xref:data/sql.adoc#data.sql.jooq[Using jOOQ]".)
+(For more about using jOOQ with Spring Boot, see xref:data/sql.adoc#data.sql.jooq[].)
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -639,7 +639,7 @@ You can use `@DataMongoTest` to test MongoDB applications.
 By default, it configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using MongoDB with Spring Boot, see "xref:data/nosql.adoc#data.nosql.mongodb[MongoDB]".)
+(For more about using MongoDB with Spring Boot, see xref:data/nosql.adoc#data.nosql.mongodb[].)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -656,7 +656,7 @@ You can use `@DataNeo4jTest` to test Neo4j applications.
 By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataNeo4jTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Neo4J with Spring Boot, see "xref:data/nosql.adoc#data.nosql.neo4j[Neo4j]".)
+(For more about using Neo4J with Spring Boot, see xref:data/nosql.adoc#data.nosql.neo4j[].)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -682,7 +682,7 @@ You can use `@DataRedisTest` to test Redis applications.
 By default, it scans for `@RedisHash` classes and configures Spring Data Redis repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataRedisTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using Redis with Spring Boot, see "xref:data/nosql.adoc#data.nosql.redis[Redis]".)
+(For more about using Redis with Spring Boot, see xref:data/nosql.adoc#data.nosql.redis[].)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -699,7 +699,7 @@ You can use `@DataLdapTest` to test LDAP applications.
 By default, it configures an in-memory embedded LDAP (if available), configures an `LdapTemplate`, scans for `@Entry` classes, and configures Spring Data LDAP repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataLdapTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
-(For more about using LDAP with Spring Boot, see "xref:data/nosql.adoc#data.nosql.ldap[LDAP]".)
+(For more about using LDAP with Spring Boot, see xref:data/nosql.adoc#data.nosql.ldap[].)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -810,7 +810,7 @@ include-code::MyRestDocsConfiguration[]
 
 You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
 By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
-(For more about using Web Services with Spring Boot, see "xref:io/webservices.adoc[Web Services]".)
+(For more about using Web Services with Spring Boot, see xref:io/webservices.adoc[].)
 
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
@@ -826,7 +826,7 @@ include-code::MyWebServiceClientTests[]
 
 You can use `@WebServiceServerTest` to test applications that implement web services using the Spring Web Services project.
 By default, it configures a `MockWebServiceClient` bean that can be used to call your web service endpoints.
-(For more about using Web Services with Spring Boot, see "xref:io/webservices.adoc[Web Services]".)
+(For more about using Web Services with Spring Boot, see xref:io/webservices.adoc[].)
 
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebServiceServerTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].

@@ -30,8 +30,8 @@ TIP: The "`Using Spring Boot`" section includes a more complete example of xref:
 
 Once the `spring-boot-antlib` namespace has been declared, the following additional tasks are available:
 
-* xref:antlib.adoc#build-tool-plugins.antlib.tasks.exejar[Using the "`exejar`" Task]
-* xref:antlib.adoc#build-tool-plugins.antlib.findmainclass[Using the "`findmainclass`" Task]
+* xref:antlib.adoc#build-tool-plugins.antlib.tasks.exejar[]
+* xref:antlib.adoc#build-tool-plugins.antlib.findmainclass[]
 
 
 

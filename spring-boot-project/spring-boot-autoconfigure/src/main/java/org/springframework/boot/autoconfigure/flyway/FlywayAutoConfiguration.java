@@ -302,6 +302,8 @@ public class FlywayAutoConfiguration {
 				.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
 			configureExecuteInTransaction(configuration, properties, map);
 			map.from(properties::getLoggers).to((loggers) -> configuration.loggers(loggers));
+			map.from(properties::getCommunityDbSupportEnabled)
+				.to((communityDbSupportEnabled) -> configuration.communityDBSupportEnabled(communityDbSupportEnabled));
 			// Flyway Teams properties
 			map.from(properties.getBatch()).to((batch) -> configuration.batch(batch));
 			map.from(properties.getDryRunOutput()).to((dryRunOutput) -> configuration.dryRunOutput(dryRunOutput));

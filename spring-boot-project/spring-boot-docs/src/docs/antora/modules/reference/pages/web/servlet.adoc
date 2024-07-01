@@ -52,7 +52,7 @@ The custom instances will be subject to further initialization and configuration
 To participate in, and if desired, override that subsequent processing, a `WebMvcConfigurer` should be used.
 
 If you do not want to use the auto-configuration and want to take complete control of Spring MVC, add your own `@Configuration` annotated with `@EnableWebMvc`.
-Alternatively, add your own `@Configuration`-annotated `DelegatingWebMvcConfiguration` as described in the Javadoc of `@EnableWebMvc`.
+Alternatively, add your own `@Configuration`-annotated `DelegatingWebMvcConfiguration` as described in the `@EnableWebMvc` API documentation.
 
 
 
@@ -342,7 +342,7 @@ For machine clients, it produces a JSON response with details of the error, the 
 For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
 
 There are a number of `server.error` properties that can be set if you want to customize the default error handling behavior.
-See the xref:appendix:application-properties/index.adoc#appendix.application-properties.server["`Server Properties`"] section of the Appendix.
+See the xref:appendix:application-properties/index.adoc#appendix.application-properties.server[Server Properties] section of the Appendix.
 
 To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
@@ -506,7 +506,7 @@ Both the servlet and the filter registrations can be given init parameters by us
 == Embedded Servlet Container Support
 
 For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
-Most developers use the appropriate "`Starter`" to obtain a fully configured instance.
+Most developers use the appropriate starter to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port `8080`.
 
 
@@ -684,7 +684,7 @@ For more advanced use cases that require you to extend from `ServletWebServerFac
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
-See the xref:api:java/org/springframework/boot/web/servlet/server/ConfigurableServletWebServerFactory.html[source code documentation] for details.
+See the xref:api:java/org/springframework/boot/web/servlet/server/ConfigurableServletWebServerFactory.html[`ConfigurableServletWebServerFactory`] API documentation for details.
 
 NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 

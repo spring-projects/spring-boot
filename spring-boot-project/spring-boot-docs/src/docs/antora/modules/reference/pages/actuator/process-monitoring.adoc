@@ -8,8 +8,8 @@ In the `spring-boot` module, you can find two classes to create files that are o
 
 By default, these writers are not activated, but you can enable them:
 
-* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.configuration[By Extending Configuration]
-* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.programmatically[Programmatically Enabling Process Monitoring]
+* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.configuration[]
+* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.programmatically[]
 
 
 

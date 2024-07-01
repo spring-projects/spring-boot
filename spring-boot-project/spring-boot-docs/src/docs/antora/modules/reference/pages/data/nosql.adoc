@@ -27,11 +27,11 @@ Spring Boot also provides auto-configuration for the InfluxDB client but it is d
 https://redis.io/[Redis] is a cache, message broker, and richly-featured key-value store.
 Spring Boot offers basic auto-configuration for the https://github.com/lettuce-io/lettuce-core/[Lettuce] and https://github.com/xetorthio/jedis/[Jedis] client libraries and the abstractions on top of them provided by https://github.com/spring-projects/spring-data-redis[Spring Data Redis].
 
-There is a `spring-boot-starter-data-redis` "`Starter`" for collecting the dependencies in a convenient way.
+There is a `spring-boot-starter-data-redis` starter for collecting the dependencies in a convenient way.
 By default, it uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
 That starter handles both traditional and reactive applications.
 
-TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for consistency with the other stores with reactive support.
+TIP: We also provide a `spring-boot-starter-data-redis-reactive` starter for consistency with the other stores with reactive support.
 
 
 
@@ -95,7 +95,7 @@ spring:
 == MongoDB
 
 https://www.mongodb.com/[MongoDB] is an open-source NoSQL document database that uses a JSON-like schema instead of traditional table-based relational data.
-Spring Boot offers several conveniences for working with MongoDB, including the `spring-boot-starter-data-mongodb` and `spring-boot-starter-data-mongodb-reactive` "`Starters`".
+Spring Boot offers several conveniences for working with MongoDB, including the `spring-boot-starter-data-mongodb` and `spring-boot-starter-data-mongodb-reactive` starters.
 
 
 
@@ -193,7 +193,7 @@ As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the
 
 include-code::MyBean[]
 
-See the {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
+See the {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoOperations.html[`MongoOperations`] API documentation for complete details.
 
 
 
@@ -220,7 +220,7 @@ TIP: For complete details of Spring Data MongoDB, including its rich object mapp
 == Neo4j
 
 https://neo4j.com/[Neo4j] is an open-source NoSQL graph database that uses a rich data model of nodes connected by first class relationships, which is better suited for connected big data than traditional RDBMS approaches.
-Spring Boot offers several conveniences for working with Neo4j, including the `spring-boot-starter-data-neo4j` "`Starter`".
+Spring Boot offers several conveniences for working with Neo4j, including the `spring-boot-starter-data-neo4j` starter.
 
 
 
@@ -263,7 +263,7 @@ You could take the JPA example from earlier and define `City` as Spring Data Neo
 
 include-code::CityRepository[]
 
-The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
+The `spring-boot-starter-data-neo4j` starter enables the repository support as well as transaction management.
 Spring Boot supports both classic and reactive Neo4j repositories, using the `Neo4jTemplate` or `ReactiveNeo4jTemplate` beans.
 When Project Reactor is available on the classpath, the reactive style is also auto-configured.
 
@@ -293,7 +293,7 @@ Spring Boot supports several clients:
 * The official Java API client
 * The `ReactiveElasticsearchClient` provided by Spring Data Elasticsearch
 
-Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elasticsearch`.
+Spring Boot provides a dedicated starter, `spring-boot-starter-data-elasticsearch`.
 
 
 
@@ -375,7 +375,7 @@ as shown in the following example:
 
 include-code::MyBean[]
 
-In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a xref:data/nosql.adoc#data.nosql.elasticsearch.connecting-using-rest.reactiveclient[ReactiveElasticsearchClient] and a `ReactiveElasticsearchTemplate` as beans.
+In the presence of `spring-data-elasticsearch` and Reactor, Spring Boot can also auto-configure a xref:data/nosql.adoc#data.nosql.elasticsearch.connecting-using-rest.reactiveclient[`ReactiveElasticsearchClient`] and a `ReactiveElasticsearchTemplate` as beans.
 They are the reactive equivalent of the other REST clients.
 
 
@@ -419,7 +419,7 @@ You can choose to disable the repositories support with the following property:
 
 https://cassandra.apache.org/[Cassandra] is an open source, distributed database management system designed to handle large amounts of data across many commodity servers.
 Spring Boot offers auto-configuration for Cassandra and the abstractions on top of it provided by {url-spring-data-cassandra-site}[Spring Data Cassandra].
-There is a `spring-boot-starter-data-cassandra` "`Starter`" for collecting the dependencies in a convenient way.
+There is a `spring-boot-starter-data-cassandra` starter for collecting the dependencies in a convenient way.
 
 
 
@@ -520,7 +520,7 @@ TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.
 
 https://www.couchbase.com/[Couchbase] is an open-source, distributed, multi-model NoSQL document-oriented database that is optimized for interactive applications.
 Spring Boot offers auto-configuration for Couchbase and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-couchbase[Spring Data Couchbase].
-There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-couchbase-reactive` "`Starters`" for collecting the dependencies in a convenient way.
+There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-couchbase-reactive` starters for collecting the dependencies in a convenient way.
 
 
 
@@ -605,14 +605,14 @@ https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol[LDAP] (Light
 Spring Boot offers auto-configuration for any compliant LDAP server as well as support for the embedded in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 
 LDAP abstractions are provided by https://github.com/spring-projects/spring-data-ldap[Spring Data LDAP].
-There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the dependencies in a convenient way.
+There is a `spring-boot-starter-data-ldap` starter for collecting the dependencies in a convenient way.
 
 
 
 [[data.nosql.ldap.connecting]]
 === Connecting to an LDAP Server
 
-To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
+To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` starter or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
 
 [configprops,yaml]
 ----

@@ -22,8 +22,6 @@ import java.time.Duration;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Clock;
-import io.micrometer.prometheus.PrometheusConfig;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exemplars.DefaultExemplarSampler;
 import io.prometheus.client.exemplars.ExemplarSampler;
@@ -69,14 +67,14 @@ import org.springframework.util.StringUtils;
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
 		after = { MetricsAutoConfiguration.class, PrometheusMetricsExportAutoConfiguration.class })
 @ConditionalOnBean(Clock.class)
-@ConditionalOnClass(PrometheusMeterRegistry.class)
+@ConditionalOnClass(io.micrometer.prometheus.PrometheusMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("prometheus")
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	PrometheusConfig simpleclientPrometheusConfig(PrometheusProperties prometheusProperties) {
+	io.micrometer.prometheus.PrometheusConfig simpleclientPrometheusConfig(PrometheusProperties prometheusProperties) {
 		return new PrometheusSimpleclientPropertiesConfigAdapter(prometheusProperties);
 	}
 

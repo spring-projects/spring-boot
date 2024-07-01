@@ -1,20 +1,24 @@
 plugins {
 	id "java"
 	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Kafka smoke test"
 
 dependencies {
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:kafka")
+
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-json"))
 	implementation("org.springframework.kafka:spring-kafka")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.springframework.kafka:spring-kafka-test") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:kafka")
 }

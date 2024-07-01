@@ -4,7 +4,7 @@
 Spring Boot provides a number of utilities and annotations to help when testing your application.
 Test support is provided by two modules: `spring-boot-test` contains core items, and `spring-boot-test-autoconfigure` supports auto-configuration for tests.
 
-Most developers use the `spring-boot-starter-test` "`Starter`", which imports both Spring Boot test modules as well as JUnit Jupiter, AssertJ, Hamcrest, and a number of other useful libraries.
+Most developers use the `spring-boot-starter-test` starter, which imports both Spring Boot test modules as well as JUnit Jupiter, AssertJ, Hamcrest, and a number of other useful libraries.
 
 [TIP]
 ====

@@ -40,8 +40,8 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
-import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
+import org.springframework.boot.buildpack.platform.socket.UnixDomainSocket;
 
 /**
  * {@link HttpClientTransport} that talks to local Docker.
@@ -116,6 +116,8 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalConnectionSocketFactory implements ConnectionSocketFactory {
 
+		private static final String NPIPE_PREFIX = "npipe://";
+
 		private final String host;
 
 		LocalConnectionSocketFactory(String host) {
@@ -124,10 +126,10 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 		@Override
 		public Socket createSocket(HttpContext context) throws IOException {
-			if (Platform.isWindows()) {
-				return NamedPipeSocket.get(this.host);
+			if (this.host.startsWith(NPIPE_PREFIX)) {
+				return NamedPipeSocket.get(this.host.substring(NPIPE_PREFIX.length()));
 			}
-			return DomainSocket.get(this.host);
+			return (!Platform.isWindows()) ? UnixDomainSocket.get(this.host) : NamedPipeSocket.get(this.host);
 		}
 
 		@Override

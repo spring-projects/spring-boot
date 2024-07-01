@@ -273,7 +273,7 @@ When it does so, the orders shown in the following table will be used:
 == Embedded Reactive Server Support
 
 Spring Boot includes support for the following embedded reactive web servers: Reactor Netty, Tomcat, Jetty, and Undertow.
-Most developers use the appropriate “Starter” to obtain a fully configured instance.
+Most developers use the appropriate starter to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port 8080.
 
 
@@ -321,7 +321,7 @@ For more advanced use cases that require you to extend from `ReactiveWebServerFa
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
-See the xref:api:java/org/springframework/boot/web/reactive/server/ConfigurableReactiveWebServerFactory.html[source code documentation] for details.
+See the xref:api:java/org/springframework/boot/web/reactive/server/ConfigurableReactiveWebServerFactory.html[`ConfigurableReactiveWebServerFactory`] API documentation for details.
 
 NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 
@@ -339,6 +339,6 @@ By default, those resources will be also shared with the Reactor Netty and Jetty
 
 Developers can override the resource configuration for Jetty and Reactor Netty by providing a custom `ReactorResourceFactory` or `JettyResourceFactory` bean - this will be applied to both clients and servers.
 
-You can learn more about the resource configuration on the client side in the xref:io/rest-client.adoc#io.rest-client.webclient.runtime[WebClient Runtime section].
+You can learn more about the resource configuration on the client side in the xref:io/rest-client.adoc#io.rest-client.webclient.runtime[] section.
 
 

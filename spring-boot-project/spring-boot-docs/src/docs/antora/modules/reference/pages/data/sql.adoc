@@ -12,7 +12,7 @@ The {url-spring-framework-site}[Spring Framework] provides extensive support for
 Java's `javax.sql.DataSource` interface provides a standard method of working with database connections.
 Traditionally, a `DataSource` uses a `URL` along with some credentials to establish a database connection.
 
-TIP: See xref:how-to:data-access.adoc#howto.data-access.configure-custom-datasource[the "`How-to`" section] for more advanced examples, typically to take full control over the configuration of the DataSource.
+TIP: See the xref:how-to:data-access.adoc#howto.data-access.configure-custom-datasource[] section of the "`How-to Guides`" for more advanced examples, typically to take full control over the configuration of the DataSource.
 
 
 
@@ -23,7 +23,7 @@ It is often convenient to develop applications by using an in-memory embedded da
 Obviously, in-memory databases do not provide persistent storage.
 You need to populate your database when your application starts and be prepared to throw away data when your application ends.
 
-TIP: The "`How-to`" section includes a xref:how-to:data-initialization.adoc[section on how to initialize a database].
+TIP: The "`How-to Guides`" section includes a xref:how-to:data-initialization.adoc[section on how to initialize a database].
 
 Spring Boot can auto-configure embedded https://www.h2database.com[H2], https://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
 You need not provide any connection URLs.
@@ -93,7 +93,7 @@ If you need to specify a specific class, you can use the configprop:spring.datas
 NOTE: For a pooling `DataSource` to be created, we need to be able to verify that a valid `Driver` class is available, so we check for that before doing anything.
 In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`, then that class has to be loadable.
 
-See xref:api:java/org/springframework/boot/autoconfigure/jdbc/DataSourceProperties.html[`DataSourceProperties`] for more of the supported options.
+See xref:api:java/org/springframework/boot/autoconfigure/jdbc/DataSourceProperties.html[`DataSourceProperties`] API documentation for more of the supported options.
 These are the standard options that work regardless of xref:data/sql.adoc#data.sql.datasource.connection-pool[the actual implementation].
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
 See the documentation of the connection pool implementation you are using for more details.
@@ -125,7 +125,7 @@ If HikariCP is available, we always choose it.
 . Otherwise, if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
 . If none of HikariCP, Tomcat, and DBCP2 are available and if Oracle UCP is available, we use it.
 
-NOTE: If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` "`starters`", you automatically get a dependency to `HikariCP`.
+NOTE: If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` starters, you automatically get a dependency to `HikariCP`.
 
 You can bypass that algorithm completely and specify the connection pool to use by setting the configprop:spring.datasource.type[] property.
 This is especially important if you run your application in a Tomcat container, as `tomcat-jdbc` is provided by default.
@@ -208,7 +208,7 @@ It provides the following key dependencies:
 * Spring ORM: Core ORM support from the Spring Framework.
 
 TIP: We do not go into too many details of JPA or {url-spring-data-site}[Spring Data] here.
-You can follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing Data with JPA`"] guide from https://spring.io and read the {url-spring-data-jpa-site}[Spring Data JPA] and https://hibernate.org/orm/documentation/[Hibernate] reference documentation.
+You can follow the https://spring.io/guides/gs/accessing-data-jpa/[Accessing Data with JPA] guide from https://spring.io and read the {url-spring-data-jpa-site}[Spring Data JPA] and https://hibernate.org/orm/documentation/[Hibernate] reference documentation.
 
 
 
@@ -225,7 +225,7 @@ A typical entity class resembles the following example:
 include-code::City[]
 
 TIP: You can customize entity scanning locations by using the `@EntityScan` annotation.
-See the "`xref:how-to:data-access.adoc#howto.data-access.separate-entity-definitions-from-spring-configuration[Separate @Entity Definitions from Spring Configuration]`" how-to.
+See the xref:how-to:data-access.adoc#howto.data-access.separate-entity-definitions-from-spring-configuration[] section of the "`How-to Guides`".
 
 
 
@@ -485,7 +485,7 @@ TIP: You do not need to specify a driver class name, since Spring Boot obtains t
 NOTE: At least the url should be provided.
 Information specified in the URL takes precedence over individual properties, that is `name`, `username`, `password` and pooling options.
 
-TIP: The "`How-to`" section includes a xref:how-to:data-initialization.adoc#howto.data-initialization.using-basic-sql-scripts[section on how to initialize a database].
+TIP: The "`How-to Guides`" section includes a xref:how-to:data-initialization.adoc#howto.data-initialization.using-basic-sql-scripts[section on how to initialize a database].
 
 To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options are taken from the application configuration:
