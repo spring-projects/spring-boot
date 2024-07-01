@@ -1,5 +1,5 @@
 [[howto.aot]]
-= Ahead-of-time processing
+= Ahead-of-Time Processing
 
 A number of questions often arise when people use the ahead-of-time processing of Spring Boot applications.
 This section addresses those questions.

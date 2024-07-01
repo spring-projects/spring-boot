@@ -94,9 +94,9 @@ include::example$using/no-starter-parent-override-dependencies-pom.xml[tags=no-s
 
 
 [[using.overriding-command-line]]
-== Overriding settings on the command-line
+== Overriding Settings on the Command Line
 
-The plugin offers a number of user properties, starting with `spring-boot`, to let you customize the configuration from the command-line.
+The plugin offers a number of user properties, starting with `spring-boot`, to let you customize the configuration from the command line.
 
 For instance, you could tune the profiles to enable when running the application as follows:
 
@@ -105,7 +105,7 @@ For instance, you could tune the profiles to enable when running the application
 $ mvn spring-boot:run -Dspring-boot.run.profiles=dev,local
 ----
 
-If you want to both have a default while allowing it to be overridden on the command-line, you should use a combination of a user-provided project property and MOJO configuration.
+If you want to both have a default while allowing it to be overridden on the command line, you should use a combination of a user-provided project property and MOJO configuration.
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -113,7 +113,7 @@ include::example$using/default-and-override-pom.xml[tags=default-and-override]
 ----
 
 The above makes sure that `local` and `dev` are enabled by default.
-Now a dedicated property has been exposed, this can be overridden on the command-line as well:
+Now a dedicated property has been exposed, this can be overridden on the command line as well:
 
 [source,shell]
 ----

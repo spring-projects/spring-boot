@@ -171,7 +171,7 @@ But when you work with `WebClient`, `RestClient` or `RestTemplate` directly, you
 
 
 [[packaging.native-image.advanced.custom-hints.testing]]
-=== Testing custom hints
+=== Testing Custom Hints
 
 The `RuntimeHintsPredicates` API can be used to test your hints.
 The API provides methods that build a `Predicate` that can be used to test a `RuntimeHints` instance.

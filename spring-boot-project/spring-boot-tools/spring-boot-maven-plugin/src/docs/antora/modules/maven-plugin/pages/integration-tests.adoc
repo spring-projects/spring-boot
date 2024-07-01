@@ -60,7 +60,7 @@ You can now retrieve the `test.server.port` system property in any of your integ
 
 
 [[integration-tests.examples.jmx-port]]
-=== Customize JMX port
+=== Customize JMX Port
 
 The `jmxPort` property allows to customize the port the plugin uses to communicate with the Spring Boot application.
 

@@ -6,7 +6,7 @@ The `sbom` endpoint provides information about the software bill of materials (S
 
 
 [[sbom.retrieving-available-sboms]]
-== Retrieving the available SBOMs
+== Retrieving the Available SBOMs
 
 To retrieve the available SBOMs, make a `GET` request to `/actuator/sbom`, as shown in the following curl-based example:
 
@@ -30,7 +30,7 @@ include::partial$rest/actuator/sbom/response-fields.adoc[]
 
 
 [[sbom.retrieving-single-sbom]]
-== Retrieving a single SBOM
+== Retrieving a Single SBOM
 
 To retrieve the available SBOMs, make a `GET` request to `/actuator/sbom/\{id}`, as shown in the following curl-based example:
 

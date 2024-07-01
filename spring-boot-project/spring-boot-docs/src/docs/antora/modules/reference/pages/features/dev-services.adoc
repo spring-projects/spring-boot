@@ -1,5 +1,5 @@
 [[features.dev-services]]
-= Development-time services
+= Development-time Services
 
 Development-time services provide external dependencies needed to run the application while developing it.
 They are only supposed to be used while developing and are disabled when the application is deployed.

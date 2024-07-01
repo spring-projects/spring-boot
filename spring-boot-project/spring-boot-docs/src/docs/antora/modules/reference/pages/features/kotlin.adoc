@@ -98,7 +98,7 @@ Among other things, the extensions make it possible to take advantage of Kotlin 
 
 
 [[features.kotlin.dependency-management]]
-== Dependency management
+== Dependency Management
 
 In order to avoid mixing different versions of Kotlin dependencies on the classpath, Spring Boot imports the Kotlin BOM.
 
@@ -155,7 +155,7 @@ If you need the `MockK` equivalent of the Mockito specific xref:testing/spring-b
 
 
 [[features.kotlin.resources.further-reading]]
-=== Further reading
+=== Further Reading
 
 * {url-kotlin-docs}[Kotlin language reference]
 * https://kotlinlang.slack.com/[Kotlin Slack] (with a dedicated #spring channel)

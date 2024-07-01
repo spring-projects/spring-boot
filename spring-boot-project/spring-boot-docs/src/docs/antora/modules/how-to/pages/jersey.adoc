@@ -4,7 +4,7 @@
 
 
 [[howto.jersey.spring-security]]
-== Secure Jersey endpoints with Spring Security
+== Secure Jersey Endpoints with Spring Security
 
 Spring Security can be used to secure a Jersey-based web application in much the same way as it can be used to secure a Spring MVC-based web application.
 However, if you want to use Spring Security's method-level security with Jersey, you must configure Jersey to use `setStatus(int)` rather `sendError(int)`.

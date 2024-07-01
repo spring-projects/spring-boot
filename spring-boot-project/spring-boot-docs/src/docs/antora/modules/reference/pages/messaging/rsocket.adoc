@@ -28,7 +28,7 @@ Note that their `@Order` is important, as it determines the order of codecs.
 
 
 [[messaging.rsocket.server-auto-configuration]]
-== RSocket server Auto-configuration
+== RSocket Server Auto-configuration
 
 Spring Boot provides RSocket server auto-configuration.
 The required dependencies are provided by the `spring-boot-starter-rsocket`.
@@ -63,7 +63,7 @@ spring:
 
 
 [[messaging.rsocket.messaging]]
-== Spring Messaging RSocket support
+== Spring Messaging RSocket Support
 
 Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
 

@@ -90,7 +90,7 @@ include::example$running/application-plugin-main-class-name.gradle.kts[tags=main
 
 
 [[running-your-application.passing-arguments]]
-== Passing Arguments to your Application
+== Passing Arguments to Your Application
 
 Like all `JavaExec` tasks, arguments can be passed into `bootRun` from the command line using `--args='<arguments>'` when using Gradle 4.9 or later.
 For example, to run your application with a profile named `dev` active the following command can be used:
@@ -105,7 +105,7 @@ See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.l
 
 
 [[running-your-application.passing-system-properties]]
-== Passing System properties to your application
+== Passing System Properties to Your application
 
 Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
 To make that value of a system property to be configurable set its value using a {url-gradle-dsl}/org.gradle.api.Project.html#N14FE1[project property].

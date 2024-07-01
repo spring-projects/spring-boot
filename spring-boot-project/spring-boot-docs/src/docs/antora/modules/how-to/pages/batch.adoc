@@ -68,7 +68,7 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 
 
 [[howto.batch.restarting-a-failed-job]]
-== Restarting a stopped or failed Job
+== Restarting a Stopped or Failed Job
 
 To restart a failed `Job`, all parameters (identifying and non-identifying) must be re-specified on the command line.
 Non-identifying parameters are *not* copied from the previous execution.

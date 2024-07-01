@@ -242,7 +242,7 @@ You can override this behaviour as shown in the xref:packaging-oci-image.adoc#bu
 
 
 [[build-image.customization.tags]]
-=== Tags format
+=== Tags Format
 
 The values provided to the `tags` option should be *full* image references.
 The accepted format is `[domainHost:port/][path/]name[:tag][@digest]`.

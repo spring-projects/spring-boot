@@ -14,7 +14,7 @@ For native image testing, you're generally looking to ensure that the following 
 
 
 [[howto.native-image.testing.with-the-jvm]]
-== Testing Ahead-of-time Processing With the JVM
+== Testing Ahead-of-Time Processing With the JVM
 
 When a Spring Boot application runs, it attempts to detect if it is running as a native image.
 If it is running as a native image, it will initialize the application using the code that was generated during at build-time by the Spring AOT engine.

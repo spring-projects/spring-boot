@@ -75,7 +75,7 @@ OS:           Linux 6.2.12-200.fc37.aarch64 aarch64
 
 
 [[getting-started.first-application.pom]]
-== Setting up the project with Maven
+== Setting Up the Project With Maven
 
 We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
@@ -136,7 +136,7 @@ For simplicity, we continue to use a plain text editor for this example.
 
 
 [[getting-started.first-application.gradle]]
-== Setting up the project with Gradle
+== Setting Up the Project With Gradle
 
 We need to start by creating a Gradle `build.gradle` file.
 The `build.gradle` is the build script that is used to build your project.

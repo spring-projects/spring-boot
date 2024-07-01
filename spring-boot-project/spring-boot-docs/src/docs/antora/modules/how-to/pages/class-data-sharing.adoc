@@ -18,7 +18,7 @@ The buildpack environment variable `BP_SPRING_AOT_ENABLED` can also be set to `t
 The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `CDS_TRAINING_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the CDS training run.
 
 [[howto.class-data-sharing.training-run-configuration]]
-== Preventing remote services interaction during the training run
+== Preventing Remote Services Interaction During the Training Run
 
 When performing the training run, it may be needed to customize the Spring Boot application configuration to prevent connections to remote services that may happen before the Spring lifecycle is started.
 This can typically happen with early database interactions and can be handled via related configuration that can be applied by default to your application (or specifically to the training run) to prevent such interactions, see https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/main/README.adoc#training-run-configuration[related documentation].

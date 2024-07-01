@@ -153,7 +153,7 @@ Spring Boot will automatically detect `DataFetcherExceptionResolver` beans and r
 
 
 [[web.graphql.graphiql]]
-== GraphiQL and Schema printer
+== GraphiQL and Schema Printer
 
 Spring GraphQL offers infrastructure for helping developers when consuming or developing a GraphQL API.
 
