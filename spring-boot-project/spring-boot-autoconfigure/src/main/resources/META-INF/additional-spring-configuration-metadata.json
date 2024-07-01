@@ -1158,6 +1158,12 @@
       "defaultValue": "default"
     },
     {
+      "name": "spring.data.web.pageable.serialization-mode",
+      "type": "org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode",
+      "description": "Configures how to render spring data Pageable instances.",
+      "defaultValue": "DIRECT"
+    },
+    {
       "name" : "spring.datasource.continue-on-error",
       "type" : "java.lang.Boolean",
       "deprecation" : {
