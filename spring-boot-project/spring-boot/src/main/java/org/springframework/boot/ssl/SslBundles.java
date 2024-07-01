@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -23,6 +24,7 @@ import java.util.function.Consumer;
  *
  * @author Scott Frederick
  * @author Moritz Halbritter
+ * @author Jonatan Ivanov
  * @since 3.1.0
  */
 public interface SslBundles {
@@ -34,6 +36,13 @@ public interface SslBundles {
 	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
 	 */
 	SslBundle getBundle(String name) throws NoSuchSslBundleException;
+
+	/**
+	 * Return all the {@link SslBundle SslBundles} by name.
+	 * @return the bundles
+	 * @since 3.4.0
+	 */
+	Map<String, SslBundle> getBundles();
 
 	/**
 	 * Add a handler that will be called each time the named bundle is updated.

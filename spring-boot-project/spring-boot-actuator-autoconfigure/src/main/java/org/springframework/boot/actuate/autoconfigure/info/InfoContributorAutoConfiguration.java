@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
+import java.time.Duration;
+
 import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
@@ -23,14 +25,18 @@ import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.JavaInfoContributor;
 import org.springframework.boot.actuate.info.OsInfoContributor;
 import org.springframework.boot.actuate.info.ProcessInfoContributor;
+import org.springframework.boot.actuate.info.SslInfoContributor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.info.SslInfo;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -98,6 +104,21 @@ public class InfoContributorAutoConfiguration {
 	@Order(DEFAULT_ORDER)
 	public ProcessInfoContributor processInfoContributor() {
 		return new ProcessInfoContributor();
+	}
+
+	@Bean
+	@ConditionalOnEnabledInfoContributor(value = "ssl", fallback = InfoContributorFallback.DISABLE)
+	@Order(DEFAULT_ORDER)
+	public SslInfoContributor sslInfoContributor(SslInfo sslInfo) {
+		return new SslInfoContributor(sslInfo);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnEnabledInfoContributor(value = "ssl", fallback = InfoContributorFallback.DISABLE)
+	public SslInfo sslInfo(ServerProperties serverProperties, SslBundles sslBundles) {
+		// TODO: Get the certificateValidityThreshold from a property
+		return new SslInfo(serverProperties.getSsl(), sslBundles, Duration.ofDays(7));
 	}
 
 }
