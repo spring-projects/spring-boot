@@ -161,6 +161,7 @@ dependencies {
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.cache2k:cache2k-api")
 	testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	testImplementation("org.eclipse.jetty.http2:jetty-http2-server")
 	testImplementation("org.glassfish.jersey.ext:jersey-spring6")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("org.hamcrest:hamcrest")
