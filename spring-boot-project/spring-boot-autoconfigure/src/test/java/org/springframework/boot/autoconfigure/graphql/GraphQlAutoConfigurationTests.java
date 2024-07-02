@@ -36,6 +36,8 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
+import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfigurationTests.AnnotatedControllerConfigurerCustomizerConfiguration.CustomAnnotatedControllerConfigurerCustomizer;
+import org.springframework.boot.autoconfigure.graphql.data.AnnotatedControllerConfigurerCustomizer;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -241,6 +243,15 @@ class GraphQlAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void whenAnnotatedControllerConfigurerCustomizerIsDefinedThenAnnotatedControllerConfigurerShouldUseIt() {
+		this.contextRunner.withUserConfiguration(CustomAnnotatedControllerConfigurerCustomizer.class).run((context) -> {
+			CustomAnnotatedControllerConfigurerCustomizer customizer = context
+				.getBean(CustomAnnotatedControllerConfigurerCustomizer.class);
+			assertThat(customizer.applied).isTrue();
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomGraphQlBuilderConfiguration {
 
@@ -332,6 +343,27 @@ class GraphQlAutoConfigurationTests {
 		@Bean
 		Executor customExecutor() {
 			return mock(Executor.class);
+		}
+
+	}
+
+	static class AnnotatedControllerConfigurerCustomizerConfiguration {
+
+		@Bean
+		CustomAnnotatedControllerConfigurerCustomizer customAnnotatedControllerConfigurerCustomizer() {
+			return new CustomAnnotatedControllerConfigurerCustomizer();
+		}
+
+		public static class CustomAnnotatedControllerConfigurerCustomizer
+				implements AnnotatedControllerConfigurerCustomizer {
+
+			public boolean applied = false;
+
+			@Override
+			public void customize(AnnotatedControllerConfigurer configurer) {
+				this.applied = true;
+			}
+
 		}
 
 	}
