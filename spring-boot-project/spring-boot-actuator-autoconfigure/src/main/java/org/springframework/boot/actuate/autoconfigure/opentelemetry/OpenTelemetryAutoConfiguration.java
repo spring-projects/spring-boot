@@ -53,7 +53,14 @@ public class OpenTelemetryAutoConfiguration {
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
 
+	/**
+	 * Default value for application group if {@code spring.application.group} is not set.
+	 */
+	private static final String DEFAULT_APPLICATION_GROUP = "unknown_group";
+
 	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
+
+	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_GROUP = AttributeKey.stringKey("service.group");
 
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
@@ -72,8 +79,10 @@ public class OpenTelemetryAutoConfiguration {
 	@ConditionalOnMissingBean
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
+		String applicationGroup = environment.getProperty("spring.application.group", DEFAULT_APPLICATION_GROUP);
 		return Resource.getDefault()
 			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_NAME, applicationName)))
+			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_GROUP, applicationGroup)))
 			.merge(toResource(properties));
 	}
 

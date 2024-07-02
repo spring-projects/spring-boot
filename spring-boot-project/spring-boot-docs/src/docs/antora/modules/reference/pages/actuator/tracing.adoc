@@ -88,9 +88,10 @@ logging:
   pattern:
     correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
   include-application-name: false
+  include-application-group: false
 ----
 
-NOTE: In the example above, configprop:logging.include-application-name[] is set to `false` to avoid the application name being duplicated in the log messages (configprop:logging.pattern.correlation[] already contains it).
+NOTE: In the example above, configprop:logging.include-application-name[] and configprop:logging.include-application-group[] is set to `false` to avoid the application name being duplicated in the log messages (configprop:logging.pattern.correlation[] already contains it).
 It's also worth mentioning that configprop:logging.pattern.correlation[] contains a trailing space so that it is separated from the logger name that comes right after it by default.
 
 
