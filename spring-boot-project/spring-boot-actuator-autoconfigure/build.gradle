@@ -78,6 +78,7 @@ dependencies {
 	optional("jakarta.servlet:jakarta.servlet-api")
 	optional("javax.cache:cache-api")
 	optional("org.apache.activemq:activemq-client")
+	optional("org.apache.activemq:activemq-broker")
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
