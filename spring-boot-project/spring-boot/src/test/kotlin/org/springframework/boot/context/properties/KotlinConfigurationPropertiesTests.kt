@@ -26,11 +26,13 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.support.TestPropertySourceUtils
 
 import org.assertj.core.api.Assertions.assertThat
+import org.springframework.boot.context.properties.bind.Name
 
 /**
  * Tests for {@link ConfigurationProperties @ConfigurationProperties}-annotated beans.
  *
  * @author Madhura Bhave
+ * @author Lasse Wulff
  */
 class KotlinConfigurationPropertiesTests {
 
@@ -60,6 +62,22 @@ class KotlinConfigurationPropertiesTests {
 	}
 
 	@Test
+	fun `renamed property can be bound`() {
+		this.context.register(EnableRenamedProperties::class.java)
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "renamed.fun=beta")
+		this.context.refresh()
+		assertThat(this.context.getBean(RenamedProperties::class.java).bar).isEqualTo("beta")
+	}
+
+	@Test
+	fun `renamed property can be bound to late init attribute`() {
+		this.context.register(EnableRenamedLateInitProperties::class.java)
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "renamed.var=beta")
+		this.context.refresh()
+		assertThat(this.context.getBean(RenamedLateInitProperties::class.java).bar).isEqualTo("beta")
+	}
+
+	@Test
 	fun `type with constructor bound lateinit property with default can be bound`() {
 		this.context.register(EnableLateInitPropertiesWithDefault::class.java)
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "lateinit-with-default.inner.bravo=two")
@@ -79,6 +97,21 @@ class KotlinConfigurationPropertiesTests {
 
 	@ConfigurationProperties(prefix = "foo")
 	class BingProperties(@Suppress("UNUSED_PARAMETER") bar: String)
+
+	@ConfigurationProperties(prefix = "renamed")
+	class RenamedProperties(@Name("fun") val bar: String)
+
+	@EnableConfigurationProperties(RenamedProperties::class)
+	class EnableRenamedProperties
+
+	@ConfigurationProperties(prefix = "renamed")
+	class RenamedLateInitProperties{
+		@Name("var")
+		lateinit var bar: String
+	}
+
+	@EnableConfigurationProperties(RenamedLateInitProperties::class)
+	class EnableRenamedLateInitProperties
 
 	@EnableConfigurationProperties
 	class EnableConfigProperties
