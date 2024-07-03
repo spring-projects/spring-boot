@@ -34,6 +34,7 @@ The following items are output:
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
 * Application name: Enclosed in square brackets (logged by default only if configprop:spring.application.name[] is set)
+* Application group: Enclosed in square brackets (logged by default only if configprop:spring.application.group[] is set)
 * Thread name: Enclosed in square brackets (may be truncated for console output).
 * Correlation ID: If tracing is enabled (not shown in the sample above)
 * Logger name: This is usually the source class name (often abbreviated).
@@ -43,6 +44,8 @@ NOTE: Logback does not have a `FATAL` level.
 It is mapped to `ERROR`.
 
 TIP: If you have a configprop:spring.application.name[] property but don't want it logged you can set configprop:logging.include-application-name[] to `false`.
+
+TIP: If you have a configprop:spring.application.group[] property but don't want it logged you can set configprop:logging.include-application-group[] to `false`.
 
 
 
@@ -544,12 +547,13 @@ The following listing shows three sample profiles:
 If you want to refer to properties from your Spring `Environment` within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
 Doing so can be useful if you want to access values from your `application.properties` file in your Log4j2 configuration.
 
-The following example shows how to set a Log4j2 property named `applicationName` that reads `spring.application.name` from the Spring `Environment`:
+The following example shows how to set a Log4j2 property named `applicationName` and `applicationGroup` that reads `spring.application.name` and `spring.application.group` from the Spring `Environment`:
 
 [source,xml]
 ----
 <Properties>
 	<Property name="applicationName">${spring:spring.application.name}</Property>
+	<Property name="applicationProperty">${spring:spring.application.property}</Property>
 </Properties>
 ----
 

@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapter to convert {@link OtlpProperties} to an {@link OtlpConfig}.
@@ -79,11 +80,17 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 		Map<String, String> result = new HashMap<>((!CollectionUtils.isEmpty(resourceAttributes)) ? resourceAttributes
 				: get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
 		result.computeIfAbsent("service.name", (key) -> getApplicationName());
+		result.computeIfAbsent("service.group", (key) -> getApplicationGroup());
 		return Collections.unmodifiableMap(result);
 	}
 
 	private String getApplicationName() {
 		return this.environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
+	}
+
+	private String getApplicationGroup() {
+		String applicationGroup = this.environment.getProperty("spring.application.group");
+		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
 	}
 
 	@Override

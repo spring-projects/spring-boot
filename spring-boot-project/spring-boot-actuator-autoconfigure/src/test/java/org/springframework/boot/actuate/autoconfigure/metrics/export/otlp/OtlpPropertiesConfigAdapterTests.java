@@ -139,6 +139,32 @@ class OtlpPropertiesConfigAdapterTests {
 		assertThat(createAdapter().resourceAttributes()).containsEntry("service.name", "unknown_service");
 	}
 
+	@Test
+	@SuppressWarnings("removal")
+	void serviceGroupOverridesApplicationGroup() {
+		this.environment.setProperty("spring.application.group", "alpha");
+		this.properties.setResourceAttributes(Map.of("service.group", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "beta");
+	}
+
+	@Test
+	void serviceGroupOverridesApplicationGroupWhenUsingOtelProperties() {
+		this.environment.setProperty("spring.application.group", "alpha");
+		this.openTelemetryProperties.setResourceAttributes(Map.of("service.group", "beta"));
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "beta");
+	}
+
+	@Test
+	void shouldUseApplicationGroupIfServiceGroupIsNotSet() {
+		this.environment.setProperty("spring.application.group", "alpha");
+		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "alpha");
+	}
+
+	@Test
+	void shouldUseDefaultApplicationGroupIfApplicationGroupIsNotSet() {
+		assertThat(createAdapter().resourceAttributes()).doesNotContainKey("service.group");
+	}
+
 	private OtlpPropertiesConfigAdapter createAdapter() {
 		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties, this.connectionDetails,
 				this.environment);

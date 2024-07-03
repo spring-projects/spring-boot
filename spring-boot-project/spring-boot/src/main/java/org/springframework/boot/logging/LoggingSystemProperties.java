@@ -229,6 +229,7 @@ public class LoggingSystemProperties {
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
 		String defaultCharsetName = getDefaultCharset().name();
 		setApplicationNameSystemProperty(resolver);
+		setApplicationGroupSystemProperty(resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, defaultCharsetName);
 		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, defaultCharsetName);
@@ -251,6 +252,16 @@ public class LoggingSystemProperties {
 			if (StringUtils.hasText(applicationName)) {
 				setSystemProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName(),
 						"[%s] ".formatted(applicationName));
+			}
+		}
+	}
+
+	private void setApplicationGroupSystemProperty(PropertyResolver resolver) {
+		if (resolver.getProperty("logging.include-application-group", Boolean.class, Boolean.TRUE)) {
+			String applicationGroup = resolver.getProperty("spring.application.group");
+			if (StringUtils.hasText(applicationGroup)) {
+				setSystemProperty(LoggingSystemProperty.LOGGED_APPLICATION_GROUP.getEnvironmentVariableName(),
+						"[%s] ".formatted(applicationGroup));
 			}
 		}
 	}
