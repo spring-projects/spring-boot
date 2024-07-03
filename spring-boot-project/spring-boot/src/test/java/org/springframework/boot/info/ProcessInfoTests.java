@@ -37,7 +37,11 @@ class ProcessInfoTests {
 		assertThat(processInfo.getPid()).isEqualTo(ProcessHandle.current().pid());
 		assertThat(processInfo.getParentPid())
 			.isEqualTo(ProcessHandle.current().parent().map(ProcessHandle::pid).orElse(null));
+	}
 
+	@Test
+	void memoryInfoIsAvailable() {
+		ProcessInfo processInfo = new ProcessInfo();
 		MemoryUsageInfo heapUsageInfo = processInfo.getMemory().getHeap();
 		MemoryUsageInfo nonHeapUsageInfo = processInfo.getMemory().getNonHeap();
 		assertThat(heapUsageInfo.getInit()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getMax());

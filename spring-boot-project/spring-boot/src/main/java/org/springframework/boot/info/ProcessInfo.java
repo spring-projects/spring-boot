@@ -84,6 +84,11 @@ public class ProcessInfo {
 		return this.owner;
 	}
 
+	/**
+	 * Memory information.
+	 *
+	 * @since 3.4.0
+	 */
 	public static class MemoryInfo {
 
 		private static final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
