@@ -1012,7 +1012,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.2.7") {
+	library("Micrometer Tracing", "1.2.8-SNAPSHOT") {
 		considerSnapshots()
 		group("io.micrometer") {
 			imports = [
