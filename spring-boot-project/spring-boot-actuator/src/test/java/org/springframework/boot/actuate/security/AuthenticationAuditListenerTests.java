@@ -62,7 +62,7 @@ class AuthenticationAuditListenerTests {
 	}
 
 	@Test
-	void testLogoutSucess() {
+	void testLogoutSuccess() {
 		AuditApplicationEvent event = handleAuthenticationEvent(
 				new LogoutSuccessEvent(new UsernamePasswordAuthenticationToken("user", "password")));
 		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.LOGOUT_SUCCESS);

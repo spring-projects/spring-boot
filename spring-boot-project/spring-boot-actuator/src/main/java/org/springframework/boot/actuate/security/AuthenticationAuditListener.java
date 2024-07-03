@@ -53,8 +53,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	public static final String AUTHENTICATION_SWITCH = "AUTHENTICATION_SWITCH";
 
 	/**
-	 * This constant is used to indicate that the logout process
-	 * has been completed successfully.
+	 * Logout success event type.
 	 *
 	 * @since 3.4.0
 	 */
@@ -111,7 +110,6 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 			data.put("details", event.getAuthentication().getDetails());
 		}
 		publish(new AuditEvent(event.getAuthentication().getName(), LOGOUT_SUCCESS, data));
-
 	}
 
 	private static final class WebAuditListener {
