@@ -260,7 +260,7 @@ public class LoggingSystemProperties {
 		if (resolver.getProperty("logging.include-application-group", Boolean.class, Boolean.TRUE)) {
 			String applicationGroup = resolver.getProperty("spring.application.group");
 			if (StringUtils.hasText(applicationGroup)) {
-				setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName(),
+				setSystemProperty(LoggingSystemProperty.LOGGED_APPLICATION_GROUP.getEnvironmentVariableName(),
 						"[%s] ".formatted(applicationGroup));
 			}
 		}

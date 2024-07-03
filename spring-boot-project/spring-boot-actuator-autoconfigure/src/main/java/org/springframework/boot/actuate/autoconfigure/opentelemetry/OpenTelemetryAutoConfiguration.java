@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
@@ -52,11 +53,6 @@ public class OpenTelemetryAutoConfiguration {
 	 * Default value for application name if {@code spring.application.name} is not set.
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
-
-	/**
-	 * Default value for application group if {@code spring.application.group} is not set.
-	 */
-	private static final String DEFAULT_APPLICATION_GROUP = "unknown_group";
 
 	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
 
@@ -79,11 +75,13 @@ public class OpenTelemetryAutoConfiguration {
 	@ConditionalOnMissingBean
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-		String applicationGroup = environment.getProperty("spring.application.group", DEFAULT_APPLICATION_GROUP);
-		return Resource.getDefault()
-			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_NAME, applicationName)))
-			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_GROUP, applicationGroup)))
-			.merge(toResource(properties));
+		String applicationGroup = environment.getProperty("spring.application.group");
+		Resource resource = Resource.getDefault()
+			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_NAME, applicationName)));
+		if (StringUtils.hasLength(applicationGroup)) {
+			resource = resource.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_GROUP, applicationGroup)));
+		}
+		return resource.merge(toResource(properties));
 	}
 
 	private static Resource toResource(OpenTelemetryProperties properties) {

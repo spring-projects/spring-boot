@@ -33,7 +33,7 @@ public enum LoggingSystemProperty {
 	/**
 	 * Logging system property for the application group that should be logged.
 	 */
-	APPLICATION_GROUP("LOGGED_APPLICATION_GROUP"),
+	LOGGED_APPLICATION_GROUP("LOGGED_APPLICATION_GROUP"),
 
 	/**
 	 * Logging system property for the process ID.

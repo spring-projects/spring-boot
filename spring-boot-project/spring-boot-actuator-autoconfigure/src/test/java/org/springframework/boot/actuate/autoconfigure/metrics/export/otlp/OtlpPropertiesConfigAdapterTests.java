@@ -162,7 +162,7 @@ class OtlpPropertiesConfigAdapterTests {
 
 	@Test
 	void shouldUseDefaultApplicationGroupIfApplicationGroupIsNotSet() {
-		assertThat(createAdapter().resourceAttributes()).containsEntry("service.group", "unknown_group");
+		assertThat(createAdapter().resourceAttributes()).doesNotContainKey("service.group");
 	}
 
 	private OtlpPropertiesConfigAdapter createAdapter() {

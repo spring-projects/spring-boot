@@ -28,6 +28,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Adapter to convert {@link OtlpProperties} to an {@link OtlpConfig}.
@@ -42,11 +43,6 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	 * Default value for application name if {@code spring.application.name} is not set.
 	 */
 	private static final String DEFAULT_APPLICATION_NAME = "unknown_service";
-
-	/**
-	 * Default value for application group if {@code spring.application.group} is not set.
-	 */
-	private static final String DEFAULT_APPLICATION_GROUP = "unknown_group";
 
 	private final OpenTelemetryProperties openTelemetryProperties;
 
@@ -93,7 +89,8 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	}
 
 	private String getApplicationGroup() {
-		return this.environment.getProperty("spring.application.group", DEFAULT_APPLICATION_GROUP);
+		String applicationGroup = this.environment.getProperty("spring.application.group");
+		return (StringUtils.hasLength(applicationGroup)) ? applicationGroup : null;
 	}
 
 	@Override

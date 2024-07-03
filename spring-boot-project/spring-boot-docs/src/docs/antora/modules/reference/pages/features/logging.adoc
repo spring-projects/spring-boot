@@ -44,6 +44,7 @@ NOTE: Logback does not have a `FATAL` level.
 It is mapped to `ERROR`.
 
 TIP: If you have a configprop:spring.application.name[] property but don't want it logged you can set configprop:logging.include-application-name[] to `false`.
+
 TIP: If you have a configprop:spring.application.group[] property but don't want it logged you can set configprop:logging.include-application-group[] to `false`.
 
 
