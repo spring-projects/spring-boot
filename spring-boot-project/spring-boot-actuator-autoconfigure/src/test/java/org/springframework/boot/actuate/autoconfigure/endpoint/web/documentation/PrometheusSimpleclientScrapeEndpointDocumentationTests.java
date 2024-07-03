@@ -27,12 +27,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the
@@ -44,27 +42,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class PrometheusSimpleclientScrapeEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void prometheus() throws Exception {
-		this.mockMvc.perform(get("/actuator/prometheus"))
-			.andExpect(status().isOk())
-			.andDo(document("prometheus-simpleclient/all"));
+	void prometheus() {
+		assertThat(this.mvc.get().uri("/actuator/prometheus")).hasStatusOk()
+			.apply(document("prometheus-simpleclient/all"));
 	}
 
 	@Test
-	void prometheusOpenmetrics() throws Exception {
-		this.mockMvc.perform(get("/actuator/prometheus").accept(TextFormat.CONTENT_TYPE_OPENMETRICS_100))
-			.andExpect(status().isOk())
-			.andExpect(header().string("Content-Type", "application/openmetrics-text;version=1.0.0;charset=utf-8"))
-			.andDo(document("prometheus-simpleclient/openmetrics"));
+	void prometheusOpenmetrics() {
+		assertThat(this.mvc.get().uri("/actuator/prometheus").accept(TextFormat.CONTENT_TYPE_OPENMETRICS_100))
+			.satisfies((result) -> {
+				assertThat(result).hasStatusOk()
+					.headers()
+					.hasValue("Content-Type", "application/openmetrics-text;version=1.0.0;charset=utf-8");
+				assertThat(result).apply(document("prometheus-simpleclient/openmetrics"));
+			});
+
 	}
 
 	@Test
-	void filteredPrometheus() throws Exception {
-		this.mockMvc
-			.perform(get("/actuator/prometheus").param("includedNames",
-					"jvm_memory_used_bytes,jvm_memory_committed_bytes"))
-			.andExpect(status().isOk())
-			.andDo(document("prometheus-simpleclient/names",
+	void filteredPrometheus() {
+		assertThat(this.mvc.get()
+			.uri("/actuator/prometheus")
+			.param("includedNames", "jvm_memory_used_bytes,jvm_memory_committed_bytes"))
+			.hasStatusOk()
+			.apply(document("prometheus-simpleclient/names",
 					queryParameters(parameterWithName("includedNames")
 						.description("Restricts the samples to those that match the names. Optional.")
 						.optional())));

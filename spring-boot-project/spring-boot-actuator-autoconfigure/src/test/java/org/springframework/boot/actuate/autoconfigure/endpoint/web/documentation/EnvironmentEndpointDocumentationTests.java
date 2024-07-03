@@ -44,13 +44,12 @@ import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.TestPropertySource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.replacePattern;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link EnvironmentEndpoint}.
@@ -74,10 +73,9 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 		.description("Name of the property source.");
 
 	@Test
-	void env() throws Exception {
-		this.mockMvc.perform(get("/actuator/env"))
-			.andExpect(status().isOk())
-			.andDo(document("env/all",
+	void env() {
+		assertThat(this.mvc.get().uri("/actuator/env")).hasStatusOk()
+			.apply(document("env/all",
 					preprocessResponse(
 							replacePattern(Pattern.compile(
 									"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"), ""),
@@ -93,10 +91,9 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	}
 
 	@Test
-	void singlePropertyFromEnv() throws Exception {
-		this.mockMvc.perform(get("/actuator/env/com.example.cache.max-size"))
-			.andExpect(status().isOk())
-			.andDo(document("env/single",
+	void singlePropertyFromEnv() {
+		assertThat(this.mvc.get().uri("/actuator/env/com.example.cache.max-size")).hasStatusOk()
+			.apply(document("env/single",
 					preprocessResponse(replacePattern(Pattern
 						.compile("org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"), "")),
 					responseFields(

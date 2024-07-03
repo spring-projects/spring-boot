@@ -47,10 +47,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -63,11 +63,9 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link BasicErrorController} using {@link MockMvc} and
+ * Tests for {@link BasicErrorController} using {@link MockMvcTester} and
  * {@link SpringBootTest @SpringBootTest}.
  *
  * @author Dave Syer
@@ -80,60 +78,51 @@ class BasicErrorControllerMockMvcTests {
 	@Autowired
 	private WebApplicationContext wac;
 
-	private MockMvc mockMvc;
+	private MockMvcTester mvc;
 
 	@BeforeEach
 	void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		this.mvc = MockMvcTester.from(this.wac);
 	}
 
 	@Test
-	void testDirectAccessForMachineClient() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/error")).andExpect(status().is5xxServerError()).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("999");
+	void testDirectAccessForMachineClient() {
+		assertThat(this.mvc.get().uri("/error")).hasStatus5xxServerError().bodyText().contains("999");
 	}
 
 	@Test
-	void testErrorWithNotFoundResponseStatus() throws Exception {
-		MvcResult result = this.mockMvc.perform(get("/bang")).andExpect(status().isNotFound()).andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("Expected!");
+	void testErrorWithNotFoundResponseStatus() {
+		assertThat(this.mvc.get().uri("/bang")).hasStatus(HttpStatus.NOT_FOUND)
+			.satisfies((result) -> assertThat(this.mvc.perform(new ErrorDispatcher(result, "/error"))).bodyText()
+				.contains("Expected!"));
+
 	}
 
 	@Test
-	void testErrorWithNoContentResponseStatus() throws Exception {
-		MvcResult result = this.mockMvc.perform(get("/noContent").accept("some/thing"))
-			.andExpect(status().isNoContent())
-			.andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
-			.andExpect(status().isNoContent())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).isEmpty();
+	void testErrorWithNoContentResponseStatus() {
+		assertThat(this.mvc.get().uri("/noContent").accept("some/thing")).hasStatus(HttpStatus.NO_CONTENT)
+			.satisfies((result) -> assertThat(this.mvc.perform(new ErrorDispatcher(result, "/error")))
+				.hasStatus(HttpStatus.NO_CONTENT)
+				.body()
+				.isEmpty());
 	}
 
 	@Test
-	void testBindingExceptionForMachineClient() throws Exception {
+	void testBindingExceptionForMachineClient() {
 		// In a real server the response is carried over into the error dispatcher, but
-		// in the mock a new one is created so we have to assert the status at this
-		// intermediate point
-		MvcResult result = this.mockMvc.perform(get("/bind")).andExpect(status().is4xxClientError()).andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
-		// And the rendered status code is always wrong (but would be 400 in a real
-		// system)
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("Validation failed");
+		// in the mock a new one is created, so we have to assert the status at this
+		// intermediate point, and the rendered status code is always wrong (but would
+		// be 400 in a real system)
+		assertThat(this.mvc.get().uri("/bind")).hasStatus4xxClientError()
+			.satisfies((result) -> assertThat(this.mvc.perform(new ErrorDispatcher(result, "/error"))).bodyText()
+				.contains("Validation failed"));
 	}
 
 	@Test
-	void testDirectAccessForBrowserClient() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("ERROR_BEAN");
+	void testDirectAccessForBrowserClient() {
+		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasStatus5xxServerError()
+			.bodyText()
+			.contains("ERROR_BEAN");
 	}
 
 	@Target(ElementType.TYPE)
@@ -225,8 +214,8 @@ class BasicErrorControllerMockMvcTests {
 
 		private final String path;
 
-		ErrorDispatcher(MvcResult result, String path) {
-			this.result = result;
+		ErrorDispatcher(MvcTestResult mvcTestResult, String path) {
+			this.result = mvcTestResult.getMvcResult();
 			this.path = path;
 		}
 

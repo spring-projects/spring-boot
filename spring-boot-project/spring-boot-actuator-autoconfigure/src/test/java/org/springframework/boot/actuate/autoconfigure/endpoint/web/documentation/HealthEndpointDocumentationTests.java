@@ -52,12 +52,11 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.util.unit.DataSize;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link HealthEndpoint}.
@@ -72,7 +71,7 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			subsectionWithPath("details").description("Details of the health of a specific part of the application."));
 
 	@Test
-	void health() throws Exception {
+	void health() {
 		FieldDescriptor status = fieldWithPath("status").description("Overall status of the application.");
 		FieldDescriptor components = fieldWithPath("components").description("The components that make up the health.");
 		FieldDescriptor componentStatus = fieldWithPath("components.*.status")
@@ -84,24 +83,21 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.description("Details of the health of a specific part of the application. "
 					+ "Presence is controlled by `management.endpoint.health.show-details`.")
 			.optional();
-		this.mockMvc.perform(get("/actuator/health").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("health",
+		assertThat(this.mvc.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.apply(document("health",
 					responseFields(status, components, componentStatus, nestedComponents, componentDetails)));
 	}
 
 	@Test
-	void healthComponent() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/db").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("health/component", responseFields(componentFields)));
+	void healthComponent() {
+		assertThat(this.mvc.get().uri("/actuator/health/db").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.apply(document("health/component", responseFields(componentFields)));
 	}
 
 	@Test
-	void healthComponentInstance() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/broker/us1").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("health/instance", responseFields(componentFields)));
+	void healthComponentInstance() {
+		assertThat(this.mvc.get().uri("/actuator/health/broker/us1").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.apply(document("health/instance", responseFields(componentFields)));
 	}
 
 	@Configuration(proxyBeanMethods = false)

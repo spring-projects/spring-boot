@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link WebMvcTest @WebMvcTest} default print output.
@@ -75,11 +72,11 @@ class WebMvcTestPrintDefaultIntegrationTests {
 	static class ShouldNotPrint {
 
 		@Autowired
-		private MockMvc mvc;
+		private MockMvcTester mvc;
 
 		@Test
-		void test() throws Exception {
-			this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
+		void test() {
+			assertThat(this.mvc.get().uri("/one")).hasStatusOk().hasBodyTextEqualTo("one");
 		}
 
 	}
@@ -90,11 +87,11 @@ class WebMvcTestPrintDefaultIntegrationTests {
 	static class ShouldPrint {
 
 		@Autowired
-		private MockMvc mvc;
+		private MockMvcTester mvc;
 
 		@Test
-		void test() throws Exception {
-			this.mvc.perform(get("/one")).andExpect(content().string("none")).andExpect(status().isOk());
+		void test() {
+			assertThat(this.mvc.get().uri("/one")).hasStatusOk().hasBodyTextEqualTo("none");
 		}
 
 	}

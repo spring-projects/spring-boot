@@ -25,11 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 /**
  * Tests for {@link WebMvcTest @WebMvcTest} with
@@ -46,11 +45,11 @@ class WebMvcTestWithAutoConfigureMockMvcIntegrationTests {
 	private ApplicationContext context;
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
-	void shouldNotAddFilters() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(header().doesNotExist("x-test"));
+	void shouldNotAddFilters() {
+		assertThat(this.mvc.get().uri("/one")).doesNotContainHeader("x-test");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,18 @@ package smoketest.web.thymeleaf;
 
 import java.util.regex.Pattern;
 
+import org.assertj.core.api.HamcrestCondition;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * A Basic Spring MVC Test for the Sample Controller.
@@ -43,37 +38,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Doo-Hwan, Kwak
  */
 @SpringBootTest
+@AutoConfigureMockMvc
 class MessageControllerWebTests {
 
 	@Autowired
-	private WebApplicationContext wac;
+	private MockMvcTester mvc;
 
-	private MockMvc mockMvc;
-
-	@BeforeEach
-	void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+	@Test
+	void testHome() {
+		assertThat(this.mvc.get().uri("/")).hasStatusOk().bodyText().contains("<title>Messages");
 	}
 
 	@Test
-	void testHome() throws Exception {
-		this.mockMvc.perform(get("/"))
-			.andExpect(status().isOk())
-			.andExpect(content().string(containsString("<title>Messages")));
+	void testCreate() {
+		assertThat(this.mvc.post().uri("/").param("text", "FOO text").param("summary", "FOO"))
+			.hasStatus(HttpStatus.FOUND)
+			.headers()
+			.hasEntrySatisfying("Location",
+					(values) -> assertThat(values).hasSize(1)
+						.element(0)
+						.satisfies(HamcrestCondition.matching(RegexMatcher.matches("/[0-9]+"))));
 	}
 
 	@Test
-	void testCreate() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "FOO text").param("summary", "FOO"))
-			.andExpect(status().isFound())
-			.andExpect(header().string("location", RegexMatcher.matches("/[0-9]+")));
-	}
-
-	@Test
-	void testCreateValidation() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "").param("summary", ""))
-			.andExpect(status().isOk())
-			.andExpect(content().string(containsString("is required")));
+	void testCreateValidation() {
+		assertThat(this.mvc.post().uri("/").param("text", "").param("summary", "")).hasStatusOk()
+			.bodyText()
+			.contains("is required");
 	}
 
 	private static class RegexMatcher extends TypeSafeMatcher<String> {

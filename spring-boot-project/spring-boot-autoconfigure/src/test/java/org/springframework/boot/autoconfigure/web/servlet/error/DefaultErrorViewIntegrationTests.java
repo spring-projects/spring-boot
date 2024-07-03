@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for the default error view.
@@ -59,49 +55,38 @@ class DefaultErrorViewIntegrationTests {
 	@Autowired
 	private WebApplicationContext wac;
 
-	private MockMvc mockMvc;
+	private MockMvcTester mvc;
 
 	@BeforeEach
 	void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		this.mvc = MockMvcTester.from(this.wac);
 	}
 
 	@Test
-	void testErrorForBrowserClient() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("<html>");
-		assertThat(content).contains("999");
+	void testErrorForBrowserClient() {
+		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasStatus5xxServerError()
+			.bodyText()
+			.contains("<html>", "999");
 	}
 
 	@Test
-	void testErrorWithHtmlEscape() throws Exception {
-		MvcResult response = this.mockMvc
-			.perform(
-					get("/error")
-						.requestAttr("jakarta.servlet.error.exception",
-								new RuntimeException("<script>alert('Hello World')</script>"))
-						.accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("&lt;script&gt;");
-		assertThat(content).contains("Hello World");
-		assertThat(content).contains("999");
+	void testErrorWithHtmlEscape() {
+		assertThat(this.mvc.get()
+			.uri("/error")
+			.requestAttr("jakarta.servlet.error.exception",
+					new RuntimeException("<script>alert('Hello World')</script>"))
+			.accept(MediaType.TEXT_HTML)).hasStatus5xxServerError()
+			.bodyText()
+			.contains("&lt;script&gt;", "Hello World", "999");
 	}
 
 	@Test
-	void testErrorWithSpelEscape() throws Exception {
+	void testErrorWithSpelEscape() {
 		String spel = "${T(" + getClass().getName() + ").injectCall()}";
-		MvcResult response = this.mockMvc
-			.perform(get("/error").requestAttr("jakarta.servlet.error.exception", new RuntimeException(spel))
-				.accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).doesNotContain("injection");
+		assertThat(this.mvc.get()
+			.uri("/error")
+			.requestAttr("jakarta.servlet.error.exception", new RuntimeException(spel))
+			.accept(MediaType.TEXT_HTML)).hasStatus5xxServerError().bodyText().doesNotContain("injection");
 	}
 
 	static String injectCall() {

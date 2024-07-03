@@ -27,10 +27,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link SbomEndpoint}.
@@ -40,18 +39,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SbomEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void sbom() throws Exception {
-		this.mockMvc.perform(get("/actuator/sbom"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("sbom",
+	void sbom() {
+		assertThat(this.mvc.get().uri("/actuator/sbom")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("sbom",
 					responseFields(fieldWithPath("ids").description("An array of available SBOM ids."))));
 	}
 
 	@Test
-	void sboms() throws Exception {
-		this.mockMvc.perform(get("/actuator/sbom/application"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("sbom/id"));
+	void sboms() {
+		assertThat(this.mvc.get().uri("/actuator/sbom/application")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("sbom/id"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

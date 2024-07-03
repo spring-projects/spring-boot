@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,19 +42,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.context.ConfigurableWebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link BasicErrorController} using {@link MockMvc} but not
+ * Tests for {@link BasicErrorController} using {@link MockMvcTester} but not
  * {@link org.springframework.test.context.junit.jupiter.SpringExtension}.
  *
  * @author Dave Syer
@@ -64,7 +59,7 @@ class BasicErrorControllerDirectMockMvcTests {
 
 	private ConfigurableWebApplicationContext wac;
 
-	private MockMvc mockMvc;
+	private MockMvcTester mvc;
 
 	@AfterEach
 	void close() {
@@ -73,49 +68,44 @@ class BasicErrorControllerDirectMockMvcTests {
 
 	void setup(ConfigurableWebApplicationContext context) {
 		this.wac = context;
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		this.mvc = MockMvcTester.from(this.wac);
 	}
 
 	@Test
-	void errorPageAvailableWithParentContext() throws Exception {
+	void errorPageAvailableWithParentContext() {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(ParentConfiguration.class)
 			.child(ChildConfiguration.class)
 			.run("--server.port=0"));
-		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("status=999");
+		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasStatus5xxServerError()
+			.bodyText()
+			.contains("status=999");
 	}
 
 	@Test
-	void errorPageAvailableWithMvcIncluded() throws Exception {
+	void errorPageAvailableWithMvcIncluded() {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 			.run("--server.port=0"));
-		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("status=999");
+		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasStatus5xxServerError()
+			.bodyText()
+			.contains("status=999");
 	}
 
 	@Test
 	void errorPageNotAvailableWithWhitelabelDisabled() {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 			.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
-		assertThatExceptionOfType(ServletException.class)
-			.isThrownBy(() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
+		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasFailed()
+			.failure()
+			.isInstanceOf(ServletException.class);
 	}
 
 	@Test
-	void errorControllerWithAop() throws Exception {
+	void errorControllerWithAop() {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WithAopConfiguration.class)
 			.run("--server.port=0"));
-		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("status=999");
+		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasStatus5xxServerError()
+			.bodyText()
+			.contains("status=999");
 	}
 
 	@Target(ElementType.TYPE)

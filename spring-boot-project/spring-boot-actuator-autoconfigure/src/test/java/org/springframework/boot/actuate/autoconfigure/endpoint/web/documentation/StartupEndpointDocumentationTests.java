@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,9 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing {@link StartupEndpoint}.
@@ -55,17 +53,15 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	}
 
 	@Test
-	void startupSnapshot() throws Exception {
-		this.mockMvc.perform(get("/actuator/startup"))
-			.andExpect(status().isOk())
-			.andDo(document("startup-snapshot", PayloadDocumentation.responseFields(responseFields())));
+	void startupSnapshot() {
+		assertThat(this.mvc.get().uri("/actuator/startup")).hasStatusOk()
+			.apply(document("startup-snapshot", PayloadDocumentation.responseFields(responseFields())));
 	}
 
 	@Test
-	void startup() throws Exception {
-		this.mockMvc.perform(post("/actuator/startup"))
-			.andExpect(status().isOk())
-			.andDo(document("startup", PayloadDocumentation.responseFields(responseFields())));
+	void startup() {
+		assertThat(this.mvc.post().uri("/actuator/startup")).hasStatusOk()
+			.apply(document("startup", PayloadDocumentation.responseFields(responseFields())));
 	}
 
 	private FieldDescriptor[] responseFields() {

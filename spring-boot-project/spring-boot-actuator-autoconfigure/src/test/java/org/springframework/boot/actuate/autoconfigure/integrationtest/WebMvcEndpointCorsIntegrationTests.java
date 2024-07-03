@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -32,14 +33,12 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for the MVC actuator endpoints' CORS support
@@ -60,21 +59,22 @@ class WebMvcEndpointCorsIntegrationTests {
 
 	@Test
 	void corsIsDisabledByDefault() {
-		this.contextRunner.run(withMockMvc((mockMvc) -> mockMvc
-			.perform(options("/actuator/beans").header("Origin", "foo.example.com")
-				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-			.andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN))));
+		this.contextRunner.run(withMockMvc((mvc) -> assertThat(mvc.options()
+			.uri("/actuator/beans")
+			.header("Origin", "foo.example.com")
+			.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
+			.doesNotContainHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN)));
 	}
 
 	@Test
 	void settingAllowedOriginsEnablesCors() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
-			.run(withMockMvc((mockMvc) -> {
-				mockMvc
-					.perform(options("/actuator/beans").header("Origin", "bar.example.com")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-					.andExpect(status().isForbidden());
-				performAcceptedCorsRequest(mockMvc);
+			.run(withMockMvc((mvc) -> {
+				assertThat(mvc.options()
+					.uri("/actuator/beans")
+					.header("Origin", "bar.example.com")
+					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).hasStatus(HttpStatus.FORBIDDEN);
+				performAcceptedCorsRequest(mvc);
 			}));
 	}
 
@@ -83,20 +83,22 @@ class WebMvcEndpointCorsIntegrationTests {
 		this.contextRunner
 			.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.com",
 					"management.endpoints.web.cors.allow-credentials:true")
-			.run(withMockMvc((mockMvc) -> {
-				mockMvc
-					.perform(options("/actuator/beans").header("Origin", "bar.example.org")
-						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-					.andExpect(status().isForbidden());
-				performAcceptedCorsRequest(mockMvc);
+			.run(withMockMvc((mvc) -> {
+				assertThat(mvc.options()
+					.uri("/actuator/beans")
+					.header("Origin", "bar.example.org")
+					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")).hasStatus(HttpStatus.FORBIDDEN);
+				performAcceptedCorsRequest(mvc);
 			}));
 	}
 
 	@Test
 	void maxAgeDefaultsTo30Minutes() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
-			.run(withMockMvc((mockMvc) -> performAcceptedCorsRequest(mockMvc)
-				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800"))));
+			.run(withMockMvc((mvc) -> {
+				MvcTestResult result = performAcceptedCorsRequest(mvc);
+				assertThat(result).hasHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "1800");
+			}));
 	}
 
 	@Test
@@ -104,20 +106,20 @@ class WebMvcEndpointCorsIntegrationTests {
 		this.contextRunner
 			.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 					"management.endpoints.web.cors.max-age: 2400")
-			.run(withMockMvc((mockMvc) -> performAcceptedCorsRequest(mockMvc)
-				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "2400"))));
+			.run(withMockMvc((mvc) -> {
+				MvcTestResult result = performAcceptedCorsRequest(mvc);
+				assertThat(result).hasHeader(HttpHeaders.ACCESS_CONTROL_MAX_AGE, "2400");
+			}));
 	}
 
 	@Test
 	void requestsWithDisallowedHeadersAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
-			.run(withMockMvc((mockMvc) ->
-
-			mockMvc
-				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
-					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
-				.andExpect(status().isForbidden())));
+			.run(withMockMvc((mvc) -> assertThat(mvc.options()
+				.uri("/actuator/beans")
+				.header("Origin", "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha")).hasStatus(HttpStatus.FORBIDDEN)));
 	}
 
 	@Test
@@ -125,21 +127,22 @@ class WebMvcEndpointCorsIntegrationTests {
 		this.contextRunner
 			.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 					"management.endpoints.web.cors.allowed-headers:Alpha,Bravo")
-			.run(withMockMvc((mockMvc) -> mockMvc
-				.perform(options("/actuator/beans").header("Origin", "foo.example.com")
-					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha"))
-				.andExpect(status().isOk())
-				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Alpha"))));
+			.run(withMockMvc((mvc) -> assertThat(mvc.options()
+				.uri("/actuator/beans")
+				.header("Origin", "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "Alpha")).hasStatusOk()
+				.headers()
+				.hasValue(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "Alpha")));
 	}
 
 	@Test
 	void requestsWithDisallowedMethodsAreRejected() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com")
-			.run(withMockMvc((mockMvc) -> mockMvc
-				.perform(options("/actuator/beans").header(HttpHeaders.ORIGIN, "foo.example.com")
-					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH"))
-				.andExpect(status().isForbidden())));
+			.run(withMockMvc((mvc) -> assertThat(mvc.options()
+				.uri("/actuator/beans")
+				.header(HttpHeaders.ORIGIN, "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH")).hasStatus(HttpStatus.FORBIDDEN)));
 	}
 
 	@Test
@@ -147,11 +150,12 @@ class WebMvcEndpointCorsIntegrationTests {
 		this.contextRunner
 			.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 					"management.endpoints.web.cors.allowed-methods:GET,HEAD")
-			.run(withMockMvc((mockMvc) -> mockMvc
-				.perform(options("/actuator/beans").header(HttpHeaders.ORIGIN, "foo.example.com")
-					.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD"))
-				.andExpect(status().isOk())
-				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD"))));
+			.run(withMockMvc((mvc) -> assertThat(mvc.options()
+				.uri("/actuator/beans")
+				.header(HttpHeaders.ORIGIN, "foo.example.com")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD")).hasStatusOk()
+				.headers()
+				.hasValue(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD")));
 	}
 
 	@Test
@@ -159,8 +163,10 @@ class WebMvcEndpointCorsIntegrationTests {
 		this.contextRunner
 			.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 					"management.endpoints.web.cors.allow-credentials:true")
-			.run(withMockMvc((mockMvc) -> performAcceptedCorsRequest(mockMvc)
-				.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"))));
+			.run(withMockMvc((mvc) -> {
+				MvcTestResult result = performAcceptedCorsRequest(mvc);
+				assertThat(result).hasHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+			}));
 	}
 
 	@Test
@@ -168,31 +174,28 @@ class WebMvcEndpointCorsIntegrationTests {
 		this.contextRunner
 			.withPropertyValues("management.endpoints.web.cors.allowed-origins:foo.example.com",
 					"management.endpoints.web.cors.allow-credentials:false")
-			.run(withMockMvc((mockMvc) -> performAcceptedCorsRequest(mockMvc)
-				.andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS))));
+			.run(withMockMvc((mvc) -> {
+				MvcTestResult result = performAcceptedCorsRequest(mvc);
+				assertThat(result).doesNotContainHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+			}));
 	}
 
-	private ContextConsumer<WebApplicationContext> withMockMvc(MockMvcConsumer mockMvc) {
-		return (context) -> mockMvc.accept(MockMvcBuilders.webAppContextSetup(context).build());
+	private ContextConsumer<WebApplicationContext> withMockMvc(ThrowingConsumer<MockMvcTester> mvc) {
+		return (context) -> mvc.accept(MockMvcTester.from(context));
 	}
 
-	private ResultActions performAcceptedCorsRequest(MockMvc mockMvc) throws Exception {
-		return performAcceptedCorsRequest(mockMvc, "/actuator/beans");
+	private MvcTestResult performAcceptedCorsRequest(MockMvcTester mvc) {
+		return performAcceptedCorsRequest(mvc, "/actuator/beans");
 	}
 
-	private ResultActions performAcceptedCorsRequest(MockMvc mockMvc, String url) throws Exception {
-		return mockMvc
-			.perform(options(url).header(HttpHeaders.ORIGIN, "foo.example.com")
-				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET"))
-			.andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "foo.example.com"))
-			.andExpect(status().isOk());
-	}
-
-	@FunctionalInterface
-	interface MockMvcConsumer {
-
-		void accept(MockMvc mockMvc) throws Exception;
-
+	private MvcTestResult performAcceptedCorsRequest(MockMvcTester mvc, String url) {
+		MvcTestResult result = mvc.options()
+			.uri(url)
+			.header(HttpHeaders.ORIGIN, "foo.example.com")
+			.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+			.exchange();
+		assertThat(result).hasStatusOk().hasHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "foo.example.com");
+		return result;
 	}
 
 }

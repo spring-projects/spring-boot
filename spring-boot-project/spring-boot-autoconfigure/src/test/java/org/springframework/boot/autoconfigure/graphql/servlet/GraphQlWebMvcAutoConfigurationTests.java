@@ -17,10 +17,11 @@
 package org.springframework.boot.autoconfigure.graphql.servlet;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 import graphql.schema.idl.TypeRuntimeWiring;
-import org.hamcrest.Matchers;
+import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -42,9 +43,9 @@ import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
 import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
@@ -52,13 +53,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.socket.server.support.WebSocketHandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link GraphQlWebMvcAutoConfiguration}.
@@ -85,93 +80,100 @@ class GraphQlWebMvcAutoConfigurationTests {
 
 	@Test
 	void simpleQueryShouldWork() {
-		testWith((mockMvc) -> {
+		withMockMvc((mvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}"))
-				.andExpect(status().isOk())
-				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_GRAPHQL_RESPONSE))
-				.andExpect(jsonPath("data.bookById.name").value("GraphQL for beginners"));
+			assertThat(mvc.post().uri("/graphql").content("{\"query\": \"" + query + "\"}")).satisfies((result) -> {
+				assertThat(result).hasStatusOk().hasContentTypeCompatibleWith(MediaType.APPLICATION_GRAPHQL_RESPONSE);
+				assertThat(result).bodyJson()
+					.extractingPath("data.bookById.name")
+					.asString()
+					.isEqualTo("GraphQL for beginners");
+			});
 		});
 	}
 
 	@Test
 	void SseSubscriptionShouldWork() {
-		testWith((mockMvc) -> {
+		withMockMvc((mvc) -> {
 			String query = "{ booksOnSale(minPages: 50){ id name pageCount author } }";
-			mockMvc
-				.perform(post("/graphql").accept(MediaType.TEXT_EVENT_STREAM)
-					.content("{\"query\": \"subscription TestSubscription " + query + "\"}"))
-				.andExpect(status().isOk())
-				.andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM))
-				.andExpect(content().string(Matchers.stringContainsInOrder("event:next",
-						"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-1\",\"name\":\"GraphQL for beginners\",\"pageCount\":100,\"author\":\"John GraphQL\"}}}",
-						"event:next",
-						"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-2\",\"name\":\"Harry Potter and the Philosopher's Stone\",\"pageCount\":223,\"author\":\"Joanne Rowling\"}}}")));
+			assertThat(mvc.post()
+				.uri("/graphql")
+				.accept(MediaType.TEXT_EVENT_STREAM)
+				.content("{\"query\": \"subscription TestSubscription " + query + "\"}")).satisfies((result) -> {
+					assertThat(result).hasStatusOk().hasContentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM);
+					assertThat(result).bodyText()
+						.containsSubsequence("event:next",
+								"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-1\",\"name\":\"GraphQL for beginners\",\"pageCount\":100,\"author\":\"John GraphQL\"}}}",
+								"event:next",
+								"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-2\",\"name\":\"Harry Potter and the Philosopher's Stone\",\"pageCount\":223,\"author\":\"Joanne Rowling\"}}}");
+				});
 		});
 	}
 
 	@Test
 	void httpGetQueryShouldBeSupported() {
-		testWith((mockMvc) -> {
+		withMockMvc((mvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			mockMvc.perform(get("/graphql?query={query}", "{\"query\": \"" + query + "\"}"))
-				.andExpect(status().isMethodNotAllowed())
-				.andExpect(header().string("Allow", "POST"));
+			assertThat(mvc.get().uri("/graphql?query={query}", "{\"query\": \"" + query + "\"}"))
+				.hasStatus(HttpStatus.METHOD_NOT_ALLOWED)
+				.headers()
+				.hasValue("Allow", "POST");
 		});
 	}
 
 	@Test
 	void shouldRejectMissingQuery() {
-		testWith((mockMvc) -> mockMvc.perform(post("/graphql").content("{}")).andExpect(status().isBadRequest()));
+		withMockMvc((mvc) -> assertThat(mvc.post().uri("/graphql").content("{}")).hasStatus(HttpStatus.BAD_REQUEST));
 	}
 
 	@Test
 	void shouldRejectQueryWithInvalidJson() {
-		testWith((mockMvc) -> mockMvc.perform(post("/graphql").content(":)")).andExpect(status().isBadRequest()));
+		withMockMvc((mvc) -> assertThat(mvc.post().uri("/graphql").content(":)")).hasStatus(HttpStatus.BAD_REQUEST));
 	}
 
 	@Test
 	void shouldConfigureWebInterceptors() {
-		testWith((mockMvc) -> {
+		withMockMvc((mvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
-			mockMvc.perform(post("/graphql").content("{\"query\": \"" + query + "\"}"))
-				.andExpect(status().isOk())
-				.andExpect(header().string("X-Custom-Header", "42"));
+			assertThat(mvc.post().uri("/graphql").content("{\"query\": \"" + query + "\"}")).hasStatusOk()
+				.headers()
+				.hasValue("X-Custom-Header", "42");
 		});
 	}
 
 	@Test
 	void shouldExposeSchemaEndpoint() {
-		testWith((mockMvc) -> mockMvc.perform(get("/graphql/schema"))
-			.andExpect(status().isOk())
-			.andExpect(content().contentType(MediaType.TEXT_PLAIN))
-			.andExpect(content().string(Matchers.containsString("type Book"))));
+		withMockMvc((mvc) -> assertThat(mvc.get().uri("/graphql/schema")).hasStatusOk()
+			.hasContentType(MediaType.TEXT_PLAIN)
+			.bodyText()
+			.contains("type Book"));
 	}
 
 	@Test
 	void shouldExposeGraphiqlEndpoint() {
-		testWith((mockMvc) -> {
-			mockMvc.perform(get("/graphiql"))
-				.andExpect(status().is3xxRedirection())
-				.andExpect(redirectedUrl("http://localhost/graphiql?path=/graphql"));
-			mockMvc.perform(get("/graphiql?path=/graphql"))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(MediaType.TEXT_HTML));
+		withMockMvc((mvc) -> {
+			assertThat(mvc.get().uri("/graphiql")).hasStatus3xxRedirection()
+				.hasRedirectedUrl("http://localhost/graphiql?path=/graphql");
+			assertThat(mvc.get().uri("/graphiql?path=/graphql")).hasStatusOk()
+				.contentType()
+				.isEqualTo(MediaType.TEXT_HTML);
 		});
 	}
 
 	@Test
 	void shouldSupportCors() {
-		testWith((mockMvc) -> {
+		withMockMvc((mvc) -> {
 			String query = "{" + "  bookById(id: \\\"book-1\\\"){ " + "    id" + "    name" + "    pageCount"
 					+ "    author" + "  }" + "}";
-			mockMvc
-				.perform(post("/graphql").header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
-					.header(HttpHeaders.ORIGIN, "https://example.com")
-					.content("{\"query\": \"" + query + "\"}"))
-				.andExpect(status().isOk())
-				.andExpect(header().stringValues(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://example.com"))
-				.andExpect(header().stringValues(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
+			assertThat(mvc.post()
+				.uri("/graphql")
+				.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+				.header(HttpHeaders.ORIGIN, "https://example.com")
+				.content("{\"query\": \"" + query + "\"}"))
+				.satisfies((result) -> assertThat(result).hasStatusOk()
+					.headers()
+					.containsEntry(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, List.of("https://example.com"))
+					.containsEntry(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, List.of("true")));
 		});
 	}
 
@@ -217,20 +219,15 @@ class GraphQlWebMvcAutoConfigurationTests {
 		assertThat(RuntimeHintsPredicates.resource().forResource("graphiql/index.html")).accepts(hints);
 	}
 
-	private void testWith(MockMvcConsumer mockMvcConsumer) {
+	private void withMockMvc(ThrowingConsumer<MockMvcTester> mvc) {
 		this.contextRunner.run((context) -> {
-			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context)
-				.defaultRequest(post("/graphql").contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_GRAPHQL_RESPONSE))
-				.build();
-			mockMvcConsumer.accept(mockMvc);
+			MockMvcTester mockMVc = MockMvcTester.from(context,
+					(builder) -> builder
+						.defaultRequest(post("/graphql").contentType(MediaType.APPLICATION_JSON)
+							.accept(MediaType.APPLICATION_GRAPHQL_RESPONSE))
+						.build());
+			mvc.accept(mockMVc);
 		});
-	}
-
-	private interface MockMvcConsumer {
-
-		void accept(MockMvc mockMvc) throws Exception;
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

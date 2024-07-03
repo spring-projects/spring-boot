@@ -37,19 +37,17 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for the Actuator's MVC {@link ControllerEndpoint controller
@@ -69,16 +67,16 @@ class ControllerEndpointWebMvcIntegrationTests {
 	}
 
 	@Test
-	void endpointsAreSecureByDefault() throws Exception {
+	void endpointsAreSecureByDefault() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class, ExampleController.class);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/actuator/example").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isUnauthorized());
+		MockMvcTester mvc = createSecureMockMvcTester();
+		assertThat(mvc.get().uri("/actuator/example").accept(MediaType.APPLICATION_JSON))
+			.hasStatus(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	void endpointsCanBeAccessed() throws Exception {
+	void endpointsCanBeAccessed() {
 		TestSecurityContextHolder.getContext()
 			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigServletWebApplicationContext();
@@ -86,22 +84,23 @@ class ControllerEndpointWebMvcIntegrationTests {
 		TestPropertyValues
 			.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
 			.applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/management/example")).andExpect(status().isOk());
+		MockMvcTester mvc = createSecureMockMvcTester();
+		assertThat(mvc.get().uri("/management/example")).hasStatusOk();
 	}
 
-	private MockMvc createSecureMockMvc() {
-		return doCreateMockMvc(springSecurity());
+	private MockMvcTester createSecureMockMvcTester() {
+		return doCreateMockMvcTester(springSecurity());
 	}
 
-	private MockMvc doCreateMockMvc(MockMvcConfigurer... configurers) {
+	private MockMvcTester doCreateMockMvcTester(MockMvcConfigurer... configurers) {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.context);
-		for (MockMvcConfigurer configurer : configurers) {
-			builder.apply(configurer);
-		}
-		return builder.build();
+		return MockMvcTester.from(this.context, (builder) -> {
+			for (MockMvcConfigurer configurer : configurers) {
+				builder.apply(configurer);
+			}
+			return builder.build();
+		});
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,

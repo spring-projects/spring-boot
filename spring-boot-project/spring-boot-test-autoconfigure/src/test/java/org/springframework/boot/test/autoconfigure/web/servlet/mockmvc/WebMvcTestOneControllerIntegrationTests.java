@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,11 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebMvcTest @WebMvcTest} when a specific controller is defined.
@@ -37,16 +36,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebMvcTestOneControllerIntegrationTests {
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
-	void shouldNotFindController1() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(status().isNotFound());
+	void shouldNotFindController1() {
+		assertThat(this.mvc.get().uri("/one")).hasStatus(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
-	void shouldFindController2() throws Exception {
-		this.mvc.perform(get("/two")).andExpect(content().string("hellotwo")).andExpect(status().isOk());
+	void shouldFindController2() {
+		assertThat(this.mvc.get().uri("/two")).hasStatusOk().hasBodyTextEqualTo("hellotwo");
 	}
 
 }

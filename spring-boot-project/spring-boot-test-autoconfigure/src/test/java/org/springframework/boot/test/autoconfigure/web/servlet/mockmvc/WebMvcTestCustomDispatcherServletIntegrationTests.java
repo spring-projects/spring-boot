@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.servlet.DispatcherServlet;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for Test {@link DispatcherServlet} customizations.
@@ -41,13 +40,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebMvcTestCustomDispatcherServletIntegrationTests {
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
-	void dispatcherServletIsCustomized() throws Exception {
-		this.mvc.perform(get("/does-not-exist"))
-			.andExpect(status().isBadRequest())
-			.andExpect(content().string("Invalid request: /does-not-exist"));
+	void dispatcherServletIsCustomized() {
+		assertThat(this.mvc.get().uri("/does-not-exist")).hasStatus(HttpStatus.BAD_REQUEST)
+			.hasBodyTextEqualTo("Invalid request: /does-not-exist");
 	}
 
 }

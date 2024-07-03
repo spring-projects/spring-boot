@@ -34,13 +34,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskHolder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.replacePattern;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link ScheduledTasksEndpoint}.
@@ -50,10 +49,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void scheduledTasks() throws Exception {
-		this.mockMvc.perform(get("/actuator/scheduledtasks"))
-			.andExpect(status().isOk())
-			.andDo(document("scheduled-tasks",
+	void scheduledTasks() {
+		assertThat(this.mvc.get().uri("/actuator/scheduledtasks")).hasStatusOk()
+			.apply(document("scheduled-tasks",
 					preprocessResponse(replacePattern(
 							Pattern.compile("org.*\\.ScheduledTasksEndpointDocumentationTests\\$TestConfiguration"),
 							"com.example.Processor")),

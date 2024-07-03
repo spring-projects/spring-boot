@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,23 @@
 
 package org.springframework.boot.docs.features.testing.springbootapplications.withmockenvironment
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.assertj.MockMvcTester
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class MyMockMvcTests {
 
 	@Test
-	fun testWithMockMvc(@Autowired mvc: MockMvc) {
-		mvc.perform(MockMvcRequestBuilders.get("/")).andExpect(MockMvcResultMatchers.status().isOk)
-			.andExpect(MockMvcResultMatchers.content().string("Hello World"))
+	fun testWithMockMvc(@Autowired mvc: MockMvcTester) {
+		assertThat(mvc.get().uri("/")).hasStatusOk()
+				.hasBodyTextEqualTo("Hello World")
 	}
 
 	// If Spring WebFlux is on the classpath, you can drive MVC tests with a WebTestClient
@@ -41,10 +40,10 @@ class MyMockMvcTests {
 	@Test
 	fun testWithWebTestClient(@Autowired webClient: WebTestClient) {
 		webClient
-			.get().uri("/")
-			.exchange()
-			.expectStatus().isOk
-			.expectBody<String>().isEqualTo("Hello World")
+				.get().uri("/")
+				.exchange()
+				.expectStatus().isOk
+				.expectBody<String>().isEqualTo("Hello World")
 	}
 
 }

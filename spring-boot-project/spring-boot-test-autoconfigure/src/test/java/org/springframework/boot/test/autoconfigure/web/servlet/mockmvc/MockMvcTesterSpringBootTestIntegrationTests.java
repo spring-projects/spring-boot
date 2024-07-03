@@ -29,27 +29,23 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link SpringBootTest @SpringBootTest} with
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} (i.e. full integration test).
  * <p>
- * This uses the regular {@link MockMvc} (Hamcrest integration).
+ * This uses {@link MockMvcTester} (AssertJ integration).
  *
- * @author Phillip Webb
- * @author Moritz Halbritter
+ * @author Stephane Nicoll
  */
 @SpringBootTest
 @AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_ERR, printOnlyOnFailure = false)
 @WithMockUser(username = "user", password = "secret")
 @ExtendWith(OutputCaptureExtension.class)
-class MockMvcSpringBootTestIntegrationTests {
+class MockMvcTesterSpringBootTestIntegrationTests {
 
 	@MockBean
 	private ExampleMockableService service;
@@ -58,22 +54,22 @@ class MockMvcSpringBootTestIntegrationTests {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
-	void shouldFindController1(CapturedOutput output) throws Exception {
-		this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
+	void shouldFindController1(CapturedOutput output) {
+		assertThat(this.mvc.get().uri("/one")).hasStatusOk().hasBodyTextEqualTo("one");
 		assertThat(output).contains("Request URI = /one");
 	}
 
 	@Test
-	void shouldFindController2() throws Exception {
-		this.mvc.perform(get("/two")).andExpect(content().string("hellotwo")).andExpect(status().isOk());
+	void shouldFindController2() {
+		assertThat(this.mvc.get().uri("/two")).hasStatusOk().hasBodyTextEqualTo("hellotwo");
 	}
 
 	@Test
-	void shouldFindControllerAdvice() throws Exception {
-		this.mvc.perform(get("/error")).andExpect(content().string("recovered")).andExpect(status().isOk());
+	void shouldFindControllerAdvice() {
+		assertThat(this.mvc.get().uri("/error")).hasStatusOk().hasBodyTextEqualTo("recovered");
 	}
 
 	@Test
@@ -87,8 +83,8 @@ class MockMvcSpringBootTestIntegrationTests {
 	}
 
 	@Test
-	void shouldNotFailIfFormattingValueThrowsException(CapturedOutput output) throws Exception {
-		this.mvc.perform(get("/formatting")).andExpect(content().string("formatting")).andExpect(status().isOk());
+	void shouldNotFailIfFormattingValueThrowsException(CapturedOutput output) {
+		assertThat(this.mvc.get().uri("/formatting")).hasStatusOk().hasBodyTextEqualTo("formatting");
 		assertThat(output).contains(
 				"Session Attrs = << Exception 'java.lang.IllegalStateException: Formatting failed' occurred while formatting >>");
 	}
