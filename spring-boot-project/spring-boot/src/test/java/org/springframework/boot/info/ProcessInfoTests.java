@@ -18,6 +18,8 @@ package org.springframework.boot.info;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.info.ProcessInfo.MemoryInfo.MemoryUsageInfo;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -35,6 +37,21 @@ class ProcessInfoTests {
 		assertThat(processInfo.getPid()).isEqualTo(ProcessHandle.current().pid());
 		assertThat(processInfo.getParentPid())
 			.isEqualTo(ProcessHandle.current().parent().map(ProcessHandle::pid).orElse(null));
+	}
+
+	@Test
+	void memoryInfoIsAvailable() {
+		ProcessInfo processInfo = new ProcessInfo();
+		MemoryUsageInfo heapUsageInfo = processInfo.getMemory().getHeap();
+		MemoryUsageInfo nonHeapUsageInfo = processInfo.getMemory().getNonHeap();
+		assertThat(heapUsageInfo.getInit()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getMax());
+		assertThat(heapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getCommited());
+		assertThat(heapUsageInfo.getCommited()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getMax());
+		assertThat(heapUsageInfo.getMax()).isPositive();
+		assertThat(nonHeapUsageInfo.getInit()).isPositive();
+		assertThat(nonHeapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getCommited());
+		assertThat(nonHeapUsageInfo.getCommited()).isPositive();
+		assertThat(nonHeapUsageInfo.getMax()).isEqualTo(-1);
 	}
 
 }
