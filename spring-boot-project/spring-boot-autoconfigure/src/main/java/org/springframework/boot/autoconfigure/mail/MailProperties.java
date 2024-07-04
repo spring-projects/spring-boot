@@ -76,6 +76,11 @@ public class MailProperties {
 	 */
 	private String jndiName;
 
+	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
+
 	public String getHost() {
 		return this.host;
 	}
@@ -134,6 +139,47 @@ public class MailProperties {
 
 	public String getJndiName() {
 		return this.jndiName;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. If enabled, {@code mail.<protocol>.ssl.enable}
+		 * property is set to {@code true}.
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * SSL bundle name. If not null, {@code mail.<protocol>.ssl.socketFactory}
+		 * property is set to a {@code SSLSocketFactory} obtained from the corresponding
+		 * SSL bundle.
+		 * <p>
+		 * Note that the {@code STARTTLS} command can use the corresponding
+		 * {@code SSLSocketFactory}, even if {@code mail.<protocol>.ssl.enable} property
+		 * is not set.
+		 */
+		private String bundle;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
+		}
+
 	}
 
 }
