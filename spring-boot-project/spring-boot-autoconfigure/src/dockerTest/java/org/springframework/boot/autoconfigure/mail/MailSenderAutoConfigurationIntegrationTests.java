@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,11 +68,11 @@ class MailSenderAutoConfigurationIntegrationTests {
 			return message.getSubject();
 		}
 		catch (MessagingException ex) {
-			throw new RuntimeException(ex);
+			throw new RuntimeException("Failed to get message subject", ex);
 		}
 	}
 
-	private void assertMessagesContainSubject(Session session, String subject) {
+	private void assertMessagesContainSubject(Session session, String subject) throws MessagingException {
 		try (Store store = session.getStore("pop3")) {
 			String host = session.getProperty("mail.pop3.host");
 			int port = Integer.parseInt(session.getProperty("mail.pop3.port"));
@@ -86,26 +86,22 @@ class MailSenderAutoConfigurationIntegrationTests {
 						.contains(subject));
 			}
 		}
-		catch (MessagingException ex) {
-			throw new RuntimeException(ex);
-		}
 	}
 
 	@Nested
 	class ImplicitTlsTests {
 
-		final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class, SslAutoConfiguration.class));
-
 		@Container
 		private static final MailpitContainer mailpit = TestImage.container(MailpitContainer.class)
-			// force ssl connection
 			.withSmtpRequireTls(true)
 			.withSmtpTlsCert(MountableFile
 				.forClasspathResource("/org/springframework/boot/autoconfigure/mail/ssl/test-server.crt"))
 			.withSmtpTlsKey(MountableFile
 				.forClasspathResource("/org/springframework/boot/autoconfigure/mail/ssl/test-server.key"))
 			.withPop3Auth("user:pass");
+
+		private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class, SslAutoConfiguration.class));
 
 		@Test
 		void sendEmailWithSslEnabledAndCert() {
@@ -115,14 +111,11 @@ class MailSenderAutoConfigurationIntegrationTests {
 					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-ca.crt",
 					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.crt",
 					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key",
-					// pop3
 					"spring.mail.properties.mail.pop3.host:" + mailpit.getHost(),
 					"spring.mail.properties.mail.pop3.port:" + mailpit.getPop3Port())
 				.run((context) -> {
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-
 					mailSender.send(createMessage("Hello World!"));
-
 					assertMessagesContainSubject(mailSender.getSession(), "Hello World!");
 				});
 		}
@@ -134,7 +127,6 @@ class MailSenderAutoConfigurationIntegrationTests {
 						"spring.mail.port:" + mailpit.getSmtpPort(), "spring.mail.ssl.enabled:true")
 				.run((context) -> {
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-
 					assertThatException().isThrownBy(() -> mailSender.send(createMessage("Should fail")))
 						.withRootCauseInstanceOf(CertPathBuilderException.class);
 				});
@@ -150,7 +142,6 @@ class MailSenderAutoConfigurationIntegrationTests {
 					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key")
 				.run((context) -> {
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-
 					assertThatException().isThrownBy(() -> mailSender.send(createMessage("Should fail")))
 						.withRootCauseInstanceOf(SocketTimeoutException.class);
 				});
@@ -161,9 +152,6 @@ class MailSenderAutoConfigurationIntegrationTests {
 	@Nested
 	class StarttlsTests {
 
-		final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class, SslAutoConfiguration.class));
-
 		@Container
 		private static final MailpitContainer mailpit = TestImage.container(MailpitContainer.class)
 			.withSmtpRequireStarttls(true)
@@ -172,6 +160,9 @@ class MailSenderAutoConfigurationIntegrationTests {
 			.withSmtpTlsKey(MountableFile
 				.forClasspathResource("/org/springframework/boot/autoconfigure/mail/ssl/test-server.key"))
 			.withPop3Auth("user:pass");
+
+		final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class, SslAutoConfiguration.class));
 
 		@Test
 		void sendEmailWithStarttlsAndCertAndSslDisabled() {
@@ -182,14 +173,11 @@ class MailSenderAutoConfigurationIntegrationTests {
 					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-ca.crt",
 					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.crt",
 					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key",
-					// pop3
 					"spring.mail.properties.mail.pop3.host:" + mailpit.getHost(),
 					"spring.mail.properties.mail.pop3.port:" + mailpit.getPop3Port())
 				.run((context) -> {
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-
 					mailSender.send(createMessage("Sent with STARTTLS"));
-
 					assertMessagesContainSubject(mailSender.getSession(), "Sent with STARTTLS");
 				});
 		}
@@ -203,12 +191,10 @@ class MailSenderAutoConfigurationIntegrationTests {
 					"spring.ssl.bundle.pem.test-bundle.truststore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-ca.crt",
 					"spring.ssl.bundle.pem.test-bundle.keystore.certificate=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.crt",
 					"spring.ssl.bundle.pem.test-bundle.keystore.private-key=classpath:org/springframework/boot/autoconfigure/mail/ssl/test-client.key",
-					// pop3
 					"spring.mail.properties.mail.pop3.host:" + mailpit.getHost(),
 					"spring.mail.properties.mail.pop3.port:" + mailpit.getPop3Port())
 				.run((context) -> {
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-
 					assertThatException().isThrownBy(() -> mailSender.send(createMessage("Should fail")))
 						.withRootCauseInstanceOf(SSLException.class);
 				});
@@ -223,7 +209,6 @@ class MailSenderAutoConfigurationIntegrationTests {
 						"spring.mail.properties.mail.smtp.starttls.required:true")
 				.run((context) -> {
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-
 					assertThatException().isThrownBy(() -> mailSender.send(createMessage("Should fail")))
 						.withRootCauseInstanceOf(CertPathBuilderException.class);
 				});
