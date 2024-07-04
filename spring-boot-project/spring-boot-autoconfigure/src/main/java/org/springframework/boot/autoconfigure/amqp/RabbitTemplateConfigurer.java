@@ -108,17 +108,17 @@ public class RabbitTemplateConfigurer {
 		map.from(templateProperties::isObservationEnabled).to(template::setObservationEnabled);
 		map.from(templateProperties::getAllowedListPatterns)
 			.whenNot(CollectionUtils::isEmpty)
-			.to((allowListPatterns) -> setAllowedListPatterns(template.getMessageConverter(), allowListPatterns));
+			.to((allowedListPatterns) -> setAllowedListPatterns(template.getMessageConverter(), allowedListPatterns));
 	}
 
-	private void setAllowedListPatterns(MessageConverter messageConverter, List<String> allowListPatterns) {
+	private void setAllowedListPatterns(MessageConverter messageConverter, List<String> allowedListPatterns) {
 		if (messageConverter instanceof AllowedListDeserializingMessageConverter allowedListDeserializingMessageConverter) {
-			allowedListDeserializingMessageConverter.setAllowedListPatterns(allowListPatterns);
+			allowedListDeserializingMessageConverter.setAllowedListPatterns(allowedListPatterns);
 			return;
 		}
-		throw new InvalidConfigurationPropertyValueException("spring.rabbitmq.template.allow-list-patterns",
-				allowListPatterns,
-				"Allow list patterns can only be applied to a AllowedListDeserializingMessageConverter");
+		throw new InvalidConfigurationPropertyValueException("spring.rabbitmq.template.allowed-list-patterns",
+				allowedListPatterns,
+				"Allowed list patterns can only be applied to an AllowedListDeserializingMessageConverter");
 	}
 
 	private boolean determineMandatoryFlag() {
