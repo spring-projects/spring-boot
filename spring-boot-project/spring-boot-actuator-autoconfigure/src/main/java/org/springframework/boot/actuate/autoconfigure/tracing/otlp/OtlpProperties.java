@@ -45,7 +45,7 @@ public class OtlpProperties {
 	private Duration timeout = Duration.ofSeconds(10);
 
 	/**
-	 * Transport used to send the spans. Defaults to HTTP.
+	 * Transport used to send the spans.
 	 */
 	private Transport transport = Transport.HTTP;
 
@@ -99,21 +99,21 @@ public class OtlpProperties {
 		this.headers = headers;
 	}
 
-	enum Transport {
+	public enum Transport {
 
 		/**
-		 * HTTP exporter.
+		 * HTTP transport.
 		 */
 		HTTP,
 
 		/**
-		 * gRPC exporter.
+		 * gRPC transport.
 		 */
 		GRPC
 
 	}
 
-	enum Compression {
+	public enum Compression {
 
 		/**
 		 * Gzip compression.

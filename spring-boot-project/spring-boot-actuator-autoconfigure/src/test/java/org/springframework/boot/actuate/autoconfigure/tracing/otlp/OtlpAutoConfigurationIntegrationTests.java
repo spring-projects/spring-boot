@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.BlockingQueue;
@@ -53,7 +52,6 @@ import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingA
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfigurationIntegrationTests.MockGrpcServer.RecordedGrpcRequest;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -76,23 +74,15 @@ class OtlpAutoConfigurationIntegrationTests {
 	private final MockGrpcServer mockGrpcServer = new MockGrpcServer();
 
 	@BeforeEach
-	void startMockWebServer() throws IOException {
+	void startServers() throws Exception {
 		this.mockWebServer.start();
-	}
-
-	@BeforeEach
-	void startMockGrpcServer() throws Exception {
 		this.mockGrpcServer.start();
 	}
 
 	@AfterEach
-	void stopMockWebServer() throws IOException {
+	void stopServers() throws Exception {
 		this.mockWebServer.close();
-	}
-
-	@AfterEach
-	void stopMockGrpcServer() throws Exception {
-		this.mockGrpcServer.stop();
+		this.mockGrpcServer.close();
 	}
 
 	@Test
@@ -142,7 +132,7 @@ class OtlpAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	void grpcSpanExporter() {
+	void grpcSpanExporterShouldExportSpans() {
 		this.contextRunner
 			.withPropertyValues(
 					"management.otlp.tracing.endpoint=http://localhost:%d".formatted(this.mockGrpcServer.getPort()),
@@ -155,7 +145,7 @@ class OtlpAutoConfigurationIntegrationTests {
 				assertThat(request).isNotNull();
 				assertThat(request.headers().get("Content-Type")).isEqualTo("application/grpc");
 				assertThat(request.headers().get("custom")).isEqualTo("42");
-				assertThat(request.body()).contains("org.springframework.boot");
+				assertThat(request.bodyAsString()).contains("org.springframework.boot");
 			});
 	}
 
@@ -169,7 +159,7 @@ class OtlpAutoConfigurationIntegrationTests {
 			this.server.start();
 		}
 
-		void stop() throws Exception {
+		void close() throws Exception {
 			this.server.stop();
 		}
 
@@ -189,7 +179,6 @@ class OtlpAutoConfigurationIntegrationTests {
 			Server server = new Server();
 			server.addConnector(createConnector(server));
 			server.setHandler(new GrpcHandler());
-
 			return server;
 		}
 
@@ -197,7 +186,6 @@ class OtlpAutoConfigurationIntegrationTests {
 			ServerConnector connector = new ServerConnector(server,
 					new HTTP2CServerConnectionFactory(new HttpConfiguration()));
 			connector.setPort(0);
-
 			return connector;
 		}
 
@@ -206,21 +194,20 @@ class OtlpAutoConfigurationIntegrationTests {
 			@Override
 			public boolean handle(Request request, Response response, Callback callback) throws Exception {
 				try (InputStream in = Content.Source.asInputStream(request)) {
-					recordRequest(new RecordedGrpcRequest(request.getHeaders(),
-							StreamUtils.copyToString(in, StandardCharsets.UTF_8)));
+					recordRequest(new RecordedGrpcRequest(request.getHeaders(), in.readAllBytes()));
 				}
-
 				response.getHeaders().add("Content-Type", "application/grpc");
 				response.getHeaders().add("Grpc-Status", "0");
-
 				callback.succeeded();
-
 				return true;
 			}
 
 		}
 
-		record RecordedGrpcRequest(HttpFields headers, String body) {
+		record RecordedGrpcRequest(HttpFields headers, byte[] body) {
+			String bodyAsString() {
+				return new String(this.body, StandardCharsets.UTF_8);
+			}
 		}
 
 	}
