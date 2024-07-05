@@ -181,7 +181,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Redis Stack Server.
 	 */
-	REDIS_STACK_SERVER("redis/redis-stack-server"),
+	REDIS_STACK_SERVER("redis/redis-stack-server", "7.2.0-v11"),
 
 	/**
 	 * A container image suitable for testing Redpanda.
