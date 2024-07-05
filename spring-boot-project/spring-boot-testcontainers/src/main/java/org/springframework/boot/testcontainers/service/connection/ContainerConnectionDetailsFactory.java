@@ -51,6 +51,7 @@ import org.springframework.util.ObjectUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Eddú Meléndez
  * @since 3.1.0
  */
 public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, D extends ConnectionDetails>
@@ -61,7 +62,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 */
 	protected static final String ANY_CONNECTION_NAME = null;
 
-	private final String connectionName;
+	private final String[] connectionNames;
 
 	private final String[] requiredClassNames;
 
@@ -80,7 +81,12 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 * @param requiredClassNames the names of classes that must be present
 	 */
 	protected ContainerConnectionDetailsFactory(String connectionName, String... requiredClassNames) {
-		this.connectionName = connectionName;
+		this.connectionNames = new String[] { connectionName };
+		this.requiredClassNames = requiredClassNames;
+	}
+
+	protected ContainerConnectionDetailsFactory(String[] connectionNames, String... requiredClassNames) {
+		this.connectionNames = connectionNames;
 		this.requiredClassNames = requiredClassNames;
 	}
 
@@ -93,8 +99,10 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			Class<?>[] generics = resolveGenerics();
 			Class<?> containerType = generics[0];
 			Class<?> connectionDetailsType = generics[1];
-			if (source.accepts(this.connectionName, containerType, connectionDetailsType)) {
-				return getContainerConnectionDetails(source);
+			for (String connectionName : this.connectionNames) {
+				if (source.accepts(connectionName, containerType, connectionDetailsType)) {
+					return getContainerConnectionDetails(source);
+				}
 			}
 		}
 		catch (NoClassDefFoundError ex) {
