@@ -184,6 +184,16 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
+	 * A container image suitable for testing Redis Stack.
+	 */
+	REDIS_STACK("redis/redis-stack", "7.2.0-v11"),
+
+	/**
+	 * A container image suitable for testing Redis Stack Server.
+	 */
+	REDIS_STACK_SERVER("redis/redis-stack-server", "7.2.0-v11"),
+
+	/**
 	 * A container image suitable for testing Redpanda.
 	 */
 	REDPANDA("redpandadata/redpanda", "v23.1.2", () -> RedpandaContainer.class,
