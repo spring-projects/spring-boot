@@ -43,13 +43,16 @@ class OpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer().withExposedPorts(4318);
+	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer()
+		.withExposedPorts(4317, 4318);
 
 	@Autowired
 	private OtlpTracingConnectionDetails connectionDetails;
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {
+		assertThat(this.connectionDetails.getGrpcEndpoint())
+			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4317) + "/v1/traces");
 		assertThat(this.connectionDetails.getUrl())
 			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4318) + "/v1/traces");
 	}

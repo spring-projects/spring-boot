@@ -32,6 +32,7 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests 
 
 	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OPENTELEMETRY)
 	void runCreatesConnectionDetails(OtlpTracingConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getGrpcEndpoint()).startsWith("http://").endsWith("/v1/traces");
 		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/traces");
 	}
 

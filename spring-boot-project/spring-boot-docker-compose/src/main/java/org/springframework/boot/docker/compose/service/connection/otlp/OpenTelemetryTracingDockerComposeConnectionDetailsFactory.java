@@ -33,7 +33,9 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 	private static final String[] OPENTELEMETRY_IMAGE_NAMES = { "otel/opentelemetry-collector-contrib",
 			"grafana/otel-lgtm" };
 
-	private static final int OTLP_PORT = 4318;
+	private static final int OTLP_GRPC_PORT = 4317;
+
+	private static final int OTLP_HTTP_PORT = 4318;
 
 	OpenTelemetryTracingDockerComposeConnectionDetailsFactory() {
 		super(OPENTELEMETRY_IMAGE_NAMES,
@@ -50,17 +52,25 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final int port;
+		private final int grpcPort;
+
+		private final int httPort;
 
 		private OpenTelemetryTracingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.port = source.ports().get(OTLP_PORT);
+			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
+			this.httPort = source.ports().get(OTLP_HTTP_PORT);
 		}
 
 		@Override
 		public String getUrl() {
-			return "http://%s:%d/v1/traces".formatted(this.host, this.port);
+			return "http://%s:%d/v1/traces".formatted(this.host, this.httPort);
+		}
+
+		@Override
+		public String getGrpcEndpoint() {
+			return "http://%s:%d/v1/traces".formatted(this.host, this.grpcPort);
 		}
 
 	}
