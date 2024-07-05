@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,9 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpTracingConnectionDetails> {
 
-	private static final int OTLP_PORT = 4318;
+	private static final int OTLP_GRPC_PORT = 4317;
+
+	private static final int OTLP_HTTP_PORT = 4318;
 
 	OpenTelemetryTracingDockerComposeConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
@@ -47,17 +49,25 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final int port;
+		private final int grpcPort;
+
+		private final int httPort;
 
 		private OpenTelemetryTracingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.port = source.ports().get(OTLP_PORT);
+			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
+			this.httPort = source.ports().get(OTLP_HTTP_PORT);
 		}
 
 		@Override
 		public String getUrl() {
-			return "http://%s:%d/v1/traces".formatted(this.host, this.port);
+			return "http://%s:%d/v1/traces".formatted(this.host, this.httPort);
+		}
+
+		@Override
+		public String getGrpcEndpoint() {
+			return "http://%s:%d/v1/traces".formatted(this.host, this.grpcPort);
 		}
 
 	}

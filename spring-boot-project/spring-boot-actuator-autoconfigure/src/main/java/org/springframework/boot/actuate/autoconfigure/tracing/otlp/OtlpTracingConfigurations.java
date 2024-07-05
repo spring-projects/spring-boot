@@ -24,6 +24,7 @@ import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporterBuilder;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpProperties.Transport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * Configurations imported by {@link OtlpAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Eddú Meléndez
  */
 class OtlpTracingConfigurations {
 
@@ -63,6 +65,11 @@ class OtlpTracingConfigurations {
 				return this.properties.getEndpoint();
 			}
 
+			@Override
+			public String getGrpcEndpoint() {
+				return this.properties.getEndpoint();
+			}
+
 		}
 
 	}
@@ -79,7 +86,7 @@ class OtlpTracingConfigurations {
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
-				.setEndpoint(connectionDetails.getUrl())
+				.setEndpoint(resolveEndpoint(properties.getTransport(), connectionDetails))
 				.setTimeout(properties.getTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase());
 			for (Entry<String, String> header : properties.getHeaders().entrySet()) {
@@ -93,13 +100,18 @@ class OtlpTracingConfigurations {
 		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
-				.setEndpoint(connectionDetails.getUrl())
+				.setEndpoint(resolveEndpoint(properties.getTransport(), connectionDetails))
 				.setTimeout(properties.getTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase());
 			for (Entry<String, String> header : properties.getHeaders().entrySet()) {
 				builder.addHeader(header.getKey(), header.getValue());
 			}
 			return builder.build();
+		}
+
+		private static String resolveEndpoint(OtlpProperties.Transport transport,
+				OtlpTracingConnectionDetails connectionDetails) {
+			return (transport == Transport.HTTP) ? connectionDetails.getUrl() : connectionDetails.getGrpcEndpoint();
 		}
 
 	}
