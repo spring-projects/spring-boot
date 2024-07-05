@@ -1,6 +1,0 @@
-- "a":
-  - "aardvark"
-  - "cat"
-  - "dog"
-  - "hamster"
-  - "zerbra"

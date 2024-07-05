@@ -1,2 +1,0 @@
-org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
-org.test.ResourceRegisteringAotProcessor

@@ -1,3 +1,0 @@
-plugins {
-	id 'org.springframework.boot' version '{version-spring-boot}' apply false
-}

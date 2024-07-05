@@ -1,1 +1,0 @@
-include::gradle-plugin:partial$nav-gradle-plugin.adoc[]
