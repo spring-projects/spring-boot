@@ -39,6 +39,10 @@ import org.springframework.batch.core.converter.DefaultJobParametersConverter;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.launch.support.ExitCodeMapper;
+import org.springframework.batch.core.launch.support.JvmSystemExiter;
+import org.springframework.batch.core.launch.support.SimpleJvmExitCodeMapper;
+import org.springframework.batch.core.launch.support.SystemExiter;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
@@ -64,7 +68,8 @@ import org.springframework.util.StringUtils;
  * @author Mahmoud Ben Hassine
  * @author Stephane Nicoll
  * @author Akshay Dubey
- * @since 2.3.0
+ * @author Minjun Kang
+ * @since 3.3.1
  */
 public class JobLauncherApplicationRunner
 		implements ApplicationRunner, InitializingBean, Ordered, ApplicationEventPublisherAware {
@@ -91,6 +96,10 @@ public class JobLauncherApplicationRunner
 	private Collection<Job> jobs = Collections.emptySet();
 
 	private int order = DEFAULT_ORDER;
+
+	private ExitCodeMapper exitCodeMapper = new SimpleJvmExitCodeMapper();
+
+	private SystemExiter systemExiter = new JvmSystemExiter();
 
 	private ApplicationEventPublisher publisher;
 
@@ -173,6 +182,7 @@ public class JobLauncherApplicationRunner
 		JobParameters jobParameters = this.converter.getJobParameters(properties);
 		executeLocalJobs(jobParameters);
 		executeRegisteredJobs(jobParameters);
+		executeJobSystemExiter();
 	}
 
 	private boolean isLocalJob(String jobName) {
@@ -202,6 +212,11 @@ public class JobLauncherApplicationRunner
 				execute(job, jobParameters);
 			}
 		}
+	}
+
+	private void executeJobSystemExiter() {
+		systemExiter.exit(exitCodeMapper.intValue(jobExplorer.getLastJobExecution(jobExplorer.getLastJobInstance(this.jobName))
+				.getExitStatus().getExitCode()));
 	}
 
 	protected void execute(Job job, JobParameters jobParameters) throws JobExecutionAlreadyRunningException,
