@@ -40,9 +40,7 @@ import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.ExitCodeMapper;
-import org.springframework.batch.core.launch.support.JvmSystemExiter;
 import org.springframework.batch.core.launch.support.SimpleJvmExitCodeMapper;
-import org.springframework.batch.core.launch.support.SystemExiter;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
@@ -57,6 +55,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import static org.springframework.batch.core.launch.support.ExitCodeMapper.JVM_EXITCODE_COMPLETED;
 
 /**
  * {@link ApplicationRunner} to {@link JobLauncher launch} Spring Batch jobs. If a single
@@ -98,8 +98,6 @@ public class JobLauncherApplicationRunner
 	private int order = DEFAULT_ORDER;
 
 	private ExitCodeMapper exitCodeMapper = new SimpleJvmExitCodeMapper();
-
-	private SystemExiter systemExiter = new JvmSystemExiter();
 
 	private ApplicationEventPublisher publisher;
 
@@ -182,7 +180,7 @@ public class JobLauncherApplicationRunner
 		JobParameters jobParameters = this.converter.getJobParameters(properties);
 		executeLocalJobs(jobParameters);
 		executeRegisteredJobs(jobParameters);
-		executeJobSystemExiter();
+		validateJobTerminateStatus();
 	}
 
 	private boolean isLocalJob(String jobName) {
@@ -214,9 +212,13 @@ public class JobLauncherApplicationRunner
 		}
 	}
 
-	private void executeJobSystemExiter() {
-		systemExiter.exit(exitCodeMapper.intValue(jobExplorer.getLastJobExecution(jobExplorer.getLastJobInstance(this.jobName))
-				.getExitStatus().getExitCode()));
+	private void validateJobTerminateStatus() throws JobExecutionException {
+		String exitCode = jobExplorer.getLastJobExecution(jobExplorer.getLastJobInstance(this.jobName))
+				.getExitStatus().getExitCode();
+
+		if (exitCodeMapper.intValue(exitCode) != JVM_EXITCODE_COMPLETED) {
+			throw new JobExecutionException("Job Terminated with BatchStatus : " + exitCode);
+		}
 	}
 
 	protected void execute(Job job, JobParameters jobParameters) throws JobExecutionAlreadyRunningException,
