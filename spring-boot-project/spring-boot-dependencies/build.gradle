@@ -446,6 +446,11 @@ bom {
 			startsWith(["2018-", "2019-", "2020-", "2021-", "230521-"])
 			because "These are snapshots that we don't want to see"
 		}
+		alignWith {
+			version {
+				from "org.springframework.graphql:spring-graphql"
+			}
+		}
 		group("com.graphql-java") {
 			modules = [
 					"graphql-java"
