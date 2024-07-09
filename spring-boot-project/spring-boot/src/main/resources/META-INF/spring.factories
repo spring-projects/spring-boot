@@ -36,6 +36,7 @@ org.springframework.boot.diagnostics.FailureAnalyzers
 org.springframework.context.ApplicationContextInitializer=\
 org.springframework.boot.context.ConfigurationWarningsApplicationContextInitializer,\
 org.springframework.boot.context.ContextIdApplicationContextInitializer,\
+org.springframework.boot.io.ProtocolResolverApplicationContextInitializer,\
 org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer,\
 org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer
 
