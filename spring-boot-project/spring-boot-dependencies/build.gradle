@@ -1420,11 +1420,7 @@ bom {
 			releaseNotes("https://github.com/open-telemetry/opentelemetry-java/releases/tag/v{version}")
 		}
 	}
-	library("Oracle Database", "21.9.0.0") {
-		prohibit {
-			versionRange "[21.10.0.0,21.13.0.0]"
-			because "they do not work in a JVM with assertions enabled"
-		}
+	library("Oracle Database", "23.4.0.24.05") {
 		alignWith {
 			dependencyManagementDeclaredIn("com.oracle.database.jdbc:ojdbc-bom")
 		}
@@ -1432,18 +1428,6 @@ bom {
 			modules = [
 				"ons",
 				"simplefan"
-			]
-		}
-		group("com.oracle.database.jdbc.debug") {
-			modules = [
-				"ojdbc11-debug",
-				"ojdbc11-observability-debug",
-				"ojdbc11_g",
-				"ojdbc11dms_g",
-				"ojdbc8-debug",
-				"ojdbc8-observability-debug",
-				"ojdbc8_g",
-				"ojdbc8dms_g"
 			]
 		}
 		group("com.oracle.database.jdbc") {
@@ -1462,20 +1446,10 @@ bom {
 				"orai18n"
 			]
 		}
-		group("com.oracle.database.observability") {
-			modules = [
-				"dms",
-				"ojdbc11-observability",
-				"ojdbc11dms",
-				"ojdbc8-observability",
-				"ojdbc8dms"
-			]
-		}
 		group("com.oracle.database.security") {
 			modules = [
-				"oraclepki",
-				"osdt_cert",
-				"osdt_core"
+				"oraclepki"
+
 			]
 		}
 		group("com.oracle.database.xml") {
