@@ -1348,7 +1348,7 @@ bom {
 				.formatted(version.toString().replace(".jre11", "")) }
 		}
 	}
-	library("MySQL", "8.3.0") {
+	library("MySQL", "9.0.0") {
 		group("com.mysql") {
 			modules = [
 				"mysql-connector-j" {
