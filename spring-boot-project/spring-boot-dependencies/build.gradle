@@ -1078,7 +1078,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "5.21.0") {
+	library("Neo4j Java Driver", "5.22.0") {
 		alignWith {
 			version {
 				from "org.springframework.data:spring-data-neo4j"
@@ -1766,6 +1766,10 @@ bom {
 		}
 	}
 	library("Undertow", "2.3.13.Final") {
+		prohibit {
+			versionRange "[2.3.14.Final]"
+			because "it contains a regression (https://issues.redhat.com/browse/UNDERTOW-2420)"
+		}
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
