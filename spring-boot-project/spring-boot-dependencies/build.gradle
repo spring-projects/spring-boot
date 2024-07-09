@@ -1187,7 +1187,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Failsafe Plugin", "3.2.5") {
+	library("Maven Failsafe Plugin", "3.3.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-failsafe-plugin"
