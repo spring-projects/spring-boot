@@ -1116,7 +1116,7 @@ bom {
 			site("https://logback.qos.ch")
 		}
 	}
-	library("Lombok", "1.18.32") {
+	library("Lombok", "1.18.34") {
 		group("org.projectlombok") {
 			modules = [
 				"lombok"
