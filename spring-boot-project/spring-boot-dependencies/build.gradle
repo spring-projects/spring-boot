@@ -285,7 +285,7 @@ bom {
 			site("https://docs.couchbase.com/java-sdk/current/hello-world/overview.html")
 		}
 	}
-	library("Crac", "1.4.0") {
+	library("Crac", "1.5.0") {
 		group("org.crac") {
 			modules = [
 				"crac"
