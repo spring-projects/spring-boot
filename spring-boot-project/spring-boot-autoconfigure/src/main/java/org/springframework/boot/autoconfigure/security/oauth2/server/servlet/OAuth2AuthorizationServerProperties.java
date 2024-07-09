@@ -43,6 +43,30 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	private String issuer;
 
 	/**
+	 * Set to {@code true} if multiple issuers are allowed per host. Using path
+	 * components in the URL of the issuer identifier enables supporting multiple
+	 * issuers per host in a multi-tenant hosting configuration.
+	 *
+	 * <p>
+	 * For example:
+	 * <ul>
+	 * <li>{@code https://example.com/issuer1}</li>
+	 * <li>{@code https://example.com/authz/issuer2}</li>
+	 * </ul>
+	 *
+	 * <p>
+	 * <b>NOTE:</b> Explicitly configuring the issuer identifier via
+	 * {@link #issuer(String)} forces to a single-tenant configuration. Avoid
+	 * configuring the issuer identifier when using a multi-tenant hosting
+	 * configuration, allowing the issuer identifier to be resolved from the
+	 * <i>"current"</i> request.
+	 * @param multipleIssuersAllowed {@code true} if multiple issuers are allowed per
+	 * host, {@code false} otherwise
+	 * @return the {@link Builder} for further configuration
+	 */
+	private boolean multipleIssuersAllowed = false;
+
+	/**
 	 * Registered clients of the Authorization Server.
 	 */
 	private final Map<String, Client> client = new HashMap<>();
