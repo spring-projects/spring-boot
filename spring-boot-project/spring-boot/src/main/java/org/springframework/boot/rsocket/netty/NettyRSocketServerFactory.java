@@ -33,7 +33,7 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.transport.netty.server.WebsocketServerTransport;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
-import reactor.netty.tcp.AbstractProtocolSslContextSpec;
+import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 import reactor.netty.tcp.TcpServer;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -234,7 +234,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		}
 
 		private TcpServer apply(TcpServer server) {
-			AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec(this.sslBundle);
+			GenericSslContextSpec<?> sslContextSpec = createSslContextSpec(this.sslBundle);
 			return server.secure((spec) -> spec.sslContext(sslContextSpec));
 		}
 

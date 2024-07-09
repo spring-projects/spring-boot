@@ -27,6 +27,7 @@ import reactor.netty.http.Http2SslContextSpec;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.AbstractProtocolSslContextSpec;
 import reactor.netty.tcp.SslProvider;
+import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 import reactor.netty.tcp.SslProvider.SslContextSpec;
 
 import org.springframework.boot.ssl.SslBundle;
@@ -102,7 +103,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	private SslProvider createSslProvider(SslBundle sslBundle) {
-		return SslProvider.builder().sslContext(createSslContextSpec(sslBundle)).build();
+		return SslProvider.builder().sslContext((GenericSslContextSpec<?>) createSslContextSpec(sslBundle)).build();
 	}
 
 	/**
