@@ -1222,7 +1222,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Javadoc Plugin", "3.6.3") {
+	library("Maven Javadoc Plugin", "3.7.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-javadoc-plugin"
