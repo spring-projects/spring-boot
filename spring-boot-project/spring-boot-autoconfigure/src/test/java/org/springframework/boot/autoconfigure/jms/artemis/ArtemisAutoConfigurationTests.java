@@ -449,7 +449,7 @@ class ArtemisAutoConfigurationTests {
 
 		void checkDestination(String name, RoutingType routingType, boolean shouldExist) {
 			try {
-				BindingQueryResult result = this.server.bindingQuery(new SimpleString(name));
+				BindingQueryResult result = this.server.bindingQuery(SimpleString.of(name));
 				assertThat(result.isExists()).isEqualTo(shouldExist);
 				if (shouldExist) {
 					assertThat(result.getAddressInfo().getRoutingType()).isEqualTo(routingType);
