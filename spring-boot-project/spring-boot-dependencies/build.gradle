@@ -944,7 +944,7 @@ bom {
 			releaseNotes("https://github.com/netplex/json-smart-v2/releases/tag/{version}")
 		}
 	}
-	library("JsonAssert", "1.5.1") {
+	library("JsonAssert", "1.5.3") {
 		group("org.skyscreamer") {
 			modules = [
 				"jsonassert"
