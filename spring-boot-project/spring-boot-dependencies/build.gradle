@@ -1126,7 +1126,7 @@ bom {
 			site("https://projectlombok.org")
 		}
 	}
-	library("MariaDB", "3.3.3") {
+	library("MariaDB", "3.4.0") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
