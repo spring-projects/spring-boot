@@ -35,8 +35,6 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -434,21 +432,6 @@ public class RestTemplateBuilder {
 				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors, this.requestFactory,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
-	}
-
-	/**
-	 * Has no effect as support for buffering has been removed in Spring Framework 6.1.
-	 * @param bufferRequestBody value of the bufferRequestBody parameter
-	 * @return a new builder instance.
-	 * @since 2.2.0
-	 * @deprecated since 3.2.0 for removal in 3.4.0 as support for buffering has been
-	 * removed in Spring Framework 6.1
-	 * @see SimpleClientHttpRequestFactory#setBufferRequestBody(boolean)
-	 * @see HttpComponentsClientHttpRequestFactory#setBufferRequestBody(boolean)
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public RestTemplateBuilder setBufferRequestBody(boolean bufferRequestBody) {
-		return this;
 	}
 
 	/**

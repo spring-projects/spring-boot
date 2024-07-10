@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.container.RedisContainer;
@@ -50,7 +51,6 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(TestcontainersPropertySourceAutoConfiguration.class));
 
 	@Test
-	@SuppressWarnings("removal")
 	void containerBeanMethodContributesProperties() {
 		List<ApplicationEvent> events = new ArrayList<>();
 		this.contextRunner.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
@@ -59,8 +59,7 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 				TestBean testBean = context.getBean(TestBean.class);
 				RedisContainer redisContainer = context.getBean(RedisContainer.class);
 				assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
-				assertThat(events.stream().filter(BeforeTestcontainersPropertySuppliedEvent.class::isInstance))
-					.hasSize(1);
+				assertThat(events.stream().filter(BeforeTestcontainerUsedEvent.class::isInstance)).hasSize(1);
 			});
 	}
 

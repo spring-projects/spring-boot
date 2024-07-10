@@ -107,17 +107,6 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	/**
-	 * Factory method used to create an {@link AbstractProtocolSslContextSpec}.
-	 * @return the {@link AbstractProtocolSslContextSpec} to use
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #createSslContextSpec(SslBundle)}
-	 */
-	@Deprecated(since = "3.2", forRemoval = true)
-	protected AbstractProtocolSslContextSpec<?> createSslContextSpec() {
-		return createSslContextSpec(this.sslBundle);
-	}
-
-	/**
 	 * Create an {@link AbstractProtocolSslContextSpec} for a given {@link SslBundle}.
 	 * @param sslBundle the {@link SslBundle} to use
 	 * @return an {@link AbstractProtocolSslContextSpec} instance

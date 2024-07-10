@@ -83,13 +83,6 @@ class MockMvcConfiguration {
 		public void customize(DispatcherServlet dispatcherServlet) {
 			dispatcherServlet.setDispatchOptionsRequest(this.webMvcProperties.isDispatchOptionsRequest());
 			dispatcherServlet.setDispatchTraceRequest(this.webMvcProperties.isDispatchTraceRequest());
-			configureThrowExceptionIfNoHandlerFound(dispatcherServlet);
-		}
-
-		@SuppressWarnings({ "deprecation", "removal" })
-		private void configureThrowExceptionIfNoHandlerFound(DispatcherServlet dispatcherServlet) {
-			dispatcherServlet
-				.setThrowExceptionIfNoHandlerFound(this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
 		}
 
 	}

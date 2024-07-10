@@ -181,21 +181,6 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaConsumerFactory} bean.
-	 * @return the consumer properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildConsumerProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildConsumerProperties() {
-		return buildConsumerProperties(null);
-	}
-
-	/**
-	 * Create an initial map of consumer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaConsumerFactory} bean.
 	 * @param sslBundles bundles providing SSL trust material
 	 * @return the consumer properties initialized with the customizations defined on this
 	 * instance
@@ -204,21 +189,6 @@ public class KafkaProperties {
 		Map<String, Object> properties = buildCommonProperties(sslBundles);
 		properties.putAll(this.consumer.buildProperties(sslBundles));
 		return properties;
-	}
-
-	/**
-	 * Create an initial map of producer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaProducerFactory} bean.
-	 * @return the producer properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildProducerProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildProducerProperties() {
-		return buildProducerProperties(null);
 	}
 
 	/**
@@ -241,21 +211,6 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaAdmin} bean.
-	 * @return the admin properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildAdminProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildAdminProperties() {
-		return buildAdminProperties(null);
-	}
-
-	/**
-	 * Create an initial map of admin properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaAdmin} bean.
 	 * @param sslBundles bundles providing SSL trust material
 	 * @return the admin properties initialized with the customizations defined on this
 	 * instance
@@ -264,20 +219,6 @@ public class KafkaProperties {
 		Map<String, Object> properties = buildCommonProperties(sslBundles);
 		properties.putAll(this.admin.buildProperties(sslBundles));
 		return properties;
-	}
-
-	/**
-	 * Create an initial map of streams properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary.
-	 * @return the streams properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildStreamsProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildStreamsProperties() {
-		return buildStreamsProperties(null);
 	}
 
 	/**

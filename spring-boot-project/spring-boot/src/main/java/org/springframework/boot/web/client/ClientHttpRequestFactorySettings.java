@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,36 +40,7 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 * the implementation.
 	 */
 	public static final ClientHttpRequestFactorySettings DEFAULTS = new ClientHttpRequestFactorySettings(null, null,
-			null, null);
-
-	/**
-	 * Create a new {@link ClientHttpRequestFactorySettings} instance.
-	 * @param connectTimeout the connection timeout
-	 * @param readTimeout the read timeout
-	 * @param bufferRequestBody if request body buffering is used
-	 * @deprecated since 3.2.0 for removal in 3.4.0 as support for buffering has been
-	 * removed in Spring Framework 6.1
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, Boolean bufferRequestBody) {
-		this(connectTimeout, readTimeout, (SslBundle) null);
-	}
-
-	/**
-	 * Create a new {@link ClientHttpRequestFactorySettings} instance.
-	 * @param connectTimeout the connection timeout
-	 * @param readTimeout the read timeout
-	 * @param bufferRequestBody if request body buffering is used
-	 * @param sslBundle the ssl bundle
-	 * @since 3.1.0
-	 * @deprecated since 3.2.0 for removal in 3.4.0 as support for buffering has been
-	 * removed in Spring Framework 6.1
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, Boolean bufferRequestBody,
-			SslBundle sslBundle) {
-		this(connectTimeout, readTimeout, sslBundle);
-	}
+			null);
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
@@ -93,18 +64,6 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	}
 
 	/**
-	 * Has no effect as support for buffering has been removed in Spring Framework 6.1.
-	 * @param bufferRequestBody the new buffer request body setting
-	 * @return a new {@link ClientHttpRequestFactorySettings} instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 as support for buffering has been
-	 * removed in Spring Framework 6.1
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public ClientHttpRequestFactorySettings withBufferRequestBody(Boolean bufferRequestBody) {
-		return this;
-	}
-
-	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated SSL
 	 * bundle setting.
 	 * @param sslBundle the new SSL bundle setting
@@ -113,17 +72,6 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
 		return new ClientHttpRequestFactorySettings(this.connectTimeout, this.readTimeout, sslBundle);
-	}
-
-	/**
-	 * Returns whether request body buffering is used.
-	 * @return whether request body buffering is used
-	 * @deprecated since 3.2.0 for removal in 3.4.0 as support for buffering has been
-	 * removed in Spring Framework 6.1
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Boolean bufferRequestBody() {
-		return null;
 	}
 
 }

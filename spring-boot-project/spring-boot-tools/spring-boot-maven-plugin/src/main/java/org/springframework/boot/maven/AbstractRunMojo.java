@@ -42,8 +42,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -170,17 +168,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.run.main-class")
 	private String mainClass;
-
-	/**
-	 * Additional directories containing classes or resources that should be added to the
-	 * classpath.
-	 * @since 1.0.0
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * 'additionalClasspathElements'
-	 */
-	@Parameter(property = "spring-boot.run.directories")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	private String[] directories;
 
 	/**
 	 * Additional classpath elements that should be added to the classpath. An element can
@@ -403,12 +390,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addAdditionalClasspathLocations(List<URL> urls) throws MalformedURLException {
-		Assert.state(ObjectUtils.isEmpty(this.directories) || ObjectUtils.isEmpty(this.additionalClasspathElements),
-				"Either additionalClasspathElements or directories (deprecated) should be set, not both");
-		String[] elements = !ObjectUtils.isEmpty(this.additionalClasspathElements) ? this.additionalClasspathElements
-				: this.directories;
-		if (elements != null) {
-			for (String element : elements) {
+		if (this.additionalClasspathElements != null) {
+			for (String element : this.additionalClasspathElements) {
 				urls.add(new File(element).toURI().toURL());
 			}
 		}

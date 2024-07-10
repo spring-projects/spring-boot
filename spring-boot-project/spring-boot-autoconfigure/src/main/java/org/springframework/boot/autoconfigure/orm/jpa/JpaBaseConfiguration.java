@@ -95,8 +95,7 @@ public abstract class JpaBaseConfiguration {
 	public PlatformTransactionManager transactionManager(
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		transactionManagerCustomizers
-			.ifAvailable((customizers) -> customizers.customize((TransactionManager) transactionManager));
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));
 		return transactionManager;
 	}
 

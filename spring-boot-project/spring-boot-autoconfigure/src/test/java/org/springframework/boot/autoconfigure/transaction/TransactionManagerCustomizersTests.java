@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,8 @@ class TransactionManagerCustomizersTests {
 		list.add(new TestCustomizer<>());
 		list.add(new TestJtaCustomizer());
 		TransactionManagerCustomizers customizers = TransactionManagerCustomizers.of(list);
-		customizers.customize((TransactionManager) mock(PlatformTransactionManager.class));
-		customizers.customize((TransactionManager) mock(JtaTransactionManager.class));
+		customizers.customize(mock(PlatformTransactionManager.class));
+		customizers.customize(mock(JtaTransactionManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);
 		assertThat(list.get(1).getCount()).isOne();
 	}
