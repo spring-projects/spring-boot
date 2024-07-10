@@ -30,6 +30,7 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -80,9 +81,8 @@ public class TestcontainersPropertySource extends MapPropertySource {
 		return (valueSupplier != null) ? getProperty(name, valueSupplier) : null;
 	}
 
-	@SuppressWarnings({ "removal", "deprecation" })
 	private Object getProperty(String name, Object valueSupplier) {
-		BeforeTestcontainersPropertySuppliedEvent event = new BeforeTestcontainersPropertySuppliedEvent(this, name);
+		BeforeTestcontainerUsedEvent event = new BeforeTestcontainerUsedEvent(this);
 		this.eventPublishers.forEach((eventPublisher) -> eventPublisher.publishEvent(event));
 		return SupplierUtils.resolve(valueSupplier);
 	}

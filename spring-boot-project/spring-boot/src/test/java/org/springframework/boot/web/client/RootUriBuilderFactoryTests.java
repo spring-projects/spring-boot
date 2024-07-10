@@ -23,8 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriBuilderFactory;
+import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link RootUriBuilderFactory}.
@@ -35,7 +37,8 @@ class RootUriBuilderFactoryTests {
 
 	@Test
 	void uriStringPrefixesRoot() throws URISyntaxException {
-		UriBuilderFactory builderFactory = new RootUriBuilderFactory("https://example.com");
+		UriBuilderFactory builderFactory = new RootUriBuilderFactory("https://example.com",
+				mock(UriTemplateHandler.class));
 		UriBuilder builder = builderFactory.uriString("/hello");
 		assertThat(builder.build()).isEqualTo(new URI("https://example.com/hello"));
 	}

@@ -33,7 +33,6 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
-import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.artifacts.result.DependencyResult;
 
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -398,17 +397,10 @@ public class Library {
 		}
 
 		public Set<String> resolve() {
-			if (this.managedBy == null) {
-				throw new IllegalStateException("Version alignment without managedBy is not supported");
-			}
 			if (this.alignedVersions != null) {
 				return this.alignedVersions;
 			}
-			Library managingLibrary = this.libraries.stream()
-				.filter((candidate) -> this.managedBy.equals(candidate.getName()))
-				.findFirst()
-				.orElseThrow(() -> new IllegalStateException("Managing library '" + this.managedBy + "' not found."));
-			Map<String, String> versions = resolveAligningDependencies(managingLibrary);
+			Map<String, String> versions = resolveAligningDependencies();
 			Set<String> versionsInLibrary = new HashSet<>();
 			for (Group group : this.groups) {
 				for (Module module : group.getModules()) {
@@ -428,18 +420,8 @@ public class Library {
 			return this.alignedVersions;
 		}
 
-		private Map<String, String> resolveAligningDependencies(Library manager) {
-			DependencyHandler dependencyHandler = this.project.getDependencies();
-			List<Dependency> boms = manager.getGroups()
-				.stream()
-				.flatMap((group) -> group.getBoms()
-					.stream()
-					.map((bom) -> dependencyHandler
-						.platform(group.getId() + ":" + bom + ":" + manager.getVersion().getVersion())))
-				.toList();
-			List<Dependency> dependencies = new ArrayList<>();
-			dependencies.addAll(boms);
-			dependencies.add(dependencyHandler.create(this.from));
+		private Map<String, String> resolveAligningDependencies() {
+			List<Dependency> dependencies = getAligningDependencies();
 			Configuration alignmentConfiguration = this.project.getConfigurations()
 				.detachedConfiguration(dependencies.toArray(new Dependency[0]));
 			Map<String, String> versions = new HashMap<>();
@@ -452,6 +434,58 @@ public class Library {
 			return versions;
 		}
 
+		private List<Dependency> getAligningDependencies() {
+			if (this.managedBy == null) {
+				Library fromLibrary = findFromLibrary();
+				return List
+					.of(this.project.getDependencies().create(this.from + ":" + fromLibrary.getVersion().getVersion()));
+			}
+			else {
+				Library managingLibrary = findManagingLibrary();
+				List<Dependency> boms = getBomDependencies(managingLibrary);
+				List<Dependency> dependencies = new ArrayList<>();
+				dependencies.addAll(boms);
+				dependencies.add(this.project.getDependencies().create(this.from));
+				return dependencies;
+			}
+		}
+
+		private Library findFromLibrary() {
+			for (Library library : this.libraries) {
+				for (Group group : library.getGroups()) {
+					for (Module module : group.getModules()) {
+						if (this.from.equals(group.getId() + ":" + module.getName())) {
+							return library;
+						}
+					}
+				}
+			}
+			return null;
+		}
+
+		private Library findManagingLibrary() {
+			if (this.managedBy == null) {
+				return null;
+			}
+			return this.libraries.stream()
+				.filter((candidate) -> this.managedBy.equals(candidate.getName()))
+				.findFirst()
+				.orElseThrow(() -> new IllegalStateException("Managing library '" + this.managedBy + "' not found."));
+		}
+
+		private List<Dependency> getBomDependencies(Library manager) {
+			if (manager == null) {
+				return Collections.emptyList();
+			}
+			return manager.getGroups()
+				.stream()
+				.flatMap((group) -> group.getBoms()
+					.stream()
+					.map((bom) -> this.project.getDependencies()
+						.platform(group.getId() + ":" + bom + ":" + manager.getVersion().getVersion())))
+				.toList();
+		}
+
 		String getFrom() {
 			return this.from;
 		}
@@ -462,7 +496,11 @@ public class Library {
 
 		@Override
 		public String toString() {
-			return "version from dependencies of " + this.from + " that is managed by " + this.managedBy;
+			String result = "version from dependencies of " + this.from;
+			if (this.managedBy != null) {
+				result += " that is managed by " + this.managedBy;
+			}
+			return result;
 		}
 
 	}

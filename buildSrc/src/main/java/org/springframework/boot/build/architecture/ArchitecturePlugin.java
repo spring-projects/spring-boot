@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ public class ArchitecturePlugin implements Plugin<Project> {
 						(task) -> {
 							task.setClasses(sourceSet.getOutput().getClassesDirs());
 							task.getResourcesDirectory().set(sourceSet.getOutput().getResourcesDir());
+							task.dependsOn(sourceSet.getProcessResourcesTaskName());
 							task.setDescription("Checks the architecture of the classes of the " + sourceSet.getName()
 									+ " source set.");
 							task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);

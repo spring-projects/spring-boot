@@ -75,10 +75,8 @@ class ArtemisEmbeddedConfigurationFactoryTests {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		Map<String, AddressSettings> addressSettings = configuration.getAddressSettings();
-		assertThat((Object) addressSettings.get("#").getDeadLetterAddress())
-			.isEqualTo(SimpleString.toSimpleString("DLQ"));
-		assertThat((Object) addressSettings.get("#").getExpiryAddress())
-			.isEqualTo(SimpleString.toSimpleString("ExpiryQueue"));
+		assertThat((Object) addressSettings.get("#").getDeadLetterAddress()).isEqualTo(SimpleString.of("DLQ"));
+		assertThat((Object) addressSettings.get("#").getExpiryAddress()).isEqualTo(SimpleString.of("ExpiryQueue"));
 	}
 
 	@Test

@@ -162,27 +162,16 @@ class DispatcherServletAutoConfigurationTests {
 	@Test
 	void dispatcherServletCustomConfig() {
 		this.contextRunner
-			.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:false",
-					"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
+			.withPropertyValues("spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
 					"spring.mvc.publish-request-handled-events:false", "spring.mvc.servlet.load-on-startup=5")
 			.run((context) -> {
 				DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-				assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
 				assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(false);
 				assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(true);
 				assertThat(dispatcherServlet).extracting("publishEvents").isEqualTo(false);
 				assertThat(context.getBean("dispatcherServletRegistration"))
 					.hasFieldOrPropertyWithValue("loadOnStartup", 5);
 			});
-	}
-
-	@Test
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void dispatcherServletThrowExceptionIfNoHandlerFoundCustomConfig() {
-		this.contextRunner.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:false").run((context) -> {
-			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
-		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

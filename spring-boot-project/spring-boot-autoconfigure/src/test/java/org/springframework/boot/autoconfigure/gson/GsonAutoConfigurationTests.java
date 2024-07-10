@@ -28,6 +28,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
+import com.google.gson.Strictness;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -212,7 +213,7 @@ class GsonAutoConfigurationTests {
 	void withoutLenient() {
 		this.contextRunner.run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			assertThat(gson).hasFieldOrPropertyWithValue("lenient", false);
+			assertThat(gson).hasFieldOrPropertyWithValue("strictness", null);
 		});
 	}
 
@@ -220,7 +221,7 @@ class GsonAutoConfigurationTests {
 	void withLenientTrue() {
 		this.contextRunner.withPropertyValues("spring.gson.lenient:true").run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			assertThat(gson).hasFieldOrPropertyWithValue("lenient", true);
+			assertThat(gson).hasFieldOrPropertyWithValue("strictness", Strictness.LENIENT);
 		});
 	}
 
@@ -228,7 +229,7 @@ class GsonAutoConfigurationTests {
 	void withLenientFalse() {
 		this.contextRunner.withPropertyValues("spring.gson.lenient:false").run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			assertThat(gson).hasFieldOrPropertyWithValue("lenient", false);
+			assertThat(gson).hasFieldOrPropertyWithValue("strictness", null);
 		});
 	}
 

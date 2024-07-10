@@ -1587,6 +1587,27 @@
       }
     },
     {
+      "name": "spring.influx.password",
+      "deprecation": {
+        "level": "error",
+        "reason": "The new InfluxDb Java client provides Spring Boot integration."
+      }
+    },
+    {
+      "name": "spring.influx.url",
+      "deprecation": {
+        "level": "error",
+        "reason": "The new InfluxDb Java client provides Spring Boot integration."
+      }
+    },
+    {
+      "name": "spring.influx.user",
+      "deprecation": {
+        "level": "error",
+        "reason": "The new InfluxDb Java client provides Spring Boot integration."
+      }
+    },
+    {
       "name": "spring.info.build.location",
       "defaultValue": "classpath:META-INF/build-info.properties"
     },
@@ -2075,6 +2096,13 @@
     {
       "name": "spring.mvc.pathmatch.matching-strategy",
       "defaultValue": "path-pattern-parser"
+    },
+    {
+      "name": "spring.mvc.throw-exception-if-no-handler-found",
+      "deprecation": {
+      	"reason": "DispatcherServlet property is deprecated for removal and should no longer need to be configured.",
+      	"level": "error"
+      }
     },
     {
       "name": "spring.neo4j.security.trust-strategy",

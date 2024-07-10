@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,57 +42,6 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 
 	private static final boolean JBOSS_LOGGING_PRESENT = ClassUtils.isPresent("org.jboss.logging.Logger",
 			LogbackLoggingSystemProperties.class.getClassLoader());
-
-	/**
-	 * The name of the System property that contains the rolled-over log file name
-	 * pattern.
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
-	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
-	 * {@link RollingPolicySystemProperty#FILE_NAME_PATTERN}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public static final String ROLLINGPOLICY_FILE_NAME_PATTERN = RollingPolicySystemProperty.FILE_NAME_PATTERN
-		.getEnvironmentVariableName();
-
-	/**
-	 * The name of the System property that contains the clean history on start flag.
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
-	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
-	 * {@link RollingPolicySystemProperty#CLEAN_HISTORY_ON_START}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public static final String ROLLINGPOLICY_CLEAN_HISTORY_ON_START = RollingPolicySystemProperty.CLEAN_HISTORY_ON_START
-		.getEnvironmentVariableName();
-
-	/**
-	 * The name of the System property that contains the file log max size.
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
-	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
-	 * {@link RollingPolicySystemProperty#MAX_FILE_SIZE}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public static final String ROLLINGPOLICY_MAX_FILE_SIZE = RollingPolicySystemProperty.MAX_FILE_SIZE
-		.getEnvironmentVariableName();
-
-	/**
-	 * The name of the System property that contains the file total size cap.
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
-	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
-	 * {@link RollingPolicySystemProperty#TOTAL_SIZE_CAP}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public static final String ROLLINGPOLICY_TOTAL_SIZE_CAP = RollingPolicySystemProperty.TOTAL_SIZE_CAP
-		.getEnvironmentVariableName();
-
-	/**
-	 * The name of the System property that contains the file log max history.
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of calling
-	 * {@link RollingPolicySystemProperty#getEnvironmentVariableName()} on
-	 * {@link RollingPolicySystemProperty#MAX_HISTORY}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public static final String ROLLINGPOLICY_MAX_HISTORY = RollingPolicySystemProperty.MAX_HISTORY
-		.getEnvironmentVariableName();
 
 	public LogbackLoggingSystemProperties(Environment environment) {
 		super(environment);

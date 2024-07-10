@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,18 +165,6 @@ class PemSslStoreBundleTests {
 		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
 		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("ssl"));
 		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("ssl"));
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void createWithDetailsWhenHasKeyStoreDetailsAndTrustStoreDetailsAndAlias() {
-		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
-			.withPrivateKey("classpath:test-key.pem");
-		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
-			.withPrivateKey("classpath:test-key.pem");
-		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, "test-alias");
-		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias"));
-		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("test-alias"));
 	}
 
 	@Test

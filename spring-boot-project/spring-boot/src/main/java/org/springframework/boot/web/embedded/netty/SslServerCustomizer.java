@@ -27,6 +27,7 @@ import reactor.netty.http.Http2SslContextSpec;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.AbstractProtocolSslContextSpec;
 import reactor.netty.tcp.SslProvider;
+import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 import reactor.netty.tcp.SslProvider.SslContextSpec;
 
 import org.springframework.boot.ssl.SslBundle;
@@ -102,18 +103,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	}
 
 	private SslProvider createSslProvider(SslBundle sslBundle) {
-		return SslProvider.builder().sslContext(createSslContextSpec(sslBundle)).build();
-	}
-
-	/**
-	 * Factory method used to create an {@link AbstractProtocolSslContextSpec}.
-	 * @return the {@link AbstractProtocolSslContextSpec} to use
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #createSslContextSpec(SslBundle)}
-	 */
-	@Deprecated(since = "3.2", forRemoval = true)
-	protected AbstractProtocolSslContextSpec<?> createSslContextSpec() {
-		return createSslContextSpec(this.sslBundle);
+		return SslProvider.builder().sslContext((GenericSslContextSpec<?>) createSslContextSpec(sslBundle)).build();
 	}
 
 	/**

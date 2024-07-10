@@ -52,6 +52,7 @@ import reactor.core.publisher.Sinks;
 import reactor.netty.NettyPipeline;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.web.server.Compression;
@@ -246,7 +247,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
-		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
+		GenericSslContextSpec<?> sslContextSpec = Http11SslContextSpec.forClient()
 			.configure((builder) -> builder.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE));
 		HttpClient client = HttpClient.create().wiretap(true).secure((spec) -> spec.sslContext(sslContextSpec));
@@ -285,7 +286,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, keyStorePassword.toCharArray());
 
-		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
+		GenericSslContextSpec<?> sslContextSpec = Http11SslContextSpec.forClient()
 			.configure((builder) -> builder.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE)
 				.keyManager(clientKeyManagerFactory));

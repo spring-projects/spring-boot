@@ -113,7 +113,7 @@ public class Neo4jDataAutoConfiguration {
 	public Neo4jTransactionManager transactionManager(Driver driver, DatabaseSelectionProvider databaseNameProvider,
 			ObjectProvider<TransactionManagerCustomizers> optionalCustomizers) {
 		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(driver, databaseNameProvider);
-		optionalCustomizers.ifAvailable((customizer) -> customizer.customize((TransactionManager) transactionManager));
+		optionalCustomizers.ifAvailable((customizer) -> customizer.customize(transactionManager));
 		return transactionManager;
 	}
 

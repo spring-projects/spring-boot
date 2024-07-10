@@ -616,10 +616,6 @@ with the `key` listed in the following table:
 | xref:api:java/org/springframework/boot/actuate/hazelcast/HazelcastHealthIndicator.html[`HazelcastHealthIndicator`]
 | Checks that a Hazelcast server is up.
 
-| `influxdb`
-| xref:api:java/org/springframework/boot/actuate/influx/InfluxDbHealthIndicator.html[`InfluxDbHealthIndicator`]
-| Checks that an InfluxDB server is up.
-
 | `jms`
 | xref:api:java/org/springframework/boot/actuate/jms/JmsHealthIndicator.html[`JmsHealthIndicator`]
 | Checks that a JMS broker is up.

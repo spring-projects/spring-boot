@@ -17,8 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -30,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
+import java.util.stream.Stream;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -69,7 +68,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -550,18 +548,18 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 		Map<String, String> properties = loggerContext.getCopyOfPropertyMap();
 		Set<String> expectedProperties = new HashSet<>();
-		ReflectionUtils.doWithFields(LogbackLoggingSystemProperties.class,
-				(field) -> expectedProperties.add((String) field.get(null)), this::isPublicStaticFinal);
-		expectedProperties.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH"));
+		Stream.of(RollingPolicySystemProperty.values())
+			.map(RollingPolicySystemProperty::getEnvironmentVariableName)
+			.forEach(expectedProperties::add);
+		Stream.of(LoggingSystemProperty.values())
+			.map(LoggingSystemProperty::getEnvironmentVariableName)
+			.forEach(expectedProperties::add);
+		expectedProperties
+			.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH", "LOGGED_APPLICATION_NAME", "LOGGED_APPLICATION_GROUP"));
 		expectedProperties.add("org.jboss.logging.provider");
 		expectedProperties.add("LOG_CORRELATION_PATTERN");
 		assertThat(properties).containsOnlyKeys(expectedProperties);
 		assertThat(properties).containsEntry("CONSOLE_LOG_CHARSET", Charset.defaultCharset().name());
-	}
-
-	private boolean isPublicStaticFinal(Field field) {
-		int modifiers = field.getModifiers();
-		return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);
 	}
 
 	@Test
