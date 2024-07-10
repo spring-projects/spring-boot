@@ -33,6 +33,7 @@ import org.slf4j.MDC;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.context.ApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Marcin Grzejszczak
  * @author Moritz Halbritter
  */
+@ForkedClassPath
 class BaggagePropagationIntegrationTests {
 
 	private static final String COUNTRY_CODE = "country-code";
