@@ -65,16 +65,16 @@ class ApplicationGroupConverterTests {
 
 	private void withLoggedApplicationGroup(String group, Runnable action) {
 		if (group == null) {
-			System.clearProperty(LoggingSystemProperty.LOGGED_APPLICATION_GROUP.getEnvironmentVariableName());
+			System.clearProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName());
 		}
 		else {
-			System.setProperty(LoggingSystemProperty.LOGGED_APPLICATION_GROUP.getEnvironmentVariableName(), group);
+			System.setProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName(), group);
 		}
 		try {
 			action.run();
 		}
 		finally {
-			System.clearProperty(LoggingSystemProperty.LOGGED_APPLICATION_GROUP.getEnvironmentVariableName());
+			System.clearProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName());
 		}
 	}
 

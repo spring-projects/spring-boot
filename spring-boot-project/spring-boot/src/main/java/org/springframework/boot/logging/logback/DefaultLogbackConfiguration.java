@@ -30,6 +30,9 @@ import ch.qos.logback.core.spi.ScanException;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiElement;
+import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.boot.logging.LogFile;
 
 /**
@@ -46,6 +49,25 @@ import org.springframework.boot.logging.LogFile;
  * @author Jonatan Ivanov
  */
 class DefaultLogbackConfiguration {
+
+	private static String DEFAULT_CHARSET = Charset.defaultCharset().name();
+
+	private static String NAME_AND_GROUP = "%applicationName%applicationGroup";
+
+	private static String DATETIME = "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}";
+
+	private static String DEFAULT_CONSOLE_LOG_PATTERN = faint(DATETIME) + " "
+			+ colorByLevel("${LOG_LEVEL_PATTERN:-%5p}") + " " + magenta("${PID:-}") + " "
+			+ faint("--- " + NAME_AND_GROUP + "[%15.15t] ${LOG_CORRELATION_PATTERN:-}") + cyan("%-40.40logger{39}")
+			+ " " + faint(":") + " %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}";
+
+	static final String CONSOLE_LOG_PATTERN = "${CONSOLE_LOG_PATTERN:-" + DEFAULT_CONSOLE_LOG_PATTERN;
+
+	private static String DEFAULT_FILE_LOG_PATTERN = DATETIME + " ${LOG_LEVEL_PATTERN:-%5p} ${PID:-} --- "
+			+ NAME_AND_GROUP + "[%t] ${LOG_CORRELATION_PATTERN:-}"
+			+ "%-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}";
+
+	static final String FILE_LOG_PATTERN = "${FILE_LOG_PATTERN:-" + DEFAULT_FILE_LOG_PATTERN;
 
 	private final LogFile logFile;
 
@@ -74,24 +96,12 @@ class DefaultLogbackConfiguration {
 		config.conversionRule("correlationId", CorrelationIdConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
 		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
-		config.getContext()
-			.putProperty("CONSOLE_LOG_PATTERN", resolve(config, "${CONSOLE_LOG_PATTERN:-"
-					+ "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) "
-					+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr(%applicationName%applicationGroup[%15.15t]){faint} "
-					+ "%clr(${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} "
-					+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
-		String defaultCharset = Charset.defaultCharset().name();
-		config.getContext()
-			.putProperty("CONSOLE_LOG_CHARSET", resolve(config, "${CONSOLE_LOG_CHARSET:-" + defaultCharset + "}"));
-		config.getContext().putProperty("CONSOLE_LOG_THRESHOLD", resolve(config, "${CONSOLE_LOG_THRESHOLD:-TRACE}"));
-		config.getContext()
-			.putProperty("FILE_LOG_PATTERN", resolve(config, "${FILE_LOG_PATTERN:-"
-					+ "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- %applicationName%applicationGroup[%t] "
-					+ "${LOG_CORRELATION_PATTERN:-}"
-					+ "%-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
-		config.getContext()
-			.putProperty("FILE_LOG_CHARSET", resolve(config, "${FILE_LOG_CHARSET:-" + defaultCharset + "}"));
-		config.getContext().putProperty("FILE_LOG_THRESHOLD", resolve(config, "${FILE_LOG_THRESHOLD:-TRACE}"));
+		putProperty(config, "CONSOLE_LOG_PATTERN", CONSOLE_LOG_PATTERN);
+		putProperty(config, "CONSOLE_LOG_CHARSET", "${CONSOLE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
+		putProperty(config, "CONSOLE_LOG_THRESHOLD", "${CONSOLE_LOG_THRESHOLD:-TRACE}");
+		putProperty(config, "FILE_LOG_PATTERN", FILE_LOG_PATTERN);
+		putProperty(config, "FILE_LOG_CHARSET", "${FILE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
+		putProperty(config, "FILE_LOG_THRESHOLD", "${FILE_LOG_THRESHOLD:-TRACE}");
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -99,7 +109,11 @@ class DefaultLogbackConfiguration {
 		config.logger("org.apache.tomcat.util.net.NioSelectorPool", Level.WARN);
 		config.logger("org.eclipse.jetty.util.component.AbstractLifeCycle", Level.ERROR);
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
-		config.logger("org.springframework.boot.actuate.endpoint.jmx", Level.WARN);
+		config.logger("org.springframework.boot.actuate.endpoint.jmx", Level.WARN);// @formatter:on
+	}
+
+	void putProperty(LogbackConfigurator config, String name, String val) {
+		config.getContext().putProperty(name, resolve(config, val));
 	}
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
@@ -172,6 +186,26 @@ class DefaultLogbackConfiguration {
 		catch (ScanException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private static String faint(String value) {
+		return color(value, AnsiStyle.FAINT);
+	}
+
+	private static String cyan(String value) {
+		return color(value, AnsiColor.CYAN);
+	}
+
+	private static String magenta(String value) {
+		return color(value, AnsiColor.MAGENTA);
+	}
+
+	private static String colorByLevel(String value) {
+		return "%clr(" + value + "){}";
+	}
+
+	private static String color(String value, AnsiElement ansiElement) {
+		return "%clr(" + value + "){" + ColorConverter.getName(ansiElement) + "}";
 	}
 
 }

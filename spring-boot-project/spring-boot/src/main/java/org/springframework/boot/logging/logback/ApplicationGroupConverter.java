@@ -24,7 +24,7 @@ import org.springframework.boot.logging.LoggingSystemProperty;
 
 /**
  * Logback {@link ClassicConverter} to convert the
- * {@link LoggingSystemProperty#LOGGED_APPLICATION_GROUP APPLICATION_GROUP} into a value
+ * {@link LoggingSystemProperty#APPLICATION_GROUP APPLICATION_GROUP} into a value
  * suitable for logging. Similar to Logback's {@link PropertyConverter} but a non-existent
  * property is logged as an empty string rather than {@code null}.
  *
@@ -33,19 +33,15 @@ import org.springframework.boot.logging.LoggingSystemProperty;
  */
 public class ApplicationGroupConverter extends ClassicConverter {
 
+	private static final String ENVIRONMENT_VARIABLE_NAME = LoggingSystemProperty.APPLICATION_GROUP
+		.getEnvironmentVariableName();
+
 	@Override
 	public String convert(ILoggingEvent event) {
-		String applicationGroup = event.getLoggerContextVO()
-			.getPropertyMap()
-			.get(LoggingSystemProperty.LOGGED_APPLICATION_GROUP.getEnvironmentVariableName());
-		if (applicationGroup == null) {
-			applicationGroup = System
-				.getProperty(LoggingSystemProperty.LOGGED_APPLICATION_GROUP.getEnvironmentVariableName());
-			if (applicationGroup == null) {
-				applicationGroup = "";
-			}
-		}
-		return applicationGroup;
+		String applicationGroup = event.getLoggerContextVO().getPropertyMap().get(ENVIRONMENT_VARIABLE_NAME);
+		applicationGroup = (applicationGroup != null) ? applicationGroup
+				: System.getProperty(ENVIRONMENT_VARIABLE_NAME);
+		return (applicationGroup != null) ? applicationGroup : "";
 	}
 
 }
