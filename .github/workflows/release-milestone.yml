@@ -1,0 +1,75 @@
+name: Release Milestone
+on:
+  push:
+    tags:
+      - v3.4.0-M[0-9]
+      - v3.4.0-RC[0-9]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+jobs:
+  build-and-stage-release:
+    name: Build and Stage Release
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@v4
+      - name: Build and Publish
+        id: build-and-publish
+        uses: ./.github/actions/build
+        with:
+          develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          publish: true
+      - name: Stage Release
+        uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
+        with:
+          uri: 'https://repo.spring.io'
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          build-name: ${{ format('spring-boot-{0}', steps.build-and-publish.outputs.version)}}
+          repository: 'libs-staging-local'
+          folder: 'deployment-repository'
+          signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+    outputs:
+      version: ${{ steps.build-and-publish.outputs.version }}
+  verify:
+    name: Verify
+    needs: build-and-stage-release
+    uses: ./.github/workflows/verify.yml
+    with:
+      staging: true
+      version: ${{ needs.build-and-stage-release.outputs.version }}
+    secrets:
+      google-chat-webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+      repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+      token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+  promote-release:
+    name: Promote Release
+    needs:
+      - build-and-stage-release
+      - verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up JFrog CLI
+        uses: jfrog/setup-jfrog-cli@8bab65dc312163b065ac5b03de6f6a5bdd1bec41 # v4.1.3
+        env:
+          JF_ENV_SPRING: ${{ secrets.JF_ARTIFACTORY_SPRING }}
+      - name: Promote build
+        run: jfrog rt build-promote ${{ format('spring-boot-{0}', needs.build-and-stage-release.outputs.version)}} ${{ github.run_number }} libs-milestone-local
+  create-github-release:
+    name: Create GitHub Release
+    needs:
+      - build-and-stage-release
+      - promote-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Create GitHub Release
+        uses: ./.github/actions/create-github-release
+        with:
+          milestone: ${{ needs.build-and-stage-release.outputs.version }}
+          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+          pre-release: true
