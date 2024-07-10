@@ -40,6 +40,8 @@ class RedisContainerConnectionDetailsFactory
 	private static final String[] REDIS_IMAGE_NAMES = { "redis", "bitnami/redis", "redis/redis-stack",
 			"redis/redis-stack-server" };
 
+	private static final int REDIS_PORT = 6379;
+
 	RedisContainerConnectionDetailsFactory() {
 		super(REDIS_IMAGE_NAMES);
 	}
@@ -61,7 +63,7 @@ class RedisContainerConnectionDetailsFactory
 
 		@Override
 		public Standalone getStandalone() {
-			return Standalone.of(getContainer().getHost(), getContainer().getFirstMappedPort());
+			return Standalone.of(getContainer().getHost(), getContainer().getMappedPort(REDIS_PORT));
 		}
 
 	}
