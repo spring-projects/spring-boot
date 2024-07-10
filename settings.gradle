@@ -19,8 +19,8 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.develocity" version "3.17.2"
-	id "io.spring.ge.conventions" version "0.0.17"
+	id "com.gradle.develocity" version "3.17.5"
+	id "io.spring.develocity.conventions" version "0.0.19"
 }
 
 rootProject.name="spring-boot-build"
@@ -34,13 +34,6 @@ settings.gradle.projectsLoaded {
 			if (toolchainVersion != null) {
 				value('Toolchain version', toolchainVersion)
 				tag("JDK-$toolchainVersion")
-			}
-			def buildDir = settings.gradle.rootProject.getBuildDir()
-			buildDir.mkdirs()
-			new File(buildDir, "build-scan-uri.txt").text = "build scan not generated"
-			buildScanPublished { scan ->
-				buildDir.mkdirs()
-				new File(buildDir, "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
 			}
 		}
 	}
