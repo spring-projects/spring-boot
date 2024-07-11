@@ -6,6 +6,16 @@ plugins {
 
 description = "Spring Boot Kafka smoke test"
 
+configurations.all {
+	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+		if (details.requested.module.group == "org.apache.kafka" && details.requested.module.name == "kafka-server-common") {
+			details.artifactSelection {
+				selectArtifact(DependencyArtifact.DEFAULT_TYPE, null, null)
+			}
+		}
+	}
+}
+
 dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
