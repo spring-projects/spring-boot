@@ -360,10 +360,10 @@ class PaketoBuilderTests {
 							(arg) -> assertThat(arg).startsWith("runner.jar"),
 							(arg) -> assertThat(arg).isEqualTo("example.ExampleApplication"));
 				metadata.processOfType("spring-boot-app")
-						.satisfiesExactly((command) -> assertThat(command).isEqualTo("java"),
-								(arg) -> assertThat(arg).isEqualTo("-cp"),
-								(arg) -> assertThat(arg).startsWith("runner.jar"),
-								(arg) -> assertThat(arg).isEqualTo("example.ExampleApplication"));
+					.satisfiesExactly((command) -> assertThat(command).isEqualTo("java"),
+							(arg) -> assertThat(arg).isEqualTo("-cp"),
+							(arg) -> assertThat(arg).startsWith("runner.jar"),
+							(arg) -> assertThat(arg).isEqualTo("example.ExampleApplication"));
 				metadata.processOfType("executable-jar")
 					.containsExactly("java", "org.springframework.boot.loader.launch.JarLauncher");
 			});
