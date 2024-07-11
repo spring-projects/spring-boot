@@ -1548,28 +1548,6 @@ public class KafkaProperties {
 			 */
 			private int attempts = 3;
 
-			/**
-			 * Canonical backoff period. Used as an initial value in the exponential case,
-			 * and as a minimum value in the uniform case.
-			 */
-			private Duration delay = Duration.ofSeconds(1);
-
-			/**
-			 * Multiplier to use for generating the next backoff delay.
-			 */
-			private double multiplier = 0.0;
-
-			/**
-			 * Maximum wait between retries. If less than the delay then the default of 30
-			 * seconds is applied.
-			 */
-			private Duration maxDelay = Duration.ZERO;
-
-			/**
-			 * Whether to have the backoff delays.
-			 */
-			private boolean randomBackOff = false;
-
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1620,8 +1598,7 @@ public class KafkaProperties {
 				getBackoff().setMaxDelay(maxDelay);
 			}
 
-			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.random",
-					since = "3.4.0")
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.random", since = "3.4.0")
 			@Deprecated(since = "3.4.0", forRemoval = true)
 			public boolean isRandomBackOff() {
 				return getBackoff().isRandom();
