@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public interface BootstrapContext {
 
 	/**
 	 * Return an instance from the context if the type has been registered. The instance
-	 * will be created it if it hasn't been accessed previously.
+	 * will be created if it hasn't been accessed previously.
 	 * @param <T> the instance type
 	 * @param type the instance type
 	 * @return the instance managed by the context
@@ -45,7 +45,7 @@ public interface BootstrapContext {
 
 	/**
 	 * Return an instance from the context if the type has been registered. The instance
-	 * will be created it if it hasn't been accessed previously.
+	 * will be created if it hasn't been accessed previously.
 	 * @param <T> the instance type
 	 * @param type the instance type
 	 * @param other the instance to use if the type has not been registered
@@ -55,7 +55,7 @@ public interface BootstrapContext {
 
 	/**
 	 * Return an instance from the context if the type has been registered. The instance
-	 * will be created it if it hasn't been accessed previously.
+	 * will be created if it hasn't been accessed previously.
 	 * @param <T> the instance type
 	 * @param type the instance type
 	 * @param other a supplier for the instance to use if the type has not been registered
@@ -65,7 +65,7 @@ public interface BootstrapContext {
 
 	/**
 	 * Return an instance from the context if the type has been registered. The instance
-	 * will be created it if it hasn't been accessed previously.
+	 * will be created if it hasn't been accessed previously.
 	 * @param <T> the instance type
 	 * @param <X> the exception to throw if the type is not registered
 	 * @param type the instance type
