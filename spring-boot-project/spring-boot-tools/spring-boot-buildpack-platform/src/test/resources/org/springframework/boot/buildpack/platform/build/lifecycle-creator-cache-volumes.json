@@ -26,11 +26,11 @@
   },
   "HostConfig": {
     "Binds": [
-      "/var/run/docker.sock:/var/run/docker.sock",
-      "work-volume-layers:/layers",
       "work-volume-app:/workspace",
+      "work-volume-layers:/layers",
       "build-volume:/cache",
-      "launch-volume:/launch-cache"
+      "launch-volume:/launch-cache",
+      "/var/run/docker.sock:/var/run/docker.sock"
     ],
     "SecurityOpt" : [
       "label=disable"

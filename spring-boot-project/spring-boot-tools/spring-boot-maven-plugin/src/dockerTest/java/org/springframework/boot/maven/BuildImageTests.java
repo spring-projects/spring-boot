@@ -68,6 +68,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 				assertThat(original).doesNotExist();
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
+					.contains("Running detector")
+					.contains("Running builder")
 					.contains("---> Test Info buildpack building")
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
@@ -88,6 +90,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 				assertThat(original).doesNotExist();
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image-cmd-line:0.0.1.BUILD-SNAPSHOT")
+					.contains("Running detector")
+					.contains("Running builder")
 					.contains("---> Test Info buildpack building")
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
@@ -248,12 +252,14 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
 			.systemProperty("spring-boot.build-image.builder", "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1")
+			.systemProperty("spring-boot.build-image.trustBuilder", "true")
 			.systemProperty("spring-boot.build-image.runImage", "paketobuildpacks/run-jammy-tiny")
 			.systemProperty("spring-boot.build-image.createdDate", "2020-07-01T12:34:56Z")
 			.systemProperty("spring-boot.build-image.applicationDirectory", "/application")
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("example.com/test/cmd-property-name:v1")
+					.contains("Running creator")
 					.contains("---> Test Info buildpack building")
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
@@ -276,6 +282,22 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
 				removeImage("docker.io/library/build-image-v2-builder", "0.0.1.BUILD-SNAPSHOT");
+			});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithTrustBuilder(MavenBuild mavenBuild) {
+		mavenBuild.project("dockerTest", "build-image-trust-builder")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-v2-trust-builder:0.0.1.BUILD-SNAPSHOT")
+					.contains("Running creator")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("docker.io/library/build-image-v2-trust-builder", "0.0.1.BUILD-SNAPSHOT");
 			});
 	}
 

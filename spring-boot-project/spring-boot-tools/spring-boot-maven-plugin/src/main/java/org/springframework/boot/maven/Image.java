@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,8 @@ public class Image {
 	String name;
 
 	String builder;
+
+	Boolean trustBuilder;
 
 	String runImage;
 
@@ -103,6 +105,18 @@ public class Image {
 
 	void setBuilder(String builder) {
 		this.builder = builder;
+	}
+
+	/**
+	 * If the builder should be treated as trusted.
+	 * @return {@code true} if the builder should be treated as trusted
+	 */
+	public Boolean getTrustBuilder() {
+		return this.trustBuilder;
+	}
+
+	void setTrustBuilder(Boolean trustBuilder) {
+		this.trustBuilder = trustBuilder;
 	}
 
 	/**
@@ -220,6 +234,9 @@ public class Image {
 	private BuildRequest customize(BuildRequest request) {
 		if (StringUtils.hasText(this.builder)) {
 			request = request.withBuilder(ImageReference.of(this.builder));
+		}
+		if (this.trustBuilder != null) {
+			request = request.withTrustBuilder(this.trustBuilder);
 		}
 		if (StringUtils.hasText(this.runImage)) {
 			request = request.withRunImage(ImageReference.of(this.runImage));

@@ -118,8 +118,13 @@ The following table summarizes the available properties and their default values
 
 | `builder`
 | `--builder`
-| Name of the Builder image to use.
+| Name of the builder image to use.
 | `paketobuildpacks/builder-jammy-tiny:latest`
+
+| `trustBuilder`
+| `--trustBuilder`
+| Whether to treat the builder as https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
+| `true` if the builder is one of `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; false otherwise.
 
 | `runImage`
 | `--runImage`

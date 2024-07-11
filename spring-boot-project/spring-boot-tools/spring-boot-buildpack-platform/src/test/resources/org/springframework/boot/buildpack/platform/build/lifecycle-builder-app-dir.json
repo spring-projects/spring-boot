@@ -1,0 +1,24 @@
+{
+  "Image": "pack.local/ephemeral-builder",
+  "Cmd": [
+    "/cnb/lifecycle/builder",
+    "-app",
+    "/application",
+    "-layers",
+    "/layers",
+    "-platform",
+    "/platform"
+  ],
+  "Env": [
+    "CNB_PLATFORM_API=0.8"
+  ],
+  "Labels": {
+    "author": "spring-boot"
+  },
+  "HostConfig": {
+    "Binds": [
+      "pack-app-aaaaaaaaaa:/application",
+      "pack-layers-aaaaaaaaaa:/layers"
+    ]
+  }
+}

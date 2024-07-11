@@ -1,0 +1,28 @@
+{
+  "User": "root",
+  "Image": "pack.local/ephemeral-builder",
+  "Cmd": [
+    "/cnb/lifecycle/restorer",
+    "-daemon",
+    "-cache-dir",
+    "/cache",
+    "-layers",
+    "/layers"
+  ],
+  "Env": [
+    "CNB_PLATFORM_API=0.8"
+  ],
+  "Labels": {
+    "author": "spring-boot"
+  },
+  "HostConfig": {
+    "Binds": [
+      "/var/run/docker.sock:/var/run/docker.sock",
+      "/tmp/build-cache:/cache",
+      "/tmp/work-layers:/layers"
+    ],
+    "SecurityOpt" : [
+      "label=disable"
+    ]
+  }
+}

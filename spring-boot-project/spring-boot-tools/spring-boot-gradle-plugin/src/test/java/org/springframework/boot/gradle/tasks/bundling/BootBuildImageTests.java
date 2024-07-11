@@ -172,14 +172,24 @@ class BootBuildImageTests {
 
 	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
-		assertThat(this.buildImage.createRequest().getBuilder().getName())
-			.isEqualTo("paketobuildpacks/builder-jammy-tiny");
+		BuildRequest request = this.buildImage.createRequest();
+		assertThat(request.getBuilder().getName()).isEqualTo("paketobuildpacks/builder-jammy-tiny");
+		assertThat(request.isTrustBuilder()).isTrue();
 	}
 
 	@Test
 	void whenBuilderIsConfiguredThenRequestUsesSpecifiedBuilder() {
 		this.buildImage.getBuilder().set("example.com/test/builder:1.2");
-		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("test/builder");
+		BuildRequest request = this.buildImage.createRequest();
+		assertThat(request.getBuilder().getName()).isEqualTo("test/builder");
+		assertThat(request.isTrustBuilder()).isFalse();
+	}
+
+	@Test
+	void whenTrustBuilderIsEnabledThenRequestHasTrustBuilderEnabled() {
+		this.buildImage.getBuilder().set("example.com/test/builder:1.2");
+		this.buildImage.getTrustBuilder().set(true);
+		assertThat(this.buildImage.createRequest().isTrustBuilder()).isTrue();
 	}
 
 	@Test

@@ -1,0 +1,24 @@
+{
+  "Image": "pack.local/ephemeral-builder",
+  "Cmd": [
+    "/cnb/lifecycle/detector",
+    "-app",
+    "/workspace",
+    "-layers",
+    "/layers",
+    "-platform",
+    "/platform"
+  ],
+  "Env": [
+    "CNB_PLATFORM_API=0.8"
+  ],
+  "Labels": {
+    "author": "spring-boot"
+  },
+  "HostConfig": {
+    "Binds": [
+      "/tmp/work-app:/workspace",
+      "/tmp/work-layers:/layers"
+    ]
+  }
+}

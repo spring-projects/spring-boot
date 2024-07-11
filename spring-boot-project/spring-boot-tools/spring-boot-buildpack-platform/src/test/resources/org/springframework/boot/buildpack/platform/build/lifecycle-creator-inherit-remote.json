@@ -27,8 +27,8 @@
   },
   "HostConfig": {
     "Binds": [
-      "pack-layers-aaaaaaaaaa:/layers",
       "pack-app-aaaaaaaaaa:/workspace",
+      "pack-layers-aaaaaaaaaa:/layers",
       "pack-cache-b35197ac41ea.build:/cache",
       "pack-cache-b35197ac41ea.launch:/launch-cache"
     ],

@@ -78,6 +78,23 @@ class BootBuildImageIntegrationTests {
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("Running detector");
+		assertThat(result.getOutput()).contains("Running builder");
+		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
+		assertThat(result.getOutput()).contains("Network status: HTTP/2 200");
+		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
+		removeImages(projectName);
+	}
+
+	@TestTemplate
+	void buildsImageWithTrustBuilder() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("Running creator");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
 		assertThat(result.getOutput()).contains("Network status: HTTP/2 200");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
@@ -146,10 +163,11 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT",
 				"--imageName=example/test-image-cmd", "--builder=ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1",
-				"--runImage=paketobuildpacks/run-jammy-tiny", "--createdDate=2020-07-01T12:34:56Z",
+				"--trustBuilder", "--runImage=paketobuildpacks/run-jammy-tiny", "--createdDate=2020-07-01T12:34:56Z",
 				"--applicationDirectory=/application");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-cmd");
+		assertThat(result.getOutput()).contains("Running creator");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		Image image = new DockerApi().image().inspect(ImageReference.of("example/test-image-cmd"));

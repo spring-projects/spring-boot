@@ -91,6 +91,7 @@ public abstract class BootBuildImage extends DefaultTask {
 			}
 			return ImageReference.of(imageName, projectVersion.get()).toString();
 		}));
+		getTrustBuilder().convention((Boolean) null);
 		getCleanCache().convention(false);
 		getVerboseLogging().convention(false);
 		getPublish().convention(false);
@@ -130,6 +131,16 @@ public abstract class BootBuildImage extends DefaultTask {
 	@Optional
 	@Option(option = "builder", description = "The name of the builder image to use")
 	public abstract Property<String> getBuilder();
+
+	/**
+	 * Whether to treat the builder as trusted.
+	 * @return whether to trust the builder
+	 * @since 3.4.0
+	 */
+	@Input
+	@Optional
+	@Option(option = "trustBuilder", description = "Consider the builder trusted")
+	public abstract Property<Boolean> getTrustBuilder();
 
 	/**
 	 * Returns the run image that will be included in the built image. When {@code null},
@@ -348,13 +359,16 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customize(BuildRequest request) {
 		request = customizeBuilder(request);
+		if (getTrustBuilder().isPresent()) {
+			request = request.withTrustBuilder(getTrustBuilder().get());
+		}
 		request = customizeRunImage(request);
 		request = customizeEnvironment(request);
 		request = customizeCreator(request);
 		request = request.withCleanCache(getCleanCache().get());
 		request = request.withVerboseLogging(getVerboseLogging().get());
 		request = customizePullPolicy(request);
-		request = customizePublish(request);
+		request = request.withPublish(getPublish().get());
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
 		request = customizeTags(request);
@@ -403,11 +417,6 @@ public abstract class BootBuildImage extends DefaultTask {
 		if (pullPolicy != null) {
 			request = request.withPullPolicy(pullPolicy);
 		}
-		return request;
-	}
-
-	private BuildRequest customizePublish(BuildRequest request) {
-		request = request.withPublish(getPublish().get());
 		return request;
 	}
 

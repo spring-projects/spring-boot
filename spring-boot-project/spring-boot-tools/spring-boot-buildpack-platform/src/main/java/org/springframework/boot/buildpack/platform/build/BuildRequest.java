@@ -45,15 +45,28 @@ import org.springframework.util.Assert;
  */
 public class BuildRequest {
 
-	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/builder-jammy-tiny:latest";
+	static final String DEFAULT_BUILDER_IMAGE_NAME = "paketobuildpacks/builder-jammy-tiny";
 
-	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(DEFAULT_BUILDER_IMAGE_NAME);
+	static final String DEFAULT_BUILDER_IMAGE_REF = DEFAULT_BUILDER_IMAGE_NAME + ":latest";
+
+	static final List<ImageReference> KNOWN_TRUSTED_BUILDERS = List.of(
+			ImageReference.of("paketobuildpacks/builder-jammy-tiny"),
+			ImageReference.of("paketobuildpacks/builder-jammy-base"),
+			ImageReference.of("paketobuildpacks/builder-jammy-full"),
+			ImageReference.of("paketobuildpacks/builder-jammy-buildpackless-tiny"),
+			ImageReference.of("paketobuildpacks/builder-jammy-buildpackless-base"),
+			ImageReference.of("paketobuildpacks/builder-jammy-buildpackless-full"),
+			ImageReference.of("gcr.io/buildpacks/builder"), ImageReference.of("heroku/builder"));
+
+	private static final ImageReference DEFAULT_BUILDER = ImageReference.of(DEFAULT_BUILDER_IMAGE_REF);
 
 	private final ImageReference name;
 
 	private final Function<Owner, TarArchive> applicationContent;
 
 	private final ImageReference builder;
+
+	private final Boolean trustBuilder;
 
 	private final ImageReference runImage;
 
@@ -95,6 +108,7 @@ public class BuildRequest {
 		this.name = name.inTaggedForm();
 		this.applicationContent = applicationContent;
 		this.builder = DEFAULT_BUILDER;
+		this.trustBuilder = null;
 		this.runImage = null;
 		this.env = Collections.emptyMap();
 		this.cleanCache = false;
@@ -118,7 +132,8 @@ public class BuildRequest {
 			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
 			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks,
 			List<Binding> bindings, String network, List<ImageReference> tags, Cache buildWorkspace, Cache buildCache,
-			Cache launchCache, Instant createdDate, String applicationDirectory, List<String> securityOptions) {
+			Cache launchCache, Instant createdDate, String applicationDirectory, List<String> securityOptions,
+			Boolean trustBuilder) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
@@ -139,6 +154,7 @@ public class BuildRequest {
 		this.createdDate = createdDate;
 		this.applicationDirectory = applicationDirectory;
 		this.securityOptions = securityOptions;
+		this.trustBuilder = trustBuilder;
 	}
 
 	/**
@@ -151,7 +167,20 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
-				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions);
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.trustBuilder);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated trust builder setting.
+	 * @param trustBuilder {@code true} if the builder should be treated as trusted,
+	 * {@code false} otherwise
+	 * @return an updated build request
+	 */
+	public BuildRequest withTrustBuilder(boolean trustBuilder) {
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
+				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
+				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
+				this.applicationDirectory, this.securityOptions, trustBuilder);
 	}
 
 	/**
@@ -163,7 +192,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, runImageName.inTaggedOrDigestForm(),
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
-				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions);
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -176,7 +205,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -193,7 +222,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
 				this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace, this.buildCache,
-				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions);
+				this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -208,7 +237,8 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging, this.pullPolicy,
 				this.publish, this.buildpacks, this.bindings, this.network, this.tags, this.buildWorkspace,
-				this.buildCache, this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions);
+				this.buildCache, this.launchCache, this.createdDate, this.applicationDirectory, this.securityOptions,
+				this.trustBuilder);
 	}
 
 	/**
@@ -220,7 +250,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -232,7 +262,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -244,7 +274,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -256,7 +286,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -281,7 +311,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -306,7 +336,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -319,7 +349,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -342,7 +372,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -356,7 +386,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -369,7 +399,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -382,7 +412,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, launchCache, this.createdDate,
-				this.applicationDirectory, this.securityOptions);
+				this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -395,7 +425,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache,
-				parseCreatedDate(createdDate), this.applicationDirectory, this.securityOptions);
+				parseCreatedDate(createdDate), this.applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	private Instant parseCreatedDate(String createdDate) {
@@ -420,7 +450,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				applicationDirectory, this.securityOptions);
+				applicationDirectory, this.securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -434,7 +464,7 @@ public class BuildRequest {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
 				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings,
 				this.network, this.tags, this.buildWorkspace, this.buildCache, this.launchCache, this.createdDate,
-				this.applicationDirectory, securityOptions);
+				this.applicationDirectory, securityOptions, this.trustBuilder);
 	}
 
 	/**
@@ -462,6 +492,19 @@ public class BuildRequest {
 	 */
 	public ImageReference getBuilder() {
 		return this.builder;
+	}
+
+	/**
+	 * Return whether the builder should be treated as trusted.
+	 * @return the trust builder flag
+	 * @since 3.4.0
+	 */
+	public boolean isTrustBuilder() {
+		return (this.trustBuilder != null) ? this.trustBuilder : isBuilderKnownAndTrusted();
+	}
+
+	private boolean isBuilderKnownAndTrusted() {
+		return KNOWN_TRUSTED_BUILDERS.stream().anyMatch((builder) -> builder.getName().equals(this.builder.getName()));
 	}
 
 	/**
