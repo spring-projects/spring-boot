@@ -344,11 +344,11 @@ class LifecycleTests {
 			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-security-opts.json", true));
 		}
 		else {
-			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-security-opts.json"));
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-security-opts.json", true));
 			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
-			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-security-opts.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-security-opts.json", true));
 			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
-			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-security-opts.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-security-opts.json", true));
 		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
