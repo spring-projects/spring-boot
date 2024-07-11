@@ -34,6 +34,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
@@ -1547,28 +1548,6 @@ public class KafkaProperties {
 			 */
 			private int attempts = 3;
 
-			/**
-			 * Canonical backoff period. Used as an initial value in the exponential case,
-			 * and as a minimum value in the uniform case.
-			 */
-			private Duration delay = Duration.ofSeconds(1);
-
-			/**
-			 * Multiplier to use for generating the next backoff delay.
-			 */
-			private double multiplier = 0.0;
-
-			/**
-			 * Maximum wait between retries. If less than the delay then the default of 30
-			 * seconds is applied.
-			 */
-			private Duration maxDelay = Duration.ZERO;
-
-			/**
-			 * Whether to have the backoff delays.
-			 */
-			private boolean randomBackOff = false;
-
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1585,36 +1564,113 @@ public class KafkaProperties {
 				this.attempts = attempts;
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.delay", since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public Duration getDelay() {
-				return this.delay;
+				return getBackoff().getDelay();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setDelay(Duration delay) {
-				this.delay = delay;
+				getBackoff().setDelay(delay);
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.multiplier",
+					since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public double getMultiplier() {
-				return this.multiplier;
+				return getBackoff().getMultiplier();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setMultiplier(double multiplier) {
-				this.multiplier = multiplier;
+				getBackoff().setMultiplier(multiplier);
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.maxDelay", since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public Duration getMaxDelay() {
-				return this.maxDelay;
+				return getBackoff().getMaxDelay();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setMaxDelay(Duration maxDelay) {
-				this.maxDelay = maxDelay;
+				getBackoff().setMaxDelay(maxDelay);
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.random", since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public boolean isRandomBackOff() {
-				return this.randomBackOff;
+				return getBackoff().isRandom();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setRandomBackOff(boolean randomBackOff) {
-				this.randomBackOff = randomBackOff;
+				getBackoff().setRandom(randomBackOff);
+			}
+
+			private final Backoff backoff = new Backoff();
+
+			public Backoff getBackoff() {
+				return this.backoff;
+			}
+
+			public static class Backoff {
+
+				/**
+				 * Canonical backoff period. Used as an initial value in the exponential
+				 * case, and as a minimum value in the uniform case.
+				 */
+				private Duration delay = Duration.ofSeconds(1);
+
+				/**
+				 * Multiplier to use for generating the next backoff delay.
+				 */
+				private double multiplier = 0.0;
+
+				/**
+				 * Maximum wait between retries. If less than the delay then the default
+				 * of 30 seconds is applied.
+				 */
+				private Duration maxDelay = Duration.ZERO;
+
+				/**
+				 * Whether to have the backoff delays.
+				 */
+				private boolean random = false;
+
+				public Duration getDelay() {
+					return this.delay;
+				}
+
+				public void setDelay(Duration delay) {
+					this.delay = delay;
+				}
+
+				public double getMultiplier() {
+					return this.multiplier;
+				}
+
+				public void setMultiplier(double multiplier) {
+					this.multiplier = multiplier;
+				}
+
+				public Duration getMaxDelay() {
+					return this.maxDelay;
+				}
+
+				public void setMaxDelay(Duration maxDelay) {
+					this.maxDelay = maxDelay;
+				}
+
+				public boolean isRandom() {
+					return this.random;
+				}
+
+				public void setRandom(boolean random) {
+					this.random = random;
+				}
+
 			}
 
 		}
