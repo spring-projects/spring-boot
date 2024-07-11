@@ -2103,10 +2103,6 @@
       "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
     },
     {
-      "name": "management.otlp.tracing.transport",
-      "defaultValue": "http"
-    },
-    {
       "name": "management.prometheus.metrics.export.histogram-flavor",
       "defaultValue": "prometheus"
     },

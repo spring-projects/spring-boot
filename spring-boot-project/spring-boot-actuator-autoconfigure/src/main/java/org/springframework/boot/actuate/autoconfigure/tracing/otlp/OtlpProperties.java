@@ -45,11 +45,6 @@ public class OtlpProperties {
 	private Duration timeout = Duration.ofSeconds(10);
 
 	/**
-	 * Transport used to send the spans.
-	 */
-	private Transport transport = Transport.HTTP;
-
-	/**
 	 * Method used to compress the payload.
 	 */
 	private Compression compression = Compression.NONE;
@@ -75,14 +70,6 @@ public class OtlpProperties {
 		this.timeout = timeout;
 	}
 
-	public Transport getTransport() {
-		return this.transport;
-	}
-
-	public void setTransport(Transport transport) {
-		this.transport = transport;
-	}
-
 	public Compression getCompression() {
 		return this.compression;
 	}
@@ -99,21 +86,7 @@ public class OtlpProperties {
 		this.headers = headers;
 	}
 
-	public enum Transport {
-
-		/**
-		 * HTTP transport.
-		 */
-		HTTP,
-
-		/**
-		 * gRPC transport.
-		 */
-		GRPC
-
-	}
-
-	public enum Compression {
+	enum Compression {
 
 		/**
 		 * Gzip compression.

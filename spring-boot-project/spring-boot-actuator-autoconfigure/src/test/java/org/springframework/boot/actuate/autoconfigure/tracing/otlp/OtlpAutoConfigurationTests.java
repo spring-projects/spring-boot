@@ -52,24 +52,9 @@ class OtlpAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyBeansIfGrpcTransportIsEnabledButPropertyIsNotSet() {
-		this.contextRunner.withPropertyValues("management.otlp.tracing.transport=grpc")
-			.run((context) -> assertThat(context).doesNotHaveBean(OtlpGrpcSpanExporter.class));
-	}
-
-	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
 			.run((context) -> assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class)
-				.hasSingleBean(SpanExporter.class));
-	}
-
-	@Test
-	void shouldSupplyBeansIfGrpcTransportIsEnabled() {
-		this.contextRunner
-			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4317/v1/traces",
-					"management.otlp.tracing.transport=grpc")
-			.run((context) -> assertThat(context).hasSingleBean(OtlpGrpcSpanExporter.class)
 				.hasSingleBean(SpanExporter.class));
 	}
 
