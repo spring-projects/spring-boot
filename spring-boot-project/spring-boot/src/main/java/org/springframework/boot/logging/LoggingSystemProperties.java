@@ -117,8 +117,8 @@ public class LoggingSystemProperties {
 
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
 		String defaultCharsetName = getDefaultCharset().name();
-		setApplicationNameSystemProperty(resolver);
-		setApplicationGroupSystemProperty(resolver);
+		setSystemProperty(LoggingSystemProperty.APPLICATION_NAME, resolver);
+		setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP, resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, defaultCharsetName);
 		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, defaultCharsetName);
@@ -132,26 +132,6 @@ public class LoggingSystemProperties {
 		setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
-		}
-	}
-
-	private void setApplicationNameSystemProperty(PropertyResolver resolver) {
-		if (resolver.getProperty("logging.include-application-name", Boolean.class, Boolean.TRUE)) {
-			String applicationName = resolver.getProperty("spring.application.name");
-			if (StringUtils.hasText(applicationName)) {
-				setSystemProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName(),
-						"[%s] ".formatted(applicationName));
-			}
-		}
-	}
-
-	private void setApplicationGroupSystemProperty(PropertyResolver resolver) {
-		if (resolver.getProperty("logging.include-application-group", Boolean.class, Boolean.TRUE)) {
-			String applicationGroup = resolver.getProperty("spring.application.group");
-			if (StringUtils.hasText(applicationGroup)) {
-				setSystemProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName(),
-						"[%s] ".formatted(applicationGroup));
-			}
 		}
 	}
 
@@ -170,11 +150,21 @@ public class LoggingSystemProperties {
 
 	private void setSystemProperty(LoggingSystemProperty property, PropertyResolver resolver, String defaultValue,
 			Function<String, String> mapper) {
+		if (property.getIncludePropertyName() != null) {
+			if (!resolver.getProperty(property.getIncludePropertyName(), Boolean.class, Boolean.TRUE)) {
+				return;
+			}
+		}
 		String value = (property.getApplicationPropertyName() != null)
 				? resolver.getProperty(property.getApplicationPropertyName()) : null;
 		value = (value != null) ? value : this.defaultValueResolver.apply(property.getApplicationPropertyName());
 		value = (value != null) ? value : defaultValue;
-		setSystemProperty(property.getEnvironmentVariableName(), mapper.apply(value));
+		value = mapper.apply(value);
+		setSystemProperty(property.getEnvironmentVariableName(), value);
+		if (property == LoggingSystemProperty.APPLICATION_NAME && StringUtils.hasText(value)) {
+			// LOGGED_APPLICATION_NAME is deprecated for removal in 3.6.0
+			setSystemProperty("LOGGED_APPLICATION_NAME", "[%s] ".formatted(value));
+		}
 	}
 
 	private void setSystemProperty(LoggingSystemProperty property, String value) {

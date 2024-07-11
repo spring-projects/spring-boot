@@ -607,6 +607,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_NAME}")
+			.doesNotContain("${sys:APPLICATION_NAME}")
 			.doesNotContain("myapp");
 	}
 
@@ -648,6 +649,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_NAME}")
+			.doesNotContain("${sys:APPLICATION_NAME}")
 			.doesNotContain("myapp");
 	}
 
@@ -680,6 +682,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_GROUP}")
+			.doesNotContain("${sys:APPLICATION_GROUP}")
 			.doesNotContain("myapp");
 	}
 
@@ -721,6 +724,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_GROUP}")
+			.doesNotContain("${sys:APPLICATION_GROUP}")
 			.doesNotContain("myapp");
 	}
 

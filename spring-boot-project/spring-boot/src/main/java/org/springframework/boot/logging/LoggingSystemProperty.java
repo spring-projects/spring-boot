@@ -28,12 +28,12 @@ public enum LoggingSystemProperty {
 	/**
 	 * Logging system property for the application name that should be logged.
 	 */
-	APPLICATION_NAME("LOGGED_APPLICATION_NAME"),
+	APPLICATION_NAME("APPLICATION_NAME", "spring.application.name", "logging.include-application-name"),
 
 	/**
 	 * Logging system property for the application group that should be logged.
 	 */
-	APPLICATION_GROUP("LOGGED_APPLICATION_GROUP"),
+	APPLICATION_GROUP("APPLICATION_GROUP", "spring.application.group", "logging.include-application-group"),
 
 	/**
 	 * Logging system property for the process ID.
@@ -104,13 +104,20 @@ public enum LoggingSystemProperty {
 
 	private final String applicationPropertyName;
 
+	private final String includePropertyName;
+
 	LoggingSystemProperty(String environmentVariableName) {
 		this(environmentVariableName, null);
 	}
 
 	LoggingSystemProperty(String environmentVariableName, String applicationPropertyName) {
+		this(environmentVariableName, applicationPropertyName, null);
+	}
+
+	LoggingSystemProperty(String environmentVariableName, String applicationPropertyName, String includePropertyName) {
 		this.environmentVariableName = environmentVariableName;
 		this.applicationPropertyName = applicationPropertyName;
+		this.includePropertyName = includePropertyName;
 	}
 
 	/**
@@ -123,6 +130,10 @@ public enum LoggingSystemProperty {
 
 	String getApplicationPropertyName() {
 		return this.applicationPropertyName;
+	}
+
+	String getIncludePropertyName() {
+		return this.includePropertyName;
 	}
 
 }

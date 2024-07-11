@@ -52,7 +52,7 @@ class DefaultLogbackConfiguration {
 
 	private static String DEFAULT_CHARSET = Charset.defaultCharset().name();
 
-	private static String NAME_AND_GROUP = "%applicationName%applicationGroup";
+	private static final String NAME_AND_GROUP = "%esb(){APPLICATION_NAME}%esb{APPLICATION_GROUP}";
 
 	private static String DATETIME = "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}";
 
@@ -90,10 +90,10 @@ class DefaultLogbackConfiguration {
 	}
 
 	private void defaults(LogbackConfigurator config) {
-		config.conversionRule("applicationGroup", ApplicationGroupConverter.class);
-		config.conversionRule("applicationName", ApplicationNameConverter.class);
+		deprecatedDefaults(config);
 		config.conversionRule("clr", ColorConverter.class);
 		config.conversionRule("correlationId", CorrelationIdConverter.class);
+		config.conversionRule("esb", EnclosedInSquareBracketsConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
 		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
 		putProperty(config, "CONSOLE_LOG_PATTERN", CONSOLE_LOG_PATTERN);
@@ -109,7 +109,12 @@ class DefaultLogbackConfiguration {
 		config.logger("org.apache.tomcat.util.net.NioSelectorPool", Level.WARN);
 		config.logger("org.eclipse.jetty.util.component.AbstractLifeCycle", Level.ERROR);
 		config.logger("org.hibernate.validator.internal.util.Version", Level.WARN);
-		config.logger("org.springframework.boot.actuate.endpoint.jmx", Level.WARN);// @formatter:on
+		config.logger("org.springframework.boot.actuate.endpoint.jmx", Level.WARN);
+	}
+
+	@SuppressWarnings("removal")
+	private void deprecatedDefaults(LogbackConfigurator config) {
+		config.conversionRule("applicationName", ApplicationNameConverter.class);
 	}
 
 	void putProperty(LogbackConfigurator config, String name, String val) {

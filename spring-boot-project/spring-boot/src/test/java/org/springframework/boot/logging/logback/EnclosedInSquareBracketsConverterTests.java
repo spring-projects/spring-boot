@@ -17,37 +17,53 @@
 package org.springframework.boot.logging.logback;
 
 import java.util.Collections;
+import java.util.List;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.logging.LoggingSystemProperty;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ApplicationGroupConverter}.
+ * Tests for {@link EnclosedInSquareBracketsConverter}.
  *
- * @author Jakob Wanger
+ * @author Phillip Webb
+ * @author Andy Wilkinson
  */
-class ApplicationGroupConverterTests {
+class EnclosedInSquareBracketsConverterTests {
 
-	private final ApplicationGroupConverter converter;
+	private final EnclosedInSquareBracketsConverter converter;
 
 	private final LoggingEvent event = new LoggingEvent();
 
-	ApplicationGroupConverterTests() {
-		this.converter = new ApplicationGroupConverter();
+	EnclosedInSquareBracketsConverterTests() {
+		this.converter = new EnclosedInSquareBracketsConverter();
 		this.converter.setContext(new LoggerContext());
 		this.event.setLoggerContextRemoteView(
 				new LoggerContextVO("test", Collections.emptyMap(), System.currentTimeMillis()));
 	}
 
 	@Test
-	void whenNoLoggedApplicationGroupConvertReturnsEmptyString() {
-		withLoggedApplicationGroup(null, () -> {
+	void transformWhenNull() {
+		assertThat(this.converter.transform(this.event, null)).isEqualTo("");
+	}
+
+	@Test
+	void transformWhenEmpty() {
+		assertThat(this.converter.transform(this.event, "")).isEqualTo("");
+	}
+
+	@Test
+	void transformWhenName() {
+		assertThat(this.converter.transform(this.event, "My Application")).isEqualTo("[My Application] ");
+	}
+
+	@Test
+	void transformWhenEmptyFromFirstOption() {
+		withLoggedApplicationName("spring", null, () -> {
+			this.converter.setOptionList(List.of("spring"));
 			this.converter.start();
 			String converted = this.converter.convert(this.event);
 			assertThat(converted).isEqualTo("");
@@ -55,26 +71,27 @@ class ApplicationGroupConverterTests {
 	}
 
 	@Test
-	void whenLoggedApplicationGroupConvertReturnsIt() {
-		withLoggedApplicationGroup("my-application", () -> {
+	void transformWhenNameFromFirstOption() {
+		withLoggedApplicationName("spring", "boot", () -> {
+			this.converter.setOptionList(List.of("spring"));
 			this.converter.start();
 			String converted = this.converter.convert(this.event);
-			assertThat(converted).isEqualTo("my-application");
+			assertThat(converted).isEqualTo("[boot] ");
 		});
 	}
 
-	private void withLoggedApplicationGroup(String group, Runnable action) {
-		if (group == null) {
-			System.clearProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName());
+	private void withLoggedApplicationName(String name, String value, Runnable action) {
+		if (value == null) {
+			System.clearProperty(name);
 		}
 		else {
-			System.setProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName(), group);
+			System.setProperty(name, value);
 		}
 		try {
 			action.run();
 		}
 		finally {
-			System.clearProperty(LoggingSystemProperty.APPLICATION_GROUP.getEnvironmentVariableName());
+			System.clearProperty(name);
 		}
 	}
 

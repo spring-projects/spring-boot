@@ -49,6 +49,7 @@ class LoggingSystemPropertiesTests {
 		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
 			System.getProperties().remove(property.getEnvironmentVariableName());
 		}
+		System.getProperties().remove("LOGGED_APPLICATION_NAME");
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
@@ -140,7 +141,7 @@ class LoggingSystemPropertiesTests {
 	@Test
 	void loggedApplicationNameWhenHasApplicationName() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")).apply(null);
-		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isEqualTo("[test] ");
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isEqualTo("test");
 	}
 
 	@Test
@@ -157,9 +158,15 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
+	void legacyLoggedApplicationNameWhenHasApplicationName() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")).apply(null);
+		assertThat(System.getProperty("LOGGED_APPLICATION_NAME")).isEqualTo("[test] ");
+	}
+
+	@Test
 	void loggedApplicationGroupWhenHasApplicationGroup() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.group", "test")).apply(null);
-		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isEqualTo("[test] ");
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isEqualTo("test");
 	}
 
 	@Test
