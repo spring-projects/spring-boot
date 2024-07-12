@@ -7,9 +7,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   build-and-stage-release:
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
     name: Build and Stage Release
     runs-on: ubuntu-latest
+    if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
@@ -22,14 +22,14 @@ jobs:
       - name: Stage Release
         uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
         with:
-          build-name: ${{ format('spring-boot-{0}', steps.build-and-publish.outputs.version)}}
-          folder: 'deployment-repository'
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          repository: 'libs-staging-local'
-          signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           uri: 'https://repo.spring.io'
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          build-name: ${{ format('spring-boot-{0}', steps.build-and-publish.outputs.version)}}
+          repository: 'libs-staging-local'
+          folder: 'deployment-repository'
+          signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
     outputs:
       version: ${{ steps.build-and-publish.outputs.version }}
   verify:

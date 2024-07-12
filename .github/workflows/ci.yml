@@ -43,6 +43,7 @@ jobs:
         uses: ./.github/actions/build
         with:
           java-version: ${{ matrix.java.version }}
+          java-distribution: ${{ matrix.java.distribution || 'liberica' }}
           java-toolchain: ${{ matrix.java.toolchain }}
           develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
       - name: Send Notification
