@@ -25,7 +25,7 @@ jobs:
           uri: 'https://repo.spring.io'
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          build-name: ${{ format('spring-boot-{0}', github.ref_name)}}
+          build-name: 'spring-boot-3.2.x'
           repository: 'libs-snapshot-local'
           folder: 'deployment-repository'
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}

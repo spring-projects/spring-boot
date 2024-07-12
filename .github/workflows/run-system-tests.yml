@@ -2,7 +2,7 @@ name: Run System Tests
 on:
   push:
     branches:
-      - 3.2.x
+      - '3.2.x'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
