@@ -210,6 +210,7 @@ class GsonAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	void withoutLenient() {
 		this.contextRunner.run((context) -> {
 			Gson gson = context.getBean(Gson.class);
@@ -218,6 +219,7 @@ class GsonAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	void withLenientTrue() {
 		this.contextRunner.withPropertyValues("spring.gson.lenient:true").run((context) -> {
 			Gson gson = context.getBean(Gson.class);
@@ -226,10 +228,43 @@ class GsonAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	void withLenientFalse() {
 		this.contextRunner.withPropertyValues("spring.gson.lenient:false").run((context) -> {
 			Gson gson = context.getBean(Gson.class);
+			assertThat(gson).hasFieldOrPropertyWithValue("strictness", Strictness.STRICT);
+		});
+	}
+
+	@Test
+	void withoutStrictness() {
+		this.contextRunner.run((context) -> {
+			Gson gson = context.getBean(Gson.class);
 			assertThat(gson).hasFieldOrPropertyWithValue("strictness", null);
+		});
+	}
+
+	@Test
+	void withStrictnessStrict() {
+		this.contextRunner.withPropertyValues("spring.gson.strictness:strict").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson).hasFieldOrPropertyWithValue("strictness", Strictness.STRICT);
+		});
+	}
+
+	@Test
+	void withStrictnessLegacyStrict() {
+		this.contextRunner.withPropertyValues("spring.gson.strictness:legacy-strict").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson).hasFieldOrPropertyWithValue("strictness", Strictness.LEGACY_STRICT);
+		});
+	}
+
+	@Test
+	void withStrictnessLenient() {
+		this.contextRunner.withPropertyValues("spring.gson.strictness:lenient").run((context) -> {
+			Gson gson = context.getBean(Gson.class);
+			assertThat(gson).hasFieldOrPropertyWithValue("strictness", Strictness.LENIENT);
 		});
 	}
 
