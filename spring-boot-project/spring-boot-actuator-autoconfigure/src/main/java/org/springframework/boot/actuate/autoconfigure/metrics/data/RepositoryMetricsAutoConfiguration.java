@@ -72,7 +72,7 @@ public class RepositoryMetricsAutoConfiguration {
 	}
 
 	@Bean
-	public static MetricsRepositoryMethodInvocationListenerBeanPostProcessor metricsRepositoryMethodInvocationListenerBeanPostProcessor(
+	public MetricsRepositoryMethodInvocationListenerBeanPostProcessor metricsRepositoryMethodInvocationListenerBeanPostProcessor(
 			ObjectProvider<MetricsRepositoryMethodInvocationListener> metricsRepositoryMethodInvocationListener) {
 		return new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
 				SingletonSupplier.of(metricsRepositoryMethodInvocationListener::getObject));
