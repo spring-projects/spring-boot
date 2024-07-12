@@ -171,6 +171,7 @@ dependencies {
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework:spring-orm")
+	testImplementation("org.springframework:spring-test")
 	testImplementation("org.springframework.data:spring-data-rest-webmvc")
 	testImplementation("org.springframework.integration:spring-integration-jmx")
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")

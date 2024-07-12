@@ -40,6 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 @ExtendWith(SpringExtension.class)
 class SpyBeanOnTestFieldForExistingGenericBeanProducedByFactoryBeanIntegrationTests {
 

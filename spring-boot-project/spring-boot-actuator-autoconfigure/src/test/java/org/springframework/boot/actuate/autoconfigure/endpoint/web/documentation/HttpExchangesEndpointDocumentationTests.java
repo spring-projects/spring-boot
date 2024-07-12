@@ -35,12 +35,12 @@ import org.springframework.boot.actuate.web.exchanges.HttpExchangesEndpoint;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpResponse;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -56,7 +56,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
  */
 class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	@MockBean
+	@MockitoBean
 	private HttpExchangeRepository repository;
 
 	@Test

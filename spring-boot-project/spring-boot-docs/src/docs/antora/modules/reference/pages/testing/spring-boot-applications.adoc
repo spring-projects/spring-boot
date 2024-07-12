@@ -247,38 +247,9 @@ When running tests, it is sometimes necessary to mock certain components within 
 For example, you may have a facade over some remote service that is unavailable during development.
 Mocking can also be useful when you want to simulate failures that might be hard to trigger in a real environment.
 
-Spring Boot includes a `@MockBean` annotation that can be used to define a Mockito mock for a bean inside your `ApplicationContext`.
-You can use the annotation to add new beans or replace a single existing bean definition.
-The annotation can be used directly on test classes, on fields within your test, or on `@Configuration` classes and fields.
-When used on a field, the instance of the created mock is also injected.
-Mock beans are automatically reset after each test method.
-
-[NOTE]
-====
-If your test uses one of Spring Boot's test annotations (such as `@SpringBootTest`), this feature is automatically enabled.
-To use this feature with a different arrangement, listeners must be explicitly added, as shown in the following example:
-
-include-code::listener/MyTests[]
-====
-
-The following example replaces an existing `RemoteService` bean with a mock implementation:
-
-include-code::bean/MyTests[]
-
-NOTE: `@MockBean` cannot be used to mock the behavior of a bean that is exercised during application context refresh.
-By the time the test is executed, the application context refresh has completed and it is too late to configure the mocked behavior.
-We recommend using a `@Bean` method to create and configure the mock in this situation.
-
-Additionally, you can use `@SpyBean` to wrap any existing bean with a Mockito `spy`.
-See the xref:api:java/org/springframework/boot/test/mock/mockito/SpyBean.html[`SpyBean`] API documentation for full details.
-
-NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
-
-TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.
-This ensures that the parameter names are available to the caching infrastructure once the bean has been spied upon.
-
-TIP: When you are using `@SpyBean` to spy on a bean that is proxied by Spring, you may need to remove Spring's proxy in some situations, for example when setting expectations using `given` or `when`.
-Use `AopTestUtils.getTargetObject(yourProxiedSpy)` to do so.
+Spring Framework includes a `@MockitoBean` annotation that can be used to define a Mockito mock for a bean inside your `ApplicationContext`.
+Additionally, `@MockitoSpyBean` can be used to define a Mockito spy.
+Learn more about these features in the {url-spring-framework-docs}/testing/annotations/integration-spring/annotation-mockitobean.html[Spring Framework documentation].
 
 
 

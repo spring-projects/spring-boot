@@ -55,6 +55,7 @@ dependencies {
 	testImplementation("org.spockframework:spock-core")
 	testImplementation("org.springframework:spring-webmvc")
 	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.springframework:spring-test")
 	testImplementation("org.testng:testng")
 
 	testRuntimeOnly("org.junit.vintage:junit-vintage-engine")

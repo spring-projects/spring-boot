@@ -54,13 +54,13 @@ import org.quartz.spi.OperableTrigger;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.scheduling.quartz.DelegatingJob;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -178,7 +178,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				.type(JsonFieldType.OBJECT)
 				.description("Job data map keyed by name, if any.") };
 
-	@MockBean
+	@MockitoBean
 	private Scheduler scheduler;
 
 	@Test

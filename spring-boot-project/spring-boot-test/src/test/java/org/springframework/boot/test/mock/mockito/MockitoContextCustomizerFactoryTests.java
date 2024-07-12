@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 class MockitoContextCustomizerFactoryTests {
 
 	private final MockitoContextCustomizerFactory factory = new MockitoContextCustomizerFactory();
@@ -60,16 +62,19 @@ class MockitoContextCustomizerFactoryTests {
 
 	}
 
+	@SuppressWarnings("removal")
 	@MockBean({ Service1.class, Service2.class })
 	static class WithMockBeanAnnotation {
 
 	}
 
+	@SuppressWarnings("removal")
 	@MockBean({ Service2.class, Service1.class })
 	static class WithSameMockBeanAnnotation {
 
 	}
 
+	@SuppressWarnings("removal")
 	@MockBean({ Service1.class })
 	static class WithDifferentMockBeanAnnotation {
 

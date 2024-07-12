@@ -50,6 +50,8 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Moritz Halbritter
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 @ExtendWith(SpringExtension.class)
 class MockitoTestExecutionListenerIntegrationTests {
 

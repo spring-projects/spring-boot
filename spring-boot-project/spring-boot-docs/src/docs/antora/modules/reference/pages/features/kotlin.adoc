@@ -145,7 +145,7 @@ JUnit 5 enables a test class to be instantiated once and reused for all of the c
 This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
-If you need the `MockK` equivalent of the Mockito specific xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[`@MockBean` and `@SpyBean` annotations], you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
+If you need the `MockK` equivalent of the Mockito specific xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[`@MockitoBean` and `@MockitoSpyBean` annotations], you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
 
 
 

@@ -34,6 +34,8 @@ import static org.mockito.BDDMockito.then;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
