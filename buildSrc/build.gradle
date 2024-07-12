@@ -22,7 +22,7 @@ new File(projectDir.parentFile, "gradle.properties").withInputStream {
 	}
 }
 versions["jackson"] = "2.15.3"
-versions["springFramework"] = "6.2.0-SNAPSHOT"
+versions["springFramework"] = "6.0.12"
 ext.set("versions", versions)
 if (versions.springFramework.contains("-")) {
 	repositories {

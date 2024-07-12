@@ -42,6 +42,8 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 @ExtendWith(MockitoExtension.class)
 class MockitoTestExecutionListenerTests {
 

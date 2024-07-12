@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,9 @@ import org.springframework.core.annotation.MergedAnnotations;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @see Definition
- * @deprecated since 3.4.0. See {@link SpyBean} and {@link MockBean} for more details.
  */
-
-@Deprecated(since = "3.4.0")
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 class QualifierDefinition {
 
 	private final Field field;

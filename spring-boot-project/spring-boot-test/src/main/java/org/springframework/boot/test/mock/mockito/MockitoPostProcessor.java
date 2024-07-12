@@ -57,6 +57,8 @@ import org.springframework.core.Conventions;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.ResolvableType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -76,9 +78,10 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Andreas Neiser
  * @since 1.4.0
- * @deprecated since 3.4.0 in favor of
- * {@link org.springframework.test.bean.override.BeanOverrideBeanPostProcessor}
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * {@link MockitoBean} and {@link MockitoSpyBean} support
  */
+@SuppressWarnings("removal")
 @Deprecated(since = "3.4.0")
 public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor, BeanClassLoaderAware,
 		BeanFactoryAware, BeanFactoryPostProcessor, Ordered {
@@ -423,7 +426,7 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 			RootBeanDefinition definition = new RootBeanDefinition(postProcessor);
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			ConstructorArgumentValues constructorArguments = definition.getConstructorArgumentValues();
-			constructorArguments.addIndexedArgumentValue(0, new LinkedHashSet<MockDefinition>());
+			constructorArguments.addIndexedArgumentValue(0, new LinkedHashSet<>());
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 			return definition;
 		}
