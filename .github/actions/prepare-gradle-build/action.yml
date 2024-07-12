@@ -5,9 +5,13 @@ inputs:
     required: false
     default: '17'
     description: 'The Java version to use for the build'
+  java-distribution:
+    required: false
+    default: 'liberica'
+    description: 'The Java distribution to use for the build'
   java-toolchain:
     required: false
-    default: false
+    default: 'false'
     description: 'Whether a Java toolchain should be used'
   develocity-access-key:
     required: false
@@ -23,7 +27,7 @@ runs:
     - name: Set Up Java
       uses: actions/setup-java@v4
       with:
-        distribution: 'liberica'
+        distribution: ${{ inputs.java-distribution }}
         java-version: |
           ${{ inputs.java-version }}
           ${{ inputs.java-toolchain == 'true' && '17' || '' }}
