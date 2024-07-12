@@ -73,11 +73,15 @@ dependencies {
 	optional("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
+	optional("org.messaginghub:pooled-jms") {
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+	}
 	optional("org.postgresql:postgresql")
 	optional("org.slf4j:jul-to-slf4j")
 	optional("org.slf4j:slf4j-api")
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-orm")
+	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-oxm")
 	optional("org.springframework:spring-r2dbc")
 	optional("org.springframework:spring-test")

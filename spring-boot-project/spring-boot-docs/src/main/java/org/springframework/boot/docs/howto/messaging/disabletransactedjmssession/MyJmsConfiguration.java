@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.docs.howto.messaging.disabletransactedjmssessio
 import jakarta.jms.ConnectionFactory;
 
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
+import org.springframework.boot.jms.ConnectionFactoryUnwrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -30,7 +31,7 @@ public class MyJmsConfiguration {
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
 			DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory listenerFactory = new DefaultJmsListenerContainerFactory();
-		configurer.configure(listenerFactory, connectionFactory);
+		configurer.configure(listenerFactory, ConnectionFactoryUnwrapper.unwrap(connectionFactory));
 		listenerFactory.setTransactionManager(null);
 		listenerFactory.setSessionTransacted(false);
 		return listenerFactory;

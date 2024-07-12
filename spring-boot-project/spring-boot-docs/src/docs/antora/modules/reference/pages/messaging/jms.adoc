@@ -144,6 +144,10 @@ When the JMS infrastructure is present, any bean can be annotated with `@JmsList
 If no `JmsListenerContainerFactory` has been defined, a default one is configured automatically.
 If a `DestinationResolver`, a `MessageConverter`, or a `jakarta.jms.ExceptionListener` beans are defined, they are associated automatically with the default factory.
 
+In most scenarios, message listener containers should be configured against the native `ConnectionFactory`.
+This way each listener container has its own connection and this gives full responsibility to it in terms of local recovery.
+The auto-configuration uses `ConnectionFactoryUnwrapper` to unwrap the native connection factory from the auto-configured one.
+
 By default, the default factory is transactional.
 If you run in an infrastructure where a `JtaTransactionManager` is present, it is associated to the listener container by default.
 If not, the `sessionTransacted` flag is enabled.
@@ -162,6 +166,8 @@ If you need to create more `JmsListenerContainerFactory` instances or if you wan
 For instance, the following example exposes another factory that uses a specific `MessageConverter`:
 
 include-code::custom/MyJmsConfiguration[]
+
+NOTE: In the example above, the customization uses `ConnectionFactoryUnwrapper` to associate the native connection factory to the message listener container the same way the auto-configured factory does.
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
 
