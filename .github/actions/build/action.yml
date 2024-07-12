@@ -5,13 +5,17 @@ inputs:
     required: false
     default: '17'
     description: 'The Java version to compile and test with'
+  java-distribution:
+    required: false
+    default: 'liberica'
+    description: 'The Java distribution to use for the build'
   java-toolchain:
     required: false
-    default: false
+    default: 'false'
     description: 'Whether a Java toolchain should be used'
   publish:
     required: false
-    default: false
+    default: 'false'
     description: 'Whether to publish artifacts ready for deployment to Artifactory'
   develocity-access-key:
     required: false
@@ -31,6 +35,7 @@ runs:
       with:
         develocity-access-key: ${{ inputs.develocity-access-key }}
         java-version: ${{ inputs.java-version }}
+        java-distribution: ${{ inputs.java-distribution }}
         java-toolchain: ${{ inputs.java-toolchain }}
     - name: Build
       id: build

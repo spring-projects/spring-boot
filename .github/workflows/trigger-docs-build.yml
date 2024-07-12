@@ -16,8 +16,8 @@ permissions:
 jobs:
   trigger-docs-build:
     name: Trigger Docs Build
-    if: github.repository_owner == 'spring-projects'
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'spring-projects'
     steps:
     - name: Check Out
       uses: actions/checkout@v4
