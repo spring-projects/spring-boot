@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.model.RootLoggerModel;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.Layout;
@@ -61,6 +62,7 @@ import org.springframework.boot.logging.logback.SpringBootJoranConfigurator.Logb
 import org.springframework.core.io.InputStreamSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link LogbackConfigurationAotContribution}.
@@ -91,6 +93,37 @@ class LogbackConfigurationAotContributionTests {
 		Properties patternRules = load(
 				generatedFiles.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
 		assertThat(patternRules).isEmpty();
+	}
+
+	@Test
+	void contributionOfBasicModelThatMatchesExistingModel() {
+		TestGenerationContext generationContext = new TestGenerationContext();
+		Model model = new Model();
+		applyContribution(model, generationContext);
+		applyContribution(model, generationContext);
+		InMemoryGeneratedFiles generatedFiles = generationContext.getGeneratedFiles();
+		assertThat(generatedFiles).has(resource("META-INF/spring/logback-model"));
+		assertThat(generatedFiles).has(resource("META-INF/spring/logback-pattern-rules"));
+		SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
+		assertThat(serializationHints.javaSerializationHints()
+			.map(JavaSerializationHint::getType)
+			.map(TypeReference::getName))
+			.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
+		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
+		Properties patternRules = load(
+				generatedFiles.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
+		assertThat(patternRules).isEmpty();
+	}
+
+	@Test
+	void contributionOfBasicModelThatDiffersFromExistingModelThrows() {
+		TestGenerationContext generationContext = new TestGenerationContext();
+		applyContribution(new Model(), generationContext);
+		Model model = new Model();
+		model.addSubModel(new RootLoggerModel());
+		assertThatIllegalStateException().isThrownBy(() -> applyContribution(model, generationContext))
+			.withMessage("Logging configuration differs from the configuration that has already been written. "
+					+ "Update your logging configuration so that it is the same for each context");
 	}
 
 	@Test
@@ -238,6 +271,18 @@ class LogbackConfigurationAotContributionTests {
 	}
 
 	private TestGenerationContext applyContribution(Model model, Consumer<LoggerContext> contextCustomizer) {
+		TestGenerationContext generationContext = new TestGenerationContext();
+		applyContribution(model, contextCustomizer, generationContext);
+		return generationContext;
+	}
+
+	private void applyContribution(Model model, TestGenerationContext generationContext) {
+		applyContribution(model, (context) -> {
+		}, generationContext);
+	}
+
+	private void applyContribution(Model model, Consumer<LoggerContext> contextCustomizer,
+			TestGenerationContext generationContext) {
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		contextCustomizer.accept(context);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(null);
@@ -245,9 +290,7 @@ class LogbackConfigurationAotContributionTests {
 		withSystemProperty("spring.aot.processing", "true", () -> configurator.processModel(model));
 		LogbackConfigurationAotContribution contribution = (LogbackConfigurationAotContribution) context
 			.getObject(BeanFactoryInitializationAotContribution.class.getName());
-		TestGenerationContext generationContext = new TestGenerationContext();
 		contribution.applyTo(generationContext, null);
-		return generationContext;
 	}
 
 	private String[] namesOf(Class<?>... types) {
