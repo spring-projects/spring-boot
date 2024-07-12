@@ -81,6 +81,9 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 
 	@Override
 	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
+		if (candidate instanceof MultipleComponentsDependencyVersion) {
+			return super.isUpgrade(candidate, movingToSnapshots);
+		}
 		if (!(candidate instanceof ArtifactVersionDependencyVersion)) {
 			return false;
 		}
