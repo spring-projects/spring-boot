@@ -97,7 +97,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LEVELS.map(LogLevel.OFF, Level.OFF);
 	}
 
-	private static final TurboFilter FILTER = new TurboFilter() {
+	private static final TurboFilter SUPPRESS_ALL_FILTER = new TurboFilter() {
 
 		@Override
 		public FilterReply decide(Marker marker, ch.qos.logback.classic.Logger logger, Level level, String format,
@@ -131,7 +131,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		super.beforeInitialize();
 		configureJdkLoggingBridgeHandler();
-		loggerContext.getTurboFilterList().add(FILTER);
+		loggerContext.getTurboFilterList().add(SUPPRESS_ALL_FILTER);
 	}
 
 	private void configureJdkLoggingBridgeHandler() {
@@ -193,7 +193,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			super.initialize(initializationContext, configLocation, logFile);
 		}
 		loggerContext.putObject(Environment.class.getName(), initializationContext.getEnvironment());
-		loggerContext.getTurboFilterList().remove(FILTER);
+		loggerContext.getTurboFilterList().remove(SUPPRESS_ALL_FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
 			getLogger(LogbackLoggingSystem.class.getName()).warn("Ignoring '" + CONFIGURATION_FILE_PROPERTY
@@ -329,7 +329,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			removeJdkLoggingBridgeHandler();
 		}
 		context.getStatusManager().clear();
-		context.getTurboFilterList().remove(FILTER);
+		context.getTurboFilterList().remove(SUPPRESS_ALL_FILTER);
 	}
 
 	@Override
@@ -467,12 +467,12 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void withLoggingSuppressed(Runnable action) {
 		TurboFilterList turboFilters = getLoggerContext().getTurboFilterList();
-		turboFilters.add(FILTER);
+		turboFilters.add(SUPPRESS_ALL_FILTER);
 		try {
 			action.run();
 		}
 		finally {
-			turboFilters.remove(FILTER);
+			turboFilters.remove(SUPPRESS_ALL_FILTER);
 		}
 	}
 
