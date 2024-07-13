@@ -53,6 +53,13 @@ final class CycloneDxPluginAction implements PluginApplicationAction {
 		configureCycloneDxTask(cycloneDxTaskProvider);
 		configureJavaPlugin(project, cycloneDxTaskProvider);
 		configureSpringBootPlugin(project, cycloneDxTaskProvider);
+		configureNormalization(project, cycloneDxTaskProvider);
+	}
+
+	private void configureNormalization(Project project, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
+		Provider<String> sbomPath = cycloneDxTaskProvider.map(this::getMetaInfSbomPath);
+		project.normalization((normalization) -> normalization
+			.runtimeClasspath((runtimeClasspathNormalization) -> runtimeClasspathNormalization.ignore(sbomPath.get())));
 	}
 
 	private void configureCycloneDxTask(TaskProvider<CycloneDxTask> taskProvider) {
@@ -70,8 +77,7 @@ final class CycloneDxPluginAction implements PluginApplicationAction {
 			SourceSet main = javaPluginExtension.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 			configureTask(project, main.getProcessResourcesTaskName(), Copy.class, (copy) -> {
 				copy.dependsOn(cycloneDxTaskProvider);
-				Provider<String> sbomFileName = cycloneDxTaskProvider
-					.map((cycloneDxTask) -> cycloneDxTask.getOutputName().get() + getSbomExtension(cycloneDxTask));
+				Provider<String> sbomFileName = cycloneDxTaskProvider.map(this::getSbomFilename);
 				copy.from(cycloneDxTaskProvider, (spec) -> spec.include(sbomFileName.get()).into("META-INF/sbom"));
 			});
 		});
@@ -103,12 +109,19 @@ final class CycloneDxPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureJarTask(Jar task, TaskProvider<CycloneDxTask> cycloneDxTaskProvider) {
-		Provider<String> sbomFileName = cycloneDxTaskProvider.map((cycloneDxTask) -> "META-INF/sbom/"
-				+ cycloneDxTask.getOutputName().get() + getSbomExtension(cycloneDxTask));
+		Provider<String> sbomFileName = cycloneDxTaskProvider.map(this::getMetaInfSbomPath);
 		task.manifest((manifest) -> {
 			manifest.getAttributes().put("Sbom-Format", "CycloneDX");
 			manifest.getAttributes().put("Sbom-Location", sbomFileName);
 		});
+	}
+
+	private String getMetaInfSbomPath(CycloneDxTask cycloneDxTask) {
+		return "META-INF/sbom/" + getSbomFilename(cycloneDxTask);
+	}
+
+	private String getSbomFilename(CycloneDxTask cycloneDxTask) {
+		return cycloneDxTask.getOutputName().get() + getSbomExtension(cycloneDxTask);
 	}
 
 	private String getSbomExtension(CycloneDxTask task) {
