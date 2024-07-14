@@ -16,7 +16,8 @@
 
 /**
  * Mockito integration for Spring Boot tests.
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * <p>
+ * Deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
  * {@link org.springframework.test.context.bean.override.mockito.MockitoBean} and
  * {@link org.springframework.test.context.bean.override.mockito.MockitoSpyBean}
  */
