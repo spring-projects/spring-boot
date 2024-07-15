@@ -17,6 +17,7 @@ include-code::Nested[]
 
 The example above produces configuration properties for `my.properties.name` and `my.properties.nested.number`.
 Without the `@NestedConfigurationProperty` annotation on the `nested` field, the `my.properties.nested.number` property would not be bindable in a native image.
+You can also annotate the getter method.
 
 When using constructor binding, you have to annotate the field with `@NestedConfigurationProperty`:
 

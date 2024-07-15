@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.specific;
+package org.springframework.boot.configurationsample.method;
 
-/**
- * POJO for use with samples needing a deprecated value.
- *
- * @author Jared Bates
- */
-public class DeprecatedSimplePojo {
+public class NestedProperty {
 
-	private int value;
+	private String myNestedProperty;
 
-	@Deprecated
-	public int getValue() {
-		return this.value;
+	public String getMyNestedProperty() {
+		return this.myNestedProperty;
 	}
 
-	public void setValue(int value) {
-		this.value = value;
+	public void setMyNestedProperty(String myNestedProperty) {
+		this.myNestedProperty = myNestedProperty;
 	}
 
 }
