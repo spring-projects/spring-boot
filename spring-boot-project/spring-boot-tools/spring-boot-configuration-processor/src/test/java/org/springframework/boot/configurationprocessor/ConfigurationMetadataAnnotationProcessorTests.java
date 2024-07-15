@@ -22,6 +22,7 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.deprecation.Dbcp2Configuration;
+import org.springframework.boot.configurationsample.method.NestedPropertiesMethod;
 import org.springframework.boot.configurationsample.record.ExampleRecord;
 import org.springframework.boot.configurationsample.record.NestedPropertiesRecord;
 import org.springframework.boot.configurationsample.record.RecordWithGetter;
@@ -45,6 +46,7 @@ import org.springframework.boot.configurationsample.specific.AnnotatedGetter;
 import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedLessPreciseTypePojo;
+import org.springframework.boot.configurationsample.specific.DeprecatedSimplePojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.EmptyDefaultValueProperties;
@@ -336,6 +338,10 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("config.third.value"));
 		assertThat(metadata).has(Metadata.withProperty("config.fourth"));
 		assertThat(metadata).isNotEqualTo(Metadata.withGroup("config.fourth"));
+		assertThat(metadata).has(Metadata.withGroup("config.fifth")
+			.ofType(DeprecatedSimplePojo.class)
+			.fromSource(InnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withProperty("config.fifth.value").withDeprecation());
 	}
 
 	@Test
@@ -356,6 +362,15 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("specific.value"));
 		assertThat(metadata).has(Metadata.withProperty("foo.name"));
 		assertThat(metadata).isNotEqualTo(Metadata.withProperty("specific.foo"));
+	}
+
+	@Test
+	void nestedClassMethod() {
+		ConfigurationMetadata metadata = compile(NestedPropertiesMethod.class);
+		assertThat(metadata).has(Metadata.withGroup("method-nested.nested"));
+		assertThat(metadata).has(Metadata.withProperty("method-nested.nested.my-nested-property"));
+		assertThat(metadata).has(Metadata.withGroup("method-nested.inner.nested"));
+		assertThat(metadata).has(Metadata.withProperty("method-nested.inner.nested.my-nested-property"));
 	}
 
 	@Test

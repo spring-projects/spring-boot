@@ -130,7 +130,7 @@ Consider the updated example:
 include-code::MyServerProperties[]
 
 The preceding example produces metadata information for `my.server.name`, `my.server.host.ip`, and `my.server.host.port` properties.
-You can use the `@NestedConfigurationProperty` annotation on a field to indicate that a regular (non-inner) class should be treated as if it were nested.
+You can use the `@NestedConfigurationProperty` annotation on a field or a getter method to indicate that a regular (non-inner) class should be treated as if it were nested.
 
 TIP: This has no effect on collections and maps, as those types are automatically identified, and a single metadata property is generated for each of them.
 
