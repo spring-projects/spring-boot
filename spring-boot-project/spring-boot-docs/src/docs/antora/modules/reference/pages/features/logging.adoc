@@ -366,6 +366,14 @@ The properties that are transferred are described in the following table:
 | `LOG_LEVEL_PATTERN`
 | The format to use when rendering the log level (default `%5p`).
 
+| configprop:logging.structured.format.console[]
+| `CONSOLE_LOG_STRUCTURED_FORMAT`
+| The structured logging format to use for console logging.
+
+| configprop:logging.structured.format.file[]
+| `FILE_LOG_STRUCTURED_FORMAT`
+| The structured logging format to use for file logging.
+
 | `PID`
 | `PID`
 | The current process ID (discovered if possible and when not already defined as an OS environment variable).
@@ -422,6 +430,94 @@ For example, if you use `logging.pattern.level=user:%X\{user} %5p`, then the def
 Handling authenticated request
 ----
 ====
+
+
+
+[[features.logging.structured]]
+== Structured Logging
+
+Structured logging is a technique where the log output is written in a well-defined, often machine-readable format.
+Spring Boot supports structured logging and has support for the following formats out of the box:
+
+* xref:#features.logging.structured.ecs[Elastic Common Schema (ECS)]
+* xref:#features.logging.structured.logstash[Logstash]
+
+To enable structured logging, set the property configprop:logging.structured.format.console[] (for console output) or configprop:logging.structured.format.file[] (for file output) to the id of the format you want to use.
+
+
+
+[[features.logging.structured.ecs]]
+=== Elastic Common Schema
+https://www.elastic.co/guide/en/ecs/8.11/ecs-reference.html[Elastic Common Schema] is a JSON based logging format.
+
+To enable the Elastic Common Schema log format, set the appropriate `format` property to `ecs`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    format:
+      console: ecs
+      file: ecs
+----
+
+A log line looks like this:
+
+[source,json]
+----
+{"@timestamp":"2024-01-01T10:15:00.067462556Z","log.level":"INFO","process.pid":39599,"process.thread.name":"main","service.name":"simple","log.logger":"org.example.Application","message":"No active profile set, falling back to 1 default profile: \"default\"","ecs.version":"8.11"}
+----
+
+This format also adds every key value pair contained in the MDC to the JSON object.
+You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
+
+
+
+[[features.logging.structured.logstash]]
+=== Logstash JSON format
+
+The https://github.com/logfellow/logstash-logback-encoder?tab=readme-ov-file#standard-fields[Logstash JSON format] is a JSON based logging format.
+
+To enable the Logstash JSON log format, set the appropriate `format` property to `logstash`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    format:
+      console: logstash
+      file: logstash
+----
+
+A log line looks like this:
+
+[source,json]
+----
+{"@timestamp":"2024-01-01T10:15:00.111037681+02:00","@version":"1","message":"No active profile set, falling back to 1 default profile: \"default\"","logger_name":"org.example.Application","thread_name":"main","level":"INFO","level_value":20000}
+----
+
+This format also adds every key value pair contained in the MDC to the JSON object.
+You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
+
+If you add https://www.slf4j.org/api/org/slf4j/Marker.html[markers], these will show up in a `tags` string array in the JSON.
+
+
+
+[[features.logging.structured.custom-format]]
+=== Custom Structured Logging formats
+
+The structured logging support in Spring Boot is extensible, allowing you to define your own custom format.
+To do this, implement the `StructuredLoggingFormatter` interface. The generic type argument has to be `ILoggingEvent` when using Logback and `LogEvent` when using Log4j2 (that means your implementation is tied to a specific logging system).
+Your implementation is then called with the log event and returns the `String` to be logged, as seen in this example:
+
+include-code::MyCustomFormat[]
+
+As you can see in the example, you can return any format, it doesn't have to be JSON.
+
+To enable your custom format, set the property configprop:logging.structured.format.console[] or configprop:logging.structured.format.file[] to the fully qualified class name of your implementation.
+
+Your implementation can use some constructor parameters, which are injected automatically.
+Please see the JavaDoc of xref:api:java/org/springframework/boot/logging/structured/StructuredLogFormatter.html[`StructuredLogFormatter`] for more details.
 
 
 

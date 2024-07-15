@@ -9,7 +9,14 @@
 	</Properties>
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
-			<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+			<Select>
+				<SystemPropertyArbiter propertyName="CONSOLE_LOG_STRUCTURED_FORMAT">
+					<StructuredLogLayout format="${sys:CONSOLE_LOG_STRUCTURED_FORMAT}" charset="${sys:CONSOLE_LOG_CHARSET}" pid="${sys:PID:--1}" serviceName="${sys:APPLICATION_NAME:-}"/>
+				</SystemPropertyArbiter>
+				<DefaultArbiter>
+					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
+				</DefaultArbiter>
+			</Select>
 			<filters>
 				<ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
 			</filters>

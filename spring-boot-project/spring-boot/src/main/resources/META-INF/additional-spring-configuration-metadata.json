@@ -224,6 +224,16 @@
       "defaultValue": true
     },
     {
+      "name": "logging.structured.format.console",
+      "type": "java.lang.String",
+      "description": "Structured logging format for output to the console. Must be either a format id or a fully qualified class name."
+    },
+    {
+      "name": "logging.structured.format.file",
+      "type": "java.lang.String",
+      "description": "Structured logging format for output to a file. Must be either a format id or a fully qualified class name."
+    },
+    {
       "name": "logging.threshold.console",
       "type": "java.lang.String",
       "description": "Log level threshold for console output.",

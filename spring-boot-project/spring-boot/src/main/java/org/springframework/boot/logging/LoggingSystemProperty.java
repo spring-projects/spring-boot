@@ -86,6 +86,18 @@ public enum LoggingSystemProperty {
 	FILE_PATTERN("FILE_LOG_PATTERN", "logging.pattern.file"),
 
 	/**
+	 * Logging system property for the console structured logging format.
+	 * @since 3.4.0
+	 */
+	CONSOLE_STRUCTURED_FORMAT("CONSOLE_LOG_STRUCTURED_FORMAT", "logging.structured.format.console"),
+
+	/**
+	 * Logging system property for the file structured logging format.
+	 * @since 3.4.0
+	 */
+	FILE_STRUCTURED_FORMAT("FILE_LOG_STRUCTURED_FORMAT", "logging.structured.format.file"),
+
+	/**
 	 * Logging system property for the log level pattern.
 	 */
 	LEVEL_PATTERN("LOG_LEVEL_PATTERN", "logging.pattern.level"),

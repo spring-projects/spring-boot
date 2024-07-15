@@ -558,6 +558,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH", "LOGGED_APPLICATION_NAME", "LOGGED_APPLICATION_GROUP"));
 		expectedProperties.add("org.jboss.logging.provider");
 		expectedProperties.add("LOG_CORRELATION_PATTERN");
+		expectedProperties.add("CONSOLE_LOG_STRUCTURED_FORMAT");
+		expectedProperties.add("FILE_LOG_STRUCTURED_FORMAT");
 		assertThat(properties).containsOnlyKeys(expectedProperties);
 		assertThat(properties).containsEntry("CONSOLE_LOG_CHARSET", Charset.defaultCharset().name());
 	}

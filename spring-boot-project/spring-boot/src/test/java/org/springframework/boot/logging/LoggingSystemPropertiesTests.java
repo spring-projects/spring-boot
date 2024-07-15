@@ -197,6 +197,22 @@ class LoggingSystemPropertiesTests {
 			.isEqualTo("OFF");
 	}
 
+	@Test
+	void shouldSetFileStructuredLogging() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.structured.format.file", "ecs"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.FILE_STRUCTURED_FORMAT.getEnvironmentVariableName()))
+			.isEqualTo("ecs");
+	}
+
+	@Test
+	void shouldSetConsoleStructuredLogging() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.structured.format.console", "ecs"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getEnvironmentVariableName()))
+			.isEqualTo("ecs");
+	}
+
 	private Environment environment(String key, Object value) {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addLast(new MapPropertySource("test", Collections.singletonMap(key, value)));

@@ -24,6 +24,8 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.OutputStreamAppender;
+import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.spi.ScanException;
@@ -34,6 +36,7 @@ import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.boot.logging.LogFile;
+import org.springframework.util.StringUtils;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -47,6 +50,7 @@ import org.springframework.boot.logging.LogFile;
  * @author Robert Thornton
  * @author Scott Frederick
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  */
 class DefaultLogbackConfiguration {
 
@@ -99,9 +103,11 @@ class DefaultLogbackConfiguration {
 		putProperty(config, "CONSOLE_LOG_PATTERN", CONSOLE_LOG_PATTERN);
 		putProperty(config, "CONSOLE_LOG_CHARSET", "${CONSOLE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
 		putProperty(config, "CONSOLE_LOG_THRESHOLD", "${CONSOLE_LOG_THRESHOLD:-TRACE}");
+		putProperty(config, "CONSOLE_LOG_STRUCTURED_FORMAT", "${CONSOLE_LOG_STRUCTURED_FORMAT:-}");
 		putProperty(config, "FILE_LOG_PATTERN", FILE_LOG_PATTERN);
 		putProperty(config, "FILE_LOG_CHARSET", "${FILE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
 		putProperty(config, "FILE_LOG_THRESHOLD", "${FILE_LOG_THRESHOLD:-TRACE}");
+		putProperty(config, "FILE_LOG_STRUCTURED_FORMAT", "${FILE_LOG_STRUCTURED_FORMAT:-}");
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -123,34 +129,57 @@ class DefaultLogbackConfiguration {
 
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
-		ThresholdFilter filter = new ThresholdFilter();
-		filter.setLevel(resolve(config, "${CONSOLE_LOG_THRESHOLD}"));
-		filter.start();
-		appender.addFilter(filter);
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(resolve(config, "${CONSOLE_LOG_PATTERN}"));
-		encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
-		config.start(encoder);
-		appender.setEncoder(encoder);
+		createAppender(config, appender, "CONSOLE");
 		config.appender("CONSOLE", appender);
 		return appender;
 	}
 
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
-		ThresholdFilter filter = new ThresholdFilter();
-		filter.setLevel(resolve(config, "${FILE_LOG_THRESHOLD}"));
-		filter.start();
-		appender.addFilter(filter);
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(resolve(config, "${FILE_LOG_PATTERN}"));
-		encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
-		appender.setEncoder(encoder);
-		config.start(encoder);
+		createAppender(config, appender, "FILE");
 		appender.setFile(logFile);
 		setRollingPolicy(appender, config);
 		config.appender("FILE", appender);
 		return appender;
+	}
+
+	private void createAppender(LogbackConfigurator config, OutputStreamAppender<ILoggingEvent> appender, String type) {
+		appender.addFilter(createThresholdFilter(config, type));
+		Encoder<ILoggingEvent> encoder = createEncoder(config, type);
+		appender.setEncoder(encoder);
+		config.start(encoder);
+	}
+
+	private ThresholdFilter createThresholdFilter(LogbackConfigurator config, String type) {
+		ThresholdFilter filter = new ThresholdFilter();
+		filter.setLevel(resolve(config, "${" + type + "_LOG_THRESHOLD}"));
+		filter.start();
+		return filter;
+	}
+
+	private Encoder<ILoggingEvent> createEncoder(LogbackConfigurator config, String type) {
+		Charset charset = resolveCharset(config, "${" + type + "_LOG_CHARSET}");
+		String structuredLogFormat = resolve(config, "${" + type + "_LOG_STRUCTURED_FORMAT}");
+		if (StringUtils.hasLength(structuredLogFormat)) {
+			StructuredLogEncoder encoder = createStructuredLoggingEncoder(config, structuredLogFormat);
+			encoder.setCharset(charset);
+			return encoder;
+		}
+		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+		encoder.setCharset(charset);
+		encoder.setPattern(resolve(config, "${" + type + "_LOG_PATTERN}"));
+		return encoder;
+	}
+
+	private StructuredLogEncoder createStructuredLoggingEncoder(LogbackConfigurator config, String format) {
+		StructuredLogEncoder encoder = new StructuredLogEncoder();
+		encoder.setFormat(format);
+		encoder.setPid(resolveLong(config, "${PID:--1}"));
+		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
+		if (StringUtils.hasLength(applicationName)) {
+			encoder.setServiceName(applicationName);
+		}
+		return encoder;
 	}
 
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config) {
@@ -174,6 +203,10 @@ class DefaultLogbackConfiguration {
 
 	private int resolveInt(LogbackConfigurator config, String val) {
 		return Integer.parseInt(resolve(config, val));
+	}
+
+	private long resolveLong(LogbackConfigurator config, String val) {
+		return Long.parseLong(resolve(config, val));
 	}
 
 	private FileSize resolveFileSize(LogbackConfigurator config, String val) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,6 +126,29 @@ public class Instantiator<T> {
 	}
 
 	/**
+	 * Instantiate the given set of class name, injecting constructor arguments as
+	 * necessary.
+	 * @param name the class name to instantiate
+	 * @return an instantiated instance
+	 * @since 3.4.0
+	 */
+	public T instantiate(String name) {
+		return instantiate((ClassLoader) null, name);
+	}
+
+	/**
+	 * Instantiate the given set of class name, injecting constructor arguments as
+	 * necessary.
+	 * @param classLoader the source classloader
+	 * @param name the class name to instantiate
+	 * @return an instantiated instance
+	 * @since 3.4.0
+	 */
+	public T instantiate(ClassLoader classLoader, String name) {
+		return instantiate(TypeSupplier.forName(classLoader, name));
+	}
+
+	/**
 	 * Instantiate the given set of classes, injecting constructor arguments as necessary.
 	 * @param types the types to instantiate
 	 * @return a list of instantiated instances
@@ -134,6 +157,22 @@ public class Instantiator<T> {
 	public List<T> instantiateTypes(Collection<Class<?>> types) {
 		Assert.notNull(types, "Types must not be null");
 		return instantiate(types.stream().map(TypeSupplier::forType));
+	}
+
+	/**
+	 * Get an injectable argument instance for the given type. This method can be used
+	 * when manually instantiating an object without reflection.
+	 * @param <A> the argument type
+	 * @param type the argument type
+	 * @return the argument to inject or {@code null}
+	 * @since 3.4.0
+	 */
+	@SuppressWarnings("unchecked")
+	public <A> A getArg(Class<A> type) {
+		Assert.notNull(type, "'type' must not be null");
+		Function<Class<?>, Object> parameter = getAvailableParameter(type);
+		Assert.isTrue(parameter != null, "Unknown argument type " + type.getName());
+		return (A) parameter.apply(this.type);
 	}
 
 	private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
@@ -242,7 +281,7 @@ public class Instantiator<T> {
 				}
 
 				@Override
-				public Class<?> get() throws ClassNotFoundException {
+				public Class<?> get() {
 					return type;
 				}
 
