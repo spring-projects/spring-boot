@@ -70,12 +70,13 @@ class LogbackEcsStructuredLoggingFormatterTests extends AbstractStructuredLoggin
 			.containsAllEntriesOf(map("error.type", "java.lang.RuntimeException", "error.message", "Boom"));
 		String stackTrace = (String) deserialized.get("error.stack_trace");
 		assertThat(stackTrace).startsWith(
-				"""
-						java.lang.RuntimeException: Boom
-						\tat org.springframework.boot.logging.logback.LogbackEcsStructuredLoggingFormatterTests.shouldFormatException""");
+				"java.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.logback.LogbackEcsStructuredLoggingFormatterTests.shouldFormatException"
+					.formatted());
 		assertThat(json).contains(
-				"""
-						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.logback.LogbackEcsStructuredLoggingFormatterTests.shouldFormatException""");
+				"java.lang.RuntimeException: Boom%n\\tat org.springframework.boot.logging.logback.LogbackEcsStructuredLoggingFormatterTests.shouldFormatException"
+					.formatted()
+					.replace("\n", "\\n")
+					.replace("\r", "\\r"));
 	}
 
 }
