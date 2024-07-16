@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,6 +141,11 @@ public class IntegrationProperties {
 		 */
 		private List<String> noAutoStartup = new ArrayList<>();
 
+		/**
+		 * Default timeout for blocking operations such as sending or receiving messages.
+		 */
+		private Duration defaultTimeout = Duration.ofSeconds(30);
+
 		public void setThrowExceptionOnLateReply(boolean throwExceptionOnLateReply) {
 			this.throwExceptionOnLateReply = throwExceptionOnLateReply;
 		}
@@ -163,6 +168,14 @@ public class IntegrationProperties {
 
 		public void setNoAutoStartup(List<String> noAutoStartup) {
 			this.noAutoStartup = noAutoStartup;
+		}
+
+		public Duration getDefaultTimeout() {
+			return this.defaultTimeout;
+		}
+
+		public void setDefaultTimeout(Duration defaultTimeout) {
+			this.defaultTimeout = defaultTimeout;
 		}
 
 	}

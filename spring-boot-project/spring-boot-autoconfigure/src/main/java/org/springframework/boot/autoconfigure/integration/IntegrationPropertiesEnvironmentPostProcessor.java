@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,6 +85,7 @@ class IntegrationPropertiesEnvironmentPostProcessor implements EnvironmentPostPr
 					IntegrationProperties.CHANNELS_MAX_BROADCAST_SUBSCRIBERS);
 			mappings.put(PREFIX + "error.require-subscribers", IntegrationProperties.ERROR_CHANNEL_REQUIRE_SUBSCRIBERS);
 			mappings.put(PREFIX + "error.ignore-failures", IntegrationProperties.ERROR_CHANNEL_IGNORE_FAILURES);
+			mappings.put(PREFIX + "endpoint.default-timeout", IntegrationProperties.ENDPOINTS_DEFAULT_TIMEOUT);
 			mappings.put(PREFIX + "endpoint.throw-exception-on-late-reply",
 					IntegrationProperties.THROW_EXCEPTION_ON_LATE_REPLY);
 			mappings.put(PREFIX + "endpoint.read-only-headers", IntegrationProperties.READ_ONLY_HEADERS);
