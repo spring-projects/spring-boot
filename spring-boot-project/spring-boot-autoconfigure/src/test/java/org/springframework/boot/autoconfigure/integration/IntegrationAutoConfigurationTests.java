@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.beans.PropertyDescriptor;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
@@ -32,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
@@ -82,6 +86,7 @@ import org.springframework.messaging.support.GenericMessage;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -295,53 +300,61 @@ class IntegrationAutoConfigurationTests {
 
 	@Test
 	void integrationGlobalPropertiesAutoConfigured() {
-		this.contextRunner.withPropertyValues("spring.integration.channel.auto-create=false",
+		String[] propertyValues = { "spring.integration.channel.auto-create=false",
 				"spring.integration.channel.max-unicast-subscribers=2",
 				"spring.integration.channel.max-broadcast-subscribers=3",
 				"spring.integration.error.require-subscribers=false", "spring.integration.error.ignore-failures=false",
+				"spring.integration.endpoint.defaultTimeout=60s",
 				"spring.integration.endpoint.throw-exception-on-late-reply=true",
 				"spring.integration.endpoint.read-only-headers=ignoredHeader",
-				"spring.integration.endpoint.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
-				org.springframework.integration.context.IntegrationProperties integrationProperties = context
-					.getBean(org.springframework.integration.context.IntegrationProperties.class);
-				assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
-				assertThat(integrationProperties.getChannelsMaxUnicastSubscribers()).isEqualTo(2);
-				assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers()).isEqualTo(3);
-				assertThat(integrationProperties.isErrorChannelRequireSubscribers()).isFalse();
-				assertThat(integrationProperties.isErrorChannelIgnoreFailures()).isFalse();
-				assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply()).isTrue();
-				assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
-				assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("notStartedEndpoint",
-						"_org.springframework.integration.errorLogger");
-			});
+				"spring.integration.endpoint.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger" };
+		assertThat(propertyValues).hasSameSizeAs(globalIntegrationPropertyNames());
+		this.contextRunner.withPropertyValues(propertyValues).run((context) -> {
+			assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+			org.springframework.integration.context.IntegrationProperties integrationProperties = context
+				.getBean(org.springframework.integration.context.IntegrationProperties.class);
+			assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
+			assertThat(integrationProperties.getChannelsMaxUnicastSubscribers()).isEqualTo(2);
+			assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers()).isEqualTo(3);
+			assertThat(integrationProperties.isErrorChannelRequireSubscribers()).isFalse();
+			assertThat(integrationProperties.isErrorChannelIgnoreFailures()).isFalse();
+			assertThat(integrationProperties.getEndpointsDefaultTimeout()).isEqualTo(60000);
+			assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply()).isTrue();
+			assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
+			assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("notStartedEndpoint",
+					"_org.springframework.integration.errorLogger");
+		});
 	}
 
 	@Test
 	void integrationGlobalPropertiesUseConsistentDefault() {
+		List<PropertyAccessor> properties = List
+			.of("isChannelsAutoCreate", "getChannelsMaxUnicastSubscribers", "getChannelsMaxBroadcastSubscribers",
+					"isErrorChannelRequireSubscribers", "isErrorChannelIgnoreFailures", "getEndpointsDefaultTimeout",
+					"isMessagingTemplateThrowExceptionOnLateReply", "getReadOnlyHeaders", "getNoAutoStartupEndpoints")
+			.stream()
+			.map(PropertyAccessor::new)
+			.toList();
+		assertThat(properties).hasSameSizeAs(globalIntegrationPropertyNames());
 		org.springframework.integration.context.IntegrationProperties defaultIntegrationProperties = new org.springframework.integration.context.IntegrationProperties();
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
 			org.springframework.integration.context.IntegrationProperties integrationProperties = context
 				.getBean(org.springframework.integration.context.IntegrationProperties.class);
-			assertThat(integrationProperties.isChannelsAutoCreate())
-				.isEqualTo(defaultIntegrationProperties.isChannelsAutoCreate());
-			assertThat(integrationProperties.getChannelsMaxUnicastSubscribers())
-				.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
-			assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers())
-				.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
-			assertThat(integrationProperties.isErrorChannelRequireSubscribers())
-				.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
-			assertThat(integrationProperties.isErrorChannelIgnoreFailures())
-				.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
-			assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply())
-				.isEqualTo(defaultIntegrationProperties.isMessagingTemplateThrowExceptionOnLateReply());
-			assertThat(integrationProperties.getReadOnlyHeaders())
-				.isEqualTo(defaultIntegrationProperties.getReadOnlyHeaders());
-			assertThat(integrationProperties.getNoAutoStartupEndpoints())
-				.isEqualTo(defaultIntegrationProperties.getNoAutoStartupEndpoints());
+			properties.forEach((property) -> assertThat(property.get(integrationProperties))
+				.isEqualTo(property.get(defaultIntegrationProperties)));
 		});
+	}
+
+	private List<String> globalIntegrationPropertyNames() {
+		return Stream
+			.of(PropertyAccessorFactory
+				.forBeanPropertyAccess(new org.springframework.integration.context.IntegrationProperties())
+				.getPropertyDescriptors())
+			.map(PropertyDescriptor::getName)
+			.filter((name) -> !"class".equals(name))
+			.filter((name) -> !"taskSchedulerPoolSize".equals(name))
+			.toList();
 	}
 
 	@Test
@@ -600,6 +613,25 @@ class IntegrationAutoConfigurationTests {
 		@Bean
 		MessageHandler handler(BlockingQueue<Message<?>> sink) {
 			return sink::add;
+		}
+
+	}
+
+	static class PropertyAccessor {
+
+		private final String name;
+
+		PropertyAccessor(String name) {
+			this.name = name;
+		}
+
+		Object get(org.springframework.integration.context.IntegrationProperties properties) {
+			return ReflectionTestUtils.invokeMethod(properties, this.name);
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
 		}
 
 	}

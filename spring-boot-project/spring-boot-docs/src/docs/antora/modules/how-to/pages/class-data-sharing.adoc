@@ -13,8 +13,6 @@ Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.
 To enable CDS optimization in a generated Docker image, the buildpack environment variable `BP_JVM_CDS_ENABLED` should be set to `true` when building the image as described in the xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven plugin] and xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle plugin] documentation.
 This will cause the buildpack to do a training run of the application, save the CDS archive in the image, and use the CDS archive when launching the application.
 
-The buildpack environment variable `BP_SPRING_AOT_ENABLED` can also be set to `true` to enable AOT mode along with CDS when running an application that has been xref:reference:packaging/aot.adoc[built with Ahead-of-Time processed].
-
 The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `CDS_TRAINING_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the CDS training run.
 
 [[howto.class-data-sharing.training-run-configuration]]

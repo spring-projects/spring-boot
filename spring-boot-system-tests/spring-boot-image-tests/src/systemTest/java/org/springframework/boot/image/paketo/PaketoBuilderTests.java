@@ -336,6 +336,45 @@ class PaketoBuilderTests {
 		}
 	}
 
+	@Test
+	void classDataSharingApp() throws Exception {
+		writeMainClass();
+		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
+		BuildResult result = buildImage(imageName);
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
+		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
+			container.withExposedPorts(8080);
+			container.waitingFor(Wait.forHttp("/test")).start();
+			ContainerConfig config = container.getContainerInfo().getConfig();
+			assertLabelsMatchManifestAttributes(config);
+			ImageAssertions.assertThat(config).buildMetadata((metadata) -> {
+				metadata.buildpacks()
+					.contains("paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
+							"paketo-buildpacks/executable-jar", "paketo-buildpacks/dist-zip",
+							"paketo-buildpacks/spring-boot");
+				metadata.processOfType("web")
+					.satisfiesExactly((command) -> assertThat(command).isEqualTo("java"),
+							(arg) -> assertThat(arg).isEqualTo("-cp"),
+							(arg) -> assertThat(arg).startsWith("runner.jar"),
+							(arg) -> assertThat(arg).isEqualTo("example.ExampleApplication"));
+				metadata.processOfType("spring-boot-app")
+					.satisfiesExactly((command) -> assertThat(command).isEqualTo("java"),
+							(arg) -> assertThat(arg).isEqualTo("-cp"),
+							(arg) -> assertThat(arg).startsWith("runner.jar"),
+							(arg) -> assertThat(arg).isEqualTo("example.ExampleApplication"));
+				metadata.processOfType("executable-jar")
+					.containsExactly("java", "org.springframework.boot.loader.launch.JarLauncher");
+			});
+			assertImageHasJvmSbomLayer(imageReference, config);
+			assertImageHasDependenciesSbomLayer(imageReference, config, "executable-jar");
+		}
+		finally {
+			removeImage(imageReference);
+		}
+	}
+
 	private BuildResult buildImage(String imageName, String... arguments) {
 		String[] buildImageArgs = { "bootBuildImage", "--imageName=" + imageName, "--pullPolicy=IF_NOT_PRESENT" };
 		String[] args = StringUtils.concatenateStringArrays(arguments, buildImageArgs);
