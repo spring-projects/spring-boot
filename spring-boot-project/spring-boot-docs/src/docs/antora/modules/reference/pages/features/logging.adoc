@@ -134,30 +134,33 @@ The following colors and styles are supported:
 
 By default, Spring Boot logs only to the console and does not write log files.
 If you want to write log files in addition to the console output, you need to set a configprop:logging.file.name[] or configprop:logging.file.path[] property (for example, in your `application.properties`).
+If both properties are set, `logging.file.path` is ignored and only `logging.file.name` is used.
 
 The following table shows how the `logging.*` properties can be used together:
 
 .Logging properties
-[cols="1,1,1,4"]
+[cols="1,1,4"]
 |===
-| configprop:logging.file.name[] | configprop:logging.file.path[] | Example | Description
+| configprop:logging.file.name[] | configprop:logging.file.path[] | Description
 
 | _(none)_
 | _(none)_
-|
 | Console only logging.
 
-| Specific file
+| Specific file (for example, `my.log`)
 | _(none)_
-| `my.log`
-| Writes to the specified log file.
-  Names can be an exact location or relative to the current directory.
+| Writes to the location specified by `logging.file.name`.
+  The location can be absolute or relative to the current directory.
 
 | _(none)_
+| Specific directory (for example, `/var/log`)
+| Writes `spring.log` to the directory specified by `logging.file.path`.
+  The directory can be absolute or relative to the current directory.
+
+| Specific file
 | Specific directory
-| `/var/log`
-| Writes `spring.log` to the specified directory.
-  Names can be an exact location or relative to the current directory.
+| Writes to the location specified by `logging.file.name` and ignores `logging.file.path`.
+  The location can be absolute or relative to the current directory.
 |===
 
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
