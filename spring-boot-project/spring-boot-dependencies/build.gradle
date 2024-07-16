@@ -1601,7 +1601,7 @@ bom {
 			]
 		}
 	}
-	library("Spring GraphQL", "1.2.7") {
+	library("Spring GraphQL", "1.2.8") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
