@@ -1959,7 +1959,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
-	library("Spring Integration", "6.4.0-SNAPSHOT") {
+	library("Spring Integration", "6.4.0-M1") {
 		considerSnapshots()
 		group("org.springframework.integration") {
 			imports = [
