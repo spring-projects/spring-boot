@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,6 +105,9 @@ public class IntegrationAutoConfiguration {
 		map.from(properties.getError().isIgnoreFailures()).to(integrationProperties::setErrorChannelIgnoreFailures);
 		map.from(properties.getEndpoint().isThrowExceptionOnLateReply())
 			.to(integrationProperties::setMessagingTemplateThrowExceptionOnLateReply);
+		map.from(properties.getEndpoint().getDefaultTimeout())
+			.as(Duration::toMillis)
+			.to(integrationProperties::setEndpointsDefaultTimeout);
 		map.from(properties.getEndpoint().getReadOnlyHeaders())
 			.as(StringUtils::toStringArray)
 			.to(integrationProperties::setReadOnlyHeaders);
