@@ -19,12 +19,11 @@ package org.springframework.boot.json;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
-import org.assertj.core.util.Arrays;
 
 import org.springframework.boot.json.JsonWriter.WritableJson;
 import org.springframework.util.ObjectUtils;
