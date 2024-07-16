@@ -363,17 +363,20 @@ public class WebMvcProperties {
 	public static class Format {
 
 		/**
-		 * Date format to use, for example 'dd/MM/yyyy'.
+		 * Date format to use, for example 'dd/MM/yyyy'. Used for formatting of
+		 * java.util.Date and java.time.LocalDate.
 		 */
 		private String date;
 
 		/**
-		 * Time format to use, for example 'HH:mm:ss'.
+		 * Time format to use, for example 'HH:mm:ss'. Used for formatting of java.time's
+		 * LocalTime and OffsetTime.
 		 */
 		private String time;
 
 		/**
-		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'.
+		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'. Used for formatting
+		 * of java.time's LocalDateTime, OffsetDateTime, and ZonedDateTime.
 		 */
 		private String dateTime;
 
