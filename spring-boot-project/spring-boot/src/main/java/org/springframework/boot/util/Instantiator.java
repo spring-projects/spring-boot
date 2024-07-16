@@ -109,7 +109,7 @@ public class Instantiator<T> {
 	 * @return a list of instantiated instances
 	 */
 	public List<T> instantiate(Collection<String> names) {
-		return instantiate((ClassLoader) null, names);
+		return instantiate(null, names);
 	}
 
 	/**
@@ -133,7 +133,7 @@ public class Instantiator<T> {
 	 * @since 3.4.0
 	 */
 	public T instantiate(String name) {
-		return instantiate((ClassLoader) null, name);
+		return instantiate(null, name);
 	}
 
 	/**
