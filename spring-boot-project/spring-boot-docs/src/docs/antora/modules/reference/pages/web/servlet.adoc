@@ -69,16 +69,19 @@ Conversion can also be customized using the `spring.mvc.format.*` configuration 
 When not configured, the following defaults are used:
 
 |===
-|Property |`DateTimeFormatter`
+|Property |`DateTimeFormatter` |Formats
 
 |configprop:spring.mvc.format.date[]
 |`ofLocalizedDate(FormatStyle.SHORT)`
+|`java.util.Date` and `java.time.LocalDate`
 
 |configprop:spring.mvc.format.time[]
 |`ofLocalizedTime(FormatStyle.SHORT)`
+|java.time's `LocalTime` and `OffsetTime`
 
 |configprop:spring.mvc.format.date-time[]
 |`ofLocalizedDateTime(FormatStyle.SHORT)`
+|java.time's `LocalDateTime`, `OffsetDateTime`, and `ZonedDateTime`
 |===
 
 

@@ -64,16 +64,19 @@ Conversion can also be customized using the `spring.webflux.format.*` configurat
 When not configured, the following defaults are used:
 
 |===
-|Property |`DateTimeFormatter`
+|Property |`DateTimeFormatter` |Formats
 
 |configprop:spring.webflux.format.date[]
 |`ofLocalizedDate(FormatStyle.SHORT)`
+|`java.util.Date` and `java.time.LocalDate`
 
 |configprop:spring.webflux.format.time[]
 |`ofLocalizedTime(FormatStyle.SHORT)`
+|java.time's `LocalTime` and `OffsetTime`
 
 |configprop:spring.webflux.format.date-time[]
 |`ofLocalizedDateTime(FormatStyle.SHORT)`
+|java.time's `LocalDateTime`, `OffsetDateTime`, and `ZonedDateTime`
 |===
 
 
