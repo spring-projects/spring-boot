@@ -79,6 +79,12 @@ class PostgresEnvironmentTests {
 	}
 
 	@Test
+	void getPasswordWhenHasTrustHostAuthMethod() {
+		PostgresEnvironment environment = new PostgresEnvironment(Map.of("POSTGRES_HOST_AUTH_METHOD", "trust"));
+		assertThat(environment.getPassword()).isNull();
+	}
+
+	@Test
 	void getDatabaseWhenNoPostgresDbOrPostgresUser() {
 		PostgresEnvironment environment = new PostgresEnvironment(Map.of("POSTGRES_PASSWORD", "secret"));
 		assertThat(environment.getDatabase()).isEqualTo("postgres");
