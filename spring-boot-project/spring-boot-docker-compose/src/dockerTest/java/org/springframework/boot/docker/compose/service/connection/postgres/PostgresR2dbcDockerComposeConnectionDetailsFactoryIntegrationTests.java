@@ -16,11 +16,16 @@
 
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
+import java.time.Duration;
+
+import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,6 +44,17 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
+	@DockerComposeTest(composeFile = "postgres-with-trust-host-auth-method-compose.yaml", image = TestImage.POSTGRESQL)
+	void runCreatesConnectionDetailsThatCanAccessDatabaseWhenHostAuthMethodIsTrust(
+			R2dbcConnectionDetails connectionDetails) {
+		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
+		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("myuser");
+		assertThat(connectionFactoryOptions.getValue(ConnectionFactoryOptions.PASSWORD)).isNull();
+		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.DATABASE))
+			.isEqualTo("mydatabase");
+		checkDatabaseAccess(connectionDetails);
+	}
+
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
 	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
@@ -49,6 +65,16 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=postgresql",
 				"password=REDACTED", "user=myuser");
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
+	}
+
+	private void checkDatabaseAccess(R2dbcConnectionDetails connectionDetails) {
+		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
+		Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
+			.sql(DatabaseDriver.POSTGRESQL.getValidationQuery())
+			.map((row, metadata) -> row.get(0))
+			.first()
+			.block(Duration.ofSeconds(30));
+		assertThat(result).isEqualTo(1);
 	}
 
 }

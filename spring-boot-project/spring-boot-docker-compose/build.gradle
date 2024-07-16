@@ -21,6 +21,8 @@ dependencies {
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("io.r2dbc:r2dbc-mssql")
+	dockerTestRuntimeOnly("org.postgresql:postgresql")
+	dockerTestRuntimeOnly("org.postgresql:r2dbc-postgresql")
 
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")

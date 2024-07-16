@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Sidmar Theodoro
  */
 class PostgresEnvironmentTests {
 
