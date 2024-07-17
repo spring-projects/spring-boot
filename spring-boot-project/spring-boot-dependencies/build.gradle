@@ -711,7 +711,7 @@ bom {
 	}
 	library("Jakarta Persistence", "3.1.0") {
 		prohibit {
-			versionRange "[3.2.0,3.2.0]"
+			versionRange "[3.2.0-B01,3.2.0]"
 			because "it's part of Jakarta EE 11"
 		}
 		group("jakarta.persistence") {
@@ -722,7 +722,7 @@ bom {
 	}
 	library("Jakarta Servlet", "6.0.0") {
 		prohibit {
-			versionRange "[6.1.0,6.1.0]"
+			versionRange "[6.1.0-M1,6.1.0]"
 			because "it's part of Jakarta EE 11"
 		}
 		group("jakarta.servlet") {
@@ -747,7 +747,7 @@ bom {
 	}
 	library("Jakarta Validation", "3.0.2") {
 		prohibit {
-			versionRange "[3.1.0,3.1.0]"
+			versionRange "[3.1.0-M1,3.1.0]"
 			because "it's part of Jakarta EE 11"
 		}
 		group("jakarta.validation") {
@@ -758,7 +758,7 @@ bom {
 	}
 	library("Jakarta WebSocket", "2.1.1") {
 		prohibit {
-			versionRange "[2.2.0,2.2.0]"
+			versionRange "[2.2.0-M1,2.2.0]"
 			because "it's part of Jakarta EE 11"
 		}
 		group("jakarta.websocket") {
