@@ -123,7 +123,7 @@ The following service connections are currently supported:
 | Containers named "rabbitmq" or "bitnami/rabbitmq"
 
 | `RedisConnectionDetails`
-| Containers named "redis" or "bitnami/redis"
+| Containers named "redis", "bitnami/redis", "redis/redis-stack" or "redis/redis-stack-server"
 
 | `ZipkinConnectionDetails`
 | Containers named "openzipkin/zipkin".

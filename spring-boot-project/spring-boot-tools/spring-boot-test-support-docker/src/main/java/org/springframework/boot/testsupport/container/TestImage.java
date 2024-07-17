@@ -184,6 +184,20 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
+	 * A container image suitable for testing Redis Stack.
+	 */
+	REDIS_STACK("redis/redis-stack", "7.2.0-v11", () -> RedisStackContainer.class,
+			(container) -> ((RedisStackContainer) container).withStartupAttempts(5)
+				.withStartupTimeout(Duration.ofMinutes(10))),
+
+	/**
+	 * A container image suitable for testing Redis Stack Server.
+	 */
+	REDIS_STACK_SERVER("redis/redis-stack-server", "7.2.0-v11", () -> RedisStackServerContainer.class,
+			(container) -> ((RedisStackServerContainer) container).withStartupAttempts(5)
+				.withStartupTimeout(Duration.ofMinutes(10))),
+
+	/**
 	 * A container image suitable for testing Redpanda.
 	 */
 	REDPANDA("redpandadata/redpanda", "v23.1.2", () -> RedpandaContainer.class,
@@ -269,6 +283,10 @@ public enum TestImage {
 
 	TestImage(String name, String tag, Supplier<Class<?>> containerClass) {
 		this(name, tag, containerClass, null);
+	}
+
+	TestImage(String name, String tag, Consumer<?> containerSetup) {
+		this(name, tag, null, containerSetup);
 	}
 
 	TestImage(String name, String tag, Supplier<Class<?>> containerClass, Consumer<?> containerSetup) {
