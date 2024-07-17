@@ -1,6 +1,6 @@
 = Spring Boot image:https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml/badge.svg?branch=main["Build Status", link="https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml?query=branch%3Amain"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"] image:https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Develocity", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
 
-:docs: https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
+:docs: https://docs.spring.io/spring-boot
 :github: https://github.com/spring-projects/spring-boot
 
 Spring Boot helps you to create Spring-powered, production-grade applications and services with absolute minimum fuss.
@@ -20,7 +20,7 @@ Our primary goals are:
 
 == Installation and Getting Started
 
-The {docs}/html/[reference documentation] includes detailed {docs}/html/getting-started.html#getting-started-installing-spring-boot[installation instructions] as well as a comprehensive {docs}/html/getting-started.html#getting-started-first-application[``getting started``] guide.
+The {docs}[reference documentation] includes detailed {docs}/installing.html[installation instructions] as well as a comprehensive {docs}/tutorial/first-application/index.html[``getting started``] guide.
 
 Here is a quick teaser of a complete Spring Boot application in Java:
 
@@ -52,7 +52,7 @@ public class Example {
 
 Are you having trouble with Spring Boot? We want to help!
 
-* Check the {docs}/html/[reference documentation], especially the {docs}/html/howto.html#howto[How-to's] -- they provide solutions to the most common questions.
+* Check the {docs}/[reference documentation], especially the {docs}/how-to/index.html[How-to's] -- they provide solutions to the most common questions.
 * Learn the Spring basics -- Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] website for a wealth of reference documentation.
   If you are new to Spring, try one of the https://spring.io/guides[guides].
 * If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and "new and noteworthy" features.
