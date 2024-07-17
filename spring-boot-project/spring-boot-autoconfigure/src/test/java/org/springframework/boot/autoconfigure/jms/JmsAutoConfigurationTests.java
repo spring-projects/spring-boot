@@ -44,6 +44,7 @@ import org.springframework.jms.config.JmsListenerConfigUtils;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerEndpoint;
 import org.springframework.jms.config.SimpleJmsListenerContainerFactory;
+import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
@@ -72,20 +73,18 @@ class JmsAutoConfigurationTests {
 
 	@Test
 	void testDefaultJmsConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).run(this::testDefaultJmsConfiguration);
-	}
-
-	private void testDefaultJmsConfiguration(AssertableApplicationContext loaded) {
-		assertThat(loaded).hasSingleBean(ConnectionFactory.class);
-		assertThat(loaded).hasSingleBean(CachingConnectionFactory.class);
-		CachingConnectionFactory factory = loaded.getBean(CachingConnectionFactory.class);
-		assertThat(factory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
-		JmsTemplate jmsTemplate = loaded.getBean(JmsTemplate.class);
-		JmsMessagingTemplate messagingTemplate = loaded.getBean(JmsMessagingTemplate.class);
-		assertThat(factory).isEqualTo(jmsTemplate.getConnectionFactory());
-		assertThat(messagingTemplate.getJmsTemplate()).isEqualTo(jmsTemplate);
-		assertThat(getBrokerUrl(factory)).startsWith("vm://");
-		assertThat(loaded.containsBean("jmsListenerContainerFactory")).isTrue();
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ConnectionFactory.class);
+			assertThat(context).hasSingleBean(CachingConnectionFactory.class);
+			CachingConnectionFactory factory = context.getBean(CachingConnectionFactory.class);
+			assertThat(factory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
+			JmsTemplate jmsTemplate = context.getBean(JmsTemplate.class);
+			JmsMessagingTemplate messagingTemplate = context.getBean(JmsMessagingTemplate.class);
+			assertThat(factory).isEqualTo(jmsTemplate.getConnectionFactory());
+			assertThat(messagingTemplate.getJmsTemplate()).isEqualTo(jmsTemplate);
+			assertThat(getBrokerUrl(factory)).startsWith("vm://");
+			assertThat(context.containsBean("jmsListenerContainerFactory")).isTrue();
+		});
 	}
 
 	@Test
@@ -122,6 +121,30 @@ class JmsAutoConfigurationTests {
 		JmsMessagingTemplate messagingTemplate = loaded.getBean(JmsMessagingTemplate.class);
 		assertThat(messagingTemplate.getDefaultDestinationName()).isEqualTo("fooBar");
 		assertThat(messagingTemplate.getJmsTemplate()).isEqualTo(jmsTemplate);
+	}
+
+	@Test
+	void testDefaultJmsListenerConfiguration() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((loaded) -> {
+			assertThat(loaded).hasSingleBean(CachingConnectionFactory.class);
+			CachingConnectionFactory connectionFactory = loaded.getBean(CachingConnectionFactory.class);
+			assertThat(loaded).hasSingleBean(DefaultJmsListenerContainerFactory.class);
+			DefaultJmsListenerContainerFactory containerFactory = loaded
+				.getBean(DefaultJmsListenerContainerFactory.class);
+			SimpleJmsListenerEndpoint jmsListenerEndpoint = new SimpleJmsListenerEndpoint();
+			jmsListenerEndpoint.setMessageListener((message) -> {
+			});
+			DefaultMessageListenerContainer container = containerFactory.createListenerContainer(jmsListenerEndpoint);
+			assertThat(container.getClientId()).isNull();
+			assertThat(container.getConcurrentConsumers()).isEqualTo(1);
+			assertThat(container.getConnectionFactory()).isSameAs(connectionFactory);
+			assertThat(container.getMaxConcurrentConsumers()).isEqualTo(1);
+			assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.AUTO_ACKNOWLEDGE);
+			assertThat(container.isAutoStartup()).isTrue();
+			assertThat(container.isPubSubDomain()).isFalse();
+			assertThat(container.isSubscriptionDurable()).isFalse();
+			assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 1000L);
+		});
 	}
 
 	@Test
