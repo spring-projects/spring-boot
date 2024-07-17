@@ -17,6 +17,7 @@
 package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
@@ -61,7 +62,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 */
 	protected static final String ANY_CONNECTION_NAME = null;
 
-	private final String connectionName;
+	private final List<String> connectionNames;
 
 	private final String[] requiredClassNames;
 
@@ -80,7 +81,19 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 * @param requiredClassNames the names of classes that must be present
 	 */
 	protected ContainerConnectionDetailsFactory(String connectionName, String... requiredClassNames) {
-		this.connectionName = connectionName;
+		this(Arrays.asList(connectionName), requiredClassNames);
+	}
+
+	/**
+	 * Create a new {@link ContainerConnectionDetailsFactory} instance with the given
+	 * supported connection names.
+	 * @param connectionNames the supported connection names
+	 * @param requiredClassNames the names of classes that must be present
+	 * @since 3.4.0
+	 */
+	protected ContainerConnectionDetailsFactory(List<String> connectionNames, String... requiredClassNames) {
+		Assert.notEmpty(connectionNames, "ConnectionNames must contain at least one name");
+		this.connectionNames = connectionNames;
 		this.requiredClassNames = requiredClassNames;
 	}
 
@@ -93,8 +106,10 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			Class<?>[] generics = resolveGenerics();
 			Class<?> containerType = generics[0];
 			Class<?> connectionDetailsType = generics[1];
-			if (source.accepts(this.connectionName, containerType, connectionDetailsType)) {
-				return getContainerConnectionDetails(source);
+			for (String connectionName : this.connectionNames) {
+				if (source.accepts(connectionName, containerType, connectionDetailsType)) {
+					return getContainerConnectionDetails(source);
+				}
 			}
 		}
 		catch (NoClassDefFoundError ex) {
