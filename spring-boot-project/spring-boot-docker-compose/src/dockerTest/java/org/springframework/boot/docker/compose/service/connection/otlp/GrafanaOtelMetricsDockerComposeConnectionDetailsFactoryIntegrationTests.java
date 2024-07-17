@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class GrafanaOtelMetricsDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.GRAFANA_OTEL)
+	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.GRAFANA_OTEL_LGTM)
 	void runCreatesConnectionDetails(OtlpMetricsConnectionDetails connectionDetails) {
 		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/metrics");
 	}
