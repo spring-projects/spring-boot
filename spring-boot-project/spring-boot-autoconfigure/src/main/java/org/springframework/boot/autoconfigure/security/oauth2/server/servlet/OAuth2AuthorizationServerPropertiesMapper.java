@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		OAuth2AuthorizationServerProperties.Endpoint endpoint = this.properties.getEndpoint();
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoint.getOidc();
 		AuthorizationServerSettings.Builder builder = AuthorizationServerSettings.builder();
-		map.from(this.properties::getIssuer).whenHasText().to(builder::issuer);
+		map.from(this.properties::getIssuer).to(builder::issuer);
 		map.from(this.properties::isMultipleIssuersAllowed).to(builder::multipleIssuersAllowed);
 		map.from(endpoint::getAuthorizationUri).to(builder::authorizationEndpoint);
 		map.from(endpoint::getDeviceAuthorizationUri).to(builder::deviceAuthorizationEndpoint);

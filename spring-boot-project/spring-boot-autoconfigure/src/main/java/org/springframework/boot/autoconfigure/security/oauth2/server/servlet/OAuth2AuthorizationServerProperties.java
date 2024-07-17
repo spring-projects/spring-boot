@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,26 +43,9 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	private String issuer;
 
 	/**
-	 * Set to {@code true} if multiple issuers are allowed per host. Using path
-	 * components in the URL of the issuer identifier enables supporting multiple
-	 * issuers per host in a multi-tenant hosting configuration.
-	 *
-	 * <p>
-	 * For example:
-	 * <ul>
-	 * <li>{@code https://example.com/issuer1}</li>
-	 * <li>{@code https://example.com/authz/issuer2}</li>
-	 * </ul>
-	 *
-	 * <p>
-	 * <b>NOTE:</b> Explicitly configuring the issuer identifier via
-	 * {@link #issuer(String)} forces to a single-tenant configuration. Avoid
-	 * configuring the issuer identifier when using a multi-tenant hosting
-	 * configuration, allowing the issuer identifier to be resolved from the
-	 * <i>"current"</i> request.
-	 * @param multipleIssuersAllowed {@code true} if multiple issuers are allowed per
-	 * host, {@code false} otherwise
-	 * @return the {@link Builder} for further configuration
+	 * Whether multiple issuers are allowed per host. Using path components in the URL of
+	 * the issuer identifier enables supporting multiple issuers per host in a
+	 * multi-tenant hosting configuration.
 	 */
 	private boolean multipleIssuersAllowed = false;
 
@@ -75,6 +58,14 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	 * Authorization Server endpoints.
 	 */
 	private final Endpoint endpoint = new Endpoint();
+
+	public boolean isMultipleIssuersAllowed() {
+		return this.multipleIssuersAllowed;
+	}
+
+	public void setMultipleIssuersAllowed(boolean multipleIssuersAllowed) {
+		this.multipleIssuersAllowed = multipleIssuersAllowed;
+	}
 
 	public String getIssuer() {
 		return this.issuer;
