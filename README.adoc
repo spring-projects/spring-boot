@@ -1,6 +1,6 @@
 = Spring Boot image:https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml/badge.svg?branch=3.2.x["Build Status", link="https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml?query=branch%3A3.2.x"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"] image:https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Develocity", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
 
-:docs: https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
+:docs: https://docs.spring.io/spring-boot/docs/3.2.x-SNAPSHOT/reference
 :github: https://github.com/spring-projects/spring-boot
 
 Spring Boot helps you to create Spring-powered, production-grade applications and services with absolute minimum fuss.
