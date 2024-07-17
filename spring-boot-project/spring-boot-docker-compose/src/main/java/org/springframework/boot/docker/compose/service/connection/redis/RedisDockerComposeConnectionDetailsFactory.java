@@ -33,13 +33,13 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  */
 class RedisDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<RedisConnectionDetails> {
 
-	private static final String[] REDIS_IMAGE_NAMES = { "redis", "bitnami/redis", "redis/redis-stack",
+	private static final String[] REDIS_CONTAINER_NAMES = { "redis", "bitnami/redis", "redis/redis-stack",
 			"redis/redis-stack-server" };
 
 	private static final int REDIS_PORT = 6379;
 
 	RedisDockerComposeConnectionDetailsFactory() {
-		super(REDIS_IMAGE_NAMES);
+		super(REDIS_CONTAINER_NAMES);
 	}
 
 	@Override

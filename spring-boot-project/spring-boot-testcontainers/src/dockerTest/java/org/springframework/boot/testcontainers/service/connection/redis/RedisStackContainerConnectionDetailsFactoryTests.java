@@ -17,7 +17,6 @@
 package org.springframework.boot.testcontainers.service.connection.redis;
 
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -26,6 +25,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.container.RedisStackContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -46,7 +46,7 @@ class RedisStackContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> redis = TestImage.REDIS_STACK.genericContainer().withExposedPorts(6379);
+	static final RedisStackContainer redis = TestImage.container(RedisStackContainer.class);
 
 	@Autowired(required = false)
 	private RedisConnectionDetails connectionDetails;
