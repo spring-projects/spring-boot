@@ -482,7 +482,7 @@ bom {
 			releaseNotes("https://github.com/google/gson/releases/tag/gson-parent-{version}")
 		}
 	}
-	library("H2", "2.2.224") {
+	library("H2", "2.3.230") {
 		group("com.h2database") {
 			modules = [
 				"h2"
