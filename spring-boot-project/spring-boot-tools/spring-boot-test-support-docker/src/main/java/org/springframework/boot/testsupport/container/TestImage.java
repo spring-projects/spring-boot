@@ -159,6 +159,11 @@ public enum TestImage {
 	OPENTELEMETRY("otel/opentelemetry-collector-contrib", "0.75.0"),
 
 	/**
+	 * A container image suitable for testing Grafana Otel LGTM.
+	 */
+	GRAFANA_OTEL("grafana/otel-lgtm", "0.6.0"),
+
+	/**
 	 * A container image suitable for testing Postgres.
 	 */
 	POSTGRESQL("postgres", "14.0", () -> PostgreSQLContainer.class),
