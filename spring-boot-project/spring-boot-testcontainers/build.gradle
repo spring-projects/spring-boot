@@ -66,6 +66,7 @@ dependencies {
 	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:jdbc")
 	optional("org.testcontainers:kafka")
 	optional("org.testcontainers:mariadb")

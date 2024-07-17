@@ -36,6 +36,7 @@ import org.testcontainers.containers.PulsarContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -157,6 +158,12 @@ public enum TestImage {
 	 * A container image suitable for testing Opentelemetry.
 	 */
 	OPENTELEMETRY("otel/opentelemetry-collector-contrib", "0.75.0"),
+
+	/**
+	 * A container image suitable for testing Grafana Otel LGTM.
+	 */
+	GRAFANA_OTEL_LGTM("grafana/otel-lgtm", "0.6.0", () -> LgtmStackContainer.class,
+			(container) -> ((LgtmStackContainer) container).withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
 	 * A container image suitable for testing Postgres.
