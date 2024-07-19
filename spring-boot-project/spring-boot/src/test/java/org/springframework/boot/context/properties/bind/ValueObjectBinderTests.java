@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -303,6 +304,13 @@ class ValueObjectBinderTests {
 	void bindWhenMapParametersWithEmptyDefaultValueShouldReturnEmptyInstance() {
 		NestedConstructorBeanWithEmptyDefaultValueForMapTypes bound = this.binder.bindOrCreate("foo",
 				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForMapTypes.class));
+		assertThat(bound.getMapValue()).isEmpty();
+	}
+
+	@Test
+	void bindWhenEnumMapParametersWithEmptyDefaultValueShouldReturnEmptyInstance() {
+		NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes bound = this.binder.bindOrCreate("foo",
+				Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes.class));
 		assertThat(bound.getMapValue()).isEmpty();
 	}
 
@@ -776,6 +784,20 @@ class ValueObjectBinderTests {
 		}
 
 		Map<String, String> getMapValue() {
+			return this.mapValue;
+		}
+
+	}
+
+	static class NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes {
+
+		private final EnumMap<ExampleEnum, String> mapValue;
+
+		NestedConstructorBeanWithEmptyDefaultValueForEnumMapTypes(@DefaultValue EnumMap<ExampleEnum, String> mapValue) {
+			this.mapValue = mapValue;
+		}
+
+		EnumMap<ExampleEnum, String> getMapValue() {
 			return this.mapValue;
 		}
 
