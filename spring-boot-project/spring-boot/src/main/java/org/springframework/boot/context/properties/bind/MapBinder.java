@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.bind;
 
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
@@ -65,8 +66,7 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 				}
 			}
 		}
-		Map<Object, Object> map = CollectionFactory
-			.createMap((target.getValue() != null) ? Map.class : target.getType().resolve(Object.class), 0);
+		Map<Object, Object> map = createMap(target);
 		for (ConfigurationPropertySource source : getContext().getSources()) {
 			if (!ConfigurationPropertyName.EMPTY.equals(name)) {
 				source = source.filter(name::isAncestorOf);
@@ -74,6 +74,15 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 			new EntryBinder(name, resolvedTarget, elementBinder).bindEntries(source, map);
 		}
 		return map.isEmpty() ? null : map;
+	}
+
+	private Map<Object, Object> createMap(Bindable<?> target) {
+		Class<?> mapType = (target.getValue() != null) ? Map.class : target.getType().resolve(Object.class);
+		if (EnumMap.class.isAssignableFrom(mapType)) {
+			Class<?> keyType = target.getType().asMap().getGeneric(0).resolve();
+			return CollectionFactory.createMap(mapType, keyType, 0);
+		}
+		return CollectionFactory.createMap(mapType, 0);
 	}
 
 	private boolean hasDescendants(ConfigurationPropertyName name) {

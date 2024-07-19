@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,6 +79,9 @@ class MapBinderTests {
 
 	private static final Bindable<Map<String, String[]>> STRING_ARRAY_MAP = Bindable.mapOf(String.class,
 			String[].class);
+
+	private static final Bindable<EnumMap<ExampleEnum, String>> EXAMPLE_ENUM_STRING_ENUM_MAP = Bindable
+		.of(ResolvableType.forClassWithGenerics(EnumMap.class, ExampleEnum.class, String.class));
 
 	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
@@ -635,6 +639,17 @@ class MapBinderTests {
 		Binder binder = new Binder(this.sources, null, conversionService, null);
 		CustomMapWithoutDefaultCtor result = binder.bind("foo", Bindable.of(CustomMapWithoutDefaultCtor.class)).get();
 		assertThat(result.getCustomMap().getSource()).isEqualTo("value");
+	}
+
+	@Test
+	void bindToEnumMapShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("props.foo-bar", "value");
+		this.sources.add(source);
+		Binder binder = new Binder(this.sources, null, null, null);
+		EnumMap<ExampleEnum, String> result = binder.bind("props", EXAMPLE_ENUM_STRING_ENUM_MAP).get();
+		assertThat(result).hasSize(1).containsEntry(ExampleEnum.FOO_BAR, "value");
+
 	}
 
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {
