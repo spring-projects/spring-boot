@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -155,6 +156,10 @@ class ValueObjectBinder implements DataObjectBinder {
 			}
 			if (Collection.class.isAssignableFrom(resolved)) {
 				return (T) CollectionFactory.createCollection(resolved, 0);
+			}
+			if (EnumMap.class.isAssignableFrom(resolved)) {
+				Class<?> keyType = type.asMap().getGeneric(0).resolve();
+				return (T) CollectionFactory.createMap(resolved, keyType, 0);
 			}
 			if (Map.class.isAssignableFrom(resolved)) {
 				return (T) CollectionFactory.createMap(resolved, 0);
