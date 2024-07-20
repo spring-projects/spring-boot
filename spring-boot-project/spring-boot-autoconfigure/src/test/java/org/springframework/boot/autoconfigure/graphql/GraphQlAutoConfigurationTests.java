@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.graphql.ExecutionGraphQlService;
+import org.springframework.graphql.data.method.HandlerMethodArgumentResolver;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.data.pagination.EncodingCursorStrategy;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
@@ -241,6 +242,15 @@ class GraphQlAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void whenAHandlerMethodArgumentResolverIsDefinedThenAnnotatedControllerConfigurerShouldUseIt() {
+		this.contextRunner.withUserConfiguration(CustomHandlerMethodArgumentResolverConfiguration.class)
+			.run((context) -> assertThat(context.getBean(AnnotatedControllerConfigurer.class))
+				.extracting("customArgumentResolvers")
+				.asInstanceOf(InstanceOfAssertFactories.LIST)
+				.hasSize(1));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomGraphQlBuilderConfiguration {
 
@@ -332,6 +342,15 @@ class GraphQlAutoConfigurationTests {
 		@Bean
 		Executor customExecutor() {
 			return mock(Executor.class);
+		}
+
+	}
+
+	static class CustomHandlerMethodArgumentResolverConfiguration {
+
+		@Bean
+		HandlerMethodArgumentResolver customHandlerMethodArgumentResolver() {
+			return mock(HandlerMethodArgumentResolver.class);
 		}
 
 	}
