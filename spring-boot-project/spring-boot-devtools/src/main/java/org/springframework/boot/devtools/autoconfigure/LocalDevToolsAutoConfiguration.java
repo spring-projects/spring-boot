@@ -94,14 +94,13 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		LiveReloadForAdditionalPaths liveReloadForAdditionalPaths(LiveReloadServer liveReloadServer,
 				DevToolsProperties properties, FileSystemWatcher fileSystemWatcher) {
-			return new LiveReloadForAdditionalPaths(liveReloadServer,
-				properties.getLivereload().getAdditionalPaths(), fileSystemWatcher);
+			return new LiveReloadForAdditionalPaths(liveReloadServer, properties.getLivereload().getAdditionalPaths(),
+					fileSystemWatcher);
 		}
 
 		@Bean
 		FileSystemWatcher fileSystemWatcher(DevToolsProperties properties) {
-			return new FileSystemWatcher(true,
-					properties.getLivereload().getPollInterval(),
+			return new FileSystemWatcher(true, properties.getLivereload().getPollInterval(),
 					properties.getLivereload().getQuietPeriod());
 		}
 
@@ -243,7 +242,8 @@ public class LocalDevToolsAutoConfiguration {
 			}
 		}
 
-		LiveReloadForAdditionalPaths(LiveReloadServer liveReloadServer, List<File> staticLocations, FileSystemWatcher fileSystemWatcher) {
+		LiveReloadForAdditionalPaths(LiveReloadServer liveReloadServer, List<File> staticLocations,
+				FileSystemWatcher fileSystemWatcher) {
 			this.fileSystemWatcher = fileSystemWatcher;
 
 			for (File path : staticLocations) {
@@ -254,6 +254,7 @@ public class LocalDevToolsAutoConfiguration {
 
 			this.fileSystemWatcher.start();
 		}
+
 	}
 
 }

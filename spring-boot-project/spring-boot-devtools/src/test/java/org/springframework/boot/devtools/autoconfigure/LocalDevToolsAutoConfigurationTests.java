@@ -220,7 +220,8 @@ class LocalDevToolsAutoConfigurationTests {
 		Map<String, Object> properties = new HashMap<>();
 		properties.put("spring.devtools.livereload.additional-paths", "src/main/java,src/test/java");
 		this.context = getContext(() -> initializeAndRun(Config.class, properties));
-		LiveReloadForAdditionalPaths liveReloadForAdditionalPaths = this.context.getBean(LiveReloadForAdditionalPaths.class);
+		LiveReloadForAdditionalPaths liveReloadForAdditionalPaths = this.context
+			.getBean(LiveReloadForAdditionalPaths.class);
 		Object watcher = ReflectionTestUtils.getField(liveReloadForAdditionalPaths, "fileSystemWatcher");
 		@SuppressWarnings("unchecked")
 		Map<File, Object> directories = (Map<File, Object>) ReflectionTestUtils.getField(watcher, "directories");
