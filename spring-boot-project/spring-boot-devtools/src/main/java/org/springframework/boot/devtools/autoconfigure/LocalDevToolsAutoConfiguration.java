@@ -250,9 +250,7 @@ public class LocalDevToolsAutoConfiguration {
 				this.fileSystemWatcher.addSourceDirectory(path.getAbsoluteFile());
 			}
 
-			this.fileSystemWatcher.addListener((__) -> {
-				liveReloadServer.triggerReload();
-			});
+			this.fileSystemWatcher.addListener((__) -> liveReloadServer.triggerReload());
 
 			this.fileSystemWatcher.start();
 		}
