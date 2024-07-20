@@ -216,18 +216,18 @@ class LocalDevToolsAutoConfigurationTests {
 	}
 
 	@Test
- 	void watchingAdditionalPathsForReload() throws Exception {
-  		Map<String, Object> properties = new HashMap<>();
-  		properties.put("spring.devtools.livereload.additional-paths", "src/main/java,src/test/java");
-  		this.context = getContext(() -> initializeAndRun(Config.class, properties));
-  		LiveReloadForAdditionalPaths liveReloadForAdditionalPaths = this.context.getBean(LiveReloadForAdditionalPaths.class);
-  		Object watcher = ReflectionTestUtils.getField(liveReloadForAdditionalPaths, "fileSystemWatcher");
-  		@SuppressWarnings("unchecked")
-  		Map<File, Object> directories = (Map<File, Object>) ReflectionTestUtils.getField(watcher, "directories");
-  		assertThat(directories).hasSize(2)
-    		.containsKey(new File("src/main/java").getAbsoluteFile())
-    		.containsKey(new File("src/test/java").getAbsoluteFile());
- 	}
+	void watchingAdditionalPathsForReload() throws Exception {
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("spring.devtools.livereload.additional-paths", "src/main/java,src/test/java");
+		this.context = getContext(() -> initializeAndRun(Config.class, properties));
+		LiveReloadForAdditionalPaths liveReloadForAdditionalPaths = this.context.getBean(LiveReloadForAdditionalPaths.class);
+		Object watcher = ReflectionTestUtils.getField(liveReloadForAdditionalPaths, "fileSystemWatcher");
+		@SuppressWarnings("unchecked")
+		Map<File, Object> directories = (Map<File, Object>) ReflectionTestUtils.getField(watcher, "directories");
+		assertThat(directories).hasSize(2)
+			.containsKey(new File("src/main/java").getAbsoluteFile())
+			.containsKey(new File("src/test/java").getAbsoluteFile());
+	}
 
 	@Test
 	void devToolsSwitchesJspServletToDevelopmentMode() throws Exception {

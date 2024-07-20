@@ -95,15 +95,14 @@ public class LocalDevToolsAutoConfiguration {
 		LiveReloadForAdditionalPaths liveReloadForAdditionalPaths(LiveReloadServer liveReloadServer,
 				DevToolsProperties properties, FileSystemWatcher fileSystemWatcher) {
 			return new LiveReloadForAdditionalPaths(liveReloadServer,
-    				properties.getLivereload().getAdditionalPaths(),fileSystemWatcher);
+				properties.getLivereload().getAdditionalPaths(),fileSystemWatcher);
 		}
 
 		@Bean
- 		FileSystemWatcher fileSystemWatcher(DevToolsProperties properties) {
-   			return new FileSystemWatcher(true,
-     				properties.getLivereload().getPollInterval(),
-    				properties.getLivereload().getQuietPeriod()
-   			);
+		FileSystemWatcher fileSystemWatcher(DevToolsProperties properties) {
+			return new FileSystemWatcher(true,
+					properties.getLivereload().getPollInterval(),
+					properties.getLivereload().getQuietPeriod());
 		}
 
 	}
@@ -233,27 +232,27 @@ public class LocalDevToolsAutoConfiguration {
 
 	}
 
-		static class LiveReloadForAdditionalPaths implements DisposableBean {
+	static class LiveReloadForAdditionalPaths implements DisposableBean {
 
 		private final FileSystemWatcher fileSystemWatcher;
 
 		@Override
-  		public void destroy() throws Exception {
-   			if(this.fileSystemWatcher!=null)
-    			this.fileSystemWatcher.stop();
-  		}
+		public void destroy() throws Exception {
+		if(this.fileSystemWatcher!=null)
+			this.fileSystemWatcher.stop();
+		}
 
-  		public LiveReloadForAdditionalPaths( LiveReloadServer liveReloadServer, List<File> staticLocations, FileSystemWatcher fileSystemWatcher) {
-   			this.fileSystemWatcher = fileSystemWatcher;
+		public LiveReloadForAdditionalPaths( LiveReloadServer liveReloadServer, List<File> staticLocations, FileSystemWatcher fileSystemWatcher) {
+			this.fileSystemWatcher = fileSystemWatcher;
 
-   			for (File path : staticLocations) {
-   		 		this.fileSystemWatcher.addSourceDirectory(path.getAbsoluteFile());
-   			}
+			for (File path : staticLocations) {
+				this.fileSystemWatcher.addSourceDirectory(path.getAbsoluteFile());
+			}
 
-   			this.fileSystemWatcher.addListener(__ -> liveReloadServer.triggerReload());
+			this.fileSystemWatcher.addListener(__ -> liveReloadServer.triggerReload());
 
-   			this.fileSystemWatcher.start();
-  		}
+			this.fileSystemWatcher.start();
+		}
 	}
 
 }
