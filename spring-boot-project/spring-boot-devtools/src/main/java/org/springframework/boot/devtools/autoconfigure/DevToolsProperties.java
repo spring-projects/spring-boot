@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Akshay Dubey
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.devtools")
@@ -198,6 +199,22 @@ public class DevToolsProperties {
 		 */
 		private int port = 35729;
 
+		/**
+		 * Additional paths to watch for changes.
+		 */
+		private List<File> additionalPaths = new ArrayList<>();
+
+		/**
+		 * Amount of time to wait between polling for classpath changes.
+		 */
+		private Duration pollInterval = Duration.ofSeconds(1);
+
+		/**
+		 * Amount of quiet time required without any classpath changes before a reload is
+		 * triggered.
+		 */
+		private Duration quietPeriod = Duration.ofMillis(400);
+
 		public boolean isEnabled() {
 			return this.enabled;
 		}
@@ -212,6 +229,30 @@ public class DevToolsProperties {
 
 		public void setPort(int port) {
 			this.port = port;
+		}
+
+		public List<File> getAdditionalPaths() {
+			return this.additionalPaths;
+		}
+
+		public void setAdditionalPaths(List<File> additionalPaths) {
+			this.additionalPaths = additionalPaths;
+		}
+
+		public Duration getPollInterval() {
+			return this.pollInterval;
+		}
+
+		public void setPollInterval(Duration pollInterval) {
+			this.pollInterval = pollInterval;
+		}
+
+		public Duration getQuietPeriod() {
+			return this.quietPeriod;
+		}
+
+		public void setQuietPeriod(Duration quietPeriod) {
+			this.quietPeriod = quietPeriod;
 		}
 
 	}
