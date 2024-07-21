@@ -24,7 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.TokenType;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueInCombinationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -51,7 +51,7 @@ class WavefrontPropertiesTests {
 		properties.setUri(URI.create("http://localhost:2878"));
 		properties.setApiToken(null);
 		assertThat(properties.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
-		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueInCombinationException.class)
 			.isThrownBy(properties::getApiTokenOrThrow)
 			.withMessageContaining("management.wavefront.api-token");
 	}

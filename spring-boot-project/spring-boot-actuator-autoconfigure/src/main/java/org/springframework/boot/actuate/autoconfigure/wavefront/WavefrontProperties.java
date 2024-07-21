@@ -29,7 +29,7 @@ import com.wavefront.sdk.common.clients.service.token.TokenService.Type;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueInCombinationException;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -140,7 +140,7 @@ public class WavefrontProperties {
 	 */
 	public String getApiTokenOrThrow() {
 		if (this.apiTokenType != TokenType.NO_TOKEN && this.apiToken == null && !usesProxy()) {
-			throw new InvalidConfigurationPropertyValueException("management.wavefront.api-token", null,
+			throw new InvalidConfigurationPropertyValueInCombinationException("management.wavefront.api-token", null,
 					"This property is mandatory whenever publishing directly to the Wavefront API");
 		}
 		return this.apiToken;

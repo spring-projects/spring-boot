@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueInCombinationException;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,8 +69,8 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
 			if (applicationName == null) {
-				throw new InvalidConfigurationPropertyValueException("spring.kafka.streams.application-id", null,
-						"This property is mandatory and fallback 'spring.application.name' is not set either.");
+				throw new InvalidConfigurationPropertyValueInCombinationException("spring.kafka.streams.application-id",
+						null, "This property is mandatory and fallback 'spring.application.name' is not set either.");
 			}
 			properties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
 		}
