@@ -34,23 +34,28 @@ public enum StartCommand {
 	/**
 	 * Start using {@code docker compose up}.
 	 */
-	UP {
-		@Override
-		void applyTo(DockerCompose dockerCompose, LogLevel logLevel, List<String> arguments) {
-			dockerCompose.up(logLevel, arguments);
-		}
-	},
+	UP(DockerCompose::up),
 
 	/**
 	 * Start using {@code docker compose start}.
 	 */
-	START {
-		@Override
-		void applyTo(DockerCompose dockerCompose, LogLevel logLevel, List<String> arguments) {
-			dockerCompose.start(logLevel, arguments);
-		}
-	};
+	START(DockerCompose::start);
 
-	abstract void applyTo(DockerCompose dockerCompose, LogLevel logLevel, List<String> arguments);
+	private final Command command;
+
+	StartCommand(Command command) {
+		this.command = command;
+	}
+
+	void applyTo(DockerCompose dockerCompose, LogLevel logLevel, List<String> arguments) {
+		this.command.applyTo(dockerCompose, logLevel, arguments);
+	}
+
+	@FunctionalInterface
+	private interface Command {
+
+		void applyTo(DockerCompose dockerCompose, LogLevel logLevel, List<String> arguments);
+
+	}
 
 }

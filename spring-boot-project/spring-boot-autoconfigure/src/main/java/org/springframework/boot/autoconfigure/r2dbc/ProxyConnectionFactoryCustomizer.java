@@ -16,21 +16,21 @@
 
 package org.springframework.boot.autoconfigure.r2dbc;
 
-import io.r2dbc.proxy.ProxyConnectionFactory;
+import io.r2dbc.proxy.ProxyConnectionFactory.Builder;
 
 /**
- * Callback interface that can be used to customize a
- * {@link ProxyConnectionFactory.Builder}.
+ * Callback interface that can be used to customize a {@link Builder}.
  *
  * @author Tadaya Tsuyukubo
  * @since 3.4.0
  */
+@FunctionalInterface
 public interface ProxyConnectionFactoryCustomizer {
 
 	/**
-	 * Callback to customize a {@link ProxyConnectionFactory.Builder} instance.
+	 * Callback to customize a {@link Builder} instance.
 	 * @param builder the builder to customize
 	 */
-	void customize(ProxyConnectionFactory.Builder builder);
+	void customize(Builder builder);
 
 }

@@ -64,9 +64,7 @@ class MailSenderPropertiesConfiguration {
 		}
 		Properties javaMailProperties = asProperties(properties.getProperties());
 		String protocol = properties.getProtocol();
-		if (!StringUtils.hasLength(protocol)) {
-			protocol = "smtp";
-		}
+		protocol = (!StringUtils.hasLength(protocol)) ? "smtp" : protocol;
 		Ssl ssl = properties.getSsl();
 		if (ssl.isEnabled()) {
 			javaMailProperties.setProperty("mail." + protocol + ".ssl.enable", "true");

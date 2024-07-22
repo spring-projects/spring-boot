@@ -26,9 +26,12 @@ import org.springframework.jms.connection.CachingConnectionFactory;
  * pooling.
  *
  * @author Stephane Nicoll
- * @since 6.4.0
+ * @since 3.4.0
  */
-public abstract class ConnectionFactoryUnwrapper {
+public final class ConnectionFactoryUnwrapper {
+
+	private ConnectionFactoryUnwrapper() {
+	}
 
 	/**
 	 * Return the native {@link ConnectionFactory} by unwrapping it from a cache or pool
@@ -38,8 +41,8 @@ public abstract class ConnectionFactoryUnwrapper {
 	 * @return the native connection factory that it wraps, if any
 	 */
 	public static ConnectionFactory unwrap(ConnectionFactory connectionFactory) {
-		if (connectionFactory instanceof CachingConnectionFactory ccf) {
-			return unwrap(ccf.getTargetConnectionFactory());
+		if (connectionFactory instanceof CachingConnectionFactory cachingConnectionFactory) {
+			return unwrap(cachingConnectionFactory.getTargetConnectionFactory());
 		}
 		ConnectionFactory unwrapedConnectionFactory = unwrapFromJmsPoolConnectionFactory(connectionFactory);
 		return (unwrapedConnectionFactory != null) ? unwrap(unwrapedConnectionFactory) : connectionFactory;
@@ -47,8 +50,8 @@ public abstract class ConnectionFactoryUnwrapper {
 
 	private static ConnectionFactory unwrapFromJmsPoolConnectionFactory(ConnectionFactory connectionFactory) {
 		try {
-			if (connectionFactory instanceof JmsPoolConnectionFactory poolConnectionFactory) {
-				return (ConnectionFactory) poolConnectionFactory.getConnectionFactory();
+			if (connectionFactory instanceof JmsPoolConnectionFactory jmsPoolConnectionFactory) {
+				return (ConnectionFactory) jmsPoolConnectionFactory.getConnectionFactory();
 			}
 		}
 		catch (Throwable ex) {

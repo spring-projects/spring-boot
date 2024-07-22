@@ -45,7 +45,7 @@ class PostgresEnvironment {
 	}
 
 	private String extractPassword(Map<String, String> env) {
-		if (hasTrustHostAuthMethod(env)) {
+		if (isUsingTrustHostAuthMethod(env)) {
 			return null;
 		}
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
@@ -53,7 +53,7 @@ class PostgresEnvironment {
 		return password;
 	}
 
-	private Boolean hasTrustHostAuthMethod(Map<String, String> env) {
+	private boolean isUsingTrustHostAuthMethod(Map<String, String> env) {
 		String hostAuthMethod = env.get("POSTGRES_HOST_AUTH_METHOD");
 		return "trust".equals(hostAuthMethod);
 	}

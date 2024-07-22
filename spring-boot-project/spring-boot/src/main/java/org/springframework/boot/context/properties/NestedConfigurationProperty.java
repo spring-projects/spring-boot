@@ -74,6 +74,7 @@ import org.springframework.boot.context.properties.bind.Nested;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Jared Bates
  * @since 1.2.0
  */
 @Target({ ElementType.FIELD, ElementType.RECORD_COMPONENT, ElementType.METHOD })
