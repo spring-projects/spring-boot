@@ -45,7 +45,7 @@ jobs:
         BUILD_VERSION: ${{ github.event.inputs.build-version }}
       run: node run.js --no-checkout
     - name: Sync Documentation
-      uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.16
+      uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.18
       with:
         docs-username: ${{ secrets.DOCS_USERNAME }}
         docs-host: ${{ secrets.DOCS_HOST }}
@@ -56,7 +56,7 @@ jobs:
         BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
         BUILD_VERSION: ${{ github.event.inputs.build-version }}
     - name: Bust Cloudflare Cache
-      uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.17
+      uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.18
       with:
         context-root: spring-boot
         context-path: /
