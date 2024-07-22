@@ -237,15 +237,15 @@ class GraphQlAutoConfigurationTests {
 	void whenCustomExecutorIsDefinedThenAnnotatedControllerConfigurerDoesNotUseIt() {
 		this.contextRunner.withUserConfiguration(CustomExecutorConfiguration.class).run((context) -> {
 			AnnotatedControllerConfigurer annotatedControllerConfigurer = context
-					.getBean(AnnotatedControllerConfigurer.class);
+				.getBean(AnnotatedControllerConfigurer.class);
 			assertThat(annotatedControllerConfigurer).extracting("executor").isNull();
 		});
 	}
 
 	@Test
 	void whenAHandlerMethodArgumentResolverIsDefinedThenAnnotatedControllerConfigurerShouldUseIt() {
-		this.contextRunner.withUserConfiguration(CustomHandlerMethodArgumentResolverConfiguration.class).run((context) -> assertThat(context
-				.getBean(AnnotatedControllerConfigurer.class))
+		this.contextRunner.withUserConfiguration(CustomHandlerMethodArgumentResolverConfiguration.class)
+			.run((context) -> assertThat(context.getBean(AnnotatedControllerConfigurer.class))
 				.extracting("customArgumentResolvers")
 				.asInstanceOf(InstanceOfAssertFactories.LIST)
 				.hasSize(1));
@@ -352,6 +352,7 @@ class GraphQlAutoConfigurationTests {
 		HandlerMethodArgumentResolver customHandlerMethodArgumentResolver() {
 			return mock(HandlerMethodArgumentResolver.class);
 		}
+
 	}
 
 }
