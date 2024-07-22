@@ -98,6 +98,7 @@ Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Fly
 === Execute Flyway Database Migrations on Startup
 
 To automatically run Flyway database migrations on startup, add the `org.flywaydb:flyway-core` to your classpath.
+For some databases, a https://search.maven.org/search?q=g:org.flywaydb%20a:flyway-database-*[database-specific module] needs to be added additionally, e.g. `org.flywaydb:flyway-database-postgresql` for PostgreSQL.
 
 Typically, migrations are scripts in the form `V<VERSION>__<NAME>.sql` (with `<VERSION>` an underscore-separated version, such as '`1`' or '`2_1`').
 By default, they are in a directory called `classpath:db/migration`, but you can modify that location by setting `spring.flyway.locations`.
