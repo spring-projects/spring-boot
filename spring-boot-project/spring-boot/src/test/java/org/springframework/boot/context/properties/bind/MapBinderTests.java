@@ -649,7 +649,6 @@ class MapBinderTests {
 		Binder binder = new Binder(this.sources, null, null, null);
 		EnumMap<ExampleEnum, String> result = binder.bind("props", EXAMPLE_ENUM_STRING_ENUM_MAP).get();
 		assertThat(result).hasSize(1).containsEntry(ExampleEnum.FOO_BAR, "value");
-
 	}
 
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {
