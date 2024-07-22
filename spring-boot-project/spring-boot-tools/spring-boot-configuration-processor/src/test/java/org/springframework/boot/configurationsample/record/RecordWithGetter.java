@@ -20,6 +20,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
  * @author Moritz Halbritter
+ * @param alpha the alpha property
  */
 @ConfigurationProperties("record-with-getter")
 public record RecordWithGetter(String alpha) {
