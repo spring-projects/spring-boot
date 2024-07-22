@@ -41,7 +41,7 @@ jobs:
       env:
         ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
         ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        REFERENCE: ${{ github.event.inputs.build-refname }}
+        BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
         BUILD_VERSION: ${{ github.event.inputs.build-version }}
       run: node run.js --no-checkout
     - name: Sync Documentation
@@ -52,6 +52,9 @@ jobs:
         docs-ssh-key: ${{ secrets.DOCS_SSH_KEY }}
         docs-ssh-host-key: ${{ secrets.DOCS_SSH_HOST_KEY }}
         httpdocs-path: /spring-boot/antora/reference
+      env:
+        BUILD_REFNAME: ${{ github.event.inputs.build-refname }}
+        BUILD_VERSION: ${{ github.event.inputs.build-version }}
     - name: Bust Cloudflare Cache
       uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.17
       with:
