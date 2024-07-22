@@ -186,8 +186,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 		}
 		if (!applied.contains(DataSourceProperty.DRIVER_CLASS_NAME)
 				&& properties.canSet(DataSourceProperty.DRIVER_CLASS_NAME)
-				&& this.values.containsKey(DataSourceProperty.URL)) {
-			String url = this.values.get(DataSourceProperty.URL);
+				&& applied.contains(DataSourceProperty.URL)) {
+			String url = properties.get(dataSource, DataSourceProperty.URL);
 			DatabaseDriver driver = DatabaseDriver.fromJdbcUrl(url);
 			properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
 		}
