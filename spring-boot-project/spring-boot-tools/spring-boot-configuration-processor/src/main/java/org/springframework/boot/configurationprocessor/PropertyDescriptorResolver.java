@@ -85,7 +85,7 @@ class PropertyDescriptorResolver {
 
 	private PropertyDescriptor extracted(TypeElement declaringElement, TypeElementMembers members,
 			VariableElement parameter) {
-		String name = getParameterName(parameter);
+		String name = getPropertyName(parameter);
 		TypeMirror type = parameter.asType();
 		ExecutableElement getter = members.getPublicGetter(name, type);
 		ExecutableElement setter = members.getPublicSetter(name, type);
@@ -98,12 +98,16 @@ class PropertyDescriptorResolver {
 						field);
 	}
 
-	private String getParameterName(VariableElement parameter) {
+	private String getPropertyName(VariableElement parameter) {
+		return getPropertyName(parameter, parameter.getSimpleName().toString());
+	}
+
+	private String getPropertyName(VariableElement parameter, String fallback) {
 		AnnotationMirror nameAnnotation = this.environment.getNameAnnotation(parameter);
 		if (nameAnnotation != null) {
 			return this.environment.getAnnotationElementStringValue(nameAnnotation, "value");
 		}
-		return parameter.getSimpleName().toString();
+		return fallback;
 	}
 
 	private Stream<PropertyDescriptor> resolveJavaBeanProperties(TypeElement declaringElement,
@@ -114,16 +118,16 @@ class PropertyDescriptorResolver {
 			VariableElement field = members.getFields().get(name);
 			ExecutableElement getter = findMatchingGetter(members, getters, field);
 			TypeMirror propertyType = getter.getReturnType();
-			register(candidates, new JavaBeanPropertyDescriptor(name, propertyType, declaringElement, getter,
-					members.getPublicSetter(name, propertyType), field, factoryMethod));
+			register(candidates, new JavaBeanPropertyDescriptor(getPropertyName(field, name), propertyType,
+					declaringElement, getter, members.getPublicSetter(name, propertyType), field, factoryMethod));
 		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
 			TypeMirror propertyType = field.asType();
 			ExecutableElement getter = members.getPublicGetter(name, propertyType);
 			ExecutableElement setter = members.getPublicSetter(name, propertyType);
-			register(candidates, new LombokPropertyDescriptor(name, propertyType, declaringElement, getter, setter,
-					field, factoryMethod));
+			register(candidates, new LombokPropertyDescriptor(getPropertyName(field, name), propertyType,
+					declaringElement, getter, setter, field, factoryMethod));
 		});
 		return candidates.values().stream();
 	}

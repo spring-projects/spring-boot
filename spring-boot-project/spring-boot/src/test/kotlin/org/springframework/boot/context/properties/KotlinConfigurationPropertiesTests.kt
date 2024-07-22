@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,11 +62,11 @@ class KotlinConfigurationPropertiesTests {
 	}
 
 	@Test
-	fun `renamed property can be bound to late init attribute`() {
-		this.context.register(EnableRenamedLateInitProperties::class.java)
+	fun `renamed property can be bound`() {
+		this.context.register(EnableRenamedProperties::class.java)
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "renamed.var=beta")
 		this.context.refresh()
-		assertThat(this.context.getBean(RenamedLateInitProperties::class.java).bar).isEqualTo("beta")
+		assertThat(this.context.getBean(RenamedProperties::class.java).bar).isEqualTo("beta")
 	}
 
 	@Test
@@ -89,15 +89,6 @@ class KotlinConfigurationPropertiesTests {
 
 	@ConfigurationProperties(prefix = "foo")
 	class BingProperties(@Suppress("UNUSED_PARAMETER") bar: String)
-
-	@ConfigurationProperties(prefix = "renamed")
-	class RenamedLateInitProperties{
-		@Name("var")
-		lateinit var bar: String
-	}
-
-	@EnableConfigurationProperties(RenamedLateInitProperties::class)
-	class EnableRenamedLateInitProperties
 
 	@EnableConfigurationProperties
 	class EnableConfigProperties
@@ -135,5 +126,14 @@ class KotlinConfigurationPropertiesTests {
 	data class MutableDataClassProperties(
 		var prop: String = ""
 	)
+
+	@EnableConfigurationProperties(RenamedProperties::class)
+	class EnableRenamedProperties
+
+	@ConfigurationProperties(prefix = "renamed")
+	class RenamedProperties{
+		@Name("var")
+		var bar: String = ""
+	}
 
 }
