@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -458,8 +458,8 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
-	void buildWhenDerivedFromCustomTypeDeriveDriverClassNameFromDerivedUrl() {
-		UrlCapableLimitedCustomDataSource dataSource = new UrlCapableLimitedCustomDataSource();
+	void buildWhenDerivedFromCustomTypeDeriveDriverClassNameFromUrl() {
+		NoDriverClassNameDataSource dataSource = new NoDriverClassNameDataSource();
 		dataSource.setUsername("test");
 		dataSource.setPassword("secret");
 		dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
@@ -469,6 +469,22 @@ class DataSourceBuilderTests {
 		assertThat(testSource.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
 		assertThat(testSource.getPassword()).isEqualTo("secret");
 		assertThat(testSource.getDriver()).isInstanceOf(org.postgresql.Driver.class);
+	}
+
+	@Test
+	void buildWhenDerivedFromCustomTypeDeriveDriverClassNameFromOverridenUrl() {
+		NoDriverClassNameDataSource dataSource = new NoDriverClassNameDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setUrl("jdbc:mysql://localhost:5432/mysql");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
+			.type(SimpleDriverDataSource.class)
+			.url("jdbc:mariadb://localhost:5432/mariadb");
+		SimpleDriverDataSource testSource = (SimpleDriverDataSource) builder.build();
+		assertThat(testSource.getUsername()).isEqualTo("test");
+		assertThat(testSource.getUrl()).isEqualTo("jdbc:mariadb://localhost:5432/mariadb");
+		assertThat(testSource.getPassword()).isEqualTo("secret");
+		assertThat(testSource.getDriver()).isInstanceOf(org.mariadb.jdbc.Driver.class);
 	}
 
 	@Test // gh-31920
@@ -634,7 +650,7 @@ class DataSourceBuilderTests {
 
 	}
 
-	static class UrlCapableLimitedCustomDataSource extends LimitedCustomDataSource {
+	static class NoDriverClassNameDataSource extends LimitedCustomDataSource {
 
 		private String url;
 
@@ -648,10 +664,11 @@ class DataSourceBuilderTests {
 
 	}
 
-	static class CustomDataSource extends UrlCapableLimitedCustomDataSource {
+	static class CustomDataSource extends LimitedCustomDataSource {
 
 		private String driverClassName;
 
+		private String url;
 
 		String getDriverClassName() {
 			return this.driverClassName;
@@ -659,6 +676,14 @@ class DataSourceBuilderTests {
 
 		void setDriverClassName(String driverClassName) {
 			this.driverClassName = driverClassName;
+		}
+
+		String getUrl() {
+			return this.url;
+		}
+
+		void setUrl(String url) {
+			this.url = url;
 		}
 
 	}
