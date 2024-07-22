@@ -38,13 +38,6 @@ runs:
         release: true
         generate-checksums: true
     - name: Await
-      shell: bash
-      run: |
-        url=${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot/{0}/spring-boot-{0}.jar', inputs.spring-boot-version) }}
-        echo "Waiting for $url"
-        until curl --fail --head --silent $url > /dev/null
-        do
-          echo "."
-          sleep 60
-        done
-        echo "$url is available"
+      uses: ./.github/actions/await-http-resource
+      with:
+        url: ${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot/{0}/spring-boot-{0}.jar', inputs.spring-boot-version) }}

@@ -1,0 +1,20 @@
+name: Await HTTP Resource
+description: Waits for an HTTP resource to be available (a HEAD request succeeds)
+inputs:
+  url:
+    description: 'The URL of the resource to await'
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Await HTTP resource
+      shell: bash
+      run: |
+        url=${{ inputs.url }}
+        echo "Waiting for $url"
+        until curl --fail --head --silent ${{ inputs.url }} > /dev/null
+        do
+          echo "."
+          sleep 60
+        done
+        echo "$url is available"
