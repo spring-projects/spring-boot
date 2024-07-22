@@ -175,6 +175,7 @@ public class BuildRequest {
 	 * @param trustBuilder {@code true} if the builder should be treated as trusted,
 	 * {@code false} otherwise
 	 * @return an updated build request
+	 * @since 3.4.0
 	 */
 	public BuildRequest withTrustBuilder(boolean trustBuilder) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,

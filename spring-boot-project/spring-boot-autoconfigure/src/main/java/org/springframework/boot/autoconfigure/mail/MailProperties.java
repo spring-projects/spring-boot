@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,19 +148,17 @@ public class MailProperties {
 	public static class Ssl {
 
 		/**
-		 * Whether to enable SSL support. If enabled, {@code mail.<protocol>.ssl.enable}
-		 * property is set to {@code true}.
+		 * Whether to enable SSL support. If enabled, 'mail.(protocol).ssl.enable'
+		 * property is set to 'true'.
 		 */
 		private boolean enabled = false;
 
 		/**
-		 * SSL bundle name. If not null, {@code mail.<protocol>.ssl.socketFactory}
-		 * property is set to a {@code SSLSocketFactory} obtained from the corresponding
-		 * SSL bundle.
+		 * SSL bundle name. If set, 'mail.(protocol).ssl.socketFactory' property is set to
+		 * an SSLSocketFactory obtained from the corresponding SSL bundle.
 		 * <p>
-		 * Note that the {@code STARTTLS} command can use the corresponding
-		 * {@code SSLSocketFactory}, even if {@code mail.<protocol>.ssl.enable} property
-		 * is not set.
+		 * Note that the STARTTLS command can use the corresponding SSLSocketFactory, even
+		 * if the 'mail.(protocol).ssl.enable' property is not set.
 		 */
 		private String bundle;
 

@@ -25,4 +25,5 @@ public record NestedPropertiesRecord(String myProperty, @NestedConfigurationProp
 
 	public record InnerPropertiesRecord(String myInnerProperty, @NestedConfigurationProperty NestedRecord nested) {
 	}
+
 }

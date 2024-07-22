@@ -17,4 +17,5 @@
 package org.springframework.boot.configurationsample.record;
 
 public record NestedRecord(String myNestedProperty) {
+
 }

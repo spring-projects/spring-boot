@@ -16,6 +16,10 @@ runs:
         path: updated-homebrew-tap-repo
         repository: spring-io/homebrew-tap
         token: ${{ inputs.token }}
+    - name: Await Formula
+      uses: ./.github/actions/await-http-resource
+      with:
+        url: https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/${{ inputs.spring-boot-version }}/spring-boot-cli-${{ inputs.spring-boot-version }}-homebrew.rb
     - name: Update Homebrew Tap
       shell: bash
       run: |

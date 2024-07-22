@@ -158,7 +158,7 @@ class ValueObjectBinder implements DataObjectBinder {
 				return (T) CollectionFactory.createCollection(resolved, 0);
 			}
 			if (EnumMap.class.isAssignableFrom(resolved)) {
-				Class<?> keyType = type.asMap().getGeneric(0).resolve();
+				Class<?> keyType = type.asMap().resolveGeneric(0);
 				return (T) CollectionFactory.createMap(resolved, keyType, 0);
 			}
 			if (Map.class.isAssignableFrom(resolved)) {

@@ -323,7 +323,7 @@ public class Ssl {
 	/**
 	 * Returns if SSL is enabled for the given instance.
 	 * @param ssl the {@link Ssl SSL} instance or {@code null}
-	 * @return {@code true} is SSL is enabled
+	 * @return {@code true} if SSL is enabled
 	 * @since 3.1.0
 	 */
 	public static boolean isEnabled(Ssl ssl) {

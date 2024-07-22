@@ -34,23 +34,28 @@ public enum StopCommand {
 	/**
 	 * Stop using {@code docker compose down}.
 	 */
-	DOWN {
-		@Override
-		void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments) {
-			dockerCompose.down(timeout, arguments);
-		}
-	},
+	DOWN(DockerCompose::down),
 
 	/**
 	 * Stop using {@code docker compose stop}.
 	 */
-	STOP {
-		@Override
-		void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments) {
-			dockerCompose.stop(timeout, arguments);
-		}
-	};
+	STOP(DockerCompose::stop);
 
-	abstract void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments);
+	private final Command command;
+
+	StopCommand(Command command) {
+		this.command = command;
+	}
+
+	void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments) {
+		this.command.applyTo(dockerCompose, timeout, arguments);
+	}
+
+	@FunctionalInterface
+	private interface Command {
+
+		void applyTo(DockerCompose dockerCompose, Duration timeout, List<String> arguments);
+
+	}
 
 }
