@@ -31,11 +31,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
+import org.springframework.boot.configurationsample.immutable.ConstructorParameterNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableDeducedConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
-import org.springframework.boot.configurationsample.immutable.ImmutableNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableSimpleProperties;
+import org.springframework.boot.configurationsample.immutable.JavaBeanNameAnnotationProperties;
+import org.springframework.boot.configurationsample.immutable.RecordComponentNameAnnotationProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
@@ -155,8 +157,20 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void propertiesWithNameAnnotationParameter() {
-		process(ImmutableNameAnnotationProperties.class,
+	void contructorParameterPropertyWithNameAnnotationParameter() {
+		process(ConstructorParameterNameAnnotationProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
+	}
+
+	@Test
+	void recordComponentPropertyWithNameAnnotationParameter() {
+		process(RecordComponentNameAnnotationProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
+	}
+
+	@Test
+	void javaBeanPropertyWithNameAnnotationParameter() {
+		process(JavaBeanNameAnnotationProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
 	}
 
