@@ -117,6 +117,7 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
+	@SuppressWarnings("removal")
 	public IncludeExcludeEndpointFilter<ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
 		return new IncludeExcludeEndpointFilter<>(ExposableControllerEndpoint.class, exposure.getInclude(),
