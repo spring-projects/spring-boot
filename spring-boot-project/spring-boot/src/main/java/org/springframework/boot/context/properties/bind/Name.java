@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that can be used to specify the name when binding to an immutable property.
- * This annotation may be required when binding to names that clash with reserved language
+ * Annotation that can be used to specify the name when binding to a property. This
+ * annotation may be required when binding to names that clash with reserved language
  * keywords.
+ * <p>
+ * When naming a JavaBean-based property, annotate the field. When naming a
+ * constructor-bound property, annotate the constructor parameter or record component.
  *
  * @author Phillip Webb
+ * @author Lasse Wulff
  * @since 2.4.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Documented
 public @interface Name {
 

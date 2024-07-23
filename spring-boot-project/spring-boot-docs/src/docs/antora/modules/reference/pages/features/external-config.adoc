@@ -713,6 +713,8 @@ The preceding POJO defines the following properties:
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
+TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the `@Name` annotation on the property's field.
+
 NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
@@ -769,6 +771,8 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
 As such, it is not well-suited to configuration property injection.
 For consistency with properties of other types, if you do declare an `Optional` property and it has no value, `null` rather than an empty `Optional` will be bound.
+
+TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the `@Name` annotation on the constructor parameter.
 
 
 

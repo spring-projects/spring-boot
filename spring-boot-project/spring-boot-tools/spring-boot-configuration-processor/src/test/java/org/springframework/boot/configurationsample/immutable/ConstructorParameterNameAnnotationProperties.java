@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
+package org.springframework.boot.configurationsample.immutable;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.Name;
 
 /**
- * Alternative to Spring Boot's {@code @Name} for testing (removes the need for a
- * dependency on the real annotation).
+ * Immutable class properties making use of {@code @Name}.
  *
  * @author Phillip Webb
  */
-@Target({ ElementType.PARAMETER, ElementType.FIELD })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-public @interface Name {
+@ConfigurationProperties("named")
+public class ConstructorParameterNameAnnotationProperties {
 
-	String value();
+	private final String imports;
+
+	public ConstructorParameterNameAnnotationProperties(@Name("import") String imports) {
+		this.imports = imports;
+	}
+
+	public String getImports() {
+		return this.imports;
+	}
 
 }
