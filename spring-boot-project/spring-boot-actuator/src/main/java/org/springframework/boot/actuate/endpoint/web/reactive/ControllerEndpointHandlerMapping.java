@@ -42,6 +42,7 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Phillip Webb
  * @since 2.0.0
  */
+@SuppressWarnings("removal")
 public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMapping {
 
 	private final EndpointMapping endpointMapping;
