@@ -20,8 +20,10 @@ import jakarta.jms.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.connection.SingleConnectionFactory;
+import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -77,6 +79,15 @@ class ConnectionFactoryUnwrapperTests {
 		JmsPoolConnectionFactory secondPooledConnectionFactory = new JmsPoolConnectionFactory();
 		secondPooledConnectionFactory.setConnectionFactory(firstPooledConnectionFactory);
 		assertThat(ConnectionFactoryUnwrapper.unwrap(secondPooledConnectionFactory)).isSameAs(connectionFactory);
+	}
+
+	@Test
+	@ClassPathExclusions("pooled-jms-*")
+	void unwrapWithoutJmsPoolOnClasspath() {
+		assertThat(ClassUtils.isPresent("org.messaginghub.pooled.jms.JmsPoolConnectionFactory", null)).isFalse();
+		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
+		assertThat(ConnectionFactoryUnwrapper.unwrap(new CachingConnectionFactory(connectionFactory)))
+			.isSameAs(connectionFactory);
 	}
 
 }
