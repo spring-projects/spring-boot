@@ -369,13 +369,23 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
-	void bindToAnnotationNamedParameter() {
+	void bindToAnnotationNamedConstructorParameter() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.import", "test");
 		this.sources.add(source);
-		Bindable<NamedParameter> target = Bindable.of(NamedParameter.class);
-		NamedParameter bound = this.binder.bindOrCreate("test", target);
+		Bindable<NamedConstructorParameter> target = Bindable.of(NamedConstructorParameter.class);
+		NamedConstructorParameter bound = this.binder.bindOrCreate("test", target);
 		assertThat(bound.getImportName()).isEqualTo("test");
+	}
+
+	@Test
+	void bindToAnnotationNamedRecordComponent() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.import", "test");
+		this.sources.add(source);
+		Bindable<NamedRecordComponent> target = Bindable.of(NamedRecordComponent.class);
+		NamedRecordComponent bound = this.binder.bindOrCreate("test", target);
+		assertThat(bound.importName()).isEqualTo("test");
 	}
 
 	@Test
@@ -886,11 +896,11 @@ class ValueObjectBinderTests {
 
 	}
 
-	static class NamedParameter {
+	static class NamedConstructorParameter {
 
 		private final String importName;
 
-		NamedParameter(@Name("import") String importName) {
+		NamedConstructorParameter(@Name("import") String importName) {
 			this.importName = importName;
 		}
 
@@ -898,6 +908,9 @@ class ValueObjectBinderTests {
 			return this.importName;
 		}
 
+	}
+
+	record NamedRecordComponent(@Name("import") String importName) {
 	}
 
 	static class NonExtractableParameterName {

@@ -179,10 +179,18 @@ class KotlinConstructorParametersBinderTests {
 	}
 
 	@Test
-	fun `Bind to named constructor parameter`() {
+	fun `Bind to named data class constructor parameter`() {
 		val source = MockConfigurationPropertySource("foo.string-value", "test")
 		val binder = Binder(source)
-		val bean = binder.bind("foo", Bindable.of(ExampleNamedParameterBean::class.java)).get()
+		val bean = binder.bind("foo", Bindable.of(ExampleNamedParameterDataClass::class.java)).get()
+		assertThat(bean.stringDataValue).isEqualTo("test")
+	}
+
+	@Test
+	fun `Bind to named class constructor parameter`() {
+		val source = MockConfigurationPropertySource("foo.string-value", "test")
+		val binder = Binder(source)
+		val bean = binder.bind("foo", Bindable.of(ExampleNamedParameterClass::class.java)).get()
 		assertThat(bean.stringDataValue).isEqualTo("test")
 	}
 
@@ -235,7 +243,9 @@ class KotlinConstructorParametersBinderTests {
 									val stringValue: String = "my data",
 									val enumValue: ExampleEnum = ExampleEnum.BAR_BAZ)
 
-	data class ExampleNamedParameterBean(@Name("stringValue") val stringDataValue: String)
+	data class ExampleNamedParameterDataClass(@Name("stringValue") val stringDataValue: String)
+
+	class ExampleNamedParameterClass(@Name("stringValue") val stringDataValue: String)
 
 	data class GenericValue<T>(
 		val value: T
