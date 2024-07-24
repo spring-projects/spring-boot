@@ -481,6 +481,12 @@ public class JsonWriterTests {
 		}
 
 		@Test
+		void toByteArrayReturnsByteArray() {
+			WritableJson writable = (out) -> out.append("{}");
+			assertThat(writable.toByteArray()).isEqualTo("{}".getBytes());
+		}
+
+		@Test
 		void toResourceWritesJson() throws Exception {
 			File file = new File(JsonWriterTests.this.temp, "out.json");
 			WritableJson writable = (out) -> out.append("{}");

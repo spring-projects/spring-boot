@@ -16,6 +16,7 @@
 
 package org.springframework.boot.json;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -181,6 +182,29 @@ public interface JsonWriter<T> {
 				StringBuilder stringBuilder = new StringBuilder();
 				to(stringBuilder);
 				return stringBuilder.toString();
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
+		}
+
+		/**
+		 * Write the JSON to a UTF-8 encoded byte array.
+		 * @return the JSON bytes
+		 */
+		default byte[] toByteArray() {
+			return toByteArray(StandardCharsets.UTF_8);
+		}
+
+		/**
+		 * Write the JSON to a byte array.
+		 * @param charset the charset
+		 * @return the JSON bytes
+		 */
+		default byte[] toByteArray(Charset charset) {
+			try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+				toWriter(new OutputStreamWriter(out, charset));
+				return out.toByteArray();
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException(ex);
