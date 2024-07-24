@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import brave.context.slf4j.MDCScopeDecorator;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
-import brave.propagation.Propagation.KeyFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Baggage.Correlation;
@@ -102,7 +101,7 @@ class BravePropagationConfigurations {
 			return new Factory() {
 
 				@Override
-				public <K> Propagation<K> create(KeyFactory<K> keyFactory) {
+				public <K> Propagation<K> create(brave.propagation.Propagation.KeyFactory<K> keyFactory) {
 					return null;
 				}
 

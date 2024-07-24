@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder;
 import org.springframework.boot.task.SimpleAsyncTaskSchedulerCustomizer;
-import org.springframework.boot.task.TaskSchedulerBuilder;
-import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +45,6 @@ class TaskSchedulingConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
 	@ConditionalOnMissingBean({ TaskScheduler.class, ScheduledExecutorService.class })
-	@SuppressWarnings("removal")
 	static class TaskSchedulerConfiguration {
 
 		@Bean(name = "taskScheduler")
@@ -57,8 +54,9 @@ class TaskSchedulingConfigurations {
 		}
 
 		@Bean
+		@SuppressWarnings({ "deprecation", "removal" })
 		@ConditionalOnThreading(Threading.PLATFORM)
-		ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder taskSchedulerBuilder,
+		ThreadPoolTaskScheduler taskScheduler(org.springframework.boot.task.TaskSchedulerBuilder taskSchedulerBuilder,
 				ObjectProvider<ThreadPoolTaskSchedulerBuilder> threadPoolTaskSchedulerBuilderProvider) {
 			ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder = threadPoolTaskSchedulerBuilderProvider
 				.getIfUnique();
@@ -71,14 +69,14 @@ class TaskSchedulingConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "deprecation", "removal" })
 	static class TaskSchedulerBuilderConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		TaskSchedulerBuilder taskSchedulerBuilder(TaskSchedulingProperties properties,
-				ObjectProvider<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
-			TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
+		org.springframework.boot.task.TaskSchedulerBuilder taskSchedulerBuilder(TaskSchedulingProperties properties,
+				ObjectProvider<org.springframework.boot.task.TaskSchedulerCustomizer> taskSchedulerCustomizers) {
+			org.springframework.boot.task.TaskSchedulerBuilder builder = new org.springframework.boot.task.TaskSchedulerBuilder();
 			builder = builder.poolSize(properties.getPool().getSize());
 			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
@@ -91,14 +89,15 @@ class TaskSchedulingConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "deprecation", "removal" })
 	static class ThreadPoolTaskSchedulerBuilderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean({ TaskSchedulerBuilder.class, ThreadPoolTaskSchedulerBuilder.class })
+		@ConditionalOnMissingBean({ org.springframework.boot.task.TaskSchedulerBuilder.class,
+				ThreadPoolTaskSchedulerBuilder.class })
 		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder(TaskSchedulingProperties properties,
 				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers,
-				ObjectProvider<TaskSchedulerCustomizer> taskSchedulerCustomizers) {
+				ObjectProvider<org.springframework.boot.task.TaskSchedulerCustomizer> taskSchedulerCustomizers) {
 			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
 			ThreadPoolTaskSchedulerBuilder builder = new ThreadPoolTaskSchedulerBuilder();
 			builder = builder.poolSize(properties.getPool().getSize());
@@ -111,7 +110,8 @@ class TaskSchedulingConfigurations {
 			return builder;
 		}
 
-		private ThreadPoolTaskSchedulerCustomizer adapt(TaskSchedulerCustomizer customizer) {
+		private ThreadPoolTaskSchedulerCustomizer adapt(
+				org.springframework.boot.task.TaskSchedulerCustomizer customizer) {
 			return customizer::customize;
 		}
 

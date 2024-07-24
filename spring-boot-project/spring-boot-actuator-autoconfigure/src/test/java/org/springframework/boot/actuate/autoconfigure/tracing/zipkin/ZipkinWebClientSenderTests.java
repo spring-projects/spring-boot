@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@Override
 	@BeforeEach
-	void beforeEach() throws Exception {
+	void beforeEach() {
 		super.beforeEach();
 		clearResponses();
 		clearRequests();
@@ -175,10 +175,16 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		assertThat(request).satisfies(assertions);
 	}
 
-	private static void clearRequests() throws InterruptedException {
+	private static void clearRequests() {
 		RecordedRequest request;
 		do {
-			request = mockBackEnd.takeRequest(0, TimeUnit.SECONDS);
+			try {
+				request = mockBackEnd.takeRequest(0, TimeUnit.SECONDS);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ex);
+			}
 		}
 		while (request != null);
 	}

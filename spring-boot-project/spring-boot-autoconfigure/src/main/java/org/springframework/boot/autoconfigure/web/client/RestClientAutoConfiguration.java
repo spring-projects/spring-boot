@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RestClient}.
  * <p>
- * This will produce a {@link RestClient.Builder RestClient.Builder} bean with the
- * {@code prototype} scope, meaning each injection point will receive a newly cloned
- * instance of the builder.
+ * This will produce a {@link Builder RestClient.Builder} bean with the {@code prototype}
+ * scope, meaning each injection point will receive a newly cloned instance of the
+ * builder.
  *
  * @author Arjen Poutsma
  * @author Moritz Halbritter

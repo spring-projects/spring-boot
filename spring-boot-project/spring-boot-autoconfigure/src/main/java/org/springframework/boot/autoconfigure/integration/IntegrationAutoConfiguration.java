@@ -43,7 +43,6 @@ import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfigurati
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
-import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -171,13 +170,14 @@ public class IntegrationAutoConfiguration {
 	 * scheduling explicitly.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(TaskSchedulerBuilder.class)
+	@ConditionalOnBean(org.springframework.boot.task.TaskSchedulerBuilder.class)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "deprecation", "removal" })
 	protected static class IntegrationTaskSchedulerConfiguration {
 
 		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
-		public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder taskSchedulerBuilder,
+		public ThreadPoolTaskScheduler taskScheduler(
+				org.springframework.boot.task.TaskSchedulerBuilder taskSchedulerBuilder,
 				ObjectProvider<ThreadPoolTaskSchedulerBuilder> threadPoolTaskSchedulerBuilderProvider) {
 			ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder = threadPoolTaskSchedulerBuilderProvider
 				.getIfUnique();
