@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.file.CopySpec;
@@ -150,27 +149,28 @@ class BootArchiveSupport {
 	}
 
 	private Integer getDirMode(CopySpec copySpec) {
-		return getMode(copySpec, "getDirPermissions", copySpec::getDirMode);
+		return getMode(copySpec, "getDirPermissions", "getDirMode");
 	}
 
 	private Integer getFileMode(CopySpec copySpec) {
-		return getMode(copySpec, "getFilePermissions", copySpec::getFileMode);
+		return getMode(copySpec, "getFilePermissions", "getFileMode");
 	}
 
 	@SuppressWarnings("unchecked")
-	private Integer getMode(CopySpec copySpec, String methodName, Supplier<Integer> fallback) {
-		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
-			try {
-				Object filePermissions = ((Property<Object>) copySpec.getClass().getMethod(methodName).invoke(copySpec))
-					.getOrNull();
+	private Integer getMode(CopySpec copySpec, String methodName, String fallbackMethodName) {
+		try {
+			if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
+				Object filePermissions = ((Property<Object>) copySpec.getClass().getMethod(methodName)
+						.invoke(copySpec)).getOrNull();
 				return (filePermissions != null)
-						? (int) filePermissions.getClass().getMethod("toUnixNumeric").invoke(filePermissions) : null;
+						? (int) filePermissions.getClass().getMethod("toUnixNumeric").invoke(filePermissions)
+						: null;
 			}
-			catch (Exception ex) {
-				throw new GradleException("Failed to get permissions", ex);
-			}
+			return (Integer) copySpec.getClass().getMethod(fallbackMethodName).invoke(copySpec);
 		}
-		return fallback.get();
+		catch (Exception ex) {
+			throw new GradleException("Failed to get permissions", ex);
+		}
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {
