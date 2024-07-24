@@ -289,7 +289,7 @@ class ConfigurationPropertiesTests {
 		load(new Class<?>[] { BasicConfiguration.class, BasicPropertiesConsumer.class }, "name=child");
 		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
 		assertThat(parent.getBean(BasicProperties.class)).isNotNull();
-		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName()).isEqualTo("parent");
+		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName()).isEqualTo("child");
 		parent.close();
 	}
 

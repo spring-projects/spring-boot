@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -68,18 +67,8 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private boolean containsBeanDefinition(String name) {
-		return containsBeanDefinition(this.beanFactory, name);
-	}
-
-	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
-		if (beanFactory instanceof ListableBeanFactory listableBeanFactory
-				&& listableBeanFactory.containsBeanDefinition(name)) {
-			return true;
-		}
-		if (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {
-			return containsBeanDefinition(hierarchicalBeanFactory.getParentBeanFactory(), name);
-		}
-		return false;
+		return (this.beanFactory instanceof ListableBeanFactory listableBeanFactory
+				&& listableBeanFactory.containsBeanDefinition(name));
 	}
 
 	private void registerBeanDefinition(String beanName, Class<?> type,
