@@ -38,23 +38,41 @@ public class ApplicationPid {
 	private static final PosixFilePermission[] WRITE_PERMISSIONS = { PosixFilePermission.OWNER_WRITE,
 			PosixFilePermission.GROUP_WRITE, PosixFilePermission.OTHERS_WRITE };
 
-	private final String pid;
+	private final Long pid;
 
 	public ApplicationPid() {
-		this.pid = getPid();
+		this.pid = currentProcessPid();
 	}
 
-	protected ApplicationPid(String pid) {
+	protected ApplicationPid(Long pid) {
 		this.pid = pid;
 	}
 
-	private String getPid() {
+	private Long currentProcessPid() {
 		try {
-			return Long.toString(ProcessHandle.current().pid());
+			return Long.valueOf(ProcessHandle.current().pid());
 		}
 		catch (Throwable ex) {
 			return null;
 		}
+	}
+
+	/**
+	 * Return if the application PID is available.
+	 * @return {@code true} if the PID is available
+	 * @since 3.4.0
+	 */
+	public boolean isAvailable() {
+		return this.pid != null;
+	}
+
+	/**
+	 * Return the application PID as a {@link Long}.
+	 * @return the application PID or {@code null}
+	 * @since 3.4.0
+	 */
+	public Long toLong() {
+		return this.pid;
 	}
 
 	@Override
@@ -75,7 +93,7 @@ public class ApplicationPid {
 
 	@Override
 	public String toString() {
-		return (this.pid != null) ? this.pid : "???";
+		return (this.pid != null) ? String.valueOf(this.pid) : "???";
 	}
 
 	/**
@@ -91,7 +109,7 @@ public class ApplicationPid {
 			assertCanOverwrite(file);
 		}
 		try (FileWriter writer = new FileWriter(file)) {
-			writer.append(this.pid);
+			writer.append(String.valueOf(this.pid));
 		}
 	}
 
