@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.logging.log4j2;
+package org.springframework.boot.logging.logback;
 
+import java.util.Collections;
 import java.util.Map;
 
-import org.apache.logging.log4j.core.impl.JdkMapAdapterStringMap;
-import org.apache.logging.log4j.core.impl.MutableLogEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.logging.structured.ApplicationMetadata;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
+import org.springframework.boot.system.ApplicationPid;
+import org.springframework.boot.system.MockApplicationPid;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,45 +35,51 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
-class Log4j2EcsStructuredLoggingFormatterTests extends AbstractStructuredLoggingTests {
+class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
 
 	private ElasticCommonSchemaStructuredLogFormatter formatter;
 
+	@Override
 	@BeforeEach
 	void setUp() {
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(
-				new ApplicationMetadata(1L, "name", "1.0.0", "test", "node-1"));
+		super.setUp();
+		ApplicationPid pid = MockApplicationPid.of(1L);
+		ElasticCommonSchemaService service = new ElasticCommonSchemaService("name", "1.0.0", "test", "node-1");
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(pid, service, getThrowableProxyConverter());
 	}
 
 	@Test
 	void shouldFormat() {
-		MutableLogEvent event = createEvent();
-		event.setContextData(new JdkMapAdapterStringMap(Map.of("mdc-1", "mdc-v-1"), true));
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Map.of("mdc-1", "mdc-v-1"));
+		event.setKeyValuePairs(keyValuePairs("kv-1", "kv-v-1"));
 		String json = this.formatter.format(event);
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", "2024-07-02T08:49:53Z",
 				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
 				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
-				"org.example.Test", "message", "message", "mdc-1", "mdc-v-1", "ecs.version", "8.11"));
+				"org.example.Test", "message", "message", "mdc-1", "mdc-v-1", "kv-1", "kv-v-1", "ecs.version", "8.11"));
 	}
 
 	@Test
 	void shouldFormatException() {
-		MutableLogEvent event = createEvent();
-		event.setThrown(new RuntimeException("Boom"));
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Collections.emptyMap());
+		event.setThrowableProxy(new ThrowableProxy(new RuntimeException("Boom")));
 		String json = this.formatter.format(event);
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized)
 			.containsAllEntriesOf(map("error.type", "java.lang.RuntimeException", "error.message", "Boom"));
 		String stackTrace = (String) deserialized.get("error.stack_trace");
 		assertThat(stackTrace).startsWith(
-				"""
-						java.lang.RuntimeException: Boom
-						\tat org.springframework.boot.logging.log4j2.Log4j2EcsStructuredLoggingFormatterTests.shouldFormatException""");
+				"java.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.logback.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException"
+					.formatted());
 		assertThat(json).contains(
-				"""
-						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.Log4j2EcsStructuredLoggingFormatterTests.shouldFormatException""");
+				"java.lang.RuntimeException: Boom%n\\tat org.springframework.boot.logging.logback.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException"
+					.formatted()
+					.replace("\n", "\\n")
+					.replace("\r", "\\r"));
 	}
 
 }

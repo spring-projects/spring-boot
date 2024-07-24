@@ -24,12 +24,14 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
 
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
+import org.springframework.boot.system.ApplicationPid;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
@@ -48,40 +50,10 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 
 	private StructuredLogFormatter<ILoggingEvent> formatter;
 
-	private Long pid;
-
-	private String serviceName;
-
-	private String serviceVersion;
-
-	private String serviceNodeName;
-
-	private String serviceEnvironment;
-
 	private Charset charset = StandardCharsets.UTF_8;
 
 	public void setFormat(String format) {
 		this.format = format;
-	}
-
-	public void setPid(Long pid) {
-		this.pid = pid;
-	}
-
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
-	}
-
-	public void setServiceVersion(String serviceVersion) {
-		this.serviceVersion = serviceVersion;
-	}
-
-	public void setServiceNodeName(String serviceNodeName) {
-		this.serviceNodeName = serviceNodeName;
-	}
-
-	public void setServiceEnvironment(String serviceEnvironment) {
-		this.serviceEnvironment = serviceEnvironment;
 	}
 
 	public void setCharset(Charset charset) {
@@ -97,10 +69,10 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 	}
 
 	private StructuredLogFormatter<ILoggingEvent> createFormatter(String format) {
-		ApplicationMetadata applicationMetadata = new ApplicationMetadata(this.pid, this.serviceName,
-				this.serviceVersion, this.serviceEnvironment, this.serviceNodeName);
-		return new StructuredLogFormatterFactory<>(ILoggingEvent.class, applicationMetadata,
-				this::addAvailableParameters, this::addCommonFormatters)
+		Environment environment = (Environment) getContext().getObject(Environment.class.getName());
+		Assert.state(environment != null, "Unable to find Spring Environment in logger context");
+		return new StructuredLogFormatterFactory<>(ILoggingEvent.class, environment, this::addAvailableParameters,
+				this::addCommonFormatters)
 			.get(format);
 	}
 
@@ -111,7 +83,8 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 	private void addCommonFormatters(CommonFormatters<ILoggingEvent> commonFormatters) {
 		commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
 				(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(
-						instantiator.getArg(ApplicationMetadata.class),
+						instantiator.getArg(ApplicationPid.class),
+						instantiator.getArg(ElasticCommonSchemaService.class),
 						instantiator.getArg(ThrowableProxyConverter.class)));
 		commonFormatters.add(CommonStructuredLogFormat.LOGSTASH, (instantiator) -> new LogstashStructuredLogFormatter(
 				instantiator.getArg(ThrowableProxyConverter.class)));
@@ -130,7 +103,7 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public byte[] encode(ILoggingEvent event) {
-		return this.formatter.format(event).getBytes(this.charset);
+		return this.formatter.formatAsBytes(event, (this.charset != null) ? this.charset : StandardCharsets.UTF_8);
 	}
 
 	@Override

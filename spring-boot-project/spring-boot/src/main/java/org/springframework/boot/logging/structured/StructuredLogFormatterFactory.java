@@ -21,10 +21,12 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
+import org.springframework.boot.system.ApplicationPid;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.boot.util.Instantiator.FailureHandler;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
@@ -56,16 +58,19 @@ public class StructuredLogFormatterFactory<E> {
 	/**
 	 * Create a new {@link StructuredLogFormatterFactory} instance.
 	 * @param logEventType the log event type
-	 * @param applicationMetadata an {@link ApplicationMetadata} instance for injection
+	 * @param environment the Spring {@link Environment}
 	 * @param availableParameters callback used to configure available parameters for the
 	 * specific logging system
 	 * @param commonFormatters callback used to define supported common formatters
 	 */
-	public StructuredLogFormatterFactory(Class<E> logEventType, ApplicationMetadata applicationMetadata,
+	public StructuredLogFormatterFactory(Class<E> logEventType, Environment environment,
 			Consumer<AvailableParameters> availableParameters, Consumer<CommonFormatters<E>> commonFormatters) {
 		this.logEventType = logEventType;
 		this.instantiator = new Instantiator<>(StructuredLogFormatter.class, (allAvailableParameters) -> {
-			allAvailableParameters.add(ApplicationMetadata.class, applicationMetadata);
+			allAvailableParameters.add(Environment.class, environment);
+			allAvailableParameters.add(ApplicationPid.class, (type) -> new ApplicationPid());
+			allAvailableParameters.add(ElasticCommonSchemaService.class,
+					(type) -> ElasticCommonSchemaService.get(environment));
 			if (availableParameters != null) {
 				availableParameters.accept(allAvailableParameters);
 			}

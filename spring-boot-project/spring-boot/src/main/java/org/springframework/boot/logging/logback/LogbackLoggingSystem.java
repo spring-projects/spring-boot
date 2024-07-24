@@ -186,13 +186,13 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	@Override
 	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
+		putInitializationContextObjects(loggerContext, initializationContext);
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
 		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, logFile)) {
 			super.initialize(initializationContext, configLocation, logFile);
 		}
-		loggerContext.putObject(Environment.class.getName(), initializationContext.getEnvironment());
 		loggerContext.getTurboFilterList().remove(SUPPRESS_ALL_FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
@@ -211,6 +211,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
+		withLoggingSuppressed(() -> putInitializationContextObjects(loggerContext, initializationContext));
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
@@ -222,21 +223,23 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
-		LoggerContext context = getLoggerContext();
-		stopAndReset(context);
+		LoggerContext loggerContext = getLoggerContext();
+		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> {
+			putInitializationContextObjects(loggerContext, initializationContext);
 			boolean debug = Boolean.getBoolean("logback.debug");
 			if (debug) {
-				StatusListenerConfigHelper.addOnConsoleListenerInstance(context, new OnConsoleStatusListener());
+				StatusListenerConfigHelper.addOnConsoleListenerInstance(loggerContext, new OnConsoleStatusListener());
 			}
 			Environment environment = initializationContext.getEnvironment();
 			// Apply system properties directly in case the same JVM runs multiple apps
-			new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), context::putProperty)
+			new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment),
+					loggerContext::putProperty)
 				.apply(logFile);
-			LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
-					: new LogbackConfigurator(context);
+			LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(loggerContext)
+					: new LogbackConfigurator(loggerContext);
 			new DefaultLogbackConfiguration(logFile).apply(configurator);
-			context.setPackagingDataEnabled(true);
+			loggerContext.setPackagingDataEnabled(true);
 		});
 	}
 
@@ -246,6 +249,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> {
+			putInitializationContextObjects(loggerContext, initializationContext);
 			if (initializationContext != null) {
 				applySystemProperties(initializationContext.getEnvironment(), logFile);
 			}
@@ -334,9 +338,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	@Override
 	protected void reinitialize(LoggingInitializationContext initializationContext) {
-		getLoggerContext().reset();
-		getLoggerContext().getStatusManager().clear();
+		LoggerContext loggerContext = getLoggerContext();
+		loggerContext.reset();
+		loggerContext.getStatusManager().clear();
 		loadConfiguration(initializationContext, getSelfInitializationConfig(), null);
+	}
+
+	private void putInitializationContextObjects(LoggerContext loggerContext,
+			LoggingInitializationContext initializationContext) {
+		withLoggingSuppressed(
+				() -> loggerContext.putObject(Environment.class.getName(), initializationContext.getEnvironment()));
 	}
 
 	@Override

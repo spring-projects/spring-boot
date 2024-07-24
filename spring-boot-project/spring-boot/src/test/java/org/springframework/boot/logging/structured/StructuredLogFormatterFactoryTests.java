@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
+import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -31,13 +33,13 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class StructuredLogFormatterFactoryTests {
 
-	private final ApplicationMetadata applicationMetadata;
-
 	private final StructuredLogFormatterFactory<LogEvent> factory;
 
+	private final MockEnvironment environment = new MockEnvironment();
+
 	StructuredLogFormatterFactoryTests() {
-		this.applicationMetadata = new ApplicationMetadata(123L, "test", "1.2", null, null);
-		this.factory = new StructuredLogFormatterFactory<>(LogEvent.class, this.applicationMetadata,
+		this.environment.setProperty("logging.structured.ecs.service.version", "1.2.3");
+		this.factory = new StructuredLogFormatterFactory<>(LogEvent.class, this.environment,
 				this::addAvailableParameters, this::addCommonFormatters);
 	}
 
@@ -47,7 +49,7 @@ class StructuredLogFormatterFactoryTests {
 
 	private void addCommonFormatters(CommonFormatters<LogEvent> commonFormatters) {
 		commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
-				(instantiator) -> new TestEcsFormatter(instantiator.getArg(ApplicationMetadata.class),
+				(instantiator) -> new TestEcsFormatter(instantiator.getArg(Environment.class),
 						instantiator.getArg(StringBuilder.class)));
 	}
 
@@ -84,7 +86,7 @@ class StructuredLogFormatterFactoryTests {
 	@Test
 	void getUsingClassNameInjectsApplicationMetadata() {
 		TestEcsFormatter formatter = (TestEcsFormatter) this.factory.get(TestEcsFormatter.class.getName());
-		assertThat(formatter.getMetadata()).isSameAs(this.applicationMetadata);
+		assertThat(formatter.getEnvironment()).isSameAs(this.environment);
 	}
 
 	@Test
@@ -103,22 +105,22 @@ class StructuredLogFormatterFactoryTests {
 
 	static class TestEcsFormatter implements StructuredLogFormatter<LogEvent> {
 
-		private ApplicationMetadata metadata;
+		private Environment environment;
 
 		private StringBuilder custom;
 
-		TestEcsFormatter(ApplicationMetadata metadata, StringBuilder custom) {
-			this.metadata = metadata;
+		TestEcsFormatter(Environment environment, StringBuilder custom) {
+			this.environment = environment;
 			this.custom = custom;
 		}
 
 		@Override
 		public String format(LogEvent event) {
-			return "formatted " + this.metadata.version();
+			return "formatted " + this.environment.getProperty("logging.structured.ecs.service.version");
 		}
 
-		ApplicationMetadata getMetadata() {
-			return this.metadata;
+		Environment getEnvironment() {
+			return this.environment;
 		}
 
 		StringBuilder getCustom() {
@@ -129,8 +131,8 @@ class StructuredLogFormatterFactoryTests {
 
 	static class ExtendedTestEcsFormatter extends TestEcsFormatter {
 
-		ExtendedTestEcsFormatter(ApplicationMetadata metadata, StringBuilder custom) {
-			super(metadata, custom);
+		ExtendedTestEcsFormatter(Environment environment, StringBuilder custom) {
+			super(environment, custom);
 		}
 
 	}

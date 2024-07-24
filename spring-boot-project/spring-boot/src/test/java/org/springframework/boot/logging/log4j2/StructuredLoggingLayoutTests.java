@@ -18,11 +18,18 @@ package org.springframework.boot.logging.log4j2;
 
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.logging.structured.ApplicationMetadata;
+import org.springframework.boot.logging.log4j2.StructuredLogLayout.Builder;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.system.ApplicationPid;
+import org.springframework.mock.env.MockEnvironment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -34,9 +41,25 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
+	private MockEnvironment environment;
+
+	private LoggerContext loggerContext;
+
+	@BeforeEach
+	void setup() {
+		this.environment = new MockEnvironment();
+		this.loggerContext = (LoggerContext) LogManager.getContext(false);
+		this.loggerContext.putObject(Log4J2LoggingSystem.ENVIRONMENT_KEY, this.environment);
+	}
+
+	@AfterEach
+	void cleanup() {
+		this.loggerContext.removeObject(Log4J2LoggingSystem.ENVIRONMENT_KEY);
+	}
+
 	@Test
 	void shouldSupportEcsCommonFormat() {
-		StructuredLogLayout layout = StructuredLogLayout.newBuilder().setFormat("ecs").build();
+		StructuredLogLayout layout = newBuilder().setFormat("ecs").build();
 		String json = layout.toSerializable(createEvent());
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsKey("ecs.version");
@@ -44,7 +67,7 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldSupportLogstashCommonFormat() {
-		StructuredLogLayout layout = StructuredLogLayout.newBuilder().setFormat("logstash").build();
+		StructuredLogLayout layout = newBuilder().setFormat("logstash").build();
 		String json = layout.toSerializable(createEvent());
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsKey("@version");
@@ -52,8 +75,7 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldSupportCustomFormat() {
-		StructuredLogLayout layout = StructuredLogLayout.newBuilder()
-			.setFormat(CustomLog4j2StructuredLoggingFormatter.class.getName())
+		StructuredLogLayout layout = newBuilder().setFormat(CustomLog4j2StructuredLoggingFormatter.class.getName())
 			.build();
 		String format = layout.toSerializable(createEvent());
 		assertThat(format).isEqualTo("custom-format");
@@ -61,38 +83,39 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldInjectCustomFormatConstructorParameters() {
-		StructuredLogLayout layout = StructuredLogLayout.newBuilder()
+		StructuredLogLayout layout = newBuilder()
 			.setFormat(CustomLog4j2StructuredLoggingFormatterWithInjection.class.getName())
-			.setPid(1L)
 			.build();
 		String format = layout.toSerializable(createEvent());
-		assertThat(format).isEqualTo("custom-format-with-injection pid=1");
+		assertThat(format).isEqualTo("custom-format-with-injection pid=" + new ApplicationPid());
 	}
 
 	@Test
 	void shouldCheckTypeArgument() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> StructuredLogLayout.newBuilder()
-				.setFormat(CustomLog4j2StructuredLoggingFormatterWrongType.class.getName())
-				.build())
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> newBuilder().setFormat(CustomLog4j2StructuredLoggingFormatterWrongType.class.getName()).build())
 			.withMessageContaining("must be org.apache.logging.log4j.core.LogEvent but was java.lang.String");
 	}
 
 	@Test
 	void shouldCheckTypeArgumentWithRawType() {
 		assertThatIllegalArgumentException()
-			.isThrownBy(() -> StructuredLogLayout.newBuilder()
-				.setFormat(CustomLog4j2StructuredLoggingFormatterRawType.class.getName())
-				.build())
+			.isThrownBy(
+					() -> newBuilder().setFormat(CustomLog4j2StructuredLoggingFormatterRawType.class.getName()).build())
 			.withMessageContaining("must be org.apache.logging.log4j.core.LogEvent but was null");
 	}
 
 	@Test
 	void shouldFailIfNoCommonOrCustomFormatIsSet() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> StructuredLogLayout.newBuilder().setFormat("does-not-exist").build())
+		assertThatIllegalArgumentException().isThrownBy(() -> newBuilder().setFormat("does-not-exist").build())
 			.withMessageContaining("Unknown format 'does-not-exist'. "
 					+ "Values can be a valid fully-qualified class name or one of the common formats: [ecs, logstash]");
+	}
+
+	private Builder newBuilder() {
+		Builder builder = StructuredLogLayout.newBuilder();
+		ReflectionTestUtils.setField(builder, "loggerContext", this.loggerContext);
+		return builder;
 	}
 
 	static final class CustomLog4j2StructuredLoggingFormatter implements StructuredLogFormatter<LogEvent> {
@@ -106,15 +129,15 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
 	static final class CustomLog4j2StructuredLoggingFormatterWithInjection implements StructuredLogFormatter<LogEvent> {
 
-		private final ApplicationMetadata metadata;
+		private final ApplicationPid pid;
 
-		CustomLog4j2StructuredLoggingFormatterWithInjection(ApplicationMetadata metadata) {
-			this.metadata = metadata;
+		CustomLog4j2StructuredLoggingFormatterWithInjection(ApplicationPid pid) {
+			this.pid = pid;
 		}
 
 		@Override
 		public String format(LogEvent event) {
-			return "custom-format-with-injection pid=" + this.metadata.pid();
+			return "custom-format-with-injection pid=" + this.pid;
 		}
 
 	}

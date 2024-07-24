@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
-class Log4j2LogstashStructuredLoggingFormatterTests extends AbstractStructuredLoggingTests {
+class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
 
 	private LogstashStructuredLogFormatter formatter;
 
@@ -71,10 +71,10 @@ class Log4j2LogstashStructuredLoggingFormatterTests extends AbstractStructuredLo
 		assertThat(stackTrace).startsWith(
 				"""
 						java.lang.RuntimeException: Boom
-						\tat org.springframework.boot.logging.log4j2.Log4j2LogstashStructuredLoggingFormatterTests.shouldFormatException""");
+						\tat org.springframework.boot.logging.log4j2.LogstashStructuredLogFormatterTests.shouldFormatException""");
 		assertThat(json).contains(
 				"""
-						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.Log4j2LogstashStructuredLoggingFormatterTests.shouldFormatException""");
+						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.LogstashStructuredLogFormatterTests.shouldFormatException""");
 	}
 
 }

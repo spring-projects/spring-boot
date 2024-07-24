@@ -224,6 +224,26 @@
       "defaultValue": true
     },
     {
+      "name": "logging.structured.ecs.service.environment",
+      "type": "java.lang.String",
+      "description": "Structured ECS service environment."
+    },
+    {
+      "name": "logging.structured.ecs.service.name",
+      "type": "java.lang.String",
+      "description": "Structured ECS service name (defaults to 'spring.application.name')."
+    },
+    {
+      "name": "logging.structured.ecs.service.node-name",
+      "type": "java.lang.String",
+      "description": "Structured ECS service node name."
+    },
+    {
+      "name": "logging.structured.ecs.service.version",
+      "type": "java.lang.String",
+      "description": "Structured ECS service version."
+    },
+    {
       "name": "logging.structured.format.console",
       "type": "java.lang.String",
       "description": "Structured logging format for output to the console. Must be either a format id or a fully qualified class name."
@@ -594,6 +614,44 @@
       "providers": [
         {
           "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "logging.structured.format.console",
+      "values": [
+        {
+          "value": "ecs"
+        },
+        {
+          "value": "logstash"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class"
+          }
+        }
+      ]
+    },
+    {
+      "name": "logging.structured.format.file",
+      "values": [
+        {
+          "value": "ecs"
+        },
+        {
+          "value": "logstash"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class"
+          }
         }
       ]
     },

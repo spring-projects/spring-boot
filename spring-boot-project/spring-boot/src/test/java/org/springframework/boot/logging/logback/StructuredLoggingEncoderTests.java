@@ -23,12 +23,16 @@ import java.util.Map;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.ContextBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.system.ApplicationPid;
+import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -37,16 +41,25 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link StructuredLogEncoder}.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class StructuredLoggingEncoderTests extends AbstractStructuredLoggingTests {
 
 	private StructuredLogEncoder encoder;
 
+	private Context loggerContext;
+
+	private MockEnvironment environment;
+
 	@Override
 	@BeforeEach
 	void setUp() {
 		super.setUp();
+		this.environment = new MockEnvironment();
+		this.loggerContext = new ContextBase();
+		this.loggerContext.putObject(Environment.class.getName(), this.environment);
 		this.encoder = new StructuredLogEncoder();
+		this.encoder.setContext(this.loggerContext);
 	}
 
 	@Override
@@ -91,12 +104,12 @@ class StructuredLoggingEncoderTests extends AbstractStructuredLoggingTests {
 	@Test
 	void shouldInjectCustomFormatConstructorParameters() {
 		this.encoder.setFormat(CustomLogbackStructuredLoggingFormatterWithInjection.class.getName());
-		this.encoder.setPid(1L);
 		this.encoder.start();
 		LoggingEvent event = createEvent();
 		event.setMDCPropertyMap(Collections.emptyMap());
 		String format = encode(event);
-		assertThat(format).isEqualTo("custom-format-with-injection pid=1 hasThrowableProxyConverter=true");
+		assertThat(format)
+			.isEqualTo("custom-format-with-injection pid=" + new ApplicationPid() + " hasThrowableProxyConverter=true");
 	}
 
 	@Test
@@ -141,20 +154,20 @@ class StructuredLoggingEncoderTests extends AbstractStructuredLoggingTests {
 	static final class CustomLogbackStructuredLoggingFormatterWithInjection
 			implements StructuredLogFormatter<ILoggingEvent> {
 
-		private final ApplicationMetadata metadata;
+		private final ApplicationPid pid;
 
 		private final ThrowableProxyConverter throwableProxyConverter;
 
-		CustomLogbackStructuredLoggingFormatterWithInjection(ApplicationMetadata metadata,
+		CustomLogbackStructuredLoggingFormatterWithInjection(ApplicationPid pid,
 				ThrowableProxyConverter throwableProxyConverter) {
-			this.metadata = metadata;
+			this.pid = pid;
 			this.throwableProxyConverter = throwableProxyConverter;
 		}
 
 		@Override
 		public String format(ILoggingEvent event) {
 			boolean hasThrowableProxyConverter = this.throwableProxyConverter != null;
-			return "custom-format-with-injection pid=" + this.metadata.pid() + " hasThrowableProxyConverter="
+			return "custom-format-with-injection pid=" + this.pid + " hasThrowableProxyConverter="
 					+ hasThrowableProxyConverter;
 		}
 

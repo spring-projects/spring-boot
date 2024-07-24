@@ -19,23 +19,23 @@ package smoketest.structuredlogging.log4j2;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.system.ApplicationPid;
 
 public class CustomStructuredLogFormatter implements StructuredLogFormatter<LogEvent> {
 
-	private final ApplicationMetadata metadata;
+	private final ApplicationPid pid;
 
-	public CustomStructuredLogFormatter(ApplicationMetadata metadata) {
-		this.metadata = metadata;
+	public CustomStructuredLogFormatter(ApplicationPid pid) {
+		this.pid = pid;
 	}
 
 	@Override
 	public String format(LogEvent event) {
 		StringBuilder result = new StringBuilder();
 		result.append("epoch=").append(event.getInstant().getEpochMillisecond());
-		if (this.metadata.pid() != null) {
-			result.append(" pid=").append(this.metadata.pid());
+		if (this.pid.isAvailable()) {
+			result.append(" pid=").append(this.pid);
 		}
 		result.append(" msg=\"").append(event.getMessage().getFormattedMessage()).append('"');
 		ThrowableProxy throwable = event.getThrownProxy();

@@ -21,17 +21,21 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
+import org.apache.logging.log4j.core.config.plugins.PluginLoggerContext;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
+import org.springframework.boot.system.ApplicationPid;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
@@ -57,6 +61,11 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		return this.formatter.format(event);
 	}
 
+	@Override
+	public byte[] toByteArray(LogEvent event) {
+		return this.formatter.formatAsBytes(event, (getCharset() != null) ? getCharset() : StandardCharsets.UTF_8);
+	}
+
 	@PluginBuilderFactory
 	static StructuredLogLayout.Builder newBuilder() {
 		return new StructuredLogLayout.Builder();
@@ -64,26 +73,14 @@ final class StructuredLogLayout extends AbstractStringLayout {
 
 	static final class Builder implements org.apache.logging.log4j.core.util.Builder<StructuredLogLayout> {
 
+		@PluginLoggerContext
+		private LoggerContext loggerContext;
+
 		@PluginBuilderAttribute
 		private String format;
 
 		@PluginBuilderAttribute
 		private String charset = StandardCharsets.UTF_8.name();
-
-		@PluginBuilderAttribute
-		private Long pid;
-
-		@PluginBuilderAttribute
-		private String serviceName;
-
-		@PluginBuilderAttribute
-		private String serviceVersion;
-
-		@PluginBuilderAttribute
-		private String serviceNodeName;
-
-		@PluginBuilderAttribute
-		private String serviceEnvironment;
 
 		Builder setFormat(String format) {
 			this.format = format;
@@ -95,38 +92,13 @@ final class StructuredLogLayout extends AbstractStringLayout {
 			return this;
 		}
 
-		Builder setPid(Long pid) {
-			this.pid = pid;
-			return this;
-		}
-
-		Builder setServiceName(String serviceName) {
-			this.serviceName = serviceName;
-			return this;
-		}
-
-		Builder setServiceVersion(String serviceVersion) {
-			this.serviceVersion = serviceVersion;
-			return this;
-		}
-
-		Builder setServiceNodeName(String serviceNodeName) {
-			this.serviceNodeName = serviceNodeName;
-			return this;
-		}
-
-		Builder setServiceEnvironment(String serviceEnvironment) {
-			this.serviceEnvironment = serviceEnvironment;
-			return this;
-		}
-
 		@Override
 		public StructuredLogLayout build() {
-			ApplicationMetadata applicationMetadata = new ApplicationMetadata(this.pid, this.serviceName,
-					this.serviceVersion, this.serviceEnvironment, this.serviceNodeName);
 			Charset charset = Charset.forName(this.charset);
+			Environment environment = Log4J2LoggingSystem.getEnvironment(this.loggerContext);
+			Assert.state(environment != null, "Unable to find Spring Environment in logger context");
 			StructuredLogFormatter<LogEvent> formatter = new StructuredLogFormatterFactory<>(LogEvent.class,
-					applicationMetadata, null, this::addCommonFormatters)
+					environment, null, this::addCommonFormatters)
 				.get(this.format);
 			return new StructuredLogLayout(charset, formatter);
 		}
@@ -134,7 +106,8 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		private void addCommonFormatters(CommonFormatters<LogEvent> commonFormatters) {
 			commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
 					(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(
-							instantiator.getArg(ApplicationMetadata.class)));
+							instantiator.getArg(ApplicationPid.class),
+							instantiator.getArg(ElasticCommonSchemaService.class)));
 			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH,
 					(instantiator) -> new LogstashStructuredLogFormatter());
 		}

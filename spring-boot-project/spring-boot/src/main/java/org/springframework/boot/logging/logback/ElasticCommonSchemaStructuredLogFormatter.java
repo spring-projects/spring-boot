@@ -23,9 +23,11 @@ import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
+import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.system.ApplicationPid;
 
 /**
  * Logback {@link StructuredLogFormatter} for
@@ -34,30 +36,23 @@ import org.springframework.boot.logging.structured.StructuredLogFormatter;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class ElasticCommonSchemaStructuredLogFormatter implements StructuredLogFormatter<ILoggingEvent> {
+class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<ILoggingEvent> {
 
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	private JsonWriter<ILoggingEvent> writer;
-
-	ElasticCommonSchemaStructuredLogFormatter(ApplicationMetadata metadata,
+	ElasticCommonSchemaStructuredLogFormatter(ApplicationPid pid, ElasticCommonSchemaService service,
 			ThrowableProxyConverter throwableProxyConverter) {
-		this.writer = JsonWriter
-			.<ILoggingEvent>of((members) -> loggingEventJson(metadata, throwableProxyConverter, members))
-			.withNewLineAtEnd();
+		super((members) -> jsonMembers(pid, service, throwableProxyConverter, members));
 	}
 
-	private void loggingEventJson(ApplicationMetadata metadata, ThrowableProxyConverter throwableProxyConverter,
-			JsonWriter.Members<ILoggingEvent> members) {
+	private static void jsonMembers(ApplicationPid pid, ElasticCommonSchemaService service,
+			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
 		members.add("@timestamp", ILoggingEvent::getInstant);
 		members.add("log.level", ILoggingEvent::getLevel);
-		members.add("process.pid", metadata::pid).whenNotNull();
+		members.add("process.pid", pid).when(ApplicationPid::isAvailable).as(ApplicationPid::toLong);
 		members.add("process.thread.name", ILoggingEvent::getThreadName);
-		members.add("service.name", metadata::name).whenHasLength();
-		members.add("service.version", metadata::version).whenHasLength();
-		members.add("service.environment", metadata::environment).whenHasLength();
-		members.add("service.node.name", metadata::nodeName).whenHasLength();
+		service.jsonMembers(members);
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
 		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
@@ -70,11 +65,6 @@ class ElasticCommonSchemaStructuredLogFormatter implements StructuredLogFormatte
 			throwableMembers.add("error.stack_trace", (event) -> throwableProxyConverter.convert(event));
 		});
 		members.add("ecs.version", "8.11");
-	}
-
-	@Override
-	public String format(ILoggingEvent event) {
-		return this.writer.writeToString(event);
 	}
 
 }

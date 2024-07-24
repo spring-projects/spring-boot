@@ -65,6 +65,7 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -938,6 +939,21 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
 		assertThat(output).doesNotContain("\033[");
+	}
+
+	@Test
+	void getEnvironment() {
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, null, null);
+		assertThat(this.logger.getLoggerContext().getObject(Environment.class.getName())).isSameAs(this.environment);
+	}
+
+	@Test
+	void getEnvironmentWhenUsingFile() {
+		this.loggingSystem.beforeInitialize();
+		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
+		initialize(this.initializationContext, "classpath:logback-nondefault.xml", logFile);
+		assertThat(this.logger.getLoggerContext().getObject(Environment.class.getName())).isSameAs(this.environment);
 	}
 
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {

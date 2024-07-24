@@ -11,7 +11,7 @@
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
 			<Select>
 				<SystemPropertyArbiter propertyName="CONSOLE_LOG_STRUCTURED_FORMAT">
-					<StructuredLogLayout format="${sys:CONSOLE_LOG_STRUCTURED_FORMAT}" charset="${sys:CONSOLE_LOG_CHARSET}" pid="${sys:PID:--1}" serviceName="${sys:APPLICATION_NAME:-}"/>
+					<StructuredLogLayout format="${sys:CONSOLE_LOG_STRUCTURED_FORMAT}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
 				</SystemPropertyArbiter>
 				<DefaultArbiter>
 					<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}"/>
@@ -24,7 +24,7 @@
 		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="${sys:LOG_PATH}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
 			<Select>
 				<SystemPropertyArbiter propertyName="FILE_LOG_STRUCTURED_FORMAT">
-					<StructuredLogLayout format="${sys:FILE_LOG_STRUCTURED_FORMAT}" charset="${sys:FILE_LOG_CHARSET}" pid="${sys:PID:--1}" serviceName="${sys:APPLICATION_NAME:-}"/>
+					<StructuredLogLayout format="${sys:FILE_LOG_STRUCTURED_FORMAT}" charset="${sys:FILE_LOG_CHARSET}"/>
 				</SystemPropertyArbiter>
 				<DefaultArbiter>
 					<PatternLayout pattern="${sys:FILE_LOG_PATTERN}" charset="${sys:FILE_LOG_CHARSET}"/>

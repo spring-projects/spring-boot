@@ -32,6 +32,7 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.util.CollectionUtils;
 
@@ -41,16 +42,14 @@ import org.springframework.util.CollectionUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class LogstashStructuredLogFormatter implements StructuredLogFormatter<LogEvent> {
-
-	private JsonWriter<LogEvent> writer;
+class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
 	LogstashStructuredLogFormatter() {
-		this.writer = JsonWriter.<LogEvent>of(this::logEventJson).withNewLineAtEnd();
+		super(LogstashStructuredLogFormatter::jsonMembers);
 	}
 
-	private void logEventJson(JsonWriter.Members<LogEvent> members) {
-		members.add("@timestamp", LogEvent::getInstant).as(this::asTimestamp);
+	private static void jsonMembers(JsonWriter.Members<LogEvent> members) {
+		members.add("@timestamp", LogEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
 		members.add("@version", "1");
 		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
 		members.add("logger_name", LogEvent::getLoggerName);
@@ -60,37 +59,35 @@ class LogstashStructuredLogFormatter implements StructuredLogFormatter<LogEvent>
 		members.add(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
 			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));
-		members.add("tags", LogEvent::getMarker).whenNotNull().as(this::getMarkers).whenNot(CollectionUtils::isEmpty);
+		members.add("tags", LogEvent::getMarker)
+			.whenNotNull()
+			.as(LogstashStructuredLogFormatter::getMarkers)
+			.whenNot(CollectionUtils::isEmpty);
 		members.add("stack_trace", LogEvent::getThrownProxy)
 			.whenNotNull()
 			.as(ThrowableProxy::getExtendedStackTraceAsString);
 	}
 
-	private String asTimestamp(Instant instant) {
+	private static String asTimestamp(Instant instant) {
 		java.time.Instant javaInstant = java.time.Instant.ofEpochMilli(instant.getEpochMillisecond())
 			.plusNanos(instant.getNanoOfMillisecond());
 		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(javaInstant, ZoneId.systemDefault());
 		return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime);
 	}
 
-	private Set<String> getMarkers(Marker marker) {
+	private static Set<String> getMarkers(Marker marker) {
 		Set<String> result = new TreeSet<>();
 		addMarkers(result, marker);
 		return result;
 	}
 
-	private void addMarkers(Set<String> result, Marker marker) {
+	private static void addMarkers(Set<String> result, Marker marker) {
 		result.add(marker.getName());
 		if (marker.hasParents()) {
 			for (Marker parent : marker.getParents()) {
 				addMarkers(result, parent);
 			}
 		}
-	}
-
-	@Override
-	public String format(LogEvent event) {
-		return this.writer.writeToString(event);
 	}
 
 }

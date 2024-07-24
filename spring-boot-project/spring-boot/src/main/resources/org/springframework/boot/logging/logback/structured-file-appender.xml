@@ -13,8 +13,6 @@ equivalent to the programmatic initialization performed by Boot
 		<encoder class="org.springframework.boot.logging.logback.StructuredLoggingEncoder">
 			<format>${FILE_LOG_STRUCTURED_FORMAT}</format>
 			<charset>${FILE_LOG_CHARSET}</charset>
-			<pid>${PID:--1}</pid>
-			<serviceName>${APPLICATION_NAME:-}</serviceName>
 		</encoder>
 		<file>${LOG_FILE}</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">

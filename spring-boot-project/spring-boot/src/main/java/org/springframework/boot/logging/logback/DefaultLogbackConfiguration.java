@@ -174,11 +174,6 @@ class DefaultLogbackConfiguration {
 	private StructuredLogEncoder createStructuredLoggingEncoder(LogbackConfigurator config, String format) {
 		StructuredLogEncoder encoder = new StructuredLogEncoder();
 		encoder.setFormat(format);
-		encoder.setPid(resolveLong(config, "${PID:--1}"));
-		String applicationName = resolve(config, "${APPLICATION_NAME:-}");
-		if (StringUtils.hasLength(applicationName)) {
-			encoder.setServiceName(applicationName);
-		}
 		return encoder;
 	}
 
@@ -203,10 +198,6 @@ class DefaultLogbackConfiguration {
 
 	private int resolveInt(LogbackConfigurator config, String val) {
 		return Integer.parseInt(resolve(config, val));
-	}
-
-	private long resolveLong(LogbackConfigurator config, String val) {
-		return Long.parseLong(resolve(config, val));
 	}
 
 	private FileSize resolveFileSize(LogbackConfigurator config, String val) {

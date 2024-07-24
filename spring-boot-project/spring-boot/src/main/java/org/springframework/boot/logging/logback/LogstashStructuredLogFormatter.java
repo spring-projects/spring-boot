@@ -34,6 +34,7 @@ import org.slf4j.event.KeyValuePair;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 
 /**
@@ -42,21 +43,18 @@ import org.springframework.boot.logging.structured.StructuredLogFormatter;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class LogstashStructuredLogFormatter implements StructuredLogFormatter<ILoggingEvent> {
+class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<ILoggingEvent> {
 
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	private JsonWriter<ILoggingEvent> writer;
-
 	LogstashStructuredLogFormatter(ThrowableProxyConverter throwableProxyConverter) {
-		this.writer = JsonWriter.<ILoggingEvent>of((members) -> loggingEventJson(throwableProxyConverter, members))
-			.withNewLineAtEnd();
+		super((members) -> jsonMembers(throwableProxyConverter, members));
 	}
 
-	private void loggingEventJson(ThrowableProxyConverter throwableProxyConverter,
+	private static void jsonMembers(ThrowableProxyConverter throwableProxyConverter,
 			JsonWriter.Members<ILoggingEvent> members) {
-		members.add("@timestamp", ILoggingEvent::getInstant).as(this::asTimestamp);
+		members.add("@timestamp", ILoggingEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
 		members.add("@version", "1");
 		members.add("message", ILoggingEvent::getFormattedMessage);
 		members.add("logger_name", ILoggingEvent::getLoggerName);
@@ -67,24 +65,27 @@ class LogstashStructuredLogFormatter implements StructuredLogFormatter<ILoggingE
 		members.add(ILoggingEvent::getKeyValuePairs)
 			.whenNotEmpty()
 			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
-		members.add("tags", ILoggingEvent::getMarkerList).whenNotNull().as(this::getMarkers).whenNotEmpty();
+		members.add("tags", ILoggingEvent::getMarkerList)
+			.whenNotNull()
+			.as(LogstashStructuredLogFormatter::getMarkers)
+			.whenNotEmpty();
 		members.add("stack_trace", (event) -> event)
 			.whenNotNull(ILoggingEvent::getThrowableProxy)
 			.as(throwableProxyConverter::convert);
 	}
 
-	private String asTimestamp(Instant instant) {
+	private static String asTimestamp(Instant instant) {
 		OffsetDateTime offsetDateTime = OffsetDateTime.ofInstant(instant, ZoneId.systemDefault());
 		return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime);
 	}
 
-	private Set<String> getMarkers(List<Marker> markers) {
+	private static Set<String> getMarkers(List<Marker> markers) {
 		Set<String> result = new LinkedHashSet<>();
 		addMarkers(result, markers.iterator());
 		return result;
 	}
 
-	private void addMarkers(Set<String> result, Iterator<Marker> iterator) {
+	private static void addMarkers(Set<String> result, Iterator<Marker> iterator) {
 		while (iterator.hasNext()) {
 			Marker marker = iterator.next();
 			result.add(marker.getName());
@@ -92,11 +93,6 @@ class LogstashStructuredLogFormatter implements StructuredLogFormatter<ILoggingE
 				addMarkers(result, marker.iterator());
 			}
 		}
-	}
-
-	@Override
-	public String format(ILoggingEvent event) {
-		return this.writer.writeToString(event);
 	}
 
 }

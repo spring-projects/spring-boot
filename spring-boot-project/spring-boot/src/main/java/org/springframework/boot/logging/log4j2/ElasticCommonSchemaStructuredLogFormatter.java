@@ -24,9 +24,11 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
-import org.springframework.boot.logging.structured.ApplicationMetadata;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
+import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.system.ApplicationPid;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -36,23 +38,19 @@ import org.springframework.util.ObjectUtils;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class ElasticCommonSchemaStructuredLogFormatter implements StructuredLogFormatter<LogEvent> {
+class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-	private final JsonWriter<LogEvent> writer;
-
-	ElasticCommonSchemaStructuredLogFormatter(ApplicationMetadata metadata) {
-		this.writer = JsonWriter.<LogEvent>of((members) -> logEventJson(metadata, members)).withNewLineAtEnd();
+	ElasticCommonSchemaStructuredLogFormatter(ApplicationPid pid, ElasticCommonSchemaService service) {
+		super((members) -> jsonMembers(pid, service, members));
 	}
 
-	private void logEventJson(ApplicationMetadata metadata, JsonWriter.Members<LogEvent> members) {
-		members.add("@timestamp", LogEvent::getInstant).as(this::asTimestamp);
+	private static void jsonMembers(ApplicationPid pid, ElasticCommonSchemaService service,
+			JsonWriter.Members<LogEvent> members) {
+		members.add("@timestamp", LogEvent::getInstant).as(ElasticCommonSchemaStructuredLogFormatter::asTimestamp);
 		members.add("log.level", LogEvent::getLevel).as(Level::name);
-		members.add("process.pid", metadata::pid).whenNotNull();
+		members.add("process.pid", pid).when(ApplicationPid::isAvailable).as(ApplicationPid::toLong);
 		members.add("process.thread.name", LogEvent::getThreadName);
-		members.add("service.name", metadata::name).whenHasLength();
-		members.add("service.version", metadata::version).whenHasLength();
-		members.add("service.environment", metadata::environment).whenHasLength();
-		members.add("service.node.name", metadata::nodeName).whenHasLength();
+		service.jsonMembers(members);
 		members.add("log.logger", LogEvent::getLoggerName);
 		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
 		members.add(LogEvent::getContextData)
@@ -68,13 +66,8 @@ class ElasticCommonSchemaStructuredLogFormatter implements StructuredLogFormatte
 		members.add("ecs.version", "8.11");
 	}
 
-	private java.time.Instant asTimestamp(Instant instant) {
+	private static java.time.Instant asTimestamp(Instant instant) {
 		return java.time.Instant.ofEpochMilli(instant.getEpochMillisecond()).plusNanos(instant.getNanoOfMillisecond());
-	}
-
-	@Override
-	public String format(LogEvent event) {
-		return this.writer.writeToString(event);
 	}
 
 }
