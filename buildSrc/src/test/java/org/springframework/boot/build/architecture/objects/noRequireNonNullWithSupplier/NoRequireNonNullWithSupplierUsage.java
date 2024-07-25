@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.architecture.objects.noRequireNonNull;
+package org.springframework.boot.build.architecture.objects.noRequireNonNullWithSupplier;
 
 import org.springframework.util.Assert;
 
 /**
- * This class is used to test the use of `Assert.notNull` for null-checking. It is
- * intended to demonstrate an acceptable approach according to the architecture check
- * rules.
+ * This class uses `Assert.notNull(Object, Supplier)` instead of
+ * `Objects.requireNonNull(Object, Supplier)`, and should pass the architecture check.
  *
  * @author Ivan Malutin
  */
-public class AssertNotNullUsage {
+public class NoRequireNonNullWithSupplierUsage {
 
 	/**
-	 * Validates that the provided object is not null using `Assert.notNull`. This method
-	 * is compliant with the architecture check rules.
+	 * Example method that uses `Assert.notNull(Object, Supplier)`, which should not be
+	 * flagged by the architecture check.
 	 */
-	public void ensureObjectNotNull() {
-		Assert.notNull(new Object(), "The object must not be null");
+	public void exampleMethod() {
+		Assert.notNull(new Object(), () -> "Object must not be null");
 	}
 
 }

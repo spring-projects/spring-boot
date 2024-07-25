@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -84,7 +85,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
 				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
-				noClassesShouldLoadResourcesUsingResourceUtils(), noClassesShouldCallObjectsRequireNonNull());
+				noClassesShouldLoadResourcesUsingResourceUtils(), noClassesShouldCallObjectsRequireNonNullWithMessage(),
+				noClassesShouldCallObjectsRequireNonNullWithSupplier());
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
 	}
 
@@ -229,13 +231,18 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.because("org.springframework.boot.io.ApplicationResourceLoader should be used instead");
 	}
 
-	private ArchRule noClassesShouldCallObjectsRequireNonNull() {
+	private ArchRule noClassesShouldCallObjectsRequireNonNullWithMessage() {
 		return ArchRuleDefinition.noClasses()
 			.should()
-			.callMethod(Objects.class, "requireNonNull", Object.class)
-			.orShould()
 			.callMethod(Objects.class, "requireNonNull", Object.class, String.class)
-			.because("org.springframework.utils.Assert.notNull() should be used instead");
+			.because("Use org.springframework.utils.Assert.notNull(Object, String) should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallObjectsRequireNonNullWithSupplier() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(Objects.class, "requireNonNull", Object.class, Supplier.class)
+			.because("Use org.springframework.utils.Assert.notNull(Object, Supplier) should be used instead");
 	}
 
 	public void setClasses(FileCollection classes) {

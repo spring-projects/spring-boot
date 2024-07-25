@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.architecture.objects.requireNonNull;
+package org.springframework.boot.build.architecture.objects.noRequireNonNullWithMessage;
 
-import java.util.Objects;
+import org.springframework.util.Assert;
 
 /**
- * This class is used to test the use of `Objects.requireNonNull` for null-checking. It is
- * intended to demonstrate a scenario that should trigger a failure in the architecture
- * check.
+ * This class uses `Assert.notNull(Object, String)` instead of
+ * `Objects.requireNonNull(Object, String)`, and should pass the architecture check.
  *
  * @author Ivan Malutin
  */
-public class RequireNonNullUsage {
+public class NoRequireNonNullWithMessageUsage {
 
 	/**
-	 * Validates that the provided object is not null using `Objects.requireNonNull`. This
-	 * method is expected to trigger a failure according to the architecture check rules.
+	 * Example method that uses `Assert.notNull(Object, String)`, which should not be
+	 * flagged by the architecture check.
 	 */
-	public void validateObject() {
-		Objects.requireNonNull(new Object(), "The object cannot be null");
+	public void exampleMethod() {
+		Assert.notNull(new Object(), "Object must not be null");
 	}
 
 }

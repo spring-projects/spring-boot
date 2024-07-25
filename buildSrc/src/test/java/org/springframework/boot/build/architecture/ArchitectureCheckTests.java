@@ -139,16 +139,32 @@ class ArchitectureCheckTests {
 	}
 
 	@Test
-	void whenClassCallsObjectsRequireNonNullTaskFailsAndWritesReport() throws Exception {
-		prepareTask("objects/requireNonNull", (architectureCheck) -> {
+	void whenClassCallsObjectsRequireNonNullWithMessageTaskFailsAndWritesReport() throws Exception {
+		prepareTask("objects/requireNonNullWithMessage", (architectureCheck) -> {
 			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
 			assertThat(failureReport(architectureCheck)).isNotEmpty();
 		});
 	}
 
 	@Test
-	void whenClassDoesNotCallObjectsRequireNonNullTaskSucceedsAndWritesAnEmptyReport() throws Exception {
-		prepareTask("objects/noRequireNonNull", (architectureCheck) -> {
+	void whenClassDoesNotCallObjectsRequireNonNullWithMessageTaskSucceedsAndWritesAnEmptyReport() throws Exception {
+		prepareTask("objects/noRequireNonNullWithMessage", (architectureCheck) -> {
+			architectureCheck.checkArchitecture();
+			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
+	@Test
+	void whenClassCallsObjectsRequireNonNullWithSupplierTaskFailsAndWritesReport() throws Exception {
+		prepareTask("objects/requireNonNullWithSupplier", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty();
+		});
+	}
+
+	@Test
+	void whenClassDoesNotCallObjectsRequireNonNullWithSupplierTaskSucceedsAndWritesAnEmptyReport() throws Exception {
+		prepareTask("objects/noRequireNonNullWithSupplier", (architectureCheck) -> {
 			architectureCheck.checkArchitecture();
 			assertThat(failureReport(architectureCheck)).isEmpty();
 		});
