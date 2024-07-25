@@ -52,6 +52,7 @@ public final class Extensions {
 		List<Extension> extensions = new ArrayList<>();
 		extensions.add(new Extension("@asciidoctor/tabs"));
 		extensions.add(new Extension("@springio/asciidoctor-extensions", "@springio/asciidoctor-extensions",
+				"@springio/asciidoctor-extensions/javadoc-extension",
 				"@springio/asciidoctor-extensions/configuration-properties-extension",
 				"@springio/asciidoctor-extensions/section-ids-extension"));
 		asciidoc = List.copyOf(extensions);
