@@ -99,8 +99,8 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedDelay()).hasSize(1);
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
-			assertThat(description.getInitialDelay()).isEqualTo(2);
-			assertThat(description.getInterval()).isOne();
+			assertThat(description.getInitialDelay()).isEqualTo(2000);
+			assertThat(description.getInterval()).isEqualTo(1000);
 			assertThat(description.getRunnable().getTarget())
 				.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
 			assertThat(description.getLastExecution()).isNull();
@@ -145,8 +145,8 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedRate()).hasSize(1);
 			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
-			assertThat(description.getInitialDelay()).isEqualTo(4);
-			assertThat(description.getInterval()).isEqualTo(3);
+			assertThat(description.getInitialDelay()).isEqualTo(4000);
+			assertThat(description.getInterval()).isEqualTo(3000);
 			assertThat(description.getRunnable().getTarget())
 				.isEqualTo(FixedRateScheduledMethod.class.getName() + ".fixedRate");
 			assertThat(description.getLastExecution()).isNull();
@@ -239,7 +239,7 @@ class ScheduledTasksEndpointTests {
 
 	static class FixedDelayScheduledMethod {
 
-		@Scheduled(fixedDelay = 1, initialDelay = 2)
+		@Scheduled(fixedDelay = 1000, initialDelay = 2000)
 		void fixedDelay() {
 
 		}
@@ -248,7 +248,7 @@ class ScheduledTasksEndpointTests {
 
 	static class FixedRateScheduledMethod {
 
-		@Scheduled(fixedRate = 3, initialDelay = 4)
+		@Scheduled(fixedRate = 3000, initialDelay = 4000)
 		void fixedRate() {
 
 		}
