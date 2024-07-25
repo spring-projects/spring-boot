@@ -10,7 +10,7 @@
     "@springio/antora-xref-extension": "1.0.0-alpha.3",
     "@springio/antora-zip-contents-collector-extension": "1.0.0-alpha.8",
     "@asciidoctor/tabs": "1.0.0-beta.6",
-    "@springio/asciidoctor-extensions": "1.0.0-alpha.10"
+    "@springio/asciidoctor-extensions": "1.0.0-alpha.11"
   },
   "config": {
     "ui-bundle-url": "https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.16/ui-bundle.zip"
