@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
 class EndpointLinksResolverTests {
 
 	@Test
