@@ -54,6 +54,18 @@ class GenerateAntoraPlaybookTests {
 		assertThat(actual.replace('\\', '/')).isEqualToNormalizingNewlines(expected.replace('\\', '/'));
 	}
 
+	@Test
+	void writePlaybookWhenHasJavadocExcludeGeneratesExpectedContent() throws Exception {
+		writePlaybookYml((task) -> {
+			task.getXrefStubs().addAll("appendix:.*", "api:.*", "reference:.*");
+			task.getAlwaysInclude().set(Map.of("name", "test", "classifier", "local-aggregate-content"));
+			task.getExcludeJavadocExtension().set(true);
+		});
+		String actual = Files.readString(this.temp.toPath()
+			.resolve("rootproject/project/build/generated/docs/antora-playbook/antora-playbook.yml"));
+		assertThat(actual).doesNotContain("javadoc-extension");
+	}
+
 	private void writePlaybookYml(ThrowingConsumer<GenerateAntoraPlaybook> customizer) throws Exception {
 		File rootProjectDir = new File(this.temp, "rootproject").getCanonicalFile();
 		rootProjectDir.mkdirs();

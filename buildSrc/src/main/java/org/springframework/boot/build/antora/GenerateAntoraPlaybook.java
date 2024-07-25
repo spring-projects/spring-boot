@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -70,6 +71,10 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	@Optional
 	public abstract MapProperty<String, String> getAlwaysInclude();
 
+	@Input
+	@Optional
+	public abstract Property<Boolean> getExcludeJavadocExtension();
+
 	public GenerateAntoraPlaybook() {
 		setGroup("Documentation");
 		setDescription("Generates an Antora playbook.yml file for local use");
@@ -94,7 +99,18 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		addExtensions(data);
 		addSources(data);
 		addDir(data);
+		filterJavadocExtension(data);
 		return data;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void filterJavadocExtension(Map<String, Object> data) {
+		if (getExcludeJavadocExtension().getOrElse(Boolean.FALSE)) {
+			Map<String, Object> asciidoc = (Map<String, Object>) data.get("asciidoc");
+			List<String> extensions = new ArrayList<>((List<String>) asciidoc.get("extensions"));
+			extensions.remove("@springio/asciidoctor-extensions/javadoc-extension");
+			asciidoc.put("extensions", extensions);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

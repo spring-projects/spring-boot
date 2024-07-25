@@ -133,12 +133,12 @@ The following table summarizes the available properties and their default values
 
 | `imageName`
 | `--imageName`
-| xref:api:java/org/springframework/boot/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
+| javadoc:org.springframework.boot.buildpack.platform.docker.type.ImageReference#of-java.lang.String-[Image name] for the generated image.
 | `docker.io/library/${project.name}:${project.version}`
 
 | `pullPolicy`
 | `--pullPolicy`
-| xref:api:java/org/springframework/boot/buildpack/platform/build/PullPolicy.html[Policy] used to determine when to pull the builder and run images from the registry.
+| javadoc:org.springframework.boot.buildpack.platform.build.PullPolicy[Policy] used to determine when to pull the builder and run images from the registry.
 Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `ALWAYS`
 

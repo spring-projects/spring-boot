@@ -127,6 +127,7 @@ def antoraGradlePluginCatalogContent = tasks.register("antoraGradlePluginCatalog
 
 tasks.named("generateAntoraPlaybook") {
 	xrefStubs = ["appendix:.*", "api:.*", "reference:.*"]
+	excludeJavadocExtension = true
 	alwaysInclude = [name: "gradle-plugin", classifier: "local-aggregate-content"]
 	dependsOn antoraGradlePluginLocalAggregateContent
 }
