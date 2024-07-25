@@ -228,6 +228,32 @@ class SpringBootServletInitializerTests {
 		assertThat(driversDeregistered).isTrue();
 	}
 
+	@Test
+	void whenServletContextIsDestroyedThenReactorSchedulersAreShutDown() throws ServletException {
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
+		given(servletContext.getInitParameterNames()).willReturn(new Vector<String>().elements());
+		given(servletContext.getAttributeNames()).willReturn(new Vector<String>().elements());
+		AtomicBoolean schedulersShutDown = new AtomicBoolean();
+		new SpringBootServletInitializer() {
+
+			@Override
+			protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+				return builder.sources(Config.class);
+			}
+
+			@Override
+			protected void shutDownSharedReactorSchedulers(ServletContext servletContext) {
+				schedulersShutDown.set(true);
+			}
+
+		}.onStartup(servletContext);
+		ArgumentCaptor<ServletContextListener> captor = ArgumentCaptor.forClass(ServletContextListener.class);
+		then(servletContext).should().addListener(captor.capture());
+		captor.getValue().contextDestroyed(new ServletContextEvent(servletContext));
+		assertThat(schedulersShutDown).isTrue();
+	}
+
 	static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
 
 		@Override
