@@ -121,6 +121,38 @@ class ArchitectureCheckTests {
 		});
 	}
 
+	@Test
+	void whenClassCallsObjectsRequireNonNullWithMessageTaskFailsAndWritesReport() throws Exception {
+		prepareTask("objects/requireNonNullWithMessage", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty();
+		});
+	}
+
+	@Test
+	void whenClassDoesNotCallObjectsRequireNonNullWithMessageTaskSucceedsAndWritesAnEmptyReport() throws Exception {
+		prepareTask("objects/noRequireNonNullWithMessage", (architectureCheck) -> {
+			architectureCheck.checkArchitecture();
+			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
+	@Test
+	void whenClassCallsObjectsRequireNonNullWithSupplierTaskFailsAndWritesReport() throws Exception {
+		prepareTask("objects/requireNonNullWithSupplier", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty();
+		});
+	}
+
+	@Test
+	void whenClassDoesNotCallObjectsRequireNonNullWithSupplierTaskSucceedsAndWritesAnEmptyReport() throws Exception {
+		prepareTask("objects/noRequireNonNullWithSupplier", (architectureCheck) -> {
+			architectureCheck.checkArchitecture();
+			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
 	private void prepareTask(String classes, Callback<ArchitectureCheck> callback) throws Exception {
 		File projectDir = new File(this.temp, "project");
 		projectDir.mkdirs();

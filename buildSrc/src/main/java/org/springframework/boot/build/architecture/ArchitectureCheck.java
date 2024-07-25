@@ -23,6 +23,8 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -75,7 +77,9 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
 				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
-				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding());
+				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
+				noClassesShouldCallObjectsRequireNonNullWithMessage(),
+				noClassesShouldCallObjectsRequireNonNullWithSupplier());
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
 	}
 
@@ -208,6 +212,20 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.because("java.net.URLDecoder.decode(String s, Charset charset) should be used instead");
 	}
 
+	private ArchRule noClassesShouldCallObjectsRequireNonNullWithMessage() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(Objects.class, "requireNonNull", Object.class, String.class)
+			.because("Use org.springframework.utils.Assert.notNull(Object, String) should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallObjectsRequireNonNullWithSupplier() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(Objects.class, "requireNonNull", Object.class, Supplier.class)
+			.because("Use org.springframework.utils.Assert.notNull(Object, Supplier) should be used instead");
+	}
+
 	public void setClasses(FileCollection classes) {
 		this.classes = classes;
 	}
@@ -237,7 +255,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	public abstract ListProperty<ArchRule> getRules();
 
 	@Input
-	// The rules themselves can't be an input as they aren't serializable so we use their
+	// The rules themselves can't be an input as they aren't serializable so we use
+	// their
 	// descriptions instead
 	abstract ListProperty<String> getRuleDescriptions();
 
