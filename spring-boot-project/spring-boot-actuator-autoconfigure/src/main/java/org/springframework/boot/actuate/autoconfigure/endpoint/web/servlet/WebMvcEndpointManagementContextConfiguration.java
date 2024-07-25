@@ -42,7 +42,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.servlet.AdditionalHealthEndpointPathsWebMvcHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.ControllerEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
@@ -84,9 +83,9 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@SuppressWarnings("removal")
 	public WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping(WebEndpointsSupplier webEndpointsSupplier,
 			org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
-			ControllerEndpointsSupplier controllerEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
-			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties,
-			Environment environment) {
+			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
+			EndpointMediaTypes endpointMediaTypes, CorsEndpointProperties corsProperties,
+			WebEndpointProperties webEndpointProperties, Environment environment) {
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		allEndpoints.addAll(webEndpoints);
@@ -126,8 +125,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 	@ConditionalOnMissingBean
 	@SuppressWarnings("removal")
 	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
-			ControllerEndpointsSupplier controllerEndpointsSupplier, CorsEndpointProperties corsProperties,
-			WebEndpointProperties webEndpointProperties) {
+			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
+			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties) {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());

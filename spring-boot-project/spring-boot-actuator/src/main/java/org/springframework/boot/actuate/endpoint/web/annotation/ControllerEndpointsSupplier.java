@@ -23,10 +23,10 @@ import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
  *
  * @author Phillip Webb
  * @since 2.0.0
- * @deprecated since 3.3.0 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
+ * @deprecated since 3.3.3 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
  */
 @FunctionalInterface
-@Deprecated(since = "3.3.0", forRemoval = true)
+@Deprecated(since = "3.3.3", forRemoval = true)
 @SuppressWarnings("removal")
 public interface ControllerEndpointsSupplier extends EndpointsSupplier<ExposableControllerEndpoint> {
 

@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({ "deprecation", "removal" })
 class ControllerEndpointHandlerMappingTests {
 
 	private final StaticApplicationContext context = new StaticApplicationContext();

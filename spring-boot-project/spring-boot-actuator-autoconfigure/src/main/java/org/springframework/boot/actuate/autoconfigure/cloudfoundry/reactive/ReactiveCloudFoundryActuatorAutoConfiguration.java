@@ -37,7 +37,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.actuate.info.GitInfoContributor;
@@ -110,7 +109,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	@SuppressWarnings("removal")
 	public CloudFoundryWebFluxEndpointHandlerMapping cloudFoundryWebFluxEndpointHandlerMapping(
 			ParameterValueMapper parameterMapper, EndpointMediaTypes endpointMediaTypes,
-			WebClient.Builder webClientBuilder, ControllerEndpointsSupplier controllerEndpointsSupplier,
+			WebClient.Builder webClientBuilder,
+			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
 			ApplicationContext applicationContext) {
 		CloudFoundryWebEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebEndpointDiscoverer(applicationContext,
 				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList());

@@ -33,8 +33,6 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
-import org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -91,11 +89,11 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ControllerEndpointsSupplier.class)
+	@ConditionalOnMissingBean(org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier.class)
 	@SuppressWarnings({ "deprecation", "removal" })
 	public org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer controllerEndpointDiscoverer(
 			ObjectProvider<PathMapper> endpointPathMappers,
-			ObjectProvider<Collection<EndpointFilter<ExposableControllerEndpoint>>> filters) {
+			ObjectProvider<Collection<EndpointFilter<org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint>>> filters) {
 		return new org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer(
 				this.applicationContext, endpointPathMappers.orderedStream().toList(),
 				filters.getIfAvailable(Collections::emptyList));
@@ -116,10 +114,11 @@ public class WebEndpointAutoConfiguration {
 
 	@Bean
 	@SuppressWarnings("removal")
-	public IncludeExcludeEndpointFilter<ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
+	public IncludeExcludeEndpointFilter<org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint> controllerExposeExcludePropertyEndpointFilter() {
 		WebEndpointProperties.Exposure exposure = this.properties.getExposure();
-		return new IncludeExcludeEndpointFilter<>(ExposableControllerEndpoint.class, exposure.getInclude(),
-				exposure.getExclude());
+		return new IncludeExcludeEndpointFilter<>(
+				org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint.class,
+				exposure.getInclude(), exposure.getExclude());
 	}
 
 	@Configuration(proxyBeanMethods = false)
