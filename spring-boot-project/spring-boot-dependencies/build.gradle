@@ -1780,7 +1780,7 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-boot")
 			github("https://github.com/spring-projects/spring-boot")
-			javadoc("https://docs.spring.io/spring-boot/docs/{version}/api")
+			javadoc("https://docs.spring.io/spring-boot/docs/{version}/api/java")
 			docs("https://docs.spring.io/spring-boot/docs/{version}/reference/htmlsingle")
 			releaseNotes("https://github.com/spring-projects/spring-boot/releases/tag/v{version}")
 			add("layers-xsd") { version -> "layers-xsd: https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
