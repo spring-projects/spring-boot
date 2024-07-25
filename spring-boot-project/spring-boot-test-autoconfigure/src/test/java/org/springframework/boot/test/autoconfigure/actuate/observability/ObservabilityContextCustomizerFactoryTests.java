@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
@@ -146,11 +145,6 @@ class ObservabilityContextCustomizerFactoryTests {
 		ContextCustomizer contextCustomizer = this.factory.createContextCustomizer(testClass, Collections.emptyList());
 		assertThat(contextCustomizer).as("contextCustomizer").isNotNull();
 		return contextCustomizer;
-	}
-
-	private ApplicationContextInitializer<ConfigurableApplicationContext> applyCustomizer(
-			ContextCustomizer customizer) {
-		return (applicationContext) -> customizer.customizeContext(applicationContext, null);
 	}
 
 	private void assertThatTracingIsDisabled(ConfigurableApplicationContext context) {

@@ -284,7 +284,6 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenOptionalAndLoaderIsUnknownAndExtensionIsUnknownShouldNotFail() {
 		ConfigDataLocation location = ConfigDataLocation
 			.of("optional:some-unknown-loader:dummy.some-unknown-extension");
-		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
 	}
 

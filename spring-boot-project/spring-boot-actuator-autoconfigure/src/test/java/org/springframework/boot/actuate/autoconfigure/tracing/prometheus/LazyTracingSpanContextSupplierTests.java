@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({ "deprecation", "removal" })
 class LazyTracingSpanContextSupplierTests {
 
 	private final Tracer tracer = mock(Tracer.class);

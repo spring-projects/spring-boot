@@ -166,7 +166,7 @@ class WebMvcObservationAutoConfigurationTests {
 			});
 	}
 
-	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) throws Exception {
+	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) {
 		return getInitializedMeterRegistry(context, "/test0", "/test1", "/test2");
 	}
 

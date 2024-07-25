@@ -25,8 +25,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -50,8 +48,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 /**
- * Integration tests for the Actuator's MVC {@link ControllerEndpoint controller
- * endpoints}.
+ * Integration tests for the Actuator's MVC
+ * {@link org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint
+ * controller endpoints}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -119,7 +118,7 @@ class ControllerEndpointWebMvcIntegrationTests {
 
 	}
 
-	@RestControllerEndpoint(id = "example")
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "example")
 	@SuppressWarnings("removal")
 	static class ExampleController {
 

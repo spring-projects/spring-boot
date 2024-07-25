@@ -60,15 +60,13 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 	private final Map<String, SslProvider> serverNameSslProviders;
 
-	private volatile SslBundle sslBundle;
-
 	public SslServerCustomizer(Http2 http2, Ssl.ClientAuth clientAuth, SslBundle sslBundle,
 			Map<String, SslBundle> serverNameSslBundles) {
 		this.http2 = http2;
 		this.clientAuth = Ssl.ClientAuth.map(clientAuth, ClientAuth.NONE, ClientAuth.OPTIONAL, ClientAuth.REQUIRE);
-		this.sslBundle = sslBundle;
 		this.sslProvider = createSslProvider(sslBundle);
 		this.serverNameSslProviders = createServerNameSslProviders(serverNameSslBundles);
+		updateSslBundle(null, sslBundle);
 	}
 
 	@Override
@@ -87,7 +85,6 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	void updateSslBundle(String serverName, SslBundle sslBundle) {
 		logger.debug("SSL Bundle has been updated, reloading SSL configuration");
 		if (serverName == null) {
-			this.sslBundle = sslBundle;
 			this.sslProvider = createSslProvider(sslBundle);
 		}
 		else {

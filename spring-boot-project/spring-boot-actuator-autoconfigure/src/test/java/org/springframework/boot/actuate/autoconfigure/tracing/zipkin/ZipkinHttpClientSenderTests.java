@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.Base64;
@@ -36,8 +35,6 @@ import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
 
-import org.springframework.http.HttpHeaders;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIOException;
@@ -55,9 +52,14 @@ class ZipkinHttpClientSenderTests extends ZipkinHttpSenderTests {
 
 	@Override
 	@BeforeEach
-	void beforeEach() throws Exception {
+	void beforeEach() {
 		this.mockBackEnd = new MockWebServer();
-		this.mockBackEnd.start();
+		try {
+			this.mockBackEnd.start();
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 		this.zipkinUrl = this.mockBackEnd.url("/api/v2/spans").toString();
 		super.beforeEach();
 	}
@@ -109,10 +111,6 @@ class ZipkinHttpClientSenderTests extends ZipkinHttpSenderTests {
 		});
 	}
 
-	/**
-	 * This tests that a dynamic {@linkplain HttpEndpointSupplier} updates are visible to
-	 * {@link HttpSender#postSpans(URI, HttpHeaders, byte[])}.
-	 */
 	@Test
 	void sendUsesDynamicEndpoint() throws Exception {
 		this.mockBackEnd.enqueue(new MockResponse());

@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @ExtendWith(MockitoExtension.class)
-@SuppressWarnings("removal")
+@SuppressWarnings({ "deprecation", "removal" })
 class ServletEndpointRegistrarTests {
 
 	@Mock

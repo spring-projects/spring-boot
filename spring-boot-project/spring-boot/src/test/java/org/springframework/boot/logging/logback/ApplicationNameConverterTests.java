@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({ "deprecation", "removal" })
 class ApplicationNameConverterTests {
 
 	private final ApplicationNameConverter converter;

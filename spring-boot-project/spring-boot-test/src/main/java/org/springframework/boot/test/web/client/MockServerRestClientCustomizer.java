@@ -30,9 +30,10 @@ import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClient.Builder;
 
 /**
- * {@link RestClientCustomizer} that can be applied to {@link RestClient.Builder}
+ * {@link RestClientCustomizer} that can be applied to {@link Builder RestClient.Builder}
  * instances to add {@link MockRestServiceServer} support.
  * <p>
  * Typically applied to an existing builder before it is used, for example:

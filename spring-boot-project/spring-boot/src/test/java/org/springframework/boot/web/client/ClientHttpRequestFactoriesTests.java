@@ -27,7 +27,6 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -72,9 +71,10 @@ class ClientHttpRequestFactoriesTests {
 	@Deprecated(since = "3.2.0")
 	@SuppressWarnings("removal")
 	void getOfOkHttpFactoryReturnsOkHttpFactory() {
-		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(OkHttp3ClientHttpRequestFactory.class,
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(
+				org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class,
 				ClientHttpRequestFactorySettings.DEFAULTS);
-		assertThat(requestFactory).isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+		assertThat(requestFactory).isInstanceOf(org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class);
 	}
 
 	@Test

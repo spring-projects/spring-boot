@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2023 the original author or authors.
+ * Copyright 2023-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.docs.messaging.pulsar.sending;
 
-import org.apache.pulsar.client.api.PulsarClientException;
-
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +28,7 @@ public class MyBean {
 		this.pulsarTemplate = pulsarTemplate;
 	}
 
-	public void someMethod() throws PulsarClientException {
+	public void someMethod() {
 		this.pulsarTemplate.send("someTopic", "Hello");
 	}
 

@@ -227,6 +227,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 			this.counter = counter;
 		}
 
+		@SuppressWarnings("unused")
 		private ValueObjectWithSpecificConstructorSampleBean(String name) {
 			this(name, 42);
 		}

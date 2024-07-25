@@ -20,9 +20,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
-import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -48,22 +45,26 @@ public class ServletEndpointManagementContextConfiguration {
 
 	@Bean
 	@SuppressWarnings("removal")
-	public IncludeExcludeEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
+	public IncludeExcludeEndpointFilter<org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
 			WebEndpointProperties properties) {
 		WebEndpointProperties.Exposure exposure = properties.getExposure();
-		return new IncludeExcludeEndpointFilter<>(ExposableServletEndpoint.class, exposure.getInclude(),
+		return new IncludeExcludeEndpointFilter<>(
+				org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint.class, exposure.getInclude(),
 				exposure.getExclude());
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(DispatcherServlet.class)
-	@SuppressWarnings("removal")
 	public static class WebMvcServletEndpointManagementContextConfiguration {
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier, DispatcherServletPath dispatcherServletPath) {
-			return new ServletEndpointRegistrar(dispatcherServletPath.getRelativePath(properties.getBasePath()),
+		@SuppressWarnings({ "deprecation", "removal" })
+		public org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar servletEndpointRegistrar(
+				WebEndpointProperties properties,
+				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
+				DispatcherServletPath dispatcherServletPath) {
+			return new org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar(
+					dispatcherServletPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 
@@ -72,13 +73,16 @@ public class ServletEndpointManagementContextConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ResourceConfig.class)
 	@ConditionalOnMissingClass("org.springframework.web.servlet.DispatcherServlet")
-	@SuppressWarnings("removal")
 	public static class JerseyServletEndpointManagementContextConfiguration {
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier, JerseyApplicationPath jerseyApplicationPath) {
-			return new ServletEndpointRegistrar(jerseyApplicationPath.getRelativePath(properties.getBasePath()),
+		@SuppressWarnings({ "deprecation", "removal" })
+		public org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar servletEndpointRegistrar(
+				WebEndpointProperties properties,
+				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
+				JerseyApplicationPath jerseyApplicationPath) {
+			return new org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar(
+					jerseyApplicationPath.getRelativePath(properties.getBasePath()),
 					servletEndpointsSupplier.getEndpoints());
 		}
 

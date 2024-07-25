@@ -68,12 +68,6 @@ abstract class HttpSender extends BaseHttpSender<URI, byte[]> {
 		postSpans(endpoint, headers, body);
 	}
 
-	/**
-	 * This will send span(s) as a POST to a zipkin endpoint.
-	 * @param endpoint the POST endpoint. For example, http://localhost:9411/api/v2/spans.
-	 * @param headers headers for the POST request
-	 * @param body list of possibly gzipped, encoded spans.
-	 */
 	abstract void postSpans(URI endpoint, HttpHeaders headers, byte[] body) throws IOException;
 
 	HttpHeaders getDefaultHeaders() {

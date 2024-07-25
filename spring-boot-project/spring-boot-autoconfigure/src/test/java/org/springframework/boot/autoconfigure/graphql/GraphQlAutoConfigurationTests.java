@@ -27,7 +27,6 @@ import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -172,20 +171,13 @@ class GraphQlAutoConfigurationTests {
 
 	@Test
 	void fieldIntrospectionShouldBeEnabledByDefault() {
-		this.contextRunner.run((context) -> {
-			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
-			GraphQLSchema schema = graphQlSource.schema();
-			assertThat(schema.getCodeRegistry().getFieldVisibility()).isInstanceOf(DefaultGraphqlFieldVisibility.class);
-		});
+		this.contextRunner.run((context) -> assertThat(Introspection.isEnabledJvmWide()).isTrue());
 	}
 
 	@Test
 	void shouldDisableFieldIntrospection() {
-		this.contextRunner.withPropertyValues("spring.graphql.schema.introspection.enabled:false").run((context) -> {
-			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
-			GraphQLSchema schema = graphQlSource.schema();
-			assertThat(Introspection.isEnabledJvmWide()).isFalse();
-		});
+		this.contextRunner.withPropertyValues("spring.graphql.schema.introspection.enabled:false")
+			.run((context) -> assertThat(Introspection.isEnabledJvmWide()).isFalse());
 	}
 
 	@Test

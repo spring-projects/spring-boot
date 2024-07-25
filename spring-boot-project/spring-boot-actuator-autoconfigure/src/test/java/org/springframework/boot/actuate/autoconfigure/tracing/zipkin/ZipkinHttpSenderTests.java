@@ -41,7 +41,7 @@ abstract class ZipkinHttpSenderTests {
 	abstract BytesMessageSender createSender();
 
 	@BeforeEach
-	void beforeEach() throws Exception {
+	void beforeEach() {
 		this.sender = createSender();
 	}
 

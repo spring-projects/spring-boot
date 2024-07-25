@@ -22,6 +22,7 @@ import org.springframework.boot.configurationsample.Name;
 /**
  * Immutable record properties making use of {@code @Name}.
  *
+ * @param imports some imports
  * @author Andy Wilkinson
  */
 @ConfigurationProperties("named")

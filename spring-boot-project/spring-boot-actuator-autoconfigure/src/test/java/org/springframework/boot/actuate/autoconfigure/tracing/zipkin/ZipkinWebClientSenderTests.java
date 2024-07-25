@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
-import java.net.URI;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Collections;
@@ -39,7 +38,6 @@ import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatException;
  *
  * @author Stefan Bratanov
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({ "deprecation", "removal" })
 class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	private static ClearableDispatcher dispatcher;
@@ -75,7 +73,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@Override
 	@BeforeEach
-	void beforeEach() throws Exception {
+	void beforeEach() {
 		super.beforeEach();
 		clearResponses();
 		clearRequests();
@@ -122,10 +120,6 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		});
 	}
 
-	/**
-	 * This tests that a dynamic {@linkplain HttpEndpointSupplier} updates are visible to
-	 * {@link HttpSender#postSpans(URI, HttpHeaders, byte[])}.
-	 */
 	@Test
 	void sendUsesDynamicEndpoint() throws Exception {
 		mockBackEnd.enqueue(new MockResponse());
@@ -180,10 +174,16 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		assertThat(request).satisfies(assertions);
 	}
 
-	private static void clearRequests() throws InterruptedException {
+	private static void clearRequests() {
 		RecordedRequest request;
 		do {
-			request = mockBackEnd.takeRequest(0, TimeUnit.SECONDS);
+			try {
+				request = mockBackEnd.takeRequest(0, TimeUnit.SECONDS);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ex);
+			}
 		}
 		while (request != null);
 	}

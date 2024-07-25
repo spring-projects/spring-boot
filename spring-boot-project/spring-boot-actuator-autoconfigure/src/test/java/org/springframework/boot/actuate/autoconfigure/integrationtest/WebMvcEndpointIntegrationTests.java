@@ -28,10 +28,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -190,25 +186,26 @@ class WebMvcEndpointIntegrationTests {
 
 	}
 
-	@ServletEndpoint(id = "servlet")
-	@SuppressWarnings("removal")
-	static class TestServletEndpoint implements Supplier<EndpointServlet> {
+	@org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint(id = "servlet")
+	@SuppressWarnings({ "deprecation", "removal" })
+	static class TestServletEndpoint
+			implements Supplier<org.springframework.boot.actuate.endpoint.web.EndpointServlet> {
 
 		@Override
-		public EndpointServlet get() {
-			return new EndpointServlet(new HttpServlet() {
+		public org.springframework.boot.actuate.endpoint.web.EndpointServlet get() {
+			return new org.springframework.boot.actuate.endpoint.web.EndpointServlet(new HttpServlet() {
 			});
 		}
 
 	}
 
-	@ControllerEndpoint(id = "controller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint(id = "controller")
 	@SuppressWarnings("removal")
 	static class TestControllerEndpoint {
 
 	}
 
-	@RestControllerEndpoint(id = "restcontroller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "restcontroller")
 	@SuppressWarnings("removal")
 	static class TestRestControllerEndpoint {
 

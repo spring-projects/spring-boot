@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,44 +33,49 @@ class ByteArrayDataBlockTests {
 
 	@Test
 	void sizeReturnsByteArrayLength() throws Exception {
-		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES);
-		assertThat(dataBlock.size()).isEqualTo(this.BYTES.length);
+		try (ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES)) {
+			assertThat(dataBlock.size()).isEqualTo(this.BYTES.length);
+		}
 	}
 
 	@Test
 	void readPutsBytes() throws Exception {
-		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES);
-		ByteBuffer dst = ByteBuffer.allocate(8);
-		int result = dataBlock.read(dst, 0);
-		assertThat(result).isEqualTo(8);
-		assertThat(dst.array()).containsExactly(this.BYTES);
+		try (ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES)) {
+			ByteBuffer dst = ByteBuffer.allocate(8);
+			int result = dataBlock.read(dst, 0);
+			assertThat(result).isEqualTo(8);
+			assertThat(dst.array()).containsExactly(this.BYTES);
+		}
 	}
 
 	@Test
 	void readWhenLessBytesThanRemainingInBufferPutsBytes() throws Exception {
-		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES);
-		ByteBuffer dst = ByteBuffer.allocate(9);
-		int result = dataBlock.read(dst, 0);
-		assertThat(result).isEqualTo(8);
-		assertThat(dst.array()).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 0);
+		try (ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES)) {
+			ByteBuffer dst = ByteBuffer.allocate(9);
+			int result = dataBlock.read(dst, 0);
+			assertThat(result).isEqualTo(8);
+			assertThat(dst.array()).containsExactly(0, 1, 2, 3, 4, 5, 6, 7, 0);
+		}
 	}
 
 	@Test
 	void readWhenLessRemainingInBufferThanLengthPutsBytes() throws Exception {
-		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES);
-		ByteBuffer dst = ByteBuffer.allocate(7);
-		int result = dataBlock.read(dst, 0);
-		assertThat(result).isEqualTo(7);
-		assertThat(dst.array()).containsExactly(0, 1, 2, 3, 4, 5, 6);
+		try (ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES)) {
+			ByteBuffer dst = ByteBuffer.allocate(7);
+			int result = dataBlock.read(dst, 0);
+			assertThat(result).isEqualTo(7);
+			assertThat(dst.array()).containsExactly(0, 1, 2, 3, 4, 5, 6);
+		}
 	}
 
 	@Test
 	void readWhenHasPosOffsetReadsBytes() throws Exception {
-		ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES);
-		ByteBuffer dst = ByteBuffer.allocate(3);
-		int result = dataBlock.read(dst, 4);
-		assertThat(result).isEqualTo(3);
-		assertThat(dst.array()).containsExactly(4, 5, 6);
+		try (ByteArrayDataBlock dataBlock = new ByteArrayDataBlock(this.BYTES)) {
+			ByteBuffer dst = ByteBuffer.allocate(3);
+			int result = dataBlock.read(dst, 4);
+			assertThat(result).isEqualTo(3);
+			assertThat(dst.array()).containsExactly(4, 5, 6);
+		}
 	}
 
 }

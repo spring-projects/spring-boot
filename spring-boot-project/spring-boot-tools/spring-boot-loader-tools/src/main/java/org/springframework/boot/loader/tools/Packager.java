@@ -268,6 +268,12 @@ public abstract class Packager {
 		}
 	}
 
+	/**
+	 * Writes a signature file if necessary for the given {@code writtenLibraries}.
+	 * @param writtenLibraries the libraries
+	 * @param writer the writer to use to write the signature file if necessary
+	 * @throws IOException if a failure occurs when writing the signature file
+	 */
 	protected void writeSignatureFileIfNecessary(Map<String, Library> writtenLibraries, AbstractJarWriter writer)
 			throws IOException {
 	}

@@ -44,7 +44,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void conditions() throws Exception {
+	void conditions() {
 		List<FieldDescriptor> positiveMatchFields = List.of(
 				fieldWithPath("").description("Classes and methods with conditions that were matched."),
 				fieldWithPath(".*.[].condition").description("Name of the condition."),

@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.pulsar.client.api.PulsarClientException;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PulsarContainer;
@@ -63,7 +62,7 @@ class PulsarContainerConnectionDetailsFactoryIntegrationTests {
 	private TestListener listener;
 
 	@Test
-	void connectionCanBeMadeToPulsarContainer() throws PulsarClientException {
+	void connectionCanBeMadeToPulsarContainer() {
 		this.pulsarTemplate.send("test-topic", "test-data");
 		Awaitility.waitAtMost(Duration.ofSeconds(30))
 			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("test-data"));

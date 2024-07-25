@@ -32,7 +32,6 @@ public final class GradleVersions {
 	private GradleVersions() {
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public static List<String> allCompatible() {
 		if (isJavaVersion(JavaVersion.VERSION_20)) {
 			return Arrays.asList("8.3", "8.9");

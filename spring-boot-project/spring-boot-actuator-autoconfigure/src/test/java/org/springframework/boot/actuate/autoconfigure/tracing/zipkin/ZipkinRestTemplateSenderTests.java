@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,6 @@ import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -48,7 +46,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Moritz Halbritter
  * @author Stefan Bratanov
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({ "deprecation", "removal" })
 class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 
 	private static final String ZIPKIN_URL = "http://localhost:9411/api/v2/spans";
@@ -101,10 +99,6 @@ class ZipkinRestTemplateSenderTests extends ZipkinHttpSenderTests {
 		}
 	}
 
-	/**
-	 * This tests that a dynamic {@linkplain HttpEndpointSupplier} updates are visible to
-	 * {@link HttpSender#postSpans(URI, HttpHeaders, byte[])}.
-	 */
 	@Test
 	void sendUsesDynamicEndpoint() throws Exception {
 		this.mockServer.expect(requestTo(ZIPKIN_URL + "/1")).andRespond(withStatus(HttpStatus.ACCEPTED));

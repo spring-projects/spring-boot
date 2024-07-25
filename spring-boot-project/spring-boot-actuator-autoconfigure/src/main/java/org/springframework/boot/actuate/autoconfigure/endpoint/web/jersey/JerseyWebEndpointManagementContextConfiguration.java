@@ -45,11 +45,9 @@ import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
-import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.actuate.endpoint.web.jersey.JerseyHealthEndpointAdditionalPathResourceFactory;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -86,7 +84,8 @@ class JerseyWebEndpointManagementContextConfiguration {
 	@Bean
 	@SuppressWarnings("removal")
 	JerseyWebEndpointsResourcesRegistrar jerseyWebEndpointsResourcesRegistrar(Environment environment,
-			WebEndpointsSupplier webEndpointsSupplier, ServletEndpointsSupplier servletEndpointsSupplier,
+			WebEndpointsSupplier webEndpointsSupplier,
+			org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
 			EndpointMediaTypes endpointMediaTypes, WebEndpointProperties webEndpointProperties) {
 		String basePath = webEndpointProperties.getBasePath();
 		boolean shouldRegisterLinks = shouldRegisterLinksMapping(webEndpointProperties, environment, basePath);
@@ -130,7 +129,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 		private final WebEndpointsSupplier webEndpointsSupplier;
 
-		private final ServletEndpointsSupplier servletEndpointsSupplier;
+		private final org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier;
 
 		private final EndpointMediaTypes mediaTypes;
 
@@ -139,8 +138,8 @@ class JerseyWebEndpointManagementContextConfiguration {
 		private final boolean shouldRegisterLinks;
 
 		JerseyWebEndpointsResourcesRegistrar(WebEndpointsSupplier webEndpointsSupplier,
-				ServletEndpointsSupplier servletEndpointsSupplier, EndpointMediaTypes endpointMediaTypes,
-				String basePath, boolean shouldRegisterLinks) {
+				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
+				EndpointMediaTypes endpointMediaTypes, String basePath, boolean shouldRegisterLinks) {
 			this.webEndpointsSupplier = webEndpointsSupplier;
 			this.servletEndpointsSupplier = servletEndpointsSupplier;
 			this.mediaTypes = endpointMediaTypes;
@@ -155,7 +154,8 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 		private void register(ResourceConfig config) {
 			Collection<ExposableWebEndpoint> webEndpoints = this.webEndpointsSupplier.getEndpoints();
-			Collection<ExposableServletEndpoint> servletEndpoints = this.servletEndpointsSupplier.getEndpoints();
+			Collection<org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint> servletEndpoints = this.servletEndpointsSupplier
+				.getEndpoints();
 			EndpointLinksResolver linksResolver = getLinksResolver(webEndpoints, servletEndpoints);
 			EndpointMapping mapping = new EndpointMapping(this.basePath);
 			Collection<Resource> endpointResources = new JerseyEndpointResourceFactory().createEndpointResources(
@@ -164,7 +164,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 		}
 
 		private EndpointLinksResolver getLinksResolver(Collection<ExposableWebEndpoint> webEndpoints,
-				Collection<ExposableServletEndpoint> servletEndpoints) {
+				Collection<org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint> servletEndpoints) {
 			List<ExposableEndpoint<?>> endpoints = new ArrayList<>(webEndpoints.size() + servletEndpoints.size());
 			endpoints.addAll(webEndpoints);
 			endpoints.addAll(servletEndpoints);
