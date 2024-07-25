@@ -623,7 +623,7 @@ You can use these extensions in any `log4j2-spring.xml` configuration file.
 NOTE: Because the standard `log4j2.xml` configuration file is loaded too early, you cannot use extensions in it.
 You need to either use `log4j2-spring.xml` or define a configprop:logging.config[] property.
 
-NOTE: The extensions supersede the https://logging.apache.org/log4j/2.x/log4j-spring-boot/index.html[Spring Boot support] provided by Log4J.
+NOTE: The extensions supersede the https://logging.apache.org/log4j/2.x/log4j-spring-boot.html[Spring Boot support] provided by Log4J.
 You should make sure not to include the `org.apache.logging.log4j:log4j-spring-boot` module in your build.
 
 
