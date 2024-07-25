@@ -138,6 +138,22 @@ class ArchitectureCheckTests {
 		});
 	}
 
+	@Test
+	void whenClassCallsObjectsRequireNonNullTaskFailsAndWritesReport() throws Exception {
+		prepareTask("objects/requireNonNull", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty();
+		});
+	}
+
+	@Test
+	void whenClassDoesNotCallObjectsRequireNonNullTaskSucceedsAndWritesAnEmptyReport() throws Exception {
+		prepareTask("objects/noRequireNonNull", (architectureCheck) -> {
+			architectureCheck.checkArchitecture();
+			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
 	private void prepareTask(String classes, Callback<ArchitectureCheck> callback) throws Exception {
 		File projectDir = new File(this.temp, "project");
 		projectDir.mkdirs();

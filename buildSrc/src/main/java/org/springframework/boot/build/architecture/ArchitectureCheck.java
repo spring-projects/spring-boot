@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -83,7 +84,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
 				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
-				noClassesShouldLoadResourcesUsingResourceUtils());
+				noClassesShouldLoadResourcesUsingResourceUtils(), noClassesShouldCallObjectsRequireNonNull());
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
 	}
 
@@ -226,6 +227,15 @@ public abstract class ArchitectureCheck extends DefaultTask {
 					.and(JavaCall.Predicates.target(HasName.Predicates.name("getFile")))
 					.and(JavaCall.Predicates.target(HasParameterTypes.Predicates.rawParameterTypes(String.class)))))
 			.because("org.springframework.boot.io.ApplicationResourceLoader should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallObjectsRequireNonNull() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(Objects.class, "requireNonNull", Object.class)
+			.orShould()
+			.callMethod(Objects.class, "requireNonNull", Object.class, String.class)
+			.because("org.springframework.utils.Assert.notNull() should be used instead");
 	}
 
 	public void setClasses(FileCollection classes) {
