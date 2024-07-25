@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
-import java.net.http.HttpClient;
+import java.net.http.HttpClient.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link HttpClient.Builder} used to send spans to Zipkin.
+ * {@link Builder HttpClient.Builder} used to send spans to Zipkin.
  *
  * @author Moritz Halbritter
  * @since 3.3.0
@@ -32,6 +32,6 @@ public interface ZipkinHttpClientBuilderCustomizer {
 	 * Customize the http client builder.
 	 * @param httpClient the http client builder to customize
 	 */
-	void customize(HttpClient.Builder httpClient);
+	void customize(Builder httpClient);
 
 }

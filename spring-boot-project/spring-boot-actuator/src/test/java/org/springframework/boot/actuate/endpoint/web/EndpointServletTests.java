@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@SuppressWarnings("removal")
+@SuppressWarnings({ "deprecation", "removal" })
 class EndpointServletTests {
 
 	@Test

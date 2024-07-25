@@ -24,8 +24,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder;
 import org.springframework.boot.task.SimpleAsyncTaskExecutorCustomizer;
-import org.springframework.boot.task.TaskExecutorBuilder;
-import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
 import org.springframework.boot.task.ThreadPoolTaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +47,6 @@ class TaskExecutorConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Executor.class)
-	@SuppressWarnings("removal")
 	static class TaskExecutorConfiguration {
 
 		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
@@ -63,7 +60,9 @@ class TaskExecutorConfigurations {
 		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
 		@ConditionalOnThreading(Threading.PLATFORM)
-		ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder taskExecutorBuilder,
+		@SuppressWarnings({ "deprecation", "removal" })
+		ThreadPoolTaskExecutor applicationTaskExecutor(
+				org.springframework.boot.task.TaskExecutorBuilder taskExecutorBuilder,
 				ObjectProvider<ThreadPoolTaskExecutorBuilder> threadPoolTaskExecutorBuilderProvider) {
 			ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder = threadPoolTaskExecutorBuilderProvider
 				.getIfUnique();
@@ -82,11 +81,11 @@ class TaskExecutorConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@Deprecated(since = "3.2.0", forRemoval = true)
-		TaskExecutorBuilder taskExecutorBuilder(TaskExecutionProperties properties,
-				ObjectProvider<TaskExecutorCustomizer> taskExecutorCustomizers,
+		org.springframework.boot.task.TaskExecutorBuilder taskExecutorBuilder(TaskExecutionProperties properties,
+				ObjectProvider<org.springframework.boot.task.TaskExecutorCustomizer> taskExecutorCustomizers,
 				ObjectProvider<TaskDecorator> taskDecorator) {
 			TaskExecutionProperties.Pool pool = properties.getPool();
-			TaskExecutorBuilder builder = new TaskExecutorBuilder();
+			org.springframework.boot.task.TaskExecutorBuilder builder = new org.springframework.boot.task.TaskExecutorBuilder();
 			builder = builder.queueCapacity(pool.getQueueCapacity());
 			builder = builder.corePoolSize(pool.getCoreSize());
 			builder = builder.maxPoolSize(pool.getMaxSize());
@@ -104,14 +103,15 @@ class TaskExecutorConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("removal")
+	@SuppressWarnings({ "deprecation", "removal" })
 	static class ThreadPoolTaskExecutorBuilderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean({ TaskExecutorBuilder.class, ThreadPoolTaskExecutorBuilder.class })
+		@ConditionalOnMissingBean({ org.springframework.boot.task.TaskExecutorBuilder.class,
+				ThreadPoolTaskExecutorBuilder.class })
 		ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder(TaskExecutionProperties properties,
 				ObjectProvider<ThreadPoolTaskExecutorCustomizer> threadPoolTaskExecutorCustomizers,
-				ObjectProvider<TaskExecutorCustomizer> taskExecutorCustomizers,
+				ObjectProvider<org.springframework.boot.task.TaskExecutorCustomizer> taskExecutorCustomizers,
 				ObjectProvider<TaskDecorator> taskDecorator) {
 			TaskExecutionProperties.Pool pool = properties.getPool();
 			ThreadPoolTaskExecutorBuilder builder = new ThreadPoolTaskExecutorBuilder();
@@ -132,7 +132,8 @@ class TaskExecutorConfigurations {
 			return builder;
 		}
 
-		private ThreadPoolTaskExecutorCustomizer adapt(TaskExecutorCustomizer customizer) {
+		private ThreadPoolTaskExecutorCustomizer adapt(
+				org.springframework.boot.task.TaskExecutorCustomizer customizer) {
 			return customizer::customize;
 		}
 

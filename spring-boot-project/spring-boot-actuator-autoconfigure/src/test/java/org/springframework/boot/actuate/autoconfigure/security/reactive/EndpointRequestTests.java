@@ -30,7 +30,6 @@ import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -354,7 +353,7 @@ class EndpointRequestTests {
 
 	}
 
-	@ServletEndpoint(id = "baz")
+	@org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint(id = "baz")
 	@SuppressWarnings("removal")
 	static class BazServletEndpoint {
 

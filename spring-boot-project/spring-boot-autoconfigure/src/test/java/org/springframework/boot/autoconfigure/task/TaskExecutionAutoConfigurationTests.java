@@ -80,6 +80,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void shouldNotSupplyThreadPoolTaskExecutorBuilderIfCustomTaskExecutorBuilderIsPresent() {
 		this.contextRunner.withBean(TaskExecutorBuilder.class, TaskExecutorBuilder::new).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
@@ -164,6 +165,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void taskExecutorBuilderShouldUseTaskDecorator() {
 		this.contextRunner.withUserConfiguration(TaskDecoratorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
@@ -275,6 +277,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void taskExecutorBuilderShouldApplyCustomizer() {
 		this.contextRunner.withUserConfiguration(TaskExecutorCustomizerConfig.class).run((context) -> {
 			TaskExecutorCustomizer customizer = context.getBean(TaskExecutorCustomizer.class);
@@ -284,6 +287,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void threadPoolTaskExecutorBuilderShouldApplyCustomizer() {
 		this.contextRunner.withUserConfiguration(TaskExecutorCustomizerConfig.class).run((context) -> {
 			TaskExecutorCustomizer customizer = context.getBean(TaskExecutorCustomizer.class);
@@ -335,6 +339,7 @@ class TaskExecutionAutoConfigurationTests {
 			});
 	}
 
+	@SuppressWarnings("deprecation")
 	private ContextConsumer<AssertableApplicationContext> assertTaskExecutor(
 			Consumer<ThreadPoolTaskExecutor> taskExecutor) {
 		return (context) -> {
@@ -379,7 +384,8 @@ class TaskExecutionAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomTaskExecutorBuilderConfig {
 
-		private final TaskExecutorBuilder taskExecutorBuilder = new TaskExecutorBuilder()
+		@SuppressWarnings("deprecation")
+		private final org.springframework.boot.task.TaskExecutorBuilder taskExecutorBuilder = new org.springframework.boot.task.TaskExecutorBuilder()
 			.threadNamePrefix("CustomTaskExecutorBuilderConfig-");
 
 		@Bean

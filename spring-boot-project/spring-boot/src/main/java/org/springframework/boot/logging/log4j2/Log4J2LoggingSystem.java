@@ -83,8 +83,6 @@ import org.springframework.util.StringUtils;
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
-	private static final String FILE_PROTOCOL = "file";
-
 	private static final String LOG4J_BRIDGE_HANDLER = "org.apache.logging.log4j.jul.Log4jBridgeHandler";
 
 	private static final String LOG4J_LOG_MANAGER = "org.apache.logging.log4j.jul.LogManager";

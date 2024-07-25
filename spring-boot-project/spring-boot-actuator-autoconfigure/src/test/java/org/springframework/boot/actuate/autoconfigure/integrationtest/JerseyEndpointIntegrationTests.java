@@ -30,8 +30,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
@@ -160,13 +158,13 @@ class JerseyEndpointIntegrationTests {
 		return autoconfigurations.toArray(new Class<?>[0]);
 	}
 
-	@ControllerEndpoint(id = "controller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint(id = "controller")
 	@SuppressWarnings("removal")
 	static class TestControllerEndpoint {
 
 	}
 
-	@RestControllerEndpoint(id = "restcontroller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "restcontroller")
 	@SuppressWarnings("removal")
 	static class TestRestControllerEndpoint {
 

@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.pulsar.client.api.PulsarClientException;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PulsarContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -106,7 +105,7 @@ class PulsarAutoConfigurationIntegrationTests {
 		}
 
 		@GetMapping("/hello")
-		String sayHello() throws PulsarClientException {
+		String sayHello() {
 			return "Hello World -> " + this.pulsarTemplate.send(TOPIC, "hello");
 		}
 

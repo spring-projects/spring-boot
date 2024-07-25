@@ -51,7 +51,6 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -90,7 +89,8 @@ public final class ClientHttpRequestFactories {
 	 * <ol>
 	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
 	 * <li>{@link JettyClientHttpRequestFactory}</li>
-	 * <li>{@link OkHttp3ClientHttpRequestFactory} (deprecated)</li>
+	 * <li>{@link org.springframework.http.client.OkHttp3ClientHttpRequestFactory
+	 * OkHttp3ClientHttpRequestFactory} (deprecated)</li>
 	 * <li>{@link SimpleClientHttpRequestFactory}</li>
 	 * </ol>
 	 * @param settings the settings to apply
@@ -120,7 +120,8 @@ public final class ClientHttpRequestFactories {
 	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
 	 * <li>{@link JdkClientHttpRequestFactory}</li>
 	 * <li>{@link JettyClientHttpRequestFactory}</li>
-	 * <li>{@link OkHttp3ClientHttpRequestFactory} (deprecated)</li>
+	 * <li>{@link org.springframework.http.client.OkHttp3ClientHttpRequestFactory
+	 * OkHttp3ClientHttpRequestFactory} (deprecated)</li>
 	 * <li>{@link SimpleClientHttpRequestFactory}</li>
 	 * </ul>
 	 * A {@code requestFactoryType} of {@link ClientHttpRequestFactory} is equivalent to
@@ -149,7 +150,7 @@ public final class ClientHttpRequestFactories {
 		if (requestFactoryType == SimpleClientHttpRequestFactory.class) {
 			return (T) Simple.get(settings);
 		}
-		if (requestFactoryType == OkHttp3ClientHttpRequestFactory.class) {
+		if (requestFactoryType == org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class) {
 			return (T) OkHttp.get(settings);
 		}
 		return get(() -> createRequestFactory(requestFactoryType), settings);
@@ -220,21 +221,25 @@ public final class ClientHttpRequestFactories {
 	}
 
 	/**
-	 * Support for {@link OkHttp3ClientHttpRequestFactory}.
+	 * Support for
+	 * {@link org.springframework.http.client.OkHttp3ClientHttpRequestFactory}.
 	 */
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	@SuppressWarnings("removal")
 	static class OkHttp {
 
-		static OkHttp3ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			OkHttp3ClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
+		static org.springframework.http.client.OkHttp3ClientHttpRequestFactory get(
+				ClientHttpRequestFactorySettings settings) {
+			org.springframework.http.client.OkHttp3ClientHttpRequestFactory requestFactory = createRequestFactory(
+					settings.sslBundle());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 			return requestFactory;
 		}
 
-		private static OkHttp3ClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
+		private static org.springframework.http.client.OkHttp3ClientHttpRequestFactory createRequestFactory(
+				SslBundle sslBundle) {
 			if (sslBundle != null) {
 				Assert.state(!sslBundle.getOptions().isSpecified(), "SSL Options cannot be specified with OkHttp");
 				SSLSocketFactory socketFactory = sslBundle.createSslContext().getSocketFactory();
@@ -244,9 +249,9 @@ public final class ClientHttpRequestFactories {
 				OkHttpClient client = new OkHttpClient.Builder()
 					.sslSocketFactory(socketFactory, (X509TrustManager) trustManagers[0])
 					.build();
-				return new OkHttp3ClientHttpRequestFactory(client);
+				return new org.springframework.http.client.OkHttp3ClientHttpRequestFactory(client);
 			}
-			return new OkHttp3ClientHttpRequestFactory();
+			return new org.springframework.http.client.OkHttp3ClientHttpRequestFactory();
 		}
 
 	}

@@ -22,7 +22,6 @@ import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.common.TextFormat;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusSimpleclientScrapeEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -36,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for generating documentation describing the
- * {@link PrometheusSimpleclientScrapeEndpoint}.
+ * {@link org.springframework.boot.actuate.metrics.export.prometheus.PrometheusSimpleclientScrapeEndpoint}.
  *
  * @author Andy Wilkinson
  * @author Johnny Lim
@@ -76,12 +75,13 @@ class PrometheusSimpleclientScrapeEndpointDocumentationTests extends MockMvcEndp
 
 		@Bean
 		@SuppressWarnings({ "removal", "deprecation" })
-		PrometheusSimpleclientScrapeEndpoint endpoint() {
+		org.springframework.boot.actuate.metrics.export.prometheus.PrometheusSimpleclientScrapeEndpoint endpoint() {
 			CollectorRegistry collectorRegistry = new CollectorRegistry(true);
 			io.micrometer.prometheus.PrometheusMeterRegistry meterRegistry = new io.micrometer.prometheus.PrometheusMeterRegistry(
 					(key) -> null, collectorRegistry, Clock.SYSTEM);
 			new JvmMemoryMetrics().bindTo(meterRegistry);
-			return new PrometheusSimpleclientScrapeEndpoint(collectorRegistry);
+			return new org.springframework.boot.actuate.metrics.export.prometheus.PrometheusSimpleclientScrapeEndpoint(
+					collectorRegistry);
 		}
 
 	}
