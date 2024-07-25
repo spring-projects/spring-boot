@@ -38,7 +38,7 @@ spring:
 NOTE: When specifying addresses that way, the `host` and `port` properties are ignored.
 If the address uses the `amqps` protocol, SSL support is enabled automatically.
 
-See xref:api:java/org/springframework/boot/autoconfigure/amqp/RabbitProperties.html[`RabbitProperties`] for more of the supported property-based configuration options.
+See javadoc:org.springframework.boot.autoconfigure.amqp.RabbitProperties[] for more of the supported property-based configuration options.
 To configure lower-level details of the RabbitMQ `ConnectionFactory` that is used by Spring AMQP, define a `ConnectionFactoryCustomizer` bean.
 
 If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to name connections created by the auto-configured `CachingConnectionFactory`.

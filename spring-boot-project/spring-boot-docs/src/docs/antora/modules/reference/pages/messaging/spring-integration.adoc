@@ -46,4 +46,4 @@ spring:
         uri: "ws://example.org"
 ----
 
-See the {code-spring-boot-autoconfigure-src}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] and xref:api:java/org/springframework/boot/autoconfigure/integration/IntegrationProperties.html[`IntegrationProperties`] classes for more details.
+See the {code-spring-boot-autoconfigure-src}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] and javadoc:org.springframework.boot.autoconfigure.integration.IntegrationProperties[] classes for more details.

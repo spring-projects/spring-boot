@@ -118,7 +118,7 @@ You can then import the class explicitly where it is required, as shown in the f
 include-code::MyTests[]
 
 NOTE: If you directly use `@ComponentScan` (that is, not through `@SpringBootApplication`) you need to register the `TypeExcludeFilter` with it.
-See the xref:api:java/org/springframework/boot/context/TypeExcludeFilter.html[`TypeExcludeFilter`] API documentation for details.
+See the javadoc:org.springframework.boot.context.TypeExcludeFilter[] API documentation for details.
 
 NOTE: An imported `@TestConfiguration` is processed earlier than an inner-class `@TestConfiguration` and an imported `@TestConfiguration` will be processed before any configuration found through component scanning.
 Generally speaking, this difference in ordering has no noticeable effect but it is something to be aware of if you're relying on bean overriding.
@@ -515,7 +515,7 @@ If that is not what you want, you can disable transaction management for a test 
 
 include-code::MyNonTransactionalTests[]
 
-Data JPA tests may also inject a xref:api:java/org/springframework/boot/test/autoconfigure/orm/jpa/TestEntityManager.html[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
+Data JPA tests may also inject a javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager[] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
 
 TIP: `TestEntityManager` can also be auto-configured to any of your Spring-based test class by adding `@AutoConfigureTestEntityManager`.
 When doing so, make sure that your test is running in a transaction, for instance by adding  `@Transactional` on your test class or method.

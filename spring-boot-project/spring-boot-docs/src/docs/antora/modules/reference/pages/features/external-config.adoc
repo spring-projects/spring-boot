@@ -24,7 +24,7 @@ Sources are considered in the following order:
 . Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
 . Command line arguments.
 . `properties` attribute on your tests.
-  Available on xref:api:java/org/springframework/boot/test/context/SpringBootTest.html[`@SpringBootTest`] and the xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[test annotations for testing a particular slice of your application].
+  Available on javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[test annotations for testing a particular slice of your application].
 . {url-spring-framework-javadoc}/org/springframework/test/context/DynamicPropertySource.html[`@DynamicPropertySource`] annotations in your tests.
 . {url-spring-framework-javadoc}/org/springframework/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
 . xref:using/devtools.adoc#using.devtools.globalsettings[Devtools global settings properties] in the `$HOME/.config/spring-boot` directory when devtools is active.

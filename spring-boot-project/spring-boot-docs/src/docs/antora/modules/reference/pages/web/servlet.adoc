@@ -192,7 +192,7 @@ spring:
 
 With this configuration, JavaScript modules located under `"/js/lib/"` use a fixed versioning strategy (`"/v12/js/lib/mymodule.js"`), while other resources still use the content one (`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`).
 
-See xref:api:java/org/springframework/boot/autoconfigure/web/WebProperties.Resources.html[`WebProperties.Resources`] for more supported options.
+See javadoc:org.springframework.boot.autoconfigure.web.WebProperties$Resources[] for more supported options.
 
 [TIP]
 ====
@@ -541,7 +541,7 @@ TIP: To see the order of every `Filter` in your application, enable debug level 
 Details of the registered filters, including their order and URL patterns, will then be logged at startup.
 
 WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifecycle.
-If you need to register a `Filter` that interacts with other beans, consider using a xref:api:java/org/springframework/boot/web/servlet/DelegatingFilterProxyRegistrationBean.html[`DelegatingFilterProxyRegistrationBean`] instead.
+If you need to register a `Filter` that interacts with other beans, consider using a javadoc:org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean[] instead.
 
 
 
@@ -603,7 +603,7 @@ Spring Boot tries as much as possible to expose common settings, but this is not
 For those cases, dedicated namespaces offer server-specific customizations (see `server.tomcat` and `server.undertow`).
 For instance, xref:how-to:webserver.adoc#howto.webserver.configure-access-logs[access logs] can be configured with specific features of the embedded servlet container.
 
-TIP: See the xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`] class for a complete list.
+TIP: See the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class for a complete list.
 
 
 
@@ -684,7 +684,7 @@ For more advanced use cases that require you to extend from `ServletWebServerFac
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
-See the xref:api:java/org/springframework/boot/web/servlet/server/ConfigurableServletWebServerFactory.html[`ConfigurableServletWebServerFactory`] API documentation for details.
+See the javadoc:org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory[] API documentation for details.
 
 NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 

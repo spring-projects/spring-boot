@@ -82,7 +82,7 @@ Thanks to relaxed binding of `Environment` values, you can also use configprop:s
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers] in the '`Spring Boot Features`' section, or the xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`] class.
+For more details, see xref:reference:web/servlet.adoc#web.servlet.embedded-container.customizing[Customizing Embedded Servlet Containers] in the '`Spring Boot Features`' section, or the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class.
 
 
 
@@ -148,7 +148,7 @@ You can configure this behavior by setting the configprop:server.compression.mim
 == Configure SSL
 
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yaml`.
-See xref:api:java/org/springframework/boot/web/server/Ssl.html[`Ssl`] for details of all of the supported properties.
+See javadoc:org.springframework.boot.web.server.Ssl[] for details of all of the supported properties.
 
 The following example shows setting SSL properties using a Java KeyStore file:
 
@@ -300,7 +300,7 @@ The `server.{asterisk}` namespace is quite useful here, and it includes namespac
 See the list of xref:appendix:application-properties/index.adoc[].
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
-However, if a configuration key does not exist for your use case, you should then look at xref:api:java/org/springframework/boot/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
+However, if a configuration key does not exist for your use case, you should then look at javadoc:org.springframework.boot.web.server.WebServerFactoryCustomizer[].
 You can declare such a component and get access to the server factory relevant to your choice: you should select the variant for the chosen Server (Tomcat, Jetty, Reactor Netty, Undertow) and the chosen web stack (servlet or reactive).
 
 The example below is for Tomcat with the `spring-boot-starter-web` (servlet stack):
@@ -465,7 +465,7 @@ You can use them in your application by setting configprop:server.forward-header
 TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.redirect-context-root[] should be set to `false`.
 This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
 
-NOTE: If your application runs xref:api:java/org/springframework/boot/cloud/CloudPlatform.html#enum-constant-summary[in a supported Cloud Platform], the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
+NOTE: If your application runs javadoc:org.springframework.boot.cloud.CloudPlatform#enum-constant-summary[in a supported Cloud Platform], the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
 In all other instances, it defaults to `NONE`.
 
 

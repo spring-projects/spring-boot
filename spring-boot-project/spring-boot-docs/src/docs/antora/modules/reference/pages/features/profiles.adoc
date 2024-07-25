@@ -64,7 +64,7 @@ This means that you can specify active profiles in `application.properties` and 
 Sometimes, it is useful to have properties that *add* to the active profiles rather than replace them.
 The `spring.profiles.include` property can be used to add active profiles on top of those activated by the configprop:spring.profiles.active[] property.
 The `SpringApplication` entry point also has a Java API for setting additional profiles.
-See the `setAdditionalProfiles()` method in xref:api:java/org/springframework/boot/SpringApplication.html[`SpringApplication`].
+See the `setAdditionalProfiles()` method in javadoc:org.springframework.boot.SpringApplication[].
 
 For example, when an application with the following properties is run, the common and local profiles will be activated even when it runs using the `--spring.profiles.active` switch:
 
