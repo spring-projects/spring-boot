@@ -34,7 +34,7 @@ If you do so and want two transaction managers, remember to mark the other one a
 
 Spring Batch auto-configuration is enabled by adding `spring-boot-starter-batch` to your application's classpath.
 
-If a single `Job` bean is found in the application context, it is executed on startup (see xref:api:java/org/springframework/boot/autoconfigure/batch/JobLauncherApplicationRunner.html[`JobLauncherApplicationRunner`] for details).
+If a single `Job` bean is found in the application context, it is executed on startup (see javadoc:org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner[] for details).
 If multiple `Job` beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
 
 To disable running a `Job` found in the application context, set the configprop:spring.batch.job.enabled[] to `false`.

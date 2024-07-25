@@ -34,8 +34,8 @@ include-code::MyJsonComponent[]
 All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with Jackson.
 Because `@JsonComponent` is meta-annotated with `@Component`, the usual component-scanning rules apply.
 
-Spring Boot also provides xref:api:java/org/springframework/boot/jackson/JsonObjectSerializer.html[`JsonObjectSerializer`] and xref:api:java/org/springframework/boot/jackson/JsonObjectDeserializer.html[`JsonObjectDeserializer`] base classes that provide useful alternatives to the standard Jackson versions when serializing objects.
-See xref:api:java/org/springframework/boot/jackson/JsonObjectSerializer.html[`JsonObjectSerializer`] and xref:api:java/org/springframework/boot/jackson/JsonObjectDeserializer.html[`JsonObjectDeserializer`] in the API documentation for details.
+Spring Boot also provides javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] base classes that provide useful alternatives to the standard Jackson versions when serializing objects.
+See javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] in the API documentation for details.
 
 The example above can be rewritten to use `JsonObjectSerializer`/`JsonObjectDeserializer` as follows:
 

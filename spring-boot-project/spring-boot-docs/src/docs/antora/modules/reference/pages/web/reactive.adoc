@@ -297,7 +297,7 @@ Common server settings include:
 Spring Boot tries as much as possible to expose common settings, but this is not always possible.
 For those cases, dedicated namespaces such as `server.netty.*` offer server-specific customizations.
 
-TIP: See the xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`] class for a complete list.
+TIP: See the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] class for a complete list.
 
 
 
@@ -324,7 +324,7 @@ For more advanced use cases that require you to extend from `ReactiveWebServerFa
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
-See the xref:api:java/org/springframework/boot/web/reactive/server/ConfigurableReactiveWebServerFactory.html[`ConfigurableReactiveWebServerFactory`] API documentation for details.
+See the javadoc:org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory[] API documentation for details.
 
 NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 

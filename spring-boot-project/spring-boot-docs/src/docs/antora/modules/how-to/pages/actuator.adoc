@@ -13,7 +13,7 @@ In a standalone application, the Actuator HTTP port defaults to the same as the 
 To make the application listen on a different port, set the external property: configprop:management.server.port[].
 To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
 
-For more detail, see the xref:api:java/org/springframework/boot/actuate/autoconfigure/web/server/ManagementServerProperties.html[`ManagementServerProperties`] source code and xref:reference:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port] in the "`Production-Ready Features`" section.
+For more detail, see the javadoc:org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties[] source code and xref:reference:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port] in the "`Production-Ready Features`" section.
 
 
 

@@ -72,7 +72,7 @@ Doing so enables trace logging for a selection of core loggers (embedded contain
 === Color-coded Output
 
 If your terminal supports ANSI, color output is used to aid readability.
-You can set `spring.output.ansi.enabled` to a xref:api:java/org/springframework/boot/ansi/AnsiOutput.Enabled.html[supported value] to override the auto-detection.
+You can set `spring.output.ansi.enabled` to a javadoc:org.springframework.boot.ansi.AnsiOutput$Enabled[supported value] to override the auto-detection.
 
 Color coding is configured by using the `%clr` conversion word.
 In its simplest form, the converter colors the output according to the log level, as shown in the following example:

@@ -8,7 +8,7 @@ This section includes topics relating directly to Spring Boot applications.
 [[howto.application.failure-analyzer]]
 == Create Your Own FailureAnalyzer
 
-xref:api:java/org/springframework/boot/diagnostics/FailureAnalyzer.html[`FailureAnalyzer`] is a great way to intercept an exception on startup and turn it into a human-readable message, wrapped in a xref:api:java/org/springframework/boot/diagnostics/FailureAnalysis.html[`FailureAnalysis`].
+javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] is a great way to intercept an exception on startup and turn it into a human-readable message, wrapped in a javadoc:org.springframework.boot.diagnostics.FailureAnalysis[].
 Spring Boot provides such an analyzer for application-context-related exceptions, JSR-303 validations, and more.
 You can also create your own.
 
@@ -46,7 +46,7 @@ When reading the code, remember the following rules of thumb:
   Pay special attention to the `+@Conditional*+` annotations to find out what features they enable and when.
   Add `--debug` to the command line or the System property `-Ddebug` to get a log on the console of all the auto-configuration decisions that were made in your app.
   In a running application with actuator enabled, look at the `conditions` endpoint (`/actuator/conditions` or the JMX equivalent) for the same information.
-* Look for classes that are `@ConfigurationProperties` (such as xref:api:java/org/springframework/boot/autoconfigure/web/ServerProperties.html[`ServerProperties`]) and read from there the available external configuration options.
+* Look for classes that are `@ConfigurationProperties` (such as javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[]) and read from there the available external configuration options.
   The `@ConfigurationProperties` annotation has a `name` attribute that acts as a prefix to external properties.
   Thus, `ServerProperties` has `prefix="server"` and its configuration properties are `server.port`, `server.address`, and others.
   In a running application with actuator enabled, look at the `configprops` endpoint.

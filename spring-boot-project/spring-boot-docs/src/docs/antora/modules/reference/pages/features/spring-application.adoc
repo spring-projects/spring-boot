@@ -117,7 +117,7 @@ Inside your `banner.txt` file, you can use any key available in the `Environment
 
 | `${Ansi.NAME}` (or `${AnsiColor.NAME}`, `${AnsiBackground.NAME}`, `${AnsiStyle.NAME}`)
 | Where `NAME` is the name of an ANSI escape code.
-  See xref:api:java/org/springframework/boot/ansi/AnsiPropertySource.html[`AnsiPropertySource`] for details.
+  See javadoc:org.springframework.boot.ansi.AnsiPropertySource[] for details.
 
 | `${application.title}`
 | The title of your application, as declared in `MANIFEST.MF`.
@@ -157,7 +157,7 @@ In most cases, these are references to `@Configuration` classes, but they could 
 It is also possible to configure the `SpringApplication` by using an `application.properties` file.
 See xref:features/external-config.adoc[] for details.
 
-For a complete list of the configuration options, see the xref:api:java/org/springframework/boot/SpringApplication.html[`SpringApplication`] API documentation.
+For a complete list of the configuration options, see the javadoc:org.springframework.boot.SpringApplication[] API documentation.
 
 
 
@@ -172,7 +172,7 @@ include-code::MyApplication[tag=*]
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
 For example, Web components *must* be contained within the child context, and the same `Environment` is used for both parent and child contexts.
-See the xref:api:java/org/springframework/boot/builder/SpringApplicationBuilder.html[`SpringApplicationBuilder`] API documentation for full details.
+See the javadoc:org.springframework.boot.builder.SpringApplicationBuilder[] API documentation for full details.
 
 
 
@@ -360,7 +360,7 @@ To control the order in which the generators are called, additionally implement 
 == Admin Features
 
 It is possible to enable admin-related features for the application by specifying the configprop:spring.application.admin.enabled[] property.
-This exposes the xref:api:java/org/springframework/boot/admin/SpringApplicationAdminMXBean.html[`SpringApplicationAdminMXBean`] on the platform `MBeanServer`.
+This exposes the javadoc:org.springframework.boot.admin.SpringApplicationAdminMXBean[] on the platform `MBeanServer`.
 You could use this feature to administer your Spring Boot application remotely.
 This feature could also be useful for any service wrapper implementation.
 

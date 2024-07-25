@@ -20,4 +20,4 @@ spring:
 
 TIP: `spring.messages.basename` supports comma-separated list of locations, either a package qualifier or a resource resolved from the classpath root.
 
-See xref:api:java/org/springframework/boot/autoconfigure/context/MessageSourceProperties.html[`MessageSourceProperties`] for more supported options.
+See javadoc:org.springframework.boot.autoconfigure.context.MessageSourceProperties[] for more supported options.

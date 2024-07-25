@@ -336,7 +336,7 @@ Profile specific filenames (of the form `spring-boot-devtools-<profile>.properti
 [[using.devtools.globalsettings.configuring-file-system-watcher]]
 === Configuring File System Watcher
 
-xref:api:java/org/springframework/boot/devtools/filewatch/FileSystemWatcher.html[`FileSystemWatcher`] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
+javadoc:org.springframework.boot.devtools.filewatch.FileSystemWatcher[] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
 Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
 

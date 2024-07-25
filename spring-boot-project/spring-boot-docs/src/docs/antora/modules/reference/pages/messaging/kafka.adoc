@@ -18,7 +18,7 @@ spring:
 TIP: To create a topic on startup, add a bean of type `NewTopic`.
 If the topic already exists, the bean is ignored.
 
-See xref:api:java/org/springframework/boot/autoconfigure/kafka/KafkaProperties.html[`KafkaProperties`] for more supported options.
+See javadoc:org.springframework.boot.autoconfigure.kafka.KafkaProperties[] for more supported options.
 
 
 

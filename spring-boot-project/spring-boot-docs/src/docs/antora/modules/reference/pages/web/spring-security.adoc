@@ -23,7 +23,7 @@ You can change the username and password by providing a `spring.security.user.na
 
 The basic features you get by default in a web application are:
 
-* A `UserDetailsService` (or `ReactiveUserDetailsService` in case of a WebFlux application) bean with in-memory store and a single user with a generated password (see xref:api:java/org/springframework/boot/autoconfigure/security/SecurityProperties.User.html[`SecurityProperties.User`] for the properties of the user).
+* A `UserDetailsService` (or `ReactiveUserDetailsService` in case of a WebFlux application) bean with in-memory store and a single user with a generated password (see javadoc:org.springframework.boot.autoconfigure.security.SecurityProperties$User[] for the properties of the user).
 * Form-based login or HTTP Basic security (depending on the `Accept` header in the request) for the entire application (including actuator endpoints if actuator is on the classpath).
 * A `DefaultAuthenticationEventPublisher` for publishing authentication events.
 
