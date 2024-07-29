@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 the original author or authors.
+ * Copyright 2022-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,10 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -47,6 +50,7 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
@@ -63,6 +67,7 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  * @author Yanming Zhou
+ * @author Ivan Malutin
  */
 public abstract class ArchitectureCheck extends DefaultTask {
 
@@ -70,12 +75,15 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
+		getProhibitObjectsRequireNonNull().convention(true);
 		getRules().addAll(allPackagesShouldBeFreeOfTangles(),
 				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
 				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
 				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding());
+		getRules().addAll(getProhibitObjectsRequireNonNull()
+			.map((prohibit) -> prohibit ? noClassesShouldCallObjectsRequireNonNull() : Collections.emptyList()));
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
 	}
 
@@ -208,6 +216,18 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.because("java.net.URLDecoder.decode(String s, Charset charset) should be used instead");
 	}
 
+	private List<ArchRule> noClassesShouldCallObjectsRequireNonNull() {
+		return List.of(
+				ArchRuleDefinition.noClasses()
+					.should()
+					.callMethod(Objects.class, "requireNonNull", Object.class, String.class)
+					.because("org.springframework.utils.Assert.notNull(Object, String) should be used instead"),
+				ArchRuleDefinition.noClasses()
+					.should()
+					.callMethod(Objects.class, "requireNonNull", Object.class, Supplier.class)
+					.because("org.springframework.utils.Assert.notNull(Object, Supplier) should be used instead"));
+	}
+
 	public void setClasses(FileCollection classes) {
 		this.classes = classes;
 	}
@@ -236,8 +256,12 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	@Internal
 	public abstract ListProperty<ArchRule> getRules();
 
+	@Internal
+	public abstract Property<Boolean> getProhibitObjectsRequireNonNull();
+
 	@Input
-	// The rules themselves can't be an input as they aren't serializable so we use their
+	// The rules themselves can't be an input as they aren't serializable so we use
+	// their
 	// descriptions instead
 	abstract ListProperty<String> getRuleDescriptions();
 
