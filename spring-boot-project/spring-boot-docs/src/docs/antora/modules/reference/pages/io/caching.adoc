@@ -36,7 +36,7 @@ TIP: It is also possible to transparently {url-spring-framework-docs}/integratio
 
 The cache abstraction does not provide an actual store and relies on abstraction materialized by the `org.springframework.cache.Cache` and `org.springframework.cache.CacheManager` interfaces.
 
-If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see javadoc:{url-spring-framework-javadoc}/org.springframework.cache.annotation.CachingConfigurer[]), Spring Boot tries to detect the following providers (in the indicated order):
+If you have not defined a bean of type `org.springframework.cache.CacheManager` or a `org.springframework.cache.interceptor.CacheResolver` named `cacheResolver` (see javadoc:{url-spring-framework-javadoc}/org.springframework.cache.annotation.CachingConfigurer[]), Spring Boot tries to detect the following providers (in the indicated order):
 
 . xref:io/caching.adoc#io.caching.provider.generic[]
 . xref:io/caching.adoc#io.caching.provider.jcache[] (EhCache 3, Hazelcast, Infinispan, and others)
@@ -50,14 +50,14 @@ If you have not defined a bean of type `CacheManager` or a `CacheResolver` named
 
 Additionally, {url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] provides {url-spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
 
-TIP: If the `CacheManager` is auto-configured by Spring Boot, it is possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
+TIP: If the `org.springframework.cache.CacheManager` is auto-configured by Spring Boot, it is possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
 Use this property if you need to xref:io/caching.adoc#io.caching.provider.none[use no-op caches] in certain environments (such as tests).
 
 TIP: Use the `spring-boot-starter-cache` starter to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
 If you add dependencies manually, you must include `spring-context-support` in order to use the JCache or Caffeine support.
 
-If the `CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
+If the `org.springframework.cache.CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
 The following example sets a flag to say that `null` values should not be passed down to the underlying map:
 
 include-code::MyCacheManagerConfiguration[]
@@ -72,7 +72,7 @@ You can have as many customizers as you want, and you can also order them by usi
 === Generic
 
 Generic caching is used if the context defines _at least_ one `org.springframework.cache.Cache` bean.
-A `CacheManager` wrapping all beans of that type is created.
+A `org.springframework.cache.CacheManager` wrapping all beans of that type is created.
 
 
 
@@ -99,13 +99,13 @@ Even if the JSR-107 standard does not enforce a standardized way to define the l
 NOTE: When a cache library offers both a native implementation and JSR-107 support, Spring Boot prefers the JSR-107 support, so that the same features are available if you switch to a different JSR-107 implementation.
 
 TIP: Spring Boot has xref:io/hazelcast.adoc[general support for Hazelcast].
-If a single `HazelcastInstance` is available, it is automatically reused for the `CacheManager` as well, unless the configprop:spring.cache.jcache.config[] property is specified.
+If a single `HazelcastInstance` is available, it is automatically reused for the `javax.cache.CacheManager` as well, unless the configprop:spring.cache.jcache.config[] property is specified.
 
 There are two ways to customize the underlying `javax.cache.CacheManager`:
 
 * Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
 If a custom `javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
-* `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are invoked with the reference of the `CacheManager` for full customization.
+* `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are invoked with the reference of the `javax.cache.CacheManager` for full customization.
 
 TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped automatically in an `org.springframework.cache.CacheManager` implementation that the abstraction expects.
 No further customization is applied to it.
@@ -116,10 +116,10 @@ No further customization is applied to it.
 === Hazelcast
 
 Spring Boot has xref:io/hazelcast.adoc[general support for Hazelcast].
-If a `HazelcastInstance` has been auto-configured and `com.hazelcast:hazelcast-spring` is on the classpath, it is automatically wrapped in a `CacheManager`.
+If a `HazelcastInstance` has been auto-configured and `com.hazelcast:hazelcast-spring` is on the classpath, it is automatically wrapped in a `org.springframework.cache.CacheManager`.
 
-NOTE: Hazelcast can be used as a JCache compliant cache or as a Spring `CacheManager` compliant cache.
-When setting configprop:spring.cache.type[] to `hazelcast`, Spring Boot will use the `CacheManager` based implementation.
+NOTE: Hazelcast can be used as a JCache compliant cache or as a Spring `org.springframework.cache.CacheManager` compliant cache.
+When setting configprop:spring.cache.type[] to `hazelcast`, Spring Boot will use the `org.springframework.cache.CacheManager` based implementation.
 If you want to use Hazelcast as a JCache compliant cache, set configprop:spring.cache.type[] to `jcache`.
 If you have multiple JCache compliant cache providers and want to force the use of Hazelcast, you have to xref:io/caching.adoc#io.caching.provider.jcache[explicitly set the JCache provider].
 
@@ -140,7 +140,7 @@ spring:
 ----
 
 Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
-If a custom `ConfigurationBuilder` bean is defined, it is used to customize the caches.
+If a custom `org.infinispan.configuration.cache.ConfigurationBuilder` bean is defined, it is used to customize the caches.
 
 To be compatible with Spring Boot's Jakarta EE 9 baseline, Infinispan's `-jakarta` modules must be used.
 For every module with a `-jakarta` variant, the variant must be used in place of the standard module.
@@ -223,7 +223,7 @@ spring:
 ----
 
 If a `com.github.benmanes.caffeine.cache.CacheLoader` bean is defined, it is automatically associated to the `CaffeineCacheManager`.
-Since the `CacheLoader` is going to be associated with _all_ caches managed by the cache manager, it must be defined as `CacheLoader<Object, Object>`.
+Since the `com.github.benmanes.caffeine.cache.CacheLoader` is going to be associated with _all_ caches managed by the cache manager, it must be defined as `CacheLoader<Object, Object>`.
 The auto-configuration ignores any other generic type.
 
 
@@ -266,7 +266,7 @@ This is similar to the way the "real" cache providers behave if you use an undec
 === None
 
 When `@EnableCaching` is present in your configuration, a suitable cache configuration is expected as well.
-If you have a custom `CacheManager`, consider defining it in a separate `@Configuration` class so that you can override it if necessary.
+If you have a custom ` org.springframework.cache.CacheManager`, consider defining it in a separate `@Configuration` class so that you can override it if necessary.
 None uses a no-op implementation that is useful in tests, and slice tests use that by default via `@AutoConfigureCache`.
 
 If you need to use a no-op cache rather than the auto-configured cache manager in a certain environment, set the cache type to `none`, as shown in the following example:

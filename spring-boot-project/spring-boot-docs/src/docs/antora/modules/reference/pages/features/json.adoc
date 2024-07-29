@@ -23,10 +23,10 @@ Several configuration properties are provided for xref:how-to:spring-mvc.adoc#ho
 [[features.json.jackson.custom-serializers-and-deserializers]]
 === Custom Serializers and Deserializers
 
-If you use Jackson to serialize and deserialize JSON data, you might want to write your own `JsonSerializer` and `JsonDeserializer` classes.
+If you use Jackson to serialize and deserialize JSON data, you might want to write your own `com.fasterxml.jackson.databind.JsonSerializer` and `com.fasterxml.jackson.databind.JsonDeserializer` classes.
 Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes it easier to directly register Spring Beans.
 
-You can use the `@JsonComponent` annotation directly on `JsonSerializer`, `JsonDeserializer` or `KeyDeserializer` implementations.
+You can use the `@JsonComponent` annotation directly on `com.fasterxml.jackson.databind.JsonSerializer`, `com.fasterxml.jackson.databind.JsonDeserializer` or `com.fasterxml.jackson.databind.KeyDeserializer` implementations.
 You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
 
 include-code::MyJsonComponent[]

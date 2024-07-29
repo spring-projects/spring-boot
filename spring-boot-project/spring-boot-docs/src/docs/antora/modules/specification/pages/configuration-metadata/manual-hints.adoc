@@ -15,7 +15,7 @@ The `name` attribute of each hint refers to the `name` of a property.
 In the xref:configuration-metadata/format.adoc[initial example shown earlier], we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
 Each value may have a description as well.
 
-If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
+If your property is of type `java.util.Map`, you can provide hints for both the keys and the values (but not for the map itself).
 The special `.keys` and `.values` suffixes must refer to the keys and the values, respectively.
 
 Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
@@ -200,7 +200,7 @@ The following types can be used:
 * `org.springframework.util.MimeType`: Supports auto-completion of content type values (such as `text/plain`)
 * `org.springframework.core.io.Resource`: Supports auto-completion of Spring’s Resource abstraction to refer to a file on the filesystem or on the classpath (such as `classpath:/sample.properties`)
 
-TIP: If multiple values can be provided, use a `Collection` or _Array_ type to teach the IDE about it.
+TIP: If multiple values can be provided, use a `java.util.Collection` or _Array_ type to teach the IDE about it.
 
 The following metadata snippet corresponds to the standard `spring.liquibase.change-log` property that defines the path to the changelog to use.
 It is actually used internally as a `org.springframework.core.io.Resource` but cannot be exposed as such, because we need to keep the original String value to pass it to the Liquibase API.

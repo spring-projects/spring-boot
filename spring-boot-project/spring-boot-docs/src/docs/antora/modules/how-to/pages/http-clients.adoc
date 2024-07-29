@@ -21,7 +21,7 @@ The exact details of the proxy configuration depend on the underlying client req
 
 When Reactor Netty is on the classpath a Reactor Netty-based `WebClient` is auto-configured.
 To customize the client's handling of network connections, provide a `ClientHttpConnector` bean.
-The following example configures a 60 second connect timeout and adds a `ReadTimeoutHandler`:
+The following example configures a 60 second connect timeout and adds a `io.netty.handler.timeout.ReadTimeoutHandler`:
 
 include-code::MyReactorNettyClientConfiguration[]
 

@@ -5,7 +5,7 @@ Java Management Extensions (JMX) provide a standard mechanism to monitor and man
 By default, this feature is not enabled.
 You can turn it on by setting the configprop:spring.jmx.enabled[] configuration property to `true`.
 Spring Boot exposes the most suitable `MBeanServer` as a bean with an ID of `mbeanServer`.
-Any of your beans that are annotated with Spring JMX annotations (`@ManagedResource`, `@ManagedAttribute`, or `@ManagedOperation`) are exposed to it.
+Any of your beans that are annotated with Spring JMX annotations (`@org.springframework.jmx.export.annotation.ManagedResource`, `@org.springframework.jmx.export.annotation.ManagedAttribute`, or `@org.springframework.jmx.export.annotation.ManagedOperation`) are exposed to it.
 
 If your platform provides a standard `MBeanServer`, Spring Boot uses that and defaults to the VM `MBeanServer`, if necessary.
 If all that fails, a new `MBeanServer` is created.

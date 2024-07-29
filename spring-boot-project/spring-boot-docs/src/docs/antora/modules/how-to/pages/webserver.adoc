@@ -96,7 +96,7 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 [[howto.webserver.discover-port]]
 == Discover the HTTP Port at Runtime
 
-You can access the port the server is running on from log output or from the `WebServerApplicationContext` through its `WebServer`.
+You can access the port the server is running on from log output or from the `WebServerApplicationContext` through its `org.springframework.boot.web.server.WebServer`.
 The best way to get that and be sure it has been initialized is to add a `@Bean` of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
@@ -310,7 +310,7 @@ include-code::MyTomcatWebServerCustomizer[]
 NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
 Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
 
-Once you have got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
+Once you have got access to a `org.springframework.boot.web.server.WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
 
 In addition Spring Boot provides:
 
@@ -336,7 +336,7 @@ In addition Spring Boot provides:
 | `NettyReactiveWebServerFactory`
 |===
 
-As a last resort, you can also declare your own `WebServerFactory` bean, which will override the one provided by Spring Boot.
+As a last resort, you can also declare your own `org.springframework.boot.web.server.WebServerFactory` bean, which will override the one provided by Spring Boot.
 When you do so, auto-configured customizers are still applied on your custom factory, so use that option carefully.
 
 
@@ -385,7 +385,7 @@ include-code::MyFilterConfiguration[]
 [[howto.webserver.add-servlet-filter-listener.using-scanning]]
 === Add Servlets, Filters, and Listeners by Using Classpath Scanning
 
-`@WebServlet`, `@WebFilter`, and `@WebListener` annotated classes can be automatically registered with an embedded servlet container by annotating a `@Configuration` class with `@ServletComponentScan` and specifying the package(s) containing the components that you want to register.
+`@WebServlet`, `@jakarta.servlet.annotation.WebFilter`, and `@WebListener` annotated classes can be automatically registered with an embedded servlet container by annotating a `@Configuration` class with `@ServletComponentScan` and specifying the package(s) containing the components that you want to register.
 By default, `@ServletComponentScan` scans from the package of the annotated class.
 
 
@@ -531,7 +531,7 @@ server:
 [[howto.webserver.enable-multiple-listeners-in-undertow]]
 == Enable Multiple Listeners with Undertow
 
-Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and add a listener to the `Builder`, as shown in the following example:
+Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and add a listener to the `io.undertow.Undertow.Builder`, as shown in the following example:
 
 include-code::MyUndertowConfiguration[]
 

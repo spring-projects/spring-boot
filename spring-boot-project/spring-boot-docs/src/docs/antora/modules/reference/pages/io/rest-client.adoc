@@ -127,7 +127,7 @@ The following code shows a typical example:
 
 include-code::MyService[]
 
-If you need to apply other customization in addition to an SSL bundle, you can use the `ClientHttpRequestFactorySettings` class with `ClientHttpRequestFactoryBuilder`:
+If you need to apply other customization in addition to an SSL bundle, you can use the `org.springframework.boot.http.client.ClientHttpRequestFactorySettings` class with `ClientHttpRequestFactoryBuilder`:
 
 include-code::settings/MyService[]
 
@@ -210,7 +210,7 @@ If multiple clients are available on the classpath, and not global configuration
 === Global HTTP Client Configuration
 
 If the the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.client.factory[] property to pick a specific factory.
-For example, if you have Apache HttpClient on your classpath, but you prefer Jetty's `HttpClient` you can add use the following:
+For example, if you have Apache HttpClient on your classpath, but you prefer Jetty's `org.eclipse.jetty.client.HttpClient` you can add use the following:
 
 [configprops,yaml]
 ----

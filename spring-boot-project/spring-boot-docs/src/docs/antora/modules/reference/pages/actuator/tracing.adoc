@@ -200,7 +200,7 @@ TIP: If you want to create a span without creating a metric, you need to use the
 [[actuator.micrometer-tracing.baggage]]
 == Baggage
 
-You can create baggage with the `Tracer` API:
+You can create baggage with the `io.micrometer.tracing.Tracer` API:
 
 include-code::CreatingBaggage[]
 

@@ -34,7 +34,7 @@ TIP: These dependencies and plugins are provided by default if one bootstraps a 
 
 One of Kotlin's key features is {url-kotlin-docs}/null-safety.html[null-safety].
 It deals with `null` values at compile time rather than deferring the problem to runtime and encountering a `NullPointerException`.
-This helps to eliminate a common source of bugs without paying the cost of wrappers like `Optional`.
+This helps to eliminate a common source of bugs without paying the cost of wrappers like `java.util.Optional`.
 Kotlin also allows using functional constructs with nullable values as described in this https://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
 
 Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API through tooling-friendly annotations.

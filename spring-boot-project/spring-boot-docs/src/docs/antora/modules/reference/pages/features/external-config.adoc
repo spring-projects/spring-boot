@@ -120,7 +120,7 @@ Spring Boot will automatically find and load `application.properties` and `appli
 .. Immediate child directories of the `config/` subdirectory
 
 The list is ordered by precedence (with values from lower items overriding earlier ones).
-Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
+Documents from the loaded files are added as `PropertySource` instances to the Spring `Environment`.
 
 If you do not like `application` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
 For example, to look for `myproject.properties` and `myproject.yaml` files you can run your application as follows:
@@ -636,7 +636,7 @@ my.servers[0]=dev.example.com
 my.servers[1]=another.example.com
 ----
 
-TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
+TIP: Properties that use the `[index]` notation can be bound to Java `java.util.List` or `java.util.Set` objects using Spring Boot's `Binder` class.
 For more details see the xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties[] section below.
 
 WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
@@ -648,7 +648,7 @@ So, in the case that you need to load values that way, you need to use a propert
 === Directly Loading YAML
 
 Spring Framework provides two convenient classes that can be used to load YAML documents.
-The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
+The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `java.util.Map`.
 
 You can also use the `YamlPropertySourceLoader` class if you want to load YAML as a Spring `PropertySource`.
 
@@ -713,7 +713,7 @@ The preceding POJO defines the following properties:
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
-TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the `@Name` annotation on the property's field.
+TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the `@org.springframework.boot.context.properties.bind.Name` annotation on the property's field.
 
 NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
@@ -754,11 +754,11 @@ Unless your record has multiple constructors, there is no need to use `@Construc
 
 Nested members of a constructor bound class (such as `+Security+` in the example above) will also be bound through their constructor.
 
-Default values can be specified using `@DefaultValue` on constructor parameters and record components.
+Default values can be specified using `@org.springframework.boot.context.properties.bind.DefaultValue` on constructor parameters and record components.
 The conversion service will be applied to coerce the annotation's `String` value to the target type of a missing property.
 
 Referring to the previous example, if no properties are bound to `+Security+`, the `MyProperties` instance will contain a `null` value for `security`.
-To make it contain a non-null instance of `+Security+` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `+Security+` to be declared as nullable as they do not have default values), use an empty `@DefaultValue` annotation:
+To make it contain a non-null instance of `+Security+` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `+Security+` to be declared as nullable as they do not have default values), use an empty `@org.springframework.boot.context.properties.bind.DefaultValue` annotation:
 
 include-code::nonnull/MyProperties[tag=*]
 
@@ -770,9 +770,9 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 
 NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
 As such, it is not well-suited to configuration property injection.
-For consistency with properties of other types, if you do declare an `Optional` property and it has no value, `null` rather than an empty `Optional` will be bound.
+For consistency with properties of other types, if you do declare an `java.util.Optional` property and it has no value, `null` rather than an empty `java.util.Optional` will be bound.
 
-TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the `@Name` annotation on the constructor parameter.
+TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the `@org.springframework.boot.context.properties.bind.Name` annotation on the constructor parameter.
 
 
 
@@ -911,7 +911,7 @@ TIP: We recommend that, when possible, properties are stored in lower-case kebab
 [[features.external-config.typesafe-configuration-properties.relaxed-binding.maps]]
 ==== Binding Maps
 
-When binding to `Map` properties you may need to use a special bracket notation so that the original `key` value is preserved.
+When binding to `java.util.Map` properties you may need to use a special bracket notation so that the original `key` value is preserved.
 If the key is not surrounded by `[]`, any characters that are not alpha-numeric, `-` or `.` are removed.
 
 For example, consider binding the following properties to a `Map<String,String>`:
@@ -927,7 +927,7 @@ my:
 
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
 
-The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
+The properties above will bind to a `java.util.Map` with `/key1`, `/key2` and `key3` as the keys in the map.
 The slash has been removed from `key3` because it was not surrounded by square brackets.
 
 When binding to scalar values, keys with `.` in them do not need to be surrounded by `[]`.
@@ -956,7 +956,8 @@ To convert a property name in the canonical-form to an environment variable name
 For example, the configuration property `spring.main.log-startup-info` would be an environment variable named `SPRING_MAIN_LOGSTARTUPINFO`.
 
 Environment variables can also be used when binding to object lists.
-To bind to a `List`, the element number should be surrounded with underscores in the variable name.
+To bind to a `java.util.List`, the element number should be surrounded with underscores in the variable name.
+
 For example, the configuration property `my.service[0].other` would use an environment variable named `MY_SERVICE_0_OTHER`.
 
 Support for binding from environment variables is applied to the `systemEnvironment` property source and to any additional property source whose name ends with `-systemEnvironment`.
@@ -1020,7 +1021,7 @@ If the `dev` profile is not active, `MyProperties.list` contains one `MyPojo` en
 If the `dev` profile is enabled, however, the `list` _still_ contains only one entry (with a name of `my another name` and a description of `null`).
 This configuration _does not_ add a second `MyPojo` instance to the list, and it does not merge the items.
 
-When a `List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
+When a `java.util.List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
 Consider the following example:
 
 [configprops%novalidate,yaml]
@@ -1044,7 +1045,7 @@ my:
 In the preceding example, if the `dev` profile is active, `MyProperties.list` contains _one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
 For YAML, both comma-separated lists and YAML lists can be used for completely overriding the contents of the list.
 
-For `Map` properties, you can bind with property values drawn from multiple sources.
+For `java.util.Map` properties, you can bind with property values drawn from multiple sources.
 However, for the same property in multiple sources, the one with the highest priority is used.
 The following example exposes a `Map<String, MyPojo>` from `MyProperties`:
 
@@ -1192,20 +1193,20 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 [[features.external-config.typesafe-configuration-properties.validation]]
 === @ConfigurationProperties Validation
 
-Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@Validated` annotation.
+Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@org.springframework.validation.annotation.Validated` annotation.
 You can use JSR-303 `jakarta.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
 include-code::MyProperties[]
 
-TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
+TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@org.springframework.validation.annotation.Validated`.
 
 To cascade validation to nested properties the associated field must be annotated with `@Valid`.
 The following example builds on the preceding `MyProperties` example:
 
 include-code::nested/MyProperties[]
 
-You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.
+You can also add a custom Spring `org.springframework.validation.Validator` by creating a bean definition called `configurationPropertiesValidator`.
 The `@Bean` method should be declared `static`.
 The configuration properties validator is created very early in the application's lifecycle, and declaring the `@Bean` method as static lets the bean be created without having to instantiate the `@Configuration` class.
 Doing so avoids any problems that may be caused by early instantiation.

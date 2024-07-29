@@ -114,7 +114,7 @@ spring:
 
 This sets the common `prop.one` Kafka property to `first` (applies to producers, consumers, admins, and streams), the `prop.two` admin property to `second`, the `prop.three` consumer property to `third`, the `prop.four` producer property to `fourth` and the `prop.five` streams property to `fifth`.
 
-You can also configure the Spring Kafka `JsonDeserializer` as follows:
+You can also configure the Spring Kafka `org.springframework.kafka.support.serializer.JsonDeserializer` as follows:
 
 [configprops,yaml]
 ----
@@ -127,7 +127,7 @@ spring:
         "[spring.json.trusted.packages]": "com.example.main,com.example.another"
 ----
 
-Similarly, you can disable the `JsonSerializer` default behavior of sending type information in headers:
+Similarly, you can disable the `org.springframework.kafka.support.serializer.JsonSerializer` default behavior of sending type information in headers:
 
 [configprops,yaml]
 ----
