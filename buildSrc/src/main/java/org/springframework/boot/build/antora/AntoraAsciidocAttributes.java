@@ -78,6 +78,7 @@ public class AntoraAsciidocAttributes {
 		addGitHubAttributes(attributes);
 		addVersionAttributes(attributes);
 		addUrlArtifactRepository(attributes);
+		addUrlJava(attributes);
 		addUrlLibraryLinkAttributes(attributes);
 		addPropertyAttributes(attributes);
 		return attributes;
@@ -109,8 +110,12 @@ public class AntoraAsciidocAttributes {
 		});
 		attributes.put("version-native-build-tools", (String) this.projectProperties.get("nativeBuildToolsVersion"));
 		attributes.put("version-graal", (String) this.projectProperties.get("graalVersion"));
+		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
+		addDependencyVersion(attributes, "jackson-core", "com.fasterxml.jackson.core:jackson-core");
+		addDependencyVersion(attributes, "jackson-databind", "com.fasterxml.jackson.core:jackson-databind");
 		addSpringDataDependencyVersion(attributes, "spring-data-commons");
 		addSpringDataDependencyVersion(attributes, "spring-data-couchbase");
+		addSpringDataDependencyVersion(attributes, "spring-data-cassandra");
 		addSpringDataDependencyVersion(attributes, "spring-data-elasticsearch");
 		addSpringDataDependencyVersion(attributes, "spring-data-jdbc");
 		addSpringDataDependencyVersion(attributes, "spring-data-jpa");
@@ -125,13 +130,21 @@ public class AntoraAsciidocAttributes {
 	}
 
 	private void addSpringDataDependencyVersion(Map<String, String> attributes, String name, String artifactId) {
-		String version = this.dependencyVersions.get("org.springframework.data:" + artifactId);
-		Assert.notNull(version, () -> "No version found for Spring Data artifact " + artifactId);
+		addDependencyVersion(attributes, name, "org.springframework.data:" + artifactId);
+	}
+
+	private void addDependencyVersion(Map<String, String> attributes, String name, String groupAndArtifactId) {
+		String version = this.dependencyVersions.get(groupAndArtifactId);
+		Assert.notNull(version, () -> "No version found for " + groupAndArtifactId);
 		attributes.put("version-" + name, version);
 	}
 
 	private void addUrlArtifactRepository(Map<String, String> attributes) {
 		attributes.put("url-artifact-repository", this.artifactRelease.getDownloadRepo());
+	}
+
+	private void addUrlJava(Map<String, String> attributes) {
+		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api/");
 	}
 
 	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
