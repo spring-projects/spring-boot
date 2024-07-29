@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import com.jayway.jsonpath.JsonPath;
@@ -616,8 +615,8 @@ class ValueObjectBinderTests {
 		private final Object value;
 
 		ExampleFailingConstructorBean(String name, String value) {
-			Objects.requireNonNull(name, "'name' must be not null.");
-			Objects.requireNonNull(value, "'value' must be not null.");
+			Assert.notNull(name, "'name' must be not null.");
+			Assert.notNull(value, "'value' must be not null.");
 			this.name = name;
 			this.value = value;
 		}
