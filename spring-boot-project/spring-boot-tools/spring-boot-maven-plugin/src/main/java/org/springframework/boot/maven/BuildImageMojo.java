@@ -253,9 +253,10 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	private void buildImage() throws MojoExecutionException {
 		Libraries libraries = getLibraries(Collections.emptySet());
 		try {
-			DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.asDockerConfiguration()
-					: new Docker().asDockerConfiguration();
 			BuildRequest request = getBuildRequest(libraries);
+			DockerConfiguration dockerConfiguration = (this.docker != null)
+					? this.docker.asDockerConfiguration(request.isPublish())
+					: new Docker().asDockerConfiguration(request.isPublish());
 			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
 			builder.build(request);
 		}
