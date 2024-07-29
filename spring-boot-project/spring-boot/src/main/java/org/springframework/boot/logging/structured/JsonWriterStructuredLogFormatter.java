@@ -37,7 +37,7 @@ public abstract class JsonWriterStructuredLogFormatter<E> implements StructuredL
 	/**
 	 * Create a new {@link JsonWriterStructuredLogFormatter} instance with the given
 	 * members.
-	 * @param members a consumer which should configure the members
+	 * @param members a consumer, which should configure the members
 	 */
 	protected JsonWriterStructuredLogFormatter(Consumer<Members<E>> members) {
 		this(JsonWriter.of(members).withNewLineAtEnd());
@@ -59,7 +59,7 @@ public abstract class JsonWriterStructuredLogFormatter<E> implements StructuredL
 
 	@Override
 	public byte[] formatAsBytes(E event, Charset charset) {
-		return this.jsonWriter.write(event).toByteArray();
+		return this.jsonWriter.write(event).toByteArray(charset);
 	}
 
 }

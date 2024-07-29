@@ -44,8 +44,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Interface that can be used to write JSON output. Typically used to generate JSON when a
- * a dependency on a fully marshalling library (such as Jackson or Gson) cannot be
- * assumed.
+ * dependency on a fully marshalling library (such as Jackson or Gson) cannot be assumed.
  * <p>
  * For standard Java types, the {@link #standard()} factory method may be used to obtain
  * an instance of this interface. It supports {@link String}, {@link Number} and
@@ -143,7 +142,7 @@ public interface JsonWriter<T> {
 	 * @return a {@link JsonWriter} instance
 	 */
 	static <T> JsonWriter<T> standard() {
-		return of((members) -> members.addSelf());
+		return of(Members::addSelf);
 	}
 
 	/**
@@ -151,13 +150,13 @@ public interface JsonWriter<T> {
 	 * mapping}. See {@link JsonValueWriter class-level javadoc} and {@link Members} for
 	 * details.
 	 * @param <T> the type to write
-	 * @param members a consumer which should configure the members
+	 * @param members a consumer, which should configure the members
 	 * @return a {@link JsonWriter} instance
 	 * @see Members
 	 */
 	static <T> JsonWriter<T> of(Consumer<Members<T>> members) {
-		Members<T> initiaizedMembers = new Members<>(members, false); // Don't inline
-		return (instance, out) -> initiaizedMembers.write(instance, new JsonValueWriter(out));
+		Members<T> initializedMembers = new Members<>(members, false); // Don't inline
+		return (instance, out) -> initializedMembers.write(instance, new JsonValueWriter(out));
 	}
 
 	/**
@@ -202,6 +201,7 @@ public interface JsonWriter<T> {
 		 * @return the JSON bytes
 		 */
 		default byte[] toByteArray(Charset charset) {
+			Assert.notNull(charset, "'charset' must not be null");
 			try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 				toWriter(new OutputStreamWriter(out, charset));
 				return out.toByteArray();
@@ -303,7 +303,7 @@ public interface JsonWriter<T> {
 
 	/**
 	 * Callback used to configure JSON members. Individual members can be declared using
-	 * the various {@code add(...)} methods. Typically members are declared with a
+	 * the various {@code add(...)} methods. Typically, members are declared with a
 	 * {@code "name"} and a {@link Function} that will extract the value from the
 	 * instance. Members can also be declared using a static value or a {@link Supplier}.
 	 * The {@link #addSelf(String)} and {@link #addSelf()} methods may be used to access
@@ -473,7 +473,7 @@ public interface JsonWriter<T> {
 	}
 
 	/**
-	 * A member that contributes JSON. Typically a member will contribute a single
+	 * A member that contributes JSON. Typically, a member will contribute a single
 	 * name/value pair based on an extracted value. They may also contribute more complex
 	 * JSON structures when configured with one of the {@code using(...)} methods.
 	 * <p>
@@ -520,7 +520,7 @@ public interface JsonWriter<T> {
 		}
 
 		/**
-		 * Only include this member when its not {@code null} and has a
+		 * Only include this member when it is not {@code null} and has a
 		 * {@link Object#toString() toString()} that is not zero length.
 		 * @return a {@link Member} which may be configured further
 		 * @see StringUtils#hasLength(CharSequence)
@@ -530,7 +530,7 @@ public interface JsonWriter<T> {
 		}
 
 		/**
-		 * Only include this member when its not empty (See
+		 * Only include this member when it is not empty (See
 		 * {@link ObjectUtils#isEmpty(Object)} for details).
 		 * @return a {@link Member} which may be configured further
 		 */
@@ -603,16 +603,13 @@ public interface JsonWriter<T> {
 		 * }
 		 * </pre>
 		 * @param <E> the element type
-		 * @param <N> the name type
-		 * @param <V> the value type
 		 * @param elements callback used to provide the elements
 		 * @param extractor a {@link PairExtractor} used to extract the name/value pair
 		 * @return a {@link Member} which may be configured further
 		 * @see #usingExtractedPairs(BiConsumer, Function, Function)
 		 * @see #usingPairs(BiConsumer)
 		 */
-		public <E, N, V> Member<T> usingExtractedPairs(BiConsumer<T, Consumer<E>> elements,
-				PairExtractor<E> extractor) {
+		public <E> Member<T> usingExtractedPairs(BiConsumer<T, Consumer<E>> elements, PairExtractor<E> extractor) {
 			Assert.notNull(elements, "'elements' must not be null");
 			Assert.notNull(extractor, "'extractor' must not be null");
 			return usingExtractedPairs(elements, extractor::getName, extractor::getValue);
@@ -784,8 +781,8 @@ public interface JsonWriter<T> {
 		}
 
 		/**
-		 * Return if this members contributes one or more name/value pairs to the JSON.
-		 * @return if a name/value pair is contributed
+		 * Whether this contributes one or more name/value pairs to the JSON.
+		 * @return whether a name/value pair is contributed
 		 */
 		boolean contributesPair() {
 			return this.name != null || this.pairs != null || (this.members != null && this.members.contributesPair());

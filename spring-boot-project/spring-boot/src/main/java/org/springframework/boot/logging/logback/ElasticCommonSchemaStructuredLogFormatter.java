@@ -62,7 +62,7 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		members.addSelf().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
 			throwableMembers.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
 			throwableMembers.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
-			throwableMembers.add("error.stack_trace", (event) -> throwableProxyConverter.convert(event));
+			throwableMembers.add("error.stack_trace", throwableProxyConverter::convert);
 		});
 		members.add("ecs.version", "8.11");
 	}

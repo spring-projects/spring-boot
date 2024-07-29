@@ -109,25 +109,25 @@ public class JsonWriterTests {
 	}
 
 	@Test
-	void ofAddingUnamedSelf() {
+	void ofAddingUnnamedSelf() {
 		JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf());
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
 	}
 
 	@Test
-	void ofAddingUnamedValue() {
+	void ofAddingUnnamedValue() {
 		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Boot"));
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
 	@Test
-	void ofAddingUnamedSupplier() {
+	void ofAddingUnnamedSupplier() {
 		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(() -> "Boot"));
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
 	@Test
-	void ofAddingUnamedExtractor() {
+	void ofAddingUnnamedExtractor() {
 		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(Person::lastName));
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
@@ -162,7 +162,7 @@ public class JsonWriterTests {
 	}
 
 	@Test
-	void ofWhenOneContibutesPairByNameAndOneHasNoNameThrowsException() {
+	void ofWhenOneContributesPairByNameAndOneHasNoNameThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
 			members.add("Spring", "Boot");
 			members.add("alone");
@@ -172,7 +172,7 @@ public class JsonWriterTests {
 	}
 
 	@Test
-	void ofWhenOneContibutesPairByUsingPairsAndOneHasNoNameThrowsException() {
+	void ofWhenOneContributesPairByUsingPairsAndOneHasNoNameThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
 			members.add(Map.of("Spring", "Boot")).usingPairs(Map::forEach);
 			members.add("alone");
@@ -182,7 +182,7 @@ public class JsonWriterTests {
 	}
 
 	@Test
-	void ofWhenOneContibutesPairByUsingMembersAndOneHasNoNameThrowsException() {
+	void ofWhenOneContributesPairByUsingMembersAndOneHasNoNameThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
 			members.add(PERSON).usingMembers((personMembers) -> {
 				personMembers.add("first", Person::firstName);
@@ -260,7 +260,7 @@ public class JsonWriterTests {
 		void whenHasLengthOnNonString() {
 			JsonWriter<StringBuilder> writer = JsonWriter.of((members) -> members.addSelf().whenHasLength());
 			assertThat(writer.writeToString(new StringBuilder("test"))).isEqualTo(quoted("test"));
-			assertThat(writer.writeToString(new StringBuilder(""))).isEmpty();
+			assertThat(writer.writeToString(new StringBuilder())).isEmpty();
 			assertThat(writer.writeToString(null)).isEmpty();
 		}
 

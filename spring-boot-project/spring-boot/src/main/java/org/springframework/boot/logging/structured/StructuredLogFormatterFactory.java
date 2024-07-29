@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
  */
 public class StructuredLogFormatterFactory<E> {
 
-	private static FailureHandler failureHandler = (type, implementationName, failure) -> {
+	private static final FailureHandler failureHandler = (type, implementationName, failure) -> {
 		if (!(failure instanceof ClassNotFoundException)) {
 			throw new IllegalArgumentException(
 					"Unable to instantiate " + implementationName + " [" + type.getName() + "]", failure);

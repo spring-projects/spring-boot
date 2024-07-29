@@ -26,6 +26,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.springframework.boot.json.JsonWriter.WritableJson;
+import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.function.ThrowingConsumer;
 
@@ -57,7 +58,6 @@ class JsonValueWriter {
 	 * @param name the name of the pair or {@code null} if only the value should be
 	 * written
 	 * @param value the value
-	 * @on IO error
 	 */
 	<N, V> void write(N name, V value) {
 		if (name != null) {
@@ -81,7 +81,6 @@ class JsonValueWriter {
 	 * All other values are written as JSON strings.
 	 * @param <V> the value type
 	 * @param value the value to write
-	 * @on IO error
 	 */
 	<V> void write(V value) {
 		if (value == null) {
@@ -118,7 +117,6 @@ class JsonValueWriter {
 	/**
 	 * Start a new {@link Series} (JSON object or array).
 	 * @param series the series to start
-	 * @on IO error
 	 * @see #end(Series)
 	 * @see #writePairs(Consumer)
 	 * @see #writeElements(Consumer)
@@ -133,7 +131,6 @@ class JsonValueWriter {
 	/**
 	 * End an active {@link Series} (JSON object or array).
 	 * @param series the series type being ended (must match {@link #start(Series)})
-	 * @on IO error
 	 * @see #start(Series)
 	 */
 	void end(Series series) {
@@ -148,7 +145,6 @@ class JsonValueWriter {
 	 * @param <E> the element type
 	 * @param elements a callback that will be used to provide each element. Typically a
 	 * {@code forEach} method reference.
-	 * @on IO error
 	 * @see #writeElements(Consumer)
 	 */
 	<E> void writeArray(Consumer<Consumer<E>> elements) {
@@ -171,6 +167,7 @@ class JsonValueWriter {
 
 	<E> void writeElement(E element) {
 		ActiveSeries activeSeries = this.activeSeries.peek();
+		Assert.notNull(activeSeries, "No series has been started");
 		activeSeries.appendCommaIfRequired();
 		write(element);
 	}
@@ -181,7 +178,6 @@ class JsonValueWriter {
 	 * @param <V> the value type in the pair
 	 * @param pairs a callback that will be used to provide each pair. Typically a
 	 * {@code forEach} method reference.
-	 * @on IO error
 	 * @see #writePairs(Consumer)
 	 */
 	<N, V> void writeObject(Consumer<BiConsumer<N, V>> pairs) {
@@ -205,6 +201,7 @@ class JsonValueWriter {
 
 	private <N, V> void writePair(N name, V value) {
 		ActiveSeries activeSeries = this.activeSeries.peek();
+		Assert.notNull(activeSeries, "No series has been started");
 		activeSeries.appendCommaIfRequired();
 		writeString(name);
 		append(":");
