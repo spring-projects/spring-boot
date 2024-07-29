@@ -63,7 +63,7 @@ Subject to xref:actuator/endpoints.adoc#actuator.endpoints.sanitization[sanitiza
 
 | `liquibase`
 | Shows any Liquibase database migrations that have been applied.
-  Requires one or more `Liquibase` beans.
+  Requires one or more `liquibase.Liquibase` beans.
 
 | `metrics`
 | Shows "`metrics`" information for the current application.
@@ -223,14 +223,14 @@ NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure tha
 If Spring Security is on the classpath and no other `SecurityFilterChain` bean is present, all actuators other than `/health` are secured by Spring Boot auto-configuration.
 If you define a custom `SecurityFilterChain` bean, Spring Boot auto-configuration backs off and lets you fully control the actuator access rules.
 
-If you wish to configure custom security for HTTP endpoints (for example, to allow only users with a certain role to access them), Spring Boot provides some convenient `RequestMatcher` objects that you can use in combination with Spring Security.
+If you wish to configure custom security for HTTP endpoints (for example, to allow only users with a certain role to access them), Spring Boot provides some convenient `org.springframework.security.web.util.matcher.RequestMatcher` objects that you can use in combination with Spring Security.
 
 A typical Spring Security configuration might look something like the following example:
 
 include-code::typical/MySecurityConfiguration[]
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
-Several other matcher methods are also available on `EndpointRequest`.
+Several other matcher methods are also available on `org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest`.
 See the xref:api:rest/actuator/index.adoc[API documentation] for details.
 
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
@@ -427,7 +427,7 @@ This will happen automatically if you use Spring Boot's Gradle plugin or if you 
 ==== Input Type Conversion
 
 The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
-Before calling an operation method, the input received over JMX or HTTP is converted to the required types by using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
+Before calling an operation method, the input received over JMX or HTTP is converted to the required types by using an instance of `ApplicationConversionService` as well as any `org.springframework.core.convert.converter.Converter` or `org.springframework.core.convert.converter.GenericConverter` beans qualified with `@EndpointConverter`.
 
 
 
@@ -453,7 +453,7 @@ The path of the predicate is determined by the ID of the endpoint and the base p
 The default base path is `/actuator`.
 For example, an endpoint with an ID of `sessions` uses `/actuator/sessions` as its path in the predicate.
 
-You can further customize the path by annotating one or more parameters of the operation method with `@Selector`.
+You can further customize the path by annotating one or more parameters of the operation method with `@org.springframework.boot.actuate.endpoint.annotation.Selector`.
 Such a parameter is added to the path predicate as a path variable.
 The variable's value is passed into the operation method when the endpoint operation is invoked.
 If you want to capture all remaining path elements, you can add `@Selector(Match=ALL_REMAINING)` to the last parameter and make it a type that is conversion-compatible with a `String[]`.
@@ -569,7 +569,7 @@ Health information is collected from the content of a javadoc:org.springframewor
 Spring Boot includes a number of auto-configured `HealthContributor` beans, and you can also write your own.
 
 A `HealthContributor` can be either a `HealthIndicator` or a `CompositeHealthContributor`.
-A `HealthIndicator` provides actual health information, including a `Status`.
+A `HealthIndicator` provides actual health information, including a `org.springframework.boot.actuate.health.Status`.
 A `CompositeHealthContributor` provides a composite of other `HealthContributor` instances.
 Taken together, contributors form a tree structure to represent the overall system health.
 
@@ -689,10 +689,10 @@ TIP: Health indicators are usually called over HTTP and need to respond before a
 Spring Boot will log a warning message for any health indicator that takes longer than 10 seconds to respond.
 If you want to configure this threshold, you can use the configprop:management.endpoint.health.logging.slow-indicator-threshold[] property.
 
-In addition to Spring Boot's predefined javadoc:org.springframework.boot.actuate.health.Status[] types, `Health` can return a custom `Status` that represents a new system state.
+In addition to Spring Boot's predefined `org.springframework.boot.actuate.health.Status` types, `Health` can return a custom `org.springframework.boot.actuate.health.Status` that represents a new system state.
 In such cases, you also need to provide a custom implementation of the javadoc:org.springframework.boot.actuate.health.StatusAggregator[] interface, or you must configure the default implementation by using the configprop:management.endpoint.health.status.order[] configuration property.
 
-For example, assume a new `Status` with a code of `FATAL` is being used in one of your `HealthIndicator` implementations.
+For example, assume a new `org.springframework.boot.actuate.health.Status` with a code of `FATAL` is being used in one of your `HealthIndicator` implementations.
 To configure the severity order, add the following property to your application properties:
 
 [configprops,yaml]

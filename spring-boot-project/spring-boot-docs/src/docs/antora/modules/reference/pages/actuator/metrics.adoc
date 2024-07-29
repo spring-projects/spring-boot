@@ -57,7 +57,7 @@ management:
         enabled: false
 ----
 
-Spring Boot also adds any auto-configured registries to the global static composite registry on the `Metrics` class, unless you explicitly tell it not to:
+Spring Boot also adds any auto-configured registries to the global static composite registry on the `io.micrometer.core.instrument.Metrics` class, unless you explicitly tell it not to:
 
 [configprops,yaml]
 ----
@@ -364,7 +364,7 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 [TIP]
 ====
 To take control over this behavior, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
-An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
+Auto-configured `GraphiteConfig` and `io.micrometer.core.instrument.Clock` beans are provided unless you define your own:
 
 include-code::MyGraphiteConfiguration[]
 ====
@@ -440,7 +440,7 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 [TIP]
 ====
 To take control over this behavior, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
-An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
+Auto-configured `JmxConfig` and `io.micrometer.core.instrument.Clock` beans are provided unless you define your own:
 
 include-code::MyJmxConfiguration[]
 ====
@@ -543,7 +543,7 @@ scrape_configs:
 ----
 
 https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported.
-To enable this feature, a `SpanContext` bean should be present.
+To enable this feature, a `io.prometheus.metrics.tracer.common.SpanContext` bean should be present.
 If you're using the deprecated Prometheus simpleclient support and want to enable that feature, a `SpanContextSupplier` bean should be present.
 If you use {url-micrometer-tracing-docs}[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
 Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Docs], since this feature needs to be explicitly enabled on Prometheus' side, and it is only supported using the https://github.com/OpenObservability/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#exemplars[OpenMetrics] format.
@@ -801,8 +801,8 @@ You can customize the name by setting the configprop:management.observations.htt
 
 See the {url-spring-framework-docs}/integration/observability.html#observability.http-server.servlet[Spring Framework reference documentation for more information on produced observations].
 
-To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.observation` package.
-To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
+To add to the default tags, provide a `@Bean` that extends `org.springframework.http.server.observation.DefaultServerRequestObservationConvention` from the `org.springframework.http.server.observation` package.
+To replace the default tags, provide a `@Bean` that implements `org.springframework.http.server.observation.ServerRequestObservationConvention`.
 
 
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
@@ -822,8 +822,8 @@ You can customize the name by setting the configprop:management.observations.htt
 
 See the {url-spring-framework-docs}/integration/observability.html#observability.http-server.reactive[Spring Framework reference documentation for more information on produced observations].
 
-To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.reactive.observation` package.
-To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
+To add to the default tags, provide a `@Bean` that extends `org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention` from the `org.springframework.http.server.reactive.observation` package.
+To replace the default tags, provide a `@Bean` that implements `org.springframework.http.server.reactive.observation.ServerRequestObservationConvention`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
 Applications can opt in and record exceptions by xref:web/reactive.adoc#web.reactive.webflux.error-handling[setting handled exceptions as request attributes].
@@ -880,8 +880,8 @@ You can customize the name by setting the configprop:management.observations.htt
 
 See the {url-spring-framework-docs}/integration/observability.html#observability.http-client[Spring Framework reference documentation for more information on produced observations].
 
-To customize the tags when using `RestTemplate` or `RestClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.http.client.observation` package.
-To customize the tags when using `WebClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.web.reactive.function.client` package.
+To customize the tags when using `RestTemplate` or `RestClient`, provide a `@Bean` that implements `org.springframework.http.client.observation.ClientRequestObservationConvention` from the `org.springframework.http.client.observation` package.
+To customize the tags when using `WebClient`, provide a `@Bean` that implements `org.springframework.web.reactive.function.client.ClientRequestObservationConvention` from the `org.springframework.web.reactive.function.client` package.
 
 
 
@@ -898,7 +898,7 @@ Tomcat metrics are published under the `tomcat.` meter name.
 [[actuator.metrics.supported.cache]]
 === Cache Metrics
 
-Auto-configuration enables the instrumentation of all available `Cache` instances on startup, with metrics prefixed with `cache`.
+Auto-configuration enables the instrumentation of all available `org.springframework.cache.Cache` instances on startup, with metrics prefixed with `cache`.
 Cache instrumentation is standardized for a basic set of metrics.
 Additional, cache-specific metrics are also available.
 
@@ -910,7 +910,7 @@ The following cache libraries are supported:
 * Any compliant JCache (JSR-107) implementation
 * Redis
 
-Metrics are tagged by the name of the cache and by the name of the `CacheManager`, which is derived from the bean name.
+Metrics are tagged by the name of the cache and by the name of the `org.springframework.cache.CacheManager`, which is derived from the bean name.
 
 NOTE: Only caches that are configured on startup are bound to the registry.
 For caches not defined in the cache’s configuration, such as caches created on the fly or programmatically after the startup phase, an explicit registration is required.
@@ -972,14 +972,14 @@ spring:
 [[actuator.metrics.supported.spring-data-repository]]
 === Spring Data Repository Metrics
 
-Auto-configuration enables the instrumentation of all Spring Data `Repository` method invocations.
+Auto-configuration enables the instrumentation of all Spring Data `org.springframework.data.repository.Repository` method invocations.
 By default, metrics are generated with the name, `spring.data.repository.invocations`.
 You can customize the name by setting the configprop:management.metrics.data.repository.metric-name[] property.
 
-The `@Timed` annotation from the `io.micrometer.core.annotation` package is supported on `Repository` interfaces and methods.
-If you do not want to record metrics for all `Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+The `@io.micrometer.core.annotation.Timed` annotation from the `io.micrometer.core.annotation` package is supported on `org.springframework.data.repository.Repository` interfaces and methods.
+If you do not want to record metrics for all `org.springframework.data.repository.Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@io.micrometer.core.annotation.Timed` annotations instead.
 
-NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
+NOTE: A `@io.micrometer.core.annotation.Timed` annotation with `longTask = true` enables a long task timer for the method.
 Long task timers require a separate metric name and can be stacked with a short task timer.
 
 By default, repository invocation related metrics are tagged with the following information:
@@ -988,10 +988,10 @@ By default, repository invocation related metrics are tagged with the following 
 | Tag | Description
 
 | `repository`
-| The simple class name of the source `Repository`.
+| The simple class name of the source `org.springframework.data.repository.Repository`.
 
 | `method`
-| The name of the `Repository` method that was invoked.
+| The name of the `org.springframework.data.repository.Repository` method that was invoked.
 
 | `state`
 | The result state (`SUCCESS`, `ERROR`, `CANCELED`, or `RUNNING`).
@@ -1117,15 +1117,15 @@ management:
 [[actuator.metrics.supported.jetty]]
 === Jetty Metrics
 
-Auto-configuration binds metrics for Jetty's `ThreadPool` by using Micrometer's `JettyServerThreadPoolMetrics`.
-Metrics for Jetty's `Connector` instances are bound by using Micrometer's `JettyConnectionMetrics` and, when configprop:server.ssl.enabled[] is set to `true`, Micrometer's `JettySslHandshakeMetrics`.
+Auto-configuration binds metrics for Jetty's `org.eclipse.jetty.util.thread.ThreadPool` by using Micrometer's `JettyServerThreadPoolMetrics`.
+Metrics for Jetty's `org.eclipse.jetty.server.Connector` instances are bound by using Micrometer's `JettyConnectionMetrics` and, when configprop:server.ssl.enabled[] is set to `true`, Micrometer's `JettySslHandshakeMetrics`.
 
 
 
 [[actuator.metrics.supported.timed-annotation]]
 === @Timed Annotation Support
 
-To enable scanning of `@Timed` annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
+To enable scanning of `@io.micrometer.core.annotation.Timed` annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
 Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer documentation].
 
 
@@ -1166,7 +1166,7 @@ For example, if you want to rename the `mytag.region` tag to `mytag.area` for al
 include-code::MyMetricsFilterConfiguration[]
 
 NOTE: By default, all `MeterFilter` beans are automatically bound to the Spring-managed `MeterRegistry`.
-Make sure to register your metrics by using the Spring-managed `MeterRegistry` and not any of the static methods on `Metrics`.
+Make sure to register your metrics by using the Spring-managed `MeterRegistry` and not any of the static methods on `io.micrometer.core.instrument.Metrics`.
 These use the global registry that is not Spring-managed.
 
 

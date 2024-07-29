@@ -38,7 +38,7 @@ The default security configuration is implemented in `SecurityAutoConfiguration`
 `SecurityAutoConfiguration` imports `+SpringBootWebSecurityConfiguration+` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
 
 To completely switch off the default web application security configuration, including Actuator security, or to combine multiple Spring Security components such as OAuth2 Client and Resource Server, add a bean of type `SecurityFilterChain` (doing so does not disable the `UserDetailsService` configuration).
-To also switch off the `UserDetailsService` configuration, add a bean of type `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
+To also switch off the `UserDetailsService` configuration, add a bean of type `UserDetailsService`, `org.springframework.security.authentication.AuthenticationProvider`, or `AuthenticationManager`.
 
 The auto-configuration of a `UserDetailsService` will also back off any of the following Spring Security modules is on the classpath:
 
@@ -50,8 +50,8 @@ To use `UserDetailsService` in addition to one or more of these dependencies, de
 
 Access rules can be overridden by adding a custom `SecurityFilterChain` bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
-`EndpointRequest` can be used to create a `RequestMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
-`PathRequest` can be used to create a `RequestMatcher` for resources in commonly used locations.
+`org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest` can be used to create a `org.springframework.security.web.util.matcher.RequestMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
+`org.springframework.boot.autoconfigure.security.servlet.PathRequest` can be used to create a `org.springframework.security.web.util.matcher.RequestMatcher` for resources in commonly used locations.
 
 
 
@@ -74,9 +74,9 @@ To use `ReactiveUserDetailsService` in addition to one or more of these dependen
 
 Access rules and the use of multiple Spring Security components such as OAuth 2 Client and Resource Server can be configured by adding a custom `SecurityWebFilterChain` bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
-`EndpointRequest` can be used to create a `ServerWebExchangeMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
+`org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest` can be used to create a `ServerWebExchangeMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
 
-`PathRequest` can be used to create a `ServerWebExchangeMatcher` for resources in commonly used locations.
+`org.springframework.boot.autoconfigure.security.reactive.PathRequest` can be used to create a `ServerWebExchangeMatcher` for resources in commonly used locations.
 
 For example, you can customize your security configuration by adding something like:
 
@@ -248,7 +248,7 @@ spring:
 ----
 
 The same properties are applicable for both servlet and reactive applications.
-Alternatively, you can define your own `JwtDecoder` bean for servlet applications or a `ReactiveJwtDecoder` for reactive applications.
+Alternatively, you can define your own `org.springframework.security.oauth2.jwt.JwtDecoder` bean for servlet applications or a `org.springframework.security.oauth2.jwt.ReactiveJwtDecoder` for reactive applications.
 
 In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens through introspection:
 
@@ -329,7 +329,7 @@ The following components can be defined as beans to override auto-configuration 
 * `AuthorizationServerSettings`
 * `SecurityFilterChain`
 * `com.nimbusds.jose.jwk.source.JWKSource<com.nimbusds.jose.proc.SecurityContext>`
-* `JwtDecoder`
+* `org.springframework.security.oauth2.jwt.JwtDecoder`
 
 TIP: Spring Boot auto-configures an `InMemoryRegisteredClientRepository` which is used by Spring Authorization Server for the management of registered clients.
 The `InMemoryRegisteredClientRepository` has limited capabilities and we recommend using it only for development environments.

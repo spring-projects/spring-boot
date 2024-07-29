@@ -90,9 +90,9 @@ the metrics and traces use the semantic conventions described in the Spring proj
 Spring Boot's actuator module includes basic support for OpenTelemetry.
 
 It provides a bean of type `OpenTelemetry`, and if there are beans of type `SdkTracerProvider`, `ContextPropagators`, `SdkLoggerProvider` or `SdkMeterProvider` in the application context, they automatically get registered.
-Additionally, it provides a `Resource` bean.
-The attributes of the auto-configured `Resource` can be configured via the configprop:management.opentelemetry.resource-attributes[] configuration property.
-If you have defined your own `Resource` bean, this will no longer be the case.
+Additionally, it provides a `io.opentelemetry.sdk.resources.Resource` bean.
+The attributes of the auto-configured `io.opentelemetry.sdk.resources.Resource` can be configured via the configprop:management.opentelemetry.resource-attributes[] configuration property.
+If you have defined your own `io.opentelemetry.sdk.resources.Resource` bean, this will no longer be the case.
 
 NOTE: Spring Boot does not provide auto-configuration for OpenTelemetry metrics or logging.
 OpenTelemetry tracing is only auto-configured when used together with xref:actuator/tracing.adoc[Micrometer Tracing].
@@ -104,5 +104,5 @@ The next sections will provide more details about logging, metrics and traces.
 [[actuator.observability.annotations]]
 == Micrometer Observation Annotations support
 
-To enable scanning of metrics and tracing annotations like `@Timed`, `@Counted`, `@MeterTag` and `@NewSpan` annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
+To enable scanning of metrics and tracing annotations like `@io.micrometer.core.annotation.Timed`, `@Counted`, `@MeterTag` and `@NewSpan` annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
 This feature is supported Micrometer directly. Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer] and {url-micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.

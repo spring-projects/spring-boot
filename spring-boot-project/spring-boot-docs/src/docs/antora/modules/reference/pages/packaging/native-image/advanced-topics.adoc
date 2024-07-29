@@ -174,7 +174,7 @@ But when you work with `WebClient`, `RestClient` or `RestTemplate` directly, you
 === Testing Custom Hints
 
 The `RuntimeHintsPredicates` API can be used to test your hints.
-The API provides methods that build a `Predicate` that can be used to test a `RuntimeHints` instance.
+The API provides methods that build a `java.util.function.Predicate` that can be used to test a `RuntimeHints` instance.
 
 If you're using AssertJ, your test would look like this:
 

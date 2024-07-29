@@ -18,7 +18,7 @@ You can add additional locations by setting an environment variable called `LOAD
 [[appendix.executable-jar.launching.manifest]]
 == Launcher Manifest
 
-You need to specify an appropriate `Launcher` as the `Main-Class` attribute of `META-INF/MANIFEST.MF`.
+You need to specify an appropriate `org.springframework.boot.loader.launch.Launcher` as the `Main-Class` attribute of `META-INF/MANIFEST.MF`.
 The actual class that you want to launch (that is, the class that contains a `main` method) should be specified in the `Start-Class` attribute.
 
 The following example shows a typical `MANIFEST.MF` for an executable jar file:

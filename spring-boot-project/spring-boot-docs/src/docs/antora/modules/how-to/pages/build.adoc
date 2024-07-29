@@ -83,7 +83,7 @@ Both the Maven and Gradle plugins allow the properties that are included in `git
 
 TIP: The commit time in `git.properties` is expected to match the following format: `yyyy-MM-dd'T'HH:mm:ssZ`.
 This is the default format for both plugins listed above.
-Using this format lets the time be parsed into a `Date` and its format, when serialized to JSON, to be controlled by Jackson's date serialization configuration settings.
+Using this format lets the time be parsed into a `java.util.Date` and its format, when serialized to JSON, to be controlled by Jackson's date serialization configuration settings.
 
 
 

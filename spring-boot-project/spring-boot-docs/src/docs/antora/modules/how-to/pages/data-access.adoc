@@ -157,14 +157,14 @@ See xref:reference:data/sql.adoc#data.sql.datasource.connection-pool[] for detai
 [[howto.data-access.spring-data-repositories]]
 == Use Spring Data Repositories
 
-Spring Data can create implementations of `Repository` interfaces of various flavors.
-Spring Boot handles all of that for you, as long as those `Repository` implementations are included in one of the xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages], typically the package (or a sub-package) of your main application class that is annotated with `@SpringBootApplication` or `@EnableAutoConfiguration`.
+Spring Data can create implementations of `org.springframework.data.repository.Repository` interfaces of various flavors.
+Spring Boot handles all of that for you, as long as those `org.springframework.data.repository.Repository` implementations are included in one of the xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages], typically the package (or a sub-package) of your main application class that is annotated with `@SpringBootApplication` or `@EnableAutoConfiguration`.
 
 For many applications, all you need is to put the right Spring Data dependencies on your classpath.
 There is a `spring-boot-starter-data-jpa` for JPA, `spring-boot-starter-data-mongodb` for Mongodb, and various other starters for supported technologies.
 To get started, create some repository interfaces to handle your `@Entity` objects.
 
-Spring Boot determines the location of your `Repository` implementations by scanning the xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
+Spring Boot determines the location of your `org.springframework.data.repository.Repository` implementations by scanning the xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
 For more control, use the `@Enable…Repositories` annotations from Spring Data.
 
 For more about Spring Data, see the {url-spring-data-site}[Spring Data project page].
@@ -278,8 +278,8 @@ Then, add a `HibernatePropertiesCustomizer` bean as shown in the following examp
 
 include-code::MyHibernateSecondLevelCacheConfiguration[]
 
-This customizer will configure Hibernate to use the same `CacheManager` as the one that the application uses.
-It is also possible to use separate `CacheManager` instances.
+This customizer will configure Hibernate to use the same `org.springframework.cache.CacheManager` as the one that the application uses.
+It is also possible to use separate `org.springframework.cache.CacheManager` instances.
 For details, see {url-hibernate-userguide}#caching-provider-jcache[the Hibernate user guide].
 
 
@@ -343,9 +343,9 @@ See {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaB
 [[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
 == Use Spring Data JPA and Mongo Repositories
 
-Spring Data JPA and Spring Data Mongo can both automatically create `Repository` implementations for you.
+Spring Data JPA and Spring Data Mongo can both automatically create `org.springframework.data.repository.Repository` implementations for you.
 If they are both present on the classpath, you might have to do some extra configuration to tell Spring Boot which repositories to create.
-The most explicit way to do that is to use the standard Spring Data `@EnableJpaRepositories` and `@EnableMongoRepositories` annotations and provide the location of your `Repository` interfaces.
+The most explicit way to do that is to use the standard Spring Data `@EnableJpaRepositories` and `@EnableMongoRepositories` annotations and provide the location of your `org.springframework.data.repository.Repository` interfaces.
 
 There are also flags (`+spring.data.*.repositories.enabled+` and `+spring.data.*.repositories.type+`) that you can use to switch the auto-configured repositories on and off in external configuration.
 Doing so is useful, for instance, in case you want to switch off the Mongo repositories and still use the auto-configured `MongoTemplate`.
@@ -367,7 +367,7 @@ Note that if you are using Spring Data REST, you must use the properties in the 
 [[howto.data-access.exposing-spring-data-repositories-as-rest]]
 == Expose Spring Data Repositories as REST Endpoint
 
-Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
+Spring Data REST can expose the `org.springframework.data.repository.Repository` implementations as REST endpoints for you,
 provided Spring MVC has been enabled for the application.
 
 Spring Boot exposes a set of useful properties (from the `spring.data.rest` namespace) that customize the javadoc:{url-spring-data-rest-javadoc}/org.springframework.data.rest.core.config.RepositoryRestConfiguration[].

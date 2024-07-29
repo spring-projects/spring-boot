@@ -25,7 +25,7 @@ Embedded servers are started and listen on a random port.
 Embedded servers are started and listen on a defined port (from your `application.properties`) or on the default port of `8080`.
 * `NONE`: Loads an `ApplicationContext` by using `SpringApplication` but does not provide _any_ web environment (mock or otherwise).
 
-NOTE: If your test is `@Transactional`, it rolls back the transaction at the end of each test method by default.
+NOTE: If your test is `@org.springframework.transaction.annotation.Transactional`, it rolls back the transaction at the end of each test method by default.
 However, as using this arrangement with either `RANDOM_PORT` or `DEFINED_PORT` implicitly provides a real servlet environment, the HTTP client and server run in separate threads and, thus, in separate transactions.
 Any transaction initiated on the server does not roll back in this case.
 
@@ -228,7 +228,7 @@ If you need those components as part of an integration test, annotate the test w
 
 If you have created your own reporting components (e.g. a custom `SpanExporter` or `+brave.handler.SpanHandler+`) and you don't want them to be active in tests, you can use the `@ConditionalOnEnabledTracing` annotation to disable them.
 
-If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with `@AutoConfigureObservability`, it auto-configures a no-op `Tracer`.
+If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with `@AutoConfigureObservability`, it auto-configures a no-op `io.micrometer.tracing.Tracer`.
 Data exporting in sliced tests is not supported with the `@AutoConfigureObservability` annotation.
 
 
@@ -267,7 +267,7 @@ See the javadoc:org.springframework.boot.test.mock.mockito.SpyBean[] API documen
 
 NOTE: While Spring's test framework caches application contexts between tests and reuses a context for tests sharing the same configuration, the use of `@MockBean` or `@SpyBean` influences the cache key, which will most likely increase the number of contexts.
 
-TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.
+TIP: If you are using `@SpyBean` to spy on a bean with `@org.springframework.cache.annotation.Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.
 This ensures that the parameter names are available to the caching infrastructure once the bean has been spied upon.
 
 TIP: When you are using `@SpyBean` to spy on a bean that is proxied by Spring, you may need to remove Spring's proxy in some situations, for example when setting expectations using `given` or `when`.
@@ -333,13 +333,13 @@ include-code::MyJsonAssertJTests[tag=*]
 == Auto-configured Spring MVC Tests
 
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest` annotation.
-`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, `WebMvcRegistrations`, and `HandlerMethodArgumentResolver`.
+`@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, `WebMvcRegistrations`, and `org.springframework.web.method.support.HandlerMethodArgumentResolver`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as the Jackson `Module`, you can import additional configuration classes by using `@Import` on your test.
+TIP: If you need to register extra components, such as the Jackson `com.fasterxml.jackson.databind.Module`, you can import additional configuration classes by using `@Import` on your test.
 
 Often, `@WebMvcTest` is limited to a single controller and is used in combination with `@MockBean` to provide mock implementations for required collaborators.
 
@@ -376,13 +376,13 @@ TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you 
 == Auto-configured Spring WebFlux Tests
 
 To test that {url-spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the `@WebFluxTest` annotation.
-`@WebFluxTest` auto-configures the Spring WebFlux infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `WebFilter`, and `WebFluxConfigurer`.
+`@WebFluxTest` auto-configures the Spring WebFlux infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter` and `WebFluxConfigurer`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
-TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
+TIP: If you need to register extra components, such as Jackson `com.fasterxml.jackson.databind.Module`, you can import additional configuration classes using `@Import` on your test.
 
 Often, `@WebFluxTest` is limited to a single controller and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
 
@@ -396,7 +396,7 @@ include-code::MyControllerTests[]
 TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a mocked web application only works with WebFlux at the moment.
 
 NOTE: `@WebFluxTest` cannot detect routes registered through the functional web framework.
-For testing `RouterFunction` beans in the context, consider importing your `RouterFunction` yourself by using `@Import` or by using `@SpringBootTest`.
+For testing `org.springframework.web.reactive.function.server.RouterFunction` beans in the context, consider importing your `org.springframework.web.reactive.function.server.RouterFunction` yourself by using `@Import` or by using `@SpringBootTest`.
 
 NOTE: `@WebFluxTest` cannot detect custom security configuration registered as a `@Bean` of type `SecurityWebFilterChain`.
 To include that in your test, you will need to import the configuration that registers the bean by using `@Import` or by using `@SpringBootTest`.
@@ -447,7 +447,7 @@ There are `GraphQlTester` variants and Spring Boot will auto-configure them depe
 
 Spring Boot helps you to test your {url-spring-graphql-docs}/controllers.html[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
 `@GraphQlTest` auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
-This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComponent`, `Converter`, `GenericConverter`, `DataFetcherExceptionResolver`, `Instrumentation` and `GraphQlSourceBuilderCustomizer`.
+This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComponent`, `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter`, `DataFetcherExceptionResolver`, `graphql.execution.instrumentation.Instrumentation` and `GraphQlSourceBuilderCustomizer`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@GraphQlTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -469,7 +469,7 @@ include-code::GraphQlIntegrationTests[]
 == Auto-configured Data Cassandra Tests
 
 You can use `@DataCassandraTest` to test Cassandra applications.
-By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
+By default, it configures a `CassandraTemplate`, scans for `@org.springframework.data.cassandra.core.mapping.Table` classes, and configures Spring Data Cassandra repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCassandraTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Cassandra with Spring Boot, see xref:data/nosql.adoc#data.nosql.cassandra[].)
@@ -486,7 +486,7 @@ include-code::MyDataCassandraTests[]
 == Auto-configured Data Couchbase Tests
 
 You can use `@DataCouchbaseTest` to test Couchbase applications.
-By default, it configures a `CouchbaseTemplate` or `ReactiveCouchbaseTemplate`, scans for `@Document` classes, and configures Spring Data Couchbase repositories.
+By default, it configures a `CouchbaseTemplate` or `ReactiveCouchbaseTemplate`, scans for `@org.springframework.data.couchbase.core.mapping.Document` classes, and configures Spring Data Couchbase repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCouchbaseTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Couchbase with Spring Boot, see xref:data/nosql.adoc#data.nosql.couchbase[], earlier in this chapter.)
@@ -503,7 +503,7 @@ include-code::MyDataCouchbaseTests[]
 == Auto-configured Data Elasticsearch Tests
 
 You can use `@DataElasticsearchTest` to test Elasticsearch applications.
-By default, it configures an `ElasticsearchTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
+By default, it configures an `ElasticsearchTemplate`, scans for `@org.springframework.data.elasticsearch.annotations.Document` classes, and configures Spring Data Elasticsearch repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataElasticsearchTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Elasticsearch with Spring Boot, see xref:data/nosql.adoc#data.nosql.elasticsearch[], earlier in this chapter.)
@@ -539,7 +539,7 @@ include-code::MyNonTransactionalTests[]
 Data JPA tests may also inject a javadoc:org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager[] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
 
 TIP: `TestEntityManager` can also be auto-configured to any of your Spring-based test class by adding `@AutoConfigureTestEntityManager`.
-When doing so, make sure that your test is running in a transaction, for instance by adding  `@Transactional` on your test class or method.
+When doing so, make sure that your test is running in a transaction, for instance by adding  `@org.springframework.transaction.annotation.Transactional` on your test class or method.
 
 A `JdbcTemplate` is also available if you need that.
 The following example shows the `@DataJpaTest` annotation in use:
@@ -636,7 +636,7 @@ If that is not what you want, you can disable transaction management for a test 
 == Auto-configured Data MongoDB Tests
 
 You can use `@DataMongoTest` to test MongoDB applications.
-By default, it configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
+By default, it configures a `MongoTemplate`, scans for `@org.springframework.data.mongodb.core.mapping.Document` classes, and configures Spring Data MongoDB repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using MongoDB with Spring Boot, see xref:data/nosql.adoc#data.nosql.mongodb[].)
@@ -653,7 +653,7 @@ include-code::MyDataMongoDbTests[]
 == Auto-configured Data Neo4j Tests
 
 You can use `@DataNeo4jTest` to test Neo4j applications.
-By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
+By default, it scans for `@org.springframework.data.neo4j.core.schema.Node` classes, and configures Spring Data Neo4j repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataNeo4jTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Neo4J with Spring Boot, see xref:data/nosql.adoc#data.nosql.neo4j[].)

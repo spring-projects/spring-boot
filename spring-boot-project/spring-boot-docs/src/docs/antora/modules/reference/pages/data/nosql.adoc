@@ -243,7 +243,7 @@ Spring Boot offers several conveniences for working with Neo4j, including the `s
 
 To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Driver`.
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
-The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
+The following example shows how to inject a Neo4j `org.neo4j.driver.Driver` that gives you access, amongst other things, to a `org.neo4j.driver.Session`:
 
 include-code::MyBean[]
 
@@ -260,9 +260,9 @@ spring:
       password: "secret"
 ----
 
-The auto-configured `Driver` is created using `ConfigBuilder`.
+The auto-configured `org.neo4j.driver.Driver` is created using `org.neo4j.driver.Config$ConfigBuilder`.
 To fine-tune its configuration, declare one or more `ConfigBuilderCustomizer` beans.
-Each will be called in order with the `ConfigBuilder` that is used to build the `Driver`.
+Each will be called in order with the `org.neo4j.driver.Config$ConfigBuilder` that is used to build the `org.neo4j.driver.Driver`.
 
 
 
@@ -273,7 +273,7 @@ Spring Data includes repository support for Neo4j.
 For complete details of Spring Data Neo4j, see the {url-spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
-You could take the JPA example from earlier and define `+City+` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
+You could take the JPA example from earlier and define `+City+` as Spring Data Neo4j `@org.springframework.data.neo4j.core.schema.Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
 include-code::CityRepository[]
 
@@ -336,7 +336,7 @@ spring:
 
 If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a `RestClient` bean.
 In addition to the properties described previously, to fine-tune the `RestClient` you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
-To take full control over the clients' configuration, define a `RestClientBuilder` bean.
+To take full control over the clients' configuration, define a `org.elasticsearch.client.RestClientBuilder` bean.
 
 
 
@@ -401,7 +401,7 @@ Spring Data includes repository support for Elasticsearch.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed for you automatically based on method names.
 
 In fact, both Spring Data JPA and Spring Data Elasticsearch share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `+City+` is now an Elasticsearch `@Document` class rather than a JPA `@Entity`, it works in the same way.
+You could take the JPA example from earlier and, assuming that `+City+` is now an Elasticsearch `@org.springframework.data.elasticsearch.annotations.Document` class rather than a JPA `@Entity`, it works in the same way.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
@@ -519,7 +519,7 @@ If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default
 === Spring Data Cassandra Repositories
 
 Spring Data includes basic repository support for Cassandra.
-Currently, this is more limited than the JPA repositories discussed earlier and needs `@Query` annotated finder methods.
+Currently, this is more limited than the JPA repositories discussed earlier and needs `@org.springframework.data.cassandra.repository.Query` annotated finder methods.
 
 Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
@@ -541,7 +541,7 @@ There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-cou
 [[data.nosql.couchbase.connecting]]
 === Connecting to Couchbase
 
-You can get a `Cluster` by adding the Couchbase SDK and some configuration.
+You can get a `com.couchbase.client.java.Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
 Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
 
@@ -555,7 +555,7 @@ spring:
 ----
 
 It is also possible to customize some of the `ClusterEnvironment` settings.
-For instance, the following configuration changes the timeout to open a new `Bucket` and enables SSL support with a reference to a configured xref:features/ssl.adoc[SSL bundle]:
+For instance, the following configuration changes the timeout to open a new `com.couchbase.client.java.Bucket` and enables SSL support with a reference to a configured xref:features/ssl.adoc[SSL bundle]:
 
 [configprops,yaml]
 ----
@@ -585,7 +585,7 @@ You can customize the locations to look for repositories and documents by using 
 For complete details of Spring Data Couchbase, see the {url-spring-data-couchbase-docs}[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
-This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
+This happens when a `com.couchbase.client.java.Cluster` is available, as described above, and a bucket name has been specified:
 
 [configprops,yaml]
 ----
@@ -602,10 +602,10 @@ include-code::MyBean[]
 There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
 
 * A `CouchbaseMappingContext` `@Bean` with a name of `couchbaseMappingContext`.
-* A `CustomConversions` `@Bean` with a name of `couchbaseCustomConversions`.
+* A `org.springframework.data.convert.CustomConversions` `@Bean` with a name of `couchbaseCustomConversions`.
 * A `CouchbaseTemplate` `@Bean` with a name of `couchbaseTemplate`.
 
-To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
+To avoid hard-coding those names in your own config, you can reuse `org.springframework.data.couchbase.config.BeanNames` provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
 
 include-code::MyCouchbaseConfiguration[]

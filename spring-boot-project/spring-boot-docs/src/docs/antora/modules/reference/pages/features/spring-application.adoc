@@ -268,7 +268,7 @@ Application events are sent in the following order, as your application runs:
 The above list only includes ``SpringApplicationEvent``s that are tied to a `SpringApplication`.
 In addition to these, the following events are also published after `ApplicationPreparedEvent` and before `ApplicationStartedEvent`:
 
-- A `WebServerInitializedEvent` is sent after the `WebServer` is ready.
+- A `WebServerInitializedEvent` is sent after the `org.springframework.boot.web.server.WebServer` is ready.
   `ServletWebServerInitializedEvent` and `ReactiveWebServerInitializedEvent` are the servlet and reactive variants respectively.
 - A `ContextRefreshedEvent` is sent when an `ApplicationContext` is refreshed.
 
@@ -410,7 +410,7 @@ That's because virtual threads are scheduled on a JVM wide platform thread pool 
 
 WARNING: One side effect of virtual threads is that they are daemon threads.
 A JVM will exit if all of its threads are daemon threads.
-This behavior can be a problem when you rely on `@Scheduled` beans, for example, to keep your application alive.
+This behavior can be a problem when you rely on `@org.springframework.scheduling.annotation.Scheduled` beans, for example, to keep your application alive.
 If you use virtual threads, the scheduler thread is a virtual thread and therefore a daemon thread and won't keep the JVM alive.
 This not only affects scheduling and can be the case with other technologies too.
 To keep the JVM running in all cases, it is recommended to set the property configprop:spring.main.keep-alive[] to `true`.

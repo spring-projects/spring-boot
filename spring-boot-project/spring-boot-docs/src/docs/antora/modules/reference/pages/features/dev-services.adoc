@@ -328,7 +328,7 @@ The `+TestMyApplication+` class can use the `SpringApplication.from(...)` method
 
 include-code::launch/TestMyApplication[]
 
-You'll also need to define the `Container` instances that you want to start along with your application.
+You'll also need to define the `org.testcontainers.containers.Container` instances that you want to start along with your application.
 To do this, you need to make sure that the `spring-boot-testcontainers` module has been added as a `test` dependency.
 Once that has been done, you can create a `@TestConfiguration` class that declares `@Bean` methods for the containers you want to start.
 
@@ -339,7 +339,7 @@ A typical Testcontainers configuration would look like this:
 
 include-code::test/MyContainersConfiguration[]
 
-NOTE: The lifecycle of `Container` beans is automatically managed by Spring Boot.
+NOTE: The lifecycle of `org.testcontainers.containers.Container` beans is automatically managed by Spring Boot.
 Containers will be started and stopped automatically.
 
 TIP: You can use the configprop:spring.testcontainers.beans.startup[] property to change how containers are started.
@@ -358,7 +358,7 @@ TIP: You can use the Maven goal `spring-boot:test-run` or the Gradle task `bootT
 [[features.dev-services.testcontainers.at-development-time.dynamic-properties]]
 ==== Contributing Dynamic Properties at Development Time
 
-If you want to contribute dynamic properties at development time from your `Container` `@Bean` methods, you can do so by injecting a `DynamicPropertyRegistry`.
+If you want to contribute dynamic properties at development time from your `org.testcontainers.containers.Container` `@Bean` methods, you can do so by injecting a `DynamicPropertyRegistry`.
 This works in a similar way to the xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource` annotation] that you can use in your tests.
 It allows you to add properties that will become available once your container has started.
 
@@ -373,7 +373,7 @@ NOTE: Using a `@ServiceConnection` is recommended whenever possible, however, dy
 [[features.dev-services.testcontainers.at-development-time.importing-container-declarations]]
 ==== Importing Testcontainer Declaration Classes
 
-A common pattern when using Testcontainers is to declare `Container` instances as static fields.
+A common pattern when using Testcontainers is to declare `org.testcontainers.containers.Container` instances as static fields.
 Often these fields are defined directly on the test class.
 They can also be declared on a parent class or on an interface that the test implements.
 
@@ -386,7 +386,7 @@ To do so, add the `@ImportTestcontainers` annotation to your test configuration 
 
 include-code::MyContainersConfiguration[]
 
-TIP: If you don't intend to use the xref:testing/testcontainers.adoc#testing.testcontainers.service-connections[service connections feature] but want to use xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource`] instead, remove the `@ServiceConnection` annotation from the `Container` fields.
+TIP: If you don't intend to use the xref:testing/testcontainers.adoc#testing.testcontainers.service-connections[service connections feature] but want to use xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource`] instead, remove the `@ServiceConnection` annotation from the `org.testcontainers.containers.Container` fields.
 You can also add `@DynamicPropertySource` annotated methods to your declaration class.
 
 
@@ -396,7 +396,7 @@ You can also add `@DynamicPropertySource` annotated methods to your declaration 
 
 When using devtools, you can annotate beans and bean methods with `@RestartScope`.
 Such beans won't be recreated when the devtools restart the application.
-This is especially useful for Testcontainer `Container` beans, as they keep their state despite the application restart.
+This is especially useful for Testcontainer `org.testcontainers.containers.Container` beans, as they keep their state despite the application restart.
 
 include-code::MyContainersConfiguration[]
 

@@ -2,7 +2,7 @@
 = SQL Databases
 
 The {url-spring-framework-site}[Spring Framework] provides extensive support for working with SQL databases, from direct JDBC access using `JdbcClient` or `JdbcTemplate` to complete "`object relational mapping`" technologies such as Hibernate.
-{url-spring-data-site}[Spring Data] provides an additional level of functionality: creating `Repository` implementations directly from interfaces and using conventions to generate queries from your method names.
+{url-spring-data-site}[Spring Data] provides an additional level of functionality: creating `org.springframework.data.repository.Repository` implementations directly from interfaces and using conventions to generate queries from your method names.
 
 
 
@@ -90,7 +90,7 @@ Otherwise, Spring Boot tries to auto-configure an embedded database.
 TIP: Spring Boot can deduce the JDBC driver class for most databases from the URL.
 If you need to specify a specific class, you can use the configprop:spring.datasource.driver-class-name[] property.
 
-NOTE: For a pooling `DataSource` to be created, we need to be able to verify that a valid `Driver` class is available, so we check for that before doing anything.
+NOTE: For a pooling `DataSource` to be created, we need to be able to verify that a valid `java.sql.Driver` class is available, so we check for that before doing anything.
 In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`, then that class has to be loadable.
 
 See javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] API documentation for more of the supported options.
@@ -219,7 +219,7 @@ Traditionally, JPA "`Entity`" classes are specified in a `persistence.xml` file.
 With Spring Boot, this file is not necessary and "`Entity Scanning`" is used instead.
 By default the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
 
-Any classes annotated with `@Entity`, `@Embeddable`, or `@MappedSuperclass` are considered.
+Any classes annotated with `@jakarta.persistence.Entity`, `@jakarta.persistence.Embeddable`, or `@jakarta.persistence.MappedSuperclass` are considered.
 A typical entity class resembles the following example:
 
 include-code::City[]
@@ -249,7 +249,7 @@ include-code::CityRepository[]
 
 Spring Data JPA repositories support three different modes of bootstrapping: default, deferred, and lazy.
 To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.repositories.bootstrap-mode[] property to `deferred` or `lazy` respectively.
-When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
+When using deferred or lazy bootstrapping, the auto-configured `org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
 If more than one exists, the one named `applicationTaskExecutor` will be used.
 
 [NOTE]
@@ -322,7 +322,7 @@ If you do not want this behavior, you should set `spring.jpa.open-in-view` to `f
 == Spring Data JDBC
 
 Spring Data includes repository support for JDBC and will automatically generate SQL for the methods on `CrudRepository`.
-For more advanced queries, a `@Query` annotation is provided.
+For more advanced queries, a `@org.springframework.data.jdbc.repository.query.Query` annotation is provided.
 
 Spring Boot will auto-configure Spring Data's JDBC repositories when the necessary dependencies are on the classpath.
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
@@ -466,9 +466,9 @@ You can also create your own `org.jooq.Configuration` `@Bean` if you want to tak
 
 The Reactive Relational Database Connectivity (https://r2dbc.io[R2DBC]) project brings reactive programming APIs to relational databases.
 R2DBC's `io.r2dbc.spi.Connection` provides a standard method of working with non-blocking database connections.
-Connections are provided by using a `ConnectionFactory`, similar to a `DataSource` with jdbc.
+Connections are provided by using a `io.r2dbc.spi.ConnectionFactory`, similar to a `DataSource` with jdbc.
 
-`ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
+`io.r2dbc.spi.ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
 For example, you might declare the following section in `application.properties`:
 
 [configprops,yaml]
@@ -487,7 +487,7 @@ Information specified in the URL takes precedence over individual properties, th
 
 TIP: The "`How-to Guides`" section includes a xref:how-to:data-initialization.adoc#howto.data-initialization.using-basic-sql-scripts[section on how to initialize a database].
 
-To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
+To customize the connections created by a `io.r2dbc.spi.ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options are taken from the application configuration:
 
 include-code::MyR2dbcConfiguration[]
@@ -496,7 +496,7 @@ The following examples show how to set some PostgreSQL connection options:
 
 include-code::MyPostgresR2dbcConfiguration[]
 
-When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
+When a `io.r2dbc.spi.ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
 If you want to retain the JDBC `DataSource` auto-configuration, and are comfortable with the risk of using the blocking JDBC API in a reactive application, add `@Import(DataSourceAutoConfiguration.class)` on a `@Configuration` class in your application to re-enable it.
 
 

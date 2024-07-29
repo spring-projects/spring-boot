@@ -91,7 +91,7 @@ If you have other features in your application (for instance, using other servle
 
 * A `@Bean` of type `Servlet` or `ServletRegistrationBean` installs that bean in the container as if it were a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
 * A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (as a `<filter/>` and `<filter-mapping/>`).
-* An `ApplicationContext` in an XML file can be added through an `@ImportResource` in your `Application`.
+* An `ApplicationContext` in an XML file can be added through an `@ImportResource` in your `+Application+`.
   Alternatively, cases where annotation configuration is heavily used already can be recreated in a few lines as `@Bean` definitions.
 
 Once the war file is working, you can make it executable by adding a `main` method to your `+Application+`, as shown in the following example:

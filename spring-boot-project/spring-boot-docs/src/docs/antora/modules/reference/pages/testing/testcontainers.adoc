@@ -31,7 +31,7 @@ This is done by automatically defining a `Neo4jConnectionDetails` bean which is 
 NOTE: You'll need to add the `spring-boot-testcontainers` module as a test dependency in order to use service connections with Testcontainers.
 
 Service connection annotations are processed by `ContainerConnectionDetailsFactory` classes registered with `spring.factories`.
-A `ContainerConnectionDetailsFactory` can create a `ConnectionDetails` bean based on a specific `Container` subclass, or the Docker image name.
+A `ContainerConnectionDetailsFactory` can create a `ConnectionDetails` bean based on a specific `org.testcontainers.containers.Container` subclass, or the Docker image name.
 
 The following service connection factories are provided in the `spring-boot-testcontainers` jar:
 
@@ -95,7 +95,7 @@ The following service connection factories are provided in the `spring-boot-test
 
 [TIP]
 ====
-By default all applicable connection details beans will be created for a given `Container`.
+By default all applicable connection details beans will be created for a given `org.testcontainers.containers.Container`.
 For example, a `PostgreSQLContainer` will create both `JdbcConnectionDetails` and `R2dbcConnectionDetails`.
 
 If you want to create only a subset of the applicable types, you can use the `type` attribute of `@ServiceConnection`.
@@ -103,7 +103,7 @@ If you want to create only a subset of the applicable types, you can use the `ty
 
 By default `Container.getDockerImageName().getRepository()` is used to obtain the name used to find connection details.
 The repository portion of the Docker image name ignores any registry and the version.
-This works as long as Spring Boot is able to get the instance of the `Container`, which is the case when using a `static` field like in the example above.
+This works as long as Spring Boot is able to get the instance of the `org.testcontainers.containers.Container`, which is the case when using a `static` field like in the example above.
 
 If you're using a `@Bean` method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.
 Instead, the return type of the bean method is used to find out which connection detail should be used.

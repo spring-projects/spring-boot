@@ -21,7 +21,7 @@ spring:
       "[mail.smtp.writetimeout]": 5000
 ----
 
-It is also possible to configure a `JavaMailSender` with an existing `Session` from JNDI:
+It is also possible to configure a `JavaMailSender` with an existing `jakarta.mail.Session` from JNDI:
 
 [configprops,yaml]
 ----

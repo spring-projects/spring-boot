@@ -1,7 +1,7 @@
 [[io.webservices]]
 = Web Services
 
-Spring Boot provides Web Services auto-configuration so that all you must do is define your `Endpoints`.
+Spring Boot provides Web Services auto-configuration so that all you must do is define your `@org.springframework.ws.server.endpoint.annotation.Endpoint` beans.
 
 The {url-spring-webservices-docs}[Spring Web Services features] can be easily accessed with the `spring-boot-starter-webservices` module.
 

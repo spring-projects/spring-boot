@@ -132,8 +132,8 @@ An `SslBundle` can be retrieved from the auto-configured `SslBundles` bean and u
 The `SslBundle` provides a layered approach of obtaining these SSL objects:
 
 - `getStores()` provides access to the key store and trust store `java.security.KeyStore` instances as well as any required key store password.
-- `getManagers()` provides access to the `java.net.ssl.KeyManagerFactory` and `java.net.ssl.TrustManagerFactory` instances as well as the `java.net.ssl.KeyManager` and `java.net.ssl.TrustManager` arrays that they create.
-- `createSslContext()` provides a convenient way to obtain a new `java.net.ssl.SSLContext` instance.
+- `getManagers()` provides access to the `javax.net.ssl.KeyManagerFactory` and `javax.net.ssl.TrustManagerFactory` instances as well as the `javax.net.ssl.KeyManager` and `javax.net.ssl.TrustManager` arrays that they create.
+- `createSslContext()` provides a convenient way to obtain a new `javax.net.ssl.SSLContext` instance.
 
 In addition, the `SslBundle` provides details about the key being used, the protocol to use and any option that should be applied to the SSL engine.
 

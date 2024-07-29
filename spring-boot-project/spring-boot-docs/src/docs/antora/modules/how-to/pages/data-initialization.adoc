@@ -13,7 +13,7 @@ It is recommended to use a single mechanism for schema generation.
 You can set configprop:spring.jpa.hibernate.ddl-auto[] to control Hibernate's database initialization.
 Supported values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether you are using an embedded database.
-An embedded database is identified by looking at the `Connection` type and JDBC url.
+An embedded database is identified by looking at the `java.sql.Connection` type and JDBC url.
 `hsqldb`, `h2`, or `derby` are embedded databases and others are not.
 If an embedded database is identified and no schema manager (Flyway or Liquibase) has been detected, `ddl-auto` defaults to `create-drop`.
 In all other cases, it defaults to `none`.
@@ -33,7 +33,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 [[howto.data-initialization.using-basic-sql-scripts]]
 == Initialize a Database Using Basic SQL Scripts
 
-Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize its data (DML scripts).
+Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `io.r2dbc.spi.ConnectionFactory` and initialize its data (DML scripts).
 
 By default, it loads schema scripts from `optional:classpath*:schema.sql` and data scripts from `optional:classpath*:data.sql`.
 The locations of these schema and data scripts can be customized using configprop:spring.sql.init.schema-locations[] and configprop:spring.sql.init.data-locations[] respectively.
@@ -139,9 +139,9 @@ If you would like more control, provide a `@Bean` that implements javadoc:org.sp
 
 Flyway supports SQL and Java https://documentation.red-gate.com/fd/callback-concept-184127466.html[callbacks].
 To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` directory.
-To use Java-based callbacks, create one or more beans that implement `Callback`.
+To use Java-based callbacks, create one or more beans that implement `org.flywaydb.core.api.callback.Callback`.
 Any such beans are automatically registered with `Flyway`.
-They can be ordered by using `@Order` or by implementing `Ordered`.
+They can be ordered by using `@org.springframework.core.annotation.Order` or by implementing `org.springframework.core.Ordered`.
 
 By default, Flyway autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
 If you like to use a different `DataSource`, you can create one and mark its `@Bean` as `@FlywayDataSource`.

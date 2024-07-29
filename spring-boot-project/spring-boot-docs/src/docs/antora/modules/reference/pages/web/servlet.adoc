@@ -25,7 +25,7 @@ include-code::MyUserHandler[]
 Spring MVC is part of the core Spring Framework, and detailed information is available in the {url-spring-framework-docs}/web/webmvc.html[reference documentation].
 There are also several guides that cover Spring MVC available at https://spring.io/guides.
 
-TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
+TIP: You can define as many `org.springframework.web.servlet.function.RouterFunction` beans as you like to modularize the definition of the router.
 Beans can be ordered if you need to apply a precedence.
 
 
@@ -39,7 +39,7 @@ In addition to Spring MVC's defaults, the auto-configuration provides the follow
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
 * Support for serving static resources, including support for WebJars (covered xref:web/servlet.adoc#web.servlet.spring-mvc.static-content[later in this document]).
-* Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
+* Automatic registration of `org.springframework.core.convert.converter.Converter`, `org.springframework.core.convert.converter.GenericConverter`, and `org.springframework.format.Formatter` beans.
 * Support for `HttpMessageConverters` (covered xref:web/servlet.adoc#web.servlet.spring-mvc.message-converters[later in this document]).
 * Automatic registration of `MessageCodesResolver` (covered xref:web/servlet.adoc#web.servlet.spring-mvc.message-codes[later in this document]).
 * Static `index.html` support.
@@ -47,7 +47,7 @@ In addition to Spring MVC's defaults, the auto-configuration provides the follow
 
 If you want to keep those Spring Boot MVC customizations and make more {url-spring-framework-docs}/web/webmvc.html[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
 
-If you want to provide custom instances of `RequestMappingHandlerMapping`, `RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
+If you want to provide custom instances of `org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping`, `org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter`, or `ExceptionHandlerExceptionResolver`, and still keep the Spring Boot MVC customizations, you can declare a bean of type `WebMvcRegistrations` and use it to provide custom instances of those components.
 The custom instances will be subject to further initialization and configuration by Spring MVC.
 To participate in, and if desired, override that subsequent processing, a `WebMvcConfigurer` should be used.
 
@@ -60,7 +60,7 @@ Alternatively, add your own `@Configuration`-annotated `DelegatingWebMvcConfigur
 === Spring MVC Conversion Service
 
 Spring MVC uses a different `ConversionService` to the one used to convert values from your `application.properties` or `application.yaml` file.
-It means that `Period`, `Duration` and `DataSize` converters are not available and that `@DurationUnit` and `@DataSizeUnit` annotations will be ignored.
+It means that `java.time.Period`, `java.time.Duration` and `DataSize` converters are not available and that `@DurationUnit` and `@DataSizeUnit` annotations will be ignored.
 
 If you want to customize the `ConversionService` used by Spring MVC, you can provide a `WebMvcConfigurer` bean with an `addFormatters` method.
 From this method you can register any converter that you like, or you can delegate to the static methods available on `ApplicationConversionService`.
@@ -213,12 +213,12 @@ If one is not found, it then looks for an `index` template.
 If either is found, it is automatically used as the welcome page of the application.
 
 This only acts as a fallback for actual index routes defined by the application.
-The ordering is defined by the order of `HandlerMapping` beans which is by default the following:
+The ordering is defined by the order of `org.springframework.web.servlet.HandlerMapping` beans which is by default the following:
 
 [cols="1,1"]
 |===
 |`RouterFunctionMapping`
-|Endpoints declared with `RouterFunction` beans
+|Endpoints declared with `org.springframework.web.servlet.function.RouterFunction` beans
 
 |`RequestMappingHandlerMapping`
 |Endpoints declared in `@Controller` beans
@@ -298,7 +298,7 @@ spring:
 
 Spring MVC will throw a `NoHandlerFoundException` if a handler is not found for a request.
 Note that, by default, the xref:web/servlet.adoc#web.servlet.spring-mvc.static-content[serving of static content] is mapped to `+/**+` and will, therefore, provide a handler for all requests.
-If no static content is available, `ResourceHttpRequestHandler` will throw a `NoResourceFoundException`.
+If no static content is available, `ResourceHttpRequestHandler` will throw a `org.springframework.web.servlet.resource.NoResourceFoundException`.
 For a `NoHandlerFoundException` to be thrown, set configprop:spring.mvc.static-path-pattern[] to a more specific value such as `/resources/**` or set configprop:spring.web.resources.add-mappings[] to `false` to disable serving of static content entirely.
 
 
@@ -342,12 +342,12 @@ If you have this problem, you can reorder the classpath in the IDE to place the 
 
 By default, Spring Boot provides an `/error` mapping that handles all errors in a sensible way, and it is registered as a "`global`" error page in the servlet container.
 For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message.
-For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
+For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `org.springframework.web.servlet.View` that resolves to `error`).
 
 There are a number of `server.error` properties that can be set if you want to customize the default error handling behavior.
 See the xref:appendix:application-properties/index.adoc#appendix.application-properties.server[Server Properties] section of the Appendix.
 
-To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `ErrorAttributes` to use the existing mechanism but replace the contents.
+To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `org.springframework.boot.web.servlet.error.ErrorAttributes` to use the existing mechanism but replace the contents.
 
 TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorController`.
 This is particularly useful if you want to add a handler for a new content type (the default is to handle `text/html` specifically and provide a fallback for everything else).
@@ -373,7 +373,7 @@ You can also define a class annotated with `@ControllerAdvice` to customize the 
 
 include-code::MyControllerAdvice[]
 
-In the preceding example, if `MyException` is thrown by a controller defined in the same package as `+SomeController+`, a JSON representation of the `MyErrorBody` POJO is used instead of the `ErrorAttributes` representation.
+In the preceding example, if `MyException` is thrown by a controller defined in the same package as `+SomeController+`, a JSON representation of the `MyErrorBody` POJO is used instead of the `org.springframework.boot.web.servlet.error.ErrorAttributes` representation.
 
 In some cases, errors handled at the controller level are not recorded by web observations or the xref:actuator/metrics.adoc#actuator.metrics.supported.spring-mvc[metrics infrastructure].
 Applications can ensure that such exceptions are recorded with the observations by {url-spring-framework-docs}/integration/observability.html#observability.http-server.servlet[setting the handled exception on the observation context].
@@ -429,12 +429,12 @@ The `ErrorController` then picks up any unhandled exceptions.
 [[web.servlet.spring-mvc.error-handling.error-pages-without-spring-mvc]]
 ==== Mapping Error Pages Outside of Spring MVC
 
-For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
+For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `org.springframework.boot.web.server.ErrorPage` instances.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
 include-code::MyErrorPagesConfiguration[]
 
-NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
+NOTE: If you register an `org.springframework.boot.web.server.ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
 include-code::MyFilterConfiguration[]
 
@@ -476,7 +476,7 @@ https://jersey.github.io/[Jersey] and https://cxf.apache.org/[Apache CXF] work q
 CXF requires you to register its `Servlet` or `Filter` as a `@Bean` in your application context.
 Jersey has some native Spring support, so we also provide auto-configuration support for it in Spring Boot, together with a starter.
 
-To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency and then you need one `@Bean` of type `ResourceConfig` in which you register all the endpoints, as shown in the following example:
+To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency and then you need one `@Bean` of type `org.glassfish.jersey.server.ResourceConfig` in which you register all the endpoints, as shown in the following example:
 
 include-code::MyJerseyConfig[]
 
@@ -490,9 +490,9 @@ All the registered endpoints should be a `@Component` with HTTP resource annotat
 
 include-code::MyEndpoint[]
 
-Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
+Since the `@Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
 By default, the Jersey servlet is registered and mapped to `/*`.
-You can change the mapping by adding `@ApplicationPath` to your `ResourceConfig`.
+You can change the mapping by adding `@ApplicationPath` to your `org.glassfish.jersey.server.ResourceConfig`.
 
 By default, Jersey is set up as a servlet in a `@Bean` of type `ServletRegistrationBean` named `jerseyServletRegistration`.
 By default, the servlet is initialized lazily, but you can customize that behavior by setting `spring.jersey.servlet.load-on-startup`.
@@ -562,7 +562,7 @@ The single `onStartup` method provides access to the `ServletContext` and, if ne
 [[web.servlet.embedded-container.context-initializer.scanning]]
 ==== Scanning for Servlets, Filters, and listeners
 
-When using an embedded container, automatic registration of classes annotated with `@WebServlet`, `@WebFilter`, and `@WebListener` can be enabled by using `@ServletComponentScan`.
+When using an embedded container, automatic registration of classes annotated with `@jakarta.servlet.annotation.WebServlet`, `@jakarta.servlet.annotation.WebFilter`, and `@jakarta.servlet.annotation.WebListener` can be enabled by using `@ServletComponentScan`.
 
 TIP: `@ServletComponentScan` has no effect in a standalone container, where the container's built-in discovery mechanisms are used instead.
 
@@ -632,7 +632,7 @@ server:
 ----
 
 If you want to change the `+SameSite+` attribute on other cookies added to your `HttpServletResponse`, you can use a `CookieSameSiteSupplier`.
-The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `+SameSite+` value, or `null`.
+The `CookieSameSiteSupplier` is passed a `jakarta.servlet.http.Cookie` and may return a `+SameSite+` value, or `null`.
 
 There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
 For example, adding the following bean will automatically apply a `+SameSite+` of `+Lax+` for all cookies with a name that matches the regular expression `myapp.*`.
