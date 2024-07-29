@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Ivan Malutin
  */
 class ArchitectureCheckTests {
 
@@ -135,6 +136,30 @@ class ArchitectureCheckTests {
 		prepareTask("resources/noloads", (architectureCheck) -> {
 			architectureCheck.checkArchitecture();
 			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
+	@Test
+	void whenClassDoesNotCallObjectsRequireNonNullTaskSucceedsAndWritesAnEmptyReport() throws Exception {
+		prepareTask("objects/noRequireNonNull", (architectureCheck) -> {
+			architectureCheck.checkArchitecture();
+			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
+	@Test
+	void whenClassCallsObjectsRequireNonNullWithMessageTaskFailsAndWritesReport() throws Exception {
+		prepareTask("objects/requireNonNullWithString", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty();
+		});
+	}
+
+	@Test
+	void whenClassCallsObjectsRequireNonNullWithSupplierTaskFailsAndWritesReport() throws Exception {
+		prepareTask("objects/requireNonNullWithSupplier", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty();
 		});
 	}
 

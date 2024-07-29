@@ -21,3 +21,7 @@ dependencies {
 	testRuntimeOnly("org.bouncycastle:bcprov-jdk18on:1.78.1")
 	testRuntimeOnly("org.springframework:spring-webmvc")
 }
+
+tasks.named("checkArchitectureMain").configure {
+	prohibitObjectsRequireNonNull = false
+}
