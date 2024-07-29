@@ -18,19 +18,9 @@ package org.springframework.boot.build.architecture.objects.requireNonNullWithSu
 
 import java.util.Objects;
 
-/**
- * This class is intentionally designed to test the use of `Objects.requireNonNull(Object,
- * Supplier)`, which should trigger a failure in the architecture check.
- *
- * @author Ivan Malutin
- */
-public class RequireNonNullWithSupplierUsage {
+class RequireNonNullWithSupplier {
 
-	/**
-	 * Example method that uses `Objects.requireNonNull(Object, Supplier)`, which should
-	 * be flagged by the architecture check.
-	 */
-	public void exampleMethod() {
+	void exampleMethod() {
 		Objects.requireNonNull(new Object(), () -> "Object cannot be null");
 	}
 
