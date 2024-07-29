@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,13 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class OpenTelemetryMetricsDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpMetricsConnectionDetails> {
 
+	private static final String[] OPENTELEMETRY_IMAGE_NAMES = { "otel/opentelemetry-collector-contrib",
+			"grafana/otel-lgtm" };
+
 	private static final int OTLP_PORT = 4318;
 
 	OpenTelemetryMetricsDockerComposeConnectionDetailsFactory() {
-		super("otel/opentelemetry-collector-contrib",
+		super(OPENTELEMETRY_IMAGE_NAMES,
 				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 

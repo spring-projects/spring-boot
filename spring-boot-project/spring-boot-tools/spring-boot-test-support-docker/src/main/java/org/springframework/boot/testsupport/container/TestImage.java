@@ -36,6 +36,7 @@ import org.testcontainers.containers.PulsarContainer;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.grafana.LgtmStackContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -99,6 +100,12 @@ public enum TestImage {
 	 * A container image suitable for testing Elasticsearch 8.
 	 */
 	ELASTICSEARCH_8("elasticsearch", "8.6.1"),
+
+	/**
+	 * A container image suitable for testing Grafana OTel LGTM.
+	 */
+	GRAFANA_OTEL_LGTM("grafana/otel-lgtm", "0.6.0", () -> LgtmStackContainer.class,
+			(container) -> ((LgtmStackContainer) container).withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
 	 * A container image suitable for testing Confluent's distribution of Kafka.

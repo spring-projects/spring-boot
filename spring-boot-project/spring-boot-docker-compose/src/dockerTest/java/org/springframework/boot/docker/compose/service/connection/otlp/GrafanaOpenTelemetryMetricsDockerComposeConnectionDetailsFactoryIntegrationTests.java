@@ -16,23 +16,23 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OpenTelemetryTracingDockerComposeConnectionDetailsFactory}
- * using {@link TestImage#OPENTELEMETRY}.
+ * Integration tests for {@link OpenTelemetryMetricsDockerComposeConnectionDetailsFactory}
+ * using {@link TestImage#GRAFANA_OTEL_LGTM}.
  *
  * @author Eddú Meléndez
  */
-class OpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests {
+class GrafanaOpenTelemetryMetricsDockerComposeConnectionDetailsFactoryIntegrationTests {
 
-	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OPENTELEMETRY)
-	void runCreatesConnectionDetails(OtlpTracingConnectionDetails connectionDetails) {
-		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/traces");
+	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.GRAFANA_OTEL_LGTM)
+	void runCreatesConnectionDetails(OtlpMetricsConnectionDetails connectionDetails) {
+		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/metrics");
 	}
 
 }

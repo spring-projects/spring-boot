@@ -72,10 +72,10 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type `Neo4jContainer`
 
 | `OtlpMetricsConnectionDetails`
-| Containers named "otel/opentelemetry-collector-contrib"
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
 
 | `OtlpTracingConnectionDetails`
-| Containers named "otel/opentelemetry-collector-contrib"
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
 
 | `PulsarConnectionDetails`
 | Containers of type `PulsarContainer`
