@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.testcontainers.service.connection.otlp;
 
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails;
@@ -27,15 +26,15 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 /**
  * {@link ContainerConnectionDetailsFactory} to create
  * {@link OtlpMetricsConnectionDetails} from a
- * {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
- * the {@code "otel/opentelemetry-collector-contrib"} image.
+ * {@link ServiceConnection @ServiceConnection}-annotated {@link LgtmStackContainer} using
+ * the {@code "grafana/otel-lgtmb"} image.
  *
  * @author Eddú Meléndez
  */
-class GrafanaOtelLgtmMetricsContainerConnectionDetailsFactory
+class GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<LgtmStackContainer, OtlpMetricsConnectionDetails> {
 
-	GrafanaOtelLgtmMetricsContainerConnectionDetailsFactory() {
+	GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME,
 				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}

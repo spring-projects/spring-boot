@@ -102,6 +102,12 @@ public enum TestImage {
 	ELASTICSEARCH_8("elasticsearch", "8.6.1"),
 
 	/**
+	 * A container image suitable for testing Grafana OTel LGTM.
+	 */
+	GRAFANA_OTEL_LGTM("grafana/otel-lgtm", "0.6.0", () -> LgtmStackContainer.class,
+			(container) -> ((LgtmStackContainer) container).withStartupTimeout(Duration.ofMinutes(2))),
+
+	/**
 	 * A container image suitable for testing Confluent's distribution of Kafka.
 	 */
 	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),
@@ -158,12 +164,6 @@ public enum TestImage {
 	 * A container image suitable for testing Opentelemetry.
 	 */
 	OPENTELEMETRY("otel/opentelemetry-collector-contrib", "0.75.0"),
-
-	/**
-	 * A container image suitable for testing Grafana Otel LGTM.
-	 */
-	GRAFANA_OTEL_LGTM("grafana/otel-lgtm", "0.6.0", () -> LgtmStackContainer.class,
-			(container) -> ((LgtmStackContainer) container).withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
 	 * A container image suitable for testing Postgres.

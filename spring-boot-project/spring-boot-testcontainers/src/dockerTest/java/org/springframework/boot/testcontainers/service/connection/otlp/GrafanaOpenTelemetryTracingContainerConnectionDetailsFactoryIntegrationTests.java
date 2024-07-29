@@ -33,14 +33,13 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for
- * {@link GrafanaOtelLgtmTracingContainerConnectionDetailsFactoryIntegrationTests}.
+ * Tests for {@link GrafanaOpenTelemetryTracingContainerConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class GrafanaOtelLgtmTracingContainerConnectionDetailsFactoryIntegrationTests {
+class GrafanaOpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection

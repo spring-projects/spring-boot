@@ -45,7 +45,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link GrafanaOtelLgtmMetricsContainerConnectionDetailsFactory}.
+ * Tests for {@link GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
  */
@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource(properties = { "management.otlp.metrics.export.resource-attributes.service.name=test",
 		"management.otlp.metrics.export.step=1s" })
 @Testcontainers(disabledWithoutDocker = true)
-class GrafanaOtelLgtmMetricsContainerConnectionDetailsFactoryIntegrationTests {
+class GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection

@@ -23,8 +23,8 @@ import org.springframework.boot.testsupport.container.TestImage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for
- * {@link OpenTelemetryMetricsDockerComposeConnectionDetailsFactory}.
+ * Integration tests for {@link OpenTelemetryMetricsDockerComposeConnectionDetailsFactory}
+ * using {@link TestImage#OPENTELEMETRY}.
  *
  * @author Eddú Meléndez
  */

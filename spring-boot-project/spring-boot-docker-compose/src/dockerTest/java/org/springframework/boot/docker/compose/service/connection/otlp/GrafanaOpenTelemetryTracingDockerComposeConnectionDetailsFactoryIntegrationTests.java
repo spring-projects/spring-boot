@@ -23,12 +23,12 @@ import org.springframework.boot.testsupport.container.TestImage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for
- * {@link OpenTelemetryTracingDockerComposeConnectionDetailsFactory}.
+ * Integration tests for {@link OpenTelemetryTracingDockerComposeConnectionDetailsFactory}
+ * using {@link TestImage#GRAFANA_OTEL_LGTM}.
  *
  * @author Eddú Meléndez
  */
-class GrafanaOtelTracingDockerComposeConnectionDetailsFactoryIntegrationTests {
+class GrafanaOpenTelemetryTracingDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.GRAFANA_OTEL_LGTM)
 	void runCreatesConnectionDetails(OtlpTracingConnectionDetails connectionDetails) {
