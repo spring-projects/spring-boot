@@ -83,6 +83,8 @@ public class Image {
 
 	List<String> securityOptions;
 
+	String imagePlatform;
+
 	/**
 	 * The name of the created image.
 	 * @return the image name
@@ -219,6 +221,20 @@ public class Image {
 		this.applicationDirectory = applicationDirectory;
 	}
 
+	/**
+	 * Returns the platform (os/architecture/variant) that will be used for all pulled
+	 * images. When {@code null}, the system will choose a platform based on the host
+	 * operating system and architecture.
+	 * @return the image platform
+	 */
+	public String getImagePlatform() {
+		return this.imagePlatform;
+	}
+
+	public void setImagePlatform(String imagePlatform) {
+		this.imagePlatform = imagePlatform;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -281,6 +297,9 @@ public class Image {
 		}
 		if (this.securityOptions != null) {
 			request = request.withSecurityOptions(this.securityOptions);
+		}
+		if (this.imagePlatform != null) {
+			request = request.withImagePlatform(this.imagePlatform);
 		}
 		return request;
 	}

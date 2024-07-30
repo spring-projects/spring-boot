@@ -36,6 +36,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ContainerReferenc
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 
@@ -86,9 +87,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest();
@@ -97,9 +101,10 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull());
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull());
 		then(docker.image()).should()
-			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull());
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull());
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 		then(docker.image()).shouldHaveNoMoreInteractions();
@@ -115,12 +120,12 @@ class BuilderTests {
 			.withBuilderRegistryTokenAuthentication("builder token")
 			.withPublishRegistryTokenAuthentication("publish token");
 		given(docker.image()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(),
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
 					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
-			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest().withPublish(true);
@@ -129,11 +134,11 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(),
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
 					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
 		then(docker.image()).should()
-			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
 		then(docker.image()).should()
 			.push(eq(request.getName()), any(),
 					eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
@@ -148,9 +153,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image-with-no-run-image-tag.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of("gcr.io/paketo-buildpacks/builder:latest")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("gcr.io/paketo-buildpacks/builder:latest")), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:latest")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:latest")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withBuilder(ImageReference.of("gcr.io/paketo-buildpacks/builder"));
@@ -168,12 +176,13 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image-with-run-image-digest.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
 			.pull(eq(ImageReference
 				.of("docker.io/cloudfoundry/run@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d")),
-					any(), isNull()))
+					eq(ImagePlatform.from(builderImage)), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest();
@@ -191,9 +200,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image-with-empty-stack.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of("gcr.io/paketo-buildpacks/builder:latest")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("gcr.io/paketo-buildpacks/builder:latest")), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withBuilder(ImageReference.of("gcr.io/paketo-buildpacks/builder"));
@@ -211,9 +223,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("example.com/custom/run:latest")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("example.com/custom/run:latest")), eq(ImagePlatform.from(builderImage)), any(),
+					isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withRunImage(ImageReference.of("example.com/custom/run:latest"));
@@ -231,9 +246,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF))))
 			.willReturn(builderImage);
@@ -247,7 +265,7 @@ class BuilderTests {
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
-		then(docker.image()).should(never()).pull(any(), any());
+		then(docker.image()).should(never()).pull(any(), any(), any());
 		then(docker.image()).should(times(2)).inspect(any());
 	}
 
@@ -257,9 +275,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF))))
 			.willReturn(builderImage);
@@ -273,7 +294,7 @@ class BuilderTests {
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
-		then(docker.image()).should(times(2)).pull(any(), any(), isNull());
+		then(docker.image()).should(times(2)).pull(any(), any(), any(), isNull());
 		then(docker.image()).should(never()).inspect(any());
 	}
 
@@ -283,9 +304,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF))))
 			.willThrow(
@@ -304,7 +328,7 @@ class BuilderTests {
 		then(docker.image()).should().load(archive.capture(), any());
 		then(docker.image()).should().remove(archive.getValue().getTag(), true);
 		then(docker.image()).should(times(2)).inspect(any());
-		then(docker.image()).should(times(2)).pull(any(), any(), isNull());
+		then(docker.image()).should(times(2)).pull(any(), any(), any(), isNull());
 	}
 
 	@Test
@@ -313,9 +337,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest().withTags(ImageReference.of("my-application:1.2.3"));
@@ -339,12 +366,12 @@ class BuilderTests {
 			.withBuilderRegistryTokenAuthentication("builder token")
 			.withPublishRegistryTokenAuthentication("publish token");
 		given(docker.image()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(),
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
 					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
 			.willAnswer(withPulledImage(builderImage));
 		given(docker.image()
-			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
 		BuildRequest request = getTestRequest().withPublish(true).withTags(ImageReference.of("my-application:1.2.3"));
@@ -354,11 +381,11 @@ class BuilderTests {
 		assertThat(out.toString()).contains("Successfully created image tag 'docker.io/library/my-application:1.2.3'");
 
 		then(docker.image()).should()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(),
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(),
 					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
 		then(docker.image()).should()
-			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(),
-					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()));
 		then(docker.image()).should()
 			.push(eq(request.getName()), any(),
 					eq(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()));
@@ -373,14 +400,45 @@ class BuilderTests {
 	}
 
 	@Test
+	void buildInvokesBuilderWithPlatform() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
+		DockerApi docker = mockDockerApi(platform);
+		Image builderImage = loadImage("image-with-platform.json");
+		Image runImage = loadImage("run-image-with-platform.json");
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), eq(platform), any(), isNull()))
+			.willAnswer(withPulledImage(builderImage));
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(platform), any(), isNull()))
+			.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		BuildRequest request = getTestRequest().withImagePlatform("linux/arm64/v1");
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		then(docker.image()).should()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), eq(platform), any(), isNull());
+		then(docker.image()).should()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(platform), any(), isNull());
+		then(docker.image()).should().load(archive.capture(), any());
+		then(docker.image()).should().remove(archive.getValue().getTag(), true);
+		then(docker.image()).shouldHaveNoMoreInteractions();
+	}
+
+	@Test
 	void buildWhenStackIdDoesNotMatchThrowsException() throws Exception {
 		TestPrintStream out = new TestPrintStream();
 		DockerApi docker = mockDockerApi();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image-with-bad-stack.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest();
@@ -395,9 +453,12 @@ class BuilderTests {
 		DockerApi docker = mockDockerApiLifecycleError();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), isNull(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), eq(ImagePlatform.from(builderImage)),
+					any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildRequest request = getTestRequest();
@@ -413,7 +474,7 @@ class BuilderTests {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration()
 			.withBuilderRegistryTokenAuthentication("builder token");
 		given(docker.image()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(),
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), any(),
 					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
 			.willAnswer(withPulledImage(builderImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
@@ -431,7 +492,7 @@ class BuilderTests {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration()
 			.withBuilderRegistryTokenAuthentication("builder token");
 		given(docker.image()
-			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(),
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), any(),
 					eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
 			.willAnswer(withPulledImage(builderImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
@@ -447,9 +508,10 @@ class BuilderTests {
 		DockerApi docker = mockDockerApiLifecycleError();
 		Image builderImage = loadImage("image.json");
 		Image runImage = loadImage("run-image.json");
-		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), isNull()))
+		given(docker.image()
+			.pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_REF)), any(), any(), isNull()))
 			.willAnswer(withPulledImage(builderImage));
-		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), any(), isNull()))
 			.willAnswer(withPulledImage(runImage));
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack@1.2.3");
@@ -460,9 +522,13 @@ class BuilderTests {
 	}
 
 	private DockerApi mockDockerApi() throws IOException {
+		return mockDockerApi(null);
+	}
+
+	private DockerApi mockDockerApi(ImagePlatform platform) throws IOException {
 		ContainerApi containerApi = mock(ContainerApi.class);
 		ContainerReference reference = ContainerReference.of("container-ref");
-		given(containerApi.create(any(), any())).willReturn(reference);
+		given(containerApi.create(any(), eq(platform), any())).willReturn(reference);
 		given(containerApi.wait(eq(reference))).willReturn(ContainerStatus.of(0, null));
 		ImageApi imageApi = mock(ImageApi.class);
 		VolumeApi volumeApi = mock(VolumeApi.class);
@@ -476,7 +542,7 @@ class BuilderTests {
 	private DockerApi mockDockerApiLifecycleError() throws IOException {
 		ContainerApi containerApi = mock(ContainerApi.class);
 		ContainerReference reference = ContainerReference.of("container-ref");
-		given(containerApi.create(any(), any())).willReturn(reference);
+		given(containerApi.create(any(), isNull(), any())).willReturn(reference);
 		given(containerApi.wait(eq(reference))).willReturn(ContainerStatus.of(9, null));
 		ImageApi imageApi = mock(ImageApi.class);
 		VolumeApi volumeApi = mock(VolumeApi.class);
@@ -499,7 +565,7 @@ class BuilderTests {
 
 	private Answer<Image> withPulledImage(Image image) {
 		return (invocation) -> {
-			TotalProgressPullListener listener = invocation.getArgument(1, TotalProgressPullListener.class);
+			TotalProgressPullListener listener = invocation.getArgument(2, TotalProgressPullListener.class);
 			listener.onStart();
 			listener.onFinish();
 			return image;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,17 +76,23 @@ public class ImageArchive implements TarArchive {
 
 	private final String os;
 
+	private final String architecture;
+
+	private final String variant;
+
 	private final List<LayerId> existingLayers;
 
 	private final List<Layer> newLayers;
 
 	ImageArchive(ObjectMapper objectMapper, ImageConfig imageConfig, Instant createDate, ImageReference tag, String os,
-			List<LayerId> existingLayers, List<Layer> newLayers) {
+			String architecture, String variant, List<LayerId> existingLayers, List<Layer> newLayers) {
 		this.objectMapper = objectMapper;
 		this.imageConfig = imageConfig;
 		this.createDate = createDate;
 		this.tag = tag;
 		this.os = os;
+		this.architecture = architecture;
+		this.variant = variant;
 		this.existingLayers = existingLayers;
 		this.newLayers = newLayers;
 	}
@@ -164,11 +170,13 @@ public class ImageArchive implements TarArchive {
 
 	private ObjectNode createConfig(List<LayerId> writtenLayers) {
 		ObjectNode config = this.objectMapper.createObjectNode();
-		config.set("config", this.imageConfig.getNodeCopy());
-		config.set("created", config.textNode(getCreatedDate()));
-		config.set("history", createHistory(writtenLayers));
-		config.set("os", config.textNode(this.os));
-		config.set("rootfs", createRootFs(writtenLayers));
+		config.set("Config", this.imageConfig.getNodeCopy());
+		config.set("Created", config.textNode(getCreatedDate()));
+		config.set("History", createHistory(writtenLayers));
+		config.set("Os", config.textNode(this.os));
+		config.set("Architecture", config.textNode(this.architecture));
+		config.set("Variant", config.textNode(this.variant));
+		config.set("RootFS", createRootFs(writtenLayers));
 		return config;
 	}
 
@@ -264,7 +272,8 @@ public class ImageArchive implements TarArchive {
 			update.accept(this);
 			Instant createDate = (this.createDate != null) ? this.createDate : WINDOWS_EPOCH_PLUS_SECOND;
 			return new ImageArchive(SharedObjectMapper.get(), this.config, createDate, this.tag, this.image.getOs(),
-					this.image.getLayers(), Collections.unmodifiableList(this.newLayers));
+					this.image.getArchitecture(), this.image.getVariant(), this.image.getLayers(),
+					Collections.unmodifiableList(this.newLayers));
 		}
 
 		/**

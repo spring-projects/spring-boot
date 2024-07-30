@@ -28,17 +28,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.net.URIBuilder;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport.Response;
+import org.springframework.boot.buildpack.platform.docker.type.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
@@ -61,7 +64,9 @@ public class DockerApi {
 
 	private static final List<String> FORCE_PARAMS = Collections.unmodifiableList(Arrays.asList("force", "1"));
 
-	static final String API_VERSION = "v1.24";
+	static final ApiVersion MINIMUM_API_VERSION = ApiVersion.parse("1.24");
+
+	static final String API_VERSION_HEADER_NAME = "API-Version";
 
 	private final HttpTransport http;
 
@@ -72,6 +77,10 @@ public class DockerApi {
 	private final ContainerApi container;
 
 	private final VolumeApi volume;
+
+	private final SystemApi system;
+
+	private ApiVersion apiVersion = null;
 
 	/**
 	 * Create a new {@link DockerApi} instance.
@@ -100,6 +109,7 @@ public class DockerApi {
 		this.image = new ImageApi();
 		this.container = new ContainerApi();
 		this.volume = new VolumeApi();
+		this.system = new SystemApi();
 	}
 
 	private HttpTransport http() {
@@ -116,7 +126,10 @@ public class DockerApi {
 
 	private URI buildUrl(String path, Object... params) {
 		try {
-			URIBuilder builder = new URIBuilder("/" + API_VERSION + path);
+			if (this.apiVersion == null) {
+				this.apiVersion = this.system.getApiVersion();
+			}
+			URIBuilder builder = new URIBuilder("/v" + this.apiVersion + path);
 			int param = 0;
 			while (param < params.length) {
 				builder.addParameter(Objects.toString(params[param++]), Objects.toString(params[param++]));
@@ -126,6 +139,13 @@ public class DockerApi {
 		catch (URISyntaxException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	private void verifyApiVersionForPlatform() {
+		ApiVersion minimumPlatformApiVersion = ApiVersion.of(1, 41);
+		Assert.isTrue(this.apiVersion.supports(minimumPlatformApiVersion),
+				"Docker API version must be at least " + minimumPlatformApiVersion
+						+ " to support the 'imagePlatform' option, but current API version is " + this.apiVersion);
 	}
 
 	/**
@@ -148,6 +168,10 @@ public class DockerApi {
 		return this.volume;
 	}
 
+	SystemApi system() {
+		return this.system;
+	}
+
 	/**
 	 * Docker API for image operations.
 	 */
@@ -159,27 +183,37 @@ public class DockerApi {
 		/**
 		 * Pull an image from a registry.
 		 * @param reference the image reference to pull
+		 * @param platform the platform (os/architecture/variant) of the image to pull
 		 * @param listener a pull listener to receive update events
 		 * @return the {@link ImageApi pulled image} instance
 		 * @throws IOException on IO error
 		 */
-		public Image pull(ImageReference reference, UpdateListener<PullImageUpdateEvent> listener) throws IOException {
-			return pull(reference, listener, null);
+		public Image pull(ImageReference reference, ImagePlatform platform,
+				UpdateListener<PullImageUpdateEvent> listener) throws IOException {
+			return pull(reference, platform, listener, null);
 		}
 
 		/**
 		 * Pull an image from a registry.
 		 * @param reference the image reference to pull
+		 * @param platform the platform (os/architecture/variant) of the image to pull
 		 * @param listener a pull listener to receive update events
 		 * @param registryAuth registry authentication credentials
 		 * @return the {@link ImageApi pulled image} instance
 		 * @throws IOException on IO error
 		 */
-		public Image pull(ImageReference reference, UpdateListener<PullImageUpdateEvent> listener, String registryAuth)
-				throws IOException {
+		public Image pull(ImageReference reference, ImagePlatform platform,
+				UpdateListener<PullImageUpdateEvent> listener, String registryAuth) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(listener, "Listener must not be null");
-			URI createUri = buildUrl("/images/create", "fromImage", reference);
+			URI createUri;
+			if (platform != null) {
+				createUri = buildUrl("/images/create", "fromImage", reference, "platform", platform);
+				verifyApiVersionForPlatform();
+			}
+			else {
+				createUri = buildUrl("/images/create", "fromImage", reference);
+			}
 			DigestCaptureUpdateListener digestCapture = new DigestCaptureUpdateListener();
 			listener.onStart();
 			try {
@@ -348,22 +382,32 @@ public class DockerApi {
 		/**
 		 * Create a new container a {@link ContainerConfig}.
 		 * @param config the container config
+		 * @param platform the platform (os/architecture/variant) of the image the
+		 * container should be created from
 		 * @param contents additional contents to include
 		 * @return a {@link ContainerReference} for the newly created container
 		 * @throws IOException on IO error
 		 */
-		public ContainerReference create(ContainerConfig config, ContainerContent... contents) throws IOException {
+		public ContainerReference create(ContainerConfig config, ImagePlatform platform, ContainerContent... contents)
+				throws IOException {
 			Assert.notNull(config, "Config must not be null");
 			Assert.noNullElements(contents, "Contents must not contain null elements");
-			ContainerReference containerReference = createContainer(config);
+			ContainerReference containerReference = createContainer(config, platform);
 			for (ContainerContent content : contents) {
 				uploadContainerContent(containerReference, content);
 			}
 			return containerReference;
 		}
 
-		private ContainerReference createContainer(ContainerConfig config) throws IOException {
-			URI createUri = buildUrl("/containers/create");
+		private ContainerReference createContainer(ContainerConfig config, ImagePlatform platform) throws IOException {
+			URI createUri;
+			if (platform != null) {
+				createUri = buildUrl("/containers/create", "platform", platform);
+				verifyApiVersionForPlatform();
+			}
+			else {
+				createUri = buildUrl("/containers/create");
+			}
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
 				return ContainerReference
 					.of(SharedObjectMapper.get().readTree(response.getContent()).at("/Id").asText());
@@ -456,6 +500,39 @@ public class DockerApi {
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/volumes/" + name, params);
 			http().delete(uri).close();
+		}
+
+	}
+
+	/**
+	 * Docker API for system operations.
+	 */
+	class SystemApi {
+
+		SystemApi() {
+		}
+
+		/**
+		 * Get the API version supported by the Docker daemon.
+		 * @return the Docker daemon API version
+		 */
+		ApiVersion getApiVersion() {
+			try {
+				URI uri = new URIBuilder("/_ping").build();
+				try (Response response = http().head(uri)) {
+					Header apiVersionHeader = response.getHeader(API_VERSION_HEADER_NAME);
+					if (apiVersionHeader != null) {
+						return ApiVersion.parse(apiVersionHeader.getValue());
+					}
+				}
+				catch (Exception ex) {
+					// fall through to return default value
+				}
+				return MINIMUM_API_VERSION;
+			}
+			catch (URISyntaxException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}

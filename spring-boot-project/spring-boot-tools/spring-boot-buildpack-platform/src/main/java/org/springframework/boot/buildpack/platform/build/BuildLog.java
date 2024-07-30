@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 
@@ -46,10 +47,12 @@ public interface BuildLog {
 	/**
 	 * Log that an image is being pulled.
 	 * @param imageReference the image reference
+	 * @param platform the platform of the image
 	 * @param imageType the image type
 	 * @return a consumer for progress update events
 	 */
-	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType);
+	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImagePlatform platform,
+			ImageType imageType);
 
 	/**
 	 * Log that an image has been pulled.

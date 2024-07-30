@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.build;
+package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,8 +26,9 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @since 3.4.0
  */
-final class ApiVersion {
+public final class ApiVersion {
 
 	private static final Pattern PATTERN = Pattern.compile("^v?(\\d+)\\.(\\d*)$");
 
@@ -57,26 +58,13 @@ final class ApiVersion {
 	}
 
 	/**
-	 * Assert that this API version supports the specified version.
-	 * @param other the version to check against
-	 * @see #supports(ApiVersion)
-	 */
-	void assertSupports(ApiVersion other) {
-		if (!supports(other)) {
-			throw new IllegalStateException(
-					"Detected platform API version '" + other + "' does not match supported version '" + this + "'");
-		}
-	}
-
-	/**
 	 * Returns if this API version supports the given version. A {@code 0.x} matches only
 	 * the same version number. A 1.x or higher release matches when the versions have the
 	 * same major version and a minor that is equal or greater.
 	 * @param other the version to check against
 	 * @return if the specified API version is supported
-	 * @see #assertSupports(ApiVersion)
 	 */
-	boolean supports(ApiVersion other) {
+	public boolean supports(ApiVersion other) {
 		if (equals(other)) {
 			return true;
 		}
@@ -92,7 +80,7 @@ final class ApiVersion {
 	 * @return if any of the specified API versions are supported
 	 * @see #supports(ApiVersion)
 	 */
-	boolean supportsAny(ApiVersion... others) {
+	public boolean supportsAny(ApiVersion... others) {
 		for (ApiVersion other : others) {
 			if (supports(other)) {
 				return true;
@@ -129,7 +117,7 @@ final class ApiVersion {
 	 * @return the corresponding {@link ApiVersion}
 	 * @throws IllegalArgumentException if the value could not be parsed
 	 */
-	static ApiVersion parse(String value) {
+	public static ApiVersion parse(String value) {
 		Assert.hasText(value, "Value must not be empty");
 		Matcher matcher = PATTERN.matcher(value);
 		Assert.isTrue(matcher.matches(), () -> "Malformed version number '" + value + "'");
@@ -143,7 +131,7 @@ final class ApiVersion {
 		}
 	}
 
-	static ApiVersion of(int major, int minor) {
+	public static ApiVersion of(int major, int minor) {
 		return new ApiVersion(major, minor);
 	}
 

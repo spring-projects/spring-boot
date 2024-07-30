@@ -29,6 +29,7 @@ import com.sun.jna.Platform;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
+import org.springframework.boot.buildpack.platform.docker.type.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
@@ -363,7 +364,7 @@ class Lifecycle implements Closeable {
 
 	private ContainerReference createContainer(ContainerConfig config, boolean requiresAppUpload) throws IOException {
 		if (!requiresAppUpload || this.applicationVolumePopulated) {
-			return this.docker.container().create(config);
+			return this.docker.container().create(config, this.request.getImagePlatform());
 		}
 		try {
 			if (this.application.getBind() != null) {
@@ -371,7 +372,8 @@ class Lifecycle implements Closeable {
 			}
 			TarArchive applicationContent = this.request.getApplicationContent(this.builder.getBuildOwner());
 			return this.docker.container()
-				.create(config, ContainerContent.of(applicationContent, this.applicationDirectory));
+				.create(config, this.request.getImagePlatform(),
+						ContainerContent.of(applicationContent, this.applicationDirectory));
 		}
 		finally {
 			this.applicationVolumePopulated = true;

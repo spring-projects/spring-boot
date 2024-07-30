@@ -327,6 +327,18 @@ public abstract class BootBuildImage extends DefaultTask {
 	public abstract ListProperty<String> getSecurityOptions();
 
 	/**
+	 * Returns the platform (os/architecture/variant) that will be used for all pulled
+	 * images. When {@code null}, the system will choose a platform based on the host
+	 * operating system and architecture.
+	 * @return the image platform
+	 */
+	@Input
+	@Optional
+	@Option(option = "imagePlatform",
+			description = "The platform (os/architecture/variant) that will be used for all pulled images")
+	public abstract Property<String> getImagePlatform();
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -377,6 +389,9 @@ public abstract class BootBuildImage extends DefaultTask {
 		request = customizeCreatedDate(request);
 		request = customizeApplicationDirectory(request);
 		request = customizeSecurityOptions(request);
+		if (getImagePlatform().isPresent()) {
+			request = request.withImagePlatform(getImagePlatform().get());
+		}
 		return request;
 	}
 

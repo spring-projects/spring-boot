@@ -140,7 +140,14 @@ The following table summarizes the available parameters and their default values
 | `trustBuilder` +
 (`spring-boot.build-image.trustBuilder`)
 | Whether to treat the builder as https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
-| `true` if the builder is one of `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; false otherwise.
+| `true` if the builder is one of `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
+
+| `imagePlatform` +
+(`spring-boot.build-image.imagePlatform`)
+a|The platform (operating system and architecture) of any builder, run, and buildpack images that are pulled.
+Must be in the form of `OS[/architecture[/variant]]`, such as `linux/amd64`, `linux/arm64`, or `linux/arm/v5`.
+Refer to documentation of the builder being used to determine the image OS and architecture options available.
+| No default value, indicating that the platform of the host machine should be used.
 
 | `runImage` +
 (`spring-boot.build-image.runImage`)

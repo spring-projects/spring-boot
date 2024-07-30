@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.build;
+package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.util.Arrays;
 
@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ApiVersion}.
@@ -55,18 +54,6 @@ class ApiVersionTests {
 		ApiVersion version = ApiVersion.parse("1.2");
 		assertThat(version.getMajor()).isOne();
 		assertThat(version.getMinor()).isEqualTo(2);
-	}
-
-	@Test
-	void assertSupportsWhenSupports() {
-		ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.0"));
-	}
-
-	@Test
-	void assertSupportsWhenDoesNotSupportThrowsException() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.3")))
-			.withMessage("Detected platform API version '1.3' does not match supported version '1.2'");
 	}
 
 	@Test

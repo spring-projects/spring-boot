@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
@@ -322,6 +323,17 @@ class BootBuildImageTests {
 		this.buildImage.getSecurityOptions().add("label=role:ROLE");
 		assertThat(this.buildImage.createRequest().getSecurityOptions()).containsExactly("label=user:USER",
 				"label=role:ROLE");
+	}
+
+	@Test
+	void whenImagePlatformIsNotConfiguredThenRequestHasNoImagePlatform() {
+		assertThat(this.buildImage.createRequest().getImagePlatform()).isNull();
+	}
+
+	@Test
+	void whenImagePlatformIsConfiguredThenRequestHasImagePlatform() {
+		this.buildImage.getImagePlatform().set("linux/arm64/v1");
+		assertThat(this.buildImage.createRequest().getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64/v1"));
 	}
 
 }

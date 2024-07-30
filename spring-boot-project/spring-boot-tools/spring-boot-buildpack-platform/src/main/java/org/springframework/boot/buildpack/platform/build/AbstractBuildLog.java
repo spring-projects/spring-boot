@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 
@@ -43,8 +44,17 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
-	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType) {
-		return getProgressConsumer(String.format(" > Pulling %s '%s'", imageType.getDescription(), imageReference));
+	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImagePlatform platform,
+			ImageType imageType) {
+		String message;
+		if (platform != null) {
+			message = String.format(" > Pulling %s '%s' for platform '%s'", imageType.getDescription(), imageReference,
+					platform);
+		}
+		else {
+			message = String.format(" > Pulling %s '%s'", imageType.getDescription(), imageReference);
+		}
+		return getProgressConsumer(message);
 	}
 
 	@Override

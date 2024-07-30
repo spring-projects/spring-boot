@@ -43,6 +43,7 @@ import org.junit.jupiter.api.condition.OS;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
+import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
@@ -64,8 +65,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @GradleCompatibility(configurationCache = true)
 @DisabledIfDockerUnavailable
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The builder image has no ARM support")
 class BootBuildImageIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -408,6 +407,57 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	@EnabledOnOs(value = { OS.LINUX, OS.MAC }, architectures = "aarch64",
+			disabledReason = "Lifecycle will only run on ARM architecture")
+	void buildsImageOnLinuxArmWithImagePlatformLinuxArm() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
+		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		removeImages(builderImage, runImage, buildpackImage);
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput())
+			.contains("Pulling builder image '" + builderImage + "' for platform 'linux/arm64'");
+		assertThat(result.getOutput())
+			.contains("Pulling builder image '" + builderImage + "' for platform 'linux/arm64'");
+		assertThat(result.getOutput()).contains("Pulling run image '" + runImage + "' for platform 'linux/arm64'");
+		assertThat(result.getOutput())
+			.contains("Pulling buildpack image '" + buildpackImage + "' for platform 'linux/arm64'");
+		assertThat(result.getOutput()).contains("Running detector");
+		assertThat(result.getOutput()).contains("Running builder");
+		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
+		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
+		removeImages(projectName, builderImage, runImage, buildpackImage);
+	}
+
+	@TestTemplate
+	@EnabledOnOs(value = { OS.LINUX, OS.MAC }, architectures = "amd64",
+			disabledReason = "The expected failure condition will not fail on ARM architectures")
+	void failsWhenBuildingOnLinuxAmdWithImagePlatformLinuxArm() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
+		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		removeImages(builderImage, runImage, buildpackImage);
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput())
+			.contains("Pulling builder image '" + builderImage + "' for platform 'linux/arm64'");
+		assertThat(result.getOutput()).contains("Pulling run image '" + runImage + "' for platform 'linux/arm64'");
+		assertThat(result.getOutput())
+			.contains("Pulling buildpack image '" + buildpackImage + "' for platform 'linux/arm64'");
+		assertThat(result.getOutput()).contains("exec format error");
+		removeImages(builderImage, runImage, buildpackImage);
+	}
+
+	@TestTemplate
 	void failsWithInvalidCreatedDate() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
@@ -589,7 +639,12 @@ class BootBuildImageIntegrationTests {
 	private void removeImages(String... names) throws IOException {
 		ImageApi imageApi = new DockerApi().image();
 		for (String name : names) {
-			imageApi.remove(ImageReference.of(name), false);
+			try {
+				imageApi.remove(ImageReference.of(name), false);
+			}
+			catch (DockerEngineException ex) {
+				// ignore image remove failures
+			}
 		}
 	}
 

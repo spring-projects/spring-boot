@@ -32,6 +32,7 @@ import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -80,6 +81,7 @@ class ImageTests {
 		assertThat(request.getBuildpacks()).isEmpty();
 		assertThat(request.getBindings()).isEmpty();
 		assertThat(request.getNetwork()).isNull();
+		assertThat(request.getImagePlatform()).isNull();
 	}
 
 	@Test
@@ -278,6 +280,14 @@ class ImageTests {
 		image.securityOptions = Collections.emptyList();
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getSecurityOptions()).isEmpty();
+	}
+
+	@Test
+	void getBuildRequestWhenHasImagePlatformUsesImagePlatform() {
+		Image image = new Image();
+		image.imagePlatform = "linux/arm64";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64"));
 	}
 
 	private Artifact createArtifact() {

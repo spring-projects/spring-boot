@@ -39,6 +39,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -390,6 +391,13 @@ class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		BuildRequest withAppDir = request.withSecurityOptions(List.of("label=user:USER", "label=role:ROLE"));
 		assertThat(withAppDir.getSecurityOptions()).containsExactly("label=user:USER", "label=role:ROLE");
+	}
+
+	@Test
+	void withPlatformSetsPlatform() throws Exception {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withAppDir = request.withImagePlatform("linux/arm64");
+		assertThat(withAppDir.getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64"));
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {

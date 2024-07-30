@@ -180,6 +180,14 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	String applicationDirectory;
 
 	/**
+	 * Alias for {@link Image#imagePlatform} to support configuration through command-line
+	 * property.
+	 * @since 3.4.0
+	 */
+	@Parameter(property = "spring-boot.build-image.imagePlatform", readonly = true)
+	String imagePlatform;
+
+	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
@@ -298,6 +306,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.applicationDirectory == null && this.applicationDirectory != null) {
 			image.setApplicationDirectory(this.applicationDirectory);
+		}
+		if (image.imagePlatform == null && this.imagePlatform != null) {
+			image.setImagePlatform(this.imagePlatform);
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
