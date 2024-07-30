@@ -402,6 +402,7 @@ bom {
 		}
 		links {
 			site("https://documentation.red-gate.com/flyway")
+			javadoc("https://javadoc.io/doc/org.flywaydb/flyway-core/{version}")
 		}
 	}
 	library("FreeMarker", "2.3.33") {
@@ -458,6 +459,7 @@ bom {
 		}
 		links {
 			site("https://www.graphql-java.com/")
+			javadoc("https://javadoc.io/doc/com.graphql-java/graphql-java/{version}")
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
 	}
@@ -479,6 +481,7 @@ bom {
 		}
 		links {
 			site("https://github.com/google/gson")
+			javadoc("https://javadoc.io/doc/com.google.code.gson/gson/{version}")
 			releaseNotes("https://github.com/google/gson/releases/tag/gson-parent-{version}")
 		}
 	}
@@ -511,6 +514,7 @@ bom {
 		}
 		links {
 			site("https://hazelcast.com")
+			javadoc("https://javadoc.io/doc/com.hazelcast/hazelcast/{version}")
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
@@ -653,6 +657,8 @@ bom {
 		}
 		links {
 			site("https://github.com/jakartaee/jaf-api")
+			javadoc { version -> "https://jakarta.ee/specifications/activation/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/jakartaee/jaf-api/releases/tag/{version}")
 		}
 	}
@@ -662,12 +668,20 @@ bom {
 				"jakarta.annotation-api"
 			]
 		}
+		links {
+			javadoc { version -> "https://jakarta.ee/specifications/annotations/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
+		}
 	}
 	library("Jakarta Inject", "2.0.1") {
 		group("jakarta.inject") {
 			modules = [
 				"jakarta.inject-api"
 			]
+		}
+		links {
+			javadoc { version -> "https://jakarta.ee/specifications/dependency-injection/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("Jakarta JMS", "3.1.0") {
@@ -676,6 +690,12 @@ bom {
 				"jakarta.jms-api"
 			]
 		}
+		links {
+			site { version -> "https://jakarta.ee/specifications/messaging/%s.%s"
+				.formatted(version.major(), version.minor()) }
+			javadoc { version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
+		}
 	}
 	library("Jakarta Json", "2.1.3") {
 		group("jakarta.json") {
@@ -683,12 +703,20 @@ bom {
 				"jakarta.json-api"
 			]
 		}
+		links {
+			javadoc { version -> "https://jakarta.ee/specifications/jsonp/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
+		}
 	}
 	library("Jakarta Json Bind", "3.0.1") {
 		group("jakarta.json.bind") {
 			modules = [
 				"jakarta.json.bind-api"
 			]
+		}
+		links {
+			javadoc { version -> "https://jakarta.ee/specifications/jsonb/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("Jakarta Mail", "2.1.3") {
@@ -698,7 +726,10 @@ bom {
 			]
 		}
 		links {
-			site("https://github.com/jakartaee/mail-api")
+			site { version -> "https://jakarta.ee/specifications/mail/%s.%s"
+				.formatted(version.major(), version.minor()) }
+			javadoc { version -> "https://jakarta.ee/specifications/mail/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/jakartaee/mail-api/releases/tag/{version}")
 		}
 	}
@@ -719,6 +750,12 @@ bom {
 				"jakarta.persistence-api"
 			]
 		}
+		links {
+			site { version -> "https://jakarta.ee/specifications/persistence/%s.%s"
+				.formatted(version.major(), version.minor()) }
+			javadoc { version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
+		}
 	}
 	library("Jakarta Servlet", "6.0.0") {
 		prohibit {
@@ -729,6 +766,12 @@ bom {
 			modules = [
 				"jakarta.servlet-api"
 			]
+		}
+		links {
+			site { version -> "https://jakarta.ee/specifications/servlet/%s.%s"
+				.formatted(version.major(), version.minor()) }
+			javadoc { version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("Jakarta Servlet JSP JSTL", "3.0.0") {
@@ -744,6 +787,10 @@ bom {
 				"jakarta.transaction-api"
 			]
 		}
+		links {
+			javadoc { version -> "https://jakarta.ee/specifications/transactions/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
+		}
 	}
 	library("Jakarta Validation", "3.0.2") {
 		prohibit {
@@ -754,6 +801,10 @@ bom {
 			modules = [
 				"jakarta.validation-api"
 			]
+		}
+		links {
+			javadoc { version -> "https://jakarta.ee/specifications/bean-validation/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("Jakarta WebSocket", "2.1.1") {
@@ -1278,6 +1329,7 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
+			javadoc("https://javadoc.io/doc/io.micrometer/micrometer-core/{version}")
 			docs { version -> "https://docs.micrometer.io/micrometer/reference/%s.%s"
 				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
@@ -1292,6 +1344,7 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
+			javadoc("https://javadoc.io/doc/io.micrometer/micrometer-tracing/{version}")
 			docs { version -> "https://docs.micrometer.io/tracing/reference/%s.%s"
 				.formatted(version.major(), version.minor()) }
 			releaseNotes("https://github.com/micrometer-metrics/tracing/releases/tag/v{version}")
@@ -1417,6 +1470,7 @@ bom {
 		}
 		links {
 			site("https://github.com/open-telemetry/opentelemetry-java")
+			javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/{version}")
 			releaseNotes("https://github.com/open-telemetry/opentelemetry-java/releases/tag/v{version}")
 		}
 	}
@@ -1624,6 +1678,10 @@ bom {
 				"r2dbc-spi"
 			]
 		}
+		links {
+			site("https://r2dbc.io")
+			javadoc("https://r2dbc.io/spec/{version}/api")
+		}
 	}
 	library("Rabbit AMQP Client", "5.21.0") {
 		group("com.rabbitmq") {
@@ -1633,6 +1691,7 @@ bom {
 		}
 		links {
 			site("https://github.com/rabbitmq/rabbitmq-java-client")
+			javadoc("https://rabbitmq.github.io/rabbitmq-java-client/api/current/")
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
 		}
 	}
@@ -2122,6 +2181,7 @@ bom {
 		}
 		links {
 			site("https://java.testcontainers.org")
+			javadoc("https://javadoc.io/doc/org.testcontainers/testcontainers/{version}")
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
 		}
 	}
