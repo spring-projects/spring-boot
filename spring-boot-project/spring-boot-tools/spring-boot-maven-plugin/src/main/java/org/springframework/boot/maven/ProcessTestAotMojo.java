@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 			return;
 		}
 		generateAotAssets(getClassPath(true), AOT_PROCESSOR_CLASS_NAME, getAotArguments());
-		compileSourceFiles(getClassPath(false), this.generatedSources, this.testClassesDirectory);
+		compileSourceFiles(getClassPath(false), this.generatedSources, this.generatedTestClasses);
 		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
 				this.testClassesDirectory.toPath().resolve("META-INF/native-image"));
 		copyAll(this.generatedTestClasses.toPath(), this.testClassesDirectory.toPath());
