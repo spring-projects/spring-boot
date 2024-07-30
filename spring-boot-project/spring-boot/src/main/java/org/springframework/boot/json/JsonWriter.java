@@ -142,7 +142,7 @@ public interface JsonWriter<T> {
 	 * @return a {@link JsonWriter} instance
 	 */
 	static <T> JsonWriter<T> standard() {
-		return of(Members::addSelf);
+		return of(Members::add);
 	}
 
 	/**
@@ -306,8 +306,8 @@ public interface JsonWriter<T> {
 	 * the various {@code add(...)} methods. Typically, members are declared with a
 	 * {@code "name"} and a {@link Function} that will extract the value from the
 	 * instance. Members can also be declared using a static value or a {@link Supplier}.
-	 * The {@link #addSelf(String)} and {@link #addSelf()} methods may be used to access
-	 * the actual instance being written.
+	 * The {@link #add(String)} and {@link #add()} methods may be used to access the
+	 * actual instance being written.
 	 * <p>
 	 * Members can be added without a {@code name} when a {@code Member.using(...)} method
 	 * is used to complete the definition.
@@ -343,7 +343,7 @@ public interface JsonWriter<T> {
 		 * @param name the member name
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public Member<T> addSelf(String name) {
+		public Member<T> add(String name) {
 			return add(name, (instance) -> instance);
 		}
 
@@ -389,46 +389,8 @@ public interface JsonWriter<T> {
 		 * complete the configuration.
 		 * @return the added {@link Member} which may be configured further
 		 */
-		public Member<T> addSelf() {
-			return add((instance) -> instance);
-		}
-
-		/**
-		 * Add a new member with a static value. The member is added without a name, so
-		 * one of the {@code Member.using(...)} methods must be used to complete the
-		 * configuration.
-		 * @param <V> the value type
-		 * @param value the member value
-		 * @return the added {@link Member} which may be configured further
-		 */
-		public <V> Member<V> add(V value) {
-			return add((instance) -> value);
-		}
-
-		/**
-		 * Add a new member with a supplied value.The member is added without a name, so
-		 * one of the {@code Member.using(...)} methods must be used to complete the
-		 * configuration.
-		 * @param <V> the value type
-		 * @param supplier a supplier of the value
-		 * @return the added {@link Member} which may be configured further
-		 */
-		public <V> Member<V> add(Supplier<V> supplier) {
-			Assert.notNull(supplier, "'supplier' must not be null");
-			return add((instance) -> supplier.get());
-		}
-
-		/**
-		 * Add a new member with an extracted value. The member is added without a name,
-		 * so one of the {@code Member.using(...)} methods must be used to complete the
-		 * configuration.
-		 * @param <V> the value type
-		 * @param extractor a function to extract the value
-		 * @return the added {@link Member} which may be configured further
-		 */
-		public <V> Member<V> add(Function<T, V> extractor) {
-			Assert.notNull(extractor, "'extractor' must not be null");
-			return addMember(null, extractor);
+		public Member<T> add() {
+			return from(Function.identity());
 		}
 
 		/**
@@ -440,7 +402,42 @@ public interface JsonWriter<T> {
 		 * @return the added {@link Member} which may be configured further
 		 */
 		public <M extends Map<K, V>, K, V> Member<M> addMapEntries(Function<T, M> extractor) {
-			return add(extractor).usingPairs(Map::forEach);
+			return from(extractor).usingPairs(Map::forEach);
+		}
+
+		/**
+		 * Add members from a static value. One of the {@code Member.using(...)} methods
+		 * must be used to complete the configuration.
+		 * @param <V> the value type
+		 * @param value the member value
+		 * @return the added {@link Member} which may be configured further
+		 */
+		public <V> Member<V> from(V value) {
+			return from((instance) -> value);
+		}
+
+		/**
+		 * Add members from a supplied value. One of the {@code Member.using(...)} methods
+		 * must be used to complete the configuration.
+		 * @param <V> the value type
+		 * @param supplier a supplier of the value
+		 * @return the added {@link Member} which may be configured further
+		 */
+		public <V> Member<V> from(Supplier<V> supplier) {
+			Assert.notNull(supplier, "'supplier' must not be null");
+			return from((instance) -> supplier.get());
+		}
+
+		/**
+		 * Add members from an extracted value. One of the {@code Member.using(...)}
+		 * methods must be used to complete the configuration.
+		 * @param <V> the value type
+		 * @param extractor a function to extract the value
+		 * @return the added {@link Member} which may be configured further
+		 */
+		public <V> Member<V> from(Function<T, V> extractor) {
+			Assert.notNull(extractor, "'extractor' must not be null");
+			return addMember(null, extractor);
 		}
 
 		private <V> Member<V> addMember(String name, Function<T, V> extractor) {

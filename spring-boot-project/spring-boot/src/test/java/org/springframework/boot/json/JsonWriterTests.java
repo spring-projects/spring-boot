@@ -89,51 +89,62 @@ public class JsonWriterTests {
 
 	@Test
 	void ofAddingNamedSelf() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf("test"));
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("test"));
 		assertThat(writer.writeToString(PERSON)).isEqualTo("""
 				{"test":"Spring Boot (10)"}""");
 	}
 
 	@Test
-	void ofAddingNamedValue() {
+	void ofAddingUnnamedSelf() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add());
+		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
+	}
+
+	@Test
+	void ofAddValue() {
 		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", "Boot"));
 		assertThat(writer.writeToString(PERSON)).isEqualTo("""
 				{"Spring":"Boot"}""");
 	}
 
 	@Test
-	void ofAddingNamedSupplier() {
+	void ofAddSupplier() {
 		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Spring", () -> "Boot"));
 		assertThat(writer.writeToString(PERSON)).isEqualTo("""
 				{"Spring":"Boot"}""");
 	}
 
 	@Test
-	void ofAddingUnnamedSelf() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf());
-		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
+	void ofAddExtractor() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> {
+			members.add("firstName", Person::firstName);
+			members.add("lastName", Person::lastName);
+			members.add("age", Person::age);
+		});
+		assertThat(writer.writeToString(PERSON)).isEqualTo("""
+				{"firstName":"Spring","lastName":"Boot","age":10}""");
 	}
 
 	@Test
-	void ofAddingUnnamedValue() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add("Boot"));
+	void ofFromValue() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.from("Boot"));
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
 	@Test
-	void ofAddingUnnamedSupplier() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(() -> "Boot"));
+	void ofFromSupplier() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.from(() -> "Boot"));
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
 	@Test
-	void ofAddingUnnamedExtractor() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> members.add(Person::lastName));
+	void ofFromExtractor() {
+		JsonWriter<Person> writer = JsonWriter.of((members) -> members.from(Person::lastName));
 		assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Boot"));
 	}
 
 	@Test
-	void ofAddingMapEntries() {
+	void ofAddMapEntries() {
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("a", "A");
 		map.put("b", 123);
@@ -142,17 +153,6 @@ public class JsonWriterTests {
 			.of((members) -> members.addMapEntries((list) -> list.get(0)));
 		assertThat(writer.writeToString(List.of(map))).isEqualTo("""
 				{"a":"A","b":123,"c":true}""");
-	}
-
-	@Test
-	void ofAddingNamedExtractor() {
-		JsonWriter<Person> writer = JsonWriter.of((members) -> {
-			members.add("firstName", Person::firstName);
-			members.add("lastName", Person::lastName);
-			members.add("age", Person::age);
-		});
-		assertThat(writer.writeToString(PERSON)).isEqualTo("""
-				{"firstName":"Spring","lastName":"Boot","age":10}""");
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class JsonWriterTests {
 	void ofWhenOneContributesPairByNameAndOneHasNoNameThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
 			members.add("Spring", "Boot");
-			members.add("alone");
+			members.from("alone");
 		}))
 			.withMessage("Member at index 1 does not contribute a named pair, "
 					+ "ensure that all members have a name or call an appropriate 'using' method");
@@ -174,8 +174,8 @@ public class JsonWriterTests {
 	@Test
 	void ofWhenOneContributesPairByUsingPairsAndOneHasNoNameThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
-			members.add(Map.of("Spring", "Boot")).usingPairs(Map::forEach);
-			members.add("alone");
+			members.from(Map.of("Spring", "Boot")).usingPairs(Map::forEach);
+			members.from("alone");
 		}))
 			.withMessage("Member at index 1 does not contribute a named pair, "
 					+ "ensure that all members have a name or call an appropriate 'using' method");
@@ -184,11 +184,11 @@ public class JsonWriterTests {
 	@Test
 	void ofWhenOneContributesPairByUsingMembersAndOneHasNoNameThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((members) -> {
-			members.add(PERSON).usingMembers((personMembers) -> {
+			members.from(PERSON).usingMembers((personMembers) -> {
 				personMembers.add("first", Person::firstName);
 				personMembers.add("last", Person::firstName);
 			});
-			members.add("alone");
+			members.from("alone");
 		}))
 			.withMessage("Member at index 1 does not contribute a named pair, "
 					+ "ensure that all members have a name or call an appropriate 'using' method");
@@ -235,7 +235,7 @@ public class JsonWriterTests {
 
 		@Test
 		void whenNotNull() {
-			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().whenNotNull());
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.add().whenNotNull());
 			assertThat(writer.writeToString("test")).isEqualTo(quoted("test"));
 			assertThat(writer.writeToString(null)).isEmpty();
 		}
@@ -243,14 +243,14 @@ public class JsonWriterTests {
 		@Test
 		void whenNotNullExtracted() {
 			Person personWithNull = new Person("Spring", null, 10);
-			JsonWriter<Person> writer = JsonWriter.of((members) -> members.addSelf().whenNotNull(Person::lastName));
+			JsonWriter<Person> writer = JsonWriter.of((members) -> members.add().whenNotNull(Person::lastName));
 			assertThat(writer.writeToString(PERSON)).isEqualTo(quoted("Spring Boot (10)"));
 			assertThat(writer.writeToString(personWithNull)).isEmpty();
 		}
 
 		@Test
 		void whenHasLength() {
-			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().whenHasLength());
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.add().whenHasLength());
 			assertThat(writer.writeToString("test")).isEqualTo(quoted("test"));
 			assertThat(writer.writeToString("")).isEmpty();
 			assertThat(writer.writeToString(null)).isEmpty();
@@ -258,7 +258,7 @@ public class JsonWriterTests {
 
 		@Test
 		void whenHasLengthOnNonString() {
-			JsonWriter<StringBuilder> writer = JsonWriter.of((members) -> members.addSelf().whenHasLength());
+			JsonWriter<StringBuilder> writer = JsonWriter.of((members) -> members.add().whenHasLength());
 			assertThat(writer.writeToString(new StringBuilder("test"))).isEqualTo(quoted("test"));
 			assertThat(writer.writeToString(new StringBuilder())).isEmpty();
 			assertThat(writer.writeToString(null)).isEmpty();
@@ -266,7 +266,7 @@ public class JsonWriterTests {
 
 		@Test
 		void whenNotEmpty() {
-			JsonWriter<Object> writer = JsonWriter.of((members) -> members.addSelf().whenNotEmpty());
+			JsonWriter<Object> writer = JsonWriter.of((members) -> members.add().whenNotEmpty());
 			assertThat(writer.writeToString(List.of("a"))).isEqualTo("""
 					["a"]""");
 			assertThat(writer.writeToString(Collections.emptyList())).isEmpty();
@@ -277,7 +277,7 @@ public class JsonWriterTests {
 
 		@Test
 		void whenNot() {
-			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.addSelf().whenNot(List::isEmpty));
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.add().whenNot(List::isEmpty));
 			assertThat(writer.writeToString(List.of("a"))).isEqualTo("""
 					["a"]""");
 			assertThat(writer.writeToString(Collections.emptyList())).isEmpty();
@@ -285,7 +285,7 @@ public class JsonWriterTests {
 
 		@Test
 		void when() {
-			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.addSelf().when(List::isEmpty));
+			JsonWriter<List<String>> writer = JsonWriter.of((members) -> members.add().when(List::isEmpty));
 			assertThat(writer.writeToString(List.of("a"))).isEmpty();
 			assertThat(writer.writeToString(Collections.emptyList())).isEqualTo("[]");
 		}
@@ -293,7 +293,7 @@ public class JsonWriterTests {
 		@Test
 		void chainedPredicates() {
 			Set<String> banned = Set.of("Spring", "Boot");
-			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf()
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.add()
 				.whenHasLength()
 				.whenNot(banned::contains)
 				.whenNot((string) -> string.length() <= 2));
@@ -305,13 +305,13 @@ public class JsonWriterTests {
 
 		@Test
 		void as() {
-			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().as(Integer::valueOf));
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.add().as(Integer::valueOf));
 			assertThat(writer.writeToString("123")).isEqualTo("123");
 		}
 
 		@Test
 		void asWhenValueIsNullDoesNotCallAdapter() {
-			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf().as((value) -> {
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.add().as((value) -> {
 				throw new RuntimeException("bad");
 			}));
 			writer.writeToString(null);
@@ -321,7 +321,7 @@ public class JsonWriterTests {
 		void chainedAs() {
 			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
 			JsonWriter<String> writer = JsonWriter
-				.of((members) -> members.addSelf().as(Integer::valueOf).as(booleanAdapter));
+				.of((members) -> members.add().as(Integer::valueOf).as(booleanAdapter));
 			assertThat(writer.writeToString("0")).isEqualTo("false");
 			assertThat(writer.writeToString("1")).isEqualTo("true");
 		}
@@ -329,7 +329,7 @@ public class JsonWriterTests {
 		@Test
 		void chainedAsAndPredicates() {
 			Function<Integer, Boolean> booleanAdapter = (integer) -> integer != 0;
-			JsonWriter<String> writer = JsonWriter.of((members) -> members.addSelf()
+			JsonWriter<String> writer = JsonWriter.of((members) -> members.add()
 				.whenNot(String::isEmpty)
 				.as(Integer::valueOf)
 				.when((integer) -> integer < 2)
@@ -348,7 +348,7 @@ public class JsonWriterTests {
 			PairExtractor<Map.Entry<String, Object>> extractor = PairExtractor.of(Map.Entry::getKey,
 					Map.Entry::getValue);
 			JsonWriter<Map<String, Object>> writer = JsonWriter
-				.of((members) -> members.addSelf().as(Map::entrySet).usingExtractedPairs(Set::forEach, extractor));
+				.of((members) -> members.add().as(Map::entrySet).usingExtractedPairs(Set::forEach, extractor));
 			assertThat(writer.writeToString(map)).isEqualTo("""
 					{"a":"A","b":"B"}""");
 		}
@@ -360,7 +360,7 @@ public class JsonWriterTests {
 			map.put("b", "B");
 			Function<Map.Entry<String, Object>, String> nameExtractor = Map.Entry::getKey;
 			Function<Map.Entry<String, Object>, Object> valueExtractor = Map.Entry::getValue;
-			JsonWriter<Map<String, Object>> writer = JsonWriter.of((members) -> members.addSelf()
+			JsonWriter<Map<String, Object>> writer = JsonWriter.of((members) -> members.add()
 				.as(Map::entrySet)
 				.usingExtractedPairs(Set::forEach, nameExtractor, valueExtractor));
 			assertThat(writer.writeToString(map)).isEqualTo("""
@@ -372,24 +372,23 @@ public class JsonWriterTests {
 			Map<String, Object> map = new LinkedHashMap<>();
 			map.put("a", "A");
 			map.put("b", "B");
-			JsonWriter<Map<String, Object>> writer = JsonWriter
-				.of((members) -> members.addSelf().usingPairs(Map::forEach));
+			JsonWriter<Map<String, Object>> writer = JsonWriter.of((members) -> members.add().usingPairs(Map::forEach));
 			assertThat(writer.writeToString(map)).isEqualTo("""
 					{"a":"A","b":"B"}""");
 		}
 
 		@Test
 		void usingPairsWhenAlreadyDeclaredThrowsException() {
-			assertThatIllegalStateException().isThrownBy(() -> JsonWriter
-				.of((members) -> members.add(Collections.emptyMap()).usingPairs(Map::forEach).usingPairs(Map::forEach)))
+			assertThatIllegalStateException().isThrownBy(() -> JsonWriter.of((
+					members) -> members.from(Collections.emptyMap()).usingPairs(Map::forEach).usingPairs(Map::forEach)))
 				.withMessage("Pairs cannot be declared multiple times");
 		}
 
 		@Test
 		void usingPairsWhenUsingMembersThrowsException() {
 			assertThatIllegalStateException()
-				.isThrownBy(() -> JsonWriter.of((members) -> members.add(Collections.emptyMap())
-					.usingMembers((mapMembers) -> mapMembers.addSelf("test"))
+				.isThrownBy(() -> JsonWriter.of((members) -> members.from(Collections.emptyMap())
+					.usingMembers((mapMembers) -> mapMembers.add("test"))
 					.usingPairs(Map::forEach)))
 				.withMessage("Pairs cannot be declared when using members");
 		}
@@ -417,8 +416,10 @@ public class JsonWriterTests {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
 			JsonWriter<Couple> writer = JsonWriter.of((member) -> {
 				member.add("version", 1);
-				member.add(Couple::person1).usingMembers((personMembers) -> personMembers.add("one", Person::toString));
-				member.add(Couple::person2).usingMembers((personMembers) -> personMembers.add("two", Person::toString));
+				member.from(Couple::person1)
+					.usingMembers((personMembers) -> personMembers.add("one", Person::toString));
+				member.from(Couple::person2)
+					.usingMembers((personMembers) -> personMembers.add("two", Person::toString));
 			});
 			assertThat(writer.writeToString(couple)).isEqualTo("""
 					{"version":1,"one":"Spring Boot (10)","two":"Spring Framework (20)"}""");
@@ -428,7 +429,7 @@ public class JsonWriterTests {
 		void usingMembersWithoutNameInMember() {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
 			JsonWriter<Couple> writer = JsonWriter.of((member) -> member.add("only", Couple::person2)
-				.usingMembers((personMembers) -> personMembers.add(Person::toString)));
+				.usingMembers((personMembers) -> personMembers.from(Person::toString)));
 			assertThat(writer.writeToString(couple)).isEqualTo("""
 					{"only":"Spring Framework (20)"}""");
 		}
@@ -436,26 +437,26 @@ public class JsonWriterTests {
 		@Test
 		void usingMemebersWithoutNameAtAll() {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
-			JsonWriter<Couple> writer = JsonWriter.of((member) -> member.add(Couple::person2)
-				.usingMembers((personMembers) -> personMembers.add(Person::toString)));
+			JsonWriter<Couple> writer = JsonWriter.of((member) -> member.from(Couple::person2)
+				.usingMembers((personMembers) -> personMembers.from(Person::toString)));
 			assertThat(writer.writeToString(couple)).isEqualTo(quoted("Spring Framework (20)"));
 		}
 
 		@Test
 		void usingMembersWhenAlreadyDeclaredThrowsException() {
 			assertThatIllegalStateException()
-				.isThrownBy(() -> JsonWriter.of((members) -> members.add(Collections.emptyMap())
-					.usingMembers((mapMembers) -> mapMembers.addSelf("test"))
-					.usingMembers((mapMembers) -> mapMembers.addSelf("test"))))
+				.isThrownBy(() -> JsonWriter.of((members) -> members.from(Collections.emptyMap())
+					.usingMembers((mapMembers) -> mapMembers.add("test"))
+					.usingMembers((mapMembers) -> mapMembers.add("test"))))
 				.withMessage("Members cannot be declared multiple times");
 		}
 
 		@Test
 		void usingMembersWhenUsingPairsThrowsException() {
 			assertThatIllegalStateException()
-				.isThrownBy(() -> JsonWriter.of((members) -> members.add(Collections.emptyMap())
+				.isThrownBy(() -> JsonWriter.of((members) -> members.from(Collections.emptyMap())
 					.usingPairs(Map::forEach)
-					.usingMembers((mapMembers) -> mapMembers.addSelf("test"))))
+					.usingMembers((mapMembers) -> mapMembers.add("test"))))
 				.withMessage("Members cannot be declared when using pairs");
 		}
 

@@ -62,7 +62,7 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 		members.add("level", ILoggingEvent::getLevel);
 		members.add("level_value", ILoggingEvent::getLevel).as(Level::toInt);
 		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
-		members.add(ILoggingEvent::getKeyValuePairs)
+		members.from(ILoggingEvent::getKeyValuePairs)
 			.whenNotEmpty()
 			.usingExtractedPairs(Iterable::forEach, keyValuePairExtractor);
 		members.add("tags", ILoggingEvent::getMarkerList)

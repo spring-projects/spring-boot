@@ -54,7 +54,7 @@ import org.springframework.util.StringUtils;
 final class PulsarPropertiesMapper {
 
 	private static final JsonWriter<Map<String, String>> jsonWriter = JsonWriter
-		.of((members) -> members.addSelf().as(TreeMap::new).usingPairs(Map::forEach));
+		.of((members) -> members.add().as(TreeMap::new).usingPairs(Map::forEach));
 
 	private final PulsarProperties properties;
 
