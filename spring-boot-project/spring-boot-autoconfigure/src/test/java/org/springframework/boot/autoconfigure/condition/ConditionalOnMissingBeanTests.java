@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -345,6 +344,25 @@ class ConditionalOnMissingBeanTests {
 			.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("customExampleBean")));
 	}
 
+	@Test
+	void typeBasedMatchingIgnoresBeanThatIsNotAutowireCandidate() {
+		this.contextRunner.withUserConfiguration(NotAutowireCandidateConfig.class, OnBeanTypeConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("bar"));
+	}
+
+	@Test
+	void nameBasedMatchingConsidersBeanThatIsNotAutowireCandidate() {
+		this.contextRunner.withUserConfiguration(NotAutowireCandidateConfig.class, OnBeanNameConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void annotationBasedMatchingIgnoresBeanThatIsNotAutowireCandidateBean() {
+		this.contextRunner
+			.withUserConfiguration(AnnotatedNotAutowireCandidateConfig.class, OnAnnotationConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("bar"));
+	}
+
 	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
 		return (context) -> {
 			String[] beans = context.getBeanNamesForType(ExampleBean.class);
@@ -367,6 +385,17 @@ class ConditionalOnMissingBeanTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo")
 	static class OnBeanNameConfiguration {
+
+		@Bean
+		String bar() {
+			return "bar";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(type = "java.lang.String")
+	static class OnBeanTypeConfiguration {
 
 		@Bean
 		String bar() {
@@ -536,7 +565,7 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(annotation = EnableScheduling.class)
+	@ConditionalOnMissingBean(annotation = TestAnnotation.class)
 	static class OnAnnotationConfiguration {
 
 		@Bean
@@ -558,10 +587,20 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableScheduling
+	@TestAnnotation
 	static class FooConfiguration {
 
 		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotAutowireCandidateConfig {
+
+		@Bean(autowireCandidate = false)
 		String foo() {
 			return "foo";
 		}
@@ -727,6 +766,16 @@ class ConditionalOnMissingBeanTests {
 		@ConditionalOnMissingBean(parameterizedContainer = TestParameterizedContainer.class)
 		TestParameterizedContainer<CustomExampleBean> conditionalCustomExampleBean() {
 			return new TestParameterizedContainer<>();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AnnotatedNotAutowireCandidateConfig {
+
+		@Bean(autowireCandidate = false)
+		ExampleBean exampleBean() {
+			return new ExampleBean("value");
 		}
 
 	}

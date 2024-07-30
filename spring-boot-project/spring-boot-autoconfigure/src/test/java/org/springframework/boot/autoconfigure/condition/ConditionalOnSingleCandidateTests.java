@@ -173,6 +173,17 @@ class ConditionalOnSingleCandidateTests {
 				}));
 	}
 
+	@Test
+	void singleCandidateMultipleCandidatesOneAutowireCandidate() {
+		this.contextRunner
+			.withUserConfiguration(AlphaConfiguration.class, BravoNonAutowireConfiguration.class,
+					OnBeanSingleCandidateConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("consumer");
+				assertThat(context.getBean("consumer")).isEqualTo("alpha");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(String.class)
 	static class OnBeanSingleCandidateConfiguration {
@@ -276,6 +287,16 @@ class ConditionalOnSingleCandidateTests {
 
 		@Bean
 		@Fallback
+		String bravo() {
+			return "bravo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BravoNonAutowireConfiguration {
+
+		@Bean(autowireCandidate = false)
 		String bravo() {
 			return "bravo";
 		}

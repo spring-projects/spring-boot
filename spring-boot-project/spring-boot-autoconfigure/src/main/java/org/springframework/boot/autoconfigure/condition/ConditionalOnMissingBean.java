@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
 /**
@@ -67,15 +69,21 @@ public @interface ConditionalOnMissingBean {
 
 	/**
 	 * The class types of beans that should be checked. The condition matches when no bean
-	 * of each class specified is contained in the {@link BeanFactory}.
+	 * of each class specified is contained in the {@link BeanFactory}. Beans that are not
+	 * autowire candidates are ignored.
 	 * @return the class types of beans to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
 	 */
 	Class<?>[] value() default {};
 
 	/**
 	 * The class type names of beans that should be checked. The condition matches when no
-	 * bean of each class specified is contained in the {@link BeanFactory}.
+	 * bean of each class specified is contained in the {@link BeanFactory}. Beans that
+	 * are not autowire candidates are ignored.
 	 * @return the class type names of beans to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
 	 */
 	String[] type() default {};
 
@@ -97,8 +105,10 @@ public @interface ConditionalOnMissingBean {
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
 	 * when each annotation specified is missing from all beans in the
-	 * {@link BeanFactory}.
+	 * {@link BeanFactory}. Beans that are not autowire candidates are ignored.
 	 * @return the class-level annotation types to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
