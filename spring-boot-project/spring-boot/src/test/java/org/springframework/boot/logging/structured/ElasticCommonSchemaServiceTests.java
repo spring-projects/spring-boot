@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ElasticCommonSchemaService}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class ElasticCommonSchemaServiceTests {
 
@@ -47,6 +48,14 @@ class ElasticCommonSchemaServiceTests {
 		environment.setProperty("spring.application.name", "spring");
 		ElasticCommonSchemaService service = ElasticCommonSchemaService.get(environment);
 		assertThat(service).isEqualTo(new ElasticCommonSchemaService("spring", null, null, null));
+	}
+
+	@Test
+	void getWhenNoServiceVersionUsesApplicationVersion() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.application.version", "1.2.3");
+		ElasticCommonSchemaService service = ElasticCommonSchemaService.get(environment);
+		assertThat(service).isEqualTo(new ElasticCommonSchemaService(null, "1.2.3", null, null));
 	}
 
 	@Test

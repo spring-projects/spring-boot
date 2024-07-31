@@ -23,9 +23,7 @@ import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
-import org.springframework.boot.system.ApplicationPid;
-import org.springframework.boot.system.MockApplicationPid;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,9 +38,13 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 
 	@BeforeEach
 	void setUp() {
-		ApplicationPid pid = MockApplicationPid.of(1L);
-		ElasticCommonSchemaService service = new ElasticCommonSchemaService("name", "1.0.0", "test", "node-1");
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(pid, service);
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.structured.ecs.service.name", "name");
+		environment.setProperty("logging.structured.ecs.service.version", "1.0.0");
+		environment.setProperty("logging.structured.ecs.service.environment", "test");
+		environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
+		environment.setProperty("spring.application.pid", "1");
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(environment);
 	}
 
 	@Test

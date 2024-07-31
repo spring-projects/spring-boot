@@ -38,7 +38,8 @@ public record ElasticCommonSchemaService(String name, String version, String env
 
 	private ElasticCommonSchemaService withDefaults(Environment environment) {
 		String name = withFallbackProperty(environment, this.name, "spring.application.name");
-		return new ElasticCommonSchemaService(name, this.version, this.environment, this.nodeName);
+		String version = withFallbackProperty(environment, this.version, "spring.application.version");
+		return new ElasticCommonSchemaService(name, version, this.environment, this.nodeName);
 	}
 
 	private String withFallbackProperty(Environment environment, String value, String property) {

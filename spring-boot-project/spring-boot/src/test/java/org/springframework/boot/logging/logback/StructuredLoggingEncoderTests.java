@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
-import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -103,13 +102,13 @@ class StructuredLoggingEncoderTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldInjectCustomFormatConstructorParameters() {
+		this.environment.setProperty("spring.application.pid", "42");
 		this.encoder.setFormat(CustomLogbackStructuredLoggingFormatterWithInjection.class.getName());
 		this.encoder.start();
 		LoggingEvent event = createEvent();
 		event.setMDCPropertyMap(Collections.emptyMap());
 		String format = encode(event);
-		assertThat(format)
-			.isEqualTo("custom-format-with-injection pid=" + new ApplicationPid() + " hasThrowableProxyConverter=true");
+		assertThat(format).isEqualTo("custom-format-with-injection pid=42 hasThrowableProxyConverter=true");
 	}
 
 	@Test
@@ -154,21 +153,21 @@ class StructuredLoggingEncoderTests extends AbstractStructuredLoggingTests {
 	static final class CustomLogbackStructuredLoggingFormatterWithInjection
 			implements StructuredLogFormatter<ILoggingEvent> {
 
-		private final ApplicationPid pid;
+		private final Environment environment;
 
 		private final ThrowableProxyConverter throwableProxyConverter;
 
-		CustomLogbackStructuredLoggingFormatterWithInjection(ApplicationPid pid,
+		CustomLogbackStructuredLoggingFormatterWithInjection(Environment environment,
 				ThrowableProxyConverter throwableProxyConverter) {
-			this.pid = pid;
+			this.environment = environment;
 			this.throwableProxyConverter = throwableProxyConverter;
 		}
 
 		@Override
 		public String format(ILoggingEvent event) {
 			boolean hasThrowableProxyConverter = this.throwableProxyConverter != null;
-			return "custom-format-with-injection pid=" + this.pid + " hasThrowableProxyConverter="
-					+ hasThrowableProxyConverter;
+			return "custom-format-with-injection pid=" + this.environment.getProperty("spring.application.pid")
+					+ " hasThrowableProxyConverter=" + hasThrowableProxyConverter;
 		}
 
 	}

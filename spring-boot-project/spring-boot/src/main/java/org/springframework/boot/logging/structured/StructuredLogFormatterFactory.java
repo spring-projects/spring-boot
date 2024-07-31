@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Consumer;
 
-import org.springframework.boot.system.ApplicationPid;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.boot.util.Instantiator.FailureHandler;
@@ -68,9 +67,6 @@ public class StructuredLogFormatterFactory<E> {
 		this.logEventType = logEventType;
 		this.instantiator = new Instantiator<>(StructuredLogFormatter.class, (allAvailableParameters) -> {
 			allAvailableParameters.add(Environment.class, environment);
-			allAvailableParameters.add(ApplicationPid.class, (type) -> new ApplicationPid());
-			allAvailableParameters.add(ElasticCommonSchemaService.class,
-					(type) -> ElasticCommonSchemaService.get(environment));
 			if (availableParameters != null) {
 				availableParameters.accept(allAvailableParameters);
 			}

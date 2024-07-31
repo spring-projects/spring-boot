@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.log4j2.StructuredLogLayout.Builder;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
-import org.springframework.boot.system.ApplicationPid;
+import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -83,11 +83,12 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldInjectCustomFormatConstructorParameters() {
+		this.environment.setProperty("spring.application.pid", "42");
 		StructuredLogLayout layout = newBuilder()
 			.setFormat(CustomLog4j2StructuredLoggingFormatterWithInjection.class.getName())
 			.build();
 		String format = layout.toSerializable(createEvent());
-		assertThat(format).isEqualTo("custom-format-with-injection pid=" + new ApplicationPid());
+		assertThat(format).isEqualTo("custom-format-with-injection pid=42");
 	}
 
 	@Test
@@ -129,15 +130,15 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
 	static final class CustomLog4j2StructuredLoggingFormatterWithInjection implements StructuredLogFormatter<LogEvent> {
 
-		private final ApplicationPid pid;
+		private final Environment environment;
 
-		CustomLog4j2StructuredLoggingFormatterWithInjection(ApplicationPid pid) {
-			this.pid = pid;
+		CustomLog4j2StructuredLoggingFormatterWithInjection(Environment environment) {
+			this.environment = environment;
 		}
 
 		@Override
 		public String format(LogEvent event) {
-			return "custom-format-with-injection pid=" + this.pid;
+			return "custom-format-with-injection pid=" + this.environment.getProperty("spring.application.pid");
 		}
 
 	}

@@ -30,11 +30,9 @@ import org.apache.logging.log4j.core.config.plugins.PluginLoggerContext;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
-import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
-import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
@@ -106,8 +104,7 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		private void addCommonFormatters(CommonFormatters<LogEvent> commonFormatters) {
 			commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
 					(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(
-							instantiator.getArg(ApplicationPid.class),
-							instantiator.getArg(ElasticCommonSchemaService.class)));
+							instantiator.getArg(Environment.class)));
 			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH,
 					(instantiator) -> new LogstashStructuredLogFormatter());
 		}

@@ -25,11 +25,9 @@ import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.encoder.EncoderBase;
 
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
-import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
-import org.springframework.boot.system.ApplicationPid;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
@@ -82,9 +80,7 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 
 	private void addCommonFormatters(CommonFormatters<ILoggingEvent> commonFormatters) {
 		commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
-				(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(
-						instantiator.getArg(ApplicationPid.class),
-						instantiator.getArg(ElasticCommonSchemaService.class),
+				(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(instantiator.getArg(Environment.class),
 						instantiator.getArg(ThrowableProxyConverter.class)));
 		commonFormatters.add(CommonStructuredLogFormat.LOGSTASH, (instantiator) -> new LogstashStructuredLogFormatter(
 				instantiator.getArg(ThrowableProxyConverter.class)));

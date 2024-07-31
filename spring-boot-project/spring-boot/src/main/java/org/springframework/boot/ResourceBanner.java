@@ -47,6 +47,7 @@ import org.springframework.util.StreamUtils;
  * @author Vedran Pavic
  * @author Toshiaki Maki
  * @author Krzysztof Krason
+ * @author Moritz Halbritter
  * @since 1.2.0
  */
 public class ResourceBanner implements Banner {
@@ -91,7 +92,7 @@ public class ResourceBanner implements Banner {
 		}
 		sources.addLast(getTitleSource(sourceClass));
 		sources.addLast(getAnsiSource());
-		sources.addLast(getVersionSource(sourceClass));
+		sources.addLast(getVersionSource(sourceClass, environment));
 		List<PropertyResolver> resolvers = new ArrayList<>();
 		resolvers.add(new PropertySourcesPropertyResolver(sources));
 		return resolvers;
@@ -119,12 +120,15 @@ public class ResourceBanner implements Banner {
 		return new AnsiPropertySource("ansi", true);
 	}
 
-	private MapPropertySource getVersionSource(Class<?> sourceClass) {
-		return new MapPropertySource("version", getVersionsMap(sourceClass));
+	private MapPropertySource getVersionSource(Class<?> sourceClass, Environment environment) {
+		return new MapPropertySource("version", getVersionsMap(sourceClass, environment));
 	}
 
-	private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
+	private Map<String, Object> getVersionsMap(Class<?> sourceClass, Environment environment) {
 		String appVersion = getApplicationVersion(sourceClass);
+		if (appVersion == null) {
+			appVersion = getApplicationVersion(environment);
+		}
 		String bootVersion = getBootVersion();
 		Map<String, Object> versions = new HashMap<>();
 		versions.put("application.version", getVersionString(appVersion, false));
@@ -134,9 +138,19 @@ public class ResourceBanner implements Banner {
 		return versions;
 	}
 
+	/**
+	 * Returns the application version.
+	 * @param sourceClass the source class
+	 * @return the application version or {@code null} if unknown
+	 * @deprecated since 3.4.0 for removal in 3.6.0
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	protected String getApplicationVersion(Class<?> sourceClass) {
-		Package sourcePackage = (sourceClass != null) ? sourceClass.getPackage() : null;
-		return (sourcePackage != null) ? sourcePackage.getImplementationVersion() : null;
+		return null;
+	}
+
+	private String getApplicationVersion(Environment environment) {
+		return environment.getProperty("spring.application.version");
 	}
 
 	protected String getBootVersion() {

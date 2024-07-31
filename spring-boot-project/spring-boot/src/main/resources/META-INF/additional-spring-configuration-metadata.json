@@ -286,6 +286,11 @@
       "description": "Application name."
     },
     {
+      "name": "spring.application.version",
+      "type": "java.lang.String",
+      "description": "Application version (defaults to 'Implementation-Version' from the manifest)."
+    },
+    {
       "name": "spring.banner.charset",
       "type": "java.nio.charset.Charset",
       "description": "Banner file encoding.",

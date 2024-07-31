@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.util.Objects;
+
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
@@ -27,7 +29,7 @@ import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
-import org.springframework.boot.system.ApplicationPid;
+import org.springframework.core.env.Environment;
 
 /**
  * Logback {@link StructuredLogFormatter} for
@@ -41,18 +43,19 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	ElasticCommonSchemaStructuredLogFormatter(ApplicationPid pid, ElasticCommonSchemaService service,
+	ElasticCommonSchemaStructuredLogFormatter(Environment environment,
 			ThrowableProxyConverter throwableProxyConverter) {
-		super((members) -> jsonMembers(pid, service, throwableProxyConverter, members));
+		super((members) -> jsonMembers(environment, throwableProxyConverter, members));
 	}
 
-	private static void jsonMembers(ApplicationPid pid, ElasticCommonSchemaService service,
-			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
+	private static void jsonMembers(Environment environment, ThrowableProxyConverter throwableProxyConverter,
+			JsonWriter.Members<ILoggingEvent> members) {
 		members.add("@timestamp", ILoggingEvent::getInstant);
 		members.add("log.level", ILoggingEvent::getLevel);
-		members.add("process.pid", pid).when(ApplicationPid::isAvailable).as(ApplicationPid::toLong);
+		members.add("process.pid", environment.getProperty("spring.application.pid", Long.class))
+			.when(Objects::nonNull);
 		members.add("process.thread.name", ILoggingEvent::getThreadName);
-		service.jsonMembers(members);
+		ElasticCommonSchemaService.get(environment).jsonMembers(members);
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
 		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);
