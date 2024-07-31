@@ -237,7 +237,7 @@ You can get more guidance about xref:how-to:deployment/cloud.adoc#howto.deployme
 [[features.spring-application.application-events-and-listeners]]
 == Application Events and Listeners
 
-In addition to the usual Spring Framework events, such as {url-spring-framework-javadoc}/org/springframework/context/event/ContextRefreshedEvent.html[`ContextRefreshedEvent`], a `SpringApplication` sends some additional application events.
+In addition to the usual Spring Framework events, such as javadoc:{url-spring-framework-javadoc}/org.springframework.context.event.ContextRefreshedEvent[], a `SpringApplication` sends some additional application events.
 
 [NOTE]
 ====
@@ -373,7 +373,7 @@ TIP: If you want to know on which HTTP port the application is running, get the 
 
 During the application startup, the `SpringApplication` and the `ApplicationContext` perform many tasks related to the application lifecycle,
 the beans lifecycle or even processing application events.
-With {url-spring-framework-javadoc}/org/springframework/core/metrics/ApplicationStartup.html[`ApplicationStartup`], Spring Framework  {url-spring-framework-docs}/core/beans/context-introduction.html#context-functionality-startup[allows you to track the application startup sequence with `StartupStep` objects].
+With javadoc:{url-spring-framework-javadoc}/org.springframework.core.metrics.ApplicationStartup[], Spring Framework {url-spring-framework-docs}/core/beans/context-introduction.html#context-functionality-startup[allows you to track the application startup sequence with `StartupStep` objects].
 This data can be collected for profiling purposes, or just to have a better understanding of an application startup process.
 
 You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.

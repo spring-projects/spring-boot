@@ -36,7 +36,7 @@ TIP: It is also possible to transparently {url-spring-framework-docs}/integratio
 
 The cache abstraction does not provide an actual store and relies on abstraction materialized by the `org.springframework.cache.Cache` and `org.springframework.cache.CacheManager` interfaces.
 
-If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {url-spring-framework-javadoc}/org/springframework/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
+If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see javadoc:{url-spring-framework-javadoc}/org.springframework.cache.annotation.CachingConfigurer[]), Spring Boot tries to detect the following providers (in the indicated order):
 
 . xref:io/caching.adoc#io.caching.provider.generic[]
 . xref:io/caching.adoc#io.caching.provider.jcache[] (EhCache 3, Hazelcast, Infinispan, and others)

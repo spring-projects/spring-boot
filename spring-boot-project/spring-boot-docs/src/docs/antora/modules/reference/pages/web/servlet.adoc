@@ -110,7 +110,7 @@ This can be useful when you want to re-order or remove some of the converters th
 === MessageCodesResolver
 
 Spring MVC has a strategy for generating error codes for rendering error messages from binding errors: `MessageCodesResolver`.
-If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in {url-spring-framework-javadoc}/org/springframework/validation/DefaultMessageCodesResolver.Format.html[`DefaultMessageCodesResolver.Format`]).
+If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in javadoc:{url-spring-framework-javadoc}/org.springframework.validation.DefaultMessageCodesResolver#Format[]).
 
 
 
@@ -168,7 +168,7 @@ spring:
 
 NOTE: Links to resources are rewritten in templates at runtime, thanks to a `ResourceUrlEncodingFilter` that is auto-configured for Thymeleaf and FreeMarker.
 You should manually declare this filter when using JSPs.
-Other template engines are currently not automatically supported but can be with custom template macros/helpers and the use of the {url-spring-framework-javadoc}/org/springframework/web/servlet/resource/ResourceUrlProvider.html[`ResourceUrlProvider`].
+Other template engines are currently not automatically supported but can be with custom template macros/helpers and the use of the javadoc:{url-spring-framework-javadoc}/org.springframework.web.servlet.resource.ResourceUrlProvider[].
 
 When loading resources dynamically with, for example, a JavaScript module loader, renaming files is not an option.
 That is why other strategies are also supported and can be combined.
@@ -458,7 +458,7 @@ You should disable this behavior by setting `com.ibm.ws.webcontainer.invokeFlush
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] implemented by https://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible way what kind of cross-domain requests are authorized, instead of using some less secure and less powerful approaches such as IFRAME or JSONP.
 
 As of version 4.2, Spring MVC {url-spring-framework-docs}/web/webmvc-cors.html[supports CORS].
-Using {url-spring-framework-docs}/web/webmvc-cors.html#mvc-cors-controller[controller method CORS configuration] with {url-spring-framework-javadoc}/org/springframework/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
+Using {url-spring-framework-docs}/web/webmvc-cors.html#mvc-cors-controller[controller method CORS configuration] with javadoc:{url-spring-framework-javadoc}/org.springframework.web.bind.annotation.CrossOrigin[format=annotation] annotations in your Spring Boot application does not require any specific configuration.
 {url-spring-framework-docs}/web/webmvc-cors.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
 
 include-code::MyCorsConfiguration[]

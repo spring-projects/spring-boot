@@ -134,7 +134,7 @@ include-code::settings/MyService[]
 [[io.rest-client.resttemplate]]
 == RestTemplate
 
-Spring Framework's {url-spring-framework-javadoc}/org/springframework/web/client/RestTemplate.html[`RestTemplate`] class predates `RestClient` and is the classic way that many applications use to call remote REST services.
+Spring Framework's javadoc:{url-spring-framework-javadoc}/org.springframework.web.client.RestTemplate[] class predates `RestClient` and is the classic way that many applications use to call remote REST services.
 You might choose to use `RestTemplate` when you have existing code that you don't want to migrate to `RestClient`, or because you're already familiar with the `RestTemplate` API.
 
 Since `RestTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `RestTemplate` bean.

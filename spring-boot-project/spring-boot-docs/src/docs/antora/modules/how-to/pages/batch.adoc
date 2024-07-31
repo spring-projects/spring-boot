@@ -14,8 +14,8 @@ Spring Batch expects a single `DataSource` by default.
 To have it use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
 If you do so and want two data sources, remember to mark the other one `@Primary`.
 To take greater control, add `@EnableBatchProcessing` to one of your `@Configuration` classes or extend `DefaultBatchConfiguration`.
-See the API documentation of {url-spring-batch-javadoc}/org/springframework/batch/core/configuration/annotation/EnableBatchProcessing.html[`@EnableBatchProcessing`]
-and {url-spring-batch-javadoc}/org/springframework/batch/core/configuration/support/DefaultBatchConfiguration.html[`DefaultBatchConfiguration`] for more details.
+See the API documentation of javadoc:{url-spring-batch-javadoc}/org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation]
+and javadoc:{url-spring-batch-javadoc}/org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[] for more details.
 
 For more info about Spring Batch, see the {url-spring-batch-site}[Spring Batch project page].
 
