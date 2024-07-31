@@ -298,8 +298,8 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	private File getArchiveFile() {
-		// We can use 'project.getArtifact().getFile()' because that was done in a
-		// forked lifecycle and is now null
+		// We can't use 'project.getArtifact().getFile()' because package can be done in a
+		// forked lifecycle and will be null
 		File archiveFile = getTargetFile(this.finalName, this.classifier, this.sourceDirectory);
 		if (!archiveFile.exists()) {
 			archiveFile = getSourceArtifact(this.classifier).getFile();
@@ -315,9 +315,17 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 * @return the file to use to back up the original source
 	 */
 	private File getBackupFile() {
-		Artifact source = getSourceArtifact(null);
-		if (this.classifier != null && !this.classifier.equals(source.getClassifier())) {
-			return source.getFile();
+		// We can't use 'project.getAttachedArtifacts()' because package can be done in a
+		// forked lifecycle and will be null
+		if (this.classifier != null) {
+			File backupFile = getTargetFile(this.finalName, null, this.sourceDirectory);
+			if (backupFile.exists()) {
+				return backupFile;
+			}
+			Artifact source = getSourceArtifact(null);
+			if (!this.classifier.equals(source.getClassifier())) {
+				return source.getFile();
+			}
 		}
 		return null;
 	}
