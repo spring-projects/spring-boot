@@ -188,12 +188,12 @@ The auto-configuration configures this factory automatically if Netty is availab
 [[data.nosql.mongodb.template]]
 === MongoTemplate
 
-{url-spring-data-mongodb-site}[Spring Data MongoDB] provides a {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
+{url-spring-data-mongodb-site}[Spring Data MongoDB] provides a javadoc:{url-spring-data-mongodb-javadoc}/org.springframework.data.mongodb.core.MongoTemplate[] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
 include-code::MyBean[]
 
-See the {url-spring-data-mongodb-javadoc}/org/springframework/data/mongodb/core/MongoOperations.html[`MongoOperations`] API documentation for complete details.
+See the javadoc:{url-spring-data-mongodb-javadoc}/org.springframework.data.mongodb.core.MongoOperations[] API documentation for complete details.
 
 
 

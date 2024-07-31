@@ -11,7 +11,7 @@ Later property sources can override the values defined in earlier ones.
 Sources are considered in the following order:
 
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
-. {url-spring-framework-javadoc}/org/springframework/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
+. javadoc:{url-spring-framework-javadoc}/org.springframework.context.annotation.PropertySource[format=annotation] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
 . Config data (such as `application.properties` files).
@@ -25,8 +25,8 @@ Sources are considered in the following order:
 . Command line arguments.
 . `properties` attribute on your tests.
   Available on javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[test annotations for testing a particular slice of your application].
-. {url-spring-framework-javadoc}/org/springframework/test/context/DynamicPropertySource.html[`@DynamicPropertySource`] annotations in your tests.
-. {url-spring-framework-javadoc}/org/springframework/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
+. javadoc:{url-spring-framework-javadoc}/org.springframework.test.context.DynamicPropertySource[format=annotation] annotations in your tests.
+. javadoc:{url-spring-framework-javadoc}/org.springframework.test.context.TestPropertySource[format=annotation] annotations on your tests.
 . xref:using/devtools.adoc#using.devtools.globalsettings[Devtools global settings properties] in the `$HOME/.config/spring-boot` directory when devtools is active.
 
 Config data files are considered in the following order:
