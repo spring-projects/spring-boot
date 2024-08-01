@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.util.MimeType;
@@ -150,5 +151,23 @@ public class FieldValues {
 	private Period periodYears = Period.ofYears(15);
 
 	private Period periodZero = Period.ZERO;
+
+	private ChronoUnit enumNone;
+
+	private ChronoUnit enumSimple = ChronoUnit.SECONDS;
+
+	private java.time.temporal.ChronoField enumQualified = java.time.temporal.ChronoField.HOUR_OF_DAY;
+
+	private ChronoUnit enumWithIndirection = SampleOptions.DEFAULT_UNIT;
+
+	private int memberSelectInt = SampleOptions.DEFAULT_MAX_RETRIES;
+
+	public static class SampleOptions {
+
+		static final Integer DEFAULT_MAX_RETRIES = 20;
+
+		static final ChronoUnit DEFAULT_UNIT = ChronoUnit.SECONDS;
+
+	}
 
 }

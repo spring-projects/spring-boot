@@ -16,6 +16,9 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
@@ -50,6 +53,7 @@ import org.springframework.boot.configurationsample.specific.DeprecatedSimplePoj
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.EmptyDefaultValueProperties;
+import org.springframework.boot.configurationsample.specific.EnumValuesPojo;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassHierarchicalProperties;
@@ -171,6 +175,15 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("hierarchical.third", String.class)
 			.withDefaultValue("three")
 			.fromSource(HierarchicalProperties.class));
+	}
+
+	@Test
+	void enumValues() {
+		ConfigurationMetadata metadata = compile(EnumValuesPojo.class);
+		assertThat(metadata).has(Metadata.withGroup("test").fromSource(EnumValuesPojo.class));
+		assertThat(metadata).has(Metadata.withProperty("test.seconds", ChronoUnit.class).withDefaultValue("seconds"));
+		assertThat(metadata)
+			.has(Metadata.withProperty("test.hour-of-day", ChronoField.class).withDefaultValue("hour-of-day"));
 	}
 
 	@Test
