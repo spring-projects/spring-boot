@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.boot.configurationprocessor.support.ConventionUtils;
 
 /**
  * Provide hints on an {@link ItemMetadata}. Defines the list of possible values for a
@@ -53,9 +55,9 @@ public class ItemHint implements Comparable<ItemHint> {
 		if (dot != -1) {
 			String prefix = name.substring(0, dot);
 			String originalName = name.substring(dot);
-			return prefix + ConfigurationMetadata.toDashedCase(originalName);
+			return prefix + ConventionUtils.toDashedCase(originalName);
 		}
-		return ConfigurationMetadata.toDashedCase(name);
+		return ConventionUtils.toDashedCase(name);
 	}
 
 	public String getName() {

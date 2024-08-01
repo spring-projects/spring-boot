@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationprocessor.metadata;
+package org.springframework.boot.configurationprocessor.support;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConfigurationMetadata}.
+ * Tests for {@link ConventionUtils}.
  *
  * @author Stephane Nicoll
  */
-class ConfigurationMetadataTests {
+class ConventionUtilsTests {
 
 	@Test
 	void toDashedCaseCamelCase() {
@@ -78,7 +78,7 @@ class ConfigurationMetadataTests {
 	}
 
 	private String toDashedCase(String name) {
-		return ConfigurationMetadata.toDashedCase(name);
+		return ConventionUtils.toDashedCase(name);
 	}
 
 }
