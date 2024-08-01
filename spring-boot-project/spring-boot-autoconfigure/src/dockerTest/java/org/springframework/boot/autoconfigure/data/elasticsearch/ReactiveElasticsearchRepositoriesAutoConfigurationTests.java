@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
@@ -30,8 +31,7 @@ import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ReactiveElasticsearchClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
-import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Configuration;
@@ -62,8 +62,15 @@ class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 				ReactiveElasticsearchClientAutoConfiguration.class))
 		.withPropertyValues(
 				"spring.elasticsearch.uris=" + elasticsearch.getHost() + ":" + elasticsearch.getFirstMappedPort(),
-				"spring.elasticsearch.socket-timeout=30s")
-		.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO));
+				"spring.elasticsearch.socket-timeout=30s");
+
+	@Test
+	void backsOffWithoutReactor() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(Mono.class))
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(ReactiveElasticsearchRepositoriesAutoConfiguration.class));
+	}
 
 	@Test
 	void testDefaultRepositoryConfiguration() {
