@@ -2121,16 +2121,44 @@
       "defaultValue": "order"
     },
     {
+      "name": "spring.pulsar.consumer.subscription.initial-position",
+      "defaultValue": "latest"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription.mode",
+      "defaultValue": "durable"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription.topics-mode",
+      "defaultValue": "persistentonly"
+    },
+    {
+      "name": "spring.pulsar.consumer.subscription.type",
+      "defaultValue": "exclusive"
+    },
+    {
       "name": "spring.pulsar.function.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable function support.",
       "defaultValue": true
     },
     {
+      "name": "spring.pulsar.producer.access-mode",
+      "defaultValue": "shared"
+    },
+    {
       "name": "spring.pulsar.producer.cache.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable caching in the PulsarProducerFactory.",
       "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.producer.hashing-scheme",
+      "defaultValue": "javastringhash"
+    },
+    {
+      "name": "spring.pulsar.producer.message-routing-mode",
+      "defaultValue": "roundrobinpartition"
     },
     {
       "name": "spring.quartz.jdbc.comment-prefix",
