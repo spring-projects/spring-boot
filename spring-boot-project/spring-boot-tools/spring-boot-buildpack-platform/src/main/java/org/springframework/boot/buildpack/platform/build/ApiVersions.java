@@ -32,7 +32,7 @@ final class ApiVersions {
 	/**
 	 * The platform API versions supported by this release.
 	 */
-	static final ApiVersions SUPPORTED_PLATFORMS = ApiVersions.of(0, IntStream.rangeClosed(3, 12));
+	static final ApiVersions SUPPORTED_PLATFORMS = ApiVersions.of(0, IntStream.rangeClosed(3, 14));
 
 	private final ApiVersion[] apiVersions;
 
