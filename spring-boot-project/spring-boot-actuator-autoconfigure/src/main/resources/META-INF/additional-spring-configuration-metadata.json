@@ -2074,6 +2074,10 @@
       }
     },
     {
+      "name": "management.newrelic.metrics.export.client-provider-type",
+      "defaultValue": "insights-api"
+    },
+    {
       "name": "management.observations.annotations.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of Micrometer annotations is enabled.",
