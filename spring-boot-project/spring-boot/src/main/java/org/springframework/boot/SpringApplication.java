@@ -336,7 +336,7 @@ public class SpringApplication {
 			afterRefresh(context, applicationArguments);
 			startup.started();
 			if (this.logStartupInfo) {
-				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), startup);
+				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
 			}
 			listeners.started(context, startup.timeTakenToStarted());
 			callRunners(context, applicationArguments);
@@ -404,6 +404,7 @@ public class SpringApplication {
 		bootstrapContext.close(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
+			logStartupInfo(context);
 			logStartupProfileInfo(context);
 		}
 		// Add boot specific singleton beans
@@ -633,12 +634,25 @@ public class SpringApplication {
 	/**
 	 * Called to log startup information, subclasses may override to add additional
 	 * logging.
-	 * @param isRoot true if this application is the root of a context hierarchy
+	 * @param context the application context
+	 * @since 3.4.0
 	 */
-	protected void logStartupInfo(boolean isRoot) {
+	protected void logStartupInfo(ConfigurableApplicationContext context) {
+		boolean isRoot = context.getParent() == null;
 		if (isRoot) {
-			new StartupInfoLogger(this.mainApplicationClass).logStarting(getApplicationLog());
+			new StartupInfoLogger(this.mainApplicationClass, context.getEnvironment()).logStarting(getApplicationLog());
 		}
+	}
+
+	/**
+	 * Called to log startup information, subclasses may override to add additional
+	 * logging.
+	 * @param isRoot true if this application is the root of a context hierarchy
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #logStartupInfo(ConfigurableApplicationContext)}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	protected void logStartupInfo(boolean isRoot) {
 	}
 
 	/**

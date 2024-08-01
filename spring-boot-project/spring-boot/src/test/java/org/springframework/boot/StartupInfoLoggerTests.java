@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.springframework.boot;
 
 import org.apache.commons.logging.Log;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication.Startup;
-import org.springframework.boot.system.ApplicationPid;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.assertArg;
@@ -39,15 +40,48 @@ class StartupInfoLoggerTests {
 
 	private final Log log = mock(Log.class);
 
+	private MockEnvironment environment;
+
+	@BeforeEach
+	void setUp() {
+		this.environment = new MockEnvironment();
+		this.environment.setProperty("spring.application.version", "1.2.3");
+		this.environment.setProperty("spring.application.pid", "42");
+	}
+
 	@Test
 	void startingFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
-		new StartupInfoLogger(getClass()).logStarting(this.log);
+		new StartupInfoLogger(getClass(), this.environment).logStarting(this.log);
 		then(this.log).should()
-			.info(assertArg((message) -> assertThat(message.toString())
-				.contains("Starting " + getClass().getSimpleName() + " using Java " + System.getProperty("java.version")
-						+ " with PID " + new ApplicationPid() + " (started by " + System.getProperty("user.name")
-						+ " in " + System.getProperty("user.dir") + ")")));
+			.info(assertArg(
+					(message) -> assertThat(message.toString()).contains("Starting " + getClass().getSimpleName()
+							+ " v1.2.3 using Java " + System.getProperty("java.version") + " with PID 42 (started by "
+							+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")")));
+	}
+
+	@Test
+	void startingFormatWhenVersionIsNotAvailable() {
+		this.environment.setProperty("spring.application.version", "");
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment).logStarting(this.log);
+		then(this.log).should()
+			.info(assertArg(
+					(message) -> assertThat(message.toString()).contains("Starting " + getClass().getSimpleName()
+							+ " using Java " + System.getProperty("java.version") + " with PID 42 (started by "
+							+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")")));
+	}
+
+	@Test
+	void startingFormatWhenPidIsNotAvailable() {
+		this.environment.setProperty("spring.application.pid", "");
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment).logStarting(this.log);
+		then(this.log).should()
+			.info(assertArg(
+					(message) -> assertThat(message.toString()).contains("Starting " + getClass().getSimpleName()
+							+ " v1.2.3 using Java " + System.getProperty("java.version") + " (started by "
+							+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")")));
 	}
 
 	@Test
@@ -55,11 +89,11 @@ class StartupInfoLoggerTests {
 		System.setProperty("spring.aot.enabled", "true");
 		try {
 			given(this.log.isInfoEnabled()).willReturn(true);
-			new StartupInfoLogger(getClass()).logStarting(this.log);
+			new StartupInfoLogger(getClass(), this.environment).logStarting(this.log);
 			then(this.log).should()
 				.info(assertArg((message) -> assertThat(message.toString())
-					.contains("Starting AOT-processed " + getClass().getSimpleName() + " using Java "
-							+ System.getProperty("java.version") + " with PID " + new ApplicationPid() + " (started by "
+					.contains("Starting AOT-processed " + getClass().getSimpleName() + " v1.2.3 using Java "
+							+ System.getProperty("java.version") + " with PID 42 (started by "
 							+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")")));
 
 		}
@@ -71,7 +105,7 @@ class StartupInfoLoggerTests {
 	@Test
 	void startedFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
-		new StartupInfoLogger(getClass()).logStarted(this.log, new TestStartup(1345L, "Started"));
+		new StartupInfoLogger(getClass(), this.environment).logStarted(this.log, new TestStartup(1345L, "Started"));
 		then(this.log).should()
 			.info(assertArg((message) -> assertThat(message.toString()).matches("Started " + getClass().getSimpleName()
 					+ " in \\d+\\.\\d{1,3} seconds \\(process running for 1.345\\)")));
@@ -80,7 +114,7 @@ class StartupInfoLoggerTests {
 	@Test
 	void startedWithoutUptimeFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
-		new StartupInfoLogger(getClass()).logStarted(this.log, new TestStartup(null, "Started"));
+		new StartupInfoLogger(getClass(), this.environment).logStarted(this.log, new TestStartup(null, "Started"));
 		then(this.log).should()
 			.info(assertArg((message) -> assertThat(message.toString())
 				.matches("Started " + getClass().getSimpleName() + " in \\d+\\.\\d{1,3} seconds")));
@@ -89,7 +123,7 @@ class StartupInfoLoggerTests {
 	@Test
 	void restoredFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
-		new StartupInfoLogger(getClass()).logStarted(this.log, new TestStartup(null, "Restored"));
+		new StartupInfoLogger(getClass(), this.environment).logStarted(this.log, new TestStartup(null, "Restored"));
 		then(this.log).should()
 			.info(assertArg((message) -> assertThat(message.toString())
 				.matches("Restored " + getClass().getSimpleName() + " in \\d+\\.\\d{1,3} seconds")));
