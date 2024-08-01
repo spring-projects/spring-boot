@@ -46,6 +46,10 @@
       "defaultValue": "never"
     },
     {
+      "name": "server.error.include-path",
+      "defaultValue": "always"
+    },
+    {
       "name": "server.error.include-stacktrace",
       "defaultValue": "never"
     },
