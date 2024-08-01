@@ -117,6 +117,7 @@ public class GraphQlWebMvcAutoConfiguration {
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
 		builder.route(GraphQlRequestPredicates.graphQlSse(path), sseHandler::handleRequest);
+		builder.POST(path, this::unsupportedMediaType);
 		builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
@@ -127,6 +128,14 @@ public class GraphQlWebMvcAutoConfiguration {
 			builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
 		return builder.build();
+	}
+
+	private ServerResponse unsupportedMediaType(ServerRequest request) {
+		return ServerResponse.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).headers(this::acceptJson).build();
+	}
+
+	private void acceptJson(HttpHeaders headers) {
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 	}
 
 	private ServerResponse onlyAllowPost(ServerRequest request) {

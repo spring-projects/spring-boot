@@ -111,7 +111,20 @@ class GraphQlWebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void httpGetQueryShouldBeSupported() {
+	void unsupportedContentTypeShouldBeRejected() {
+		withMockMvc((mvc) -> {
+			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
+			assertThat(mvc.post()
+				.uri("/graphql")
+				.content("{\"query\": \"" + query + "\"}")
+				.contentType(MediaType.TEXT_PLAIN)).hasStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+				.headers()
+				.hasValue("Accept", "application/json");
+		});
+	}
+
+	@Test
+	void httpGetQueryShouldBeRejected() {
 		withMockMvc((mvc) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
 			assertThat(mvc.get().uri("/graphql?query={query}", "{\"query\": \"" + query + "\"}"))
