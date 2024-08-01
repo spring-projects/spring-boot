@@ -2084,6 +2084,10 @@
       "defaultValue": false
     },
     {
+      "name": "management.otlp.metrics.export.aggregation-temporality",
+      "defaultValue": "cumulative"
+    },
+    {
       "name": "management.otlp.metrics.export.base-time-unit",
       "defaultValue": "milliseconds"
     },
