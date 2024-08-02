@@ -1,9 +1,0 @@
-Error: Unknown option "--invalid" for the extract command
-
-Extracts layers from the jar for image creation
-
-Usage:
-  java -Djarmode=layertools -jar test.jar extract [options] [<layer>...]
-
-Options:
-  --destination string  The destination to extract files to

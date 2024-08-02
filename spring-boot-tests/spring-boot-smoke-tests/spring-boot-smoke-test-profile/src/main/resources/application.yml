@@ -1,7 +1,0 @@
-name: Phil
-
----
-
-spring:
-  profiles: goodbye,dev
-name: Everyone

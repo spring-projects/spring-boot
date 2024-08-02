@@ -1,4 +1,0 @@
-CREATE TABLE FOO (
-  id         INTEGER IDENTITY PRIMARY KEY,
-  todrop VARCHAR(30)
-);
