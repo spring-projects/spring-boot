@@ -47,6 +47,8 @@ See {code-spring-boot-autoconfigure-src}/thymeleaf/ThymeleafAutoConfiguration.ja
 If you use FreeMarker, set `spring.freemarker.cache` to `false`.
 See {code-spring-boot-autoconfigure-src}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`] for other FreeMarker customization options.
 
+NOTE: Template caching for FreeMarker is not supported with WebFlux.
+
 
 
 [[howto.hotswapping.reload-templates.groovy]]
