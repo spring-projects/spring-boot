@@ -224,6 +224,7 @@ If you add your own, you have to be aware of the order and in which position you
   The prefix is externalized to `spring.freemarker.prefix`, and the suffix is externalized to `spring.freemarker.suffix`.
   The default values of the prefix and suffix are empty and '`.ftlh`', respectively.
   You can override `FreeMarkerViewResolver` by providing a bean of the same name.
+  FreeMarker variables can be customized by defining a bean of type `FreeMarkerVariablesCustomizer`.
 * If you use Groovy templates (actually, if `groovy-templates` is on your classpath), you also have a `GroovyMarkupViewResolver` named '`groovyMarkupViewResolver`'.
   It looks for resources in a loader path by surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix` and `spring.groovy.template.suffix`).
   The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively.
