@@ -67,7 +67,7 @@ class DockerCliIntegrationTests {
 
 	@Test
 	void runLifecycle() throws IOException {
-		File composeFile = createComposeFile();
+		File composeFile = createComposeFile("redis-compose.yaml");
 		DockerCli cli = new DockerCli(null, DockerComposeFile.of(composeFile), Collections.emptySet());
 		try {
 			// Verify that no services are running (this is a fresh compose project)
@@ -103,6 +103,26 @@ class DockerCliIntegrationTests {
 		}
 	}
 
+	@Test
+	void shouldWorkWithMultipleComposeFiles() throws IOException {
+		List<File> composeFiles = createComposeFiles();
+		DockerCli cli = new DockerCli(null, DockerComposeFile.of(composeFiles), Collections.emptySet());
+		try {
+			// List the config and verify that both redis are there
+			DockerCliComposeConfigResponse config = cli.run(new ComposeConfig());
+			assertThat(config.services()).containsOnlyKeys("redis1", "redis2");
+			// Run up
+			cli.run(new ComposeUp(LogLevel.INFO, Collections.emptyList()));
+			// Run ps and use id to run inspect on the id
+			List<DockerCliComposePsResponse> ps = cli.run(new ComposePs());
+			assertThat(ps).hasSize(2);
+		}
+		finally {
+			// Clean up in any case
+			quietComposeDown(cli);
+		}
+	}
+
 	private static void quietComposeDown(DockerCli cli) {
 		try {
 			cli.run(new ComposeDown(Duration.ZERO, Collections.emptyList()));
@@ -112,13 +132,21 @@ class DockerCliIntegrationTests {
 		}
 	}
 
-	private static File createComposeFile() throws IOException {
-		File composeFile = new ClassPathResource("redis-compose.yaml", DockerCliIntegrationTests.class).getFile();
-		File tempComposeFile = Path.of(tempDir.toString(), composeFile.getName()).toFile();
-		String composeFileContent = FileCopyUtils.copyToString(new FileReader(composeFile));
-		composeFileContent = composeFileContent.replace("{imageName}", TestImage.REDIS.toString());
-		FileCopyUtils.copy(composeFileContent, new FileWriter(tempComposeFile));
-		return tempComposeFile;
+	private static File createComposeFile(String resource) throws IOException {
+		File source = new ClassPathResource(resource, DockerCliIntegrationTests.class).getFile();
+		File target = Path.of(tempDir.toString(), source.getName()).toFile();
+		String content = FileCopyUtils.copyToString(new FileReader(source));
+		content = content.replace("{imageName}", TestImage.REDIS.toString());
+		try (FileWriter writer = new FileWriter(target)) {
+			FileCopyUtils.copy(content, writer);
+		}
+		return target;
+	}
+
+	private static List<File> createComposeFiles() throws IOException {
+		File file1 = createComposeFile("1.yaml");
+		File file2 = createComposeFile("2.yaml");
+		return List.of(file1, file2);
 	}
 
 }

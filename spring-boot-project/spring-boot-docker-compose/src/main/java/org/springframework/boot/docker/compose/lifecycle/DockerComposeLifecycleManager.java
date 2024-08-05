@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Manages the lifecycle for docker compose services.
@@ -110,7 +111,7 @@ class DockerComposeLifecycleManager {
 		Set<String> activeProfiles = this.properties.getProfiles().getActive();
 		DockerCompose dockerCompose = getDockerCompose(composeFile, activeProfiles);
 		if (!dockerCompose.hasDefinedServices()) {
-			logger.warn(LogMessage.format("No services defined in Docker Compose file '%s' with active profiles %s",
+			logger.warn(LogMessage.format("No services defined in Docker Compose file %s with active profiles %s",
 					composeFile, activeProfiles));
 			return;
 		}
@@ -145,11 +146,16 @@ class DockerComposeLifecycleManager {
 	}
 
 	protected DockerComposeFile getComposeFile() {
-		DockerComposeFile composeFile = (this.properties.getFile() != null)
-				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
+		DockerComposeFile composeFile = (CollectionUtils.isEmpty(this.properties.getFile()))
+				? DockerComposeFile.find(this.workingDirectory) : DockerComposeFile.of(this.properties.getFile());
 		Assert.state(composeFile != null, () -> "No Docker Compose file found in directory '%s'".formatted(
 				((this.workingDirectory != null) ? this.workingDirectory : new File(".")).toPath().toAbsolutePath()));
-		logger.info(LogMessage.format("Using Docker Compose file '%s'", composeFile));
+		if (composeFile.getFiles().size() == 1) {
+			logger.info(LogMessage.format("Using Docker Compose file %s", composeFile.getFiles().get(0)));
+		}
+		else {
+			logger.info(LogMessage.format("Using Docker Compose files %s", composeFile.toString()));
+		}
 		return composeFile;
 	}
 

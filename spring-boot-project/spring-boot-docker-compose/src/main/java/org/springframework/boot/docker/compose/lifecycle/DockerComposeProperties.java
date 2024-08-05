@@ -49,7 +49,7 @@ public class DockerComposeProperties {
 	/**
 	 * Path to a specific docker compose configuration file.
 	 */
-	private File file;
+	private final List<File> file = new ArrayList<>();
 
 	/**
 	 * Docker compose lifecycle management.
@@ -88,12 +88,8 @@ public class DockerComposeProperties {
 		this.enabled = enabled;
 	}
 
-	public File getFile() {
+	public List<File> getFile() {
 		return this.file;
-	}
-
-	public void setFile(File file) {
-		this.file = file;
 	}
 
 	public LifecycleManagement getLifecycleManagement() {

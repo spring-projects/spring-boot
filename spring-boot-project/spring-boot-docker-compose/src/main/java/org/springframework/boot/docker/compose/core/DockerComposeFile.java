@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.util.Assert;
 
@@ -33,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 3.1.0
  * @see #of(File)
+ * @see #of(Collection)
  * @see #find(File)
  */
 public final class DockerComposeFile {
@@ -40,15 +44,29 @@ public final class DockerComposeFile {
 	private static final List<String> SEARCH_ORDER = List.of("compose.yaml", "compose.yml", "docker-compose.yaml",
 			"docker-compose.yml");
 
-	private final File file;
+	private final List<File> files;
 
-	private DockerComposeFile(File file) {
+	private DockerComposeFile(List<File> files) {
+		Assert.state(!files.isEmpty(), "Files must not be empty");
+		this.files = files.stream().map(DockerComposeFile::toCanonicalFile).toList();
+	}
+
+	private static File toCanonicalFile(File file) {
 		try {
-			this.file = file.getCanonicalFile();
+			return file.getCanonicalFile();
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	/**
+	 * Returns the source docker compose files.
+	 * @return the source docker compose files
+	 * @since 3.4.0
+	 */
+	public List<File> getFiles() {
+		return this.files;
 	}
 
 	@Override
@@ -60,17 +78,20 @@ public final class DockerComposeFile {
 			return false;
 		}
 		DockerComposeFile other = (DockerComposeFile) obj;
-		return this.file.equals(other.file);
+		return this.files.equals(other.files);
 	}
 
 	@Override
 	public int hashCode() {
-		return this.file.hashCode();
+		return this.files.hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return this.file.toString();
+		if (this.files.size() == 1) {
+			return this.files.get(0).getPath();
+		}
+		return this.files.stream().map(File::toString).collect(Collectors.joining(", "));
 	}
 
 	/**
@@ -111,7 +132,23 @@ public final class DockerComposeFile {
 		Assert.notNull(file, "File must not be null");
 		Assert.isTrue(file.exists(), () -> "Docker Compose file '%s' does not exist".formatted(file));
 		Assert.isTrue(file.isFile(), () -> "Docker compose file '%s' is not a file".formatted(file));
-		return new DockerComposeFile(file);
+		return new DockerComposeFile(Collections.singletonList(file));
+	}
+
+	/**
+	 * Creates a new {@link DockerComposeFile} for the given {@link File files}.
+	 * @param files the source files
+	 * @return the docker compose file
+	 * @since 3.4.0
+	 */
+	public static DockerComposeFile of(Collection<? extends File> files) {
+		Assert.notNull(files, "Files must not be null");
+		for (File file : files) {
+			Assert.notNull(file, "File must not be null");
+			Assert.isTrue(file.exists(), () -> "Docker Compose file '%s' does not exist".formatted(file));
+			Assert.isTrue(file.isFile(), () -> "Docker compose file '%s' is not a file".formatted(file));
+		}
+		return new DockerComposeFile(List.copyOf(files));
 	}
 
 }

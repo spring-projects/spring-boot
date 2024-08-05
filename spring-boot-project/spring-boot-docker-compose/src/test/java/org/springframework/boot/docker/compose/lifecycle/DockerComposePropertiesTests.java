@@ -47,7 +47,7 @@ class DockerComposePropertiesTests {
 	void getWhenNoPropertiesReturnsNew() {
 		Binder binder = new Binder(new MapConfigurationPropertySource());
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
-		assertThat(properties.getFile()).isNull();
+		assertThat(properties.getFile()).isEmpty();
 		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_AND_STOP);
 		assertThat(properties.getHost()).isNull();
 		assertThat(properties.getStart().getCommand()).isEqualTo(StartCommand.UP);
@@ -76,7 +76,7 @@ class DockerComposePropertiesTests {
 		source.put("spring.docker.compose.readiness.tcp.read-timeout", "500ms");
 		Binder binder = new Binder(new MapConfigurationPropertySource(source));
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
-		assertThat(properties.getFile()).isEqualTo(new File("my-compose.yml"));
+		assertThat(properties.getFile()).containsExactly(new File("my-compose.yml"));
 		assertThat(properties.getLifecycleManagement()).isEqualTo(LifecycleManagement.START_ONLY);
 		assertThat(properties.getHost()).isEqualTo("myhost");
 		assertThat(properties.getStart().getCommand()).isEqualTo(StartCommand.START);
