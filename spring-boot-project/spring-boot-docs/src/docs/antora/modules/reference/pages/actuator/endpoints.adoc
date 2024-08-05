@@ -418,7 +418,8 @@ include-code::../MyEndpoint[tag=write]
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
 In particular, declaring a single parameter with a `CustomData` type that defines a `name` and `counter` properties is not supported.
 
-NOTE: To let the input be mapped to the operation method's parameters, Java code that implements an endpoint should be compiled with `-parameters`, and Kotlin code that implements an endpoint should be compiled with `-java-parameters`.
+NOTE: To let the input be mapped to the operation method's parameters, Java code that implements an endpoint should be compiled with `-parameters`.
+For Kotlin code, please review {url-spring-framework-docs}/languages/kotlin/classes-interfaces.html[the recommendation] of the Spring Framework reference.
 This will happen automatically if you use Spring Boot's Gradle plugin or if you use Maven and `spring-boot-starter-parent`.
 
 
