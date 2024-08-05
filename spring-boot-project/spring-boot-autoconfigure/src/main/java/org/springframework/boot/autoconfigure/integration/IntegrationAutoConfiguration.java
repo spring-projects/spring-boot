@@ -170,8 +170,11 @@ public class IntegrationAutoConfiguration {
 	}
 
 	/**
-	 * Expose a standard {@link ThreadPoolTaskScheduler} if the user has not enabled task
-	 * scheduling explicitly.
+	 * Expose a standard {@link org.springframework.scheduling.TaskScheduler
+	 * TaskScheduler} if the user has not enabled task scheduling explicitly. A
+	 * {@link SimpleAsyncTaskScheduler} is exposed if the user enables virtual threads via
+	 * {@code spring.threads.virtual.enabled=true}, otherwise
+	 * {@link ThreadPoolTaskScheduler}.
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
