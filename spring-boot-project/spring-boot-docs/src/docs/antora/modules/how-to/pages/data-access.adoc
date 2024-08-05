@@ -311,8 +311,8 @@ It scans entities located in the same package as `Order`.
 It is possible to map additional JPA properties using the `app.first.jpa` namespace.
 
 NOTE: When you create a bean for `LocalContainerEntityManagerFactoryBean` yourself, any customization that was applied during the creation of the auto-configured `LocalContainerEntityManagerFactoryBean` is lost.
-For example, in the case of Hibernate, any properties under the `spring.jpa.hibernate` prefix will not be automatically applied to your `LocalContainerEntityManagerFactoryBean`.
-If you were relying on these properties for configuring things like the naming strategy or the DDL mode, you will need to explicitly configure that when creating the `LocalContainerEntityManagerFactoryBean` bean.
+Make sure to use the auto-configured `EntityManagerFactoryBuilder` to retain JPA and vendor properties.
+This is particularly important if you were relying on `spring.jpa.*` properties for configuring things like the naming strategy or the DDL mode.
 
 You should provide a similar configuration for any additional data sources for which you need JPA access.
 To complete the picture, you need to configure a `JpaTransactionManager` for each `EntityManagerFactory` as well.
