@@ -86,6 +86,7 @@ def testHazelcast = tasks.register("testHazelcast", Test) {
 }
 
 def testInfinispan = tasks.register("testInfinispan", Test) {
+	enabled = (toolchain.javaVersion == null || toolchain.javaVersion.asInt() < 23)
 	description = "Runs the tests against Infinispan"
 	classpath = sourceSets.test.runtimeClasspath + configurations.infinispan
 	systemProperties = ["spring.cache.jcache.config" : "classpath:infinispan.xml"]
