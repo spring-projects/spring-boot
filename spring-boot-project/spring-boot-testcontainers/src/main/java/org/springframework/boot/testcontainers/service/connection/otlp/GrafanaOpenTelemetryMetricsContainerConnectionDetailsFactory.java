@@ -27,7 +27,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * {@link ContainerConnectionDetailsFactory} to create
  * {@link OtlpMetricsConnectionDetails} from a
  * {@link ServiceConnection @ServiceConnection}-annotated {@link LgtmStackContainer} using
- * the {@code "grafana/otel-lgtmb"} image.
+ * the {@code "grafana/otel-lgtm"} image.
  *
  * @author Eddú Meléndez
  */
