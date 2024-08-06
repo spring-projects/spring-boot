@@ -531,6 +531,7 @@ class IntegrationAutoConfigurationTests {
 	@EnabledForJreRange(min = JRE.JAVA_21)
 	void integrationVirtualThreadsEnabled() {
 		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
 			.run((context) -> assertThat(context).hasSingleBean(TaskScheduler.class)
 				.getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
 				.isInstanceOf(SimpleAsyncTaskScheduler.class)
