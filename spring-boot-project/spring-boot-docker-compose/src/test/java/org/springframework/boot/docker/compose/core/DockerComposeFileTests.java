@@ -70,7 +70,7 @@ class DockerComposeFileTests {
 
 	@Test
 	void findFindsSingleFile() throws Exception {
-		File file = new File(this.temp, "docker-compose.yml");
+		File file = new File(this.temp, "docker-compose.yml").getCanonicalFile();
 		FileCopyUtils.copy(new byte[0], file);
 		DockerComposeFile composeFile = DockerComposeFile.find(file.getParentFile());
 		assertThat(composeFile.getFiles()).containsExactly(file);
@@ -78,9 +78,9 @@ class DockerComposeFileTests {
 
 	@Test
 	void findWhenMultipleFilesPicksBest() throws Exception {
-		File f1 = new File(this.temp, "docker-compose.yml");
+		File f1 = new File(this.temp, "docker-compose.yml").getCanonicalFile();
 		FileCopyUtils.copy(new byte[0], f1);
-		File f2 = new File(this.temp, "compose.yml");
+		File f2 = new File(this.temp, "compose.yml").getCanonicalFile();
 		FileCopyUtils.copy(new byte[0], f2);
 		DockerComposeFile composeFile = DockerComposeFile.find(f1.getParentFile());
 		assertThat(composeFile.getFiles()).containsExactly(f2);
