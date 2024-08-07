@@ -75,6 +75,8 @@ If you are not using this attribute, and annotation processors are picked up by 
 
 The processor picks up both classes and methods that are annotated with `@ConfigurationProperties`.
 
+NOTE: Custom annotations that are meta-annotated with `@ConfigurationProperties` are not supported.
+
 If the class has a single parameterized constructor, one property is created per constructor parameter, unless the constructor is annotated with `@Autowired`.
 If the class has a constructor explicitly annotated with `@ConstructorBinding`, one property is created per constructor parameter for that constructor.
 Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection and map types (that is detected even if only a getter is present).
