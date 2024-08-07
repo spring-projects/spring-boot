@@ -275,7 +275,7 @@ bom {
 			site("https://commons.apache.org/proper/commons-pool")
 		}
 	}
-	library("Couchbase Client", "3.6.2") {
+	library("Couchbase Client", "3.7.1") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
