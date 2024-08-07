@@ -5,10 +5,10 @@ inputs:
     required: false
     default: '17'
     description: 'The Java version to compile and test with'
-  java-distribution:
+  java-early-access:
     required: false
-    default: 'liberica'
-    description: 'The Java distribution to use for the build'
+    default: 'false'
+    description: 'Whether the Java version is in early access'
   java-toolchain:
     required: false
     default: 'false'
@@ -35,7 +35,7 @@ runs:
       with:
         develocity-access-key: ${{ inputs.develocity-access-key }}
         java-version: ${{ inputs.java-version }}
-        java-distribution: ${{ inputs.java-distribution }}
+        java-early-access: ${{ inputs.java-early-access }}
         java-toolchain: ${{ inputs.java-toolchain }}
     - name: Build
       id: build
