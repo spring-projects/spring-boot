@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-class StructuredLoggingEncoderTests extends AbstractStructuredLoggingTests {
+class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 
 	private StructuredLogEncoder encoder;
 

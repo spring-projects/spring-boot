@@ -10,7 +10,7 @@ equivalent to the programmatic initialization performed by Boot
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>${FILE_LOG_THRESHOLD}</level>
 		</filter>
-		<encoder class="org.springframework.boot.logging.logback.StructuredLoggingEncoder">
+		<encoder class="org.springframework.boot.logging.logback.StructuredLogEncoder">
 			<format>${FILE_LOG_STRUCTURED_FORMAT}</format>
 			<charset>${FILE_LOG_CHARSET}</charset>
 		</encoder>
