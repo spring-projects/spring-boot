@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -567,6 +569,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	@DisabledOnJre(value = JRE.OTHER, disabledReason = "Infinispan 14 does not work on Java 23")
 	void infinispanCacheWithConfig() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 			.withPropertyValues("spring.cache.type=infinispan", "spring.cache.infinispan.config=infinispan.xml")
@@ -577,6 +580,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	@DisabledOnJre(value = JRE.OTHER, disabledReason = "Infinispan 14 does not work on Java 23")
 	void infinispanCacheWithCustomizers() {
 		this.contextRunner.withUserConfiguration(DefaultCacheAndCustomizersConfiguration.class)
 			.withPropertyValues("spring.cache.type=infinispan")
@@ -584,6 +588,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	@DisabledOnJre(value = JRE.OTHER, disabledReason = "Infinispan 14 does not work on Java 23")
 	void infinispanCacheWithCaches() {
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
 			.withPropertyValues("spring.cache.type=infinispan", "spring.cache.cacheNames[0]=foo",
@@ -593,6 +598,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	@DisabledOnJre(value = JRE.OTHER, disabledReason = "Infinispan 14 does not work on Java 23")
 	void infinispanCacheWithCachesAndCustomConfig() {
 		this.contextRunner.withUserConfiguration(InfinispanCustomConfiguration.class)
 			.withPropertyValues("spring.cache.type=infinispan", "spring.cache.cacheNames[0]=foo",
@@ -605,6 +611,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	@DisabledOnJre(value = JRE.OTHER, disabledReason = "Infinispan 14 does not work on Java 23")
 	void infinispanAsJCacheWithCaches() {
 		String cachingProviderClassName = JCachingProvider.class.getName();
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
@@ -615,6 +622,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	@DisabledOnJre(value = JRE.OTHER, disabledReason = "Infinispan 14 does not work on Java 23")
 	void infinispanAsJCacheWithConfig() {
 		String cachingProviderClassName = JCachingProvider.class.getName();
 		String configLocation = "infinispan.xml";

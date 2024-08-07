@@ -24,6 +24,9 @@ jobs:
             toolchain: true
           - version: 22
             toolchain: true
+          - version: 23-ea
+            distribution: temurin
+            toolchain: true
         exclude:
           - os:
               name: Linux
