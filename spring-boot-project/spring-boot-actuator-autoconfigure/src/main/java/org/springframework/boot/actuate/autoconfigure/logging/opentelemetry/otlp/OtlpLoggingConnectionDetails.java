@@ -30,6 +30,6 @@ public interface OtlpLoggingConnectionDetails extends ConnectionDetails {
 	 * Address to where logs will be published.
 	 * @return the address to where logs will be published
 	 */
-	String getEndpoint();
+	String getUrl();
 
 }

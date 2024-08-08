@@ -59,7 +59,7 @@ final class OtlpLoggingConfigurations {
 			}
 
 			@Override
-			public String getEndpoint() {
+			public String getUrl() {
 				return this.properties.getEndpoint();
 			}
 
@@ -77,7 +77,7 @@ final class OtlpLoggingConfigurations {
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpLoggingConnectionDetails connectionDetails) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
-				.setEndpoint(connectionDetails.getEndpoint())
+				.setEndpoint(connectionDetails.getUrl())
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.US))
 				.setTimeout(properties.getTimeout());
 			properties.getHeaders().forEach(builder::addHeader);

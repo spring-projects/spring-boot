@@ -57,7 +57,7 @@ class OtlpLoggingAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
 				OtlpLoggingConnectionDetails connectionDetails = context.getBean(OtlpLoggingConnectionDetails.class);
-				assertThat(connectionDetails.getEndpoint()).isEqualTo("http://localhost:4318/v1/logs");
+				assertThat(connectionDetails.getUrl()).isEqualTo("http://localhost:4318/v1/logs");
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class)
 					.hasSingleBean(LogRecordExporter.class);
 			});
