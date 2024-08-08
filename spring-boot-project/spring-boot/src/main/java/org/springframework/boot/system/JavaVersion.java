@@ -77,7 +77,7 @@ public enum JavaVersion {
 	 * Java 23.
 	 * @since 3.2.9
 	 */
-	TWENTY_THREE("23", NumberFormat .class, "isStrict");
+	TWENTY_THREE("23", NumberFormat.class, "isStrict");
 
 	private final String name;
 
