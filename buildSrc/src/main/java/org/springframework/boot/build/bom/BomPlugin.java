@@ -140,10 +140,9 @@ public class BomPlugin implements Plugin<Project> {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
-					Node classifierNode = findChild(dependency, "classifier");
-					String classifier = (classifierNode != null) ? classifierNode.text() : "";
+					String groupId = extractText(findChild(dependency, "groupId"));
+					String artifactId = extractText(findChild(dependency, "artifactId"));
+					String classifier = extractText(findChild(dependency, "classifier"));
 					String versionProperty = this.bom.getArtifactVersionProperty(groupId, artifactId, classifier);
 					if (versionProperty != null) {
 						findChild(dependency, "version").setValue("${" + versionProperty + "}");
@@ -156,8 +155,8 @@ public class BomPlugin implements Plugin<Project> {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
+					String groupId = extractText(findChild(dependency, "groupId"));
+					String artifactId = extractText(findChild(dependency, "artifactId"));
 					this.bom.getLibraries()
 						.stream()
 						.flatMap((library) -> library.getGroups().stream())
@@ -179,8 +178,8 @@ public class BomPlugin implements Plugin<Project> {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
+					String groupId = extractText(findChild(dependency, "groupId"));
+					String artifactId = extractText(findChild(dependency, "artifactId"));
 					Set<String> types = this.bom.getLibraries()
 						.stream()
 						.flatMap((library) -> library.getGroups().stream())
@@ -207,9 +206,9 @@ public class BomPlugin implements Plugin<Project> {
 			Node dependencies = findChild(dependencyManagement, "dependencies");
 			if (dependencies != null) {
 				for (Node dependency : findChildren(dependencies, "dependency")) {
-					String groupId = findChild(dependency, "groupId").text();
-					String artifactId = findChild(dependency, "artifactId").text();
-					String version = findChild(dependency, "version").text();
+					String groupId = extractText(findChild(dependency, "groupId"));
+					String artifactId = extractText(findChild(dependency, "artifactId"));
+					String version = extractText(findChild(dependency, "version"));
 					Set<String> classifiers = this.bom.getLibraries()
 						.stream()
 						.flatMap((library) -> library.getGroups().stream())
@@ -294,6 +293,10 @@ public class BomPlugin implements Plugin<Project> {
 				return name.equals(node.name());
 			}
 			return false;
+		}
+
+		private String extractText(Node node) {
+			return (node != null) ? node.text() : "";
 		}
 
 	}
