@@ -1646,7 +1646,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Pulsar", "1.0.8") {
+	library("Spring Pulsar", "1.0.9-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.pulsar") {
 			imports = [
