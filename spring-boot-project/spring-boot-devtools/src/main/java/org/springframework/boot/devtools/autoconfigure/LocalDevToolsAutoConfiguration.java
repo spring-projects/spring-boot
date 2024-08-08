@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -57,6 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Vladimir Tsanev
+ * @author Akshay Dubey
  * @since 1.3.0
  */
 @AutoConfiguration
@@ -87,6 +89,19 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		LiveReloadServerEventListener liveReloadServerEventListener(OptionalLiveReloadServer liveReloadServer) {
 			return new LiveReloadServerEventListener(liveReloadServer);
+		}
+
+		@Bean
+		LiveReloadForAdditionalPaths liveReloadForAdditionalPaths(LiveReloadServer liveReloadServer,
+				DevToolsProperties properties, FileSystemWatcher fileSystemWatcher) {
+			return new LiveReloadForAdditionalPaths(liveReloadServer, properties.getLivereload().getAdditionalPaths(),
+					fileSystemWatcher);
+		}
+
+		@Bean
+		FileSystemWatcher fileSystemWatcher(DevToolsProperties properties) {
+			return new FileSystemWatcher(true, properties.getLivereload().getPollInterval(),
+					properties.getLivereload().getQuietPeriod());
 		}
 
 	}
@@ -212,6 +227,32 @@ public class LocalDevToolsAutoConfiguration {
 				logger.debug(LogMessage.format("Change set: %s", event.getChangeSet()));
 				Restarter.getInstance().restart(new FileWatchingFailureHandler(this.fileSystemWatcherFactory));
 			}
+		}
+
+	}
+
+	static class LiveReloadForAdditionalPaths implements DisposableBean {
+
+		private final FileSystemWatcher fileSystemWatcher;
+
+		@Override
+		public void destroy() throws Exception {
+			if (this.fileSystemWatcher != null) {
+				this.fileSystemWatcher.stop();
+			}
+		}
+
+		LiveReloadForAdditionalPaths(LiveReloadServer liveReloadServer, List<File> staticLocations,
+				FileSystemWatcher fileSystemWatcher) {
+			this.fileSystemWatcher = fileSystemWatcher;
+
+			for (File path : staticLocations) {
+				this.fileSystemWatcher.addSourceDirectory(path.getAbsoluteFile());
+			}
+
+			this.fileSystemWatcher.addListener((__) -> liveReloadServer.triggerReload());
+
+			this.fileSystemWatcher.start();
 		}
 
 	}
