@@ -39,9 +39,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.core.Saml2X509Credential.Saml2X509CredentialType;
+import org.springframework.security.saml2.provider.service.registration.AssertingPartyMetadata;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
-import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.AssertingPartyDetails;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
@@ -83,7 +83,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 				: createBuilderUsingMetadata(properties.getAssertingparty()).registrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
-		builder.assertingPartyDetails(mapAssertingParty(properties.getAssertingparty()));
+		builder.assertingPartyMetadata(mapAssertingParty(properties.getAssertingparty()));
 		builder.signingX509Credentials((credentials) -> properties.getSigning()
 			.getCredentials()
 			.stream()
@@ -94,7 +94,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 			.stream()
 			.map(this::asDecryptionCredential)
 			.forEach(credentials::add));
-		builder.assertingPartyDetails(
+		builder.assertingPartyMetadata(
 				(details) -> details.verificationX509Credentials((credentials) -> properties.getAssertingparty()
 					.getVerification()
 					.getCredentials()
@@ -107,7 +107,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		builder.entityId(properties.getEntityId());
 		builder.nameIdFormat(properties.getNameIdFormat());
 		RelyingPartyRegistration registration = builder.build();
-		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
+		boolean signRequest = registration.getAssertingPartyMetadata().getWantAuthnRequestsSigned();
 		validateSigningCredentials(properties, signRequest);
 		return registration;
 	}
@@ -126,11 +126,11 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private Object getEntityId(RelyingPartyRegistration.Builder candidate) {
 		String[] result = new String[1];
-		candidate.assertingPartyDetails((builder) -> result[0] = builder.build().getEntityId());
+		candidate.assertingPartyMetadata((builder) -> result[0] = builder.build().getEntityId());
 		return result[0];
 	}
 
-	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(AssertingParty assertingParty) {
+	private Consumer<AssertingPartyMetadata.Builder<?>> mapAssertingParty(AssertingParty assertingParty) {
 		return (details) -> {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(assertingParty::getEntityId).to(details::entityId);
