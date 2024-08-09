@@ -208,13 +208,7 @@ public class SpringApplication {
 
 	private final Set<Class<?>> primarySources;
 
-	private Set<String> sources = new LinkedHashSet<>();
-
 	private Class<?> mainApplicationClass;
-
-	private Banner.Mode bannerMode = Banner.Mode.CONSOLE;
-
-	private boolean logStartupInfo = true;
 
 	private boolean addCommandLineProperties = true;
 
@@ -228,11 +222,7 @@ public class SpringApplication {
 
 	private ConfigurableEnvironment environment;
 
-	private WebApplicationType webApplicationType;
-
 	private boolean headless = true;
-
-	private boolean registerShutdownHook = true;
 
 	private List<ApplicationContextInitializer<?>> initializers;
 
@@ -244,13 +234,7 @@ public class SpringApplication {
 
 	private Set<String> additionalProfiles = Collections.emptySet();
 
-	private boolean allowBeanDefinitionOverriding;
-
-	private boolean allowCircularReferences;
-
 	private boolean isCustomEnvironment = false;
-
-	private boolean lazyInitialization = false;
 
 	private String environmentPrefix;
 
@@ -258,7 +242,7 @@ public class SpringApplication {
 
 	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
 
-	private boolean keepAlive;
+	final ApplicationProperties properties = new ApplicationProperties();
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -289,7 +273,7 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		this.properties.setWebApplicationType(WebApplicationType.deduceFromClasspath());
 		this.bootstrapRegistryInitializers = new ArrayList<>(
 				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
@@ -317,7 +301,7 @@ public class SpringApplication {
 	 */
 	public ConfigurableApplicationContext run(String... args) {
 		Startup startup = Startup.create();
-		if (this.registerShutdownHook) {
+		if (this.properties.isRegisterShutdownHook()) {
 			SpringApplication.shutdownHook.enableShutdownHookAddition();
 		}
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
@@ -335,7 +319,7 @@ public class SpringApplication {
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			startup.started();
-			if (this.logStartupInfo) {
+			if (this.properties.isLogStartupInfo()) {
 				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
 			}
 			listeners.started(context, startup.timeTakenToStarted());
@@ -383,9 +367,10 @@ public class SpringApplication {
 
 	private Class<? extends ConfigurableEnvironment> deduceEnvironmentClass() {
 		Class<? extends ConfigurableEnvironment> environmentType = this.applicationContextFactory
-			.getEnvironmentType(this.webApplicationType);
+			.getEnvironmentType(this.properties.getWebApplicationType());
 		if (environmentType == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
-			environmentType = ApplicationContextFactory.DEFAULT.getEnvironmentType(this.webApplicationType);
+			environmentType = ApplicationContextFactory.DEFAULT
+				.getEnvironmentType(this.properties.getWebApplicationType());
 		}
 		if (environmentType == null) {
 			return ApplicationEnvironment.class;
@@ -402,7 +387,7 @@ public class SpringApplication {
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		bootstrapContext.close(context);
-		if (this.logStartupInfo) {
+		if (this.properties.isLogStartupInfo()) {
 			logStartupInfo(context.getParent() == null);
 			logStartupInfo(context);
 			logStartupProfileInfo(context);
@@ -414,15 +399,15 @@ public class SpringApplication {
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
 		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
-			autowireCapableBeanFactory.setAllowCircularReferences(this.allowCircularReferences);
+			autowireCapableBeanFactory.setAllowCircularReferences(this.properties.isAllowCircularReferences());
 			if (beanFactory instanceof DefaultListableBeanFactory listableBeanFactory) {
-				listableBeanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+				listableBeanFactory.setAllowBeanDefinitionOverriding(this.properties.isAllowBeanDefinitionOverriding());
 			}
 		}
-		if (this.lazyInitialization) {
+		if (this.properties.isLazyInitialization()) {
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
-		if (this.keepAlive) {
+		if (this.properties.isKeepAlive()) {
 			context.addApplicationListener(new KeepAlive());
 		}
 		context.addBeanFactoryPostProcessor(new PropertySourceOrderingBeanFactoryPostProcessor(context));
@@ -452,7 +437,7 @@ public class SpringApplication {
 	}
 
 	private void refreshContext(ConfigurableApplicationContext context) {
-		if (this.registerShutdownHook) {
+		if (this.properties.isRegisterShutdownHook()) {
 			shutdownHook.registerApplicationContext(context);
 		}
 		refresh(context);
@@ -489,9 +474,10 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		ConfigurableEnvironment environment = this.applicationContextFactory.createEnvironment(this.webApplicationType);
+		ConfigurableEnvironment environment = this.applicationContextFactory
+			.createEnvironment(this.properties.getWebApplicationType());
 		if (environment == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
-			environment = ApplicationContextFactory.DEFAULT.createEnvironment(this.webApplicationType);
+			environment = ApplicationContextFactory.DEFAULT.createEnvironment(this.properties.getWebApplicationType());
 		}
 		return (environment != null) ? environment : new ApplicationEnvironment();
 	}
@@ -556,12 +542,12 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Bind the environment to the {@link SpringApplication}.
+	 * Bind the environment to the {@link ApplicationProperties}.
 	 * @param environment the environment to bind
 	 */
 	protected void bindToSpringApplication(ConfigurableEnvironment environment) {
 		try {
-			Binder.get(environment).bind("spring.main", Bindable.ofInstance(this));
+			Binder.get(environment).bind("spring.main", Bindable.ofInstance(this.properties));
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Cannot bind to SpringApplication", ex);
@@ -569,13 +555,13 @@ public class SpringApplication {
 	}
 
 	private Banner printBanner(ConfigurableEnvironment environment) {
-		if (this.bannerMode == Banner.Mode.OFF) {
+		if (this.properties.getBannerMode() == Banner.Mode.OFF) {
 			return null;
 		}
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
 				: new DefaultResourceLoader(null);
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
-		if (this.bannerMode == Mode.LOG) {
+		if (this.properties.getBannerMode() == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}
 		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
@@ -589,7 +575,7 @@ public class SpringApplication {
 	 * @see #setApplicationContextFactory(ApplicationContextFactory)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
-		return this.applicationContextFactory.create(this.webApplicationType);
+		return this.applicationContextFactory.create(this.properties.getWebApplicationType());
 	}
 
 	/**
@@ -967,7 +953,7 @@ public class SpringApplication {
 	 * @since 2.0.0
 	 */
 	public WebApplicationType getWebApplicationType() {
-		return this.webApplicationType;
+		return this.properties.getWebApplicationType();
 	}
 
 	/**
@@ -978,7 +964,7 @@ public class SpringApplication {
 	 */
 	public void setWebApplicationType(WebApplicationType webApplicationType) {
 		Assert.notNull(webApplicationType, "WebApplicationType must not be null");
-		this.webApplicationType = webApplicationType;
+		this.properties.setWebApplicationType(webApplicationType);
 	}
 
 	/**
@@ -989,7 +975,7 @@ public class SpringApplication {
 	 * @see DefaultListableBeanFactory#setAllowBeanDefinitionOverriding(boolean)
 	 */
 	public void setAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
-		this.allowBeanDefinitionOverriding = allowBeanDefinitionOverriding;
+		this.properties.setAllowBeanDefinitionOverriding(allowBeanDefinitionOverriding);
 	}
 
 	/**
@@ -1000,7 +986,7 @@ public class SpringApplication {
 	 * @see AbstractAutowireCapableBeanFactory#setAllowCircularReferences(boolean)
 	 */
 	public void setAllowCircularReferences(boolean allowCircularReferences) {
-		this.allowCircularReferences = allowCircularReferences;
+		this.properties.setAllowCircularReferences(allowCircularReferences);
 	}
 
 	/**
@@ -1010,7 +996,7 @@ public class SpringApplication {
 	 * @see BeanDefinition#setLazyInit(boolean)
 	 */
 	public void setLazyInitialization(boolean lazyInitialization) {
-		this.lazyInitialization = lazyInitialization;
+		this.properties.setLazyInitialization(lazyInitialization);
 	}
 
 	/**
@@ -1030,7 +1016,7 @@ public class SpringApplication {
 	 * @see #getShutdownHandlers()
 	 */
 	public void setRegisterShutdownHook(boolean registerShutdownHook) {
-		this.registerShutdownHook = registerShutdownHook;
+		this.properties.setRegisterShutdownHook(registerShutdownHook);
 	}
 
 	/**
@@ -1048,7 +1034,7 @@ public class SpringApplication {
 	 * @param bannerMode the mode used to display the banner
 	 */
 	public void setBannerMode(Banner.Mode bannerMode) {
-		this.bannerMode = bannerMode;
+		this.properties.setBannerMode(bannerMode);
 	}
 
 	/**
@@ -1057,7 +1043,7 @@ public class SpringApplication {
 	 * @param logStartupInfo if startup info should be logged.
 	 */
 	public void setLogStartupInfo(boolean logStartupInfo) {
-		this.logStartupInfo = logStartupInfo;
+		this.properties.setLogStartupInfo(logStartupInfo);
 	}
 
 	/**
@@ -1173,7 +1159,7 @@ public class SpringApplication {
 	 * @see #getAllSources()
 	 */
 	public Set<String> getSources() {
-		return this.sources;
+		return this.properties.getSources();
 	}
 
 	/**
@@ -1188,7 +1174,7 @@ public class SpringApplication {
 	 */
 	public void setSources(Set<String> sources) {
 		Assert.notNull(sources, "Sources must not be null");
-		this.sources = new LinkedHashSet<>(sources);
+		this.properties.setSources(sources);
 	}
 
 	/**
@@ -1203,8 +1189,8 @@ public class SpringApplication {
 		if (!CollectionUtils.isEmpty(this.primarySources)) {
 			allSources.addAll(this.primarySources);
 		}
-		if (!CollectionUtils.isEmpty(this.sources)) {
-			allSources.addAll(this.sources);
+		if (!CollectionUtils.isEmpty(this.properties.getSources())) {
+			allSources.addAll(this.properties.getSources());
 		}
 		return Collections.unmodifiableSet(allSources);
 	}
@@ -1333,7 +1319,7 @@ public class SpringApplication {
 	 * @since 3.2.0
 	 */
 	public boolean isKeepAlive() {
-		return this.keepAlive;
+		return this.properties.isKeepAlive();
 	}
 
 	/**
@@ -1344,7 +1330,7 @@ public class SpringApplication {
 	 * @since 3.2.0
 	 */
 	public void setKeepAlive(boolean keepAlive) {
-		this.keepAlive = keepAlive;
+		this.properties.setKeepAlive(keepAlive);
 	}
 
 	/**

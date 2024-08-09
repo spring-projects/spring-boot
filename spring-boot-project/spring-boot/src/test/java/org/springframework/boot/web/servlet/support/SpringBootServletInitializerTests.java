@@ -52,6 +52,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -119,7 +120,8 @@ class SpringBootServletInitializerTests {
 		new WithConfigurationAnnotation().onStartup(this.servletContext);
 		assertThat(this.servletContext.getAttribute(LoggingApplicationListener.REGISTER_SHUTDOWN_HOOK_PROPERTY))
 			.isEqualTo(false);
-		assertThat(this.application).hasFieldOrPropertyWithValue("registerShutdownHook", false);
+		Object properties = ReflectionTestUtils.getField(this.application, "properties");
+		assertThat(properties).hasFieldOrPropertyWithValue("registerShutdownHook", false);
 	}
 
 	@Test
