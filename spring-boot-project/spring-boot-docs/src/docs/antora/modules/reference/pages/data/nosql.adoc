@@ -58,6 +58,20 @@ spring:
       password: "secret"
 ----
 
+You can also specify the url of the Redis server directly.
+When setting the url, the host, port, username and password properties are ignored.
+This is shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  data:
+    redis:
+      url: "redis://user:secret@localhost:6379"
+      database: 0
+----
+
+
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
 `ClientResources` can also be customized using `ClientResourcesBuilderCustomizer`.
 If you use Jedis, `JedisClientConfigurationBuilderCustomizer` is also available.
