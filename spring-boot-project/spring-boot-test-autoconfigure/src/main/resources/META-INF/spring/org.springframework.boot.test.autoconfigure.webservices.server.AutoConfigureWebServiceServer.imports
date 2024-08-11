@@ -1,2 +1,0 @@
-# AutoConfigureWebServiceServer auto-configuration imports
-org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration

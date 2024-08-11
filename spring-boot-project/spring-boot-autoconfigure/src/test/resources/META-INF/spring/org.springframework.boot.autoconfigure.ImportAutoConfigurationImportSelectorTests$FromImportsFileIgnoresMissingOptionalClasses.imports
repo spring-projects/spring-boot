@@ -1,3 +1,0 @@
-optional:org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration
-optional:org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration
-org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration

@@ -1,2 +1,0 @@
-# AutoConfigureJsonTesters auto-configuration imports
-org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration

@@ -1,1 +1,0 @@
-include::api:partial$nav-actuator-rest-api.adoc[]

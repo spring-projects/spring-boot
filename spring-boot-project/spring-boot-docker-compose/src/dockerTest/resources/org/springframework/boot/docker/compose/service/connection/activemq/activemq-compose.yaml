@@ -1,8 +1,0 @@
-services:
-  activemq:
-    image: '{imageName}'
-    ports:
-      - '61616'
-    environment:
-      ACTIVEMQ_USERNAME: 'root'
-      ACTIVEMQ_PASSWORD: 'secret'
