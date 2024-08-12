@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -569,20 +569,32 @@ public class WebProperties {
 				public CacheControl toHttpCacheControl() {
 					PropertyMapper map = PropertyMapper.get();
 					CacheControl control = createCacheControl();
-					map.from(this::getMustRevalidate).whenTrue().toCall(control::mustRevalidate);
-					map.from(this::getNoTransform).whenTrue().toCall(control::noTransform);
-					map.from(this::getCachePublic).whenTrue().toCall(control::cachePublic);
-					map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
-					map.from(this::getProxyRevalidate).whenTrue().toCall(control::proxyRevalidate);
-					map.from(this::getStaleWhileRevalidate)
+					if (Boolean.TRUE.equals(this.mustRevalidate)) {
+						control = control.mustRevalidate();
+					}
+					if (Boolean.TRUE.equals(this.noTransform)) {
+						control = control.noTransform();
+					}
+					if (Boolean.TRUE.equals(this.cachePrivate)) {
+						control = control.cachePrivate();
+					}
+					if (Boolean.TRUE.equals(this.cachePublic)) {
+						control = control.cachePublic();
+					}
+					if (Boolean.TRUE.equals(this.proxyRevalidate)) {
+						control = control.proxyRevalidate();
+					}
+					control = map.from(this::getStaleWhileRevalidate)
 						.whenNonNull()
-						.to((duration) -> control.staleWhileRevalidate(duration.getSeconds(), TimeUnit.SECONDS));
-					map.from(this::getStaleIfError)
+						.to(control, (instance, duration) -> instance.staleWhileRevalidate(duration.getSeconds(),
+								TimeUnit.SECONDS));
+					control = map.from(this::getStaleIfError)
 						.whenNonNull()
-						.to((duration) -> control.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
-					map.from(this::getSMaxAge)
+						.to(control,
+								(instance, duration) -> instance.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
+					control = map.from(this::getSMaxAge)
 						.whenNonNull()
-						.to((duration) -> control.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+						.to(control, (instance, duration) -> instance.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
 					// check if cacheControl remained untouched
 					if (control.getHeaderValue() == null) {
 						return null;
