@@ -1458,7 +1458,7 @@ bom {
 			]
 		}
 	}
-	library("OpenTelemetry", "1.39.0") {
+	library("OpenTelemetry", "1.41.0") {
 		group("io.opentelemetry") {
 			imports = [
 				"opentelemetry-bom"
