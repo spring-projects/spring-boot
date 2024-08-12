@@ -24,7 +24,6 @@ import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
 import io.micrometer.tracing.otel.bridge.CompositeSpanExporter;
 import io.micrometer.tracing.otel.bridge.EventListener;
-import io.micrometer.tracing.otel.bridge.EventPublishingContextWrapper;
 import io.micrometer.tracing.otel.bridge.OtelBaggageManager;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelPropagator;
@@ -35,7 +34,6 @@ import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.sdk.resources.Resource;
@@ -164,8 +162,7 @@ public class OpenTelemetryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	OtelCurrentTraceContext otelCurrentTraceContext(EventPublisher publisher) {
-		ContextStorage.addWrapper(new EventPublishingContextWrapper(publisher));
+	OtelCurrentTraceContext otelCurrentTraceContext() {
 		return new OtelCurrentTraceContext();
 	}
 

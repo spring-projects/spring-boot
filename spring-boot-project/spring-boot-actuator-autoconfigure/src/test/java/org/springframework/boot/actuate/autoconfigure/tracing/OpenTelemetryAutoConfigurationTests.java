@@ -26,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.micrometer.tracing.SpanCustomizer;
+import io.micrometer.tracing.Tracer.SpanInScope;
+import io.micrometer.tracing.otel.bridge.EventListener;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelPropagator;
 import io.micrometer.tracing.otel.bridge.OtelSpanCustomizer;
@@ -37,6 +39,7 @@ import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.MeterProvider;
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -52,15 +55,18 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.ResourceAttributes;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEventPublisherApplicationListener.EventPublisherBeansContextWrapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -85,6 +91,11 @@ class OpenTelemetryAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(
 				org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration.class,
 				OpenTelemetryAutoConfiguration.class));
+
+	@BeforeAll
+	static void addWrapper() {
+		EventPublisherBeansContextWrapper.addWrapperIfNecessary();
+	}
 
 	@Test
 	void shouldSupplyBeans() {
@@ -316,6 +327,28 @@ class OpenTelemetryAutoConfigurationTests {
 		});
 	}
 
+	@Test // gh-41439
+	void shouldPublishEventsWhenContextStorageIsInitializedEarly() {
+		this.contextRunner.withInitializer(this::initializeOpenTelemetry)
+			.withUserConfiguration(OtelEventListener.class)
+			.run((context) -> {
+				OtelEventListener listener = context.getBean(OtelEventListener.class);
+				io.micrometer.tracing.Tracer micrometerTracer = context.getBean(io.micrometer.tracing.Tracer.class);
+				io.micrometer.tracing.Span span = micrometerTracer.nextSpan().name("test");
+				try (SpanInScope scoped = micrometerTracer.withSpan(span.start())) {
+					assertThat(listener.events).isNotEmpty();
+				}
+				finally {
+					span.end();
+				}
+			});
+	}
+
+	private void initializeOpenTelemetry(ConfigurableApplicationContext context) {
+		context.addApplicationListener(new OpenTelemetryEventPublisherApplicationListener());
+		Span.current();
+	}
+
 	private List<TextMapPropagator> getInjectors(TextMapPropagator propagator) {
 		assertThat(propagator).as("propagator").isNotNull();
 		if (propagator instanceof CompositeTextMapPropagator compositePropagator) {
@@ -527,6 +560,17 @@ class OpenTelemetryAutoConfigurationTests {
 			if (!this.latch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
 				throw new TimeoutException("Waiting for exporting spans timed out (%s)".formatted(timeout));
 			}
+		}
+
+	}
+
+	static class OtelEventListener implements EventListener {
+
+		private final List<Object> events = new ArrayList<>();
+
+		@Override
+		public void onEvent(Object event) {
+			this.events.add(event);
 		}
 
 	}

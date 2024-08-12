@@ -10,3 +10,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.actuate.autoconfigure.tracing.LogCorrelationEnvironmentPostProcessor
+
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEventPublisherApplicationListener
