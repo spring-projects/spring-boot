@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose Postgres service connections.
+ * Auto-configuration for Docker Compose Postgres service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.postgres;

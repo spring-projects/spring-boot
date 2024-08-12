@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import org.springframework.util.Assert;
 
 /**
- * A reference to a docker compose file (usually named {@code compose.yaml}).
+ * A reference to a Docker Compose file (usually named {@code compose.yaml}).
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -61,8 +61,8 @@ public final class DockerComposeFile {
 	}
 
 	/**
-	 * Returns the source docker compose files.
-	 * @return the source docker compose files
+	 * Returns the source Docker Compose files.
+	 * @return the source Docker Compose files
 	 * @since 3.4.0
 	 */
 	public List<File> getFiles() {
@@ -95,7 +95,7 @@ public final class DockerComposeFile {
 	}
 
 	/**
-	 * Find the docker compose file by searching in the given working directory. Files are
+	 * Find the Docker Compose file by searching in the given working directory. Files are
 	 * considered in the same order that {@code docker compose} uses, namely:
 	 * <ul>
 	 * <li>{@code compose.yaml}</li>
@@ -105,7 +105,7 @@ public final class DockerComposeFile {
 	 * </ul>
 	 * @param workingDirectory the working directory to search or {@code null} to use the
 	 * current directory
-	 * @return the located file or {@code null} if no docker compose file can be found
+	 * @return the located file or {@code null} if no Docker Compose file can be found
 	 */
 	public static DockerComposeFile find(File workingDirectory) {
 		File base = (workingDirectory != null) ? workingDirectory : new File(".");
@@ -126,7 +126,7 @@ public final class DockerComposeFile {
 	/**
 	 * Create a new {@link DockerComposeFile} for the given {@link File}.
 	 * @param file the source file
-	 * @return the docker compose file
+	 * @return the Docker Compose file
 	 */
 	public static DockerComposeFile of(File file) {
 		Assert.notNull(file, "File must not be null");
@@ -138,7 +138,7 @@ public final class DockerComposeFile {
 	/**
 	 * Creates a new {@link DockerComposeFile} for the given {@link File files}.
 	 * @param files the source files
-	 * @return the docker compose file
+	 * @return the Docker Compose file
 	 * @since 3.4.0
 	 */
 	public static DockerComposeFile of(Collection<? extends File> files) {

@@ -15,6 +15,6 @@
  */
 
 /**
- * Core interfaces and classes for working with docker compose.
+ * Core interfaces and classes for working with Docker Compose.
  */
 package org.springframework.boot.docker.compose.core;

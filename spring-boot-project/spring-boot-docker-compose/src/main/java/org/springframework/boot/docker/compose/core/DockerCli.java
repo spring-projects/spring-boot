@@ -56,8 +56,8 @@ class DockerCli {
 	/**
 	 * Create a new {@link DockerCli} instance.
 	 * @param workingDirectory the working directory or {@code null}
-	 * @param composeFile the docker compose file to use
-	 * @param activeProfiles the docker compose profiles to activate
+	 * @param composeFile the Docker Compose file to use
+	 * @param activeProfiles the Docker Compose profiles to activate
 	 */
 	DockerCli(File workingDirectory, DockerComposeFile composeFile, Set<String> activeProfiles) {
 		this.processRunner = new ProcessRunner(workingDirectory);
@@ -112,7 +112,7 @@ class DockerCli {
 
 	/**
 	 * Return the {@link DockerComposeFile} being used by this CLI instance.
-	 * @return the docker compose file
+	 * @return the Docker Compose file
 	 */
 	DockerComposeFile getDockerComposeFile() {
 		return this.composeFile;
@@ -156,7 +156,7 @@ class DockerCli {
 				DockerCliComposeVersionResponse response = DockerJson.deserialize(
 						processRunner.run("docker", "compose", "version", "--format", "json"),
 						DockerCliComposeVersionResponse.class);
-				logger.trace(LogMessage.format("Using docker compose %s", response.version()));
+				logger.trace(LogMessage.format("Using Docker Compose %s", response.version()));
 				return List.of("docker", "compose");
 			}
 			catch (ProcessExitException ex) {

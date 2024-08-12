@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose RabbitMQ service connections.
+ * Auto-configuration for Docker Compose RabbitMQ service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.rabbit;

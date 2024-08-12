@@ -42,7 +42,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Manages the lifecycle for docker compose services.
+ * Manages the lifecycle for Docker Compose services.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

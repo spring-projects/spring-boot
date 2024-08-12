@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose Pulsar service connections.
+ * Auto-configuration for Docker Compose Pulsar service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.pulsar;

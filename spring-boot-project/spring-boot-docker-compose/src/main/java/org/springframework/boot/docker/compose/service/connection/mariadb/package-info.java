@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose MariaDB service connections.
+ * Auto-configuration for Docker Compose MariaDB service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.mariadb;

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose Liquibase service connections.
+ * Auto-configuration for Docker Compose Liquibase service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.liquibase;

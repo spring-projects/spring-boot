@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose MS SQL Server service connections.
+ * Auto-configuration for Docker Compose MS SQL Server service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.sqlserver;

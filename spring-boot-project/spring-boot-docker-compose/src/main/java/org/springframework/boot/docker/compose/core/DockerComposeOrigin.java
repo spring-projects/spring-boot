@@ -19,10 +19,10 @@ package org.springframework.boot.docker.compose.core;
 import org.springframework.boot.origin.Origin;
 
 /**
- * An origin which points to a service defined in docker compose.
+ * An origin which points to a service defined in Docker Compose.
  *
- * @param composeFile docker compose file
- * @param serviceName name of the docker compose service
+ * @param composeFile the Docker Compose file
+ * @param serviceName name of the Docker Compose service
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose Neo4j service connections.
+ * Auto-configuration for Docker Compose Neo4j service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.neo4j;

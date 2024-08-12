@@ -15,6 +15,6 @@
  */
 
 /**
- * Support for docker compose OpenTelemetry service connections.
+ * Support for Docker Compose OpenTelemetry service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.otlp;

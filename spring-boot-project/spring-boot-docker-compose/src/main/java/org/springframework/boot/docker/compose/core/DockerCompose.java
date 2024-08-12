@@ -118,7 +118,7 @@ public interface DockerCompose {
 
 	/**
 	 * Factory method used to create a {@link DockerCompose} instance.
-	 * @param file the docker compose file
+	 * @param file the Docker Compose file
 	 * @param hostname the hostname used for services or {@code null} if the hostname
 	 * should be deduced
 	 * @param activeProfiles a set of the profiles that should be activated

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for docker compose ActiveMQ service connections.
+ * Auto-configuration for Docker Compose ActiveMQ service connections.
  */
 package org.springframework.boot.docker.compose.service.connection.activemq;
