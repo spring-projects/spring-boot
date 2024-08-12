@@ -572,7 +572,7 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "4.3.0") {
+	library("HtmlUnit", "4.4.0") {
 		group("org.htmlunit") {
 			modules = [
 				"htmlunit" {
