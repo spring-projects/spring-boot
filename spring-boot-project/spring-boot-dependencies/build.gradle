@@ -1108,6 +1108,10 @@ bom {
 		}
 	}
 	library("Kotlin Serialization", "1.6.3") {
+		prohibit {
+			versionRange "[1.7.0-RC,)"
+			because "it requires Kotlin 2"
+		}
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-serialization-bom"
