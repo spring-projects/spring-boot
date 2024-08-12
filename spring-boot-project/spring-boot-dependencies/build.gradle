@@ -2307,7 +2307,7 @@ bom {
 			releaseNotes("https://github.com/xmlunit/xmlunit/releases/tag/v{version}")
 		}
 	}
-	library("Yasson", "3.0.3") {
+	library("Yasson", "3.0.4") {
 		group("org.eclipse") {
 			modules = [
 				"yasson"
