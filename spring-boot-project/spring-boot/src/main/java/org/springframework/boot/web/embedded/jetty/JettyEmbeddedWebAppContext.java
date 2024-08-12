@@ -42,6 +42,11 @@ class JettyEmbeddedWebAppContext extends WebAppContext {
 		getContext().call(handler::deferredInitialize, null);
 	}
 
+	@Override
+	public String getCanonicalNameForTmpDir() {
+		return super.getCanonicalNameForTmpDir();
+	}
+
 	private static final class JettyEmbeddedServletHandler extends ServletHandler {
 
 		@Override
