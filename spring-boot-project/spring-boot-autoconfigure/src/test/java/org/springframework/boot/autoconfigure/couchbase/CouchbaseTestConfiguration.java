@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import com.couchbase.client.core.env.Authenticator;
 import com.couchbase.client.java.Cluster;
 
 import org.springframework.context.annotation.Bean;
@@ -27,15 +28,23 @@ import static org.mockito.Mockito.mock;
  * Test configuration for couchbase that mocks access.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 class CouchbaseTestConfiguration {
 
 	private final Cluster cluster = mock(Cluster.class);
 
+	private final Authenticator authenticator = mock(Authenticator.class);
+
 	@Bean
 	Cluster couchbaseCluster() {
 		return this.cluster;
+	}
+
+	@Bean
+	Authenticator couchbaseAuth() {
+		return this.authenticator;
 	}
 
 }

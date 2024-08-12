@@ -21,7 +21,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.couchbase.client.core.env.Authenticator;
+import com.couchbase.client.core.env.CertificateAuthenticator;
 import com.couchbase.client.core.env.IoConfig;
+import com.couchbase.client.core.env.PasswordAuthenticator;
 import com.couchbase.client.core.env.SecurityConfig;
 import com.couchbase.client.core.env.TimeoutConfig;
 import com.couchbase.client.java.Cluster;
@@ -54,6 +57,7 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class CouchbaseAutoConfigurationTests {
 
@@ -63,6 +67,7 @@ class CouchbaseAutoConfigurationTests {
 	@Test
 	void connectionStringIsRequired() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ClusterEnvironment.class)
+			.doesNotHaveBean(Authenticator.class)
 			.doesNotHaveBean(Cluster.class));
 	}
 
@@ -79,6 +84,7 @@ class CouchbaseAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class)
 					.hasSingleBean(Cluster.class)
+					.hasSingleBean(PasswordAuthenticator.class)
 					.hasSingleBean(CouchbaseConnectionDetails.class)
 					.doesNotHaveBean(PropertiesCouchbaseConnectionDetails.class);
 				Cluster cluster = context.getBean(Cluster.class);
@@ -94,19 +100,24 @@ class CouchbaseAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
 			.withPropertyValues("spring.couchbase.connection-string=localhost")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				assertThat(context).hasSingleBean(ClusterEnvironment.class)
+					.hasSingleBean(Authenticator.class)
+					.hasSingleBean(Cluster.class);
+				assertThat(context).doesNotHaveBean("couchbaseAuthenticator");
 				assertThat(context.getBean(Cluster.class))
 					.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
 			});
 	}
 
 	@Test
-	void connectionDetailsShouldOverrideProperties() {
+	void connectionDetailsOverridesProperties() {
 		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
 			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=a-user",
 					"spring.couchbase.password=a-password")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				assertThat(context).hasSingleBean(ClusterEnvironment.class)
+					.hasSingleBean(PasswordAuthenticator.class)
+					.hasSingleBean(Cluster.class);
 				Cluster cluster = context.getBean(Cluster.class);
 				assertThat(cluster.core()).extracting("connectionString.hosts")
 					.asInstanceOf(InstanceOfAssertFactories.LIST)
@@ -241,6 +252,41 @@ class CouchbaseAutoConfigurationTests {
 				assertThat(env.timeoutConfig().kvTimeout()).isEqualTo(Duration.ofSeconds(5));
 				assertThat(env.timeoutConfig().connectTimeout()).isEqualTo(Duration.ofSeconds(2));
 			});
+	}
+
+	@Test
+	void passwordAuthenticationWithUsernameAndPassword() {
+		this.contextRunner
+			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=user",
+					"spring.couchbase.password=secret")
+			.run((context) -> assertThat(context).hasSingleBean(PasswordAuthenticator.class));
+	}
+
+	@Test
+	void certificateAuthenticationWithPemPrivateKeyAndCertificate() {
+		this.contextRunner.withPropertyValues("spring.couchbase.connection-string=localhost",
+				"spring.couchbase.env.ssl.enabled=true",
+				"spring.couchbase.authentication.pem.private-key=classpath:org/springframework/boot/autoconfigure/ssl/key2.pem",
+				"spring.couchbase.authentication.pem.certificates=classpath:org/springframework/boot/autoconfigure/ssl/key2.crt")
+			.run((context) -> assertThat(context).hasSingleBean(CertificateAuthenticator.class));
+	}
+
+	@Test
+	void certificateAuthenticationWithJavaKeyStore() {
+		this.contextRunner.withPropertyValues("spring.couchbase.connection-string=localhost",
+				"spring.couchbase.env.ssl.enabled=true",
+				"spring.couchbase.authentication.jks.location=classpath:org/springframework/boot/autoconfigure/ssl/keystore.jks",
+				"spring.couchbase.authentication.jks.password=secret")
+			.run((context) -> assertThat(context).hasSingleBean(CertificateAuthenticator.class));
+	}
+
+	@Test
+	void failsWithMissingAuthentication() {
+		this.contextRunner.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure()
+				.hasMessageContaining("Couchbase authentication requires username and password, or certificates");
+		});
 	}
 
 	private CouchbaseConnectionDetails couchbaseConnectionDetails() {
