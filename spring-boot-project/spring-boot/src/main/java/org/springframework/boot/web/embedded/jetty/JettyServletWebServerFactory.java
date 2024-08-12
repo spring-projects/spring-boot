@@ -309,9 +309,17 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private File getTempDirectory(WebAppContext context) {
 		String temp = System.getProperty("java.io.tmpdir");
-		return (temp != null)
-				? new File(temp, WebInfConfiguration.getCanonicalNameForWebAppTmpDir(context) + UUID.randomUUID())
-				: null;
+		return (temp != null) ? new File(temp, getTempDirectoryPrefix(context) + UUID.randomUUID()) : null;
+	}
+
+	@SuppressWarnings("removal")
+	private String getTempDirectoryPrefix(WebAppContext context) {
+		try {
+			return ((JettyEmbeddedWebAppContext) context).getCanonicalNameForTmpDir();
+		}
+		catch (Throwable ex) {
+			return WebInfConfiguration.getCanonicalNameForWebAppTmpDir(context);
+		}
 	}
 
 	private void configureDocumentRoot(WebAppContext handler) {
