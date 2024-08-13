@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.security.saml2;
 
 import java.io.InputStream;
-import java.security.cert.CertificateFactory;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.Collection;
@@ -32,11 +32,11 @@ import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyPr
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration.Signing;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.pem.PemContent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.core.Saml2X509Credential.Saml2X509CredentialType;
 import org.springframework.security.saml2.provider.service.registration.AssertingPartyMetadata;
@@ -57,6 +57,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Lasse Lindqvist
  * @author Lasse Wulff
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 @Conditional(RegistrationConfiguredCondition.class)
@@ -172,7 +173,11 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		Assert.state(location != null, "No private key location specified");
 		Assert.state(location.exists(), () -> "Private key location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
-			return RsaKeyConverters.pkcs8().convert(inputStream);
+			PemContent pemContent = PemContent.load(inputStream);
+			PrivateKey privateKey = pemContent.getPrivateKey();
+			Assert.isInstanceOf(RSAPrivateKey.class, privateKey,
+					"PrivateKey in resource '" + location + "' must be an RSAPrivateKey");
+			return (RSAPrivateKey) privateKey;
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException(ex);
@@ -183,7 +188,9 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		Assert.state(location != null, "No certificate location specified");
 		Assert.state(location.exists(), () -> "Certificate  location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
-			return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(inputStream);
+			PemContent pemContent = PemContent.load(inputStream);
+			List<X509Certificate> certificates = pemContent.getCertificates();
+			return certificates.get(0);
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException(ex);

@@ -140,7 +140,13 @@ public final class PemContent {
 		}
 	}
 
-	private static PemContent load(InputStream in) throws IOException {
+	/**
+	 * Load {@link PemContent} from the given {@link InputStream}.
+	 * @param in an input stream to load the content from
+	 * @return the loaded PEM content
+	 * @throws IOException on IO error
+	 */
+	public static PemContent load(InputStream in) throws IOException {
 		return of(StreamUtils.copyToString(in, StandardCharsets.UTF_8));
 	}
 
