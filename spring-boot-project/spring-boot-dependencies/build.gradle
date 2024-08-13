@@ -1033,7 +1033,7 @@ bom {
 			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
 		}
 	}
-	library("Kafka", "3.7.1") {
+	library("Kafka", "3.8.0") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect",
