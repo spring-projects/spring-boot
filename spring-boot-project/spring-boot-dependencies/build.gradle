@@ -554,7 +554,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Servlet JSP JSTL", "3.0.0") {
+	library("Jakarta Servlet JSP JSTL", "3.0.1") {
 		group("jakarta.servlet.jsp.jstl") {
 			modules = [
 				"jakarta.servlet.jsp.jstl-api"
