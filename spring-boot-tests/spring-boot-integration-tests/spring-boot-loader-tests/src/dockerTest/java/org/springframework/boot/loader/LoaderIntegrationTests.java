@@ -110,7 +110,8 @@ class LoaderIntegrationTests {
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.SEVENTEEN));
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_ONE));
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
-		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_TWO));
+		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_TWO));
+		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_THREE));
 		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
 
