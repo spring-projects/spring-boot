@@ -50,6 +50,10 @@ import org.springframework.web.client.RestClient.Builder;
  * obtain the mock server. If the customizer has been used more than once the
  * {@link #getServer(RestClient.Builder)} or {@link #getServers()} method must be used to
  * access the related server.
+ * <p>
+ * If a mock server is used in more than one test case in a test class, it might be
+ * necessary to reset the expectations on the server between tests using
+ * {@code getServer().reset()} or {@code getServer(restClientBuilder).reset()}.
  *
  * @author Scott Frederick
  * @since 3.2.0
