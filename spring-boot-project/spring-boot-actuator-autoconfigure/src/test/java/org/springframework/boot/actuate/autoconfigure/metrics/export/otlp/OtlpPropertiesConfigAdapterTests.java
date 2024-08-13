@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.HistogramFlavor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -83,6 +84,39 @@ class OtlpPropertiesConfigAdapterTests {
 	void whenPropertiesHeadersIsSetAdapterHeadersReturnsIt() {
 		this.properties.setHeaders(Map.of("header", "value"));
 		assertThat(createAdapter().headers()).containsEntry("header", "value");
+	}
+
+	@Test
+	void whenPropertiesHistogramFlavorIsNotSetAdapterHistogramFlavorReturnsExplicitBucketHistogram() {
+		assertThat(createAdapter().histogramFlavor()).isSameAs(HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM);
+	}
+
+	@Test
+	void whenPropertiesHistogramFlavorIsSetAdapterHistogramFlavorReturnsIt() {
+		this.properties.setHistogramFlavor(HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+		assertThat(createAdapter().histogramFlavor()).isSameAs(HistogramFlavor.BASE2_EXPONENTIAL_BUCKET_HISTOGRAM);
+	}
+
+	@Test
+	void whenPropertiesMaxScaleIsNotSetAdapterMaxScaleReturns20() {
+		assertThat(createAdapter().maxScale()).isEqualTo(20);
+	}
+
+	@Test
+	void whenPropertiesMaxScaleIsSetAdapterMaxScaleReturnsIt() {
+		this.properties.setMaxScale(5);
+		assertThat(createAdapter().maxScale()).isEqualTo(5);
+	}
+
+	@Test
+	void whenPropertiesMaxBucketCountIsNotSetAdapterMaxBucketCountReturns160() {
+		assertThat(createAdapter().maxBucketCount()).isEqualTo(160);
+	}
+
+	@Test
+	void whenPropertiesMaxBucketCountIsSetAdapterMaxBucketCountReturnsIt() {
+		this.properties.setMaxBucketCount(6);
+		assertThat(createAdapter().maxBucketCount()).isEqualTo(6);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.HistogramFlavor;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -56,6 +57,22 @@ public class OtlpProperties extends StepRegistryProperties {
 	 * Headers for the exported metrics.
 	 */
 	private Map<String, String> headers;
+
+	/**
+	 * Histogram type to be preferred when histogram publishing is enabled.
+	 */
+	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
+
+	/**
+	 * Max scale to use for exponential histograms, if configured.
+	 */
+	private int maxScale = 20;
+
+	/**
+	 * Maximum number of buckets to be used for exponential histograms, if configured.
+	 * This has no effect on explicit bucket histograms.
+	 */
+	private int maxBucketCount = 160;
 
 	/**
 	 * Time unit for exported metrics.
@@ -95,6 +112,30 @@ public class OtlpProperties extends StepRegistryProperties {
 
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
+	}
+
+	public HistogramFlavor getHistogramFlavor() {
+		return this.histogramFlavor;
+	}
+
+	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+		this.histogramFlavor = histogramFlavor;
+	}
+
+	public int getMaxScale() {
+		return this.maxScale;
+	}
+
+	public void setMaxScale(int maxScale) {
+		this.maxScale = maxScale;
+	}
+
+	public int getMaxBucketCount() {
+		return this.maxBucketCount;
+	}
+
+	public void setMaxBucketCount(int maxBucketCount) {
+		this.maxBucketCount = maxBucketCount;
 	}
 
 	public TimeUnit getBaseTimeUnit() {

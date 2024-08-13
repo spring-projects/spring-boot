@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
+import io.micrometer.registry.otlp.HistogramFlavor;
 import io.micrometer.registry.otlp.OtlpConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
@@ -96,6 +97,21 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	@Override
 	public Map<String, String> headers() {
 		return get(OtlpProperties::getHeaders, OtlpConfig.super::headers);
+	}
+
+	@Override
+	public HistogramFlavor histogramFlavor() {
+		return get(OtlpProperties::getHistogramFlavor, OtlpConfig.super::histogramFlavor);
+	}
+
+	@Override
+	public int maxScale() {
+		return get(OtlpProperties::getMaxScale, OtlpConfig.super::maxScale);
+	}
+
+	@Override
+	public int maxBucketCount() {
+		return get(OtlpProperties::getMaxBucketCount, OtlpConfig.super::maxBucketCount);
 	}
 
 	@Override
