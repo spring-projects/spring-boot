@@ -35,6 +35,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.pulsar.core.DefaultPulsarClientFactory;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
@@ -179,7 +180,8 @@ class PulsarConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(PulsarTopicBuilder.class)
+	@Scope("prototype")
+	@ConditionalOnMissingBean
 	PulsarTopicBuilder pulsarTopicBuilder() {
 		return new PulsarTopicBuilder(TopicDomain.persistent, this.properties.getDefaults().getTenant(),
 				this.properties.getDefaults().getNamespace());
