@@ -37,6 +37,6 @@ public enum InfoContributorFallback {
 	/**
 	 * Do not fall back, thereby disabling the info contributor.
 	 */
-	DISABLE;
+	DISABLE
 
 }

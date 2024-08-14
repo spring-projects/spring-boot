@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DelegatingApplicationListener}.
  *
  * @author Dave Syer
+ * @deprecated since 3.2.0 for removal in 3.4.0
  */
 @Deprecated(since = "3.2.0", forRemoval = true)
 @SuppressWarnings("removal")

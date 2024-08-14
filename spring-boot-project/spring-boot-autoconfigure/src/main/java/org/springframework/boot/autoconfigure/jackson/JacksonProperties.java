@@ -224,7 +224,7 @@ public class JacksonProperties {
 		 * Refuse to decide implicit mode and instead throw an InvalidDefinitionException
 		 * for ambiguous cases.
 		 */
-		EXPLICIT_ONLY;
+		EXPLICIT_ONLY
 
 	}
 

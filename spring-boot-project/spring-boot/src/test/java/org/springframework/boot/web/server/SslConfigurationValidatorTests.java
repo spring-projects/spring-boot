@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link SslConfigurationValidator}.
  *
  * @author Chris Bono
+ * @deprecated since 3.1.0 for removal in 3.3.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.1.0", forRemoval = true)

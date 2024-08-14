@@ -37,7 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
  * @author Phillip Webb
  */
 @Disabled("Only used for manual testing")
-public class VirtualZipPerformanceTests {
+class VirtualZipPerformanceTests {
 
 	@TempDir
 	Path temp;

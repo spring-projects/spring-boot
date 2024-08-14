@@ -35,6 +35,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link InfluxDbHealthIndicator}.
  *
  * @author Eddú Meléndez
+ * @deprecated since 3.2.0 for removal in 3.4.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.2.0", forRemoval = true)

@@ -241,7 +241,7 @@ public class TracingProperties {
 			 * <a href="https://github.com/openzipkin/b3-propagation#multiple-headers">B3
 			 * multiple headers</a> propagation.
 			 */
-			B3_MULTI;
+			B3_MULTI
 
 		}
 

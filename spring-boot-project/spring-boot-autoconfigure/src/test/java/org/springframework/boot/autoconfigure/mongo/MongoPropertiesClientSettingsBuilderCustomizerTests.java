@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MongoPropertiesClientSettingsBuilderCustomizer}.
  *
  * @author Scott Frederick
+ * @deprecated since 3.1.0 for removal in 3.3.0
  */
 @Deprecated(since = "3.1.0", forRemoval = true)
 class MongoPropertiesClientSettingsBuilderCustomizerTests {

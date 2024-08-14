@@ -223,6 +223,8 @@ public final class ClientHttpRequestFactories {
 	/**
 	 * Support for
 	 * {@link org.springframework.http.client.OkHttp3ClientHttpRequestFactory}.
+	 *
+	 * @deprecated since 3.2.0 for removal in 3.4.0
 	 */
 	@Deprecated(since = "3.2.0", forRemoval = true)
 	@SuppressWarnings("removal")

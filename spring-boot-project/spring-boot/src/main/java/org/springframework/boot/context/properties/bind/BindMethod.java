@@ -32,6 +32,6 @@ public enum BindMethod {
 	/**
 	 * Value object using constructor binding.
 	 */
-	VALUE_OBJECT;
+	VALUE_OBJECT
 
 }

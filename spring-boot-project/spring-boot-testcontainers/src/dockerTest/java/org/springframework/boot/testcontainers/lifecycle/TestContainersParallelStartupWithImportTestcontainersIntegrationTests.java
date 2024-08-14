@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisabledIfDockerUnavailable
 @ExtendWith(OutputCaptureExtension.class)
 @ImportTestcontainers(Containers.class)
-public class TestContainersParallelStartupWithImportTestcontainersIntegrationTests {
+class TestContainersParallelStartupWithImportTestcontainersIntegrationTests {
 
 	@Test
 	void startsInParallel(CapturedOutput out) {

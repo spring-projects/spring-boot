@@ -62,10 +62,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Andy Wilkinson
  * @see JerseyEndpointResourceFactory
  */
-public class JerseyWebEndpointIntegrationTests
+class JerseyWebEndpointIntegrationTests
 		extends AbstractWebEndpointIntegrationTests<AnnotationConfigServletWebServerApplicationContext> {
 
-	public JerseyWebEndpointIntegrationTests() {
+	JerseyWebEndpointIntegrationTests() {
 		super(JerseyWebEndpointIntegrationTests::createApplicationContext,
 				JerseyWebEndpointIntegrationTests::applyAuthenticatedConfiguration);
 	}
