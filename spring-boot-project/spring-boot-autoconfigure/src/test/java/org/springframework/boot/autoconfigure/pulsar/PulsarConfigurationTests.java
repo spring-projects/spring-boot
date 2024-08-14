@@ -341,10 +341,10 @@ class PulsarConfigurationTests {
 			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
 				.run((context) -> assertThat(context).getBean(PulsarTopicBuilder.class)
 					.asInstanceOf(InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
-					.satisfies((topicBuilder -> {
+					.satisfies((topicBuilder) -> {
 						assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultTenant", "my-tenant");
 						assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultNamespace", "my-namespace");
-					})));
+					}));
 		}
 
 	}
