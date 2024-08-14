@@ -161,7 +161,7 @@ class DefaultLogbackConfiguration {
 		Charset charset = resolveCharset(config, "${" + type + "_LOG_CHARSET}");
 		String structuredLogFormat = resolve(config, "${" + type + "_LOG_STRUCTURED_FORMAT}");
 		if (StringUtils.hasLength(structuredLogFormat)) {
-			StructuredLogEncoder encoder = createStructuredLogEncoder(config, structuredLogFormat);
+			StructuredLogEncoder encoder = createStructuredLogEncoder(structuredLogFormat);
 			encoder.setCharset(charset);
 			return encoder;
 		}
@@ -171,7 +171,7 @@ class DefaultLogbackConfiguration {
 		return encoder;
 	}
 
-	private StructuredLogEncoder createStructuredLogEncoder(LogbackConfigurator config, String format) {
+	private StructuredLogEncoder createStructuredLogEncoder(String format) {
 		StructuredLogEncoder encoder = new StructuredLogEncoder();
 		encoder.setFormat(format);
 		return encoder;
