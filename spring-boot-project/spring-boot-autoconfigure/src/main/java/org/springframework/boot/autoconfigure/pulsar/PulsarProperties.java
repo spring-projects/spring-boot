@@ -251,11 +251,41 @@ public class PulsarProperties {
 	public static class Defaults {
 
 		/**
+		 * Default tenant to use when producing or consuming messages against a
+		 * non-fully-qualified topic URL. When not specified Pulsar uses a default tenant
+		 * of 'public'.
+		 */
+		private String tenant;
+
+		/**
+		 * Default namespace to use when producing or consuming messages against a
+		 * non-fully-qualified topic URL. When not specified Pulsar uses a default
+		 * namespace of 'default'.
+		 */
+		private String namespace;
+
+		/**
 		 * List of mappings from message type to topic name and schema info to use as a
 		 * defaults when a topic name and/or schema is not explicitly specified when
 		 * producing or consuming messages of the mapped type.
 		 */
 		private List<TypeMapping> typeMappings = new ArrayList<>();
+
+		public String getTenant() {
+			return this.tenant;
+		}
+
+		public void setTenant(String tenant) {
+			this.tenant = tenant;
+		}
+
+		public String getNamespace() {
+			return this.namespace;
+		}
+
+		public void setNamespace(String namespace) {
+			this.namespace = namespace;
+		}
 
 		public List<TypeMapping> getTypeMappings() {
 			return this.typeMappings;

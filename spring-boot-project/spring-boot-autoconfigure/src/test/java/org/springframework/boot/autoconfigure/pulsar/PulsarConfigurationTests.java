@@ -49,6 +49,7 @@ import org.springframework.pulsar.core.PulsarAdminBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarAdministration;
 import org.springframework.pulsar.core.PulsarClientBuilderCustomizer;
 import org.springframework.pulsar.core.PulsarClientFactory;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.SchemaResolver.SchemaResolverCustomizer;
 import org.springframework.pulsar.core.TopicResolver;
@@ -320,6 +321,34 @@ class PulsarConfigurationTests {
 
 	}
 
+	@Nested
+	class TopicBuilderTests {
+
+		private final ApplicationContextRunner contextRunner = PulsarConfigurationTests.this.contextRunner;
+
+		@Test
+		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
+			PulsarTopicBuilder topicBuilder = mock(PulsarTopicBuilder.class);
+			this.contextRunner.withBean("customPulsarTopicBuilder", PulsarTopicBuilder.class, () -> topicBuilder)
+					.run((context) -> assertThat(context).getBean(PulsarTopicBuilder.class).isSameAs(topicBuilder));
+		}
+
+		@Test
+		void whenHasDefaultsTenantAndNamespaceAppliedToTopicBuilder() {
+			List<String> properties = new ArrayList<>();
+			properties.add("spring.pulsar.defaults.tenant=my-tenant");
+			properties.add("spring.pulsar.defaults.namespace=my-namespace");
+			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
+					.run((context) -> assertThat(context).getBean(PulsarTopicBuilder.class)
+							.asInstanceOf(InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
+							.satisfies((topicBuilder -> {
+								assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultTenant", "my-tenant");
+								assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultNamespace", "my-namespace");
+							})));
+		}
+
+	}
+	
 	@Nested
 	class FunctionAdministrationTests {
 

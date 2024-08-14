@@ -152,7 +152,7 @@ class PulsarPropertiesTests {
 	}
 
 	@Nested
-	class DefaultsProperties {
+	class DefaultsTypeMappingProperties {
 
 		@Test
 		void bindWhenNoTypeMappings() {
@@ -238,6 +238,29 @@ class PulsarPropertiesTests {
 		}
 
 		record TestMessage(String value) {
+		}
+
+	}
+
+	@Nested
+	class DefaultsTenantNamespaceProperties {
+
+		@Test
+		void bindWhenValuesNotSpecified() {
+			assertThat(new PulsarProperties().getDefaults()).satisfies((defaults) -> {
+				assertThat(defaults.getTenant()).isNull();
+				assertThat(defaults.getNamespace()).isNull();
+			});
+		}
+
+		@Test
+		void bindWhenValuesSpecified() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.pulsar.defaults.tenant", "my-tenant");
+			map.put("spring.pulsar.defaults.namespace", "my-namespace");
+			PulsarProperties.Defaults properties = bindProperties(map).getDefaults();
+			assertThat(properties.getTenant()).isEqualTo("my-tenant");
+			assertThat(properties.getNamespace()).isEqualTo("my-namespace");
 		}
 
 	}

@@ -67,6 +67,7 @@ import org.springframework.pulsar.core.PulsarConsumerFactory;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarReaderFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
@@ -219,7 +220,8 @@ class PulsarAutoConfigurationTests {
 						"spring.pulsar.producer.cache.enabled=false")
 				.run((context) -> assertThat(context).getBean(DefaultPulsarProducerFactory.class)
 					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class)));
+					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class))
+					.hasFieldOrPropertyWithValue("topicBuilder", context.getBean(PulsarTopicBuilder.class)));
 		}
 
 		@ParameterizedTest
@@ -375,7 +377,8 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarConsumerFactory.class)
-				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class)));
+				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+				.hasFieldOrPropertyWithValue("topicBuilder", context.getBean(PulsarTopicBuilder.class)));
 		}
 
 		@Test
@@ -574,7 +577,8 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
-				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class)));
+				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+				.hasFieldOrPropertyWithValue("topicBuilder", context.getBean(PulsarTopicBuilder.class)));
 		}
 
 		@Test
