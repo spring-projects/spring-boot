@@ -85,7 +85,7 @@ class TestcontainersLifecycleBeanPostProcessor
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (this.beanFactory.isConfigurationFrozen()) {
+		if (this.beanFactory.isConfigurationFrozen() && !isAotProcessingInProgress()) {
 			initializeContainers();
 		}
 		if (bean instanceof Startable startableBean) {
@@ -98,6 +98,10 @@ class TestcontainersLifecycleBeanPostProcessor
 			}
 		}
 		return bean;
+	}
+
+	private boolean isAotProcessingInProgress() {
+		return Boolean.getBoolean("spring.aot.processing");
 	}
 
 	private void initializeStartables(Startable startableBean, String startableBeanName) {
