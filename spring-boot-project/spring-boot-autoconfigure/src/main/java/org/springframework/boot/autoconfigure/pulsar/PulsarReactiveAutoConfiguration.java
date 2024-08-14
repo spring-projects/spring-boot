@@ -146,8 +146,8 @@ public class PulsarReactiveAutoConfiguration {
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		List<ReactiveMessageConsumerBuilderCustomizer<Object>> lambdaSafeCustomizers = List
 			.of((builder) -> applyMessageConsumerBuilderCustomizers(customizers, builder));
-		DefaultReactivePulsarConsumerFactory<?> consumerFactory =
-				new DefaultReactivePulsarConsumerFactory<>(pulsarReactivePulsarClient, lambdaSafeCustomizers);
+		DefaultReactivePulsarConsumerFactory<?> consumerFactory = new DefaultReactivePulsarConsumerFactory<>(
+				pulsarReactivePulsarClient, lambdaSafeCustomizers);
 		consumerFactory.setTopicBuilder(topicBuilder);
 		return consumerFactory;
 	}
@@ -181,7 +181,8 @@ public class PulsarReactiveAutoConfiguration {
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		List<ReactiveMessageReaderBuilderCustomizer<Object>> lambdaSafeCustomizers = List
 			.of((builder) -> applyMessageReaderBuilderCustomizers(customizers, builder));
-		DefaultReactivePulsarReaderFactory<?> readerFactory = new DefaultReactivePulsarReaderFactory<>(reactivePulsarClient, lambdaSafeCustomizers);
+		DefaultReactivePulsarReaderFactory<?> readerFactory = new DefaultReactivePulsarReaderFactory<>(
+				reactivePulsarClient, lambdaSafeCustomizers);
 		readerFactory.setTopicBuilder(topicBuilder);
 		return readerFactory;
 	}

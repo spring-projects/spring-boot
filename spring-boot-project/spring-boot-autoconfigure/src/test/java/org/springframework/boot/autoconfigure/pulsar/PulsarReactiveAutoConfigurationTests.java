@@ -179,8 +179,8 @@ class PulsarReactiveAutoConfigurationTests {
 						.extracting("topicResolver", InstanceOfAssertFactories.type(TopicResolver.class))
 						.isSameAs(context.getBean(TopicResolver.class));
 					assertThat(senderFactory)
-							.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
-							.isSameAs(context.getBean(PulsarTopicBuilder.class));
+						.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
+						.isSameAs(context.getBean(PulsarTopicBuilder.class));
 				});
 		}
 
@@ -257,9 +257,8 @@ class PulsarReactiveAutoConfigurationTests {
 		void injectsExpectedBeans() {
 			ReactivePulsarClient client = mock(ReactivePulsarClient.class);
 			PulsarTopicBuilder topicBuilder = mock(PulsarTopicBuilder.class);
-			this.contextRunner
-					.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
-					.withBean("customTopicBuilder", PulsarTopicBuilder.class, () -> topicBuilder)
+			this.contextRunner.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
+				.withBean("customTopicBuilder", PulsarTopicBuilder.class, () -> topicBuilder)
 				.run((context) -> {
 					ReactivePulsarConsumerFactory<?> consumerFactory = context
 						.getBean(DefaultReactivePulsarConsumerFactory.class);
@@ -267,8 +266,8 @@ class PulsarReactiveAutoConfigurationTests {
 						.extracting("reactivePulsarClient", InstanceOfAssertFactories.type(ReactivePulsarClient.class))
 						.isSameAs(client);
 					assertThat(consumerFactory)
-							.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
-							.isSameAs(topicBuilder);
+						.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
+						.isSameAs(topicBuilder);
 				});
 		}
 
@@ -383,8 +382,8 @@ class PulsarReactiveAutoConfigurationTests {
 						.extracting("reactivePulsarClient", InstanceOfAssertFactories.type(ReactivePulsarClient.class))
 						.isSameAs(client);
 					assertThat(readerFactory)
-							.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
-							.isSameAs(topicBuilder);
+						.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
+						.isSameAs(topicBuilder);
 				});
 		}
 

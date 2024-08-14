@@ -89,12 +89,11 @@ public class PulsarAutoConfiguration {
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "false")
 	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
-			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider,
-			PulsarTopicBuilder topicBuilder) {
+			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider, PulsarTopicBuilder topicBuilder) {
 		List<ProducerBuilderCustomizer<Object>> lambdaSafeCustomizers = lambdaSafeProducerBuilderCustomizers(
 				customizersProvider);
-		DefaultPulsarProducerFactory<?> producerFactory = new DefaultPulsarProducerFactory<>(pulsarClient, this.properties.getProducer().getTopicName(),
-				lambdaSafeCustomizers, topicResolver);
+		DefaultPulsarProducerFactory<?> producerFactory = new DefaultPulsarProducerFactory<>(pulsarClient,
+				this.properties.getProducer().getTopicName(), lambdaSafeCustomizers, topicResolver);
 		producerFactory.setTopicBuilder(topicBuilder);
 		return producerFactory;
 	}
@@ -103,14 +102,14 @@ public class PulsarAutoConfiguration {
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
 	CachingPulsarProducerFactory<?> cachingPulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
-			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider,
-			PulsarTopicBuilder topicBuilder) {
+			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider, PulsarTopicBuilder topicBuilder) {
 		PulsarProperties.Producer.Cache cacheProperties = this.properties.getProducer().getCache();
 		List<ProducerBuilderCustomizer<Object>> lambdaSafeCustomizers = lambdaSafeProducerBuilderCustomizers(
 				customizersProvider);
-		CachingPulsarProducerFactory<?> producerFactory = new CachingPulsarProducerFactory<>(pulsarClient, this.properties.getProducer().getTopicName(),
-				lambdaSafeCustomizers, topicResolver, cacheProperties.getExpireAfterAccess(),
-				cacheProperties.getMaximumSize(), cacheProperties.getInitialCapacity());
+		CachingPulsarProducerFactory<?> producerFactory = new CachingPulsarProducerFactory<>(pulsarClient,
+				this.properties.getProducer().getTopicName(), lambdaSafeCustomizers, topicResolver,
+				cacheProperties.getExpireAfterAccess(), cacheProperties.getMaximumSize(),
+				cacheProperties.getInitialCapacity());
 		producerFactory.setTopicBuilder(topicBuilder);
 		return producerFactory;
 	}
@@ -145,14 +144,14 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PulsarConsumerFactory.class)
 	DefaultPulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient,
-			ObjectProvider<ConsumerBuilderCustomizer<?>> customizersProvider,
-			PulsarTopicBuilder topicBuilder) {
+			ObjectProvider<ConsumerBuilderCustomizer<?>> customizersProvider, PulsarTopicBuilder topicBuilder) {
 		List<ConsumerBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(this.propertiesMapper::customizeConsumerBuilder);
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		List<ConsumerBuilderCustomizer<Object>> lambdaSafeCustomizers = List
 			.of((builder) -> applyConsumerBuilderCustomizers(customizers, builder));
-		DefaultPulsarConsumerFactory<?> consumerFactory = new DefaultPulsarConsumerFactory<>(pulsarClient, lambdaSafeCustomizers);
+		DefaultPulsarConsumerFactory<?> consumerFactory = new DefaultPulsarConsumerFactory<>(pulsarClient,
+				lambdaSafeCustomizers);
 		consumerFactory.setTopicBuilder(topicBuilder);
 		return consumerFactory;
 	}
@@ -191,14 +190,14 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(PulsarReaderFactory.class)
 	DefaultPulsarReaderFactory<?> pulsarReaderFactory(PulsarClient pulsarClient,
-			ObjectProvider<ReaderBuilderCustomizer<?>> customizersProvider,
-			PulsarTopicBuilder topicBuilder) {
+			ObjectProvider<ReaderBuilderCustomizer<?>> customizersProvider, PulsarTopicBuilder topicBuilder) {
 		List<ReaderBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(this.propertiesMapper::customizeReaderBuilder);
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		List<ReaderBuilderCustomizer<Object>> lambdaSafeCustomizers = List
 			.of((builder) -> applyReaderBuilderCustomizers(customizers, builder));
-		DefaultPulsarReaderFactory<?> readerFactory = new DefaultPulsarReaderFactory<>(pulsarClient, lambdaSafeCustomizers);
+		DefaultPulsarReaderFactory<?> readerFactory = new DefaultPulsarReaderFactory<>(pulsarClient,
+				lambdaSafeCustomizers);
 		readerFactory.setTopicBuilder(topicBuilder);
 		return readerFactory;
 	}

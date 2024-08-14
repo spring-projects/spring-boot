@@ -330,7 +330,7 @@ class PulsarConfigurationTests {
 		void whenHasUserDefinedBeanDoesNotAutoConfigureBean() {
 			PulsarTopicBuilder topicBuilder = mock(PulsarTopicBuilder.class);
 			this.contextRunner.withBean("customPulsarTopicBuilder", PulsarTopicBuilder.class, () -> topicBuilder)
-					.run((context) -> assertThat(context).getBean(PulsarTopicBuilder.class).isSameAs(topicBuilder));
+				.run((context) -> assertThat(context).getBean(PulsarTopicBuilder.class).isSameAs(topicBuilder));
 		}
 
 		@Test
@@ -339,16 +339,16 @@ class PulsarConfigurationTests {
 			properties.add("spring.pulsar.defaults.tenant=my-tenant");
 			properties.add("spring.pulsar.defaults.namespace=my-namespace");
 			this.contextRunner.withPropertyValues(properties.toArray(String[]::new))
-					.run((context) -> assertThat(context).getBean(PulsarTopicBuilder.class)
-							.asInstanceOf(InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
-							.satisfies((topicBuilder -> {
-								assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultTenant", "my-tenant");
-								assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultNamespace", "my-namespace");
-							})));
+				.run((context) -> assertThat(context).getBean(PulsarTopicBuilder.class)
+					.asInstanceOf(InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
+					.satisfies((topicBuilder -> {
+						assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultTenant", "my-tenant");
+						assertThat(topicBuilder).hasFieldOrPropertyWithValue("defaultNamespace", "my-namespace");
+					})));
 		}
 
 	}
-	
+
 	@Nested
 	class FunctionAdministrationTests {
 
