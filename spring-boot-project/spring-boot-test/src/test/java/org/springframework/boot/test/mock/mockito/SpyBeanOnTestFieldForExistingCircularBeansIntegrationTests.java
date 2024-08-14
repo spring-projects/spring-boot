@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBeanOnTestFieldForExistingCircularBeansIntegrationTests.SpyBeanOnTestFieldForExistingCircularBeansConfig;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -32,11 +31,13 @@ import static org.mockito.BDDMockito.then;
  * beans with circular dependencies.
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = SpyBeanOnTestFieldForExistingCircularBeansConfig.class)
+@ContextConfiguration(
+		classes = SpyBeanOnTestFieldForExistingCircularBeansIntegrationTests.SpyBeanOnTestFieldForExistingCircularBeansConfig.class)
 class SpyBeanOnTestFieldForExistingCircularBeansIntegrationTests {
 
 	@SpyBean

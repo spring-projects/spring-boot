@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
  * A complete definition that can be used to create a Mockito spy.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)

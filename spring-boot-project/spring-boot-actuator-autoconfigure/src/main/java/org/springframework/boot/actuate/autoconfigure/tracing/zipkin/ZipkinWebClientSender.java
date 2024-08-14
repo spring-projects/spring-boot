@@ -30,6 +30,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Stefan Bratanov
  * @author Moritz Halbritter
+ * @deprecated since 3.3.0 for removal in 3.5.0 in favor of {@link ZipkinHttpClientSender}
  */
 @Deprecated(since = "3.3.0", forRemoval = true)
 class ZipkinWebClientSender extends HttpSender {

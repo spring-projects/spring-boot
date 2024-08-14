@@ -54,6 +54,7 @@ public class PrometheusProperties {
 
 	/**
 	 * Histogram type for backing DistributionSummary and Timer.
+	 * @deprecated since 3.3.0 for removal in 3.5.0
 	 */
 	@Deprecated(since = "3.3.0", forRemoval = true)
 	private HistogramFlavor histogramFlavor = HistogramFlavor.Prometheus;
@@ -230,7 +231,7 @@ public class PrometheusProperties {
 	@Deprecated(since = "3.3.0", forRemoval = true)
 	public enum HistogramFlavor {
 
-		Prometheus, VictoriaMetrics;
+		Prometheus, VictoriaMetrics
 
 	}
 

@@ -23,6 +23,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @see DefinitionsParser
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)

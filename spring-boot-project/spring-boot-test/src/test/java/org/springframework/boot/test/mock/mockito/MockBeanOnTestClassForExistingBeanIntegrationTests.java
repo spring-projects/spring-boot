@@ -34,6 +34,7 @@ import static org.mockito.BDDMockito.given;
  * Test {@link MockBean @MockBean} on a test class can be used to replace existing beans.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)

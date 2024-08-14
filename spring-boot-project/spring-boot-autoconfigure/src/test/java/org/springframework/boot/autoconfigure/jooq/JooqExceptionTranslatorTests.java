@@ -39,6 +39,7 @@ import static org.mockito.Mockito.never;
  * Tests for {@link JooqExceptionTranslator}
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.3.0 for removal in 3.5.0
  */
 @Deprecated(since = "3.3.0")
 @SuppressWarnings("removal")

@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Moritz Halbritter
  * @author Stefan Bratanov
+ * @deprecated since 3.3.0 for removal in 3.5.0 in favor of {@link ZipkinHttpClientSender}
  */
 @Deprecated(since = "3.3.0", forRemoval = true)
 class ZipkinRestTemplateSender extends HttpSender {

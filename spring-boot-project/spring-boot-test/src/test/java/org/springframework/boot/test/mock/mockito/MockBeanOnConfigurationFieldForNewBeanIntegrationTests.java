@@ -34,6 +34,7 @@ import static org.mockito.BDDMockito.given;
  * used to inject new mock instances.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @SuppressWarnings("removal")
 @ExtendWith(SpringExtension.class)

@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Moritz Halbritter
  * @author Phillip Webb
  */
-public class JsonWriterTests {
+class JsonWriterTests {
 
 	private static final Person PERSON = new Person("Spring", "Boot", 10);
 

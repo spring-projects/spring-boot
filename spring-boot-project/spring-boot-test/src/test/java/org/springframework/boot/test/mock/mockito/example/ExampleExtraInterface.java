@@ -20,6 +20,7 @@ package org.springframework.boot.test.mock.mockito.example;
  * Example extra interface for mocking tests.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @Deprecated(since = "3.4.0", forRemoval = true)
 public interface ExampleExtraInterface {
