@@ -48,6 +48,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
@@ -177,6 +178,11 @@ class PulsarReactiveAutoConfigurationTests {
 					assertThat(senderFactory)
 						.extracting("topicResolver", InstanceOfAssertFactories.type(TopicResolver.class))
 						.isSameAs(context.getBean(TopicResolver.class));
+					assertThat(senderFactory).extracting("topicBuilder").isNotNull(); // prototype
+																						// so
+																						// only
+																						// check
+																						// not-null
 				});
 		}
 
@@ -252,13 +258,18 @@ class PulsarReactiveAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			ReactivePulsarClient client = mock(ReactivePulsarClient.class);
+			PulsarTopicBuilder topicBuilder = mock(PulsarTopicBuilder.class);
 			this.contextRunner.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
+				.withBean("customTopicBuilder", PulsarTopicBuilder.class, () -> topicBuilder)
 				.run((context) -> {
 					ReactivePulsarConsumerFactory<?> consumerFactory = context
 						.getBean(DefaultReactivePulsarConsumerFactory.class);
 					assertThat(consumerFactory)
 						.extracting("reactivePulsarClient", InstanceOfAssertFactories.type(ReactivePulsarClient.class))
 						.isSameAs(client);
+					assertThat(consumerFactory)
+						.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
+						.isSameAs(topicBuilder);
 				});
 		}
 
@@ -362,14 +373,19 @@ class PulsarReactiveAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			ReactivePulsarClient client = mock(ReactivePulsarClient.class);
+			PulsarTopicBuilder topicBuilder = mock(PulsarTopicBuilder.class);
 			this.contextRunner.withPropertyValues("spring.pulsar.reader.name=test-reader")
 				.withBean("customReactivePulsarClient", ReactivePulsarClient.class, () -> client)
+				.withBean("customPulsarTopicBuilder", PulsarTopicBuilder.class, () -> topicBuilder)
 				.run((context) -> {
 					DefaultReactivePulsarReaderFactory<?> readerFactory = context
 						.getBean(DefaultReactivePulsarReaderFactory.class);
 					assertThat(readerFactory)
 						.extracting("reactivePulsarClient", InstanceOfAssertFactories.type(ReactivePulsarClient.class))
 						.isSameAs(client);
+					assertThat(readerFactory)
+						.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
+						.isSameAs(topicBuilder);
 				});
 		}
 

@@ -2069,6 +2069,12 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
+      "name": "spring.pulsar.defaults.topic.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable default tenant and namespace support for topics.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.pulsar.function.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable function support.",

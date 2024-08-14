@@ -219,7 +219,9 @@ class PulsarAutoConfigurationTests {
 						"spring.pulsar.producer.cache.enabled=false")
 				.run((context) -> assertThat(context).getBean(DefaultPulsarProducerFactory.class)
 					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class)));
+					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class))
+					.extracting("topicBuilder")
+					.isNotNull()); // prototype so only check not-null
 		}
 
 		@ParameterizedTest
@@ -375,7 +377,9 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarConsumerFactory.class)
-				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class)));
+				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+				.extracting("topicBuilder")
+				.isNotNull()); // prototype so only check not-null
 		}
 
 		@Test
@@ -574,7 +578,9 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
-				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class)));
+				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+				.extracting("topicBuilder")
+				.isNotNull()); // prototype so only check not-null
 		}
 
 		@Test
