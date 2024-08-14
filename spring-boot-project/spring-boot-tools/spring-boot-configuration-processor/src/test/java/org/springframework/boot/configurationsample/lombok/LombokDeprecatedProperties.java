@@ -25,6 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * Deprecated configuration properties.
  *
  * @author Stephane Nicoll
+ * @deprecated deprecated
  */
 @Getter
 @Setter

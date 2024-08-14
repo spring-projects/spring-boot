@@ -42,7 +42,7 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  */
 @DataLdapTest
 @Testcontainers(disabledWithoutDocker = true)
-public class DataLdapTestDockerTests {
+class DataLdapTestDockerTests {
 
 	@Container
 	@ServiceConnection

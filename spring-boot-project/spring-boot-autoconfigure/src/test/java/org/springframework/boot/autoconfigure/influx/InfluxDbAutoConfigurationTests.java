@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @deprecated since 3.2.0 for removal in 3.4.0
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.2.0", forRemoval = true)

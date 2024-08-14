@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @DisabledIfDockerUnavailable
 @ImportTestcontainers(LoadTimeWeaverAwareConsumerContainers.class)
-public class LoadTimeWeaverAwareConsumerImportTestcontainersTests implements LoadTimeWeaverAwareConsumerContainers {
+class LoadTimeWeaverAwareConsumerImportTestcontainersTests implements LoadTimeWeaverAwareConsumerContainers {
 
 	@Autowired
 	private LoadTimeWeaverAwareConsumer consumer;
