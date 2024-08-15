@@ -178,9 +178,11 @@ class PulsarReactiveAutoConfigurationTests {
 					assertThat(senderFactory)
 						.extracting("topicResolver", InstanceOfAssertFactories.type(TopicResolver.class))
 						.isSameAs(context.getBean(TopicResolver.class));
-					assertThat(senderFactory)
-						.extracting("topicBuilder", InstanceOfAssertFactories.type(PulsarTopicBuilder.class))
-						.isSameAs(context.getBean(PulsarTopicBuilder.class));
+					assertThat(senderFactory).extracting("topicBuilder").isNotNull(); // prototype
+																						// so
+																						// only
+																						// check
+																						// not-null
 				});
 		}
 
