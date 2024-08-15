@@ -40,13 +40,16 @@ public abstract class PrepareMavenBinaries extends DefaultTask {
 
 	@TaskAction
 	public void prepareBinaries() {
-		for (String version : getVersions().get()) {
-			Configuration configuration = getProject().getConfigurations()
-				.detachedConfiguration(
-						getProject().getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
-			getProject()
-				.copy((copy) -> copy.into(getOutputDir()).from(getProject().zipTree(configuration.getSingleFile())));
-		}
+		getProject().sync((sync) -> {
+			sync.into(getOutputDir());
+			for (String version : getVersions().get()) {
+				Configuration configuration = getProject().getConfigurations()
+					.detachedConfiguration(getProject().getDependencies()
+						.create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
+				sync.from(getProject().zipTree(configuration.getSingleFile()));
+			}
+		});
+
 	}
 
 }
