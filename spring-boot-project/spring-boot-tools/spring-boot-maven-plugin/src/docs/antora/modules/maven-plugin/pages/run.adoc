@@ -24,7 +24,7 @@ To enable it, just add the following dependency to your project:
 include::example$running/devtools-pom.xml[tags=devtools]
 ----
 
-When `devtools` is running, it detects change when you recompile your application and automatically refreshes it.
+When `devtools` is running, it detects changes when you recompile your application and automatically refreshes it.
 This works for not only resources but code as well.
 It also provides a LiveReload server so that it can automatically trigger a browser refresh whenever things change.
 
@@ -36,7 +36,7 @@ Just include the following property in your project:
 spring.devtools.remote.restart.enabled=false
 ----
 
-Prior to `devtools`, the plugin supported hot refreshing of resources by default which has now be disabled in favour of the solution described above.
+Prior to `devtools`, the plugin supported hot refreshing of resources by default which has now been disabled in favour of the solution described above.
 You can restore it at any time by configuring your project:
 
 [source,xml,subs="verbatim,attributes"]
