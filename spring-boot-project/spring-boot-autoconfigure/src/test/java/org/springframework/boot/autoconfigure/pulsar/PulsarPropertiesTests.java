@@ -247,7 +247,7 @@ class PulsarPropertiesTests {
 
 		@Test
 		void bindWhenValuesNotSpecified() {
-			assertThat(new PulsarProperties().getDefaults()).satisfies((defaults) -> {
+			assertThat(new PulsarProperties().getDefaults().getTopic()).satisfies((defaults) -> {
 				assertThat(defaults.getTenant()).isNull();
 				assertThat(defaults.getNamespace()).isNull();
 			});
@@ -256,9 +256,9 @@ class PulsarPropertiesTests {
 		@Test
 		void bindWhenValuesSpecified() {
 			Map<String, String> map = new HashMap<>();
-			map.put("spring.pulsar.defaults.tenant", "my-tenant");
-			map.put("spring.pulsar.defaults.namespace", "my-namespace");
-			PulsarProperties.Defaults properties = bindProperties(map).getDefaults();
+			map.put("spring.pulsar.defaults.topic.tenant", "my-tenant");
+			map.put("spring.pulsar.defaults.topic.namespace", "my-namespace");
+			PulsarProperties.Defaults.Topic properties = bindProperties(map).getDefaults().getTopic();
 			assertThat(properties.getTenant()).isEqualTo("my-tenant");
 			assertThat(properties.getNamespace()).isEqualTo("my-namespace");
 		}

@@ -182,9 +182,10 @@ class PulsarConfiguration {
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
+	@ConditionalOnProperty(name = "spring.pulsar.defaults.topic.enabled", havingValue = "true", matchIfMissing = true)
 	PulsarTopicBuilder pulsarTopicBuilder() {
-		return new PulsarTopicBuilder(TopicDomain.persistent, this.properties.getDefaults().getTenant(),
-				this.properties.getDefaults().getNamespace());
+		return new PulsarTopicBuilder(TopicDomain.persistent, this.properties.getDefaults().getTopic().getTenant(),
+				this.properties.getDefaults().getTopic().getNamespace());
 	}
 
 }
