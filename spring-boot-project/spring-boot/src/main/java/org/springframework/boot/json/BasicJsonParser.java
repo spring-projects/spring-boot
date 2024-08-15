@@ -72,19 +72,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 		if (json.startsWith("\"")) {
 			return trimEdges(json, '"', '"');
 		}
-		try {
-			return Long.valueOf(json);
-		}
-		catch (NumberFormatException ex) {
-			// ignore
-		}
-		try {
-			return Double.valueOf(json);
-		}
-		catch (NumberFormatException ex) {
-			// ignore
-		}
-		return json;
+		return parseNumber(json);
 	}
 
 	private Map<String, Object> parseMapInternal(int nesting, String json) {
@@ -99,6 +87,18 @@ public class BasicJsonParser extends AbstractJsonParser {
 			map.put(key, value);
 		}
 		return map;
+	}
+
+	private Object parseNumber(String json) {
+		try {
+			return Long.valueOf(json);
+		} catch (NumberFormatException e) {
+			try {
+				return Double.valueOf(json);
+			} catch (NumberFormatException ex) {
+				return json;
+			}
+		}
 	}
 
 	private static String trimTrailingCharacter(String string, char c) {
