@@ -80,13 +80,8 @@
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
 	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
-	<suppress files="CertificateMatchingTest\.java" checks="SpringTestFileName" />
-	<suppress files="ConversionServiceTest\.java" checks="SpringTestFileName" />
-	<suppress files="DockerComposeTest\.java" checks="SpringTestFileName" />
-	<suppress files="WebEndpointTest\.java" checks="SpringTestFileName" />
 	<suppress files="ImportTestcontainersTests\.java" checks="InterfaceIsType" />
 	<suppress files="MyContainers\.java" checks="InterfaceIsType" />
-	<suppress files="CertificateMatchingTest\.java" checks="SpringTestFileName" />
 	<suppress files="SpringBootBanner\.java" checks="SpringLeadingWhitespace" />
 	<suppress files="LoadTimeWeaverAwareConsumerContainers\.java" checks="InterfaceIsType" />
 </suppressions>
