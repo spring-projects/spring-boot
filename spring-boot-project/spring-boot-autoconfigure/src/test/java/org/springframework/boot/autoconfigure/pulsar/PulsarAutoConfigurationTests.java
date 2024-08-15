@@ -67,7 +67,6 @@ import org.springframework.pulsar.core.PulsarConsumerFactory;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarReaderFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
-import org.springframework.pulsar.core.PulsarTopicBuilder;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
@@ -221,7 +220,8 @@ class PulsarAutoConfigurationTests {
 				.run((context) -> assertThat(context).getBean(DefaultPulsarProducerFactory.class)
 					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
 					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class))
-					.hasFieldOrPropertyWithValue("topicBuilder", context.getBean(PulsarTopicBuilder.class)));
+					.extracting("topicBuilder")
+					.isNotNull()); // prototype so only check not-null
 		}
 
 		@ParameterizedTest
@@ -378,7 +378,8 @@ class PulsarAutoConfigurationTests {
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarConsumerFactory.class)
 				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-				.hasFieldOrPropertyWithValue("topicBuilder", context.getBean(PulsarTopicBuilder.class)));
+				.extracting("topicBuilder")
+				.isNotNull()); // prototype so only check not-null
 		}
 
 		@Test
@@ -578,7 +579,8 @@ class PulsarAutoConfigurationTests {
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
 				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-				.hasFieldOrPropertyWithValue("topicBuilder", context.getBean(PulsarTopicBuilder.class)));
+				.extracting("topicBuilder")
+				.isNotNull()); // prototype so only check not-null
 		}
 
 		@Test

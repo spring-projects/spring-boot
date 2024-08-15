@@ -353,6 +353,12 @@ class PulsarConfigurationTests {
 					}));
 		}
 
+		@Test
+		void beanHasScopePrototype() {
+			this.contextRunner.run((context) -> assertThat(context.getBean(PulsarTopicBuilder.class))
+				.isNotSameAs(context.getBean(PulsarTopicBuilder.class)));
+		}
+
 	}
 
 	@Nested
