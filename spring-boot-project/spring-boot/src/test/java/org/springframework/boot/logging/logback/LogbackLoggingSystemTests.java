@@ -44,7 +44,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -94,9 +93,8 @@ import static org.mockito.Mockito.times;
  * @author Scott Frederick
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
- * @author Mark Chesney
  */
-@ExtendWith({ MockitoExtension.class, OutputCaptureExtension.class })
+@ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions({ "log4j-core-*.jar", "log4j-api-*.jar" })
 class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 

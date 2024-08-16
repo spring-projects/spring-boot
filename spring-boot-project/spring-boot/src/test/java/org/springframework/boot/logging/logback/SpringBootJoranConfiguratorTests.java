@@ -43,7 +43,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
- * @author Mark Chesney
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringBootJoranConfiguratorTests {

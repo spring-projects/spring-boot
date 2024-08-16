@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * control over how and when the logging system is initialized.
  *
  * @author Andy Wilkinson
- * @author Mark Chesney
  */
 class LogbackLoggingSystemParallelInitializationTests {
 
