@@ -466,7 +466,7 @@ bom {
 			releaseNotes("https://github.com/google/gson/releases/tag/gson-parent-{version}")
 		}
 	}
-	library("H2", "2.3.230") {
+	library("H2", "2.3.232") {
 		group("com.h2database") {
 			modules = [
 				"h2"
