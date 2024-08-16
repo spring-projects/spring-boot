@@ -25,6 +25,8 @@ import org.apache.activemq.artemis.core.config.CoreAddressConfiguration;
 import org.apache.activemq.artemis.core.server.JournalType;
 import org.apache.activemq.artemis.core.settings.impl.AddressSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
+@EnabledForJreRange(max = JRE.JAVA_22, disabledReason = "https://issues.apache.org/jira/browse/ARTEMIS-4975")
 class ArtemisEmbeddedConfigurationFactoryTests {
 
 	@Test

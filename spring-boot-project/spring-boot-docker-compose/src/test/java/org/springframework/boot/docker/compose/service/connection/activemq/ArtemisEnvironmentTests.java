@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
+@EnabledForJreRange(max = JRE.JAVA_22, disabledReason = "https://issues.apache.org/jira/browse/ARTEMIS-4975")
 class ArtemisEnvironmentTests {
 
 	@Test

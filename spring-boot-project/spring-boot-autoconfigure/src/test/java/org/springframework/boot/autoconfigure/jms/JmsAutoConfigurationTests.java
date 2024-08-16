@@ -24,6 +24,8 @@ import jakarta.jms.ExceptionListener;
 import jakarta.jms.Session;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
@@ -72,6 +74,7 @@ class JmsAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(ArtemisAutoConfiguration.class, JmsAutoConfiguration.class));
 
 	@Test
+	@EnabledForJreRange(max = JRE.JAVA_22, disabledReason = "https://issues.apache.org/jira/browse/ARTEMIS-4975")
 	void testDefaultJmsConfiguration() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ConnectionFactory.class);
@@ -88,6 +91,7 @@ class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JRE.JAVA_22, disabledReason = "https://issues.apache.org/jira/browse/ARTEMIS-4975")
 	void testConnectionFactoryBackOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration2.class)
 			.run((context) -> assertThat(context.getBeansOfType(ActiveMQConnectionFactory.class))
@@ -108,6 +112,7 @@ class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	@EnabledForJreRange(max = JRE.JAVA_22, disabledReason = "https://issues.apache.org/jira/browse/ARTEMIS-4975")
 	void testJmsTemplateBackOffEverything() {
 		this.contextRunner
 			.withUserConfiguration(TestConfiguration2.class, TestConfiguration3.class, TestConfiguration5.class)

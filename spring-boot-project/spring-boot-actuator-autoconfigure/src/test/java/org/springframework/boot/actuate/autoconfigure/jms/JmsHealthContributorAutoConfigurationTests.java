@@ -17,6 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.jms;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.jms.JmsHealthIndicator;
@@ -32,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
+@EnabledForJreRange(max = JRE.JAVA_22, disabledReason = "https://issues.apache.org/jira/browse/ARTEMIS-4975")
 class JmsHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
