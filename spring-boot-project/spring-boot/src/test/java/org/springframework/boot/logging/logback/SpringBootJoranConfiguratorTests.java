@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Mark Chesney
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringBootJoranConfiguratorTests {
@@ -72,6 +73,7 @@ class SpringBootJoranConfiguratorTests {
 	@AfterEach
 	void reset() {
 		this.context.stop();
+		this.context.reset();
 		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
 	}
 
