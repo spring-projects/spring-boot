@@ -73,6 +73,7 @@ class SpringBootJoranConfiguratorTests {
 	void reset() {
 		this.context.stop();
 		new BasicConfigurator().configure((LoggerContext) LoggerFactory.getILoggerFactory());
+		this.context.start();
 	}
 
 	@Test

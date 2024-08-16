@@ -80,7 +80,8 @@ class DefaultLogbackConfiguration {
 	}
 
 	void apply(LogbackConfigurator config) {
-		synchronized (config.getConfigurationLock()) {
+		config.getConfigurationLock().lock();
+		try {
 			defaults(config);
 			Appender<ILoggingEvent> consoleAppender = consoleAppender(config);
 			if (this.logFile != null) {
@@ -90,6 +91,9 @@ class DefaultLogbackConfiguration {
 			else {
 				config.root(Level.INFO, consoleAppender);
 			}
+		}
+		finally {
+			config.getConfigurationLock().unlock();
 		}
 	}
 

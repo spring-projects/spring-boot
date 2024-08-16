@@ -240,6 +240,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 					: new LogbackConfigurator(loggerContext);
 			new DefaultLogbackConfiguration(logFile).apply(configurator);
 			loggerContext.setPackagingDataEnabled(true);
+			loggerContext.start();
 		});
 	}
 
@@ -260,6 +261,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			catch (Exception ex) {
 				throw new IllegalStateException("Could not initialize Logback logging from " + location, ex);
 			}
+			loggerContext.start();
 		});
 		reportConfigurationErrorsIfNecessary(loggerContext);
 	}
