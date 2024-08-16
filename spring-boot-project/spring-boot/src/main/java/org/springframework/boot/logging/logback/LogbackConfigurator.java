@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -35,6 +36,7 @@ import org.springframework.util.Assert;
  * Allows programmatic configuration of logback which is usually faster than parsing XML.
  *
  * @author Phillip Webb
+ * @author Mark Chesney
  */
 class LogbackConfigurator {
 
@@ -49,7 +51,7 @@ class LogbackConfigurator {
 		return this.context;
 	}
 
-	Object getConfigurationLock() {
+	ReentrantLock getConfigurationLock() {
 		return this.context.getConfigurationLock();
 	}
 
