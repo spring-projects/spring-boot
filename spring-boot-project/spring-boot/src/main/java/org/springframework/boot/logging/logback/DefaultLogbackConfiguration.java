@@ -17,7 +17,6 @@
 package org.springframework.boot.logging.logback;
 
 import java.nio.charset.Charset;
-import java.util.concurrent.locks.ReentrantLock;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -52,7 +51,6 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
- * @author Mark Chesney
  */
 class DefaultLogbackConfiguration {
 
@@ -82,9 +80,7 @@ class DefaultLogbackConfiguration {
 	}
 
 	void apply(LogbackConfigurator config) {
-		ReentrantLock lock = config.getConfigurationLock();
-		lock.lock();
-		try {
+		synchronized (config.getConfigurationLock()) {
 			defaults(config);
 			Appender<ILoggingEvent> consoleAppender = consoleAppender(config);
 			if (this.logFile != null) {
@@ -94,9 +90,6 @@ class DefaultLogbackConfiguration {
 			else {
 				config.root(Level.INFO, consoleAppender);
 			}
-		}
-		finally {
-			lock.unlock();
 		}
 	}
 

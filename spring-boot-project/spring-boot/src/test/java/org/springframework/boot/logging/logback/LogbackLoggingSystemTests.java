@@ -127,7 +127,6 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 		this.loggingSystem.cleanUp();
 		((LoggerContext) LoggerFactory.getILoggerFactory()).stop();
-		((LoggerContext) LoggerFactory.getILoggerFactory()).reset();
 	}
 
 	@Test
