@@ -45,7 +45,6 @@ class LogbackLoggingSystemParallelInitializationTests {
 	void cleanUp() {
 		this.loggingSystem.cleanUp();
 		((LoggerContext) LoggerFactory.getILoggerFactory()).stop();
-		((LoggerContext) LoggerFactory.getILoggerFactory()).reset();
 	}
 
 	@Test
