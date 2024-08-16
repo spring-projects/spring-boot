@@ -17,6 +17,8 @@
 package org.springframework.boot.logging;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -43,8 +45,10 @@ public abstract class AbstractLoggingSystemTests {
 	private String originalTempDirectory;
 
 	@BeforeEach
-	void configureTempDir(@TempDir Path temp) {
+	void configureTempDir(@TempDir Path temp) throws IOException {
 		this.originalTempDirectory = System.getProperty(JAVA_IO_TMPDIR);
+		Files.delete(Files.createTempFile("prevent", "pollution"));
+		File.createTempFile("prevent", "pollution").delete();
 		System.setProperty(JAVA_IO_TMPDIR, temp.toAbsolutePath().toString());
 		MDC.clear();
 	}
