@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -49,7 +50,7 @@ class LogbackConfigurator {
 		return this.context;
 	}
 
-	Object getConfigurationLock() {
+	ReentrantLock getConfigurationLock() {
 		return this.context.getConfigurationLock();
 	}
 
