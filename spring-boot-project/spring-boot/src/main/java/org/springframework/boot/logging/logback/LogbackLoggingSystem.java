@@ -76,6 +76,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @author Mark Chesney
  * @since 1.0.0
  */
 public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanFactoryInitializationAotProcessor {
@@ -210,7 +211,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			applySystemProperties(initializationContext.getEnvironment(), logFile);
 		}
 		LoggerContext loggerContext = getLoggerContext();
-		stopAndReset(loggerContext);
+		stopOrReset(loggerContext);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
@@ -223,7 +224,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		LoggerContext context = getLoggerContext();
-		stopAndReset(context);
+		stopOrReset(context);
 		withLoggingSuppressed(() -> {
 			boolean debug = Boolean.getBoolean("logback.debug");
 			if (debug) {
@@ -245,7 +246,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
-		stopAndReset(loggerContext);
+		stopOrReset(loggerContext);
 		withLoggingSuppressed(() -> {
 			if (initializationContext != null) {
 				applySystemProperties(initializationContext.getEnvironment(), logFile);
@@ -298,9 +299,13 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 	}
 
-	private void stopAndReset(LoggerContext loggerContext) {
-		loggerContext.stop();
-		loggerContext.reset();
+	private void stopOrReset(LoggerContext loggerContext) {
+		if (loggerContext.isStarted()) {
+			loggerContext.stop();
+		}
+		else {
+			loggerContext.reset();
+		}
 		if (isBridgeHandlerInstalled()) {
 			addLevelChangePropagator(loggerContext);
 		}
