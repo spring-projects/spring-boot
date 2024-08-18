@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointEx
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 
 /**
@@ -112,11 +113,20 @@ import org.springframework.core.env.Environment;
 public @interface ConditionalOnAvailableEndpoint {
 
 	/**
+	 * Alias for {@link #endpoint()}.
+	 * @return the endpoint type to check
+	 * @since 3.4.0
+	 */
+	@AliasFor(attribute = "endpoint")
+	Class<?> value() default Void.class;
+
+	/**
 	 * The endpoint type that should be checked. Inferred when the return type of the
 	 * {@code @Bean} method is either an {@link Endpoint @Endpoint} or an
 	 * {@link EndpointExtension @EndpointExtension}.
 	 * @return the endpoint type to check
 	 */
+	@AliasFor(attribute = "value")
 	Class<?> endpoint() default Void.class;
 
 	/**

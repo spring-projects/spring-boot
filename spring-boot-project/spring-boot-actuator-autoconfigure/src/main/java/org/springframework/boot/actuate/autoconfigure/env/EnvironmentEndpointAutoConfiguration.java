@@ -38,7 +38,7 @@ import org.springframework.core.env.Environment;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = EnvironmentEndpoint.class)
+@ConditionalOnAvailableEndpoint(EnvironmentEndpoint.class)
 @EnableConfigurationProperties(EnvironmentEndpointProperties.class)
 public class EnvironmentEndpointAutoConfiguration {
 

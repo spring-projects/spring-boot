@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = LogFileWebEndpoint.class)
+@ConditionalOnAvailableEndpoint(LogFileWebEndpoint.class)
 @EnableConfigurationProperties(LogFileWebEndpointProperties.class)
 public class LogFileWebEndpointAutoConfiguration {
 

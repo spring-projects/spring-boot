@@ -42,7 +42,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration(after = QuartzAutoConfiguration.class)
 @ConditionalOnClass(Scheduler.class)
-@ConditionalOnAvailableEndpoint(endpoint = QuartzEndpoint.class)
+@ConditionalOnAvailableEndpoint(QuartzEndpoint.class)
 @EnableConfigurationProperties(QuartzEndpointProperties.class)
 public class QuartzEndpointAutoConfiguration {
 
