@@ -16,7 +16,7 @@
 
 package org.springframework.boot.ssl;
 
-import java.util.Map;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -38,13 +38,6 @@ public interface SslBundles {
 	SslBundle getBundle(String name) throws NoSuchSslBundleException;
 
 	/**
-	 * Return all the {@link SslBundle SslBundles} by name.
-	 * @return the bundles
-	 * @since 3.4.0
-	 */
-	Map<String, SslBundle> getBundles();
-
-	/**
 	 * Add a handler that will be called each time the named bundle is updated.
 	 * @param name the bundle name
 	 * @param updateHandler the handler that should be called
@@ -52,5 +45,12 @@ public interface SslBundles {
 	 * @since 3.2.0
 	 */
 	void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException;
+
+	/**
+	 * Return the names of all bundles managed by this instance.
+	 * @return the bundle names
+	 * @since 3.4.0
+	 */
+	List<String> getBundleNames();
 
 }

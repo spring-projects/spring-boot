@@ -16,14 +16,18 @@
 
 package org.springframework.boot.actuate.ssl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.info.SslInfo;
-import org.springframework.boot.info.SslInfo.CertificateChain;
+import org.springframework.boot.info.SslInfo.BundleInfo;
+import org.springframework.boot.info.SslInfo.CertificateChainInfo;
+import org.springframework.boot.info.SslInfo.CertificateInfo;
 
 /**
  * {@link HealthIndicator} that checks the certificates the application uses and reports
@@ -42,38 +46,41 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
-		List<CertificateChain> certificateChains = this.sslInfo.getBundles()
-			.stream()
-			.flatMap((bundle) -> bundle.getCertificateChains().stream())
-			.toList();
-		List<CertificateChain> validCertificateChains = certificateChains.stream()
-			.filter(this::containsOnlyValidCertificates)
-			.toList();
-		List<CertificateChain> invalidCertificateChains = certificateChains.stream()
-			.filter(this::containsInvalidCertificate)
-			.toList();
+		List<CertificateChainInfo> validCertificateChains = new ArrayList<>();
+		List<CertificateChainInfo> invalidCertificateChains = new ArrayList<>();
+		for (BundleInfo bundle : this.sslInfo.getBundles()) {
+			for (CertificateChainInfo certificateChain : bundle.getCertificateChains()) {
+				if (containsOnlyValidCertificates(certificateChain)) {
+					validCertificateChains.add(certificateChain);
+				}
+				else if (containsInvalidCertificate(certificateChain)) {
+					invalidCertificateChains.add(certificateChain);
+				}
+			}
+		}
+		builder.status((invalidCertificateChains.isEmpty()) ? Status.UP : Status.OUT_OF_SERVICE);
 		builder.withDetail("validChains", validCertificateChains);
 		builder.withDetail("invalidChains", invalidCertificateChains);
-		if (invalidCertificateChains.isEmpty()) {
-			builder.status(Status.UP);
-		}
-		else {
-			builder.status(Status.OUT_OF_SERVICE);
-		}
 	}
 
-	private boolean containsOnlyValidCertificates(CertificateChain certificateChain) {
-		return certificateChain.getCertificates()
-			.stream()
-			.filter((certificate) -> certificate.getValidity() != null)
-			.allMatch((certificate) -> certificate.getValidity().getStatus().isValid());
+	private boolean containsOnlyValidCertificates(CertificateChainInfo certificateChain) {
+		return validatableCertificates(certificateChain).allMatch(this::isValidCertificate);
 	}
 
-	private boolean containsInvalidCertificate(CertificateChain certificateChain) {
-		return certificateChain.getCertificates()
-			.stream()
-			.filter((certificate) -> certificate.getValidity() != null)
-			.anyMatch((certificate) -> !certificate.getValidity().getStatus().isValid());
+	private boolean containsInvalidCertificate(CertificateChainInfo certificateChain) {
+		return validatableCertificates(certificateChain).anyMatch(this::isNotValidCertificate);
+	}
+
+	private Stream<CertificateInfo> validatableCertificates(CertificateChainInfo certificateChain) {
+		return certificateChain.getCertificates().stream().filter((certificate) -> certificate.getValidity() != null);
+	}
+
+	private boolean isValidCertificate(CertificateInfo certificate) {
+		return certificate.getValidity().getStatus().isValid();
+	}
+
+	private boolean isNotValidCertificate(CertificateInfo certificate) {
+		return !isValidCertificate(certificate);
 	}
 
 }

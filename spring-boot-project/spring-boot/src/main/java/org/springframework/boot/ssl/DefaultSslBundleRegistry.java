@@ -16,13 +16,13 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,15 +71,15 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	}
 
 	@Override
-	public Map<String, SslBundle> getBundles() {
-		return this.registeredBundles.entrySet()
-			.stream()
-			.collect(Collectors.toUnmodifiableMap(Entry::getKey, (entry) -> entry.getValue().getBundle()));
+	public void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException {
+		getRegistered(name).addUpdateHandler(updateHandler);
 	}
 
 	@Override
-	public void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException {
-		getRegistered(name).addUpdateHandler(updateHandler);
+	public List<String> getBundleNames() {
+		List<String> names = new ArrayList<>(this.registeredBundles.keySet());
+		Collections.sort(names);
+		return Collections.unmodifiableList(names);
 	}
 
 	private RegisteredSslBundle getRegistered(String name) throws NoSuchSslBundleException {

@@ -25,10 +25,10 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.info.SslInfo;
-import org.springframework.boot.info.SslInfo.Bundle;
-import org.springframework.boot.info.SslInfo.CertificateChain;
+import org.springframework.boot.info.SslInfo.BundleInfo;
+import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.info.SslInfo.CertificateInfo;
-import org.springframework.boot.info.SslInfo.CertificateInfo.Validity;
+import org.springframework.boot.info.SslInfo.CertificateValidityInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -43,18 +43,16 @@ class SslHealthIndicatorTests {
 
 	private HealthIndicator healthIndicator;
 
-	private Validity validity;
+	private CertificateValidityInfo validity;
 
 	@BeforeEach
 	void setUp() {
 		SslInfo sslInfo = mock(SslInfo.class);
-		Bundle bundle = mock(Bundle.class);
-		CertificateChain certificateChain = mock(CertificateChain.class);
+		BundleInfo bundle = mock(BundleInfo.class);
+		CertificateChainInfo certificateChain = mock(CertificateChainInfo.class);
 		CertificateInfo certificateInfo = mock(CertificateInfo.class);
-
 		this.healthIndicator = new SslHealthIndicator(sslInfo);
-		this.validity = mock(Validity.class);
-
+		this.validity = mock(CertificateValidityInfo.class);
 		given(sslInfo.getBundles()).willReturn(List.of(bundle));
 		given(bundle.getCertificateChains()).willReturn(List.of(certificateChain));
 		given(certificateChain.getCertificates()).willReturn(List.of(certificateInfo));
@@ -63,54 +61,54 @@ class SslHealthIndicatorTests {
 
 	@Test
 	void shouldBeUpIfNoSslIssuesDetected() {
-		given(this.validity.getStatus()).willReturn(Validity.Status.VALID);
+		given(this.validity.getStatus()).willReturn(CertificateValidityInfo.Status.VALID);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertDetailsKeys(health);
-		List<CertificateChain> validChains = getValidChains(health);
+		List<CertificateChainInfo> validChains = getValidChains(health);
 		assertThat(validChains).hasSize(1);
-		assertThat(validChains.get(0)).isInstanceOf(CertificateChain.class);
-		List<CertificateChain> invalidChains = getInvalidChains(health);
+		assertThat(validChains.get(0)).isInstanceOf(CertificateChainInfo.class);
+		List<CertificateChainInfo> invalidChains = getInvalidChains(health);
 		assertThat(invalidChains).isEmpty();
 	}
 
 	@Test
 	void shouldBeOutOfServiceIfACertificateIsExpired() {
-		given(this.validity.getStatus()).willReturn(Validity.Status.EXPIRED);
+		given(this.validity.getStatus()).willReturn(CertificateValidityInfo.Status.EXPIRED);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 		assertDetailsKeys(health);
-		List<CertificateChain> validChains = getValidChains(health);
+		List<CertificateChainInfo> validChains = getValidChains(health);
 		assertThat(validChains).isEmpty();
-		List<CertificateChain> invalidChains = getInvalidChains(health);
+		List<CertificateChainInfo> invalidChains = getInvalidChains(health);
 		assertThat(invalidChains).hasSize(1);
-		assertThat(invalidChains.get(0)).isInstanceOf(CertificateChain.class);
+		assertThat(invalidChains.get(0)).isInstanceOf(CertificateChainInfo.class);
 	}
 
 	@Test
 	void shouldBeOutOfServiceIfACertificateIsNotYetValid() {
-		given(this.validity.getStatus()).willReturn(Validity.Status.NOT_YET_VALID);
+		given(this.validity.getStatus()).willReturn(CertificateValidityInfo.Status.NOT_YET_VALID);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
 		assertDetailsKeys(health);
-		List<CertificateChain> validChains = getValidChains(health);
+		List<CertificateChainInfo> validChains = getValidChains(health);
 		assertThat(validChains).isEmpty();
-		List<CertificateChain> invalidChains = getInvalidChains(health);
+		List<CertificateChainInfo> invalidChains = getInvalidChains(health);
 		assertThat(invalidChains).hasSize(1);
-		assertThat(invalidChains.get(0)).isInstanceOf(CertificateChain.class);
+		assertThat(invalidChains.get(0)).isInstanceOf(CertificateChainInfo.class);
 
 	}
 
 	@Test
 	void shouldReportWarningIfACertificateWillExpireSoon() {
-		given(this.validity.getStatus()).willReturn(Validity.Status.WILL_EXPIRE_SOON);
+		given(this.validity.getStatus()).willReturn(CertificateValidityInfo.Status.WILL_EXPIRE_SOON);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertDetailsKeys(health);
-		List<CertificateChain> validChains = getValidChains(health);
+		List<CertificateChainInfo> validChains = getValidChains(health);
 		assertThat(validChains).hasSize(1);
-		assertThat(validChains.get(0)).isInstanceOf(CertificateChain.class);
-		List<CertificateChain> invalidChains = getInvalidChains(health);
+		assertThat(validChains.get(0)).isInstanceOf(CertificateChainInfo.class);
+		List<CertificateChainInfo> invalidChains = getInvalidChains(health);
 		assertThat(invalidChains).isEmpty();
 	}
 
@@ -119,13 +117,13 @@ class SslHealthIndicatorTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<CertificateChain> getInvalidChains(Health health) {
-		return (List<CertificateChain>) health.getDetails().get("invalidChains");
+	private static List<CertificateChainInfo> getInvalidChains(Health health) {
+		return (List<CertificateChainInfo>) health.getDetails().get("invalidChains");
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<CertificateChain> getValidChains(Health health) {
-		return (List<CertificateChain>) health.getDetails().get("validChains");
+	private static List<CertificateChainInfo> getValidChains(Health health) {
+		return (List<CertificateChainInfo>) health.getDetails().get("validChains");
 	}
 
 }

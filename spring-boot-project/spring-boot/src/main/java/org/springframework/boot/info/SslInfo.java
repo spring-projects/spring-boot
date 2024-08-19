@@ -24,12 +24,18 @@ import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
-import org.springframework.boot.info.SslInfo.CertificateInfo.Validity.Status;
+import javax.security.auth.x500.X500Principal;
+
+import org.springframework.boot.info.SslInfo.CertificateValidityInfo.Status;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Information about the certificates that the application uses.
@@ -48,38 +54,32 @@ public class SslInfo {
 		this.certificateValidityWarningThreshold = certificateValidityWarningThreshold;
 	}
 
-	public List<Bundle> getBundles() {
-		return this.sslBundles.getBundles()
-			.entrySet()
+	public List<BundleInfo> getBundles() {
+		return this.sslBundles.getBundleNames()
 			.stream()
-			.map((entry) -> new Bundle(entry.getKey(), entry.getValue()))
+			.map((name) -> new BundleInfo(name, this.sslBundles.getBundle(name)))
 			.toList();
 	}
 
-	public final class Bundle {
+	/**
+	 * Info about a single {@link SslBundle}.
+	 */
+	public final class BundleInfo {
 
 		private final String name;
 
-		private final List<CertificateChain> certificateChains;
+		private final List<CertificateChainInfo> certificateChains;
 
-		private Bundle(String name, SslBundle sslBundle) {
+		private BundleInfo(String name, SslBundle sslBundle) {
 			this.name = name;
-			this.certificateChains = createCertificateChains(sslBundle.getStores().getKeyStore());
+			this.certificateChains = extractCertificateChains(sslBundle.getStores().getKeyStore());
 		}
 
-		public String getName() {
-			return this.name;
-		}
-
-		public List<CertificateChain> getCertificateChains() {
-			return this.certificateChains;
-		}
-
-		private List<CertificateChain> createCertificateChains(KeyStore keyStore) {
+		private List<CertificateChainInfo> extractCertificateChains(KeyStore keyStore) {
 			try {
 				return Collections.list(keyStore.aliases())
 					.stream()
-					.map((alias) -> new CertificateChain(alias, getCertificates(alias, keyStore)))
+					.map((alias) -> new CertificateChainInfo(keyStore, alias))
 					.toList();
 			}
 			catch (KeyStoreException ex) {
@@ -87,27 +87,39 @@ public class SslInfo {
 			}
 		}
 
-		private List<Certificate> getCertificates(String alias, KeyStore keyStore) {
-			try {
-				Certificate[] certificateChain = keyStore.getCertificateChain(alias);
-				return (certificateChain != null) ? List.of(certificateChain) : Collections.emptyList();
-			}
-			catch (KeyStoreException ex) {
-				return Collections.emptyList();
-			}
+		public String getName() {
+			return this.name;
+		}
+
+		public List<CertificateChainInfo> getCertificateChains() {
+			return this.certificateChains;
 		}
 
 	}
 
-	public final class CertificateChain {
+	/**
+	 * Info about a single certificate chain.
+	 */
+	public final class CertificateChainInfo {
 
 		private final String alias;
 
 		private final List<CertificateInfo> certificates;
 
-		CertificateChain(String alias, List<Certificate> certificates) {
+		CertificateChainInfo(KeyStore keyStore, String alias) {
 			this.alias = alias;
-			this.certificates = certificates.stream().map(CertificateInfo::new).toList();
+			this.certificates = extractCertificates(keyStore, alias);
+		}
+
+		private List<CertificateInfo> extractCertificates(KeyStore keyStore, String alias) {
+			try {
+				Certificate[] certificates = keyStore.getCertificateChain(alias);
+				return (!ObjectUtils.isEmpty(certificates))
+						? Arrays.stream(certificates).map(CertificateInfo::new).toList() : Collections.emptyList();
+			}
+			catch (KeyStoreException ex) {
+				return Collections.emptyList();
+			}
 		}
 
 		public String getAlias() {
@@ -120,130 +132,139 @@ public class SslInfo {
 
 	}
 
+	/**
+	 * Info about a certificate.
+	 */
 	public final class CertificateInfo {
 
 		private final X509Certificate certificate;
 
 		private CertificateInfo(Certificate certificate) {
-			if (certificate instanceof X509Certificate x509Certificate) {
-				this.certificate = x509Certificate;
-			}
-			else {
-				this.certificate = null;
-			}
+			this.certificate = (certificate instanceof X509Certificate x509Certificate) ? x509Certificate : null;
 		}
 
 		public String getSubject() {
-			return (this.certificate != null) ? this.certificate.getSubjectX500Principal().getName() : null;
+			return extract(X509Certificate::getSubjectX500Principal, X500Principal::getName);
 		}
 
 		public String getIssuer() {
-			return (this.certificate != null) ? this.certificate.getIssuerX500Principal().getName() : null;
+			return extract(X509Certificate::getIssuerX500Principal, X500Principal::getName);
 		}
 
 		public String getSerialNumber() {
-			return (this.certificate != null) ? this.certificate.getSerialNumber().toString(16) : null;
+			return extract(X509Certificate::getSerialNumber, (serial) -> serial.toString(16));
 		}
 
 		public String getVersion() {
-			return (this.certificate != null) ? "V" + this.certificate.getVersion() : null;
+			return extract((certificate) -> "V" + certificate.getVersion());
 		}
 
 		public String getSignatureAlgorithmName() {
-			return (this.certificate != null) ? this.certificate.getSigAlgName() : null;
+			return extract(X509Certificate::getSigAlgName);
 		}
 
 		public Instant getValidityStarts() {
-			return (this.certificate != null) ? this.certificate.getNotBefore().toInstant() : null;
+			return extract(X509Certificate::getNotBefore, Date::toInstant);
 		}
 
 		public Instant getValidityEnds() {
-			return (this.certificate != null) ? this.certificate.getNotAfter().toInstant() : null;
+			return extract(X509Certificate::getNotAfter, Date::toInstant);
 		}
 
-		public Validity getValidity() {
-			try {
-				if (this.certificate != null) {
-					this.certificate.checkValidity();
-					if (isCloseToBeExpired(this.certificate, SslInfo.this.certificateValidityWarningThreshold)) {
-						return new Validity(Status.WILL_EXPIRE_SOON,
-								"Certificate will expire within threshold (%s) at %s".formatted(
-										SslInfo.this.certificateValidityWarningThreshold, this.getValidityEnds()));
-					}
-					else {
-						return new Validity(Status.VALID, null);
-					}
+		public CertificateValidityInfo getValidity() {
+			return extract((certificate) -> {
+				Instant starts = getValidityStarts();
+				Instant ends = getValidityEnds();
+				Duration threshold = SslInfo.this.certificateValidityWarningThreshold;
+				try {
+					certificate.checkValidity();
+					return (!isExpiringSoon(certificate, threshold)) ? CertificateValidityInfo.VALID
+							: new CertificateValidityInfo(Status.WILL_EXPIRE_SOON,
+									"Certificate will expire within threshold (%s) at %s", threshold, ends);
 				}
-				else {
-					return null;
+				catch (CertificateNotYetValidException ex) {
+					return new CertificateValidityInfo(Status.NOT_YET_VALID, "Not valid before %s", starts);
 				}
-			}
-			catch (CertificateNotYetValidException exception) {
-				return new Validity(Status.NOT_YET_VALID, "Not valid before %s".formatted(this.getValidityStarts()));
-			}
-			catch (CertificateExpiredException exception) {
-				return new Validity(Status.EXPIRED, "Not valid after %s".formatted(this.getValidityEnds()));
-			}
+				catch (CertificateExpiredException ex) {
+					return new CertificateValidityInfo(Status.EXPIRED, "Not valid after %s", ends);
+				}
+			});
 		}
 
-		private boolean isCloseToBeExpired(X509Certificate certificate, Duration certificateValidityThreshold) {
-			Instant shouldBeValidAt = Instant.now().plus(certificateValidityThreshold);
+		private boolean isExpiringSoon(X509Certificate certificate, Duration threshold) {
+			Instant shouldBeValidAt = Instant.now().plus(threshold);
 			Instant expiresAt = certificate.getNotAfter().toInstant();
 			return shouldBeValidAt.isAfter(expiresAt);
 		}
 
-		public static class Validity {
+		private <V, R> R extract(Function<X509Certificate, V> valueExtractor, Function<V, R> resultExtractor) {
+			return extract(valueExtractor.andThen(resultExtractor));
+		}
 
-			private final Status status;
+		private <R> R extract(Function<X509Certificate, R> extractor) {
+			return (this.certificate != null) ? extractor.apply(this.certificate) : null;
+		}
 
-			private final String message;
+	}
 
-			Validity(Status status, String message) {
-				this.status = status;
-				this.message = message;
+	/**
+	 * Certificate validity info.
+	 */
+	public static class CertificateValidityInfo {
+
+		static final CertificateValidityInfo VALID = new CertificateValidityInfo(Status.VALID, null);
+
+		private final Status status;
+
+		private final String message;
+
+		CertificateValidityInfo(Status status, String message, Object... messageArgs) {
+			this.status = status;
+			this.message = (message != null) ? message.formatted(messageArgs) : null;
+		}
+
+		public Status getStatus() {
+			return this.status;
+		}
+
+		public String getMessage() {
+			return this.message;
+		}
+
+		/**
+		 * Validity Status.
+		 */
+		public enum Status {
+
+			/**
+			 * The certificate is valid.
+			 */
+			VALID(true),
+
+			/**
+			 * The certificate's validity date range is in the future.
+			 */
+			NOT_YET_VALID(false),
+
+			/**
+			 * The certificate's validity date range is in the past.
+			 */
+			EXPIRED(false),
+
+			/**
+			 * The certificate is still valid, but the end of its validity date range is
+			 * within the defined threshold.
+			 */
+			WILL_EXPIRE_SOON(true);
+
+			private final boolean valid;
+
+			Status(boolean valid) {
+				this.valid = valid;
 			}
 
-			public Status getStatus() {
-				return this.status;
-			}
-
-			public String getMessage() {
-				return this.message;
-			}
-
-			public enum Status {
-
-				/**
-				 * The certificate is valid.
-				 */
-				VALID(true),
-
-				/**
-				 * The certificate's validity date range is in the future.
-				 */
-				NOT_YET_VALID(false),
-
-				/**
-				 * The certificate's validity date range is in the past.
-				 */
-				EXPIRED(false),
-
-				/**
-				 * The certificate is still valid, but the end of its validity date range
-				 * is within the defined threshold.
-				 */
-				WILL_EXPIRE_SOON(true);
-
-				private final boolean valid;
-
-				Status(boolean valid) {
-					this.valid = valid;
-				}
-
-				public boolean isValid() {
-					return this.valid;
-				}
-
+			public boolean isValid() {
+				return this.valid;
 			}
 
 		}

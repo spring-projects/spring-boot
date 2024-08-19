@@ -29,7 +29,7 @@ import org.springframework.boot.actuate.ssl.SslHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.info.SslInfo;
-import org.springframework.boot.info.SslInfo.CertificateChain;
+import org.springframework.boot.info.SslInfo.CertificateChainInfo;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -65,9 +65,9 @@ class SslHealthContributorAutoConfigurationTests {
 			Health health = context.getBean(SslHealthIndicator.class).health();
 			assertThat(health.getStatus()).isSameAs(Status.OUT_OF_SERVICE);
 			assertDetailsKeys(health);
-			List<CertificateChain> invalidChains = getInvalidChains(health);
+			List<CertificateChainInfo> invalidChains = getInvalidChains(health);
 			assertThat(invalidChains).hasSize(1);
-			assertThat(invalidChains).first().isInstanceOf(CertificateChain.class);
+			assertThat(invalidChains).first().isInstanceOf(CertificateChainInfo.class);
 
 		});
 	}
@@ -84,9 +84,9 @@ class SslHealthContributorAutoConfigurationTests {
 				Health health = context.getBean(SslHealthIndicator.class).health();
 				assertThat(health.getStatus()).isSameAs(Status.OUT_OF_SERVICE);
 				assertDetailsKeys(health);
-				List<CertificateChain> invalidChains = getInvalidChains(health);
+				List<CertificateChainInfo> invalidChains = getInvalidChains(health);
 				assertThat(invalidChains).hasSize(1);
-				assertThat(invalidChains).first().isInstanceOf(CertificateChain.class);
+				assertThat(invalidChains).first().isInstanceOf(CertificateChainInfo.class);
 			});
 	}
 
@@ -101,9 +101,9 @@ class SslHealthContributorAutoConfigurationTests {
 			Health health = context.getBean(SslHealthIndicator.class).health();
 			assertThat(health.getStatus()).isSameAs(Status.OUT_OF_SERVICE);
 			assertDetailsKeys(health);
-			List<CertificateChain> invalidChains = getInvalidChains(health);
+			List<CertificateChainInfo> invalidChains = getInvalidChains(health);
 			assertThat(invalidChains).hasSize(1);
-			assertThat(invalidChains).first().isInstanceOf(CertificateChain.class);
+			assertThat(invalidChains).first().isInstanceOf(CertificateChainInfo.class);
 		});
 	}
 
@@ -112,8 +112,8 @@ class SslHealthContributorAutoConfigurationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<CertificateChain> getInvalidChains(Health health) {
-		return (List<CertificateChain>) health.getDetails().get("invalidChains");
+	private static List<CertificateChainInfo> getInvalidChains(Health health) {
+		return (List<CertificateChainInfo>) health.getDetails().get("invalidChains");
 	}
 
 	@Configuration(proxyBeanMethods = false)

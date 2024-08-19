@@ -106,12 +106,10 @@ class DefaultSslBundleRegistryTests {
 	}
 
 	@Test
-	void getBundlesReturnsBundles() {
+	void getBundleNamesReturnsNames() {
 		this.registry.registerBundle("test1", this.bundle1);
 		this.registry.registerBundle("test2", this.bundle2);
-		assertThat(this.registry.getBundles()).hasSize(2)
-			.containsEntry("test1", this.bundle1)
-			.containsEntry("test2", this.bundle2);
+		assertThat(this.registry.getBundleNames()).containsExactly("test1", "test2");
 	}
 
 	@Test
