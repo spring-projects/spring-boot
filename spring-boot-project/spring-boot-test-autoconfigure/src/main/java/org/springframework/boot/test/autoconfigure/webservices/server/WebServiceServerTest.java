@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,21 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.ws.server.EndpointInterceptor;
 
 /**
  * Annotation that can be used for a typical Spring web service server test. Can be used
  * when a test focuses <strong>only</strong> on Spring WS endpoints.
  * <p>
- * Using this annotation will disable full auto-configuration and instead apply only
+ * Using this annotation will disable full auto-configuration and instead scan only for
  * configuration relevant to Web Service server tests (i.e. {@code Endpoint} and
  * {@code EndpointInterceptor} beans but not {@code @Component}, {@code @Service} or
  * {@code @Repository} beans).
+ * <p>
+ * <b>Note:</b> The component scanning will only pick up beans annotated with
+ * {@code Endpoint} or of type {@link EndpointInterceptor EndpointInterceptor}. If your
+ * interceptors are configured in a configuration class, slice tests will not selectively
+ * pick up {@code @Bean} methods.
  * <p>
  * Typically {@code WebServiceServerTest} is used in combination with
  * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
