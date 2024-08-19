@@ -354,11 +354,12 @@ bom {
 			releaseNotes("https://www.elastic.co/guide/en/elasticsearch/reference/current/release-notes-{version}.html")
 		}
 	}
-	library("Flyway", "10.15.2") {
+	library("Flyway", "10.17.1") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-commandline",
 				"flyway-core",
+				"flyway-database-cassandra",
 				"flyway-database-db2",
 				"flyway-database-derby",
 				"flyway-database-hsqldb",
