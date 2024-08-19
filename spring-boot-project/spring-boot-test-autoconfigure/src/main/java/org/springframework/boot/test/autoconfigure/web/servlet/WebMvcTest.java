@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,32 @@ import org.springframework.test.web.servlet.MockMvc;
  * Annotation that can be used for a Spring MVC test that focuses <strong>only</strong> on
  * Spring MVC components.
  * <p>
- * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to MVC tests (i.e. {@code @Controller},
- * {@code @ControllerAdvice}, {@code @JsonComponent},
- * {@code Converter}/{@code GenericConverter}, {@code Filter}, {@code WebMvcConfigurer}
- * and {@code HandlerMethodArgumentResolver} beans but not {@code @Component},
- * {@code @Service} or {@code @Repository} beans).
+ * Using this annotation only enables auto-configuration that is relevant to MVC tests.
+ * Similarly, component scanning is limited to beans annotated with:
+ * <ul>
+ * <li>{@code @Controller}</li>
+ * <li>{@code @ControllerAdvice}</li>
+ * <li>{@code @JsonComponent}</li>
+ * </ul>
+ * <p>
+ * as well as beans that implement:
+ * <ul>
+ * <li>{@code Converter}</li>
+ * <li>{@code DelegatingFilterProxyRegistrationBean}</li>
+ * <li>{@code ErrorAttributes}</li>
+ * <li>{@code Filter}</li>
+ * <li>{@code FilterRegistrationBean}</li>
+ * <li>{@code GenericConverter}</li>
+ * <li>{@code HandlerInterceptor}</li>
+ * <li>{@code HandlerMethodArgumentResolver}</li>
+ * <li>{@code HttpMessageConverter}</li>
+ * <li>{@code IDialect}, if Thymeleaf is available</li>
+ * <li>{@code Module}, if Jackson is available</li>
+ * <li>{@code SecurityFilterChain}</li>
+ * <li>{@code WebMvcConfigurer}</li>
+ * <li>{@code WebMvcRegistrations}</li>
+ * <li>{@code WebSecurityConfigurer}</li>
+ * </ul>
  * <p>
  * By default, tests annotated with {@code @WebMvcTest} will also auto-configure Spring
  * Security and {@link MockMvc} (include support for HtmlUnit WebClient and Selenium
