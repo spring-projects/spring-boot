@@ -957,9 +957,9 @@ For example, the configuration property `spring.main.log-startup-info` would be 
 
 Environment variables can also be used when binding to object lists.
 To bind to a `List`, the element number should be surrounded with underscores in the variable name.
-
 For example, the configuration property `my.service[0].other` would use an environment variable named `MY_SERVICE_0_OTHER`.
 
+Support for binding from environment variables is applied to the `systemEnvironment` property source and to any additional property source whose name ends with `-systemEnvironment`.
 
 
 [[features.external-config.typesafe-configuration-properties.relaxed-binding.caching]]
