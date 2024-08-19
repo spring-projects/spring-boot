@@ -180,7 +180,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	private static PropertySource<?> getRootSource(PropertySource<?> source) {
-		while (source.getSource() != null && source.getSource() instanceof PropertySource<?> propertySource) {
+		while (source.getSource() instanceof PropertySource<?> propertySource) {
 			source = propertySource;
 		}
 		return source;
