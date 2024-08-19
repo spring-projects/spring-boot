@@ -108,6 +108,21 @@ public final class PemContent {
 	 * Load {@link PemContent} from the given content (either the PEM content itself or a
 	 * reference to the resource to load).
 	 * @param content the content to load
+	 * @param isOptional the content to load may be optional
+	 * @return a new {@link PemContent} instance
+	 * @throws IOException on IO error
+	 */
+	static PemContent load(String content, Boolean isOptional) throws IOException {
+		if (isOptional && !Files.exists(Path.of(content))) {
+			return null;
+		}
+		return load(content);
+	}
+
+	/**
+	 * Load {@link PemContent} from the given content (either the PEM content itself or a
+	 * reference to the resource to load).
+	 * @param content the content to load
 	 * @return a new {@link PemContent} instance
 	 * @throws IOException on IO error
 	 */

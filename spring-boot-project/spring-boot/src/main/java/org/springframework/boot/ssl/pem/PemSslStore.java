@@ -33,6 +33,9 @@ import org.springframework.util.Assert;
  */
 public interface PemSslStore {
 
+
+	boolean optional();
+
 	/**
 	 * The key store type, for example {@code JKS} or {@code PKCS11}. A {@code null} value
 	 * will use {@link KeyStore#getDefaultType()}).
@@ -162,6 +165,11 @@ public interface PemSslStore {
 			@Override
 			public PrivateKey privateKey() {
 				return privateKey;
+			}
+
+			@Override
+			public boolean optional() {
+				return false; //TODO
 			}
 
 		};

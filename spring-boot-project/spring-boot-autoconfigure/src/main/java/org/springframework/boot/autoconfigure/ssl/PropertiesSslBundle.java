@@ -29,6 +29,7 @@ import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link SslBundle} backed by {@link JksSslBundleProperties} or
@@ -39,6 +40,8 @@ import org.springframework.util.Assert;
  * @since 3.1.0
  */
 public final class PropertiesSslBundle implements SslBundle {
+
+	private static final String OPTIONAL_URL_PREFIX = "optional:";
 
 	private final SslStoreBundle stores;
 
@@ -118,8 +121,19 @@ public final class PropertiesSslBundle implements SslBundle {
 	}
 
 	private static PemSslStoreDetails asPemSslStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey(),
-				properties.getPrivateKeyPassword());
+		return new PemSslStoreDetails(properties.getType(), getRawCertificate(properties.getCertificate()), properties.getPrivateKey(),
+			properties.getPrivateKeyPassword(), isCertificateOptional(properties.getCertificate()));
+	}
+
+	private static boolean isCertificateOptional(String certificate) {
+		return StringUtils.hasText(certificate) && certificate.startsWith(OPTIONAL_URL_PREFIX);
+	}
+
+	private static String getRawCertificate(String certificate)	{
+		if (isCertificateOptional(certificate)) {
+			return certificate.substring(OPTIONAL_URL_PREFIX.length());
+		}
+		return certificate;
 	}
 
 	/**

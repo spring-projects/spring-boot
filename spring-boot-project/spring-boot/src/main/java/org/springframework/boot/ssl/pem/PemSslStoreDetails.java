@@ -29,20 +29,20 @@ import org.springframework.util.StringUtils;
  * @param password the password used
  * {@link KeyStore#setKeyEntry(String, java.security.Key, char[], java.security.cert.Certificate[])
  * setting key entries} in the {@link KeyStore}
- * @param certificates the certificates content (either the PEM content itself or a
+ * @param certificates the certificates content (either the PEM content itself or or a
  * reference to the resource to load). When a {@link #privateKey() private key} is present
  * this value is treated as a certificate chain, otherwise it is treated a list of
  * certificates that should all be registered.
  * @param privateKey the private key content (either the PEM content itself or a reference
  * to the resource to load)
  * @param privateKeyPassword a password used to decrypt an encrypted private key
+ * @param optional certificates/privateKey may be optional
  * @author Scott Frederick
  * @author Phillip Webb
  * @since 3.1.0
  * @see PemSslStore#load(PemSslStoreDetails)
  */
-public record PemSslStoreDetails(String type, String alias, String password, String certificates, String privateKey,
-		String privateKeyPassword) {
+public record PemSslStoreDetails(String type, String alias, String password, String certificates, String privateKey, String privateKeyPassword, boolean optional) {
 
 	/**
 	 * Create a new {@link PemSslStoreDetails} instance.
@@ -71,9 +71,10 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @param privateKey the private key content (either the PEM content itself or a
 	 * reference to the resource to load)
 	 * @param privateKeyPassword a password used to decrypt an encrypted private key
+	 * @param optional certificates/privateKey may be optional
 	 */
-	public PemSslStoreDetails(String type, String certificate, String privateKey, String privateKeyPassword) {
-		this(type, null, null, certificate, privateKey, privateKeyPassword);
+	public PemSslStoreDetails(String type, String certificate, String privateKey, String privateKeyPassword, boolean optional) {
+		this(type, null, null, certificate, privateKey, privateKeyPassword, optional);
 	}
 
 	/**
@@ -86,7 +87,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * reference to the resource to load)
 	 */
 	public PemSslStoreDetails(String type, String certificate, String privateKey) {
-		this(type, certificate, privateKey, null);
+		this(type, certificate, privateKey, null, false);
 	}
 
 	/**
@@ -96,8 +97,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @since 3.2.0
 	 */
 	public PemSslStoreDetails withAlias(String alias) {
-		return new PemSslStoreDetails(this.type, alias, this.password, this.certificates, this.privateKey,
-				this.privateKeyPassword);
+		return new PemSslStoreDetails(this.type, alias, this.password, this.certificates, this.privateKey, this.privateKeyPassword, this.optional);
 	}
 
 	/**
@@ -107,8 +107,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @since 3.2.0
 	 */
 	public PemSslStoreDetails withPassword(String password) {
-		return new PemSslStoreDetails(this.type, this.alias, password, this.certificates, this.privateKey,
-				this.privateKeyPassword);
+		return new PemSslStoreDetails(this.type, this.alias, password, this.certificates, this.privateKey, this.privateKeyPassword, this.optional);
 	}
 
 	/**
@@ -117,8 +116,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @return a new {@link PemSslStoreDetails} instance
 	 */
 	public PemSslStoreDetails withPrivateKey(String privateKey) {
-		return new PemSslStoreDetails(this.type, this.alias, this.password, this.certificates, privateKey,
-				this.privateKeyPassword);
+		return new PemSslStoreDetails(this.type, this.alias, this.password, this.certificates, privateKey, this.privateKeyPassword, this.optional);
 	}
 
 	/**
@@ -127,8 +125,7 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	 * @return a new {@link PemSslStoreDetails} instance
 	 */
 	public PemSslStoreDetails withPrivateKeyPassword(String privateKeyPassword) {
-		return new PemSslStoreDetails(this.type, this.alias, this.password, this.certificates, this.privateKey,
-				privateKeyPassword);
+		return new PemSslStoreDetails(this.type, this.alias, this.password, this.certificates, this.privateKey, privateKeyPassword, this.optional);
 	}
 
 	boolean isEmpty() {

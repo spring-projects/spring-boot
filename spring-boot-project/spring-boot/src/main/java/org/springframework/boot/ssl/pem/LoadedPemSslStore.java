@@ -58,7 +58,7 @@ final class LoadedPemSslStore implements PemSslStore {
 	}
 
 	private static List<X509Certificate> loadCertificates(PemSslStoreDetails details) throws IOException {
-		PemContent pemContent = PemContent.load(details.certificates());
+		PemContent pemContent = PemContent.load(details.certificates(), details.optional());
 		if (pemContent == null) {
 			return null;
 		}
@@ -70,6 +70,11 @@ final class LoadedPemSslStore implements PemSslStore {
 	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) throws IOException {
 		PemContent pemContent = PemContent.load(details.privateKey());
 		return (pemContent != null) ? pemContent.getPrivateKey(details.privateKeyPassword()) : null;
+	}
+
+	@Override
+	public boolean optional() {
+		return this.details.optional();
 	}
 
 	@Override

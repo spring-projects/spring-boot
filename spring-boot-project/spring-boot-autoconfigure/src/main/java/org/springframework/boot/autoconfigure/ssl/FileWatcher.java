@@ -74,7 +74,7 @@ class FileWatcher implements Closeable {
 	 * @param paths the files or directories to watch
 	 * @param action the action to take when changes are detected
 	 */
-	void watch(Set<Path> paths, Runnable action) {
+	void watch(Set<WatchablePath> paths, Runnable action) {
 		Assert.notNull(paths, "Paths must not be null");
 		Assert.notNull(action, "Action must not be null");
 		if (paths.isEmpty()) {
@@ -133,7 +133,11 @@ class FileWatcher implements Closeable {
 		}
 
 		void register(Registration registration) throws IOException {
-			for (Path path : registration.paths()) {
+			for (WatchablePath watchablePath : registration.paths()) {
+				Path path = watchablePath.path();
+				if (watchablePath.optional() && !Files.exists(path)) {
+					path = path.getParent();
+				}
 				if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
 					throw new IOException("'%s' is neither a file nor a directory".formatted(path));
 				}
@@ -210,19 +214,23 @@ class FileWatcher implements Closeable {
 	/**
 	 * An individual watch registration.
 	 */
-	private record Registration(Set<Path> paths, Runnable action) {
+	private record Registration(Set<WatchablePath> paths, Runnable action) {
 
 		Registration {
-			paths = paths.stream().map(Path::toAbsolutePath).collect(Collectors.toSet());
+			paths = paths.stream().map(watchablePath ->
+						new WatchablePath(watchablePath.path().toAbsolutePath(), watchablePath.optional()))
+				.collect(Collectors.toSet());
 		}
 
 		boolean manages(Path file) {
 			Path absolutePath = file.toAbsolutePath();
-			return this.paths.contains(absolutePath) || isInDirectories(absolutePath);
+			return this.paths.stream()
+				.map(WatchablePath::path)
+				.anyMatch(absolutePath::equals) || isInDirectories(absolutePath);
 		}
 
 		private boolean isInDirectories(Path file) {
-			return this.paths.stream().filter(Files::isDirectory).anyMatch(file::startsWith);
+			return this.paths.stream().map(WatchablePath::path).filter(Files::isDirectory).anyMatch(file::startsWith);
 		}
 	}
 

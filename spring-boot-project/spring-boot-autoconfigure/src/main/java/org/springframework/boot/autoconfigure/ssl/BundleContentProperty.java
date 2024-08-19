@@ -35,6 +35,8 @@ import org.springframework.util.StringUtils;
  */
 record BundleContentProperty(String name, String value) {
 
+	private static final String OPTIONAL_URL_PREFIX = "optional:";
+
 	/**
 	 * Return if the property value is PEM content.
 	 * @return if the value is PEM content
@@ -51,13 +53,24 @@ record BundleContentProperty(String name, String value) {
 		return StringUtils.hasText(this.value);
 	}
 
-	Path toWatchPath() {
+	boolean isOptional() {
+		return this.value.startsWith(OPTIONAL_URL_PREFIX);
+	}
+
+	String getRawValue() {
+		if (isOptional()) {
+			return this.value.substring(OPTIONAL_URL_PREFIX.length());
+		}
+		return this.value;
+	}
+
+	WatchablePath toWatchPath() {
 		try {
-			Resource resource = getResource();
+			Resource resource = getResource(getRawValue());
 			if (!resource.isFile()) {
 				throw new BundleContentNotWatchableException(this);
 			}
-			return Path.of(resource.getFile().getAbsolutePath());
+			return new WatchablePath(Path.of(resource.getFile().getAbsolutePath()), isOptional());
 		}
 		catch (Exception ex) {
 			if (ex instanceof BundleContentNotWatchableException bundleContentNotWatchableException) {
@@ -68,9 +81,9 @@ record BundleContentProperty(String name, String value) {
 		}
 	}
 
-	private Resource getResource() {
+	private Resource getResource(String value) {
 		Assert.state(!isPemContent(), "Value contains PEM content");
-		return new ApplicationResourceLoader().getResource(this.value);
+		return new ApplicationResourceLoader().getResource(value);
 	}
 
 }
