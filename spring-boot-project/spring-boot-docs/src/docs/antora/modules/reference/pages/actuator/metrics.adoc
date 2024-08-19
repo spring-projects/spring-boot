@@ -1082,7 +1082,7 @@ Auto-configuration registers a `MongoMetricsConnectionPoolListener` with the aut
 
 The following gauge metrics are created for the connection pool:
 
-* `mongodb.driver.pool.size` reports the current size of the connection pool, including idle and and in-use members.
+* `mongodb.driver.pool.size` reports the current size of the connection pool, including idle and in-use members.
 * `mongodb.driver.pool.checkedout` reports the count of connections that are currently in use.
 * `mongodb.driver.pool.waitqueuesize` reports the current size of the wait queue for a connection from the pool.
 

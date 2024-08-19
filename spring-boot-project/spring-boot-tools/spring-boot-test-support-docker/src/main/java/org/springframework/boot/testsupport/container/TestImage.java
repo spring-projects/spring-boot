@@ -43,7 +43,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.springframework.util.Assert;
 
 /**
- * References to container images used for integration tests. This class also acts a a
+ * References to container images used for integration tests. This class also acts a
  * central location for tests to {@link #container(Class) create} a correctly configured
  * {@link Container testcontainer}.
  *
