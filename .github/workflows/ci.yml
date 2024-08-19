@@ -11,6 +11,7 @@ jobs:
     runs-on: ${{ matrix.os.id }}
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     strategy:
+      fail-fast: false
       matrix:
         os:
           - id: ubuntu-latest
