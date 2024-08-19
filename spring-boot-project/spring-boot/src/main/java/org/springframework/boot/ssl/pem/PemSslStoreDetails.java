@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
  * @param password the password used
  * {@link KeyStore#setKeyEntry(String, java.security.Key, char[], java.security.cert.Certificate[])
  * setting key entries} in the {@link KeyStore}
- * @param certificates the certificates content (either the PEM content itself or or a
+ * @param certificates the certificates content (either the PEM content itself or a
  * reference to the resource to load). When a {@link #privateKey() private key} is present
  * this value is treated as a certificate chain, otherwise it is treated a list of
  * certificates that should all be registered.
