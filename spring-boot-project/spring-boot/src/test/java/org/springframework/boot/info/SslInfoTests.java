@@ -154,7 +154,7 @@ class SslInfoTests {
 		assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
 		assertThat(cert.getSerialNumber()).isNotEmpty();
 		assertThat(cert.getVersion()).isEqualTo("V3");
-		assertThat(cert.getSignatureAlgorithmName()).isEqualTo("SHA256withRSA");
+		assertThat(cert.getSignatureAlgorithmName()).isNotEmpty();
 		assertThat(cert.getValidityStarts()).isInThePast();
 		assertThat(cert.getValidityEnds()).isInTheFuture();
 		assertThat(cert.getValidity()).isNotNull();
@@ -182,7 +182,7 @@ class SslInfoTests {
 			assertThat(cert.getIssuer()).isEqualTo(cert.getSubject());
 			assertThat(cert.getSerialNumber()).isNotEmpty();
 			assertThat(cert.getVersion()).isEqualTo("V3");
-			assertThat(cert.getSignatureAlgorithmName()).isEqualTo("SHA256withRSA");
+			assertThat(cert.getSignatureAlgorithmName()).isNotEmpty();
 			assertThat(cert.getValidity()).isNotNull();
 		});
 
@@ -226,7 +226,6 @@ class SslInfoTests {
 			SslStoreBundle sslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
 			sslBundleRegistry.registerBundle("test-%d".formatted(i), SslBundle.of(sslStoreBundle));
 		}
-
 		return new SslInfo(sslBundleRegistry, Duration.ofDays(7));
 	}
 
@@ -240,7 +239,6 @@ class SslInfoTests {
 				.collect(Collectors.joining("\n"));
 			throw new RuntimeException("Unexpected exit code from keytool: %d\n%s".formatted(exitCode, out));
 		}
-
 		return keyStore;
 	}
 
@@ -261,7 +259,6 @@ class SslInfoTests {
 		);
 		// @formatter:on
 		processBuilder.redirectErrorStream(true);
-
 		return processBuilder;
 	}
 

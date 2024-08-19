@@ -228,12 +228,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.ssl.certificate-validity-warning-threshold",
-      "type": "java.time.Duration",
-      "description": "If an SSL Certificate will be invalid within the time span defined by this threshold, it should trigger a warning.",
-      "defaultValue": "14d"
-    },
-    {
       "name": "management.health.ssl.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable SSL Certificate health check.",

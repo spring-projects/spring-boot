@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,15 +76,15 @@ class SampleTomcatSslApplicationTests {
 		JsonContent body = new JsonContent(entity.getBody());
 		assertThat(body).extractingPath("status").isEqualTo("OUT_OF_SERVICE");
 		assertThat(body).extractingPath("components.ssl.status").isEqualTo("OUT_OF_SERVICE");
-		assertThat(body).extractingPath("components.ssl.details.certificateChains[0].alias")
+		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].alias")
 			.isEqualTo("spring-boot-ssl-sample");
-		assertThat(body).extractingPath("components.ssl.details.certificateChains[0].certificates[0].issuer")
+		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].issuer")
 			.isEqualTo("CN=localhost,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown");
-		assertThat(body).extractingPath("components.ssl.details.certificateChains[0].certificates[0].subject")
+		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].subject")
 			.isEqualTo("CN=localhost,OU=Unknown,O=Unknown,L=Unknown,ST=Unknown,C=Unknown");
-		assertThat(body).extractingPath("components.ssl.details.certificateChains[0].certificates[0].validity.status")
+		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].validity.status")
 			.isEqualTo("EXPIRED");
-		assertThat(body).extractingPath("components.ssl.details.certificateChains[0].certificates[0].validity.message")
+		assertThat(body).extractingPath("components.ssl.details.invalidChains[0].certificates[0].validity.message")
 			.asString()
 			.startsWith("Not valid after ");
 	}

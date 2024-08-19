@@ -17,8 +17,6 @@
 package org.springframework.boot.actuate.ssl;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
@@ -26,12 +24,10 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.info.SslInfo;
 import org.springframework.boot.info.SslInfo.CertificateChain;
-import org.springframework.boot.info.SslInfo.CertificateInfo.Validity;
 
 /**
  * {@link HealthIndicator} that checks the certificates the application uses and reports
- * {@link Status#OUT_OF_SERVICE} when a certificate is invalid or "WILL_EXPIRE_SOON" if it
- * will expire within the configurable threshold.
+ * {@link Status#OUT_OF_SERVICE} when a certificate is invalid.
  *
  * @author Jonatan Ivanov
  * @since 3.4.0
@@ -46,43 +42,38 @@ public class SslHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
-		List<CertificateChain> notValidCertificateChains = this.sslInfo.getBundles()
+		List<CertificateChain> certificateChains = this.sslInfo.getBundles()
 			.stream()
 			.flatMap((bundle) -> bundle.getCertificateChains().stream())
-			.filter(this::containsNotValidCertificate)
 			.toList();
-
-		if (notValidCertificateChains.isEmpty()) {
+		List<CertificateChain> validCertificateChains = certificateChains.stream()
+			.filter(this::containsOnlyValidCertificates)
+			.toList();
+		List<CertificateChain> invalidCertificateChains = certificateChains.stream()
+			.filter(this::containsInvalidCertificate)
+			.toList();
+		builder.withDetail("validChains", validCertificateChains);
+		builder.withDetail("invalidChains", invalidCertificateChains);
+		if (invalidCertificateChains.isEmpty()) {
 			builder.status(Status.UP);
 		}
 		else {
-			Set<Validity.Status> statuses = collectCertificateStatuses(notValidCertificateChains);
-			if (statuses.contains(Validity.Status.EXPIRED) || statuses.contains(Validity.Status.NOT_YET_VALID)) {
-				builder.status(Status.OUT_OF_SERVICE);
-			}
-			else if (statuses.contains(Validity.Status.WILL_EXPIRE_SOON)) {
-				builder.status(Status.UP);
-			}
-			else {
-				builder.status(Status.OUT_OF_SERVICE);
-			}
-			builder.withDetail("certificateChains", notValidCertificateChains);
+			builder.status(Status.OUT_OF_SERVICE);
 		}
 	}
 
-	private boolean containsNotValidCertificate(CertificateChain certificateChain) {
+	private boolean containsOnlyValidCertificates(CertificateChain certificateChain) {
 		return certificateChain.getCertificates()
 			.stream()
 			.filter((certificate) -> certificate.getValidity() != null)
-			.anyMatch((certificate) -> certificate.getValidity().getStatus() != Validity.Status.VALID);
+			.allMatch((certificate) -> certificate.getValidity().getStatus().isValid());
 	}
 
-	private Set<Validity.Status> collectCertificateStatuses(List<CertificateChain> certificateChains) {
-		return certificateChains.stream()
-			.flatMap((certificateChain) -> certificateChain.getCertificates().stream())
+	private boolean containsInvalidCertificate(CertificateChain certificateChain) {
+		return certificateChain.getCertificates()
+			.stream()
 			.filter((certificate) -> certificate.getValidity() != null)
-			.map((certificate) -> certificate.getValidity().getStatus())
-			.collect(Collectors.toUnmodifiableSet());
+			.anyMatch((certificate) -> !certificate.getValidity().getStatus().isValid());
 	}
 
 }

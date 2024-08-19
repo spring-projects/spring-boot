@@ -216,23 +216,33 @@ public class SslInfo {
 				/**
 				 * The certificate is valid.
 				 */
-				VALID,
+				VALID(true),
 
 				/**
 				 * The certificate's validity date range is in the future.
 				 */
-				NOT_YET_VALID,
+				NOT_YET_VALID(false),
 
 				/**
 				 * The certificate's validity date range is in the past.
 				 */
-				EXPIRED,
+				EXPIRED(false),
 
 				/**
-				 * The certificate is still valid but the end of its validity date range
+				 * The certificate is still valid, but the end of its validity date range
 				 * is within the defined threshold.
 				 */
-				WILL_EXPIRE_SOON
+				WILL_EXPIRE_SOON(true);
+
+				private final boolean valid;
+
+				Status(boolean valid) {
+					this.valid = valid;
+				}
+
+				public boolean isValid() {
+					return this.valid;
+				}
 
 			}
 

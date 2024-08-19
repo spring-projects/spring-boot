@@ -39,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SslHealthContributorAutoConfiguration}.
+ *
+ * @author Jonatan Ivanov
  */
 class SslHealthContributorAutoConfigurationTests {
 
@@ -56,24 +58,21 @@ class SslHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void beansShouldBeConfigured() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(SslHealthIndicator.class);
 			assertThat(context).hasSingleBean(SslInfo.class);
 			Health health = context.getBean(SslHealthIndicator.class).health();
 			assertThat(health.getStatus()).isSameAs(Status.OUT_OF_SERVICE);
-			assertThat(health.getDetails()).hasSize(1);
-			List<CertificateChain> certificateChains = (List<CertificateChain>) health.getDetails()
-				.get("certificateChains");
-			assertThat(certificateChains).hasSize(1);
-			assertThat(certificateChains.get(0)).isInstanceOf(CertificateChain.class);
+			assertDetailsKeys(health);
+			List<CertificateChain> invalidChains = getInvalidChains(health);
+			assertThat(invalidChains).hasSize(1);
+			assertThat(invalidChains).first().isInstanceOf(CertificateChain.class);
 
 		});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void beansShouldBeConfiguredWithWarningThreshold() {
 		this.contextRunner.withPropertyValues("management.health.ssl.certificate-validity-warning-threshold=1d")
 			.run((context) -> {
@@ -84,16 +83,14 @@ class SslHealthContributorAutoConfigurationTests {
 					.isEqualTo(Duration.ofDays(1));
 				Health health = context.getBean(SslHealthIndicator.class).health();
 				assertThat(health.getStatus()).isSameAs(Status.OUT_OF_SERVICE);
-				assertThat(health.getDetails()).hasSize(1);
-				List<CertificateChain> certificateChains = (List<CertificateChain>) health.getDetails()
-					.get("certificateChains");
-				assertThat(certificateChains).hasSize(1);
-				assertThat(certificateChains.get(0)).isInstanceOf(CertificateChain.class);
+				assertDetailsKeys(health);
+				List<CertificateChain> invalidChains = getInvalidChains(health);
+				assertThat(invalidChains).hasSize(1);
+				assertThat(invalidChains).first().isInstanceOf(CertificateChain.class);
 			});
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void customBeansShouldBeConfigured() {
 		this.contextRunner.withUserConfiguration(CustomSslInfoConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(SslHealthIndicator.class);
@@ -103,12 +100,20 @@ class SslHealthContributorAutoConfigurationTests {
 			assertThat(context.getBean(SslInfo.class)).isSameAs(context.getBean("customSslInfo"));
 			Health health = context.getBean(SslHealthIndicator.class).health();
 			assertThat(health.getStatus()).isSameAs(Status.OUT_OF_SERVICE);
-			assertThat(health.getDetails()).hasSize(1);
-			List<CertificateChain> certificateChains = (List<CertificateChain>) health.getDetails()
-				.get("certificateChains");
-			assertThat(certificateChains).hasSize(1);
-			assertThat(certificateChains.get(0)).isInstanceOf(CertificateChain.class);
+			assertDetailsKeys(health);
+			List<CertificateChain> invalidChains = getInvalidChains(health);
+			assertThat(invalidChains).hasSize(1);
+			assertThat(invalidChains).first().isInstanceOf(CertificateChain.class);
 		});
+	}
+
+	private static void assertDetailsKeys(Health health) {
+		assertThat(health.getDetails()).containsOnlyKeys("validChains", "invalidChains");
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<CertificateChain> getInvalidChains(Health health) {
+		return (List<CertificateChain>) health.getDetails().get("invalidChains");
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -651,12 +651,14 @@ with the `key` listed in the following table:
 
 | `ssl`
 | javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]
-| Checks that SSL Cerificates are ok.
+| Checks that SSL Certificates are ok.
 |===
 
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
 
-TIP: The `ssl` `HealthIndicator` has a "warning threshold" property. If an SSL Certificate will be invalid within the time span defined by this threshold, the `HealthIndicator` will warn you but it will still return HTTP 200 to not disrupt the application. You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate. See the `management.health.ssl.certificate-validity-warning-threshold` property.
+TIP: The `ssl` `HealthIndicator` has a "warning threshold" property named configprop:management.health.ssl.certificate-validity-warning-threshold[].
+If an SSL Certificate will be invalid within the time span defined by this threshold, the `HealthIndicator` will warn you but it will still return HTTP 200 to not disrupt the application.
+You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate.
 
 
 

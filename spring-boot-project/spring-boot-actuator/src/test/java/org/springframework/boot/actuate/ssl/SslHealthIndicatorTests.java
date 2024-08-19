@@ -66,59 +66,66 @@ class SslHealthIndicatorTests {
 		given(this.validity.getStatus()).willReturn(Validity.Status.VALID);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).isEmpty();
+		assertDetailsKeys(health);
+		List<CertificateChain> validChains = getValidChains(health);
+		assertThat(validChains).hasSize(1);
+		assertThat(validChains.get(0)).isInstanceOf(CertificateChain.class);
+		List<CertificateChain> invalidChains = getInvalidChains(health);
+		assertThat(invalidChains).isEmpty();
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void shouldBeOutOfServiceIfACertificateIsExpired() {
 		given(this.validity.getStatus()).willReturn(Validity.Status.EXPIRED);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
-		assertThat(health.getDetails()).hasSize(1);
-		List<CertificateChain> certificateChains = (List<CertificateChain>) health.getDetails()
-			.get("certificateChains");
-		assertThat(certificateChains).hasSize(1);
-		assertThat(certificateChains.get(0)).isInstanceOf(CertificateChain.class);
+		assertDetailsKeys(health);
+		List<CertificateChain> validChains = getValidChains(health);
+		assertThat(validChains).isEmpty();
+		List<CertificateChain> invalidChains = getInvalidChains(health);
+		assertThat(invalidChains).hasSize(1);
+		assertThat(invalidChains.get(0)).isInstanceOf(CertificateChain.class);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void shouldBeOutOfServiceIfACertificateIsNotYetValid() {
 		given(this.validity.getStatus()).willReturn(Validity.Status.NOT_YET_VALID);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
-		assertThat(health.getDetails()).hasSize(1);
-		List<CertificateChain> certificateChains = (List<CertificateChain>) health.getDetails()
-			.get("certificateChains");
-		assertThat(certificateChains).hasSize(1);
-		assertThat(certificateChains.get(0)).isInstanceOf(CertificateChain.class);
+		assertDetailsKeys(health);
+		List<CertificateChain> validChains = getValidChains(health);
+		assertThat(validChains).isEmpty();
+		List<CertificateChain> invalidChains = getInvalidChains(health);
+		assertThat(invalidChains).hasSize(1);
+		assertThat(invalidChains.get(0)).isInstanceOf(CertificateChain.class);
+
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void shouldReportWarningIfACertificateWillExpireSoon() {
 		given(this.validity.getStatus()).willReturn(Validity.Status.WILL_EXPIRE_SOON);
 		Health health = this.healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).hasSize(1);
-		List<CertificateChain> certificateChains = (List<CertificateChain>) health.getDetails()
-			.get("certificateChains");
-		assertThat(certificateChains).hasSize(1);
-		assertThat(certificateChains.get(0)).isInstanceOf(CertificateChain.class);
+		assertDetailsKeys(health);
+		List<CertificateChain> validChains = getValidChains(health);
+		assertThat(validChains).hasSize(1);
+		assertThat(validChains.get(0)).isInstanceOf(CertificateChain.class);
+		List<CertificateChain> invalidChains = getInvalidChains(health);
+		assertThat(invalidChains).isEmpty();
 	}
 
-	@Test
+	private static void assertDetailsKeys(Health health) {
+		assertThat(health.getDetails()).containsOnlyKeys("validChains", "invalidChains");
+	}
+
 	@SuppressWarnings("unchecked")
-	void shouldBeOutOfServiceIfACertificateHasUnMappedValidityStatus() {
-		given(this.validity.getStatus()).willReturn(mock(Validity.Status.class));
-		Health health = this.healthIndicator.health();
-		assertThat(health.getStatus()).isEqualTo(Status.OUT_OF_SERVICE);
-		assertThat(health.getDetails()).hasSize(1);
-		List<CertificateChain> certificateChains = (List<CertificateChain>) health.getDetails()
-			.get("certificateChains");
-		assertThat(certificateChains).hasSize(1);
-		assertThat(certificateChains.get(0)).isInstanceOf(CertificateChain.class);
+	private static List<CertificateChain> getInvalidChains(Health health) {
+		return (List<CertificateChain>) health.getDetails().get("invalidChains");
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<CertificateChain> getValidChains(Health health) {
+		return (List<CertificateChain>) health.getDetails().get("validChains");
 	}
 
 }
