@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package org.springframework.boot.ssl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Scott Frederick
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Jonatan Ivanov
  * @since 3.1.0
  */
 public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
@@ -65,6 +68,13 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	@Override
 	public SslBundle getBundle(String name) {
 		return getRegistered(name).getBundle();
+	}
+
+	@Override
+	public Map<String, SslBundle> getBundles() {
+		return this.registeredBundles.entrySet()
+			.stream()
+			.collect(Collectors.toUnmodifiableMap(Entry::getKey, (entry) -> entry.getValue().getBundle()));
 	}
 
 	@Override
