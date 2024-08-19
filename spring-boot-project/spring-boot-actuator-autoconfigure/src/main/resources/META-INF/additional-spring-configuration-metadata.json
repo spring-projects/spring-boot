@@ -230,7 +230,7 @@
     {
       "name": "management.health.ssl.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable SSL Certificate health check.",
+      "description": "Whether to enable SSL certificate health check.",
       "defaultValue": true
     },
     {
@@ -292,7 +292,7 @@
     {
       "name": "management.info.ssl.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable SSL Certificate info.",
+      "description": "Whether to enable SSL certificate info.",
       "defaultValue": false
     },
     {
