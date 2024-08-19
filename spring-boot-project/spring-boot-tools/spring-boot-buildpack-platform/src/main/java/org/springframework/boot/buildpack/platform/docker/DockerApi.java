@@ -64,7 +64,9 @@ public class DockerApi {
 
 	private static final List<String> FORCE_PARAMS = Collections.unmodifiableList(Arrays.asList("force", "1"));
 
-	static final ApiVersion MINIMUM_API_VERSION = ApiVersion.parse("1.24");
+	static final ApiVersion MINIMUM_API_VERSION = ApiVersion.of(1, 24);
+
+	static final ApiVersion MINIMUM_PLATFORM_API_VERSION = ApiVersion.of(1, 41);
 
 	static final String API_VERSION_HEADER_NAME = "API-Version";
 
@@ -80,7 +82,7 @@ public class DockerApi {
 
 	private final SystemApi system;
 
-	private ApiVersion apiVersion = null;
+	private volatile ApiVersion apiVersion = null;
 
 	/**
 	 * Create a new {@link DockerApi} instance.
@@ -126,10 +128,7 @@ public class DockerApi {
 
 	private URI buildUrl(String path, Object... params) {
 		try {
-			if (this.apiVersion == null) {
-				this.apiVersion = this.system.getApiVersion();
-			}
-			URIBuilder builder = new URIBuilder("/v" + this.apiVersion + path);
+			URIBuilder builder = new URIBuilder("/v" + getApiVersion() + path);
 			int param = 0;
 			while (param < params.length) {
 				builder.addParameter(Objects.toString(params[param++]), Objects.toString(params[param++]));
@@ -141,11 +140,19 @@ public class DockerApi {
 		}
 	}
 
-	private void verifyApiVersionForPlatform() {
-		ApiVersion minimumPlatformApiVersion = ApiVersion.of(1, 41);
-		Assert.isTrue(this.apiVersion.supports(minimumPlatformApiVersion),
-				"Docker API version must be at least " + minimumPlatformApiVersion
-						+ " to support the 'imagePlatform' option, but current API version is " + this.apiVersion);
+	private void verifyApiVersionForPlatform(ImagePlatform platform) {
+		Assert.isTrue(platform == null || getApiVersion().supports(MINIMUM_PLATFORM_API_VERSION),
+				() -> "Docker API version must be at least " + MINIMUM_PLATFORM_API_VERSION
+						+ " to support the 'imagePlatform' option, but current API version is " + getApiVersion());
+	}
+
+	private ApiVersion getApiVersion() {
+		ApiVersion apiVersion = this.apiVersion;
+		if (this.apiVersion == null) {
+			apiVersion = this.system.getApiVersion();
+			this.apiVersion = apiVersion;
+		}
+		return apiVersion;
 	}
 
 	/**
@@ -206,14 +213,10 @@ public class DockerApi {
 				UpdateListener<PullImageUpdateEvent> listener, String registryAuth) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(listener, "Listener must not be null");
-			URI createUri;
-			if (platform != null) {
-				createUri = buildUrl("/images/create", "fromImage", reference, "platform", platform);
-				verifyApiVersionForPlatform();
-			}
-			else {
-				createUri = buildUrl("/images/create", "fromImage", reference);
-			}
+			verifyApiVersionForPlatform(platform);
+			URI createUri = (platform != null)
+					? buildUrl("/images/create", "fromImage", reference, "platform", platform)
+					: buildUrl("/images/create", "fromImage", reference);
 			DigestCaptureUpdateListener digestCapture = new DigestCaptureUpdateListener();
 			listener.onStart();
 			try {
@@ -400,14 +403,9 @@ public class DockerApi {
 		}
 
 		private ContainerReference createContainer(ContainerConfig config, ImagePlatform platform) throws IOException {
-			URI createUri;
-			if (platform != null) {
-				createUri = buildUrl("/containers/create", "platform", platform);
-				verifyApiVersionForPlatform();
-			}
-			else {
-				createUri = buildUrl("/containers/create");
-			}
+			verifyApiVersionForPlatform(platform);
+			URI createUri = (platform != null) ? buildUrl("/containers/create", "platform", platform)
+					: buildUrl("/containers/create");
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
 				return ContainerReference
 					.of(SharedObjectMapper.get().readTree(response.getContent()).at("/Id").asText());

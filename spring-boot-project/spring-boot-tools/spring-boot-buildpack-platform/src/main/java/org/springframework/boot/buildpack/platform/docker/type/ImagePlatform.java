@@ -42,20 +42,21 @@ public class ImagePlatform {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (!(o instanceof ImagePlatform that)) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		return Objects.equals(this.os, that.os) && Objects.equals(this.architecture, that.architecture)
-				&& Objects.equals(this.variant, that.variant);
+		ImagePlatform other = (ImagePlatform) obj;
+		return Objects.equals(this.architecture, other.architecture) && Objects.equals(this.os, other.os)
+				&& Objects.equals(this.variant, other.variant);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.os, this.architecture, this.variant);
+		return Objects.hash(this.architecture, this.os, this.variant);
 	}
 
 	@Override

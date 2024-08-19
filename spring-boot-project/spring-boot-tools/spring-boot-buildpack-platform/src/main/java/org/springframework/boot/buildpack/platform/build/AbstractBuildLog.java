@@ -46,15 +46,10 @@ public abstract class AbstractBuildLog implements BuildLog {
 	@Override
 	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImagePlatform platform,
 			ImageType imageType) {
-		String message;
-		if (platform != null) {
-			message = String.format(" > Pulling %s '%s' for platform '%s'", imageType.getDescription(), imageReference,
-					platform);
-		}
-		else {
-			message = String.format(" > Pulling %s '%s'", imageType.getDescription(), imageReference);
-		}
-		return getProgressConsumer(message);
+		return (platform != null)
+				? getProgressConsumer(" > Pulling %s '%s' for platform '%s'".formatted(imageType.getDescription(),
+						imageReference, platform))
+				: getProgressConsumer(" > Pulling %s '%s'".formatted(imageType.getDescription(), imageReference));
 	}
 
 	@Override
