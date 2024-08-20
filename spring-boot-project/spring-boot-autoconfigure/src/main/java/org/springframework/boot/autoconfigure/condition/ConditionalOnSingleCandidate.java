@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
@@ -53,14 +54,16 @@ public @interface ConditionalOnSingleCandidate {
 	/**
 	 * The class type of bean that should be checked. The condition matches if a bean of
 	 * the class specified is contained in the {@link BeanFactory} and a primary candidate
-	 * exists in case of multiple instances. Beans that are not autowire candidates are
-	 * ignored.
+	 * exists in case of multiple instances. Beans that are not autowire candidates or
+	 * that are not default candidates are ignored.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
 	 * {@link #type()}, but it may be used instead of {@link #type()}.
 	 * @return the class type of the bean to check
 	 * @see Bean#autowireCandidate()
 	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<?> value() default Object.class;
 
@@ -68,13 +71,15 @@ public @interface ConditionalOnSingleCandidate {
 	 * The class type name of bean that should be checked. The condition matches if a bean
 	 * of the class specified is contained in the {@link BeanFactory} and a primary
 	 * candidate exists in case of multiple instances. Beans that are not autowire
-	 * candidates are ignored.
+	 * candidates or that are not default candidates are ignored.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
 	 * {@link #value()}, but it may be used instead of {@link #value()}.
 	 * @return the class type name of the bean to check
 	 * @see Bean#autowireCandidate()
 	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	String type() default "";
 

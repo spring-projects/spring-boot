@@ -42,6 +42,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Bean;
@@ -217,8 +218,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			Map<String, BeanDefinition> typeMatchedDefinitions = getBeanDefinitionsForType(classLoader,
 					considerHierarchy, beanFactory, type, parameterizedContainers);
 			Set<String> typeMatchedNames = matchedNamesFrom(typeMatchedDefinitions,
-					(name, definition) -> !beansIgnoredByType.contains(name) && !ScopedProxyUtils.isScopedTarget(name)
-							&& (definition == null || definition.isAutowireCandidate()));
+					(name, definition) -> isCandidate(name, definition, beansIgnoredByType)
+							&& !ScopedProxyUtils.isScopedTarget(name));
 			if (typeMatchedNames.isEmpty()) {
 				result.recordUnmatchedType(type);
 			}
@@ -230,8 +231,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			Map<String, BeanDefinition> annotationMatchedDefinitions = getBeanDefinitionsForAnnotation(classLoader,
 					beanFactory, annotation, considerHierarchy);
 			Set<String> annotationMatchedNames = matchedNamesFrom(annotationMatchedDefinitions,
-					(name, definition) -> !beansIgnoredByType.contains(name)
-							&& (definition == null || definition.isAutowireCandidate()));
+					(name, definition) -> isCandidate(name, definition, beansIgnoredByType));
 			if (annotationMatchedNames.isEmpty()) {
 				result.recordUnmatchedAnnotation(annotation);
 			}
@@ -260,6 +260,18 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			}
 		}
 		return matchedNames;
+	}
+
+	private boolean isCandidate(String name, BeanDefinition definition, Set<String> ignoredBeans) {
+		return (!ignoredBeans.contains(name))
+				&& (definition == null || (definition.isAutowireCandidate() && isDefaultCandidate(definition)));
+	}
+
+	private boolean isDefaultCandidate(BeanDefinition definition) {
+		if (definition instanceof AbstractBeanDefinition abstractBeanDefinition) {
+			return abstractBeanDefinition.isDefaultCandidate();
+		}
+		return true;
 	}
 
 	private Set<String> getNamesOfBeansIgnoredByType(ClassLoader classLoader, ListableBeanFactory beanFactory,

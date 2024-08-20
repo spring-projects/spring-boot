@@ -363,6 +363,25 @@ class ConditionalOnMissingBeanTests {
 			.run((context) -> assertThat(context).hasBean("bar"));
 	}
 
+	@Test
+	void typeBasedMatchingIgnoresBeanThatIsNotDefaultCandidate() {
+		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfig.class, OnBeanTypeConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("bar"));
+	}
+
+	@Test
+	void nameBasedMatchingConsidersBeanThatIsNotDefaultCandidate() {
+		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfig.class, OnBeanNameConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void annotationBasedMatchingIgnoresBeanThatIsNotDefaultCandidateBean() {
+		this.contextRunner
+			.withUserConfiguration(AnnotatedNotDefaultCandidateConfig.class, OnAnnotationConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("bar"));
+	}
+
 	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
 		return (context) -> {
 			String[] beans = context.getBeanNamesForType(ExampleBean.class);
@@ -608,6 +627,16 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class NotDefaultCandidateConfig {
+
+		@Bean(defaultCandidate = false)
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(name = "foo")
 	static class HierarchyConsidered {
 
@@ -772,6 +801,16 @@ class ConditionalOnMissingBeanTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class AnnotatedNotAutowireCandidateConfig {
+
+		@Bean(autowireCandidate = false)
+		ExampleBean exampleBean() {
+			return new ExampleBean("value");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AnnotatedNotDefaultCandidateConfig {
 
 		@Bean(autowireCandidate = false)
 		ExampleBean exampleBean() {

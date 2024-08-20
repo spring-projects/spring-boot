@@ -261,6 +261,25 @@ class ConditionalOnBeanTests {
 			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
+	@Test
+	void conditionalOnBeanTypeIgnoresNotDefaultCandidateBean() {
+		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfiguration.class, OnBeanClassConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void conditionalOnBeanNameMatchesNotDefaultCandidateBean() {
+		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfiguration.class, OnBeanNameConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("bar"));
+	}
+
+	@Test
+	void conditionalOnAnnotatedBeanIgnoresNotDefaultCandidateBean() {
+		this.contextRunner
+			.withUserConfiguration(AnnotatedNotDefaultCandidateConfig.class, OnAnnotationConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
 	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
 		return (context) -> {
 			String[] beans = context.getBeanNamesForType(ExampleBean.class);
@@ -350,6 +369,16 @@ class ConditionalOnBeanTests {
 	static class NotAutowireCandidateConfiguration {
 
 		@Bean(autowireCandidate = false)
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotDefaultCandidateConfiguration {
+
+		@Bean(defaultCandidate = false)
 		String foo() {
 			return "foo";
 		}
@@ -563,6 +592,16 @@ class ConditionalOnBeanTests {
 	static class AnnotatedNotAutowireCandidateConfig {
 
 		@Bean(autowireCandidate = false)
+		ExampleBean exampleBean() {
+			return new ExampleBean("value");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AnnotatedNotDefaultCandidateConfig {
+
+		@Bean(defaultCandidate = false)
 		ExampleBean exampleBean() {
 			return new ExampleBean("value");
 		}

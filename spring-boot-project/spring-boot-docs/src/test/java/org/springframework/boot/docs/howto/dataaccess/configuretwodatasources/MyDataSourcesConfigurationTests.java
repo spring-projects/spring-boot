@@ -22,39 +22,44 @@ import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MyDataSourcesConfiguration}.
+ * Tests for {@link MyAdditionalDataSourceConfiguration}.
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = { "app.datasource.second.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
-		"app.datasource.second.max-total=42" })
-@Import(MyDataSourcesConfiguration.class)
+@SpringBootTest(properties = { "app.datasource.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1", "app.datasource.max-total=42" })
+@Import(MyAdditionalDataSourceConfiguration.class)
 class MyDataSourcesConfigurationTests {
 
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	private DataSource dataSource;
+
+	@Autowired
+	@Qualifier("second")
+	private DataSource secondDataSource;
+
 	@Test
 	void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(2);
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(this.context.getBean("firstDataSource")).isSameAs(dataSource);
-		assertThat(dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
-		BasicDataSource secondDataSource = this.context.getBean("secondDataSource", BasicDataSource.class);
-		assertThat(secondDataSource.getUrl()).isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
-		assertThat(secondDataSource.getMaxTotal()).isEqualTo(42);
+		assertThat(this.context.getBean("dataSource")).isSameAs(this.dataSource);
+		assertThat(this.dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
+		assertThat(this.context.getBean("secondDataSource")).isSameAs(this.secondDataSource);
+		assertThat(this.secondDataSource).extracting((dataSource) -> ((BasicDataSource) dataSource).getUrl())
+			.isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
+		assertThat(this.secondDataSource).extracting((dataSource) -> ((BasicDataSource) dataSource).getMaxTotal())
+			.isEqualTo(42);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.docs.howto.dataaccess.usemultipleentitymanagers
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -28,19 +29,21 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 @Configuration(proxyBeanMethods = false)
-public class MyEntityManagerFactoryConfiguration {
+public class MyAdditionalEntityManagerFactoryConfiguration {
 
-	@Bean
-	@ConfigurationProperties("app.jpa.first")
-	public JpaProperties firstJpaProperties() {
+	@Qualifier("second")
+	@Bean(defaultCandidate = false)
+	@ConfigurationProperties("app.jpa")
+	public JpaProperties secondJpaProperties() {
 		return new JpaProperties();
 	}
 
-	@Bean
-	public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(DataSource firstDataSource,
-			JpaProperties firstJpaProperties) {
-		EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(firstJpaProperties);
-		return builder.dataSource(firstDataSource).packages(Order.class).persistenceUnit("firstDs").build();
+	@Qualifier("second")
+	@Bean(defaultCandidate = false)
+	public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(@Qualifier("second") DataSource dataSource,
+			@Qualifier("second") JpaProperties jpaProperties) {
+		EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(jpaProperties);
+		return builder.dataSource(dataSource).packages(Order.class).persistenceUnit("second").build();
 	}
 
 	private EntityManagerFactoryBuilder createEntityManagerFactoryBuilder(JpaProperties jpaProperties) {

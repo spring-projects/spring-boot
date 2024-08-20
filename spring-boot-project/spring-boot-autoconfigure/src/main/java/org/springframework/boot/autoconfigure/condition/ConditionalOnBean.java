@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
@@ -69,30 +70,37 @@ public @interface ConditionalOnBean {
 	/**
 	 * The class types of beans that should be checked. The condition matches when beans
 	 * of all classes specified are contained in the {@link BeanFactory}. Beans that are
-	 * not autowire candidates are ignored.
+	 * not autowire candidates or that are not default candidates are ignored.
 	 * @return the class types of beans to check
 	 * @see Bean#autowireCandidate()
 	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<?>[] value() default {};
 
 	/**
 	 * The class type names of beans that should be checked. The condition matches when
 	 * beans of all classes specified are contained in the {@link BeanFactory}. Beans that
-	 * are not autowire candidates are ignored.
+	 * are not autowire candidates or that are not default candidates are ignored.
 	 * @return the class type names of beans to check
 	 * @see Bean#autowireCandidate()
 	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	String[] type() default {};
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
 	 * when all the annotations specified are defined on beans in the {@link BeanFactory}.
-	 * Beans that are not autowire candidates are ignored.
+	 * Beans that are not autowire candidates or that are not default candidates are
+	 * ignored.
 	 * @return the class-level annotation types to check
 	 * @see Bean#autowireCandidate()
 	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 

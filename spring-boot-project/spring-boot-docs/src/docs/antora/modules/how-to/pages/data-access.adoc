@@ -110,43 +110,41 @@ See xref:reference:data/sql.adoc#data.sql.datasource[] in the "`Spring Boot Feat
 [[howto.data-access.configure-two-datasources]]
 == Configure Two DataSources
 
-If you need to configure multiple data sources, you can apply the same tricks that were described in the previous section.
-You must, however, mark one of the `DataSource` instances as `@Primary`, because various auto-configurations down the road expect to be able to get one by type.
+To define an additional `DataSource`, an approach that's similar to the previous section can be used.
+A key difference is that the `DataSource` `@Bean` must be declared with `defaultCandidate=false`.
+This prevents the auto-configured `DataSource` from backing off.
+To allow the additional `DataSource` to be injected where it's needed, also annotate it with `@Qualifier` as shown in the following example:
 
-If you create your own `DataSource`, the auto-configuration backs off.
-In the following example, we provide the _exact_ same feature set as the auto-configuration provides on the primary data source:
+include-code::MyAdditionalDataSourceConfiguration[]
 
-include-code::MyDataSourcesConfiguration[]
+To consume the additional `DataSource`, annotate the injection point with the same `@Qualifier`.
 
-TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database initializer feature uses your copy (if you use the initializer).
-
-Both data sources are also bound for advanced customizations.
-For instance, you could configure them as follows:
+The auto-configured and additional data sources can be configured as follows:
 
 [configprops%novalidate,yaml]
 ----
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost/first"
+    username: "dbuser"
+    password: "dbpass"
+    configuration:
+      maximum-pool-size: 30
 app:
   datasource:
-    first:
-      url: "jdbc:mysql://localhost/first"
-      username: "dbuser"
-      password: "dbpass"
-      configuration:
-        maximum-pool-size: 30
-
-    second:
-      url: "jdbc:mysql://localhost/second"
-      username: "dbuser"
-      password: "dbpass"
-      max-total: 30
+    url: "jdbc:mysql://localhost/second"
+    username: "dbuser"
+    password: "dbpass"
+    max-total: 30
 ----
 
-You can apply the same concept to the secondary `DataSource` as well, as shown in the following example:
+More advanced, implementation-specific, configuration of the auto-configured `DataSource` is available through the `spring.datasource.configuration.*` properties.
+You can apply the same concept to the additional `DataSource` as well, as shown in the following example:
 
-include-code::MyCompleteDataSourcesConfiguration[]
+include-code::MyCompleteAdditionalDataSourceConfiguration[]
 
-The preceding example configures two data sources on custom namespaces with the same logic as Spring Boot would use in auto-configuration.
-Note that each `configuration` sub namespace provides advanced settings based on the chosen implementation.
+The preceding example configures the additional data source with the same logic as Spring Boot would use in auto-configuration.
+Note that the `app.datasource.configuration.*` properties provide advanced settings based on the chosen implementation.
 
 
 
@@ -295,26 +293,28 @@ You can disable or tune this behavior by registering a `HibernatePropertiesCusto
 To take full control of the configuration of the `EntityManagerFactory`, you need to add a `@Bean` named '`entityManagerFactory`'.
 Spring Boot auto-configuration switches off its entity manager in the presence of a bean of that type.
 
+NOTE: When you create a bean for `LocalContainerEntityManagerFactoryBean` yourself, any customization that was applied during the creation of the auto-configured `LocalContainerEntityManagerFactoryBean` is lost.
+Make sure to use the auto-configured `EntityManagerFactoryBuilder` to retain JPA and vendor properties.
+This is particularly important if you were relying on `spring.jpa.*` properties for configuring things like the naming strategy or the DDL mode.
+
 
 
 [[howto.data-access.use-multiple-entity-managers]]
 == Using Multiple EntityManagerFactories
 
-If you need to use JPA against multiple data sources, you likely need one `EntityManagerFactory` per data source.
+If you need to use JPA against multiple datasources, you likely need one `EntityManagerFactory` per datasource.
 The `LocalContainerEntityManagerFactoryBean` from Spring ORM allows you to configure an `EntityManagerFactory` for your needs.
-You can also reuse `JpaProperties` to bind settings for each `EntityManagerFactory`, as shown in the following example:
+You can also reuse `JpaProperties` to bind settings for a second `EntityManagerFactory`.
+Building upon xref:how-to:data-access.adoc#howto.data-access.configure-two-datasources[the example for configuring a second `DataSource`], a second `EntityManagerFactory` can be defined as shown in the following example:
 
-include-code::MyEntityManagerFactoryConfiguration[]
+include-code::MyAdditionalEntityManagerFactoryConfiguration[]
 
-The example above creates an `EntityManagerFactory` using a `DataSource` bean named `firstDataSource`.
+The example above creates an `EntityManagerFactory` using the `DataSource` bean qualified with `@Qualifier("second")`.
 It scans entities located in the same package as `Order`.
-It is possible to map additional JPA properties using the `app.first.jpa` namespace.
+It is possible to map additional JPA properties using the `app.jpa` namespace.
+The use of `@Bean(defaultCandidate=false)` allows the `secondJpaProperties` and `secondEntityManagerFactory` beans to be defined without interfering with auto-configured beans of the same type.
 
-NOTE: When you create a bean for `LocalContainerEntityManagerFactoryBean` yourself, any customization that was applied during the creation of the auto-configured `LocalContainerEntityManagerFactoryBean` is lost.
-Make sure to use the auto-configured `EntityManagerFactoryBuilder` to retain JPA and vendor properties.
-This is particularly important if you were relying on `spring.jpa.*` properties for configuring things like the naming strategy or the DDL mode.
-
-You should provide a similar configuration for any additional data sources for which you need JPA access.
+You should provide a similar configuration for any more additional data sources for which you need JPA access.
 To complete the picture, you need to configure a `JpaTransactionManager` for each `EntityManagerFactory` as well.
 Alternatively, you might be able to use a JTA transaction manager that spans both.
 

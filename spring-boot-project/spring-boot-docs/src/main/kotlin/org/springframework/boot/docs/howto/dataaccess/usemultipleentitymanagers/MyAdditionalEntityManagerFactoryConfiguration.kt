@@ -18,6 +18,7 @@ package org.springframework.boot.docs.howto.dataaccess.usemultipleentitymanagers
 
 import javax.sql.DataSource
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
@@ -29,21 +30,23 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 
 @Suppress("UNUSED_PARAMETER")
 @Configuration(proxyBeanMethods = false)
-class MyEntityManagerFactoryConfiguration {
+class MyAdditionalEntityManagerFactoryConfiguration {
 
-	@Bean
-	@ConfigurationProperties("app.jpa.first")
-	fun firstJpaProperties(): JpaProperties {
+	@Qualifier("second")
+	@Bean(defaultCandidate = false)
+	@ConfigurationProperties("app.jpa")
+	fun secondJpaProperties(): JpaProperties {
 		return JpaProperties()
 	}
 
-	@Bean
+	@Qualifier("second")
+	@Bean(defaultCandidate = false)
 	fun firstEntityManagerFactory(
-		firstDataSource: DataSource?,
-		firstJpaProperties: JpaProperties
+		@Qualifier("second") dataSource: DataSource,
+		@Qualifier("second") jpaProperties: JpaProperties
 	): LocalContainerEntityManagerFactoryBean {
-		val builder = createEntityManagerFactoryBuilder(firstJpaProperties)
-		return builder.dataSource(firstDataSource).packages(Order::class.java).persistenceUnit("firstDs").build()
+		val builder = createEntityManagerFactoryBuilder(jpaProperties)
+		return builder.dataSource(dataSource).packages(Order::class.java).persistenceUnit("second").build()
 	}
 
 	private fun createEntityManagerFactoryBuilder(jpaProperties: JpaProperties): EntityManagerFactoryBuilder {
