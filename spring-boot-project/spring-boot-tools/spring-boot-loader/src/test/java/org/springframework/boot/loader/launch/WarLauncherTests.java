@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @AssertFileChannelDataBlocksClosed
-class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
+class WarLauncherTests extends AbstractLauncherTests {
 
 	@Test
 	void explodedWarHasOnlyWebInfClassesAndContentsOfWebInfLibOnClasspath() throws Exception {
@@ -84,10 +84,6 @@ class WarLauncherTests extends AbstractExecutableArchiveLauncherTests {
 		List<File> expectedFiles = getExpectedFilesWithExtraLibs(explodedRoot);
 		URL[] expectedFileUrls = expectedFiles.stream().map(this::toUrl).toArray(URL[]::new);
 		assertThat(urls).containsExactly(expectedFileUrls);
-	}
-
-	private URLClassLoader createClassLoader(Launcher launcher) throws Exception {
-		return (URLClassLoader) launcher.createClassLoader(launcher.getClassPathUrls());
 	}
 
 	private URL[] getExpectedFileUrls(File explodedRoot) {
