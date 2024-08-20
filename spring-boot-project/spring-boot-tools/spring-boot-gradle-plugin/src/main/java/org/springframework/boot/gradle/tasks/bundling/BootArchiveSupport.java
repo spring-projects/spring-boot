@@ -150,11 +150,11 @@ class BootArchiveSupport {
 	}
 
 	private Integer getDirMode(CopySpec copySpec) {
-		return getMode(copySpec, "getDirPermissions", copySpec::getDirMode);
+		return getMode(copySpec, "getDirPermissions", () -> copySpec.getDirMode());
 	}
 
 	private Integer getFileMode(CopySpec copySpec) {
-		return getMode(copySpec, "getFilePermissions", copySpec::getFileMode);
+		return getMode(copySpec, "getFilePermissions", () -> copySpec.getFileMode());
 	}
 
 	@SuppressWarnings("unchecked")
