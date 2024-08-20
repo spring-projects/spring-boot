@@ -44,6 +44,12 @@ class SampleLog4j2StructuredLoggingApplicationTests {
 	}
 
 	@Test
+	void shouldNotLogBanner(CapturedOutput output) {
+		SampleLog4j2StructuredLoggingApplication.main(new String[0]);
+		assertThat(output).doesNotContain(" :: Spring Boot :: ");
+	}
+
+	@Test
 	void json(CapturedOutput output) {
 		SampleLog4j2StructuredLoggingApplication.main(new String[0]);
 		assertThat(output).contains("{\"@timestamp\"")

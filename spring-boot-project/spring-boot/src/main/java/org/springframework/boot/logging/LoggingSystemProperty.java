@@ -140,7 +140,13 @@ public enum LoggingSystemProperty {
 		return this.environmentVariableName;
 	}
 
-	String getApplicationPropertyName() {
+	/**
+	 * Return the name of the application property name that can be used to set this
+	 * property.
+	 * @return the application property name
+	 * @since 3.4.0
+	 */
+	public String getApplicationPropertyName() {
 		return this.applicationPropertyName;
 	}
 

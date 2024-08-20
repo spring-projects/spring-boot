@@ -1647,7 +1647,7 @@ class SpringApplicationTests {
 		}
 
 		Banner.Mode getBannerMode() {
-			return this.properties.getBannerMode();
+			return this.properties.getBannerMode(new MockEnvironment());
 		}
 
 	}

@@ -20,6 +20,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.logging.LoggingSystemProperty;
+import org.springframework.core.env.Environment;
 
 /**
  * Spring application properties.
@@ -43,7 +45,7 @@ class ApplicationProperties {
 	/**
 	 * Mode used to display the banner when the application runs.
 	 */
-	private Banner.Mode bannerMode = Banner.Mode.CONSOLE;
+	private Banner.Mode bannerMode;
 
 	/**
 	 * Whether to keep the application alive even if there are no more non-daemon threads.
@@ -93,8 +95,13 @@ class ApplicationProperties {
 		this.allowCircularReferences = allowCircularReferences;
 	}
 
-	Mode getBannerMode() {
-		return this.bannerMode;
+	Mode getBannerMode(Environment environment) {
+		if (this.bannerMode != null) {
+			return this.bannerMode;
+		}
+		boolean structuredLoggingEnabled = environment
+			.containsProperty(LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getApplicationPropertyName());
+		return (structuredLoggingEnabled) ? Mode.OFF : Banner.Mode.CONSOLE;
 	}
 
 	void setBannerMode(Mode bannerMode) {

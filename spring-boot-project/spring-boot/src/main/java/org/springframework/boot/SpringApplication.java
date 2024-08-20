@@ -555,13 +555,13 @@ public class SpringApplication {
 	}
 
 	private Banner printBanner(ConfigurableEnvironment environment) {
-		if (this.properties.getBannerMode() == Banner.Mode.OFF) {
+		if (this.properties.getBannerMode(environment) == Banner.Mode.OFF) {
 			return null;
 		}
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
 				: new DefaultResourceLoader(null);
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
-		if (this.properties.getBannerMode() == Mode.LOG) {
+		if (this.properties.getBannerMode(environment) == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
 		}
 		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);

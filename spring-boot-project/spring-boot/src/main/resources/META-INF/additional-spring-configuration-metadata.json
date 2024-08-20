@@ -426,8 +426,7 @@
       "name": "spring.main.banner-mode",
       "type": "org.springframework.boot.Banner$Mode",
       "sourceType": "org.springframework.boot.SpringApplication",
-      "description": "Mode used to display the banner when the application runs.",
-      "defaultValue": "console"
+      "description": "Mode used to display the banner when the application runs. Defaults to 'off' if structured logging is enabled or to 'console' otherwise"
     },
     {
       "name": "spring.main.cloud-platform",
