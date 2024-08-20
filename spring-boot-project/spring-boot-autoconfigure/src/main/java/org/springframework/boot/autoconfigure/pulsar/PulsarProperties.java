@@ -311,17 +311,15 @@ public class PulsarProperties {
 
 			/**
 			 * Default tenant to use when producing or consuming messages against a
-			 * non-fully-qualified topic URL. When not specified Pulsar uses a default
-			 * tenant of 'public'.
+			 * non-fully-qualified topic URL.
 			 */
-			private String tenant;
+			private String tenant = "public";
 
 			/**
 			 * Default namespace to use when producing or consuming messages against a
-			 * non-fully-qualified topic URL. When not specified Pulsar uses a default
-			 * namespace of 'default'.
+			 * non-fully-qualified topic URL.
 			 */
-			private String namespace;
+			private String namespace = "default";
 
 			public String getTenant() {
 				return this.tenant;

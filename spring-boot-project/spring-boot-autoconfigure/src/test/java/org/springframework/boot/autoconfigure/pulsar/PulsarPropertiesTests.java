@@ -30,6 +30,7 @@ import org.apache.pulsar.client.api.SubscriptionInitialPosition;
 import org.apache.pulsar.client.api.SubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Failover.B
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -247,9 +249,12 @@ class PulsarPropertiesTests {
 
 		@Test
 		void bindWhenValuesNotSpecified() {
+			PulsarTopicBuilder defaultTopicBuilder = new PulsarTopicBuilder();
 			assertThat(new PulsarProperties().getDefaults().getTopic()).satisfies((defaults) -> {
-				assertThat(defaults.getTenant()).isNull();
-				assertThat(defaults.getNamespace()).isNull();
+				assertThat(defaults.getTenant())
+					.isEqualTo(Extractors.byName("defaultTenant").apply(defaultTopicBuilder));
+				assertThat(defaults.getNamespace())
+					.isEqualTo(Extractors.byName("defaultNamespace").apply(defaultTopicBuilder));
 			});
 		}
 
