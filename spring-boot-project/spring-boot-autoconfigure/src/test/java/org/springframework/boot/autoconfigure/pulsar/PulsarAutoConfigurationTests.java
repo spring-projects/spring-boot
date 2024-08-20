@@ -67,6 +67,7 @@ import org.springframework.pulsar.core.PulsarConsumerFactory;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarReaderFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
@@ -126,6 +127,7 @@ class PulsarAutoConfigurationTests {
 			.hasSingleBean(PulsarConnectionDetails.class)
 			.hasSingleBean(DefaultPulsarClientFactory.class)
 			.hasSingleBean(PulsarClient.class)
+			.hasSingleBean(PulsarTopicBuilder.class)
 			.hasSingleBean(PulsarAdministration.class)
 			.hasSingleBean(DefaultSchemaResolver.class)
 			.hasSingleBean(DefaultTopicResolver.class)
@@ -139,6 +141,12 @@ class PulsarAutoConfigurationTests {
 			.hasSingleBean(PulsarListenerEndpointRegistry.class)
 			.hasSingleBean(PulsarReaderAnnotationBeanPostProcessor.class)
 			.hasSingleBean(PulsarReaderEndpointRegistry.class));
+	}
+
+	@Test
+	void topicDefaultsCanBeDisabled() {
+		this.contextRunner.withPropertyValues("spring.pulsar.defaults.topic.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(PulsarTopicBuilder.class));
 	}
 
 	@Nested
@@ -219,7 +227,17 @@ class PulsarAutoConfigurationTests {
 						"spring.pulsar.producer.cache.enabled=false")
 				.run((context) -> assertThat(context).getBean(DefaultPulsarProducerFactory.class)
 					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
-					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class)));
+					.hasFieldOrPropertyWithValue("topicResolver", context.getBean(TopicResolver.class))
+					.extracting("topicBuilder")
+					.isNotNull());
+		}
+
+		@Test
+		void hasNoTopicBuilderWhenTopicDefaultsAreDisabled() {
+			this.contextRunner.withPropertyValues("spring.pulsar.defaults.topic.enabled=false")
+				.run((context) -> assertThat(context).getBean(DefaultPulsarProducerFactory.class)
+					.extracting("topicBuilder")
+					.isNull());
 		}
 
 		@ParameterizedTest
@@ -375,7 +393,18 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarConsumerFactory.class)
-				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class)));
+				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+				.extracting("topicBuilder")
+				.isNotNull());
+		}
+
+		@Test
+		void hasNoTopicBuilderWhenTopicDefaultsAreDisabled() {
+			this.contextRunner.withPropertyValues("spring.pulsar.defaults.topic.enabled=false")
+				.run((context) -> assertThat(context).getBean(DefaultPulsarConsumerFactory.class)
+					.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+					.extracting("topicBuilder")
+					.isNull());
 		}
 
 		@Test
@@ -574,7 +603,17 @@ class PulsarAutoConfigurationTests {
 		@Test
 		void injectsExpectedBeans() {
 			this.contextRunner.run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
-				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class)));
+				.hasFieldOrPropertyWithValue("pulsarClient", context.getBean(PulsarClient.class))
+				.extracting("topicBuilder")
+				.isNotNull());
+		}
+
+		@Test
+		void hasNoTopicBuilderWhenTopicDefaultsAreDisabled() {
+			this.contextRunner.withPropertyValues("spring.pulsar.defaults.topic.enabled=false")
+				.run((context) -> assertThat(context).getBean(DefaultPulsarReaderFactory.class)
+					.extracting("topicBuilder")
+					.isNull());
 		}
 
 		@Test
