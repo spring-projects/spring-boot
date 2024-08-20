@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -31,15 +32,17 @@ import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
+import org.springframework.boot.autoconfigure.condition.ConditionMessage.Builder;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
@@ -52,6 +55,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @see ConditionalOnAvailableEndpoint
  */
 class OnAvailableEndpointCondition extends SpringBootCondition {
@@ -60,7 +64,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 
 	private static final String ENABLED_BY_DEFAULT_KEY = "management.endpoints.enabled-by-default";
 
-	private static final Map<Environment, Set<ExposureFilter>> exposureFiltersCache = new ConcurrentReferenceHashMap<>();
+	private static final Map<Environment, Set<EndpointExposureOutcomeContributor>> exposureOutcomeContributorsCache = new ConcurrentReferenceHashMap<>();
 
 	private static final ConcurrentReferenceHashMap<Environment, Optional<Boolean>> enabledByDefaultCache = new ConcurrentReferenceHashMap<>();
 
@@ -110,18 +114,10 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnAvailableEndpoint.class);
 		EndpointId endpointId = EndpointId.of(environment, endpointAnnotation.getString("id"));
 		ConditionOutcome enablementOutcome = getEnablementOutcome(environment, endpointAnnotation, endpointId, message);
-		if (!enablementOutcome.isMatch()) {
-			return enablementOutcome;
-		}
-		Set<EndpointExposure> exposuresToCheck = getExposuresToCheck(conditionAnnotation);
-		Set<ExposureFilter> exposureFilters = getExposureFilters(environment);
-		for (ExposureFilter exposureFilter : exposureFilters) {
-			if (exposuresToCheck.contains(exposureFilter.getExposure()) && exposureFilter.isExposed(endpointId)) {
-				return ConditionOutcome.match(message.because("marked as exposed by a 'management.endpoints."
-						+ exposureFilter.getExposure().name().toLowerCase() + ".exposure' property"));
-			}
-		}
-		return ConditionOutcome.noMatch(message.because("no 'management.endpoints' property marked it as exposed"));
+		ConditionOutcome exposureOutcome = (!enablementOutcome.isMatch()) ? null
+				: getExposureOutcome(environment, conditionAnnotation, endpointAnnotation, endpointId, message);
+		return (exposureOutcome != null) ? exposureOutcome
+				: ConditionOutcome.noMatch(message.because("not enabled or exposed"));
 	}
 
 	private ConditionOutcome getEnablementOutcome(Environment environment,
@@ -148,54 +144,83 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		return enabledByDefault.orElse(null);
 	}
 
-	private Set<EndpointExposure> getExposuresToCheck(
-			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
-		EndpointExposure[] exposure = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
-		return (exposure.length == 0) ? EnumSet.allOf(EndpointExposure.class)
-				: new LinkedHashSet<>(Arrays.asList(exposure));
-	}
-
-	private Set<ExposureFilter> getExposureFilters(Environment environment) {
-		Set<ExposureFilter> exposureFilters = exposureFiltersCache.get(environment);
-		if (exposureFilters == null) {
-			exposureFilters = new HashSet<>(2);
-			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
-				exposureFilters.add(new ExposureFilter(environment, EndpointExposure.JMX));
+	private ConditionOutcome getExposureOutcome(Environment environment,
+			MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation,
+			MergedAnnotation<Endpoint> endpointAnnotation, EndpointId endpointId, Builder message) {
+		Set<EndpointExposure> exposures = getExposures(conditionAnnotation);
+		Set<EndpointExposureOutcomeContributor> outcomeContributors = getExposureOutcomeContributors(environment);
+		for (EndpointExposureOutcomeContributor outcomeContributor : outcomeContributors) {
+			ConditionOutcome outcome = outcomeContributor.getExposureOutcome(endpointId, exposures, message);
+			if (outcome != null && outcome.isMatch()) {
+				return outcome;
 			}
-			if (CloudPlatform.CLOUD_FOUNDRY.isActive(environment)) {
-				exposureFilters.add(new ExposureFilter(environment, EndpointExposure.CLOUD_FOUNDRY));
-			}
-			exposureFilters.add(new ExposureFilter(environment, EndpointExposure.WEB));
-			exposureFiltersCache.put(environment, exposureFilters);
 		}
-		return exposureFilters;
+		return null;
 	}
 
-	static final class ExposureFilter extends IncludeExcludeEndpointFilter<ExposableEndpoint<?>> {
+	private Set<EndpointExposure> getExposures(MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation) {
+		EndpointExposure[] exposures = conditionAnnotation.getEnumArray("exposure", EndpointExposure.class);
+		return replaceCloudFoundryExposure(
+				(exposures.length == 0) ? EnumSet.allOf(EndpointExposure.class) : Arrays.asList(exposures));
+	}
+
+	@SuppressWarnings("removal")
+	private Set<EndpointExposure> replaceCloudFoundryExposure(Collection<EndpointExposure> exposures) {
+		Set<EndpointExposure> result = EnumSet.copyOf(exposures);
+		if (result.remove(EndpointExposure.CLOUD_FOUNDRY)) {
+			result.add(EndpointExposure.WEB);
+		}
+		return result;
+	}
+
+	private Set<EndpointExposureOutcomeContributor> getExposureOutcomeContributors(Environment environment) {
+		Set<EndpointExposureOutcomeContributor> contributors = exposureOutcomeContributorsCache.get(environment);
+		if (contributors == null) {
+			contributors = new LinkedHashSet<>();
+			contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.WEB));
+			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
+				contributors.add(new StandardExposureOutcomeContributor(environment, EndpointExposure.JMX));
+			}
+			contributors.addAll(loadExposureOutcomeContributors(environment));
+			exposureOutcomeContributorsCache.put(environment, contributors);
+		}
+		return contributors;
+	}
+
+	private List<EndpointExposureOutcomeContributor> loadExposureOutcomeContributors(Environment environment) {
+		ArgumentResolver argumentResolver = ArgumentResolver.of(Environment.class, environment);
+		return SpringFactoriesLoader.forDefaultResourceLocation()
+			.load(EndpointExposureOutcomeContributor.class, argumentResolver);
+	}
+
+	/**
+	 * Standard {@link EndpointExposureOutcomeContributor}.
+	 */
+	private static class StandardExposureOutcomeContributor implements EndpointExposureOutcomeContributor {
 
 		private final EndpointExposure exposure;
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		private ExposureFilter(Environment environment, EndpointExposure exposure) {
-			super((Class) ExposableEndpoint.class, environment,
-					"management.endpoints." + getCanonicalName(exposure) + ".exposure", exposure.getDefaultIncludes());
+		private final String property;
+
+		private final IncludeExcludeEndpointFilter<?> filter;
+
+		StandardExposureOutcomeContributor(Environment environment, EndpointExposure exposure) {
 			this.exposure = exposure;
+			String name = exposure.name().toLowerCase().replace('_', '-');
+			this.property = "management.endpoints." + name + ".exposure";
+			this.filter = new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, environment, this.property,
+					exposure.getDefaultIncludes());
 
 		}
 
-		private static String getCanonicalName(EndpointExposure exposure) {
-			if (EndpointExposure.CLOUD_FOUNDRY.equals(exposure)) {
-				return "cloud-foundry";
+		@Override
+		public ConditionOutcome getExposureOutcome(EndpointId endpointId, Set<EndpointExposure> exposures,
+				ConditionMessage.Builder message) {
+			if (exposures.contains(this.exposure) && this.filter.match(endpointId)) {
+				return ConditionOutcome
+					.match(message.because("marked as exposed by a '" + this.property + "' property"));
 			}
-			return exposure.name().toLowerCase();
-		}
-
-		EndpointExposure getExposure() {
-			return this.exposure;
-		}
-
-		boolean isExposed(EndpointId id) {
-			return super.match(id);
+			return null;
 		}
 
 	}

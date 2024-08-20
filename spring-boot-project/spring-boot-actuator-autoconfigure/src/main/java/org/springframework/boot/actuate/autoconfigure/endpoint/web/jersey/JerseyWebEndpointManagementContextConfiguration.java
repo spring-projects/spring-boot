@@ -100,12 +100,12 @@ class JerseyWebEndpointManagementContextConfiguration {
 	JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar jerseyDifferentPortAdditionalHealthEndpointPathsResourcesRegistrar(
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups healthEndpointGroups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint health = webEndpoints.stream()
+		ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HEALTH_ENDPOINT_ID))
 			.findFirst()
-			.orElseThrow(
-					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HEALTH_ENDPOINT_ID)));
-		return new JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(health, healthEndpointGroups);
+			.orElse(null);
+		return new JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(healthEndpoint,
+				healthEndpointGroups);
 	}
 
 	@Bean
@@ -180,19 +180,21 @@ class JerseyWebEndpointManagementContextConfiguration {
 	class JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar
 			implements ManagementContextResourceConfigCustomizer {
 
-		private final ExposableWebEndpoint endpoint;
+		private final ExposableWebEndpoint healthEndpoint;
 
 		private final HealthEndpointGroups groups;
 
-		JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(ExposableWebEndpoint endpoint,
+		JerseyAdditionalHealthEndpointPathsManagementResourcesRegistrar(ExposableWebEndpoint healthEndpoint,
 				HealthEndpointGroups groups) {
-			this.endpoint = endpoint;
+			this.healthEndpoint = healthEndpoint;
 			this.groups = groups;
 		}
 
 		@Override
 		public void customize(ResourceConfig config) {
-			register(config);
+			if (this.healthEndpoint != null) {
+				register(config);
+			}
 		}
 
 		private void register(ResourceConfig config) {
@@ -200,7 +202,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.MANAGEMENT, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-				.createEndpointResources(mapping, Collections.singletonList(this.endpoint))
+				.createEndpointResources(mapping, Collections.singletonList(this.healthEndpoint))
 				.stream()
 				.filter(Objects::nonNull)
 				.toList();

@@ -112,13 +112,16 @@ public class WebMvcEndpointManagementContextConfiguration {
 	public AdditionalHealthEndpointPathsWebMvcHandlerMapping managementHealthEndpointWebMvcHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint health = webEndpoints.stream()
-			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
+		ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
+			.filter(this::isHealthEndpoint)
 			.findFirst()
-			.orElseThrow(
-					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
-		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(health,
+			.orElse(null);
+		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(healthEndpoint,
 				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
+	}
+
+	private boolean isHealthEndpoint(ExposableWebEndpoint endpoint) {
+		return endpoint.getEndpointId().equals(HealthEndpoint.ID);
 	}
 
 	@Bean

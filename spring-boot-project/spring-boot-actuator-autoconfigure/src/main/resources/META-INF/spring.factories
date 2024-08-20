@@ -1,3 +1,7 @@
+# Endpoint Exposure Outcome Contributors
+org.springframework.boot.actuate.autoconfigure.endpoint.condition.EndpointExposureOutcomeContributor=\
+org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryEndpointExposureOutcomeContributor
+
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
 org.springframework.boot.actuate.autoconfigure.health.NoSuchHealthContributorFailureAnalyzer,\

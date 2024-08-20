@@ -117,12 +117,11 @@ public class WebFluxEndpointManagementContextConfiguration {
 	public AdditionalHealthEndpointPathsWebFluxHandlerMapping managementHealthEndpointWebFluxHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint health = webEndpoints.stream()
+		ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.orElseThrow(
-					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
-		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
+			.orElse(null);
+		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), healthEndpoint,
 				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}
 
