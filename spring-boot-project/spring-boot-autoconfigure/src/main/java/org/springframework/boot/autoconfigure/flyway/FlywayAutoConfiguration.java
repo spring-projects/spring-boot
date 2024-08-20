@@ -227,7 +227,7 @@ public class FlywayAutoConfiguration {
 		 */
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			// NOTE: Using method references in the mapper methods can break
-			// back-compatibilty (see gh-38164)
+			// back-compatibility (see gh-38164)
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 				.resolveLocations(properties.getLocations())
