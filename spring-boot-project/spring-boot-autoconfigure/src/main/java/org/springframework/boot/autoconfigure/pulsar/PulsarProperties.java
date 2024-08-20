@@ -257,15 +257,7 @@ public class PulsarProperties {
 		 */
 		private List<TypeMapping> typeMappings = new ArrayList<>();
 
-		private Topic topic = new Topic();
-
-		public Topic getTopic() {
-			return this.topic;
-		}
-
-		public void setTopic(Topic topic) {
-			this.topic = topic;
-		}
+		private final Topic topic = new Topic();
 
 		public List<TypeMapping> getTypeMappings() {
 			return this.typeMappings;
@@ -273,6 +265,10 @@ public class PulsarProperties {
 
 		public void setTypeMappings(List<TypeMapping> typeMappings) {
 			this.typeMappings = typeMappings;
+		}
+
+		public Topic getTopic() {
+			return this.topic;
 		}
 
 		/**
