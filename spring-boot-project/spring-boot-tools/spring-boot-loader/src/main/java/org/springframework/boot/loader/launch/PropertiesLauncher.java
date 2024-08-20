@@ -70,6 +70,7 @@ import org.springframework.boot.loader.net.protocol.jar.JarUrl;
  * @author Janne Valkealahti
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 3.2.0
  */
 public class PropertiesLauncher extends Launcher {
@@ -148,6 +149,7 @@ public class PropertiesLauncher extends Launcher {
 		this.homeDirectory = getHomeDirectory();
 		initializeProperties();
 		this.paths = getPaths();
+		this.classPathIndex = getClassPathIndex(this.archive);
 	}
 
 	protected File getHomeDirectory() throws Exception {
@@ -330,6 +332,10 @@ public class PropertiesLauncher extends Launcher {
 	@Override
 	protected ClassLoader createClassLoader(Collection<URL> urls) throws Exception {
 		String loaderClassName = getProperty("loader.classLoader");
+		if (this.classPathIndex != null) {
+			urls = new ArrayList<>(urls);
+			urls.addAll(this.classPathIndex.getUrls());
+		}
 		if (loaderClassName == null) {
 			return super.createClassLoader(urls);
 		}
@@ -537,9 +543,9 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private Set<URL> getClassPathUrlsForRoot() throws IOException {
+	private Set<URL> getClassPathUrlsForRoot() throws Exception {
 		debug.log("Adding classpath entries from root archive %s", this.archive);
-		return this.archive.getClassPathUrls(JarLauncher::isLibraryFileOrClassesDirectory);
+		return this.archive.getClassPathUrls(this::isIncludedOnClassPathAndNotIndexed, Archive.ALL_ENTRIES);
 	}
 
 	private Predicate<Entry> includeByPrefix(String prefix) {
