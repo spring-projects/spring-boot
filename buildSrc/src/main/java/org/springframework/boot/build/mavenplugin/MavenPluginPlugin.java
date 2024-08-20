@@ -55,6 +55,7 @@ import org.gradle.api.artifacts.result.ResolvedArtifactResult;
 import org.gradle.api.attributes.DocsType;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.component.ConfigurationVariantDetails;
 import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DirectoryProperty;
@@ -132,7 +133,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			if (component instanceof AdhocComponentWithVariants componentWithVariants) {
 				componentWithVariants.addVariantsFromConfiguration(
 						project.getConfigurations().getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME),
-						(variant) -> variant.mapToOptional());
+						ConfigurationVariantDetails::mapToOptional);
 			}
 		});
 		MavenPublication publication = (MavenPublication) project.getExtensions()
