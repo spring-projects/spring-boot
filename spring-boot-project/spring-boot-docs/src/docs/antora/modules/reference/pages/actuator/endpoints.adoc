@@ -1296,7 +1296,7 @@ For Gradle, you'll need to apply the CycloneDX Gradle plugin:
 [source,groovy]
 ----
 plugins {
-    id 'org.cyclonedx.bom' version '1.8.2'
+    id 'org.cyclonedx.bom' version '1.10.0'
 }
 ----
 
