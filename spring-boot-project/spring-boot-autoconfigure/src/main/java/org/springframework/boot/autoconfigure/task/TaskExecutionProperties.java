@@ -84,30 +84,32 @@ public class TaskExecutionProperties {
 
 		/**
 		 * Queue capacity. An unbounded capacity does not increase the pool and therefore
-		 * ignores the "max-size" property.
+		 * ignores the "max-size" property. Doesn't have an effect if virtual threads are
+		 * enabled.
 		 */
 		private int queueCapacity = Integer.MAX_VALUE;
 
 		/**
-		 * Core number of threads.
+		 * Core number of threads. Doesn't have an effect if virtual threads are enabled.
 		 */
 		private int coreSize = 8;
 
 		/**
 		 * Maximum allowed number of threads. If tasks are filling up the queue, the pool
 		 * can expand up to that size to accommodate the load. Ignored if the queue is
-		 * unbounded.
+		 * unbounded. Doesn't have an effect if virtual threads are enabled.
 		 */
 		private int maxSize = Integer.MAX_VALUE;
 
 		/**
 		 * Whether core threads are allowed to time out. This enables dynamic growing and
-		 * shrinking of the pool.
+		 * shrinking of the pool. Doesn't have an effect if virtual threads are enabled.
 		 */
 		private boolean allowCoreThreadTimeout = true;
 
 		/**
-		 * Time limit for which threads may remain idle before being terminated.
+		 * Time limit for which threads may remain idle before being terminated. Doesn't
+		 * have an effect if virtual threads are enabled.
 		 */
 		private Duration keepAlive = Duration.ofSeconds(60);
 
