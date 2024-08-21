@@ -22,12 +22,12 @@ jobs:
           - version: 17
             toolchain: false
           - version: 21
-            toolchain: true
+            toolchain: false
           - version: 22
-            toolchain: true
+            toolchain: false
           - version: 23
             early-access: true
-            toolchain: true
+            toolchain: false
         exclude:
           - os:
               name: Linux

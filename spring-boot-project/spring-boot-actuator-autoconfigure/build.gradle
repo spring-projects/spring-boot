@@ -203,6 +203,8 @@ tasks.named("test") {
 }
 
 def documentationTest = tasks.register("documentationTest", Test) {
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
+	classpath = testing.suites.test.sources.runtimeClasspath
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 	filter {
 		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")

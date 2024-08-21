@@ -140,10 +140,6 @@ artifacts {
 	antoraContent antoraGradlePluginCatalogContent
 }
 
-toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
-}
-
 plugins.withType(EclipsePlugin) {
 	eclipse {
 		classpath.file { merger ->

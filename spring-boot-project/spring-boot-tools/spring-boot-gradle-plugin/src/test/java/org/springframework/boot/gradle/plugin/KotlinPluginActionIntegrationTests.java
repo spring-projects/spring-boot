@@ -82,7 +82,7 @@ class KotlinPluginActionIntegrationTests {
 				configured.add(line.substring("Configuring :".length()));
 			}
 		}
-		assertThat(configured).containsExactlyInAnyOrder("help", "clean");
+		assertThat(configured).containsExactlyInAnyOrder("help", "compileJava", "clean");
 	}
 
 }

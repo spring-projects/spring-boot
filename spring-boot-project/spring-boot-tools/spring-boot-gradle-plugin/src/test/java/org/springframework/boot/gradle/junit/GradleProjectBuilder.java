@@ -21,6 +21,7 @@ import java.io.File;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.internal.nativeintegration.services.NativeServices;
+import org.gradle.internal.nativeintegration.services.NativeServices.NativeServicesMode;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testfixtures.internal.ProjectBuilderImpl;
 
@@ -68,7 +69,7 @@ public final class GradleProjectBuilder {
 			builder.withName(this.name);
 		}
 		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-			NativeServices.initializeOnClient(userHome);
+			NativeServices.initializeOnClient(userHome, NativeServicesMode.ENABLED);
 			try {
 				ProjectBuilderImpl.getGlobalServices();
 			}

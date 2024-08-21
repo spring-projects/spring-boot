@@ -71,6 +71,8 @@ public class DockerTestPlugin implements Plugin<Project> {
 				.add(project.getConfigurations()
 					.getByName(dockerTestSourceSet.getRuntimeClasspathConfigurationName())));
 		});
+		project.getDependencies()
+			.add(dockerTestSourceSet.getRuntimeOnlyConfigurationName(), "org.junit.platform:junit-platform-launcher");
 	}
 
 	private SourceSet createSourceSet(Project project) {

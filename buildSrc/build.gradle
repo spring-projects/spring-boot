@@ -10,8 +10,11 @@ repositories {
 	gradlePluginPortal()
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+	sourceCompatibility = 17
+	targetCompatibility = 17
+}
+
 
 def versions = [:]
 new File(projectDir.parentFile, "gradle.properties").withInputStream {

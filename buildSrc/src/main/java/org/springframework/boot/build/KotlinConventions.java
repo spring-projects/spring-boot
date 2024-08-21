@@ -51,7 +51,7 @@ class KotlinConventions {
 	void apply(Project project) {
 		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
 			project.getTasks().withType(KotlinCompile.class, this::configure);
-			configureDokkatoo(project);
+			project.getPlugins().withType(DokkatooHtmlPlugin.class, (dokkatooPlugin) -> configureDokkatoo(project));
 		});
 	}
 
@@ -67,7 +67,6 @@ class KotlinConventions {
 	}
 
 	private void configureDokkatoo(Project project) {
-		project.getPlugins().apply(DokkatooHtmlPlugin.class);
 		DokkatooExtension dokkatoo = project.getExtensions().getByType(DokkatooExtension.class);
 		dokkatoo.getDokkatooSourceSets().named(SourceSet.MAIN_SOURCE_SET_NAME).configure((sourceSet) -> {
 			sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
