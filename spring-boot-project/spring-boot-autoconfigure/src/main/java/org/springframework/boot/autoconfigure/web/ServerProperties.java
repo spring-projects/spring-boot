@@ -925,12 +925,14 @@ public class ServerProperties {
 		public static class Threads {
 
 			/**
-			 * Maximum amount of worker threads.
+			 * Maximum amount of worker threads. Doesn't have an effect if virtual threads
+			 * are enabled.
 			 */
 			private int max = 200;
 
 			/**
-			 * Minimum amount of worker threads.
+			 * Minimum amount of worker threads. Doesn't have an effect if virtual threads
+			 * are enabled.
 			 */
 			private int minSpare = 10;
 
@@ -1350,12 +1352,14 @@ public class ServerProperties {
 			private Integer selectors = -1;
 
 			/**
-			 * Maximum number of threads.
+			 * Maximum number of threads. Doesn't have an effect if virtual threads are
+			 * enabled.
 			 */
 			private Integer max = 200;
 
 			/**
-			 * Minimum number of threads.
+			 * Minimum number of threads. Doesn't have an effect if virtual threads are
+			 * enabled.
 			 */
 			private Integer min = 8;
 

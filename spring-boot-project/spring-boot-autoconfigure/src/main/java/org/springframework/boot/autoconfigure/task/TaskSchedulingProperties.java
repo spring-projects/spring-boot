@@ -63,7 +63,8 @@ public class TaskSchedulingProperties {
 	public static class Pool {
 
 		/**
-		 * Maximum allowed number of threads.
+		 * Maximum allowed number of threads. Doesn't have an effect if virtual threads
+		 * are enabled.
 		 */
 		private int size = 1;
 

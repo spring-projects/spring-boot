@@ -405,6 +405,9 @@ If you're running on Java 21 or up, you can enable virtual threads by setting th
 Before turning on this option for your application, you should consider https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html[reading the official Java virtual threads documentation].
 In some cases, applications can experience lower throughput because of "Pinned Virtual Threads"; this page also explains how to detect such cases with JDK Flight Recorder or the `jcmd` CLI.
 
+NOTE: If virtual threads are enabled, properties which configure thread pools don't have an effect anymore.
+That's because virtual threads are scheduled on a JVM wide platform thread pool and not on dedicated thread pools.
+
 WARNING: One side effect of virtual threads is that they are daemon threads.
 A JVM will exit if all of its threads are daemon threads.
 This behavior can be a problem when you rely on `@Scheduled` beans, for example, to keep your application alive.
