@@ -113,6 +113,27 @@ class AntoraAsciidocAttributesTests {
 	}
 
 	@Test
+	void artifactReleaseTypeWhenRelease() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+				mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("artifact-release-type", "release");
+	}
+
+	@Test
+	void artifactReleaseTypeWhenMilestone() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, null,
+				mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("artifact-release-type", "milestone");
+	}
+
+	@Test
+	void artifactReleaseTypeWhenSnapshot() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
+				mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("artifact-release-type", "snapshot");
+	}
+
+	@Test
 	void urlLinksFromLibrary() {
 		Map<String, Function<LibraryVersion, String>> links = new LinkedHashMap<>();
 		links.put("site", (version) -> "https://example.com/site/" + version);
