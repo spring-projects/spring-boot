@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
-import org.springframework.boot.build.processors.ProcessedAnnotationsPlugin;
 import org.springframework.util.StringUtils;
 
 /**
@@ -92,7 +91,6 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 			.add(project.getDependencies()
 				.project(Collections.singletonMap("path",
 						":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
-		project.getPlugins().apply(ProcessedAnnotationsPlugin.class);
 	}
 
 	private void disableIncrementalCompilation(Project project) {
