@@ -40,7 +40,6 @@ dependencies {
 	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
 
 	implementation(platform("org.springframework:spring-framework-bom:${versions.springFramework}"))
-	implementation("com.diffplug.gradle:goomph:3.37.2")
 	implementation("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}")
 	implementation("com.gradle:develocity-gradle-plugin:3.17.2")
 	implementation("com.tngtech.archunit:archunit:1.0.0")
