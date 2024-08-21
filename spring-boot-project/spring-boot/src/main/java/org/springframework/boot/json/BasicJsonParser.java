@@ -93,11 +93,11 @@ public class BasicJsonParser extends AbstractJsonParser {
 		try {
 			return Long.valueOf(json);
 		}
-		catch (NumberFormatException e) {
+		catch (NumberFormatException ex) {
 			try {
 				return Double.valueOf(json);
 			}
-			catch (NumberFormatException ex) {
+			catch (NumberFormatException ex2) {
 				return json;
 			}
 		}
