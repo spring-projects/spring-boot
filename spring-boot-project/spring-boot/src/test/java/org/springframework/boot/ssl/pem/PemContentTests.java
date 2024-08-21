@@ -211,7 +211,7 @@ class PemContentTests {
 	}
 
 	private static String contentFromClasspath(String path) throws IOException {
-		return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
+		return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8).indent(0).stripTrailing();
 	}
 
 }
