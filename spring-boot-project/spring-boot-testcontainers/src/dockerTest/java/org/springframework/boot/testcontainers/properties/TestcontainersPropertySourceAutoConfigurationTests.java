@@ -19,6 +19,7 @@ package org.springframework.boot.testcontainers.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -28,7 +29,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.container.RedisContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Bean;

@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.redis.testcontainers.RedisContainer;
+import com.redis.testcontainers.RedisStackContainer;
 import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.containers.CassandraContainer;

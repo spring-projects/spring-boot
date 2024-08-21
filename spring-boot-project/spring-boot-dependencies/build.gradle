@@ -2167,6 +2167,16 @@ bom {
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
 		}
 	}
+	library("Testcontainers Redis Module", "2.2.2") {
+		group("com.redis") {
+			modules = [
+				"testcontainers-redis"
+			]
+		}
+		links {
+			site("https://testcontainers.com/modules/redis/")
+		}
+	}
 	library("Thymeleaf", "3.1.2.RELEASE") {
 		group("org.thymeleaf") {
 			modules = [

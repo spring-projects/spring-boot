@@ -31,4 +31,5 @@ dependencies {
 	optional("org.testcontainers:pulsar")
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
+	optional("com.redis:testcontainers-redis")
 }

@@ -16,6 +16,7 @@ dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("io.projectreactor:reactor-test")
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:cassandra")

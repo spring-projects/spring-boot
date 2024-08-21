@@ -107,8 +107,8 @@ This works as long as Spring Boot is able to get the instance of the `Container`
 
 If you're using a `@Bean` method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.
 Instead, the return type of the bean method is used to find out which connection detail should be used.
-This works as long as you're using typed containers, e.g. `Neo4jContainer` or `RabbitMQContainer`.
-This stops working if you're using `GenericContainer`, e.g. with Redis, as shown in the following example:
+This works as long as you're using typed containers such as `Neo4jContainer` or `RabbitMQContainer`.
+This stops working if you're using `GenericContainer`, for example with Redis as shown in the following example:
 
 include-code::MyRedisConfiguration[]
 

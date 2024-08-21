@@ -15,6 +15,7 @@ dependencies {
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.springframework:spring-test")

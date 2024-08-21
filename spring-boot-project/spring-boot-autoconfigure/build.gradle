@@ -25,7 +25,9 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-test")
@@ -37,7 +39,6 @@ dependencies {
 	dockerTestImplementation("org.testcontainers:neo4j")
 	dockerTestImplementation("org.testcontainers:pulsar")
 	dockerTestImplementation("org.testcontainers:testcontainers")
-	dockerTestImplementation("org.awaitility:awaitility")
 
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"

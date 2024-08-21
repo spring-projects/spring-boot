@@ -81,6 +81,7 @@ dependencies {
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
+	optional("com.redis:testcontainers-redis")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

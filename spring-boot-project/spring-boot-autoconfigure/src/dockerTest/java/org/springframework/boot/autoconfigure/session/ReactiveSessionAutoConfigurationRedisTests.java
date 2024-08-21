@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import java.time.Duration;
 import java.util.List;
 
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -31,7 +32,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.boot.testsupport.container.RedisContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.http.ResponseCookie;
 import org.springframework.session.MapSession;

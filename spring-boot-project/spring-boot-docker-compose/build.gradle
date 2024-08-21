@@ -13,11 +13,12 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
-	
+
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("io.r2dbc:r2dbc-mssql")
