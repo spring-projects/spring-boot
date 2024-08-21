@@ -77,7 +77,7 @@ public class AntoraAsciidocAttributes {
 		Map<String, String> attributes = new LinkedHashMap<>();
 		addGitHubAttributes(attributes);
 		addVersionAttributes(attributes);
-		addUrlArtifactRepository(attributes);
+		addArtifactAttributes(attributes);
 		addUrlJava(attributes);
 		addUrlLibraryLinkAttributes(attributes);
 		addPropertyAttributes(attributes);
@@ -139,8 +139,9 @@ public class AntoraAsciidocAttributes {
 		attributes.put("version-" + name, version);
 	}
 
-	private void addUrlArtifactRepository(Map<String, String> attributes) {
+	private void addArtifactAttributes(Map<String, String> attributes) {
 		attributes.put("url-artifact-repository", this.artifactRelease.getDownloadRepo());
+		attributes.put("artifact-release-type", this.artifactRelease.getType());
 	}
 
 	private void addUrlJava(Map<String, String> attributes) {
