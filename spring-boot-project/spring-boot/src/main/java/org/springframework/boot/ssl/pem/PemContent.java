@@ -25,14 +25,17 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * PEM encoded content that can provide {@link X509Certificate certificates} and
@@ -51,7 +54,9 @@ public final class PemContent {
 	private final String text;
 
 	private PemContent(String text) {
-		this.text = text;
+		this.text = Arrays.stream(StringUtils.delimitedListToStringArray(text, "\n"))
+			.map(String::trim)
+			.collect(Collectors.joining("\n"));
 	}
 
 	/**
