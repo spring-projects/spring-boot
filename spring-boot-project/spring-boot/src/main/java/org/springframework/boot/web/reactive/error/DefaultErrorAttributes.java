@@ -123,6 +123,9 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		else if (error instanceof ResponseStatusException responseStatusException) {
 			errorAttributes.put("message", responseStatusException.getReason());
 			exception = (responseStatusException.getCause() != null) ? responseStatusException.getCause() : error;
+			if (exception instanceof BindingResult bindingResult) {
+				errorAttributes.put("errors", bindingResult.getAllErrors());
+			}
 		}
 		else {
 			exception = error;
