@@ -19,11 +19,14 @@ package org.springframework.boot.build.cli;
 import java.io.File;
 import java.security.MessageDigest;
 
+import javax.inject.Inject;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.tasks.Input;
@@ -43,12 +46,16 @@ import org.springframework.boot.build.artifacts.ArtifactRelease;
  */
 public abstract class HomebrewFormula extends DefaultTask {
 
-	public HomebrewFormula() {
+	private final FileSystemOperations fileSystemOperations;
+
+	@Inject
+	public HomebrewFormula(FileSystemOperations fileSystemOperations) {
 		Project project = getProject();
 		MapProperty<String, Object> properties = getProperties();
 		properties.put("hash", getArchive().map((archive) -> sha256(archive.getAsFile())));
 		getProperties().put("repo", ArtifactRelease.forProject(project).getDownloadRepo());
 		getProperties().put("version", project.getVersion().toString());
+		this.fileSystemOperations = fileSystemOperations;
 	}
 
 	private String sha256(File file) {
@@ -77,7 +84,7 @@ public abstract class HomebrewFormula extends DefaultTask {
 
 	@TaskAction
 	void createFormula() {
-		getProject().copy((copy) -> {
+		this.fileSystemOperations.copy((copy) -> {
 			copy.from(getTemplate());
 			copy.into(getOutputDir());
 			copy.expand(getProperties().get());
