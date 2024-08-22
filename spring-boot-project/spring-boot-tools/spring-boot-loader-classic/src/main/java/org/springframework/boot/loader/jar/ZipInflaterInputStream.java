@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,23 @@ import java.util.zip.InflaterInputStream;
  */
 class ZipInflaterInputStream extends InflaterInputStream {
 
+	private final boolean ownsInflator;
+
 	private int available;
 
 	private boolean extraBytesWritten;
 
 	ZipInflaterInputStream(InputStream inputStream, int size) {
-		super(inputStream, new Inflater(true), getInflaterBufferSize(size));
+		this(inputStream, new Inflater(true), size, true);
+	}
+
+	ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size) {
+		this(inputStream, inflater, size, false);
+	}
+
+	private ZipInflaterInputStream(InputStream inputStream, Inflater inflater, int size, boolean ownsInflator) {
+		super(inputStream, inflater, getInflaterBufferSize(size));
+		this.ownsInflator = ownsInflator;
 		this.available = size;
 	}
 
@@ -59,7 +70,9 @@ class ZipInflaterInputStream extends InflaterInputStream {
 	@Override
 	public void close() throws IOException {
 		super.close();
-		this.inf.end();
+		if (this.ownsInflator) {
+			this.inf.end();
+		}
 	}
 
 	@Override

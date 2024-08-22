@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
-import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
@@ -334,37 +333,30 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	JarEntryCertification getCertification(JarEntry entry) throws IOException {
 		JarEntryCertification[] certifications = this.certifications;
 		if (certifications == null) {
-			certifications = new JarEntryCertification[this.size];
-			// We fall back to use JarInputStream to obtain the certs. This isn't that
-			// fast, but hopefully doesn't happen too often.
-			try (JarInputStream certifiedJarStream = new JarInputStream(this.jarFile.getData().getInputStream())) {
-				java.util.jar.JarEntry certifiedEntry;
-				while ((certifiedEntry = certifiedJarStream.getNextJarEntry()) != null) {
-					// Entry must be closed to trigger a read and set entry certificates
-					certifiedJarStream.closeEntry();
-					int index = getEntryIndex(certifiedEntry.getName());
-					if (index != -1) {
-						certifications[index] = JarEntryCertification.from(certifiedEntry);
-					}
-				}
-			}
+			certifications = getCertifications();
 			this.certifications = certifications;
 		}
 		JarEntryCertification certification = certifications[entry.getIndex()];
 		return (certification != null) ? certification : JarEntryCertification.NONE;
 	}
 
-	private int getEntryIndex(CharSequence name) {
-		int hashCode = AsciiBytes.hashCode(name);
-		int index = getFirstIndex(hashCode);
-		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
-			FileHeader candidate = getEntry(index, FileHeader.class, false, null);
-			if (candidate.hasName(name, NO_SUFFIX)) {
-				return index;
+	private JarEntryCertification[] getCertifications() throws IOException {
+		JarEntryCertification[] certifications = new JarEntryCertification[this.size];
+		try (JarEntriesStream entries = new JarEntriesStream(this.jarFile.getData().getInputStream())) {
+			java.util.jar.JarEntry entry = entries.getNextEntry();
+			while (entry != null) {
+				JarEntry relatedEntry = this.doGetEntry(entry.getName(), JarEntry.class, false, null);
+				if (relatedEntry != null && entries.matches(relatedEntry.isDirectory(), (int) relatedEntry.getSize(),
+						relatedEntry.getMethod(), () -> getEntryData(relatedEntry).getInputStream())) {
+					int index = relatedEntry.getIndex();
+					if (index != -1) {
+						certifications[index] = JarEntryCertification.from(entry);
+					}
+				}
+				entry = entries.getNextEntry();
 			}
-			index++;
 		}
-		return -1;
+		return certifications;
 	}
 
 	private static void swap(int[] array, int i, int j) {
