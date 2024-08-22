@@ -78,9 +78,11 @@ dependencies {
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 
 	mavenRepository(project(path: ":spring-boot-project:spring-boot", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-parent", configuration: "mavenRepository"))
 
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
