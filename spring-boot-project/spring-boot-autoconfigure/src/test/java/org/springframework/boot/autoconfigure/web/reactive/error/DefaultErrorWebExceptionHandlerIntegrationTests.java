@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import jakarta.validation.Valid;
@@ -597,6 +598,21 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		});
 	}
 
+	@Test
+	void customErrorAttributesWithoutStatus() {
+		this.contextRunner.withUserConfiguration(CustomErrorAttributesWithoutStatus.class).run((context) -> {
+			WebTestClient client = getWebClient(context);
+			client.get()
+				.uri("/badRequest")
+				.exchange()
+				.expectStatus()
+				.isBadRequest()
+				.expectBody()
+				.jsonPath("status")
+				.doesNotExist();
+		});
+	}
+
 	private String getErrorTemplatesLocation() {
 		String packageName = getClass().getPackage().getName();
 		return "classpath:/" + packageName.replace('.', '/') + "/templates/";
@@ -686,6 +702,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		@Bean
 		ErrorAttributes errorAttributes() {
 			return new DefaultErrorAttributes() {
+
 				@Override
 				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 					Map<String, Object> errorAttributes = new HashMap<>();
@@ -720,6 +737,25 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
 			exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());
 			return exceptionHandler;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomErrorAttributesWithoutStatus {
+
+		@Bean
+		ErrorAttributes errorAttributes() {
+			return new DefaultErrorAttributes() {
+
+				@Override
+				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+					Map<String, Object> attributes = new LinkedHashMap<>(super.getErrorAttributes(request, options));
+					attributes.remove("status");
+					return attributes;
+				}
+
+			};
 		}
 
 	}

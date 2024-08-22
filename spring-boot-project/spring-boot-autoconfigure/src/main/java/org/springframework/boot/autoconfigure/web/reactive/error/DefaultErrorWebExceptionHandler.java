@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
+import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -94,6 +95,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 
 	private static final ErrorAttributeOptions ONLY_STATUS = ErrorAttributeOptions.of(Include.STATUS);
 
+	private static final DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes();
+
 	private final ErrorProperties errorProperties;
 
 	/**
@@ -121,8 +124,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorView(ServerRequest request) {
-		int status = getHttpStatus(getErrorAttributes(request, ONLY_STATUS));
 		Map<String, Object> errorAttributes = getErrorAttributes(request, MediaType.TEXT_HTML);
+		int status = getHttpStatus(request, errorAttributes);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(status).contentType(TEXT_HTML_UTF8);
 		return Flux.just(getData(status).toArray(new String[] {}))
 			.flatMap((viewName) -> renderErrorView(viewName, responseBody, errorAttributes))
@@ -148,8 +151,8 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return a {@code Publisher} of the HTTP response
 	 */
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
-		int status = getHttpStatus(getErrorAttributes(request, ONLY_STATUS));
 		Map<String, Object> errorAttributes = getErrorAttributes(request, MediaType.ALL);
+		int status = getHttpStatus(request, errorAttributes);
 		return ServerResponse.status(status)
 			.contentType(MediaType.APPLICATION_JSON)
 			.body(BodyInserters.fromValue(errorAttributes));
@@ -232,6 +235,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 			case ON_PARAM -> isPathEnabled(request);
 			case NEVER -> false;
 		};
+	}
+
+	private int getHttpStatus(ServerRequest request, Map<String, Object> errorAttributes) {
+		return getHttpStatus(errorAttributes.containsKey("status") ? errorAttributes
+				: defaultErrorAttributes.getErrorAttributes(request, ONLY_STATUS));
 	}
 
 	/**
