@@ -666,6 +666,26 @@ class JarFileTests {
 		}
 	}
 
+	@Test
+	void mismatchedStreamEntriesThrowsException() throws IOException {
+		File mismatchJar = new File("src/test/resources/jars/mismatch.jar");
+		IllegalStateException failure = null;
+		try (JarFile jarFile = new JarFile(mismatchJar)) {
+			JarFile nestedJarFile = jarFile.getNestedJarFile(jarFile.getJarEntry("inner.jar"));
+			Enumeration<JarEntry> entries = nestedJarFile.entries();
+			while (entries.hasMoreElements()) {
+				try {
+					entries.nextElement().getCodeSigners();
+				}
+				catch (IllegalStateException ex) {
+					failure = (failure != null) ? failure : ex;
+				}
+			}
+		}
+		assertThat(failure)
+			.hasMessage("Content mismatch when reading security info for entry 'content' (content check)");
+	}
+
 	private File createJarFileWithEpochTimeOfZero() throws Exception {
 		File jarFile = new File(this.tempDir, "temp.jar");
 		FileOutputStream fileOutputStream = new FileOutputStream(jarFile);
