@@ -128,10 +128,6 @@ gradlePlugin {
 			id = "org.springframework.boot.optional-dependencies"
 			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
 		}
-		processedAnnotationsPlugin {
-			id = "org.springframework.boot.processed-annotations"
-			implementationClass = "org.springframework.boot.build.processors.ProcessedAnnotationsPlugin"
-		}
 		starterPlugin {
 			id = "org.springframework.boot.starter"
 			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
