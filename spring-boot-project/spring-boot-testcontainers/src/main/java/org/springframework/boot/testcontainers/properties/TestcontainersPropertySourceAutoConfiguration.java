@@ -16,6 +16,10 @@
 
 package org.springframework.boot.testcontainers.properties;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -40,8 +44,26 @@ public class TestcontainersPropertySourceAutoConfiguration {
 	}
 
 	@Bean
+	static RemoveTestDynamicPropertyRegistryBeanPostProcessor removeTestDynamicPropertyRegistryBeanPostProcessor() {
+		return new RemoveTestDynamicPropertyRegistryBeanPostProcessor();
+	}
+
+	@Bean
 	static DynamicPropertyRegistry dynamicPropertyRegistry(ConfigurableApplicationContext applicationContext) {
 		return TestcontainersPropertySource.attach(applicationContext);
+	}
+
+	static class RemoveTestDynamicPropertyRegistryBeanPostProcessor implements BeanFactoryPostProcessor {
+
+		@Override
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+			if (beanFactory instanceof DefaultSingletonBeanRegistry singletonBeanRegistry) {
+				singletonBeanRegistry
+					.destroySingleton("org.springframework.test.context.support.DynamicPropertiesContextCustomizer"
+							+ ".dynamicPropertyRegistry");
+			}
+		}
+
 	}
 
 }
