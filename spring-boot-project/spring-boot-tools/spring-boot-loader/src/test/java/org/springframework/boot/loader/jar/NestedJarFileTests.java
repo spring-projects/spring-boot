@@ -412,6 +412,25 @@ class NestedJarFileTests {
 		assertThat(nested).isEqualTo(jdk);
 	}
 
+	@Test
+	void mismatchedStreamEntriesThrowsException() throws IOException {
+		File mismatchJar = new File("src/test/resources/jars/mismatch.jar");
+		IllegalStateException failure = null;
+		try (NestedJarFile innerJar = new NestedJarFile(mismatchJar, "inner.jar")) {
+			Enumeration<JarEntry> entries = innerJar.entries();
+			while (entries.hasMoreElements()) {
+				try {
+					entries.nextElement().getCodeSigners();
+				}
+				catch (IllegalStateException ex) {
+					failure = (failure != null) ? failure : ex;
+				}
+			}
+		}
+		assertThat(failure)
+			.hasMessage("Content mismatch when reading security info for entry 'content' (content check)");
+	}
+
 	private List<String> collectComments(JarFile jarFile) throws IOException {
 		try (jarFile) {
 			List<String> comments = new ArrayList<>();
