@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,17 @@ package org.springframework.boot.gradle.junit;
 
 import java.io.File;
 
-import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
-import org.gradle.internal.nativeintegration.services.NativeServices;
-import org.gradle.internal.nativeintegration.services.NativeServices.NativeServicesMode;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.gradle.testfixtures.internal.ProjectBuilderImpl;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  * Helper class to build Gradle {@link Project Projects} for test fixtures. Wraps
- * functionality of Gradle's own {@link ProjectBuilder} in order to work around an issue
- * on JDK 17 and 18.
+ * functionality of Gradle's own {@link ProjectBuilder}.
  *
  * @author Christoph Dreis
- * @see <a href="https://github.com/gradle/gradle/issues/16857">Gradle Support JDK 17</a>
  */
 public final class GradleProjectBuilder {
 
@@ -67,14 +61,6 @@ public final class GradleProjectBuilder {
 		builder.withGradleUserHomeDir(userHome);
 		if (StringUtils.hasText(this.name)) {
 			builder.withName(this.name);
-		}
-		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-			NativeServices.initializeOnClient(userHome, NativeServicesMode.ENABLED);
-			try {
-				ProjectBuilderImpl.getGlobalServices();
-			}
-			catch (Throwable ignore) {
-			}
 		}
 		return builder.build();
 	}
