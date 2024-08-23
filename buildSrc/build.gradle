@@ -44,7 +44,7 @@ dependencies {
 	implementation("com.fasterxml.jackson.core:jackson-databind:${versions.jackson}")
 	implementation("com.github.node-gradle:gradle-node-plugin:3.5.1")
 	implementation("com.gradle:develocity-gradle-plugin:3.17.2")
-	implementation("com.tngtech.archunit:archunit:1.0.0")
+	implementation("com.tngtech.archunit:archunit:1.3.0")
 	implementation("commons-codec:commons-codec:${versions.commonsCodec}")
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
 	implementation("io.spring.gradle.antora:spring-antora-plugin:0.0.1")
