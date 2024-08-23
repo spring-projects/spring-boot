@@ -9,6 +9,11 @@ plugins {
 
 apply plugin: "io.spring.dependency-management"
 
+java {
+	sourceCompatibility = '17'
+	targetCompatibility = '17'
+}
+
 repositories {
 	maven { url "file:${rootDir}/../test-repository"}
 	mavenCentral()
