@@ -66,6 +66,7 @@ import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEvent
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -328,6 +329,7 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Test // gh-41439
+	@ForkedClassPath
 	void shouldPublishEventsWhenContextStorageIsInitializedEarly() {
 		this.contextRunner.withInitializer(this::initializeOpenTelemetry)
 			.withUserConfiguration(OtelEventListener.class)
