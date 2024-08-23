@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Map;
 
 import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.testcontainers.containers.GenericContainer;
@@ -56,7 +57,13 @@ class SniIntegrationTests {
 	void home(String webStack, String server) {
 		try (ApplicationContainer serverContainer = new ServerApplicationContainer(webStack, server)) {
 			serverContainer.start();
-			Awaitility.await().atMost(Duration.ofSeconds(60)).until(serverContainer::isRunning);
+			try {
+				Awaitility.await().atMost(Duration.ofSeconds(60)).until(serverContainer::isRunning);
+			}
+			catch (ConditionTimeoutException ex) {
+				System.out.println(serverContainer.getLogs());
+				throw ex;
+			}
 			String serverLogs = serverContainer.getLogs();
 			assertThat(serverLogs).contains(SERVER_START_MESSAGES.get(server));
 			try (ApplicationContainer clientContainer = new ClientApplicationContainer()) {
