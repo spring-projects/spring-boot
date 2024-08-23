@@ -130,6 +130,22 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	void logbackDefaultsConfigurationDoesNotTriggerDeprecation(CapturedOutput output) {
+		initialize(this.initializationContext, "classpath:logback-include-defaults.xml", null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).isEqualTo("[INFO] - Hello world");
+		assertThat(output.toString()).doesNotContain("WARN").doesNotContain("deprecated");
+	}
+
+	@Test
+	void logbackBaseConfigurationDoesNotTriggerDeprecation(CapturedOutput output) {
+		initialize(this.initializationContext, "classpath:logback-include-base.xml", null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains(" INFO ").endsWith(": Hello world");
+		assertThat(output.toString()).doesNotContain("WARN").doesNotContain("deprecated");
+	}
+
+	@Test
 	@ClassPathOverrides({ "org.jboss.logging:jboss-logging:3.5.0.Final", "org.apache.logging.log4j:log4j-core:2.19.0" })
 	void jbossLoggingRoutesThroughLog4j2ByDefault() {
 		System.getProperties().remove("org.jboss.logging.provider");

@@ -5,12 +5,12 @@ Default logback configuration provided for import
 -->
 
 <included>
-	<conversionRule conversionWord="applicationName" converterClass="org.springframework.boot.logging.logback.ApplicationNameConverter" />
-	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
-	<conversionRule conversionWord="correlationId" converterClass="org.springframework.boot.logging.logback.CorrelationIdConverter" />
-	<conversionRule conversionWord="esb" converterClass="org.springframework.boot.logging.logback.EnclosedInSquareBracketsConverter" />
-	<conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
-	<conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+	<conversionRule conversionWord="applicationName" class="org.springframework.boot.logging.logback.ApplicationNameConverter" />
+	<conversionRule conversionWord="clr" class="org.springframework.boot.logging.logback.ColorConverter" />
+	<conversionRule conversionWord="correlationId" class="org.springframework.boot.logging.logback.CorrelationIdConverter" />
+	<conversionRule conversionWord="esb" class="org.springframework.boot.logging.logback.EnclosedInSquareBracketsConverter" />
+	<conversionRule conversionWord="wex" class="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+	<conversionRule conversionWord="wEx" class="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
 
 	<property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}){} %clr(${PID:-}){magenta} %clr(--- %esb(){APPLICATION_NAME}%esb{APPLICATION_GROUP}[%15.15t] ${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 	<property name="CONSOLE_LOG_CHARSET" value="${CONSOLE_LOG_CHARSET:-${file.encoding:-UTF-8}}"/>
