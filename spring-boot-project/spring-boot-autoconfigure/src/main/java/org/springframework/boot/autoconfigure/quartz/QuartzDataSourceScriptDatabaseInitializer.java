@@ -57,9 +57,6 @@ public class QuartzDataSourceScriptDatabaseInitializer extends DataSourceScriptD
 	 * @param settings the database initialization settings
 	 * @see #getSettings
 	 */
-	public QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
-		this(dataSource, settings, null);
-	}
 
 	private QuartzDataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings,
 			List<String> commentPrefixes) {
