@@ -12,7 +12,7 @@ repositories {
 	maven { url 'repository' }
 }
 
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy {
 		eachDependency {
 			if (it.requested.group == 'org.springframework.boot') {
@@ -23,7 +23,7 @@ configurations.all {
 }
 
 // tag::custom-version[]
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
 		if (details.requested.group == 'org.slf4j') {
 			details.useVersion '1.7.20'

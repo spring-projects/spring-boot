@@ -20,7 +20,7 @@ allprojects {
 		}
 	}
 
-	configurations.all {
+	configurations.configureEach {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }

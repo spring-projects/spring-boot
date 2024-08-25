@@ -71,7 +71,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-configurations.all {
+configurations.configureEach {
 	exclude group:"org.slf4j", module:"slf4j-api"
 	exclude group:"ch.qos.logback", module:"logback-classic"
 	exclude group:"ch.qos.logback", module:"logback-core"

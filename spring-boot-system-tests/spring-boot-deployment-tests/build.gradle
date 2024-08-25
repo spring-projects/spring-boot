@@ -12,7 +12,7 @@ configurations {
 	}
 }
 
-configurations.all {
+configurations.configureEach {
 	exclude module: "spring-boot-starter-logging"
 }
 

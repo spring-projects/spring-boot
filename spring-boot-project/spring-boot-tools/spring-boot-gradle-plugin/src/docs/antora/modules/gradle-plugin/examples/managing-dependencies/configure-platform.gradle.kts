@@ -19,7 +19,7 @@ repositories {
 	}
 }
 
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy {
 		eachDependency {
 			if (requested.group == "org.springframework.boot") {

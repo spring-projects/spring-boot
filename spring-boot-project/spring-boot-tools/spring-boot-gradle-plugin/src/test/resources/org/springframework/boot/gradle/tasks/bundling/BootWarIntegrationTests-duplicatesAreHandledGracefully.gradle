@@ -12,7 +12,7 @@ configurations {
 	provided
 }
 
-sourceSets.all {
+sourceSets.configureEach {
 	compileClasspath += configurations.provided
 	runtimeClasspath += configurations.provided
 }

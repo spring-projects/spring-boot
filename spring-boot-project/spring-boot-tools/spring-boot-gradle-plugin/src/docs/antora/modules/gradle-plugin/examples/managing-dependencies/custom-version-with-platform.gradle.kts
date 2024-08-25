@@ -14,7 +14,7 @@ repositories {
 	}
 }
 
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy {
 		eachDependency {
 			if (requested.group == "org.springframework.boot") {
@@ -25,7 +25,7 @@ configurations.all {
 }
 
 // tag::custom-version[]
-configurations.all {
+configurations.configureEach {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.slf4j") {
             useVersion("1.7.20")

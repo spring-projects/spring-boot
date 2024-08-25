@@ -5,7 +5,7 @@ plugins {
 
 description = "Spring Boot Actuator Log4j 2 smoke test"
 
-configurations.all {
+configurations.configureEach {
 	exclude module: "spring-boot-starter-logging"
 }
 

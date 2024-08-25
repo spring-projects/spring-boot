@@ -10,7 +10,7 @@ plugins {
 
 description = "Spring Boot AutoConfigure"
 
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
 		if (details.requested.module.group == "org.apache.kafka" && details.requested.module.name == "kafka-server-common") {
 			details.artifactSelection {

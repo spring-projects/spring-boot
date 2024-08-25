@@ -10,7 +10,7 @@ repositories {
 	maven { url 'repository' }
 }
 
-configurations.all {
+configurations.configureEach {
 	resolutionStrategy {
 		eachDependency {
 			if (it.requested.group == 'org.springframework.boot') {
