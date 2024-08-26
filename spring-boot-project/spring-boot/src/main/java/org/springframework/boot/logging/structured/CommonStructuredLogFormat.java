@@ -32,6 +32,12 @@ public enum CommonStructuredLogFormat {
 	ELASTIC_COMMON_SCHEMA("ecs"),
 
 	/**
+	 * <a href="https://go2docs.graylog.org/current/getting_in_log_data/gelf.html">Graylog
+	 * Extended Log Format</a> (GELF) log format.
+	 */
+	GRAYLOG_EXTENDED_LOG_FORMAT("gelf"),
+
+	/**
 	 * The <a href=
 	 * "https://github.com/logfellow/logstash-logback-encoder?tab=readme-ov-file#standard-fields">Logstash</a>
 	 * log format.
