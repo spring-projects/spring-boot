@@ -105,6 +105,9 @@ final class StructuredLogLayout extends AbstractStringLayout {
 			commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
 					(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(
 							instantiator.getArg(Environment.class)));
+			commonFormatters.add(CommonStructuredLogFormat.GRAYLOG_EXTENDED_LOG_FORMAT,
+					(instantiator) -> new GraylogExtendedLogFormatStructuredLogFormatter(
+							instantiator.getArg(Environment.class)));
 			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH,
 					(instantiator) -> new LogstashStructuredLogFormatter());
 		}

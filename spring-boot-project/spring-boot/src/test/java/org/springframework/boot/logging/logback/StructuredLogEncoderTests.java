@@ -134,7 +134,7 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 			this.encoder.start();
 		})
 			.withMessageContaining(
-					"Unknown format 'does-not-exist'. Values can be a valid fully-qualified class name or one of the common formats: [ecs, logstash]");
+					"Unknown format 'does-not-exist'. Values can be a valid fully-qualified class name or one of the common formats: [ecs, gelf, logstash]");
 	}
 
 	private String encode(LoggingEvent event) {
