@@ -22,7 +22,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
-import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
@@ -54,7 +53,7 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		members.add("process.thread.name", LogEvent::getThreadName);
 		ElasticCommonSchemaService.get(environment).jsonMembers(members);
 		members.add("log.logger", LogEvent::getLoggerName);
-		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
+		members.add("message", LogEvent::getMessage).as(StructuredMessage::get);
 		members.from(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
 			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));

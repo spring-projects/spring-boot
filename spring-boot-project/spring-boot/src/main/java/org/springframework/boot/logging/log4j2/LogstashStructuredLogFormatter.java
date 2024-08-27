@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
-import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
@@ -51,7 +50,7 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<Lo
 	private static void jsonMembers(JsonWriter.Members<LogEvent> members) {
 		members.add("@timestamp", LogEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
 		members.add("@version", "1");
-		members.add("message", LogEvent::getMessage).as(Message::getFormattedMessage);
+		members.add("message", LogEvent::getMessage).as(StructuredMessage::get);
 		members.add("logger_name", LogEvent::getLoggerName);
 		members.add("thread_name", LogEvent::getThreadName);
 		members.add("level", LogEvent::getLevel).as(Level::name);

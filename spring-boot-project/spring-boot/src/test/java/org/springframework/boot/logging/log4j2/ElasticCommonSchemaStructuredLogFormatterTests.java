@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.core.impl.JdkMapAdapterStringMap;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
+import org.apache.logging.log4j.message.MapMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -76,6 +77,20 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		assertThat(json).contains(
 				"""
 						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException""");
+	}
+
+	@Test
+	void shouldFormatStructuredMessage() {
+		MutableLogEvent event = createEvent();
+		event.setMessage(new MapMessage<>().with("foo", true).with("bar", 1.0));
+		String json = this.formatter.format(event);
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
+		Map<String, Object> expectedMessage = Map.of("foo", true, "bar", 1.0);
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", "2024-07-02T08:49:53Z",
+				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
+				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
+				"org.example.Test", "message", expectedMessage, "ecs.version", "8.11"));
 	}
 
 }
