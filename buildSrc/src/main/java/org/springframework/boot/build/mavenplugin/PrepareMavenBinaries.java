@@ -16,10 +16,13 @@
 
 package org.springframework.boot.build.mavenplugin;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
@@ -32,6 +35,13 @@ import org.gradle.api.tasks.TaskAction;
  */
 public abstract class PrepareMavenBinaries extends DefaultTask {
 
+	private final FileSystemOperations fileSystemOperations;
+
+	@Inject
+	public PrepareMavenBinaries(FileSystemOperations fileSystemOperations) {
+		this.fileSystemOperations = fileSystemOperations;
+	}
+
 	@OutputDirectory
 	public abstract DirectoryProperty getOutputDir();
 
@@ -40,7 +50,7 @@ public abstract class PrepareMavenBinaries extends DefaultTask {
 
 	@TaskAction
 	public void prepareBinaries() {
-		getProject().sync((sync) -> {
+		this.fileSystemOperations.sync((sync) -> {
 			sync.into(getOutputDir());
 			for (String version : getVersions().get()) {
 				Configuration configuration = getProject().getConfigurations()
