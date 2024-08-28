@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.core.env.Environment;
 
@@ -154,6 +155,14 @@ class ApplicationProperties {
 
 	void setWebApplicationType(WebApplicationType webApplicationType) {
 		this.webApplicationType = webApplicationType;
+	}
+
+	static class ApplicationPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+
+		ApplicationPropertiesRuntimeHints() {
+			super(ApplicationProperties.class);
+		}
+
 	}
 
 }

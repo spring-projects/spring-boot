@@ -58,7 +58,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -1590,14 +1589,6 @@ public class SpringApplication {
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 			DefaultPropertiesPropertySource.moveToEnd(this.context.getEnvironment());
-		}
-
-	}
-
-	static class SpringApplicationRuntimeHints extends BindableRuntimeHintsRegistrar {
-
-		SpringApplicationRuntimeHints() {
-			super(SpringApplication.class);
 		}
 
 	}

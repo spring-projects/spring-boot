@@ -18,6 +18,9 @@ package org.springframework.boot;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.ApplicationProperties.ApplicationPropertiesRuntimeHints;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -42,6 +45,21 @@ class ApplicationPropertiesTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.format.console", "ecs");
 		assertThat(properties.getBannerMode(environment)).isEqualTo(Mode.OFF);
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new ApplicationPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(ApplicationProperties.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setBannerMode"))
+			.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "getSources"))
+			.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setSources"))
+			.accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "getBannerMode"))
+			.rejects(hints);
 	}
 
 }

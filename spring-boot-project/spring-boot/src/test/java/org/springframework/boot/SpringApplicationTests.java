@@ -44,8 +44,6 @@ import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
 import org.springframework.aot.AotDetector;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -58,7 +56,6 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
-import org.springframework.boot.SpringApplication.SpringApplicationRuntimeHints;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
@@ -1410,18 +1407,6 @@ class SpringApplicationTests {
 		then(listener).should().onApplicationEvent(any(ApplicationPreparedEvent.class));
 		then(listener).should(never()).onApplicationEvent(any(ApplicationReadyEvent.class));
 		then(listener).should(never()).onApplicationEvent(any(ApplicationFailedEvent.class));
-	}
-
-	@Test
-	void shouldRegisterHints() {
-		RuntimeHints hints = new RuntimeHints();
-		new SpringApplicationRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(SpringApplication.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "setBannerMode"))
-			.accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "getSources")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "setSources")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(SpringApplication.class, "load")).rejects(hints);
 	}
 
 	@Test // gh-32555
