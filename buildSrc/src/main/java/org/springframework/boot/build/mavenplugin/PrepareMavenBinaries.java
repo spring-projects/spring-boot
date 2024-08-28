@@ -57,8 +57,9 @@ public abstract class PrepareMavenBinaries extends DefaultTask {
 		this.fileSystemOperations.sync((sync) -> {
 			sync.into(getOutputDir());
 			for (String version : getVersions().get()) {
-				Configuration configuration = getProject().getConfigurations().detachedConfiguration(
-						getProject().getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
+				Configuration configuration = getProject().getConfigurations()
+					.detachedConfiguration(getProject().getDependencies()
+						.create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
 				sync.from(this.archiveOperations.zipTree(configuration.getSingleFile()));
 			}
 		});
