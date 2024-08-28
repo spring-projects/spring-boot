@@ -812,6 +812,11 @@ public class PulsarProperties {
 		private SchemaType schemaType;
 
 		/**
+		 * Number of threads used by listener container.
+		 */
+		private Integer concurrency;
+
+		/**
 		 * Whether to record observations for when the Observations API is available and
 		 * the client supports it.
 		 */
@@ -823,6 +828,14 @@ public class PulsarProperties {
 
 		public void setSchemaType(SchemaType schemaType) {
 			this.schemaType = schemaType;
+		}
+
+		public Integer getConcurrency() {
+			return this.concurrency;
+		}
+
+		public void setConcurrency(Integer concurrency) {
+			this.concurrency = concurrency;
 		}
 
 		public boolean isObservationEnabled() {
