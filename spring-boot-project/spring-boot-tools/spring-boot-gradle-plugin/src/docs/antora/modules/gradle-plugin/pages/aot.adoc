@@ -24,15 +24,6 @@ include::example$aot/apply-native-image-plugin.gradle.kts[]
 ======
 
 
-.Groovy
-----
-----
-
-.Kotlin
-----
-----
-
-
 
 [[aot.processing-applications]]
 == Processing Applications
