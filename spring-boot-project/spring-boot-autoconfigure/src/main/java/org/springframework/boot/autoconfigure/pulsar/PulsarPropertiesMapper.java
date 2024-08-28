@@ -39,6 +39,7 @@ import org.apache.pulsar.client.impl.AutoClusterFailover.AutoClusterFailoverBuil
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
@@ -196,6 +197,13 @@ final class PulsarPropertiesMapper {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
+	}
+
+	<T> void customizeConcurrentPulsarListenerContainerFactory(
+			ConcurrentPulsarListenerContainerFactory<T> listenerContainerFactory) {
+		PulsarProperties.Listener properties = this.properties.getListener();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getConcurrency).to(listenerContainerFactory::setConcurrency);
 	}
 
 	<T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder) {

@@ -393,9 +393,11 @@ class PulsarPropertiesTests {
 		void bind() {
 			Map<String, String> map = new HashMap<>();
 			map.put("spring.pulsar.listener.schema-type", "avro");
+			map.put("spring.pulsar.listener.concurrency", "10");
 			map.put("spring.pulsar.listener.observation-enabled", "true");
 			PulsarProperties.Listener properties = bindProperties(map).getListener();
 			assertThat(properties.getSchemaType()).isEqualTo(SchemaType.AVRO);
+			assertThat(properties.getConcurrency()).isEqualTo(10);
 			assertThat(properties.isObservationEnabled()).isTrue();
 		}
 
