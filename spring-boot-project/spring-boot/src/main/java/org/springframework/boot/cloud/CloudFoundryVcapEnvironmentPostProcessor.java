@@ -201,9 +201,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 				// Need a compound key
 				flatten(properties, (Map<String, Object>) value, name);
 			}
-			else if (value instanceof Collection) {
+			else if (value instanceof Collection<?> collection) {
 				// Need a compound key
-				Collection<Object> collection = (Collection<Object>) value;
 				properties.put(name, StringUtils.collectionToCommaDelimitedString(collection));
 				int count = 0;
 				for (Object item : collection) {

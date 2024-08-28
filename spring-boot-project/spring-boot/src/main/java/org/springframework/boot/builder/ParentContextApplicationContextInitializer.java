@@ -72,8 +72,9 @@ public class ParentContextApplicationContextInitializer
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ApplicationContext context = event.getApplicationContext();
-			if (context instanceof ConfigurableApplicationContext && context == event.getSource()) {
-				context.publishEvent(new ParentContextAvailableEvent((ConfigurableApplicationContext) context));
+			if (context instanceof ConfigurableApplicationContext configurableApplicationContext
+					&& context == event.getSource()) {
+				context.publishEvent(new ParentContextAvailableEvent(configurableApplicationContext));
 			}
 		}
 
