@@ -59,6 +59,7 @@ import static org.mockito.Mockito.never;
  * @author Chris Bono
  * @author Phillip Webb
  * @author Swamy Mavuri
+ * @author Vedran Pavic
  */
 class PulsarPropertiesMapperTests {
 
@@ -69,6 +70,8 @@ class PulsarPropertiesMapperTests {
 		properties.getClient().setConnectionTimeout(Duration.ofSeconds(1));
 		properties.getClient().setOperationTimeout(Duration.ofSeconds(2));
 		properties.getClient().setLookupTimeout(Duration.ofSeconds(3));
+		properties.getClient().getThreads().setIo(3);
+		properties.getClient().getThreads().setListener(10);
 		ClientBuilder builder = mock(ClientBuilder.class);
 		new PulsarPropertiesMapper(properties).customizeClientBuilder(builder,
 				new PropertiesPulsarConnectionDetails(properties));
@@ -76,6 +79,8 @@ class PulsarPropertiesMapperTests {
 		then(builder).should().connectionTimeout(1000, TimeUnit.MILLISECONDS);
 		then(builder).should().operationTimeout(2000, TimeUnit.MILLISECONDS);
 		then(builder).should().lookupTimeout(3000, TimeUnit.MILLISECONDS);
+		then(builder).should().ioThreads(3);
+		then(builder).should().listenerThreads(10);
 	}
 
 	@Test
