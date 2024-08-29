@@ -32,10 +32,13 @@ To configure a given logger, `POST` a partial entity to the resource's URI, as t
 
 TIP: To "`reset`" the specific level of the logger (and use the default configuration instead), you can pass a value of `null` as the `configuredLevel`.
 
+
+
+[[actuator.loggers.opentelemetry]]
 == OpenTelemetry
 By default, the OpenTelemetry SDK logs are not configured. You can provide the location of the OpenTelemetry logs endpoint to configure it:
 
-[source,yaml]
+[configprops,yaml]
 ----
 management:
   otlp:
@@ -43,4 +46,11 @@ management:
       endpoint: "https://otlp.example.com:4318/v1/logs"
 ----
 
-Note: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot. You have to provide and configure them yourself. For more details, https://github.com/spring-projects/spring-boot/pull/40961[see this pull request].
+NOTE: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot, for more details, see the https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library[OpenTelemetry Logback appender] or https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library[OpenTelemetry Log4j2 appender] in the https://github.com/open-telemetry/opentelemetry-java-instrumentation[OpenTelemetry Java instrumentation GitHub repository]
+
+You have to add the appender to your logback-spring.xml or log4j-spring.xml.
+
+In order to function, OpenTelemetryAppender needs access to an OpenTelemetry instance. This must be set programmatically during application startup as follows:
+
+include-code::opentelemetry/OpentelemetryLoggerConfiguration[]
+
