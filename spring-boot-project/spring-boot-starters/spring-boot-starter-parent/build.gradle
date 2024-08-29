@@ -248,6 +248,12 @@ publishing.publications.withType(MavenPublication) {
 			profiles {
 				profile {
 					delegate.id("native")
+					activation {
+						property {
+							delegate.name('native')
+							delegate.value('true')
+						}
+					}
 					build {
 						pluginManagement {
 							plugins {

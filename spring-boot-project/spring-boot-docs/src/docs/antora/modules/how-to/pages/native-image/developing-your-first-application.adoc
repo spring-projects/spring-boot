@@ -210,6 +210,15 @@ With the `native` profile active, you can invoke the `native:compile` goal to tr
 $ mvn -Pnative native:compile
 ----
 
+The `native` profile can be activated by default by setting the Maven property `native` to `true` in the POM.
+
+[source,xml]
+----
+<properties>
+  <native>true</native>
+</properties>
+----
+
 The native image executable can be found in the `target` directory.
 
 
