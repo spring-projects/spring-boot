@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.ConnectionString;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Adapts {@link MongoProperties} to {@link MongoConnectionDetails}.
@@ -90,7 +92,7 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 
 	private List<String> getOptions() {
 		List<String> options = new ArrayList<>();
-		if (this.properties.getReplicaSetName() != null) {
+		if (StringUtils.hasText(this.properties.getReplicaSetName())) {
 			options.add("replicaSet=" + this.properties.getReplicaSetName());
 		}
 		if (this.properties.getUsername() != null && this.properties.getAuthenticationDatabase() != null) {

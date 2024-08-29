@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,20 @@ class PropertiesMongoConnectionDetailsTests {
 		ConnectionString connectionString = getConnectionString();
 		assertThat(connectionString.getDatabase()).isEqualTo("db");
 		assertThat(connectionString.getRequiredReplicaSetName()).isEqualTo("test");
+	}
+
+	@Test
+	void replicaSetCanBeNull() {
+		this.properties.setReplicaSetName(null);
+		ConnectionString connectionString = getConnectionString();
+		assertThat(connectionString.getRequiredReplicaSetName()).isNull();
+	}
+
+	@Test
+	void replicaSetCanBeBlank() {
+		this.properties.setReplicaSetName("");
+		ConnectionString connectionString = getConnectionString();
+		assertThat(connectionString.getRequiredReplicaSetName()).isNull();
 	}
 
 	@Test
