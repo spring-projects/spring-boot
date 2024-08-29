@@ -31,12 +31,15 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class OpenTelemetryLoggingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpLoggingConnectionDetails> {
 
+	private static final String[] OPENTELEMETRY_IMAGE_NAMES = { "otel/opentelemetry-collector-contrib",
+			"grafana/otel-lgtm" };
+
 	private static final int OTLP_GRPC_PORT = 4317;
 
 	private static final int OTLP_HTTP_PORT = 4318;
 
 	OpenTelemetryLoggingDockerComposeConnectionDetailsFactory() {
-		super("otel/opentelemetry-collector-contrib",
+		super(OPENTELEMETRY_IMAGE_NAMES,
 				"org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingAutoConfiguration");
 	}
 

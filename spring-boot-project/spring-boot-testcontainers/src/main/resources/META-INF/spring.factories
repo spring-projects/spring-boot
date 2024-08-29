@@ -23,6 +23,7 @@ org.springframework.boot.testcontainers.service.connection.ldap.OpenLdapContaine
 org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelemetryLoggingContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelemetryTracingContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryLoggingContainerConnectionDetailsFactory,\

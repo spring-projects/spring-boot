@@ -108,7 +108,7 @@ The following service connections are currently supported:
 | Containers named "neo4j" or "bitnami/neo4j"
 
 | `OtlpLoggingConnectionDetails`
-| Containers named "otel/opentelemetry-collector-contrib"
+| Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
 | `OtlpMetricsConnectionDetails`
 | Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
