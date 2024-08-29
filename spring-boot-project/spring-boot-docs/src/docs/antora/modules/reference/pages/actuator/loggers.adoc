@@ -52,5 +52,5 @@ You have to add the appender to your logback-spring.xml or log4j-spring.xml.
 
 In order to function, OpenTelemetryAppender needs access to an OpenTelemetry instance. This must be set programmatically during application startup as follows:
 
-include-code::opentelemetry/OpentelemetryLoggerConfiguration[]
+include-code::logback/OpentelemetryLoggerConfiguration[]
 
