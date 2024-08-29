@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.mongodb.ServerAddress;
 
 import org.springframework.core.Ordered;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * A {@link MongoClientSettingsBuilderCustomizer} that applies properties from a
@@ -90,7 +91,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	}
 
 	private void applyReplicaSet(MongoClientSettings.Builder builder) {
-		if (this.properties.getReplicaSetName() != null) {
+		if (StringUtils.hasText(this.properties.getReplicaSetName())) {
 			builder.applyToClusterSettings(
 					(cluster) -> cluster.requiredReplicaSetName(this.properties.getReplicaSetName()));
 		}

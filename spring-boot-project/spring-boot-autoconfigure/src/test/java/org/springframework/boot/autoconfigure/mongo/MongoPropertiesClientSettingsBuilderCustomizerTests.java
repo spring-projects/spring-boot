@@ -22,6 +22,7 @@ import java.util.List;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
+import com.mongodb.connection.ClusterType;
 import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.Test;
 
@@ -81,6 +82,23 @@ class MongoPropertiesClientSettingsBuilderCustomizerTests {
 		this.properties.setReplicaSetName("test");
 		MongoClientSettings settings = customizeSettings();
 		assertThat(settings.getClusterSettings().getRequiredReplicaSetName()).isEqualTo("test");
+		assertThat(settings.getClusterSettings().getRequiredClusterType()).isEqualTo(ClusterType.REPLICA_SET);
+	}
+
+	@Test
+	void replicaSetCanBeNull() {
+		this.properties.setReplicaSetName(null);
+		MongoClientSettings settings = customizeSettings();
+		assertThat(settings.getClusterSettings().getRequiredReplicaSetName()).isNull();
+		assertThat(settings.getClusterSettings().getRequiredClusterType()).isEqualTo(ClusterType.UNKNOWN);
+	}
+
+	@Test
+	void replicaSetCanBeEmptyString() {
+		this.properties.setReplicaSetName("");
+		MongoClientSettings settings = customizeSettings();
+		assertThat(settings.getClusterSettings().getRequiredReplicaSetName()).isNull();
+		assertThat(settings.getClusterSettings().getRequiredClusterType()).isEqualTo(ClusterType.UNKNOWN);
 	}
 
 	@Test
