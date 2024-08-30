@@ -104,18 +104,35 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		}
 		try {
 			Class<?>[] generics = resolveGenerics();
-			Class<?> containerType = generics[0];
-			Class<?> connectionDetailsType = generics[1];
-			for (String connectionName : this.connectionNames) {
-				if (source.accepts(connectionName, containerType, connectionDetailsType)) {
-					return getContainerConnectionDetails(source);
-				}
+			Class<?> requiredContainerType = generics[0];
+			Class<?> requiredConnectionDetailsType = generics[1];
+			if (sourceAccepts(source, requiredContainerType, requiredConnectionDetailsType)) {
+				return getContainerConnectionDetails(source);
 			}
 		}
 		catch (NoClassDefFoundError ex) {
 			// Ignore
 		}
 		return null;
+	}
+
+	/**
+	 * Return if the give source accepts the connection. By default this method checks
+	 * each connection name.
+	 * @param source the container connection source
+	 * @param requiredContainerType the required container type
+	 * @param requiredConnectionDetailsType the required connection details type
+	 * @return if the source accepts the connection
+	 * @since 3.4.0
+	 */
+	protected boolean sourceAccepts(ContainerConnectionSource<C> source, Class<?> requiredContainerType,
+			Class<?> requiredConnectionDetailsType) {
+		for (String requiredConnectionName : this.connectionNames) {
+			if (source.accepts(requiredConnectionName, requiredContainerType, requiredConnectionDetailsType)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean hasRequiredClasses() {
