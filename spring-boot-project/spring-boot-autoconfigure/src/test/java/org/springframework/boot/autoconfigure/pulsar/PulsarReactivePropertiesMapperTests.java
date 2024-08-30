@@ -119,10 +119,12 @@ class PulsarReactivePropertiesMapperTests {
 	void customizeContainerProperties() {
 		PulsarProperties properties = new PulsarProperties();
 		properties.getConsumer().getSubscription().setType(SubscriptionType.Shared);
+		properties.getConsumer().getSubscription().setName("my-subscription");
 		properties.getListener().setSchemaType(SchemaType.AVRO);
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		new PulsarReactivePropertiesMapper(properties).customizeContainerProperties(containerProperties);
 		assertThat(containerProperties.getSubscriptionType()).isEqualTo(SubscriptionType.Shared);
+		assertThat(containerProperties.getSubscriptionName()).isEqualTo("my-subscription");
 		assertThat(containerProperties.getSchemaType()).isEqualTo(SchemaType.AVRO);
 	}
 
