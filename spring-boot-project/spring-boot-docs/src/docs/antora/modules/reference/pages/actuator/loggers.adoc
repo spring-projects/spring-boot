@@ -48,9 +48,6 @@ management:
 
 NOTE: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot, for more details, see the https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library[OpenTelemetry Logback appender] or https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library[OpenTelemetry Log4j2 appender] in the https://github.com/open-telemetry/opentelemetry-java-instrumentation[OpenTelemetry Java instrumentation GitHub repository]
 
-You have to add the appender to your logback-spring.xml or log4j-spring.xml.
+TIP: Ensure that you add the appender to your `logback.xml` or `logback-spring.xml` (or the equivalent configuration file for Log4j).
 
-In order to function, OpenTelemetryAppender needs access to an OpenTelemetry instance. This must be set programmatically during application startup as follows:
-
-include-code::logback/OpentelemetryLoggerConfiguration[]
-
+TIP: The `OpenTelemetryAppender` requires access to an OpenTelemetry instance to function properly. This instance must be set programmatically during application startup by using an `ApplicationListener` for the `ApplicationReadyEvent`.
