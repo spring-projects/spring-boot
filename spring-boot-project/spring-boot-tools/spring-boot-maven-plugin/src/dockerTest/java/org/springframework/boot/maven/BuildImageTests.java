@@ -464,9 +464,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 			});
 	}
 
-	private static void cleanupCache(Path buildCachePath) {
+	private static void cleanupCache(Path cachePath) {
 		try {
-			FileSystemUtils.deleteRecursively(buildCachePath);
+			FileSystemUtils.deleteRecursively(cachePath);
 		}
 		catch (Exception ex) {
 			// ignore
