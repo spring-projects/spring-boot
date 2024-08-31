@@ -146,7 +146,7 @@ class PropertiesMigrationReporter {
 
 	private boolean hasSameName(ConfigurationProperty property, ConfigurationMetadataProperty replacement) {
 		return (property.getOrigin() instanceof PropertySourceOrigin propertySourceOrigin)
-				&& Objects.equals(propertySourceOrigin.getPropertyName(), replacement.getName());
+				&& Objects.equals(propertySourceOrigin.getPropertyName(), replacement.getId());
 	}
 
 	private ConfigurationMetadataProperty determineReplacementMetadata(ConfigurationMetadataProperty metadata) {

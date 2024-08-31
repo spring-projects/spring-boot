@@ -1,4 +1,10 @@
 {
+  "groups": [
+    {
+      "name": "relaxed",
+      "type": "com.example.SourceType"
+    }
+  ],
   "properties": [
     {
       "name": "test.two",
@@ -64,7 +70,8 @@
     },
     {
       "name": "relaxed.this-that-the-other",
-      "type": "java.lang.String"
+      "type": "java.lang.String",
+      "sourceType": "com.example.SourceType"
     }
   ]
 }
