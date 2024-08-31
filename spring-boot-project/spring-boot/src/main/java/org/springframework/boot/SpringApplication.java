@@ -1670,20 +1670,23 @@ public class SpringApplication {
 		}
 
 		private void startKeepAliveThread() {
-			Thread thread = new Thread(() -> {
-				while (true) {
-					try {
-						Thread.sleep(Long.MAX_VALUE);
-					}
-					catch (InterruptedException ex) {
-						break;
-					}
-				}
-			});
+			Thread thread = new Thread(this::keepAlive);
+
 			if (this.thread.compareAndSet(null, thread)) {
 				thread.setDaemon(false);
 				thread.setName("keep-alive");
 				thread.start();
+			}
+		}
+
+		private void keepAlive() {
+			while (!Thread.currentThread().isInterrupted()) {
+				try {
+					Thread.sleep(Long.MAX_VALUE);
+				}
+				catch (InterruptedException ex) {
+					Thread.currentThread().interrupt(); // Restore interrupted status
+				}
 			}
 		}
 
