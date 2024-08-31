@@ -16,12 +16,19 @@
 
 package org.springframework.boot.context.properties;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
+import org.springframework.context.annotation.ScopeMetadata;
+import org.springframework.context.annotation.ScopeMetadataResolver;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -37,6 +44,8 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  */
 final class ConfigurationPropertiesBeanRegistrar {
+
+	private static final ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
 
 	private final BeanDefinitionRegistry registry;
 
@@ -75,17 +84,25 @@ final class ConfigurationPropertiesBeanRegistrar {
 			MergedAnnotation<ConfigurationProperties> annotation) {
 		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
 				+ " annotation found on  '" + type.getName() + "'.");
-		this.registry.registerBeanDefinition(beanName, createBeanDefinition(beanName, type));
+		BeanDefinitionReaderUtils.registerBeanDefinition(createBeanDefinition(beanName, type), this.registry);
 	}
 
-	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
+	private BeanDefinitionHolder createBeanDefinition(String beanName, Class<?> type) {
 		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		BindMethodAttribute.set(definition, bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
 			definition.setInstanceSupplier(() -> ConstructorBound.from(this.beanFactory, beanName, type));
 		}
-		return definition;
+		ScopeMetadata metadata = scopeMetadataResolver.resolveScopeMetadata(new AnnotatedGenericBeanDefinition(type));
+		definition.setScope(metadata.getScopeName());
+		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(definition, beanName);
+		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
+		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
+			return definitionHolder;
+		}
+		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
+		return ScopedProxyUtils.createScopedProxy(definitionHolder, this.registry, proxyTargetClass);
 	}
 
 }

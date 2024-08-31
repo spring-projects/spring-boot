@@ -20,12 +20,15 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -45,11 +48,37 @@ class ConfigurationPropertiesBeanRegistrarTests {
 			this.registry);
 
 	@Test
+	void registerScopedBeanDefinition() {
+		String beanName = "scopedbeancp-" + ScopedBeanConfigurationProperties.class.getName();
+		this.registrar.register(ScopedBeanConfigurationProperties.class);
+		BeanDefinition beanDefinition = this.registry.getBeanDefinition(beanName);
+		assertThat(beanDefinition).isNotNull();
+		assertThat(beanDefinition.getBeanClassName()).isEqualTo(ScopedBeanConfigurationProperties.class.getName());
+		assertThat(beanDefinition.getScope()).isEqualTo(BeanDefinition.SCOPE_PROTOTYPE);
+	}
+
+	@Test
+	void registerScopedBeanDefinitionWithProxyMode() {
+		String beanName = "scopedbeancp-" + ProxyScopedBeanConfigurationProperties.class.getName();
+		this.registrar.register(ProxyScopedBeanConfigurationProperties.class);
+		BeanDefinition proxiedBeanDefinition = this.registry.getBeanDefinition(beanName);
+		assertThat(proxiedBeanDefinition).isNotNull();
+		assertThat(proxiedBeanDefinition.getBeanClassName()).isEqualTo(ScopedProxyFactoryBean.class.getName());
+		String targetBeanName = (String) proxiedBeanDefinition.getPropertyValues().get("targetBeanName");
+		assertThat(targetBeanName).isNotNull();
+		BeanDefinition beanDefinition = this.registry.getBeanDefinition(targetBeanName);
+		assertThat(beanDefinition).isNotNull();
+		assertThat(beanDefinition.getBeanClassName()).isEqualTo(ProxyScopedBeanConfigurationProperties.class.getName());
+		assertThat(beanDefinition.getScope()).isEqualTo(BeanDefinition.SCOPE_PROTOTYPE);
+	}
+
+	@Test
 	void registerWhenNotAlreadyRegisteredAddBeanDefinition() {
 		String beanName = "beancp-" + BeanConfigurationProperties.class.getName();
 		this.registrar.register(BeanConfigurationProperties.class);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
 		assertThat(definition).isNotNull();
+		assertThat(definition.getScope()).isEqualTo(BeanDefinition.SCOPE_SINGLETON);
 		assertThat(definition.getBeanClassName()).isEqualTo(BeanConfigurationProperties.class.getName());
 	}
 
@@ -96,6 +125,18 @@ class ConfigurationPropertiesBeanRegistrarTests {
 
 	@ConfigurationProperties(prefix = "beancp")
 	static class BeanConfigurationProperties {
+
+	}
+
+	@ConfigurationProperties(prefix = "scopedbeancp")
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	static class ScopedBeanConfigurationProperties {
+
+	}
+
+	@ConfigurationProperties(prefix = "scopedbeancp")
+	@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = BeanDefinition.SCOPE_PROTOTYPE)
+	static class ProxyScopedBeanConfigurationProperties {
 
 	}
 
