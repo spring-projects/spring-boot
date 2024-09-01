@@ -365,8 +365,8 @@ public class BomExtension {
 			}
 
 			public Object methodMissing(String name, Object args) {
-				if (args instanceof Object[] && ((Object[]) args).length == 1) {
-					Object arg = ((Object[]) args)[0];
+				if (args instanceof Object[] objects && objects.length == 1) {
+					Object arg = objects[0];
 					if (arg instanceof Closure<?> closure) {
 						ModuleHandler moduleHandler = new ModuleHandler();
 						closure.setResolveStrategy(Closure.DELEGATE_FIRST);
