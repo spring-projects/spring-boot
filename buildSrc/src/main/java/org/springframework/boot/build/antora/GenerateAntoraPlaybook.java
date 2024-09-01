@@ -175,7 +175,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	private void addDir(Map<String, Object> data) {
 		Path playbookDir = toRealPath(getOutputFile().get().getAsFile().toPath()).getParent();
 		Path outputDir = toRealPath(getProject().getBuildDir().toPath().resolve("site"));
-		data.put("output", Map.of("dir", "." + File.separator + playbookDir.relativize(outputDir).toString()));
+		data.put("output", Map.of("dir", "." + File.separator + playbookDir.relativize(outputDir)));
 	}
 
 	@SuppressWarnings("unchecked")
