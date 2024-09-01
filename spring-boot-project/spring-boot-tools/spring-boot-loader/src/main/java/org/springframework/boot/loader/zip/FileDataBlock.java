@@ -71,14 +71,15 @@ class FileDataBlock implements CloseableDataBlock {
 			throw new IllegalArgumentException("Position must not be negative");
 		}
 		ensureOpen(ClosedChannelException::new);
-		int remaining = (int) (this.size - pos);
+		long remaining = this.size - pos;
 		if (remaining <= 0) {
 			return -1;
 		}
 		int originalDestinationLimit = -1;
 		if (dst.remaining() > remaining) {
 			originalDestinationLimit = dst.limit();
-			dst.limit(dst.position() + remaining);
+			long updatedLimit = dst.position() + remaining;
+			dst.limit((updatedLimit > Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) updatedLimit);
 		}
 		int result = this.fileAccess.read(dst, this.offset + pos);
 		if (originalDestinationLimit != -1) {
