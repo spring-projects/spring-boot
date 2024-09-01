@@ -636,7 +636,8 @@ public final class ZipContent implements Closeable {
 		private static long getStartOfZipContent(FileDataBlock data, ZipEndOfCentralDirectoryRecord eocd,
 				Zip64EndOfCentralDirectoryRecord zip64Eocd) throws IOException {
 			long specifiedOffsetToStartOfCentralDirectory = (zip64Eocd != null)
-					? zip64Eocd.offsetToStartOfCentralDirectory() : eocd.offsetToStartOfCentralDirectory();
+					? zip64Eocd.offsetToStartOfCentralDirectory()
+					: Integer.toUnsignedLong(eocd.offsetToStartOfCentralDirectory());
 			long sizeOfCentralDirectoryAndEndRecords = getSizeOfCentralDirectoryAndEndRecords(eocd, zip64Eocd);
 			long actualOffsetToStartOfCentralDirectory = data.size() - sizeOfCentralDirectoryAndEndRecords;
 			return actualOffsetToStartOfCentralDirectory - specifiedOffsetToStartOfCentralDirectory;
@@ -650,7 +651,8 @@ public final class ZipContent implements Closeable {
 				result += Zip64EndOfCentralDirectoryLocator.SIZE;
 				result += zip64Eocd.size();
 			}
-			result += (zip64Eocd != null) ? zip64Eocd.sizeOfCentralDirectory() : eocd.sizeOfCentralDirectory();
+			result += (zip64Eocd != null) ? zip64Eocd.sizeOfCentralDirectory()
+					: Integer.toUnsignedLong(eocd.sizeOfCentralDirectory());
 			return result;
 		}
 
@@ -796,10 +798,10 @@ public final class ZipContent implements Closeable {
 		private FileDataBlock getContent() throws IOException {
 			FileDataBlock content = this.content;
 			if (content == null) {
-				int pos = this.centralRecord.offsetToLocalHeader();
+				long pos = Integer.toUnsignedLong(this.centralRecord.offsetToLocalHeader());
 				checkNotZip64Extended(pos);
 				ZipLocalFileHeaderRecord localHeader = ZipLocalFileHeaderRecord.load(ZipContent.this.data, pos);
-				int size = this.centralRecord.compressedSize();
+				long size = Integer.toUnsignedLong(this.centralRecord.compressedSize());
 				checkNotZip64Extended(size);
 				content = ZipContent.this.data.slice(pos + localHeader.size(), size);
 				this.content = content;
@@ -807,7 +809,7 @@ public final class ZipContent implements Closeable {
 			return content;
 		}
 
-		private void checkNotZip64Extended(int value) throws IOException {
+		private void checkNotZip64Extended(long value) throws IOException {
 			if (value == 0xFFFFFFFF) {
 				throw new IOException("Zip64 extended information extra fields are not supported");
 			}
