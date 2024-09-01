@@ -235,7 +235,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	@SuppressWarnings({ "unchecked" })
 	private Map<String, Object> safeSerialize(ObjectMapper mapper, Object bean, String prefix) {
 		try {
-			return new HashMap<>(mapper.convertValue(bean, Map.class));
+			return new HashMap<String, Object>(mapper.convertValue(bean, Map.class));
 		}
 		catch (Exception ex) {
 			return new HashMap<>(Collections.singletonMap("error", "Cannot serialize '" + prefix + "'"));
