@@ -121,6 +121,7 @@ public interface BuildLog {
 	 * Log that a cache cleanup step was not completed successfully.
 	 * @param cache the cache
 	 * @param exception any exception that caused the failure
+	 * @since 3.2.6
 	 */
 	void failedCleaningWorkDir(Cache cache, Exception exception);
 
