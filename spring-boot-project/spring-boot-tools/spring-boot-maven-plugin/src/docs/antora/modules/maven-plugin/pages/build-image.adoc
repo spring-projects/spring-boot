@@ -523,7 +523,12 @@ TIP: With the `colima` CLI installed, the command `podman info --format='{{.Host
 ==== Docker Configuration for Colima
 
 The plugin can communicate with the Docker daemon provided by https://github.com/abiosoft/colima[Colima].
-The `DOCKER_HOST` environment variable can be set by using the command `export DOCKER_HOST=$(docker context inspect colima -f '{{.Endpoints.docker.Host}}').`
+The `DOCKER_HOST` environment variable can be set by using the following command:
+
+[source,shell,subs="verbatim,attributes"]
+----
+$ export DOCKER_HOST=$(docker context inspect colima -f '{{.Endpoints.docker.Host}}')
+----
 
 The plugin can also be configured to use Colima daemon by providing connection details similar to those shown in the following example:
 
