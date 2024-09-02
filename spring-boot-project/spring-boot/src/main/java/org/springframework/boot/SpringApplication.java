@@ -187,16 +187,6 @@ import org.springframework.util.function.ThrowingSupplier;
  */
 public class SpringApplication {
 
-	/**
-	 * Default banner location.
-	 */
-	public static final String BANNER_LOCATION_PROPERTY_VALUE = SpringApplicationBannerPrinter.DEFAULT_BANNER_LOCATION;
-
-	/**
-	 * Banner location property key.
-	 */
-	public static final String BANNER_LOCATION_PROPERTY = SpringApplicationBannerPrinter.BANNER_LOCATION_PROPERTY;
-
 	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
