@@ -16,7 +16,6 @@
 
 package org.springframework.boot.jdbc.metadata;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -40,8 +39,7 @@ public class CompositeDataSourcePoolMetadataProvider implements DataSourcePoolMe
 	 * @param providers the data source pool metadata providers
 	 */
 	public CompositeDataSourcePoolMetadataProvider(Collection<? extends DataSourcePoolMetadataProvider> providers) {
-		this.providers = (providers != null) ? Collections.unmodifiableList(new ArrayList<>(providers))
-				: Collections.emptyList();
+		this.providers = (providers != null) ? List.copyOf(providers) : Collections.emptyList();
 	}
 
 	@Override
