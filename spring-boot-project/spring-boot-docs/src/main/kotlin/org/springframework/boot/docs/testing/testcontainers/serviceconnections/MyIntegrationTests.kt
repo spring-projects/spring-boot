@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections;
+package org.springframework.boot.docs.testing.testcontainers.serviceconnections
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;

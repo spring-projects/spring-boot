@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.springbootapplications.mockingbeans.listener
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+import org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener
+import org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener
+import org.springframework.test.context.ContextConfiguration
+import org.springframework.test.context.TestExecutionListeners
 
-@TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
-	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
-	}
+@ContextConfiguration(classes = [MyConfig::class])
+@TestExecutionListeners(
+	MockitoTestExecutionListener::class,
+	ResetMocksTestExecutionListener::class
+)
+class MyTests {
+
+	// ...
+
 }

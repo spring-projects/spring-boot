@@ -13,34 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.docs.testing.testcontainers.dynamicproperties
 
+package org.springframework.boot.docs.testing.springbootapplications.withrunningserver
+
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.Neo4jContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import org.springframework.boot.test.web.client.TestRestTemplate
 
-@Testcontainers
-@SpringBootTest
-class MyIntegrationTests {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+class MyRandomPortTestRestTemplateTests {
 
 	@Test
-	fun myTest() {
-		// ...
+	fun exampleTest(@Autowired restTemplate: TestRestTemplate) {
+		val body = restTemplate.getForObject("/", String::class.java)
+		assertThat(body).isEqualTo("Hello World")
 	}
 
-	companion object {
-		@Container
-		@JvmStatic
-		val neo4j = Neo4jContainer("neo4j:5");
-
-		@DynamicPropertySource
-		@JvmStatic
-		fun neo4jProperties(registry: DynamicPropertyRegistry) {
-			registry.add("spring.neo4j.uri") { neo4j.boltUrl }
-		}
-	}
 }

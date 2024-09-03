@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.springbootapplications.mockingbeans.bean
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+class Reverser {
 
-@TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
-	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
-	}
+	val reverseValue: String?
+		get() = null
+
 }

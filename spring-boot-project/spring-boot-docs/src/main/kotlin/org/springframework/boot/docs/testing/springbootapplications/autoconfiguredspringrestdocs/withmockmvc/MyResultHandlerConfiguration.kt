@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withmockmvc
 
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler
 
 @TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
+class MyResultHandlerConfiguration {
+
 	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
+	fun restDocumentation(): RestDocumentationResultHandler {
+		return MockMvcRestDocumentation.document("{method-name}")
 	}
+
 }

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.utilities.testresttemplate
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.boot.test.web.client.TestRestTemplate
 
-@TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
-	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
+class MyTests {
+
+	private val template = TestRestTemplate()
+
+	@Test
+	fun testRequest() {
+		val headers = template.getForEntity("https://myhost.example.com/example", String::class.java)
+		assertThat(headers.headers.location).hasHost("other.example.com")
 	}
+
 }

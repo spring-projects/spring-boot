@@ -13,34 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.docs.testing.testcontainers.dynamicproperties
 
+package org.springframework.boot.docs.testing.springbootapplications.usingapplicationarguments
+
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.Neo4jContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
 
-@Testcontainers
-@SpringBootTest
-class MyIntegrationTests {
+@SpringBootTest(args = ["--app.test=one"])
+class MyApplicationArgumentTests {
 
 	@Test
-	fun myTest() {
-		// ...
+	fun applicationArgumentsPopulated(@Autowired args: ApplicationArguments) {
+		assertThat(args.optionNames).containsOnly("app.test")
+		assertThat(args.getOptionValues("app.test")).containsOnly("one")
 	}
 
-	companion object {
-		@Container
-		@JvmStatic
-		val neo4j = Neo4jContainer("neo4j:5");
-
-		@DynamicPropertySource
-		@JvmStatic
-		fun neo4jProperties(registry: DynamicPropertyRegistry) {
-			registry.add("spring.neo4j.uri") { neo4j.boltUrl }
-		}
-	}
 }

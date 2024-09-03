@@ -13,34 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.docs.testing.testcontainers.dynamicproperties
 
+package org.springframework.boot.docs.testing.springbootapplications.mockingbeans.bean
+
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito.given
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.Neo4jContainer
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
+import org.springframework.boot.test.mock.mockito.MockBean
 
-@Testcontainers
 @SpringBootTest
-class MyIntegrationTests {
+class MyTests(@Autowired val reverser: Reverser, @MockBean val remoteService: RemoteService) {
 
 	@Test
-	fun myTest() {
-		// ...
+	fun exampleTest() {
+		given(remoteService.value).willReturn("spring")
+		val reverse = reverser.reverseValue // Calls injected RemoteService
+		assertThat(reverse).isEqualTo("gnirps")
 	}
 
-	companion object {
-		@Container
-		@JvmStatic
-		val neo4j = Neo4jContainer("neo4j:5");
-
-		@DynamicPropertySource
-		@JvmStatic
-		fun neo4jProperties(registry: DynamicPropertyRegistry) {
-			registry.add("spring.neo4j.uri") { neo4j.boltUrl }
-		}
-	}
 }
