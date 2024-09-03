@@ -22,14 +22,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -131,8 +129,7 @@ class ServletComponentRegisteringPostProcessor
 						.getValue();
 					generationContext.getRuntimeHints()
 						.reflection()
-						.registerType(TypeReference.of(listenerClassName),
-								MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+						.registerType(TypeReference.of(listenerClassName), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 				}
 			}
 		};
