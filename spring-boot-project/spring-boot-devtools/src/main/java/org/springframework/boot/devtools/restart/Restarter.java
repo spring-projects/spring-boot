@@ -440,7 +440,12 @@ public class Restarter {
 	}
 
 	public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
-		return this.attributes.computeIfAbsent(name, (ignore) -> objectFactory.getObject());
+		Object value = this.attributes.get(name);
+		if (value == null) {
+			value = objectFactory.getObject();
+			this.attributes.put(name, value);
+		}
+		return value;
 	}
 
 	public Object removeAttribute(String name) {
