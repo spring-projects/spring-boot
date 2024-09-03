@@ -121,26 +121,20 @@ class ServletComponentRegisteringPostProcessor
 
 	@Override
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
-		return new BeanFactoryInitializationAotContribution() {
-
-			@Override
-			public void applyTo(GenerationContext generationContext,
-					BeanFactoryInitializationCode beanFactoryInitializationCode) {
-				for (String beanName : beanFactory.getBeanDefinitionNames()) {
-					BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
-					if (Objects.equals(definition.getBeanClassName(),
-							WebListenerHandler.ServletComponentWebListenerRegistrar.class.getName())) {
-						String listenerClassName = (String) definition.getConstructorArgumentValues()
-							.getArgumentValue(0, String.class)
-							.getValue();
-						generationContext.getRuntimeHints()
-							.reflection()
-							.registerType(TypeReference.of(listenerClassName),
-									MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
-					}
+		return (generationContext, beanFactoryInitializationCode) -> {
+			for (String beanName : beanFactory.getBeanDefinitionNames()) {
+				BeanDefinition definition = beanFactory.getBeanDefinition(beanName);
+				if (Objects.equals(definition.getBeanClassName(),
+						WebListenerHandler.ServletComponentWebListenerRegistrar.class.getName())) {
+					String listenerClassName = (String) definition.getConstructorArgumentValues()
+						.getArgumentValue(0, String.class)
+						.getValue();
+					generationContext.getRuntimeHints()
+						.reflection()
+						.registerType(TypeReference.of(listenerClassName),
+								MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 				}
 			}
-
 		};
 	}
 
