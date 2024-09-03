@@ -81,7 +81,13 @@ The preceding example will prevent all observations whose name contains "denied"
 [[actuator.observability.opentelemetry]]
 == OpenTelemetry Support
 
-Spring Boot's actuator module includes basic support for https://opentelemetry.io/[OpenTelemetry].
+NOTE: There are several ways to support https://opentelemetry.io/[OpenTelemetry] in your application.
+You can use the https://opentelemetry.io/docs/zero-code/java/agent/[OpenTelemetry Java Agent] or the https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/[OpenTelemetry Spring Boot Starter],
+which are supported by the OTel community; the metrics and traces use the semantic conventions defined by OTel libraries.
+This documentation describes OpenTelemetry as officially supported by the Spring team, using Micrometer and the OTLP exporter;
+the metrics and traces use the semantic conventions described in the Spring projects documentation, such as {spring-framework-docs}/integration/observability.html[Spring Framework].
+
+Spring Boot's actuator module includes basic support for OpenTelemetry.
 
 It provides a bean of type `OpenTelemetry`, and if there are beans of type `SdkTracerProvider`, `ContextPropagators`, `SdkLoggerProvider` or `SdkMeterProvider` in the application context, they automatically get registered.
 Additionally, it provides a `Resource` bean.
