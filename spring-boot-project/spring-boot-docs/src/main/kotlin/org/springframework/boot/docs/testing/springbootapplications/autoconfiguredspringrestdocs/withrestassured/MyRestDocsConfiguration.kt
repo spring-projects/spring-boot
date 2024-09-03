@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withrestassured
 
+import org.springframework.boot.test.autoconfigure.restdocs.RestDocsRestAssuredConfigurationCustomizer
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer
+import org.springframework.restdocs.templates.TemplateFormats
 
 @TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
-	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
+class MyRestDocsConfiguration : RestDocsRestAssuredConfigurationCustomizer {
+
+	override fun customize(configurer: RestAssuredRestDocumentationConfigurer) {
+		configurer.snippets().withTemplateFormat(TemplateFormats.markdown())
 	}
+
 }

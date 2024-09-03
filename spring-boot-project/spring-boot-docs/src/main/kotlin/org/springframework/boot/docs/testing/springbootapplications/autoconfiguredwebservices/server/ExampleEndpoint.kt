@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredwebservices.server
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+import javax.xml.transform.Source
 
-@TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
-	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
+import org.springframework.ws.server.endpoint.annotation.Endpoint
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload
+import org.springframework.xml.transform.StringSource
+
+@Endpoint
+class ExampleEndpoint {
+
+	@PayloadRoot(localPart = "ExampleRequest")
+	@ResponsePayload
+	fun handleRequest(): Source {
+		return StringSource("<ExampleResponse>42</ExampleResponse>")
 	}
+
 }

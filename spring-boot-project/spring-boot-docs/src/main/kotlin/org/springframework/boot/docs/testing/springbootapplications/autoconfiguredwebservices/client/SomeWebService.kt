@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.testing.testcontainers.serviceconnections
+package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredwebservices.client
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection
-import org.springframework.context.annotation.Bean
-import org.testcontainers.containers.GenericContainer
+import org.springframework.boot.webservices.client.WebServiceTemplateBuilder
+import org.springframework.stereotype.Service
+import org.springframework.ws.client.core.WebServiceTemplate
 
-@TestConfiguration(proxyBeanMethods = false)
-class MyRedisConfiguration {
-	@Bean
-	@ServiceConnection(name = "redis")
-	fun redisContainer(): GenericContainer<*> {
-		return GenericContainer("redis:7")
+@Service
+class SomeWebService(builder: WebServiceTemplateBuilder) {
+
+	private val webServiceTemplate: WebServiceTemplate
+
+	init {
+		webServiceTemplate = builder.build()
 	}
+
+	fun test(): Response {
+		return webServiceTemplate.marshalSendAndReceive("https://example.com", Request()) as Response
+	}
+
 }
