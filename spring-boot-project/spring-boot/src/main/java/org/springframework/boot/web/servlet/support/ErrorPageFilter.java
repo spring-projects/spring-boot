@@ -321,12 +321,12 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 		}
 
 		@Override
-		public void sendError(int status) throws IOException {
+		public void sendError(int status) {
 			sendError(status, null);
 		}
 
 		@Override
-		public void sendError(int status, String message) throws IOException {
+		public void sendError(int status, String message) {
 			this.status = status;
 			this.message = message;
 			this.hasErrorToSend = true;
