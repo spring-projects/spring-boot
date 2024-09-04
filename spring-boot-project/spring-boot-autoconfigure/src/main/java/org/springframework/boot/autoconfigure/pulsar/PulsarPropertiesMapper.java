@@ -199,6 +199,7 @@ final class PulsarPropertiesMapper {
 		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
 	}
 
+	@SuppressWarnings("removal")
 	<T> void customizeConcurrentPulsarListenerContainerFactory(
 			ConcurrentPulsarListenerContainerFactory<T> listenerContainerFactory) {
 		PulsarProperties.Listener properties = this.properties.getListener();

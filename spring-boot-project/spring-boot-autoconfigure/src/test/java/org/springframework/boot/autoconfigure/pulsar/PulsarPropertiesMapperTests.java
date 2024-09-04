@@ -274,6 +274,7 @@ class PulsarPropertiesMapperTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void customizeConcurrentPulsarListenerContainerFactory() {
 		PulsarProperties properties = new PulsarProperties();
 		properties.getListener().setConcurrency(10);
