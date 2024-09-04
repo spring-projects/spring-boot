@@ -20,7 +20,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for {
 - xref:actuator/metrics.adoc#actuator.metrics.export.signalfx[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.simple[] (in-memory)
 - xref:actuator/metrics.adoc#actuator.metrics.export.stackdriver[]
-- xref:actuator/metrics.adoc#actuator.metrics.export.statsd[D]
+- xref:actuator/metrics.adoc#actuator.metrics.export.statsd[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.wavefront[]
 
 TIP: To learn more about Micrometer's capabilities, see its {url-micrometer-docs}[reference documentation], in particular the {url-micrometer-docs-concepts}[concepts section].
