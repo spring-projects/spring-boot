@@ -85,7 +85,7 @@ NOTE: There are several ways to support https://opentelemetry.io/[OpenTelemetry]
 You can use the https://opentelemetry.io/docs/zero-code/java/agent/[OpenTelemetry Java Agent] or the https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/[OpenTelemetry Spring Boot Starter],
 which are supported by the OTel community; the metrics and traces use the semantic conventions defined by OTel libraries.
 This documentation describes OpenTelemetry as officially supported by the Spring team, using Micrometer and the OTLP exporter;
-the metrics and traces use the semantic conventions described in the Spring projects documentation, such as {spring-framework-docs}/integration/observability.html[Spring Framework].
+the metrics and traces use the semantic conventions described in the Spring projects documentation, such as {url-spring-framework-docs}/integration/observability.html[Spring Framework].
 
 Spring Boot's actuator module includes basic support for OpenTelemetry.
 
