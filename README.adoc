@@ -185,7 +185,6 @@ The https://spring.io/[spring.io] site contains several guides that show how to 
 
 * https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot] is an introductory guide that shows you how to create an application, run it, and add some management services.
 * https://spring.io/guides/gs/actuator-service/[Building a RESTful Web Service with Spring Boot Actuator] is a guide to creating a REST web service and also shows how the server can be configured.
-* https://spring.io/guides/gs/convert-jar-to-war/[Converting a Spring Boot JAR Application to a WAR] shows you how to run applications in a web server as a WAR file.
 
 
 
