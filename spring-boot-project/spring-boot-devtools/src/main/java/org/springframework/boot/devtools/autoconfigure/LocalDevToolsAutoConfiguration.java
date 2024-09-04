@@ -99,9 +99,8 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		FileSystemWatcher fileSystemWatcher(DevToolsProperties properties) {
-			return new FileSystemWatcher(true, properties.getLivereload().getPollInterval(),
-					properties.getLivereload().getQuietPeriod());
+		FileSystemWatcher fileSystemWatcher(DevToolsProperties properties, RestartConfiguration restartConfiguration) {
+			return restartConfiguration.newFileSystemWatcher();
 		}
 
 	}
