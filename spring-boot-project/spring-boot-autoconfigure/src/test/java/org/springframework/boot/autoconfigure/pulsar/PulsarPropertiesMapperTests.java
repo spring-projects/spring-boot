@@ -41,7 +41,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Failover.BackupCluster;
-import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
@@ -264,6 +263,7 @@ class PulsarPropertiesMapperTests {
 		properties.getConsumer().getSubscription().setType(SubscriptionType.Shared);
 		properties.getConsumer().getSubscription().setName("my-subscription");
 		properties.getListener().setSchemaType(SchemaType.AVRO);
+		properties.getListener().setConcurrency(10);
 		properties.getListener().setObservationEnabled(true);
 		properties.getTransaction().setEnabled(true);
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties("my-topic-pattern");
@@ -271,20 +271,9 @@ class PulsarPropertiesMapperTests {
 		assertThat(containerProperties.getSubscriptionType()).isEqualTo(SubscriptionType.Shared);
 		assertThat(containerProperties.getSubscriptionName()).isEqualTo("my-subscription");
 		assertThat(containerProperties.getSchemaType()).isEqualTo(SchemaType.AVRO);
+		assertThat(containerProperties.getConcurrency()).isEqualTo(10);
 		assertThat(containerProperties.isObservationEnabled()).isTrue();
 		assertThat(containerProperties.transactions().isEnabled()).isTrue();
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void customizeConcurrentPulsarListenerContainerFactory() {
-		PulsarProperties properties = new PulsarProperties();
-		properties.getListener().setConcurrency(10);
-		ConcurrentPulsarListenerContainerFactory<?> listenerContainerFactory = mock(
-				ConcurrentPulsarListenerContainerFactory.class);
-		new PulsarPropertiesMapper(properties)
-			.customizeConcurrentPulsarListenerContainerFactory(listenerContainerFactory);
-		then(listenerContainerFactory).should().setConcurrency(10);
 	}
 
 	@Test
