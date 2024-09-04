@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,12 +58,10 @@ class JksSslStoreBundleTests {
 	}
 
 	@Test
-	void whenTypePKCS11AndLocationThrowsException() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("PKCS11", null, "test.jks", null);
-			JksSslStoreDetails trustStoreDetails = null;
-			new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
-		})
+	void whenTypePKCS11AndLocationGetKeyStoreThrowsException() {
+		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails("PKCS11", null, "test.jks", null);
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getKeyStore)
 			.withMessageContaining(
 					"Unable to create key store: Location is 'test.jks', but must be empty or null for PKCS11 hardware key stores");
 	}
@@ -104,22 +102,28 @@ class JksSslStoreBundleTests {
 
 	@Test
 	void whenHasKeyStoreProvider() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
-					"classpath:test.jks", "secret");
-			JksSslStoreDetails trustStoreDetails = null;
-			new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
-		}).withMessageContaining("com.example.KeyStoreProvider");
+		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
+				"classpath:test.jks", "secret");
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(keyStoreDetails, null);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getKeyStore)
+			.withMessageContaining("com.example.KeyStoreProvider");
 	}
 
 	@Test
 	void whenHasTrustStoreProvider() {
-		assertThatIllegalStateException().isThrownBy(() -> {
-			JksSslStoreDetails keyStoreDetails = null;
-			JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
-					"classpath:test.jks", "secret");
-			new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
-		}).withMessageContaining("com.example.KeyStoreProvider");
+		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(null, "com.example.KeyStoreProvider",
+				"classpath:test.jks", "secret");
+		JksSslStoreBundle jksSslStoreBundle = new JksSslStoreBundle(null, trustStoreDetails);
+		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getTrustStore)
+			.withMessageContaining("com.example.KeyStoreProvider");
+	}
+
+	@Test
+	void storeCreationIsLazy() {
+		JksSslStoreDetails details = new JksSslStoreDetails(null, null, "does-not-exist", null);
+		JksSslStoreBundle bundle = new JksSslStoreBundle(details, details);
+		assertThatIllegalStateException().isThrownBy(bundle::getKeyStore);
+		assertThatIllegalStateException().isThrownBy(bundle::getTrustStore);
 	}
 
 	private Consumer<KeyStore> storeContainingCertAndKey(String keyAlias, String keyPassword) {
