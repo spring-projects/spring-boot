@@ -36,7 +36,8 @@ TIP: To "`reset`" the specific level of the logger (and use the default configur
 
 [[actuator.loggers.opentelemetry]]
 == OpenTelemetry
-By default, the OpenTelemetry SDK logs are not configured. You can provide the location of the OpenTelemetry logs endpoint to configure it:
+By default, logging via OpenTelemetry is not configured.
+You have to provide the location of the OpenTelemetry logs endpoint to configure it:
 
 [configprops,yaml]
 ----
@@ -46,8 +47,12 @@ management:
       endpoint: "https://otlp.example.com:4318/v1/logs"
 ----
 
-NOTE: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot, for more details, see the https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library[OpenTelemetry Logback appender] or https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library[OpenTelemetry Log4j2 appender] in the https://github.com/open-telemetry/opentelemetry-java-instrumentation[OpenTelemetry Java instrumentation GitHub repository]
+NOTE: The OpenTelemetry Logback appender and Log4j appender are not part of Spring Boot.
+For more details, see the https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library[OpenTelemetry Logback appender] or the https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library[OpenTelemetry Log4j2 appender] in the https://github.com/open-telemetry/opentelemetry-java-instrumentation[OpenTelemetry Java instrumentation GitHub repository].
 
-TIP: Ensure that you add the appender to your `logback.xml` or `logback-spring.xml` (or the equivalent configuration file for Log4j).
+TIP: You have to configure the appender in your `logback-spring.xml` or `log4j2-spring.xml` configuration to get OpenTelemetry logging working.
 
-TIP: The `OpenTelemetryAppender` requires access to an OpenTelemetry instance to function properly. This instance must be set programmatically during application startup by using an `ApplicationListener` for the `ApplicationReadyEvent`.
+The `OpenTelemetryAppender` for both Logback and Log4j requires access to an `OpenTelemetry` instance to function properly.
+This instance must be set programmatically during application startup, which can be done like this:
+
+include-code::OpenTelemetryAppenderInitializer[]
