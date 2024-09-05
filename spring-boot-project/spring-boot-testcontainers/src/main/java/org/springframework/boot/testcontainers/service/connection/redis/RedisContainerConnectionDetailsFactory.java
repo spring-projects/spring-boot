@@ -19,6 +19,7 @@ package org.springframework.boot.testcontainers.service.connection.redis;
 import java.util.List;
 
 import com.redis.testcontainers.RedisContainer;
+import com.redis.testcontainers.RedisStackContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
@@ -53,7 +54,8 @@ class RedisContainerConnectionDetailsFactory
 	protected boolean sourceAccepts(ContainerConnectionSource<Container<?>> source, Class<?> requiredContainerType,
 			Class<?> requiredConnectionDetailsType) {
 		return super.sourceAccepts(source, requiredContainerType, requiredConnectionDetailsType)
-				|| source.accepts(ANY_CONNECTION_NAME, RedisContainer.class, requiredConnectionDetailsType);
+				|| source.accepts(ANY_CONNECTION_NAME, RedisContainer.class, requiredConnectionDetailsType)
+				|| source.accepts(ANY_CONNECTION_NAME, RedisStackContainer.class, requiredConnectionDetailsType);
 	}
 
 	@Override

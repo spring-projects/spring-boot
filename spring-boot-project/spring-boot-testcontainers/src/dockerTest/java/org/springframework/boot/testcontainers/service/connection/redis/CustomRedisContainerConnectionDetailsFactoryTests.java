@@ -19,6 +19,7 @@ package org.springframework.boot.testcontainers.service.connection.redis;
 import java.util.Map;
 
 import com.redis.testcontainers.RedisContainer;
+import com.redis.testcontainers.RedisStackContainer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
@@ -32,7 +33,7 @@ import org.springframework.core.annotation.MergedAnnotation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test for {@link RedisContainerConnectionDetailsFactory} when using a custom contain
+ * Test for {@link RedisContainerConnectionDetailsFactory} when using a custom container
  * without "redis" as the name.
  *
  * @author Phillip Webb
@@ -46,6 +47,17 @@ class CustomRedisContainerConnectionDetailsFactoryTests {
 				Map.of("value", ""));
 		ContainerConnectionSource<RedisContainer> source = TestContainerConnectionSource.create("test", null,
 				RedisContainer.class, "mycustomimage", annotation, null);
+		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails(source, true);
+		assertThat(connectionDetails.get(RedisConnectionDetails.class)).isNotNull();
+	}
+
+	@Test
+	void getConnectionDetailsWhenRedisStackContainerWithCustomName() {
+		ConnectionDetailsFactories factories = new ConnectionDetailsFactories();
+		MergedAnnotation<ServiceConnection> annotation = MergedAnnotation.of(ServiceConnection.class,
+				Map.of("value", ""));
+		ContainerConnectionSource<RedisStackContainer> source = TestContainerConnectionSource.create("test", null,
+				RedisStackContainer.class, "mycustomimage", annotation, null);
 		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails(source, true);
 		assertThat(connectionDetails.get(RedisConnectionDetails.class)).isNotNull();
 	}
