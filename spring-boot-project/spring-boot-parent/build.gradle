@@ -159,6 +159,13 @@ bom {
 			]
 		}
 	}
+	library("OpenTelemetry Logback Appender", "2.7.0-alpha") {
+		group("io.opentelemetry.instrumentation") {
+			modules = [
+				"opentelemetry-logback-appender-1.0"
+			]
+		}
+	}
 	library("Plexus Build API", "0.0.7") {
 		group("org.sonatype.plexus") {
 			modules = [

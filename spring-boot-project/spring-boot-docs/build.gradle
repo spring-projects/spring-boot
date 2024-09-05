@@ -83,6 +83,7 @@ dependencies {
 	implementation("io.micrometer:micrometer-tracing")
 	implementation("io.micrometer:micrometer-registry-graphite")
 	implementation("io.micrometer:micrometer-registry-jmx")
+	implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0")
 	implementation("io.projectreactor.netty:reactor-netty-http")
 	implementation("io.undertow:undertow-core")
 	implementation("jakarta.annotation:jakarta.annotation-api")
