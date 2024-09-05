@@ -69,7 +69,6 @@ import org.springframework.pulsar.transaction.PulsarTransactionManager;
  * @author Alexander Preuß
  * @author Phillip Webb
  * @author Jonas Geiregat
- * @author Vedran Pavic
  * @since 3.2.0
  */
 @AutoConfiguration
@@ -188,10 +187,7 @@ public class PulsarAutoConfiguration {
 		}
 		pulsarTransactionManager.ifUnique(containerProperties.transactions()::setTransactionManager);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
-		ConcurrentPulsarListenerContainerFactory<Object> listenerContainerFactory = new ConcurrentPulsarListenerContainerFactory<>(
-				pulsarConsumerFactory, containerProperties);
-		this.propertiesMapper.customizeConcurrentPulsarListenerContainerFactory(listenerContainerFactory);
-		return listenerContainerFactory;
+		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
 	}
 
 	@Bean
