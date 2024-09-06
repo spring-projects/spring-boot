@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -99,7 +100,14 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		FileSystemWatcher fileSystemWatcher(DevToolsProperties properties, RestartConfiguration restartConfiguration) {
+		@ConditionalOnMissingBean(RestartConfiguration.class)
+		FileSystemWatcher newFileSystemWatcher(DevToolsProperties properties) {
+			return new FileSystemWatcher(true, properties.getLivereload().getPollInterval(), properties.getLivereload().getQuietPeriod());
+		}
+
+		@Bean
+		@ConditionalOnBean(RestartConfiguration.class)
+		FileSystemWatcher fileSystemWatcher(RestartConfiguration restartConfiguration) {
 			return restartConfiguration.newFileSystemWatcher();
 		}
 
