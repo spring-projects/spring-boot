@@ -102,7 +102,8 @@ public class LocalDevToolsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(RestartConfiguration.class)
 		FileSystemWatcher newFileSystemWatcher(DevToolsProperties properties) {
-			return new FileSystemWatcher(true, properties.getLivereload().getPollInterval(), properties.getLivereload().getQuietPeriod());
+			return new FileSystemWatcher(true, properties.getLivereload().getPollInterval(),
+					properties.getLivereload().getQuietPeriod());
 		}
 
 		@Bean
