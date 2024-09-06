@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,16 @@ final class LoadedPemSslStore implements PemSslStore {
 	@Override
 	public PrivateKey privateKey() {
 		return this.privateKeySupplier.get();
+	}
+
+	@Override
+	public PemSslStore withAlias(String alias) {
+		return new LoadedPemSslStore(this.details.withAlias(alias));
+	}
+
+	@Override
+	public PemSslStore withPassword(String password) {
+		return new LoadedPemSslStore(this.details.withPassword(password));
 	}
 
 }

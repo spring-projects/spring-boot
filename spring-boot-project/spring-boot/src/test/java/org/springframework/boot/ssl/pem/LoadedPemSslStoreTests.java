@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,22 @@ class LoadedPemSslStoreTests {
 			.withPrivateKey("classpath:missing-test-key.pem");
 		LoadedPemSslStore store = new LoadedPemSslStore(details);
 		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(store::privateKey);
+	}
+
+	@Test
+	void withAliasIsLazy() {
+		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
+			.withPrivateKey("classpath:test-key.pem");
+		PemSslStore store = new LoadedPemSslStore(details).withAlias("alias");
+		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(store::certificates);
+	}
+
+	@Test
+	void withPasswordIsLazy() {
+		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
+			.withPrivateKey("classpath:test-key.pem");
+		PemSslStore store = new LoadedPemSslStore(details).withPassword("password");
+		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(store::certificates);
 	}
 
 }
