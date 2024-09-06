@@ -172,7 +172,7 @@ class OtlpAutoConfigurationTests {
 
 		@Bean
 		OtlpTracingConnectionDetails otlpTracingConnectionDetails() {
-			return () -> "http://localhost:12345/v1/traces";
+			return (transport) -> "http://localhost:12345/v1/traces";
 		}
 
 	}

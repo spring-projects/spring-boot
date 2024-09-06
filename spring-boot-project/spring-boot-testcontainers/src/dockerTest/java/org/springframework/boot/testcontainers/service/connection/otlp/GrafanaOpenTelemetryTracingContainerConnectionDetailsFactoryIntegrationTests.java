@@ -22,6 +22,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -50,7 +51,10 @@ class GrafanaOpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTes
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {
-		assertThat(this.connectionDetails.getUrl()).isEqualTo("%s/v1/traces".formatted(container.getOtlpHttpUrl()));
+		assertThat(this.connectionDetails.getUrl(Transport.HTTP))
+			.isEqualTo("%s/v1/traces".formatted(container.getOtlpHttpUrl()));
+		assertThat(this.connectionDetails.getUrl(Transport.GRPC))
+			.isEqualTo("%s/v1/traces".formatted(container.getOtlpGrpcUrl()));
 	}
 
 	@Configuration(proxyBeanMethods = false)

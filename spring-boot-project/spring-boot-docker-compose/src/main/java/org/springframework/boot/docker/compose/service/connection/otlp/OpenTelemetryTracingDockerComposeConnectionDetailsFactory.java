@@ -16,6 +16,7 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -26,6 +27,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * {@link OtlpTracingConnectionDetails} for an OTLP service.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpTracingConnectionDetails> {
@@ -33,7 +35,9 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 	private static final String[] OPENTELEMETRY_IMAGE_NAMES = { "otel/opentelemetry-collector-contrib",
 			"grafana/otel-lgtm" };
 
-	private static final int OTLP_PORT = 4318;
+	private static final int OTLP_GRPC_PORT = 4317;
+
+	private static final int OTLP_HTTP_PORT = 4318;
 
 	OpenTelemetryTracingDockerComposeConnectionDetailsFactory() {
 		super(OPENTELEMETRY_IMAGE_NAMES,
@@ -50,17 +54,24 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final int port;
+		private final int grpcPort;
+
+		private final int httPort;
 
 		private OpenTelemetryTracingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.port = source.ports().get(OTLP_PORT);
+			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
+			this.httPort = source.ports().get(OTLP_HTTP_PORT);
 		}
 
 		@Override
-		public String getUrl() {
-			return "http://%s:%d/v1/traces".formatted(this.host, this.port);
+		public String getUrl(Transport transport) {
+			int port = switch (transport) {
+				case HTTP -> this.httPort;
+				case GRPC -> this.grpcPort;
+			};
+			return "http://%s:%d/v1/traces".formatted(this.host, port);
 		}
 
 	}

@@ -18,6 +18,7 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 
 import org.testcontainers.grafana.LgtmStackContainer;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
@@ -52,8 +53,12 @@ class GrafanaOpenTelemetryTracingContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getUrl() {
-			return "%s/v1/traces".formatted(getContainer().getOtlpHttpUrl());
+		public String getUrl(Transport transport) {
+			String url = switch (transport) {
+				case HTTP -> getContainer().getOtlpHttpUrl();
+				case GRPC -> getContainer().getOtlpGrpcUrl();
+			};
+			return "%s/v1/traces".formatted(url);
 		}
 
 	}
