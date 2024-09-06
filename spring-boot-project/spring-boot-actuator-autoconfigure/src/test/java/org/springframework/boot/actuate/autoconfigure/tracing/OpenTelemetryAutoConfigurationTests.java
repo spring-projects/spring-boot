@@ -53,7 +53,6 @@ import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
-import io.opentelemetry.semconv.ResourceAttributes;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -195,7 +194,7 @@ class OpenTelemetryAutoConfigurationTests {
 				exporter.await(Duration.ofSeconds(10));
 				SpanData spanData = exporter.getExportedSpans().get(0);
 				Map<AttributeKey<?>, Object> expectedAttributes = Resource.getDefault()
-					.merge(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, "unknown_service")))
+					.merge(Resource.create(Attributes.of(AttributeKey.stringKey("service.name"), "unknown_service")))
 					.getAttributes()
 					.asMap();
 				assertThat(spanData.getResource().getAttributes().asMap()).isEqualTo(expectedAttributes);
