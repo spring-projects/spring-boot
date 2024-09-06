@@ -110,16 +110,7 @@ class BufferedStartupStep implements StartupStep {
 		return this.ended.get();
 	}
 
-	static class DefaultTag implements Tag {
-
-		private final String key;
-
-		private final String value;
-
-		DefaultTag(String key, String value) {
-			this.key = key;
-			this.value = value;
-		}
+	record DefaultTag(String key, String value) implements Tag {
 
 		@Override
 		public String getKey() {
@@ -130,7 +121,5 @@ class BufferedStartupStep implements StartupStep {
 		public String getValue() {
 			return this.value;
 		}
-
 	}
-
 }
