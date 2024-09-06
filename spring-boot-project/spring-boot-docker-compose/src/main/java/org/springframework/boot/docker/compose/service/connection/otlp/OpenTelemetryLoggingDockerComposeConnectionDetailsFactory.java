@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
 import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -30,7 +31,9 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 class OpenTelemetryLoggingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpLoggingConnectionDetails> {
 
-	private static final int OTLP_PORT = 4318;
+	private static final int OTLP_GRPC_PORT = 4317;
+
+	private static final int OTLP_HTTP_PORT = 4318;
 
 	OpenTelemetryLoggingDockerComposeConnectionDetailsFactory() {
 		super("otel/opentelemetry-collector-contrib",
@@ -47,17 +50,24 @@ class OpenTelemetryLoggingDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final int port;
+		private final int grpcPort;
+
+		private final int httPort;
 
 		private OpenTelemetryLoggingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.port = source.ports().get(OTLP_PORT);
+			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
+			this.httPort = source.ports().get(OTLP_HTTP_PORT);
 		}
 
 		@Override
-		public String getUrl() {
-			return "http://%s:%d/v1/logs".formatted(this.host, this.port);
+		public String getUrl(Transport transport) {
+			int port = switch (transport) {
+				case HTTP -> this.httPort;
+				case GRPC -> this.grpcPort;
+			};
+			return "http://%s:%d/v1/logs".formatted(this.host, port);
 		}
 
 	}

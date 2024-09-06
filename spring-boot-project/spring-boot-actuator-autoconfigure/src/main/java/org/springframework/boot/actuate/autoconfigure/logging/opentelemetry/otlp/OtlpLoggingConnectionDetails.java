@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
@@ -28,8 +29,9 @@ public interface OtlpLoggingConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Address to where logs will be published.
+	 * @param transport the transport to use
 	 * @return the address to where logs will be published
 	 */
-	String getUrl();
+	String getUrl(Transport transport);
 
 }

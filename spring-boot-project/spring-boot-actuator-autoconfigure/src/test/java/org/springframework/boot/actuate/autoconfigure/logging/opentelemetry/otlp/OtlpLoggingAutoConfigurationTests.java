@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -57,7 +58,7 @@ class OtlpLoggingAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
 				OtlpLoggingConnectionDetails connectionDetails = context.getBean(OtlpLoggingConnectionDetails.class);
-				assertThat(connectionDetails.getUrl()).isEqualTo("http://localhost:4318/v1/logs");
+				assertThat(connectionDetails.getUrl(Transport.HTTP)).isEqualTo("http://localhost:4318/v1/logs");
 				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class)
 					.hasSingleBean(LogRecordExporter.class);
 			});
@@ -124,7 +125,7 @@ class OtlpLoggingAutoConfigurationTests {
 
 		@Bean
 		public OtlpLoggingConnectionDetails customOtlpLogsConnectionDetails() {
-			return () -> "https://otel.example.com/v1/logs";
+			return (transport) -> "https://otel.example.com/v1/logs";
 		}
 
 	}

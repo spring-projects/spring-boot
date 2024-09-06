@@ -21,6 +21,7 @@ import java.util.Locale;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporterBuilder;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -59,7 +60,7 @@ final class OtlpLoggingConfigurations {
 			}
 
 			@Override
-			public String getUrl() {
+			public String getUrl(Transport transport) {
 				return this.properties.getEndpoint();
 			}
 
@@ -77,7 +78,7 @@ final class OtlpLoggingConfigurations {
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpLoggingConnectionDetails connectionDetails) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
-				.setEndpoint(connectionDetails.getUrl())
+				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setCompression(properties.getCompression().name().toLowerCase(Locale.US))
 				.setTimeout(properties.getTimeout());
 			properties.getHeaders().forEach(builder::addHeader);

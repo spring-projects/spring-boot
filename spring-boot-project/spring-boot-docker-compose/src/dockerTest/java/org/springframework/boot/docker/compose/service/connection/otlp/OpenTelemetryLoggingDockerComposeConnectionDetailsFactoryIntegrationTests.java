@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
 import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
 
@@ -32,7 +33,8 @@ class OpenTelemetryLoggingDockerComposeConnectionDetailsFactoryIntegrationTests 
 
 	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OPENTELEMETRY)
 	void runCreatesConnectionDetails(OtlpLoggingConnectionDetails connectionDetails) {
-		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/logs");
+		assertThat(connectionDetails.getUrl(Transport.HTTP)).startsWith("http://").endsWith("/v1/logs");
+		assertThat(connectionDetails.getUrl(Transport.GRPC)).startsWith("http://").endsWith("/v1/logs");
 	}
 
 }

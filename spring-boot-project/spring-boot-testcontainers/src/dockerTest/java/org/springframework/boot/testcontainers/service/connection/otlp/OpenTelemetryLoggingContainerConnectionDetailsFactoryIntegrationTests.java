@@ -23,6 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -43,15 +44,18 @@ class OpenTelemetryLoggingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer().withExposedPorts(4318);
+	static final GenericContainer<?> container = TestImage.OPENTELEMETRY.genericContainer()
+		.withExposedPorts(4317, 4318);
 
 	@Autowired
 	private OtlpLoggingConnectionDetails connectionDetails;
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {
-		assertThat(this.connectionDetails.getUrl())
+		assertThat(this.connectionDetails.getUrl(Transport.HTTP))
 			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4318) + "/v1/logs");
+		assertThat(this.connectionDetails.getUrl(Transport.GRPC))
+			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4317) + "/v1/logs");
 	}
 
 	@Configuration(proxyBeanMethods = false)
