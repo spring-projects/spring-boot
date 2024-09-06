@@ -29,7 +29,7 @@ import java.time.Duration;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier.Factory;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.util.MultiValueMap;
 
 /**
  * A {@link HttpSender} which uses the JDK {@link HttpClient} for HTTP communication.
@@ -50,7 +50,7 @@ class ZipkinHttpClientSender extends HttpSender {
 	}
 
 	@Override
-	void postSpans(URI endpoint, HttpHeaders headers, byte[] body) throws IOException {
+	void postSpans(URI endpoint, MultiValueMap<String, String> headers, byte[] body) throws IOException {
 		Builder request = HttpRequest.newBuilder()
 			.POST(BodyPublishers.ofByteArray(body))
 			.uri(endpoint)

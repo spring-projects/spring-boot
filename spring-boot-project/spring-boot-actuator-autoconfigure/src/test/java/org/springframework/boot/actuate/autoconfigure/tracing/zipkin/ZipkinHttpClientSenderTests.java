@@ -35,6 +35,8 @@ import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.HttpEndpointSuppliers;
 
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIOException;
@@ -44,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatIOException;
  *
  * @author Moritz Halbritter
  */
+@ClassPathExclusions("spring-web-*.jar")
 class ZipkinHttpClientSenderTests extends ZipkinHttpSenderTests {
 
 	private MockWebServer mockBackEnd;
