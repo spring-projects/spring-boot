@@ -16,8 +16,6 @@
 
 package org.springframework.boot.ansi;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -48,16 +46,15 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 	private static final Iterable<Mapping> MAPPINGS;
 
 	static {
-		List<Mapping> mappings = new ArrayList<>();
-		mappings.add(new EnumMapping<>("AnsiStyle.", AnsiStyle.class));
-		mappings.add(new EnumMapping<>("AnsiColor.", AnsiColor.class));
-		mappings.add(new Ansi8BitColorMapping("AnsiColor.", Ansi8BitColor::foreground));
-		mappings.add(new EnumMapping<>("AnsiBackground.", AnsiBackground.class));
-		mappings.add(new Ansi8BitColorMapping("AnsiBackground.", Ansi8BitColor::background));
-		mappings.add(new EnumMapping<>("Ansi.", AnsiStyle.class));
-		mappings.add(new EnumMapping<>("Ansi.", AnsiColor.class));
-		mappings.add(new EnumMapping<>("Ansi.BG_", AnsiBackground.class));
-		MAPPINGS = Collections.unmodifiableList(mappings);
+		MAPPINGS = List.of(
+				new EnumMapping<>("AnsiStyle.", AnsiStyle.class),
+				new EnumMapping<>("AnsiColor.", AnsiColor.class),
+				new Ansi8BitColorMapping("AnsiColor.", Ansi8BitColor::foreground),
+				new EnumMapping<>("AnsiBackground.", AnsiBackground.class),
+				new Ansi8BitColorMapping("AnsiBackground.", Ansi8BitColor::background),
+				new EnumMapping<>("Ansi.", AnsiStyle.class),
+				new EnumMapping<>("Ansi.", AnsiColor.class),
+				new EnumMapping<>("Ansi.BG_", AnsiBackground.class));
 	}
 
 	private final boolean encode;
