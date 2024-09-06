@@ -2059,10 +2059,6 @@
       "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
     },
     {
-      "name": "management.otlp.tracing.transport",
-      "defaultValue": "http"
-    },
-    {
       "name": "management.server.add-application-context-header",
       "type": "java.lang.Boolean",
       "description": "Add the \"X-Application-Context\" HTTP header in each response.",

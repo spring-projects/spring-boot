@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Compression;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -80,20 +81,6 @@ public class OtlpLoggingProperties {
 
 	public Map<String, String> getHeaders() {
 		return this.headers;
-	}
-
-	public enum Compression {
-
-		/**
-		 * Gzip compression.
-		 */
-		GZIP,
-
-		/**
-		 * No compression.
-		 */
-		NONE
-
 	}
 
 }

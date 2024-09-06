@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Compression;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -97,34 +99,6 @@ public class OtlpProperties {
 
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
-	}
-
-	public enum Transport {
-
-		/**
-		 * HTTP transport.
-		 */
-		HTTP,
-
-		/**
-		 * gRPC transport.
-		 */
-		GRPC
-
-	}
-
-	public enum Compression {
-
-		/**
-		 * Gzip compression.
-		 */
-		GZIP,
-
-		/**
-		 * No compression.
-		 */
-		NONE
-
 	}
 
 }
