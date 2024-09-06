@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.SortHandlerMethodArgumentResolver;
@@ -121,22 +119,14 @@ class SpringDataWebAutoConfigurationTests {
 
 	@Test
 	void customizePageSerializationModeViaCustomBean() {
-		this.contextRunner.withUserConfiguration(AppConfiguration.class)
-			.withPropertyValues("spring.data.web.pageable.serialization-mode=VIA_DTO")
+		this.contextRunner
+			.withBean("customSpringDataWebSettings", SpringDataWebSettings.class,
+					() -> new SpringDataWebSettings(PageSerializationMode.VIA_DTO))
 			.run((context) -> {
+				assertThat(context).doesNotHaveBean("springDataWebSettings");
 				SpringDataWebSettings springDataWebSettings = context.getBean(SpringDataWebSettings.class);
-				assertThat(springDataWebSettings.pageSerializationMode()).isEqualTo(PageSerializationMode.DIRECT);
+				assertThat(springDataWebSettings.pageSerializationMode()).isEqualTo(PageSerializationMode.VIA_DTO);
 			});
-	}
-
-	@Configuration
-	static class AppConfiguration {
-
-		@Bean
-		SpringDataWebSettings springDataWebSettings() {
-			return new SpringDataWebSettings(PageSerializationMode.DIRECT);
-		}
-
 	}
 
 }
