@@ -293,10 +293,10 @@ spring:
       matching-strategy: "ant-path-matcher"
 ----
 
-By default, Spring MVC will send a 404 Not Found error response if a handler is not found for a request.
-To have a `NoHandlerFoundException` thrown instead, set configprop:spring.mvc.throw-exception-if-no-handler-found to `true`.
+Spring MVC will throw a `NoHandlerFoundException` if a handler is not found for a request.
 Note that, by default, the xref:web/servlet.adoc#web.servlet.spring-mvc.static-content[serving of static content] is mapped to `+/**+` and will, therefore, provide a handler for all requests.
-For a `NoHandlerFoundException` to be thrown, you must also set configprop:spring.mvc.static-path-pattern[] to a more specific value such as `/resources/**` or set configprop:spring.web.resources.add-mappings[] to `false` to disable serving of static content entirely.
+If no static content is available, `ResourceHttpRequestHandler` will throw a `NoResourceFoundException`.
+For a `NoHandlerFoundException` to be thrown, set configprop:spring.mvc.static-path-pattern[] to a more specific value such as `/resources/**` or set configprop:spring.web.resources.add-mappings[] to `false` to disable serving of static content entirely.
 
 
 
