@@ -27,6 +27,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link PemSslStoreBundle}.
@@ -201,6 +205,18 @@ class PemSslStoreBundleTests {
 		PemSslStoreBundle bundle = new PemSslStoreBundle(pemSslStore, pemSslStore);
 		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("ssl"));
 		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("ssl"));
+	}
+
+	@Test
+	void storeCreationIsLazy() {
+		PemSslStore pemSslStore = mock(PemSslStore.class);
+		PemSslStoreBundle bundle = new PemSslStoreBundle(pemSslStore, pemSslStore);
+		given(pemSslStore.certificates()).willReturn(PemContent.of(CERTIFICATE).getCertificates());
+		then(pemSslStore).shouldHaveNoInteractions();
+		bundle.getKeyStore();
+		then(pemSslStore).should().certificates();
+		bundle.getTrustStore();
+		then(pemSslStore).should(times(2)).certificates();
 	}
 
 	private Consumer<KeyStore> storeContainingCert(String keyAlias) {

@@ -24,11 +24,13 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link SslStoreBundle} backed by PEM-encoded certificates and private keys.
@@ -42,9 +44,9 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private static final String DEFAULT_ALIAS = "ssl";
 
-	private final KeyStore keyStore;
+	private final Supplier<KeyStore> keyStore;
 
-	private final KeyStore trustStore;
+	private final Supplier<KeyStore> trustStore;
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
@@ -62,13 +64,13 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @since 3.2.0
 	 */
 	public PemSslStoreBundle(PemSslStore pemKeyStore, PemSslStore pemTrustStore) {
-		this.keyStore = createKeyStore("key", pemKeyStore);
-		this.trustStore = createKeyStore("trust", pemTrustStore);
+		this.keyStore = SingletonSupplier.of(() -> createKeyStore("key", pemKeyStore));
+		this.trustStore = SingletonSupplier.of(() -> createKeyStore("trust", pemTrustStore));
 	}
 
 	@Override
 	public KeyStore getKeyStore() {
-		return this.keyStore;
+		return this.keyStore.get();
 	}
 
 	@Override
@@ -78,7 +80,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	@Override
 	public KeyStore getTrustStore() {
-		return this.trustStore;
+		return this.trustStore.get();
 	}
 
 	private static KeyStore createKeyStore(String name, PemSslStore pemSslStore) {
@@ -86,10 +88,10 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			return null;
 		}
 		try {
-			Assert.notEmpty(pemSslStore.certificates(), "Certificates must not be empty");
+			List<X509Certificate> certificates = pemSslStore.certificates();
+			Assert.notEmpty(certificates, "Certificates must not be empty");
 			String alias = (pemSslStore.alias() != null) ? pemSslStore.alias() : DEFAULT_ALIAS;
 			KeyStore store = createKeyStore(pemSslStore.type());
-			List<X509Certificate> certificates = pemSslStore.certificates();
 			PrivateKey privateKey = pemSslStore.privateKey();
 			if (privateKey != null) {
 				addPrivateKey(store, privateKey, alias, pemSslStore.password(), certificates);
@@ -129,9 +131,11 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
-		creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+		KeyStore keyStore = this.keyStore.get();
+		KeyStore trustStore = this.trustStore.get();
+		creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");
 		creator.append("keyStorePassword", null);
-		creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+		creator.append("trustStore.type", (trustStore != null) ? trustStore.getType() : "none");
 		return creator.toString();
 	}
 

@@ -23,6 +23,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+import java.util.function.Supplier;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslStoreBundle;
@@ -30,6 +31,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link SslStoreBundle} backed by a Java keystore.
@@ -43,9 +45,9 @@ public class JksSslStoreBundle implements SslStoreBundle {
 
 	private final JksSslStoreDetails keyStoreDetails;
 
-	private final KeyStore keyStore;
+	private final Supplier<KeyStore> keyStore;
 
-	private final KeyStore trustStore;
+	private final Supplier<KeyStore> trustStore;
 
 	/**
 	 * Create a new {@link JksSslStoreBundle} instance.
@@ -54,13 +56,13 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 */
 	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails) {
 		this.keyStoreDetails = keyStoreDetails;
-		this.keyStore = createKeyStore("key", this.keyStoreDetails);
-		this.trustStore = createKeyStore("trust", trustStoreDetails);
+		this.keyStore = SingletonSupplier.of(() -> createKeyStore("key", this.keyStoreDetails));
+		this.trustStore = SingletonSupplier.of(() -> createKeyStore("trust", trustStoreDetails));
 	}
 
 	@Override
 	public KeyStore getKeyStore() {
-		return this.keyStore;
+		return this.keyStore.get();
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 
 	@Override
 	public KeyStore getTrustStore() {
-		return this.trustStore;
+		return this.trustStore.get();
 	}
 
 	private KeyStore createKeyStore(String name, JksSslStoreDetails details) {
@@ -127,10 +129,12 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	@Override
 	public String toString() {
 		ToStringCreator creator = new ToStringCreator(this);
-		creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+		KeyStore keyStore = this.keyStore.get();
+		creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");
 		String keyStorePassword = getKeyStorePassword();
 		creator.append("keyStorePassword", (keyStorePassword != null) ? "******" : null);
-		creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+		KeyStore trustStore = this.trustStore.get();
+		creator.append("trustStore.type", (trustStore != null) ? trustStore.getType() : "none");
 		return creator.toString();
 	}
 
