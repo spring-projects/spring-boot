@@ -35,7 +35,7 @@ public class OtlpLoggingProperties {
 	/**
 	 * URL to the OTel collector's HTTP API.
 	 */
-	private String endpoint = "http://localhost:4318/v1/logs";
+	private String endpoint;
 
 	/**
 	 * Call timeout for the OTel Collector to process an exported batch of data. This

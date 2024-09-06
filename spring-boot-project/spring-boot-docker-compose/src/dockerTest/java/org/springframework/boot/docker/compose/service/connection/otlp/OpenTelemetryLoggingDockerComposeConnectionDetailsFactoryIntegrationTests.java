@@ -32,7 +32,7 @@ class OpenTelemetryLoggingDockerComposeConnectionDetailsFactoryIntegrationTests 
 
 	@DockerComposeTest(composeFile = "otlp-compose.yaml", image = TestImage.OPENTELEMETRY)
 	void runCreatesConnectionDetails(OtlpLoggingConnectionDetails connectionDetails) {
-		assertThat(connectionDetails.getEndpoint()).startsWith("http://").endsWith("/v1/logs");
+		assertThat(connectionDetails.getUrl()).startsWith("http://").endsWith("/v1/logs");
 	}
 
 }

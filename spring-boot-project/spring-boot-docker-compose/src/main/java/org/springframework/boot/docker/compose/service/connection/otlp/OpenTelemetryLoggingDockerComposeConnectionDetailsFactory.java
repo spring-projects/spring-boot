@@ -56,7 +56,7 @@ class OpenTelemetryLoggingDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getEndpoint() {
+		public String getUrl() {
 			return "http://%s:%d/v1/logs".formatted(this.host, this.port);
 		}
 

@@ -54,7 +54,7 @@ class OpenTelemetryLoggingContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getEndpoint() {
+		public String getUrl() {
 			return "http://%s:%d/v1/logs".formatted(getContainer().getHost(), getContainer().getMappedPort(4318));
 		}
 
