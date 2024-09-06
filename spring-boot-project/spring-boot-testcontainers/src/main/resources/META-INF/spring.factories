@@ -25,6 +25,7 @@ org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerC
 org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelemetryMetricsContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.GrafanaOpenTelemetryTracingContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryLoggingContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryMetricsContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.otlp.OpenTelemetryTracingContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.pulsar.PulsarContainerConnectionDetailsFactory,\
