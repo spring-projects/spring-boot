@@ -22,7 +22,7 @@ import java.time.Duration;
 import zipkin2.reporter.Encoding;
 import zipkin2.reporter.HttpEndpointSupplier.Factory;
 
-import org.springframework.http.HttpHeaders;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -47,7 +47,7 @@ class ZipkinWebClientSender extends HttpSender {
 	}
 
 	@Override
-	void postSpans(URI endpoint, HttpHeaders headers, byte[] body) {
+	void postSpans(URI endpoint, MultiValueMap<String, String> headers, byte[] body) {
 		this.webClient.post()
 			.uri(endpoint)
 			.headers((h) -> h.addAll(headers))
