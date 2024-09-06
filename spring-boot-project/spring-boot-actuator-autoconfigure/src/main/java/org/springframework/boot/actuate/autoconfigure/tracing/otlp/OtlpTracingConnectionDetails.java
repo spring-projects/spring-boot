@@ -16,12 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
  * Details required to establish a connection to an OpenTelemetry service.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  * @since 3.2.0
  */
 public interface OtlpTracingConnectionDetails extends ConnectionDetails {
@@ -29,11 +31,19 @@ public interface OtlpTracingConnectionDetails extends ConnectionDetails {
 	/**
 	 * Address to where tracing will be published.
 	 * @return the address to where tracing will be published
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #getUrl(Transport)}
 	 */
-	String getUrl();
-
-	default String getGrpcEndpoint() {
-		return "http://localhost:4317/v1/traces";
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	default String getUrl() {
+		return getUrl(Transport.HTTP);
 	}
+
+	/**
+	 * Address to where tracing will be published.
+	 * @param transport the transport to use
+	 * @return the address to where tracing will be published
+	 * @since 3.4.0
+	 */
+	String getUrl(Transport transport);
 
 }

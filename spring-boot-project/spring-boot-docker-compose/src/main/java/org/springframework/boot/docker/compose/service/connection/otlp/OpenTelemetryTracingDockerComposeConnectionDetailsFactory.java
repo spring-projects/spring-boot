@@ -16,6 +16,7 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -26,6 +27,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * {@link OtlpTracingConnectionDetails} for an OTLP service.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpTracingConnectionDetails> {
@@ -64,13 +66,12 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 		}
 
 		@Override
-		public String getUrl() {
-			return "http://%s:%d/v1/traces".formatted(this.host, this.httPort);
-		}
-
-		@Override
-		public String getGrpcEndpoint() {
-			return "http://%s:%d/v1/traces".formatted(this.host, this.grpcPort);
+		public String getUrl(Transport transport) {
+			int port = switch (transport) {
+				case HTTP -> this.httPort;
+				case GRPC -> this.grpcPort;
+			};
+			return "http://%s:%d/v1/traces".formatted(this.host, port);
 		}
 
 	}

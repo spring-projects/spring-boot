@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
 /**
  * Configurations imported by {@link OtlpAutoConfiguration}.
@@ -61,12 +62,10 @@ class OtlpTracingConfigurations {
 			}
 
 			@Override
-			public String getUrl() {
-				return this.properties.getEndpoint();
-			}
-
-			@Override
-			public String getGrpcEndpoint() {
+			public String getUrl(Transport transport) {
+				Assert.state(transport == this.properties.getTransport(),
+						"Requested transport %s doesn't match configured transport %s".formatted(transport,
+								this.properties.getTransport()));
 				return this.properties.getEndpoint();
 			}
 
@@ -86,7 +85,7 @@ class OtlpTracingConfigurations {
 		OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
-				.setEndpoint(resolveEndpoint(properties.getTransport(), connectionDetails))
+				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
 				.setTimeout(properties.getTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase());
 			for (Entry<String, String> header : properties.getHeaders().entrySet()) {
@@ -100,17 +99,13 @@ class OtlpTracingConfigurations {
 		OtlpGrpcSpanExporter otlpGrpcSpanExporter(OtlpProperties properties,
 				OtlpTracingConnectionDetails connectionDetails) {
 			OtlpGrpcSpanExporterBuilder builder = OtlpGrpcSpanExporter.builder()
-				.setEndpoint(resolveEndpoint(properties.getTransport(), connectionDetails))
+				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
 				.setTimeout(properties.getTimeout())
 				.setCompression(properties.getCompression().name().toLowerCase());
 			for (Entry<String, String> header : properties.getHeaders().entrySet()) {
 				builder.addHeader(header.getKey(), header.getValue());
 			}
 			return builder.build();
-		}
-
-		private static String resolveEndpoint(Transport transport, OtlpTracingConnectionDetails connectionDetails) {
-			return (transport == Transport.HTTP) ? connectionDetails.getUrl() : connectionDetails.getGrpcEndpoint();
 		}
 
 	}

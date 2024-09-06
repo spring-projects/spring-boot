@@ -19,6 +19,7 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
@@ -58,15 +59,12 @@ class OpenTelemetryTracingContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getUrl() {
-			return "http://%s:%d/v1/traces".formatted(getContainer().getHost(),
-					getContainer().getMappedPort(OTLP_HTTP_PORT));
-		}
-
-		@Override
-		public String getGrpcEndpoint() {
-			return "http://%s:%d/v1/traces".formatted(getContainer().getHost(),
-					getContainer().getMappedPort(OTLP_GRPC_PORT));
+		public String getUrl(Transport transport) {
+			int port = switch (transport) {
+				case HTTP -> OTLP_HTTP_PORT;
+				case GRPC -> OTLP_GRPC_PORT;
+			};
+			return "http://%s:%d/v1/traces".formatted(getContainer().getHost(), getContainer().getMappedPort(port));
 		}
 
 	}

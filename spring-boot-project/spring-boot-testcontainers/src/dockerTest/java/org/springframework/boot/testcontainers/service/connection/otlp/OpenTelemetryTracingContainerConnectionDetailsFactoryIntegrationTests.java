@@ -22,6 +22,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -51,10 +52,10 @@ class OpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Test
 	void connectionCanBeMadeToOpenTelemetryContainer() {
-		assertThat(this.connectionDetails.getGrpcEndpoint())
-			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4317) + "/v1/traces");
-		assertThat(this.connectionDetails.getUrl())
+		assertThat(this.connectionDetails.getUrl(Transport.HTTP))
 			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4318) + "/v1/traces");
+		assertThat(this.connectionDetails.getUrl(Transport.GRPC))
+			.isEqualTo("http://" + container.getHost() + ":" + container.getMappedPort(4317) + "/v1/traces");
 	}
 
 	@Configuration(proxyBeanMethods = false)
