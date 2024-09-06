@@ -114,8 +114,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 
 [[features.kotlin.configuration-properties]]
 == @ConfigurationProperties
-
-`@ConfigurationProperties` when used in combination with xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.constructor-binding[constructor binding] supports classes with immutable `val` properties as shown in the following example:
+`@ConfigurationProperties` when used in combination with xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.constructor-binding[constructor binding] supports data classes with immutable `val` properties as shown in the following example:
 
 [source,kotlin]
 ----
@@ -131,6 +130,10 @@ data class KotlinExampleProperties(
 	)
 }
 ----
+
+Due to the limitations of their interoperability with Java, support for value classes is limited.
+In particular, relying upon a value class's default value will not work with configuration property binding.
+In such cases, a data class should be used instead.
 
 TIP: To generate xref:specification:configuration-metadata/annotation-processor.adoc[your own metadata] using the annotation processor, {url-kotlin-docs}/kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
 Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
