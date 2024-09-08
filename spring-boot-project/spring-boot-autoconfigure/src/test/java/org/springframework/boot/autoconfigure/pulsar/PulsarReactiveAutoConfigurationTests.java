@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -380,6 +381,36 @@ class PulsarReactiveAutoConfigurationTests {
 						.extracting(ReactivePulsarContainerProperties::getSchemaResolver)
 						.isSameAs(schemaResolver);
 				});
+		}
+
+		@Test
+		void whenHasUserDefinedFactoryCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(ListenerContainerFactoryCustomizersConfig.class)
+				.run((context) -> assertThat(context).getBean(DefaultReactivePulsarListenerContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.subscriptionName", ":bar:foo"));
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ListenerContainerFactoryCustomizersConfig {
+
+			@Bean
+			@Order(200)
+			DefaultReactivePulsarListenerContainerFactoryCustomizer customizerFoo() {
+				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":foo");
+			}
+
+			@Bean
+			@Order(100)
+			DefaultReactivePulsarListenerContainerFactoryCustomizer customizerBar() {
+				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":bar");
+			}
+
+			private void appendToSubscriptionName(DefaultReactivePulsarListenerContainerFactory<?> containerFactory,
+					String valueToAppend) {
+				String name = Objects.toString(containerFactory.getContainerProperties().getSubscriptionName(), "");
+				containerFactory.getContainerProperties().setSubscriptionName(name.concat(valueToAppend));
+			}
+
 		}
 
 	}

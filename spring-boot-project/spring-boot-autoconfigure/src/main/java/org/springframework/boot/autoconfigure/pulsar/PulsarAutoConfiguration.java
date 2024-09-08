@@ -178,6 +178,7 @@ public class PulsarAutoConfiguration {
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
 			TopicResolver topicResolver, ObjectProvider<PulsarAwareTransactionManager> pulsarTransactionManager,
+			ObjectProvider<ConcurrentPulsarListenerContainerFactoryCustomizer> customizersProvider,
 			Environment environment) {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
 		containerProperties.setSchemaResolver(schemaResolver);
@@ -187,7 +188,10 @@ public class PulsarAutoConfiguration {
 		}
 		pulsarTransactionManager.ifUnique(containerProperties.transactions()::setTransactionManager);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
-		return new ConcurrentPulsarListenerContainerFactory<>(pulsarConsumerFactory, containerProperties);
+		ConcurrentPulsarListenerContainerFactory<?> containerFactory = new ConcurrentPulsarListenerContainerFactory<>(
+				pulsarConsumerFactory, containerProperties);
+		customizersProvider.orderedStream().forEachOrdered((customizer) -> customizer.customize(containerFactory));
+		return containerFactory;
 	}
 
 	@Bean
@@ -215,14 +219,19 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
 	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(PulsarReaderFactory<?> pulsarReaderFactory,
-			SchemaResolver schemaResolver, Environment environment) {
+			SchemaResolver schemaResolver,
+			ObjectProvider<DefaultPulsarReaderContainerFactoryCustomizer> customizersProvider,
+			Environment environment) {
 		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
 		readerContainerProperties.setSchemaResolver(schemaResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
 			readerContainerProperties.setReaderTaskExecutor(new VirtualThreadTaskExecutor("pulsar-reader-"));
 		}
 		this.propertiesMapper.customizeReaderContainerProperties(readerContainerProperties);
-		return new DefaultPulsarReaderContainerFactory<>(pulsarReaderFactory, readerContainerProperties);
+		DefaultPulsarReaderContainerFactory<?> containerFactory = new DefaultPulsarReaderContainerFactory<>(
+				pulsarReaderFactory, readerContainerProperties);
+		customizersProvider.orderedStream().forEachOrdered((customizer) -> customizer.customize(containerFactory));
+		return containerFactory;
 	}
 
 	@Configuration(proxyBeanMethods = false)

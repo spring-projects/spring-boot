@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -585,6 +586,36 @@ class PulsarAutoConfigurationTests {
 			});
 		}
 
+		@Test
+		void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(ListenerContainerFactoryCustomizersConfig.class)
+				.run((context) -> assertThat(context).getBean(ConcurrentPulsarListenerContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.subscriptionName", ":bar:foo"));
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ListenerContainerFactoryCustomizersConfig {
+
+			@Bean
+			@Order(200)
+			ConcurrentPulsarListenerContainerFactoryCustomizer customizerFoo() {
+				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":foo");
+			}
+
+			@Bean
+			@Order(100)
+			ConcurrentPulsarListenerContainerFactoryCustomizer customizerBar() {
+				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":bar");
+			}
+
+			private void appendToSubscriptionName(ConcurrentPulsarListenerContainerFactory<?> containerFactory,
+					String valueToAppend) {
+				String name = Objects.toString(containerFactory.getContainerProperties().getSubscriptionName(), "");
+				containerFactory.getContainerProperties().setSubscriptionName(name.concat(valueToAppend));
+			}
+
+		}
+
 	}
 
 	@Nested
@@ -617,7 +648,7 @@ class PulsarAutoConfigurationTests {
 		}
 
 		@Test
-		<T> void whenHasUserDefinedCustomizersAppliesInCorrectOrder() {
+		<T> void whenHasUserDefinedReaderBuilderCustomizersAppliesInCorrectOrder() {
 			this.contextRunner.withPropertyValues("spring.pulsar.reader.name=fromPropsCustomizer")
 				.withUserConfiguration(ReaderBuilderCustomizersConfig.class)
 				.run((context) -> {
@@ -654,6 +685,13 @@ class PulsarAutoConfigurationTests {
 			});
 		}
 
+		@Test
+		void whenHasUserDefinedFactoryCustomizersAppliesInCorrectOrder() {
+			this.contextRunner.withUserConfiguration(ReaderContainerFactoryCustomizersConfig.class)
+				.run((context) -> assertThat(context).getBean(DefaultPulsarReaderContainerFactory.class)
+					.hasFieldOrPropertyWithValue("containerProperties.readerListener", ":bar:foo"));
+		}
+
 		@TestConfiguration(proxyBeanMethods = false)
 		static class ReaderBuilderCustomizersConfig {
 
@@ -667,6 +705,29 @@ class PulsarAutoConfigurationTests {
 			@Order(100)
 			ReaderBuilderCustomizer<?> customizerBar() {
 				return (builder) -> builder.readerName("fromCustomizer1");
+			}
+
+		}
+
+		@TestConfiguration(proxyBeanMethods = false)
+		static class ReaderContainerFactoryCustomizersConfig {
+
+			@Bean
+			@Order(200)
+			DefaultPulsarReaderContainerFactoryCustomizer customizerFoo() {
+				return (containerFactory) -> appendToReaderListener(containerFactory, ":foo");
+			}
+
+			@Bean
+			@Order(100)
+			DefaultPulsarReaderContainerFactoryCustomizer customizerBar() {
+				return (containerFactory) -> appendToReaderListener(containerFactory, ":bar");
+			}
+
+			private void appendToReaderListener(DefaultPulsarReaderContainerFactory<?> containerFactory,
+					String valueToAppend) {
+				String name = Objects.toString(containerFactory.getContainerProperties().getReaderListener(), "");
+				containerFactory.getContainerProperties().setReaderListener(name.concat(valueToAppend));
 			}
 
 		}
