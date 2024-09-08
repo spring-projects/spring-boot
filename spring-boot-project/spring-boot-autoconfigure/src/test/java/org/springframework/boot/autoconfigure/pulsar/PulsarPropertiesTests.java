@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.S
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.TypeMapping;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Failover;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Failover.BackupCluster;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.FailurePolicy;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
@@ -395,10 +396,14 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.listener.schema-type", "avro");
 			map.put("spring.pulsar.listener.concurrency", "10");
 			map.put("spring.pulsar.listener.observation-enabled", "true");
+			map.put("spring.pulsar.listener.startup.on-failure", "retry");
+			map.put("spring.pulsar.listener.startup.timeout", "2m");
 			PulsarProperties.Listener properties = bindProperties(map).getListener();
 			assertThat(properties.getSchemaType()).isEqualTo(SchemaType.AVRO);
 			assertThat(properties.getConcurrency()).isEqualTo(10);
 			assertThat(properties.isObservationEnabled()).isTrue();
+			assertThat(properties.getStartup().getOnFailure()).isEqualTo(FailurePolicy.RETRY);
+			assertThat(properties.getStartup().getTimeout()).isEqualTo(Duration.ofSeconds(13));
 		}
 
 	}
@@ -414,12 +419,16 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.reader.subscription-name", "my-subscription");
 			map.put("spring.pulsar.reader.subscription-role-prefix", "sub-role");
 			map.put("spring.pulsar.reader.read-compacted", "true");
+			map.put("spring.pulsar.reader.startup.on-failure", "continue");
+			map.put("spring.pulsar.reader.startup.timeout", "2m");
 			PulsarProperties.Reader properties = bindProperties(map).getReader();
 			assertThat(properties.getName()).isEqualTo("my-reader");
 			assertThat(properties.getTopics()).containsExactly("my-topic");
 			assertThat(properties.getSubscriptionName()).isEqualTo("my-subscription");
 			assertThat(properties.getSubscriptionRolePrefix()).isEqualTo("sub-role");
 			assertThat(properties.isReadCompacted()).isTrue();
+			assertThat(properties.getStartup().getOnFailure()).isEqualTo(FailurePolicy.CONTINUE);
+			assertThat(properties.getStartup().getTimeout()).isEqualTo(Duration.ofMinutes(2));
 		}
 
 	}

@@ -37,6 +37,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer.Subscription;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.FailurePolicy;
+import org.springframework.pulsar.config.StartupFailurePolicy;
 import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,12 +125,14 @@ class PulsarReactivePropertiesMapperTests {
 		properties.getConsumer().getSubscription().setName("my-subscription");
 		properties.getListener().setSchemaType(SchemaType.AVRO);
 		properties.getListener().setConcurrency(10);
+		properties.getListener().getStartup().setOnFailure(FailurePolicy.CONTINUE);
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		new PulsarReactivePropertiesMapper(properties).customizeContainerProperties(containerProperties);
 		assertThat(containerProperties.getSubscriptionType()).isEqualTo(SubscriptionType.Shared);
 		assertThat(containerProperties.getSubscriptionName()).isEqualTo("my-subscription");
 		assertThat(containerProperties.getSchemaType()).isEqualTo(SchemaType.AVRO);
 		assertThat(containerProperties.getConcurrency()).isEqualTo(10);
+		assertThat(containerProperties.getStartupFailurePolicy()).isEqualTo(StartupFailurePolicy.CONTINUE);
 	}
 
 	@Test

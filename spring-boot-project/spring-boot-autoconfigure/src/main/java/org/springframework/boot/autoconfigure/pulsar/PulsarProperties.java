@@ -822,6 +822,11 @@ public class PulsarProperties {
 		 */
 		private boolean observationEnabled;
 
+		/**
+		 * Startup settings.
+		 */
+		private final Startup startup = new Startup();
+
 		public SchemaType getSchemaType() {
 			return this.schemaType;
 		}
@@ -846,6 +851,9 @@ public class PulsarProperties {
 			this.observationEnabled = observationEnabled;
 		}
 
+		public Startup getStartup() {
+			return this.startup;
+		}
 	}
 
 	public static class Reader {
@@ -875,6 +883,11 @@ public class PulsarProperties {
 		 * backlog of a topic.
 		 */
 		private boolean readCompacted;
+
+		/**
+		 * Startup settings.
+		 */
+		private final Startup startup = new Startup();
 
 		public String getName() {
 			return this.name;
@@ -916,6 +929,50 @@ public class PulsarProperties {
 			this.readCompacted = readCompacted;
 		}
 
+		public Startup getStartup() {
+			return this.startup;
+		}
+	}
+
+	public static class Startup {
+
+		/**
+		 * The max time to wait for the container to start.
+		 */
+		private Duration timeout;
+
+		/**
+		 * The action to take when the container fails to start.
+		 */
+		private FailurePolicy onFailure;
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
+		}
+
+		public FailurePolicy getOnFailure() {
+			return this.onFailure;
+		}
+
+		public void setOnFailure(FailurePolicy onFailure) {
+			this.onFailure = onFailure;
+		}
+	}
+
+	public enum FailurePolicy {
+
+		/** Stop the container and throw exception. */
+		STOP,
+
+		/** Stop the container but do not throw exception. */
+		CONTINUE,
+
+		/** Retry startup asynchronously. */
+		RETRY;
 	}
 
 	public static class Template {

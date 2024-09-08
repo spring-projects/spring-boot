@@ -22,7 +22,10 @@ import org.apache.pulsar.reactive.client.api.ReactiveMessageConsumerBuilder;
 import org.apache.pulsar.reactive.client.api.ReactiveMessageReaderBuilder;
 import org.apache.pulsar.reactive.client.api.ReactiveMessageSenderBuilder;
 
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.FailurePolicy;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.pulsar.config.StartupFailurePolicy;
+import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerProperties;
 
 /**
@@ -96,6 +99,16 @@ final class PulsarReactivePropertiesMapper {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(properties::getConcurrency).to(containerProperties::setConcurrency);
+		customizeListenerStartupProperties(containerProperties);
+	}
+
+	private void customizeListenerStartupProperties(ReactivePulsarContainerProperties<?> containerProperties) {
+		PulsarProperties.Startup properties = this.properties.getListener().getStartup();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getOnFailure)
+				.as(FailurePolicy::name)
+				.as(StartupFailurePolicy::valueOf)
+				.to(containerProperties::setStartupFailurePolicy);
 	}
 
 	void customizeMessageReaderBuilder(ReactiveMessageReaderBuilder<?> builder) {

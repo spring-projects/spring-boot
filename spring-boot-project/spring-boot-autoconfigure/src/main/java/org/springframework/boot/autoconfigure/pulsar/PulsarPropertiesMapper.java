@@ -37,8 +37,10 @@ import org.apache.pulsar.client.api.ReaderBuilder;
 import org.apache.pulsar.client.api.ServiceUrlProvider;
 import org.apache.pulsar.client.impl.AutoClusterFailover.AutoClusterFailoverBuilderImpl;
 
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.FailurePolicy;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.pulsar.config.StartupFailurePolicy;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
@@ -198,6 +200,17 @@ final class PulsarPropertiesMapper {
 		map.from(properties::getSchemaType).to(containerProperties::setSchemaType);
 		map.from(properties::getConcurrency).to(containerProperties::setConcurrency);
 		map.from(properties::isObservationEnabled).to(containerProperties::setObservationEnabled);
+		customizeListenerStartupProperties(containerProperties);
+	}
+
+	private void customizeListenerStartupProperties(PulsarContainerProperties containerProperties) {
+		PulsarProperties.Startup properties = this.properties.getListener().getStartup();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getTimeout).to(containerProperties::setConsumerStartTimeout);
+		map.from(properties::getOnFailure)
+				.as(FailurePolicy::name)
+				.as(StartupFailurePolicy::valueOf)
+				.to(containerProperties::setStartupFailurePolicy);
 	}
 
 	<T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder) {
@@ -214,6 +227,17 @@ final class PulsarPropertiesMapper {
 		PulsarProperties.Reader properties = this.properties.getReader();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getTopics).to(readerContainerProperties::setTopics);
+		customizeReaderStartupProperties(readerContainerProperties);
+	}
+
+	private void customizeReaderStartupProperties(PulsarReaderContainerProperties readerContainerProperties) {
+		PulsarProperties.Startup properties = this.properties.getReader().getStartup();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getTimeout).to(readerContainerProperties::setReaderStartTimeout);
+		map.from(properties::getOnFailure)
+				.as(FailurePolicy::name)
+				.as(StartupFailurePolicy::valueOf)
+				.to(readerContainerProperties::setStartupFailurePolicy);
 	}
 
 	private Consumer<Duration> timeoutProperty(BiConsumer<Integer, TimeUnit> setter) {

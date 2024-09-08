@@ -41,9 +41,12 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Consumer;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Failover.BackupCluster;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.FailurePolicy;
+import org.springframework.pulsar.config.StartupFailurePolicy;
 import org.springframework.pulsar.core.PulsarProducerFactory;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.listener.PulsarContainerProperties;
+import org.springframework.pulsar.reader.PulsarReaderContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -265,6 +268,8 @@ class PulsarPropertiesMapperTests {
 		properties.getListener().setSchemaType(SchemaType.AVRO);
 		properties.getListener().setConcurrency(10);
 		properties.getListener().setObservationEnabled(true);
+		properties.getListener().getStartup().setOnFailure(FailurePolicy.RETRY);
+		properties.getListener().getStartup().setTimeout(Duration.ofSeconds(25));
 		properties.getTransaction().setEnabled(true);
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties("my-topic-pattern");
 		new PulsarPropertiesMapper(properties).customizeContainerProperties(containerProperties);
@@ -274,6 +279,8 @@ class PulsarPropertiesMapperTests {
 		assertThat(containerProperties.getConcurrency()).isEqualTo(10);
 		assertThat(containerProperties.isObservationEnabled()).isTrue();
 		assertThat(containerProperties.transactions().isEnabled()).isTrue();
+		assertThat(containerProperties.getStartupFailurePolicy()).isEqualTo(StartupFailurePolicy.RETRY);
+		assertThat(containerProperties.getConsumerStartTimeout()).isEqualTo(Duration.ofSeconds(25));
 	}
 
 	@Test
@@ -295,4 +302,18 @@ class PulsarPropertiesMapperTests {
 		then(builder).should().readCompacted(true);
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	void customizeReaderContainerProperties() {
+		PulsarProperties properties = new PulsarProperties();
+		List<String> topics = List.of("mytopic");
+		properties.getReader().setTopics(topics);
+		properties.getReader().getStartup().setOnFailure(FailurePolicy.CONTINUE);
+		properties.getReader().getStartup().setTimeout(Duration.ofSeconds(25));
+		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
+		new PulsarPropertiesMapper(properties).customizeReaderContainerProperties(readerContainerProperties);
+		assertThat(readerContainerProperties.getTopics()).isEqualTo(topics);
+		assertThat(readerContainerProperties.getStartupFailurePolicy()).isEqualTo(StartupFailurePolicy.CONTINUE);
+		assertThat(readerContainerProperties.getReaderStartTimeout()).isEqualTo(Duration.ofSeconds(25));
+	}
 }
