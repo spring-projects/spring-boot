@@ -854,6 +854,7 @@ public class PulsarProperties {
 		public Startup getStartup() {
 			return this.startup;
 		}
+
 	}
 
 	public static class Reader {
@@ -932,6 +933,7 @@ public class PulsarProperties {
 		public Startup getStartup() {
 			return this.startup;
 		}
+
 	}
 
 	public static class Startup {
@@ -961,6 +963,7 @@ public class PulsarProperties {
 		public void setOnFailure(FailurePolicy onFailure) {
 			this.onFailure = onFailure;
 		}
+
 	}
 
 	public enum FailurePolicy {
@@ -973,6 +976,7 @@ public class PulsarProperties {
 
 		/** Retry startup asynchronously. */
 		RETRY;
+
 	}
 
 	public static class Template {

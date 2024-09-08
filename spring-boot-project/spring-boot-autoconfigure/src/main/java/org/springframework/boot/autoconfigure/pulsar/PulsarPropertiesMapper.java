@@ -208,9 +208,9 @@ final class PulsarPropertiesMapper {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getTimeout).to(containerProperties::setConsumerStartTimeout);
 		map.from(properties::getOnFailure)
-				.as(FailurePolicy::name)
-				.as(StartupFailurePolicy::valueOf)
-				.to(containerProperties::setStartupFailurePolicy);
+			.as(FailurePolicy::name)
+			.as(StartupFailurePolicy::valueOf)
+			.to(containerProperties::setStartupFailurePolicy);
 	}
 
 	<T> void customizeReaderBuilder(ReaderBuilder<T> readerBuilder) {
@@ -235,9 +235,9 @@ final class PulsarPropertiesMapper {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getTimeout).to(readerContainerProperties::setReaderStartTimeout);
 		map.from(properties::getOnFailure)
-				.as(FailurePolicy::name)
-				.as(StartupFailurePolicy::valueOf)
-				.to(readerContainerProperties::setStartupFailurePolicy);
+			.as(FailurePolicy::name)
+			.as(StartupFailurePolicy::valueOf)
+			.to(readerContainerProperties::setStartupFailurePolicy);
 	}
 
 	private Consumer<Duration> timeoutProperty(BiConsumer<Integer, TimeUnit> setter) {

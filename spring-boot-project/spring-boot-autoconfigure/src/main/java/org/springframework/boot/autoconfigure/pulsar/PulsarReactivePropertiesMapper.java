@@ -106,9 +106,9 @@ final class PulsarReactivePropertiesMapper {
 		PulsarProperties.Startup properties = this.properties.getListener().getStartup();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getOnFailure)
-				.as(FailurePolicy::name)
-				.as(StartupFailurePolicy::valueOf)
-				.to(containerProperties::setStartupFailurePolicy);
+			.as(FailurePolicy::name)
+			.as(StartupFailurePolicy::valueOf)
+			.to(containerProperties::setStartupFailurePolicy);
 	}
 
 	void customizeMessageReaderBuilder(ReactiveMessageReaderBuilder<?> builder) {

@@ -316,4 +316,5 @@ class PulsarPropertiesMapperTests {
 		assertThat(readerContainerProperties.getStartupFailurePolicy()).isEqualTo(StartupFailurePolicy.CONTINUE);
 		assertThat(readerContainerProperties.getReaderStartTimeout()).isEqualTo(Duration.ofSeconds(25));
 	}
+
 }
