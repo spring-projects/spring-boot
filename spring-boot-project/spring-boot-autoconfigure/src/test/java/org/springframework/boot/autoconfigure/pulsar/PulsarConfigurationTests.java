@@ -86,6 +86,15 @@ class PulsarConfigurationTests {
 				.isSameAs(customConnectionDetails));
 	}
 
+	@Test
+	void whenHasUserDefinedContainerFactoryCustomizersBeanDoesNotAutoConfigureBean() {
+		PulsarContainerFactoryCustomizers customizers = mock(PulsarContainerFactoryCustomizers.class);
+		this.contextRunner
+			.withBean("customContainerFactoryCustomizers", PulsarContainerFactoryCustomizers.class, () -> customizers)
+			.run((context) -> assertThat(context).getBean(PulsarContainerFactoryCustomizers.class)
+				.isSameAs(customizers));
+	}
+
 	@Nested
 	class ClientTests {
 

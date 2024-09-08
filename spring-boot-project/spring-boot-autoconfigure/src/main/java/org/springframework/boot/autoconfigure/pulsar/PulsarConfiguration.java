@@ -188,4 +188,11 @@ class PulsarConfiguration {
 				this.properties.getDefaults().getTopic().getNamespace());
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	PulsarContainerFactoryCustomizers pulsarContainerFactoryCustomizers(
+			ObjectProvider<PulsarContainerFactoryCustomizer<?>> customizers) {
+		return new PulsarContainerFactoryCustomizers(customizers.orderedStream().toList());
+	}
+
 }
