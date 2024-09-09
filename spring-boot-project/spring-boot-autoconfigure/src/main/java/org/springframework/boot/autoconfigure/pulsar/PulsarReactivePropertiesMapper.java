@@ -25,7 +25,6 @@ import org.apache.pulsar.reactive.client.api.ReactiveMessageSenderBuilder;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.FailurePolicy;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.pulsar.config.StartupFailurePolicy;
-import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerProperties;
 
 /**

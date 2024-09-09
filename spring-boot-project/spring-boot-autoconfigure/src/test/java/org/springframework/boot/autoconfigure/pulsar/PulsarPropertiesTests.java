@@ -403,7 +403,7 @@ class PulsarPropertiesTests {
 			assertThat(properties.getConcurrency()).isEqualTo(10);
 			assertThat(properties.isObservationEnabled()).isTrue();
 			assertThat(properties.getStartup().getOnFailure()).isEqualTo(FailurePolicy.RETRY);
-			assertThat(properties.getStartup().getTimeout()).isEqualTo(Duration.ofSeconds(13));
+			assertThat(properties.getStartup().getTimeout()).isEqualTo(Duration.ofMinutes(2));
 		}
 
 	}
@@ -420,7 +420,7 @@ class PulsarPropertiesTests {
 			map.put("spring.pulsar.reader.subscription-role-prefix", "sub-role");
 			map.put("spring.pulsar.reader.read-compacted", "true");
 			map.put("spring.pulsar.reader.startup.on-failure", "continue");
-			map.put("spring.pulsar.reader.startup.timeout", "2m");
+			map.put("spring.pulsar.reader.startup.timeout", "23s");
 			PulsarProperties.Reader properties = bindProperties(map).getReader();
 			assertThat(properties.getName()).isEqualTo("my-reader");
 			assertThat(properties.getTopics()).containsExactly("my-topic");
@@ -428,7 +428,7 @@ class PulsarPropertiesTests {
 			assertThat(properties.getSubscriptionRolePrefix()).isEqualTo("sub-role");
 			assertThat(properties.isReadCompacted()).isTrue();
 			assertThat(properties.getStartup().getOnFailure()).isEqualTo(FailurePolicy.CONTINUE);
-			assertThat(properties.getStartup().getTimeout()).isEqualTo(Duration.ofMinutes(2));
+			assertThat(properties.getStartup().getTimeout()).isEqualTo(Duration.ofSeconds(23));
 		}
 
 	}

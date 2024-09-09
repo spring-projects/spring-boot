@@ -975,7 +975,7 @@ public class PulsarProperties {
 		CONTINUE,
 
 		/** Retry startup asynchronously. */
-		RETRY;
+		RETRY
 
 	}
 
