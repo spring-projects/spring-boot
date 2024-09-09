@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -30,6 +31,7 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Kedar Joshi
  * @since 2.0.0
  */
+@ConfigurationProperties(prefix = "spring.messages")
 public class MessageSourceProperties {
 
 	/**
