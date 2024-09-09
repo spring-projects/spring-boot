@@ -23,6 +23,7 @@ import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerC
  * {@link DefaultReactivePulsarListenerContainerFactory}.
  *
  * @author Chris Bono
+ * @since 3.4.0
  */
 @FunctionalInterface
 public interface DefaultReactivePulsarListenerContainerFactoryCustomizer {

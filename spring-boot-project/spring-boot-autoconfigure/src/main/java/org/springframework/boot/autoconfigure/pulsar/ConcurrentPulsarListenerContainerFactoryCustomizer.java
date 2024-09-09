@@ -23,6 +23,7 @@ import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactor
  * {@link ConcurrentPulsarListenerContainerFactory}.
  *
  * @author Chris Bono
+ * @since 3.4.0
  */
 @FunctionalInterface
 public interface ConcurrentPulsarListenerContainerFactoryCustomizer {
