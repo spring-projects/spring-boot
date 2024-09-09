@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class AutoConfigurations extends Configurations implements Ordered {
 	private static final AutoConfigurationSorter SORTER = new AutoConfigurationSorter(new SimpleMetadataReaderFactory(),
 			null);
 
-	private static final Ordered ORDER = new AutoConfigurationImportSelector();
+	private static final int ORDER = AutoConfigurationImportSelector.ORDER;
 
 	protected AutoConfigurations(Collection<Class<?>> classes) {
 		super(classes);
@@ -56,7 +56,7 @@ public class AutoConfigurations extends Configurations implements Ordered {
 
 	@Override
 	public int getOrder() {
-		return ORDER.getOrder();
+		return ORDER;
 	}
 
 	@Override

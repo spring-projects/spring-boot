@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,19 +97,19 @@ class AutoConfigurationSorterTests {
 
 	@Test
 	void byOrderAnnotation() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(LOWEST, HIGHEST, DEFAULT));
+		List<String> actual = getInPriorityOrder(LOWEST, HIGHEST, DEFAULT);
 		assertThat(actual).containsExactly(HIGHEST, DEFAULT, LOWEST);
 	}
 
 	@Test
 	void byAutoConfigureAfter() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C));
+		List<String> actual = getInPriorityOrder(A, B, C);
 		assertThat(actual).containsExactly(C, B, A);
 	}
 
 	@Test
 	void byAutoConfigureAfterAliasFor() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A3, B2, C));
+		List<String> actual = getInPriorityOrder(A3, B2, C);
 		assertThat(actual).containsExactly(C, B2, A3);
 	}
 
@@ -118,19 +118,19 @@ class AutoConfigurationSorterTests {
 		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A3, B2, C);
 		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A3, B2, C));
+		List<String> actual = getInPriorityOrder(A3, B2, C);
 		assertThat(actual).containsExactly(C, B2, A3);
 	}
 
 	@Test
 	void byAutoConfigureBefore() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y, Z));
+		List<String> actual = getInPriorityOrder(X, Y, Z);
 		assertThat(actual).containsExactly(Z, Y, X);
 	}
 
 	@Test
 	void byAutoConfigureBeforeAliasFor() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y2, Z2));
+		List<String> actual = getInPriorityOrder(X, Y2, Z2);
 		assertThat(actual).containsExactly(Z2, Y2, X);
 	}
 
@@ -139,44 +139,44 @@ class AutoConfigurationSorterTests {
 		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(X, Y2, Z2);
 		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(X, Y2, Z2));
+		List<String> actual = getInPriorityOrder(X, Y2, Z2);
 		assertThat(actual).containsExactly(Z2, Y2, X);
 	}
 
 	@Test
 	void byAutoConfigureAfterDoubles() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, E));
+		List<String> actual = getInPriorityOrder(A, B, C, E);
 		assertThat(actual).containsExactly(C, E, B, A);
 	}
 
 	@Test
 	void byAutoConfigureMixedBeforeAndAfter() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, W, X));
+		List<String> actual = getInPriorityOrder(A, B, C, W, X);
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
 	void byAutoConfigureMixedBeforeAndAfterWithClassNames() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
+		List<String> actual = getInPriorityOrder(A2, B, C, W2, X);
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
 	@Test
 	void byAutoConfigureMixedBeforeAndAfterWithDifferentInputOrder() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(W, X, A, B, C));
+		List<String> actual = getInPriorityOrder(W, X, A, B, C);
 		assertThat(actual).containsExactly(C, W, B, A, X);
 	}
 
 	@Test
 	void byAutoConfigureAfterWithMissing() {
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, B));
+		List<String> actual = getInPriorityOrder(A, B);
 		assertThat(actual).containsExactly(B, A);
 	}
 
 	@Test
 	void byAutoConfigureAfterWithCycle() {
 		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata);
-		assertThatIllegalStateException().isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D)))
+		assertThatIllegalStateException().isThrownBy(() -> getInPriorityOrder(A, B, C, D))
 			.withMessageContaining("AutoConfigure cycle detected");
 	}
 
@@ -185,7 +185,7 @@ class AutoConfigurationSorterTests {
 		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A2, B, C, W2, X);
 		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A2, B, C, W2, X));
+		List<String> actual = getInPriorityOrder(A2, B, C, W2, X);
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
 
@@ -194,7 +194,7 @@ class AutoConfigurationSorterTests {
 		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, E);
 		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(A, E));
+		List<String> actual = getInPriorityOrder(A, E);
 		assertThat(actual).containsExactly(E, A);
 	}
 
@@ -203,7 +203,7 @@ class AutoConfigurationSorterTests {
 		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, D);
 		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
-		assertThatIllegalStateException().isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(D, B)))
+		assertThatIllegalStateException().isThrownBy(() -> getInPriorityOrder(D, B))
 			.withMessageContaining("AutoConfigure cycle detected");
 	}
 
@@ -214,8 +214,12 @@ class AutoConfigurationSorterTests {
 		String oa2 = OrderAutoConfigureASeedY2.class.getName();
 		String oa3 = OrderAutoConfigureASeedA3.class.getName();
 		String oa4 = OrderAutoConfigureAutoConfigureASeedG4.class.getName();
-		List<String> actual = this.sorter.getInPriorityOrder(Arrays.asList(oa4, oa3, oa2, oa1, oa));
+		List<String> actual = getInPriorityOrder(oa4, oa3, oa2, oa1, oa);
 		assertThat(actual).containsExactly(oa1, oa2, oa3, oa4, oa);
+	}
+
+	private List<String> getInPriorityOrder(String... classNames) {
+		return this.sorter.getInPriorityOrder(Arrays.asList(classNames));
 	}
 
 	private AutoConfigurationMetadata getAutoConfigurationMetadata(String... classNames) throws Exception {

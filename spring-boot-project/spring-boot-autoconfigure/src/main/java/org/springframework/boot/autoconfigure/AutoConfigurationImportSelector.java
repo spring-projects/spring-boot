@@ -76,6 +76,8 @@ import org.springframework.util.StringUtils;
 public class AutoConfigurationImportSelector implements DeferredImportSelector, BeanClassLoaderAware,
 		ResourceLoaderAware, BeanFactoryAware, EnvironmentAware, Ordered {
 
+	static final int ORDER = Ordered.LOWEST_PRECEDENCE - 1;
+
 	private static final AutoConfigurationEntry EMPTY_ENTRY = new AutoConfigurationEntry();
 
 	private static final String[] NO_IMPORTS = {};
@@ -92,7 +94,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	private ResourceLoader resourceLoader;
 
-	private ConfigurationClassFilter configurationClassFilter;
+	private volatile ConfigurationClassFilter configurationClassFilter;
 
 	@Override
 	public String[] selectImports(AnnotationMetadata annotationMetadata) {
@@ -177,8 +179,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		List<String> configurations = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader())
-			.getCandidates();
+		ImportCandidates importCandidates = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader());
+		List<String> configurations = importCandidates.getCandidates();
 		Assert.notEmpty(configurations,
 				"No auto configuration classes found in "
 						+ "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. If you "
@@ -254,14 +256,16 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	}
 
 	private ConfigurationClassFilter getConfigurationClassFilter() {
-		if (this.configurationClassFilter == null) {
+		ConfigurationClassFilter configurationClassFilter = this.configurationClassFilter;
+		if (configurationClassFilter == null) {
 			List<AutoConfigurationImportFilter> filters = getAutoConfigurationImportFilters();
 			for (AutoConfigurationImportFilter filter : filters) {
 				invokeAwareMethods(filter);
 			}
-			this.configurationClassFilter = new ConfigurationClassFilter(this.beanClassLoader, filters);
+			configurationClassFilter = new ConfigurationClassFilter(this.beanClassLoader, filters);
+			this.configurationClassFilter = configurationClassFilter;
 		}
-		return this.configurationClassFilter;
+		return configurationClassFilter;
 	}
 
 	protected final <T> List<T> removeDuplicates(List<T> list) {
@@ -344,7 +348,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	@Override
 	public int getOrder() {
-		return Ordered.LOWEST_PRECEDENCE - 1;
+		return ORDER;
 	}
 
 	private static class ConfigurationClassFilter {
