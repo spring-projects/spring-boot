@@ -181,7 +181,7 @@ For machine clients, it produces a JSON response with details of the error, the 
 For browser clients, there is a "`whitelabel`" error handler that renders the same data in HTML format.
 You can also provide your own HTML templates to display errors (see the xref:web/reactive.adoc#web.reactive.webflux.error-handling.error-pages[next section]).
 
-Before customizing error handling in Spring Boot directly, you can leverage the {url-spring-framework-docs}/web/webflux/ann-rest-exceptions.html[RFC 7807 Problem Details] support in Spring WebFlux.
+Before customizing error handling in Spring Boot directly, you can leverage the {url-spring-framework-docs}/web/webflux/ann-rest-exceptions.html[RFC 9457 Problem Details] support in Spring WebFlux.
 Spring WebFlux can produce custom error messages with the `application/problem+json` media type, like:
 
 [source,json]
