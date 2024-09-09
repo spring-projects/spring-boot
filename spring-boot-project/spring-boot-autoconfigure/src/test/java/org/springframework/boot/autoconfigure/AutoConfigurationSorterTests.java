@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,9 +63,13 @@ class AutoConfigurationSorterTests {
 
 	private static final String A3 = AutoConfigureA3.class.getName();
 
+	private static final String A_WITH_REPLACED = AutoConfigureAWithReplaced.class.getName();
+
 	private static final String B = AutoConfigureB.class.getName();
 
 	private static final String B2 = AutoConfigureB2.class.getName();
+
+	private static final String B_WITH_REPLACED = AutoConfigureBWithReplaced.class.getName();
 
 	private static final String C = AutoConfigureC.class.getName();
 
@@ -86,13 +91,16 @@ class AutoConfigurationSorterTests {
 
 	private static final String Z2 = AutoConfigureZ2.class.getName();
 
+	private static final UnaryOperator<String> REPLACEMENT_MAPPER = (name) -> name.replace("Deprecated", "");
+
 	private AutoConfigurationSorter sorter;
 
 	private AutoConfigurationMetadata autoConfigurationMetadata = mock(AutoConfigurationMetadata.class);
 
 	@BeforeEach
 	void setup() {
-		this.sorter = new AutoConfigurationSorter(new SkipCycleMetadataReaderFactory(), this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(new SkipCycleMetadataReaderFactory(), this.autoConfigurationMetadata,
+				REPLACEMENT_MAPPER);
 	}
 
 	@Test
@@ -117,9 +125,15 @@ class AutoConfigurationSorterTests {
 	void byAutoConfigureAfterAliasForWithProperties() throws Exception {
 		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A3, B2, C);
-		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata, REPLACEMENT_MAPPER);
 		List<String> actual = getInPriorityOrder(A3, B2, C);
 		assertThat(actual).containsExactly(C, B2, A3);
+	}
+
+	@Test
+	void byAutoConfigureAfterWithDeprecated() {
+		List<String> actual = getInPriorityOrder(A_WITH_REPLACED, B_WITH_REPLACED, C);
+		assertThat(actual).containsExactly(C, B_WITH_REPLACED, A_WITH_REPLACED);
 	}
 
 	@Test
@@ -138,7 +152,7 @@ class AutoConfigurationSorterTests {
 	void byAutoConfigureBeforeAliasForWithProperties() throws Exception {
 		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(X, Y2, Z2);
-		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata, REPLACEMENT_MAPPER);
 		List<String> actual = getInPriorityOrder(X, Y2, Z2);
 		assertThat(actual).containsExactly(Z2, Y2, X);
 	}
@@ -175,7 +189,8 @@ class AutoConfigurationSorterTests {
 
 	@Test
 	void byAutoConfigureAfterWithCycle() {
-		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata,
+				REPLACEMENT_MAPPER);
 		assertThatIllegalStateException().isThrownBy(() -> getInPriorityOrder(A, B, C, D))
 			.withMessageContaining("AutoConfigure cycle detected");
 	}
@@ -184,7 +199,7 @@ class AutoConfigurationSorterTests {
 	void usesAnnotationPropertiesWhenPossible() throws Exception {
 		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A2, B, C, W2, X);
-		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata, REPLACEMENT_MAPPER);
 		List<String> actual = getInPriorityOrder(A2, B, C, W2, X);
 		assertThat(actual).containsExactly(C, W2, B, A2, X);
 	}
@@ -193,7 +208,7 @@ class AutoConfigurationSorterTests {
 	void useAnnotationWithNoDirectLink() throws Exception {
 		MetadataReaderFactory readerFactory = new SkipCycleMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, E);
-		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata, REPLACEMENT_MAPPER);
 		List<String> actual = getInPriorityOrder(A, E);
 		assertThat(actual).containsExactly(E, A);
 	}
@@ -202,7 +217,7 @@ class AutoConfigurationSorterTests {
 	void useAnnotationWithNoDirectLinkAndCycle() throws Exception {
 		MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory();
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, D);
-		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
+		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata, REPLACEMENT_MAPPER);
 		assertThatIllegalStateException().isThrownBy(() -> getInPriorityOrder(D, B))
 			.withMessageContaining("AutoConfigure cycle detected");
 	}
@@ -307,6 +322,11 @@ class AutoConfigurationSorterTests {
 
 	}
 
+	@AutoConfigureAfter(AutoConfigureBWithReplaced.class)
+	public static class AutoConfigureAWithReplaced {
+
+	}
+
 	@AutoConfigureAfter({ AutoConfigureC.class, AutoConfigureD.class, AutoConfigureE.class })
 	static class AutoConfigureB {
 
@@ -317,7 +337,18 @@ class AutoConfigurationSorterTests {
 
 	}
 
+	@AutoConfigureAfter({ DeprecatedAutoConfigureC.class, AutoConfigureD.class, AutoConfigureE.class })
+	public static class AutoConfigureBWithReplaced {
+
+	}
+
 	static class AutoConfigureC {
+
+	}
+
+	// @DeprecatedAutoConfiguration(replacement =
+	// "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureC")
+	public static class DeprecatedAutoConfigureC {
 
 	}
 
@@ -351,6 +382,12 @@ class AutoConfigurationSorterTests {
 
 	@AutoConfiguration(before = AutoConfigureX.class)
 	static class AutoConfigureY2 {
+
+	}
+
+	// @DeprecatedAutoConfiguration(replacement =
+	// "org.springframework.boot.autoconfigure.AutoConfigurationSorterTests$AutoConfigureY")
+	public static class DeprecatedAutoConfigureY {
 
 	}
 

@@ -86,6 +86,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	private static final String PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE = "spring.autoconfigure.exclude";
 
+	private final Class<?> autoConfigurationAnnotation;
+
 	private ConfigurableListableBeanFactory beanFactory;
 
 	private Environment environment;
@@ -95,6 +97,17 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	private ResourceLoader resourceLoader;
 
 	private volatile ConfigurationClassFilter configurationClassFilter;
+
+	private volatile AutoConfigurationReplacements autoConfigurationReplacements;
+
+	public AutoConfigurationImportSelector() {
+		this(null);
+	}
+
+	AutoConfigurationImportSelector(Class<?> autoConfigurationAnnotation) {
+		this.autoConfigurationAnnotation = (autoConfigurationAnnotation != null) ? autoConfigurationAnnotation
+				: AutoConfiguration.class;
+	}
 
 	@Override
 	public String[] selectImports(AnnotationMetadata annotationMetadata) {
@@ -179,11 +192,12 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		ImportCandidates importCandidates = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader());
+		ImportCandidates importCandidates = ImportCandidates.load(this.autoConfigurationAnnotation,
+				getBeanClassLoader());
 		List<String> configurations = importCandidates.getCandidates();
 		Assert.notEmpty(configurations,
-				"No auto configuration classes found in "
-						+ "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports. If you "
+				"No auto configuration classes found in " + "META-INF/spring/"
+						+ this.autoConfigurationAnnotation.getName() + ".imports. If you "
 						+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
 	}
@@ -227,7 +241,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		excluded.addAll(asList(attributes, "exclude"));
 		excluded.addAll(asList(attributes, "excludeName"));
 		excluded.addAll(getExcludeAutoConfigurationsProperty());
-		return excluded;
+		return getAutoConfigurationReplacements().replaceAll(excluded);
 	}
 
 	/**
@@ -266,6 +280,16 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			this.configurationClassFilter = configurationClassFilter;
 		}
 		return configurationClassFilter;
+	}
+
+	private AutoConfigurationReplacements getAutoConfigurationReplacements() {
+		AutoConfigurationReplacements autoConfigurationReplacements = this.autoConfigurationReplacements;
+		if (autoConfigurationReplacements == null) {
+			autoConfigurationReplacements = AutoConfigurationReplacements.load(this.autoConfigurationAnnotation,
+					this.beanClassLoader);
+			this.autoConfigurationReplacements = autoConfigurationReplacements;
+		}
+		return autoConfigurationReplacements;
 	}
 
 	protected final <T> List<T> removeDuplicates(List<T> list) {
@@ -409,6 +433,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		private AutoConfigurationMetadata autoConfigurationMetadata;
 
+		private AutoConfigurationReplacements autoConfigurationReplacements;
+
 		@Override
 		public void setBeanClassLoader(ClassLoader classLoader) {
 			this.beanClassLoader = classLoader;
@@ -430,7 +456,15 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 					() -> String.format("Only %s implementations are supported, got %s",
 							AutoConfigurationImportSelector.class.getSimpleName(),
 							deferredImportSelector.getClass().getName()));
-			AutoConfigurationEntry autoConfigurationEntry = ((AutoConfigurationImportSelector) deferredImportSelector)
+			AutoConfigurationImportSelector autoConfigurationImportSelector = (AutoConfigurationImportSelector) deferredImportSelector;
+			AutoConfigurationReplacements autoConfigurationReplacements = autoConfigurationImportSelector
+				.getAutoConfigurationReplacements();
+			Assert.state(
+					this.autoConfigurationReplacements == null
+							|| this.autoConfigurationReplacements.equals(autoConfigurationReplacements),
+					"Auto-configuration replacements must be the same for each call to process");
+			this.autoConfigurationReplacements = autoConfigurationReplacements;
+			AutoConfigurationEntry autoConfigurationEntry = autoConfigurationImportSelector
 				.getAutoConfigurationEntry(annotationMetadata);
 			this.autoConfigurationEntries.add(autoConfigurationEntry);
 			for (String importClassName : autoConfigurationEntry.getConfigurations()) {
@@ -452,7 +486,6 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 				.flatMap(Collection::stream)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 			processedConfigurations.removeAll(allExclusions);
-
 			return sortAutoConfigurations(processedConfigurations, getAutoConfigurationMetadata()).stream()
 				.map((importClassName) -> new Entry(this.entries.get(importClassName), importClassName))
 				.toList();
@@ -467,7 +500,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 		private List<String> sortAutoConfigurations(Set<String> configurations,
 				AutoConfigurationMetadata autoConfigurationMetadata) {
-			return new AutoConfigurationSorter(getMetadataReaderFactory(), autoConfigurationMetadata)
+			return new AutoConfigurationSorter(getMetadataReaderFactory(), autoConfigurationMetadata,
+					this.autoConfigurationReplacements::replace)
 				.getInPriorityOrder(configurations);
 		}
 
