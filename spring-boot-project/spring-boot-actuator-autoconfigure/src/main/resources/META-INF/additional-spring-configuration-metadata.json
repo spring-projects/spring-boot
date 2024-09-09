@@ -1910,7 +1910,7 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Requests are timed automatically."
       }
     },
     {
@@ -1918,7 +1918,7 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
       }
     },
     {
@@ -1927,7 +1927,7 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
       }
     },
     {
@@ -1953,7 +1953,7 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Requests are timed automatically."
       }
     },
     {
@@ -1961,7 +1961,7 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
       }
     },
     {
@@ -1970,7 +1970,7 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
       }
     },
     {
@@ -2003,7 +2003,7 @@
       "defaultValue": true,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Requests are timed automatically."
       }
     },
     {
@@ -2011,7 +2011,7 @@
       "description": "Computed non-aggregable percentiles to publish.",
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles."
       }
     },
     {
@@ -2020,7 +2020,7 @@
       "defaultValue": false,
       "deprecation": {
         "level": "error",
-        "reason": "Should be applied at the ObservationRegistry level."
+        "reason": "Should be configured globally via management.metrics.distribution.percentiles-histogram."
       }
     },
     {
