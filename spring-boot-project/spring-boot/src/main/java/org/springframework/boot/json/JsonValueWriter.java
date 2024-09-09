@@ -103,11 +103,8 @@ class JsonValueWriter {
 		else if (value instanceof Map<?, ?> map) {
 			writeObject(map::forEach);
 		}
-		else if (value instanceof Number) {
+		else if (value instanceof Number || value instanceof Boolean) {
 			append(value.toString());
-		}
-		else if (value instanceof Boolean bool) {
-			append(bool ? "true" : "false");
 		}
 		else {
 			writeString(value);

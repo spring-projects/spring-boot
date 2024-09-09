@@ -698,6 +698,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	private static class SimpleDataSourceProperties extends MappedDataSourceProperties<SimpleDriverDataSource> {
 
+		@SuppressWarnings("unchecked")
 		SimpleDataSourceProperties() {
 			add(DataSourceProperty.URL, SimpleDriverDataSource::getUrl, SimpleDriverDataSource::setUrl);
 			add(DataSourceProperty.DRIVER_CLASS_NAME, Class.class, (dataSource) -> dataSource.getDriver().getClass(),
