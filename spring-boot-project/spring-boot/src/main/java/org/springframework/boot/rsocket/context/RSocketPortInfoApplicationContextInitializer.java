@@ -51,49 +51,43 @@ public class RSocketPortInfoApplicationContextInitializer
 		applicationContext.addApplicationListener(new Listener(applicationContext));
 	}
 
-	private static class Listener implements ApplicationListener<RSocketServerInitializedEvent> {
+	private record Listener(ConfigurableApplicationContext applicationContext) implements ApplicationListener<RSocketServerInitializedEvent> {
 
-		private static final String PROPERTY_NAME = "local.rsocket.server.port";
+			private static final String PROPERTY_NAME = "local.rsocket.server.port";
 
-		private static final String PROPERTY_SOURCE_NAME = "server.ports";
-
-		private final ConfigurableApplicationContext applicationContext;
-
-		Listener(ConfigurableApplicationContext applicationContext) {
-			this.applicationContext = applicationContext;
-		}
+			private static final String PROPERTY_SOURCE_NAME = "server.ports";
 
 		@Override
-		public void onApplicationEvent(RSocketServerInitializedEvent event) {
-			if (event.getServer().address() != null) {
-				setPortProperty(this.applicationContext, event.getServer().address().getPort());
+			public void onApplicationEvent(RSocketServerInitializedEvent event) {
+				if (event.getServer().address() != null) {
+					setPortProperty(this.applicationContext, event.getServer().address().getPort());
+				}
 			}
-		}
 
-		private void setPortProperty(ApplicationContext context, int port) {
-			if (context instanceof ConfigurableApplicationContext configurableContext) {
-				setPortProperty(configurableContext.getEnvironment(), port);
+			private void setPortProperty(ApplicationContext context, int port) {
+				if (context instanceof ConfigurableApplicationContext configurableContext) {
+					setPortProperty(configurableContext.getEnvironment(), port);
+				}
+				if (context.getParent() != null) {
+					setPortProperty(context.getParent(), port);
+				}
 			}
-			if (context.getParent() != null) {
-				setPortProperty(context.getParent(), port);
+
+			private void setPortProperty(ConfigurableEnvironment environment, int port) {
+				MutablePropertySources sources = environment.getPropertySources();
+				PropertySource<?> source = sources.get(PROPERTY_SOURCE_NAME);
+				if (source == null) {
+					source = new MapPropertySource(PROPERTY_SOURCE_NAME, new HashMap<>());
+					sources.addFirst(source);
+				}
+				setPortProperty(port, source);
 			}
-		}
 
-		private void setPortProperty(ConfigurableEnvironment environment, int port) {
-			MutablePropertySources sources = environment.getPropertySources();
-			PropertySource<?> source = sources.get(PROPERTY_SOURCE_NAME);
-			if (source == null) {
-				source = new MapPropertySource(PROPERTY_SOURCE_NAME, new HashMap<>());
-				sources.addFirst(source);
+			@SuppressWarnings("unchecked")
+			private void setPortProperty(int port, PropertySource<?> source) {
+				((Map<String, Object>) source.getSource()).put(PROPERTY_NAME, port);
 			}
-			setPortProperty(port, source);
-		}
 
-		@SuppressWarnings("unchecked")
-		private void setPortProperty(int port, PropertySource<?> source) {
-			((Map<String, Object>) source.getSource()).put(PROPERTY_NAME, port);
 		}
-
-	}
 
 }

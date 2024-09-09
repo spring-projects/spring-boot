@@ -29,7 +29,7 @@ import org.springframework.web.server.ServerWebExchange;
 /**
  * {@link ApplicationContext} backed {@link ServerWebExchangeMatcher}. Can work directly
  * with the {@link ApplicationContext}, obtain an existing bean or
- * {@link AutowireCapableBeanFactory#createBean(Class, int, boolean) create a new bean}
+ * {@link AutowireCapableBeanFactory#createBean(Class) create a new bean}
  * that is autowired in the usual way.
  *
  * @param <C> the type of the context that the match method actually needs to use. Can be

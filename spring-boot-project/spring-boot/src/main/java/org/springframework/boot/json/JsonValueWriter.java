@@ -106,8 +106,8 @@ class JsonValueWriter {
 		else if (value instanceof Number) {
 			append(value.toString());
 		}
-		else if (value instanceof Boolean) {
-			append(Boolean.TRUE.equals(value) ? "true" : "false");
+		else if (value instanceof Boolean bool) {
+			append(bool ? "true" : "false");
 		}
 		else {
 			writeString(value);
