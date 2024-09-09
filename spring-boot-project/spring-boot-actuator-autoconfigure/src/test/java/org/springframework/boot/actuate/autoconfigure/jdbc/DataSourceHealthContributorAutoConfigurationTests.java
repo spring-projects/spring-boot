@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,22 @@
 
 package org.springframework.boot.actuate.autoconfigure.jdbc;
 
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ConnectionBuilder;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.ShardingKeyBuilder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration.RoutingDataSourceHealthContributor;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
@@ -88,8 +97,34 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
+	void runWithProxyBeanPostProcessorRoutingAndEmbeddedDataSourceShouldIncludeRoutingDataSource() {
+		this.contextRunner
+			.withUserConfiguration(ProxyDataSourceBeanPostProcessor.class, EmbeddedDataSourceConfiguration.class,
+					RoutingDataSourceConfig.class)
+			.run((context) -> {
+				CompositeHealthContributor composite = context.getBean(CompositeHealthContributor.class);
+				assertThat(composite.getContributor("dataSource")).isInstanceOf(DataSourceHealthIndicator.class);
+				assertThat(composite.getContributor("routingDataSource"))
+					.isInstanceOf(RoutingDataSourceHealthContributor.class);
+			});
+	}
+
+	@Test
 	void runWithRoutingAndEmbeddedDataSourceShouldNotIncludeRoutingDataSourceWhenIgnored() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDataSourceConfig.class)
+			.withPropertyValues("management.health.db.ignore-routing-datasources:true")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(CompositeHealthContributor.class);
+				assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
+				assertThat(context).doesNotHaveBean(RoutingDataSourceHealthContributor.class);
+			});
+	}
+
+	@Test
+	void runWithProxyBeanPostProcessorAndRoutingAndEmbeddedDataSourceShouldNotIncludeRoutingDataSourceWhenIgnored() {
+		this.contextRunner
+			.withUserConfiguration(ProxyDataSourceBeanPostProcessor.class, EmbeddedDataSourceConfiguration.class,
+					RoutingDataSourceConfig.class)
 			.withPropertyValues("management.health.db.ignore-routing-datasources:true")
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(CompositeHealthContributor.class);
@@ -113,8 +148,34 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	}
 
 	@Test
+	void runWithProxyBeanPostProcessorAndRoutingDataSourceShouldIncludeRoutingDataSourceWithComposedIndicators() {
+		this.contextRunner.withUserConfiguration(ProxyDataSourceBeanPostProcessor.class, RoutingDataSourceConfig.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RoutingDataSourceHealthContributor.class);
+				RoutingDataSourceHealthContributor routingHealthContributor = context
+					.getBean(RoutingDataSourceHealthContributor.class);
+				assertThat(routingHealthContributor.getContributor("one"))
+					.isInstanceOf(DataSourceHealthIndicator.class);
+				assertThat(routingHealthContributor.getContributor("two"))
+					.isInstanceOf(DataSourceHealthIndicator.class);
+				assertThat(routingHealthContributor.iterator()).toIterable()
+					.extracting("name")
+					.containsExactlyInAnyOrder("one", "two");
+			});
+	}
+
+	@Test
 	void runWithOnlyRoutingDataSourceShouldCrashWhenIgnored() {
 		this.contextRunner.withUserConfiguration(RoutingDataSourceConfig.class)
+			.withPropertyValues("management.health.db.ignore-routing-datasources:true")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasRootCauseInstanceOf(IllegalArgumentException.class));
+	}
+
+	@Test
+	void runWithProxyBeanPostProcessorAndOnlyRoutingDataSourceShouldCrashWhenIgnored() {
+		this.contextRunner.withUserConfiguration(ProxyDataSourceBeanPostProcessor.class, RoutingDataSourceConfig.class)
 			.withPropertyValues("management.health.db.ignore-routing-datasources:true")
 			.run((context) -> assertThat(context).hasFailed()
 				.getFailure()
@@ -177,13 +238,27 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	static class RoutingDataSourceConfig {
 
 		@Bean
-		AbstractRoutingDataSource routingDataSource() {
+		AbstractRoutingDataSource routingDataSource() throws SQLException {
 			Map<Object, DataSource> dataSources = new HashMap<>();
 			dataSources.put("one", mock(DataSource.class));
 			dataSources.put("two", mock(DataSource.class));
 			AbstractRoutingDataSource routingDataSource = mock(AbstractRoutingDataSource.class);
+			given(routingDataSource.isWrapperFor(AbstractRoutingDataSource.class)).willReturn(true);
+			given(routingDataSource.unwrap(AbstractRoutingDataSource.class)).willReturn(routingDataSource);
 			given(routingDataSource.getResolvedDataSources()).willReturn(dataSources);
 			return routingDataSource;
+		}
+
+	}
+
+	static class ProxyDataSourceBeanPostProcessor implements BeanPostProcessor {
+
+		@Override
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof DataSource dataSource) {
+				return new ProxyDataSource(dataSource);
+			}
+			return bean;
 		}
 
 	}
@@ -192,13 +267,81 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	static class NullKeyRoutingDataSourceConfig {
 
 		@Bean
-		AbstractRoutingDataSource routingDataSource() {
+		AbstractRoutingDataSource routingDataSource() throws Exception {
 			Map<Object, DataSource> dataSources = new HashMap<>();
 			dataSources.put(null, mock(DataSource.class));
 			dataSources.put("one", mock(DataSource.class));
 			AbstractRoutingDataSource routingDataSource = mock(AbstractRoutingDataSource.class);
+			given(routingDataSource.isWrapperFor(AbstractRoutingDataSource.class)).willReturn(true);
+			given(routingDataSource.unwrap(AbstractRoutingDataSource.class)).willReturn(routingDataSource);
 			given(routingDataSource.getResolvedDataSources()).willReturn(dataSources);
 			return routingDataSource;
+		}
+
+	}
+
+	static class ProxyDataSource implements DataSource {
+
+		private final DataSource dataSource;
+
+		ProxyDataSource(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
+
+		@Override
+		public void setLogWriter(PrintWriter out) throws SQLException {
+			this.dataSource.setLogWriter(out);
+		}
+
+		@Override
+		public Connection getConnection() throws SQLException {
+			return this.dataSource.getConnection();
+		}
+
+		@Override
+		public Connection getConnection(String username, String password) throws SQLException {
+			return this.dataSource.getConnection(username, password);
+		}
+
+		@Override
+		public PrintWriter getLogWriter() throws SQLException {
+			return this.dataSource.getLogWriter();
+		}
+
+		@Override
+		public void setLoginTimeout(int seconds) throws SQLException {
+			this.dataSource.setLoginTimeout(seconds);
+		}
+
+		@Override
+		public int getLoginTimeout() throws SQLException {
+			return this.dataSource.getLoginTimeout();
+		}
+
+		@Override
+		public ConnectionBuilder createConnectionBuilder() throws SQLException {
+			return this.dataSource.createConnectionBuilder();
+		}
+
+		@Override
+		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+			return this.dataSource.getParentLogger();
+		}
+
+		@Override
+		public ShardingKeyBuilder createShardingKeyBuilder() throws SQLException {
+			return this.dataSource.createShardingKeyBuilder();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <T> T unwrap(Class<T> iface) throws SQLException {
+			return iface.isInstance(this) ? (T) this : this.dataSource.unwrap(iface);
+		}
+
+		@Override
+		public boolean isWrapperFor(Class<?> iface) throws SQLException {
+			return (iface.isInstance(this) || this.dataSource.isWrapperFor(iface));
 		}
 
 	}

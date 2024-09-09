@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.jdbc;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -88,7 +89,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
 			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
 				.stream()
-				.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
+				.filter((e) -> !isAbstractRoutingDataSource(e.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return createContributor(filteredDatasources);
 		}
@@ -104,8 +105,9 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	}
 
 	private HealthContributor createContributor(DataSource source) {
-		if (source instanceof AbstractRoutingDataSource routingDataSource) {
-			return new RoutingDataSourceHealthContributor(routingDataSource, this::createContributor);
+		if (isAbstractRoutingDataSource(source)) {
+			return new RoutingDataSourceHealthContributor(unwrapAbstractRoutingDataSource(source),
+					this::createContributor);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
@@ -113,6 +115,31 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	private String getValidationQuery(DataSource source) {
 		DataSourcePoolMetadata poolMetadata = this.poolMetadataProvider.getDataSourcePoolMetadata(source);
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
+	}
+
+	private static boolean isAbstractRoutingDataSource(DataSource dataSource) {
+		if (dataSource instanceof AbstractRoutingDataSource) {
+			return true;
+		}
+		try {
+			return dataSource.isWrapperFor(AbstractRoutingDataSource.class);
+		}
+		catch (SQLException ex) {
+			return false;
+		}
+	}
+
+	private static AbstractRoutingDataSource unwrapAbstractRoutingDataSource(DataSource dataSource) {
+		if (dataSource instanceof AbstractRoutingDataSource routingDataSource) {
+			return routingDataSource;
+		}
+		try {
+			return dataSource.unwrap(AbstractRoutingDataSource.class);
+		}
+		catch (SQLException ex) {
+			throw new IllegalStateException(
+					"DataSource '%s' failed to unwrap '%s'".formatted(dataSource, AbstractRoutingDataSource.class), ex);
+		}
 	}
 
 	/**
