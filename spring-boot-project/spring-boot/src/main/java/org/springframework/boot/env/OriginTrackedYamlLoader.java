@@ -29,11 +29,11 @@ import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.Mark;
-import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.SequenceNode;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 import org.yaml.snakeyaml.resolver.Resolver;
@@ -105,8 +105,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 		@Override
 		protected Object constructObject(Node node) {
-			if (node instanceof CollectionNode && ((CollectionNode<?>) node).getValue().isEmpty()) {
-				return constructTrackedObject(node, super.constructObject(node));
+			if (node instanceof SequenceNode sequenceNode && sequenceNode.getValue().isEmpty()) {
+				return constructTrackedObject(node, "");
 			}
 			if (node instanceof ScalarNode) {
 				if (!(node instanceof KeyScalarNode)) {
