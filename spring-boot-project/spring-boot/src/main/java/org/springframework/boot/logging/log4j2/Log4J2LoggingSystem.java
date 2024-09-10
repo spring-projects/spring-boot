@@ -238,9 +238,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void load(LoggingInitializationContext initializationContext, String location, LogFile logFile) {
 		List<String> overrides = getOverrides(initializationContext);
-		if (initializationContext != null) {
-			applySystemProperties(initializationContext.getEnvironment(), logFile);
-		}
+		applySystemProperties(initializationContext.getEnvironment(), logFile);
 		loadConfiguration(location, logFile, overrides);
 	}
 
