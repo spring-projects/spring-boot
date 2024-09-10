@@ -164,15 +164,14 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean(name = "reactivePulsarListenerContainerFactory")
 	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
 			ReactivePulsarConsumerFactory<Object> reactivePulsarConsumerFactory, SchemaResolver schemaResolver,
-			TopicResolver topicResolver,
-			ObjectProvider<DefaultReactivePulsarListenerContainerFactoryCustomizer> customizersProvider) {
+			TopicResolver topicResolver, PulsarContainerFactoryCustomizers containerFactoryCustomizers) {
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
 		DefaultReactivePulsarListenerContainerFactory<?> containerFactory = new DefaultReactivePulsarListenerContainerFactory<>(
 				reactivePulsarConsumerFactory, containerProperties);
-		customizersProvider.orderedStream().forEachOrdered((customizer) -> customizer.customize(containerFactory));
+		containerFactoryCustomizers.customize(containerFactory);
 		return containerFactory;
 	}
 

@@ -16,22 +16,24 @@
 
 package org.springframework.boot.autoconfigure.pulsar;
 
-import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
+import org.springframework.pulsar.config.PulsarContainerFactory;
 
 /**
- * Callback interface that can be implemented to customize a
- * {@link DefaultPulsarReaderContainerFactory}.
+ * Callback interface that can be implemented by beans wishing to customize a
+ * {@link PulsarContainerFactory} before it is fully initialized, in particular to tune
+ * its configuration.
  *
+ * @param <T> the type of the {@link PulsarContainerFactory}
  * @author Chris Bono
  * @since 3.4.0
  */
 @FunctionalInterface
-public interface DefaultPulsarReaderContainerFactoryCustomizer {
+public interface PulsarContainerFactoryCustomizer<T extends PulsarContainerFactory<?, ?>> {
 
 	/**
-	 * Customize a {@link DefaultPulsarReaderContainerFactory}.
-	 * @param containerFactory the factory to customize
+	 * Customize the container factory.
+	 * @param containerFactory the {@code PulsarContainerFactory} to customize
 	 */
-	void customize(DefaultPulsarReaderContainerFactory<?> containerFactory);
+	void customize(T containerFactory);
 
 }

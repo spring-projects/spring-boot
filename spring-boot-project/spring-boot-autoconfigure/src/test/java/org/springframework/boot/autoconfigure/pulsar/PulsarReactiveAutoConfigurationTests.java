@@ -46,6 +46,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
 import org.springframework.pulsar.core.DefaultSchemaResolver;
 import org.springframework.pulsar.core.DefaultTopicResolver;
 import org.springframework.pulsar.core.PulsarAdministration;
@@ -394,14 +395,22 @@ class PulsarReactiveAutoConfigurationTests {
 		static class ListenerContainerFactoryCustomizersConfig {
 
 			@Bean
+			@Order(50)
+			PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>> customizerIgnored() {
+				return (__) -> {
+					throw new RuntimeException("should-not-have-matched");
+				};
+			}
+
+			@Bean
 			@Order(200)
-			DefaultReactivePulsarListenerContainerFactoryCustomizer customizerFoo() {
+			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerFoo() {
 				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":foo");
 			}
 
 			@Bean
 			@Order(100)
-			DefaultReactivePulsarListenerContainerFactoryCustomizer customizerBar() {
+			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerBar() {
 				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":bar");
 			}
 

@@ -73,6 +73,7 @@ import org.springframework.pulsar.core.ReaderBuilderCustomizer;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.listener.PulsarContainerProperties.TransactionSettings;
+import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
 import org.springframework.pulsar.transaction.PulsarAwareTransactionManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -597,14 +598,22 @@ class PulsarAutoConfigurationTests {
 		static class ListenerContainerFactoryCustomizersConfig {
 
 			@Bean
+			@Order(50)
+			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
+				return (__) -> {
+					throw new RuntimeException("should-not-have-matched");
+				};
+			}
+
+			@Bean
 			@Order(200)
-			ConcurrentPulsarListenerContainerFactoryCustomizer customizerFoo() {
+			PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>> customizerFoo() {
 				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":foo");
 			}
 
 			@Bean
 			@Order(100)
-			ConcurrentPulsarListenerContainerFactoryCustomizer customizerBar() {
+			PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>> customizerBar() {
 				return (containerFactory) -> appendToSubscriptionName(containerFactory, ":bar");
 			}
 
@@ -713,14 +722,22 @@ class PulsarAutoConfigurationTests {
 		static class ReaderContainerFactoryCustomizersConfig {
 
 			@Bean
+			@Order(50)
+			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
+				return (__) -> {
+					throw new RuntimeException("should-not-have-matched");
+				};
+			}
+
+			@Bean
 			@Order(200)
-			DefaultPulsarReaderContainerFactoryCustomizer customizerFoo() {
+			PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>> customizerFoo() {
 				return (containerFactory) -> appendToReaderListener(containerFactory, ":foo");
 			}
 
 			@Bean
 			@Order(100)
-			DefaultPulsarReaderContainerFactoryCustomizer customizerBar() {
+			PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>> customizerBar() {
 				return (containerFactory) -> appendToReaderListener(containerFactory, ":bar");
 			}
 

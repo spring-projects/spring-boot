@@ -178,8 +178,7 @@ public class PulsarAutoConfiguration {
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
 			TopicResolver topicResolver, ObjectProvider<PulsarAwareTransactionManager> pulsarTransactionManager,
-			ObjectProvider<ConcurrentPulsarListenerContainerFactoryCustomizer> customizersProvider,
-			Environment environment) {
+			PulsarContainerFactoryCustomizers containerFactoryCustomizers, Environment environment) {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
@@ -190,7 +189,7 @@ public class PulsarAutoConfiguration {
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
 		ConcurrentPulsarListenerContainerFactory<?> containerFactory = new ConcurrentPulsarListenerContainerFactory<>(
 				pulsarConsumerFactory, containerProperties);
-		customizersProvider.orderedStream().forEachOrdered((customizer) -> customizer.customize(containerFactory));
+		containerFactoryCustomizers.customize(containerFactory);
 		return containerFactory;
 	}
 
@@ -219,8 +218,7 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
 	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(PulsarReaderFactory<?> pulsarReaderFactory,
-			SchemaResolver schemaResolver,
-			ObjectProvider<DefaultPulsarReaderContainerFactoryCustomizer> customizersProvider,
+			SchemaResolver schemaResolver, PulsarContainerFactoryCustomizers containerFactoryCustomizers,
 			Environment environment) {
 		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
 		readerContainerProperties.setSchemaResolver(schemaResolver);
@@ -230,7 +228,7 @@ public class PulsarAutoConfiguration {
 		this.propertiesMapper.customizeReaderContainerProperties(readerContainerProperties);
 		DefaultPulsarReaderContainerFactory<?> containerFactory = new DefaultPulsarReaderContainerFactory<>(
 				pulsarReaderFactory, readerContainerProperties);
-		customizersProvider.orderedStream().forEachOrdered((customizer) -> customizer.customize(containerFactory));
+		containerFactoryCustomizers.customize(containerFactory);
 		return containerFactory;
 	}
 

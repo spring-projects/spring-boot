@@ -154,7 +154,7 @@ If you need more control over the configuration of the consumer factory used by 
 These customizers are applied to all consumers created by the factory, and therefore all `@PulsarListener` instances.
 You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@PulsarListener` annotation.
 
-If you need more control over the actual container factory configuration, consider registering one or more `ConcurrentPulsarListenerContainerFactoryCustomizer` beans.
+If you need more control over the actual container factory configuration, consider registering one or more `PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactoryCustomizer<?>>` beans.
 
 [[messaging.pulsar.receiving-reactive]]
 == Receiving a Message Reactively
@@ -171,7 +171,7 @@ If you need more control over the configuration of the consumer factory used by 
 These customizers are applied to all consumers created by the factory, and therefore all `@ReactivePulsarListener` instances.
 You can also customize a single listener by setting the `consumerCustomizer` attribute of the `@ReactivePulsarListener` annotation.
 
-If you need more control over the actual container factory configuration, consider registering one or more `DefaultReactivePulsarListenerContainerFactoryCustomizer` beans.
+If you need more control over the actual container factory configuration, consider registering one or more `PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>>` beans.
 
 [[messaging.pulsar.reading]]
 == Reading a Message
@@ -191,7 +191,7 @@ If you need more control over the configuration of the reader factory used by th
 These customizers are applied to all readers created by the factory, and therefore all `@PulsarReader` instances.
 You can also customize a single listener by setting the `readerCustomizer` attribute of the `@PulsarReader` annotation.
 
-If you need more control over the actual container factory configuration, consider registering one or more `DefaultPulsarReaderContainerFactoryCustomizer` beans.
+If you need more control over the actual container factory configuration, consider registering one or more `PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>>` beans.
 
 
 [[messaging.pulsar.reading-reactive]]
