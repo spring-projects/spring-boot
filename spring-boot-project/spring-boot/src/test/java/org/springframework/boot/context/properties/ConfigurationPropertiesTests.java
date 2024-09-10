@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import java.util.UUID;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
@@ -586,13 +585,21 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadShouldSupportRebindableConfigurationProperties() {
-		// gh-9160
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testRebindableConfigurationProperties(PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testRebindableConfigurationProperties(PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testRebindableConfigurationProperties(Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
 		assertThat(first.getOne()).isEqualTo("foo");
@@ -604,12 +611,24 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties() {
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+			Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.register(PropertySourcesPlaceholderConfigurer.class);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
@@ -1246,24 +1265,6 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadPrototypeScopedProperties() {
-		load(PrototypeScopePropertiesConfiguration.class);
-		PrototypeScopeProperties p1 = this.context.getBean(PrototypeScopeProperties.class);
-		PrototypeScopeProperties p2 = this.context.getBean(PrototypeScopeProperties.class);
-		assertThat(p1.id).isNotNull();
-		assertThat(p2.id).isNotNull();
-		assertThat(p1.id).isNotEqualTo(p2.id);
-	}
-
-	@Test
-	void loadProxyScopedProperties() {
-		load(ProxyScopePropertiesConfiguration.class, "name=test");
-		ProxyScopeProperties p = this.context.getBean(ProxyScopeProperties.class);
-		assertThat(p.name).isEqualTo("test");
-		assertThat(p.getName()).isEqualTo("test");
-	}
-
-	@Test
 	void loadWhenBindingToJavaBeanWithConversionToCustomListImplementation() {
 		load(SetterBoundCustomListPropertiesConfiguration.class, "test.values=a,b");
 		assertThat(this.context.getBean(SetterBoundCustomListProperties.class).getValues()).containsExactly("a", "b");
@@ -1513,49 +1514,9 @@ class ConfigurationPropertiesTests {
 
 	}
 
-	@EnableConfigurationProperties(PrototypeScopeProperties.class)
-	@Configuration(proxyBeanMethods = false)
-	static class PrototypeScopePropertiesConfiguration {
-
-	}
-
-	@ConfigurationProperties
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
-	static class PrototypeScopeProperties {
-
-		private final String id = UUID.randomUUID().toString();
-
-		String getId() {
-			return this.id;
-		}
-
-	}
-
-	@EnableConfigurationProperties(ProxyScopeProperties.class)
-	@Configuration(proxyBeanMethods = false)
-	static class ProxyScopePropertiesConfiguration {
-
-	}
-
-	@ConfigurationProperties
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
-	static class ProxyScopeProperties {
-
-		private String name;
-
-		String getName() {
-			return this.name;
-		}
-
-		void setName(String name) {
-			this.name = name;
-		}
-
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	static class PrototypePropertiesConfiguration {
+	static class PrototypePropertiesBeanConfiguration {
 
 		@Bean
 		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -1563,6 +1524,18 @@ class ConfigurationPropertiesTests {
 		PrototypeBean prototypeBean() {
 			return new PrototypeBean();
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(PrototypeBeanProperties.class)
+	static class PrototypePropertiesRegistrarConfiguration {
+
+	}
+
+	@ConfigurationProperties("example")
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	static class PrototypeBeanProperties extends PrototypeBean {
 
 	}
 

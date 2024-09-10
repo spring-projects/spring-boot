@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefiniti
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ScopeMetadata;
@@ -88,21 +88,26 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinitionHolder createBeanDefinition(String beanName, Class<?> type) {
+		GenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
 		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
-		RootBeanDefinition definition = new RootBeanDefinition(type);
 		BindMethodAttribute.set(definition, bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
 			definition.setInstanceSupplier(() -> ConstructorBound.from(this.beanFactory, beanName, type));
 		}
-		ScopeMetadata metadata = scopeMetadataResolver.resolveScopeMetadata(new AnnotatedGenericBeanDefinition(type));
+		ScopeMetadata metadata = scopeMetadataResolver.resolveScopeMetadata(definition);
 		definition.setScope(metadata.getScopeName());
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(definition, beanName);
+		return applyScopedProxyMode(metadata, definitionHolder, this.registry);
+	}
+
+	static BeanDefinitionHolder applyScopedProxyMode(ScopeMetadata metadata, BeanDefinitionHolder definition,
+			BeanDefinitionRegistry registry) {
 		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
 		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
-			return definitionHolder;
+			return definition;
 		}
 		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
-		return ScopedProxyUtils.createScopedProxy(definitionHolder, this.registry, proxyTargetClass);
+		return ScopedProxyUtils.createScopedProxy(definition, registry, proxyTargetClass);
 	}
 
 }
