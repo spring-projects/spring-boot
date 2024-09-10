@@ -445,6 +445,7 @@ Structured logging is a technique where the log output is written in a well-defi
 Spring Boot supports structured logging and has support for the following JSON formats out of the box:
 
 * xref:#features.logging.structured.ecs[Elastic Common Schema (ECS)]
+* xref:#features.logging.structured.gelf[Graylog Extended Log Format (GELF)]
 * xref:#features.logging.structured.logstash[Logstash]
 
 To enable structured logging, set the property configprop:logging.structured.format.console[] (for console output) or configprop:logging.structured.format.file[] (for file output) to the id of the format you want to use.
@@ -491,6 +492,51 @@ logging:
 ----
 
 NOTE: configprop:logging.structured.ecs.service.name[] will default to configprop:spring.application.name[] if not specified.
+
+NOTE: configprop:logging.structured.ecs.service.version[] will default to configprop:spring.application.version[] if not specified.
+
+
+
+[[features.logging.structured.gelf]]
+=== Graylog Extended Log Format (GELF)
+https://go2docs.graylog.org/current/getting_in_log_data/gelf.html[Graylog Extended Log Format] is a JSON based logging format for the Graylog log analytics platform.
+
+To enable the Graylog Extended Log Format, set the appropriate `format` property to `gelf`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    format:
+      console: gelf
+      file: gelf
+----
+
+A log line looks like this:
+
+[source,json]
+----
+{"version":"1.1","short_message":"No active profile set, falling back to 1 default profile: \"default\"","timestamp":1725958035.857,"level":6,"_level_name":"INFO","_process_pid":47649,"_process_thread_name":"main","_log_logger":"org.example.Application"}
+----
+
+This format also adds every key value pair contained in the MDC to the JSON object.
+You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
+
+The `service` values can be customized using `logging.structured.gelf.service` properties:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    gelf:
+      service:
+        name: MyService
+        version: 1.0
+----
+
+NOTE: configprop:logging.structured.gelf.service.name[] will default to configprop:spring.application.name[] if not specified.
+
+NOTE: configprop:logging.structured.gelf.service.version[] will default to configprop:spring.application.version[] if not specified.
 
 
 

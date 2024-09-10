@@ -82,6 +82,11 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 		commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
 				(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(instantiator.getArg(Environment.class),
 						instantiator.getArg(ThrowableProxyConverter.class)));
+		commonFormatters
+			.add(CommonStructuredLogFormat.GRAYLOG_EXTENDED_LOG_FORMAT,
+					(instantiator) -> new GraylogExtendedLogFormatStructuredLogFormatter(
+							instantiator.getArg(Environment.class),
+							instantiator.getArg(ThrowableProxyConverter.class)));
 		commonFormatters.add(CommonStructuredLogFormat.LOGSTASH, (instantiator) -> new LogstashStructuredLogFormatter(
 				instantiator.getArg(ThrowableProxyConverter.class)));
 	}

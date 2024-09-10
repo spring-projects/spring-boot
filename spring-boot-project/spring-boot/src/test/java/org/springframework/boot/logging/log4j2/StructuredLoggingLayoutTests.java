@@ -110,7 +110,7 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 	void shouldFailIfNoCommonOrCustomFormatIsSet() {
 		assertThatIllegalArgumentException().isThrownBy(() -> newBuilder().setFormat("does-not-exist").build())
 			.withMessageContaining("Unknown format 'does-not-exist'. "
-					+ "Values can be a valid fully-qualified class name or one of the common formats: [ecs, logstash]");
+					+ "Values can be a valid fully-qualified class name or one of the common formats: [ecs, gelf, logstash]");
 	}
 
 	private Builder newBuilder() {

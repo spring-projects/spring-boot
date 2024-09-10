@@ -242,7 +242,7 @@
     {
       "name": "logging.structured.ecs.service.version",
       "type": "java.lang.String",
-      "description": "Structured ECS service version."
+      "description": "Structured ECS service version (defaults to 'spring.application.version')."
     },
     {
       "name": "logging.structured.format.console",
@@ -253,6 +253,16 @@
       "name": "logging.structured.format.file",
       "type": "java.lang.String",
       "description": "Structured logging format for output to a file. Must be either a format id or a fully qualified class name."
+    },
+    {
+      "name": "logging.structured.gelf.service.name",
+      "type": "java.lang.String",
+      "description": "Structured GELF service name (defaults to 'spring.application.name')."
+    },
+    {
+      "name": "logging.structured.gelf.service.version",
+      "type": "java.lang.String",
+      "description": "Structured GELF service version (defaults to 'spring.application.version')."
     },
     {
       "name": "logging.threshold.console",
@@ -629,6 +639,9 @@
           "value": "ecs"
         },
         {
+          "value": "gelf"
+        },
+        {
           "value": "logstash"
         }
       ],
@@ -646,6 +659,9 @@
       "values": [
         {
           "value": "ecs"
+        },
+        {
+          "value": "gelf"
         },
         {
           "value": "logstash"
