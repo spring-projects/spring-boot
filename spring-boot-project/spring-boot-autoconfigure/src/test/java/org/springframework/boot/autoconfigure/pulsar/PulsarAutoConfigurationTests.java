@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.pulsar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -600,8 +599,8 @@ class PulsarAutoConfigurationTests {
 			@Bean
 			@Order(50)
 			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
-				return (__) -> {
-					throw new RuntimeException("should-not-have-matched");
+				return (containerFactory) -> {
+					throw new IllegalStateException("should-not-have-matched");
 				};
 			}
 
@@ -619,8 +618,9 @@ class PulsarAutoConfigurationTests {
 
 			private void appendToSubscriptionName(ConcurrentPulsarListenerContainerFactory<?> containerFactory,
 					String valueToAppend) {
-				String name = Objects.toString(containerFactory.getContainerProperties().getSubscriptionName(), "");
-				containerFactory.getContainerProperties().setSubscriptionName(name.concat(valueToAppend));
+				String subscriptionName = containerFactory.getContainerProperties().getSubscriptionName();
+				String updatedValue = (subscriptionName != null) ? subscriptionName + valueToAppend : valueToAppend;
+				containerFactory.getContainerProperties().setSubscriptionName(updatedValue);
 			}
 
 		}
@@ -724,8 +724,8 @@ class PulsarAutoConfigurationTests {
 			@Bean
 			@Order(50)
 			PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>> customizerIgnored() {
-				return (__) -> {
-					throw new RuntimeException("should-not-have-matched");
+				return (containerFactory) -> {
+					throw new IllegalStateException("should-not-have-matched");
 				};
 			}
 
@@ -743,8 +743,9 @@ class PulsarAutoConfigurationTests {
 
 			private void appendToReaderListener(DefaultPulsarReaderContainerFactory<?> containerFactory,
 					String valueToAppend) {
-				String name = Objects.toString(containerFactory.getContainerProperties().getReaderListener(), "");
-				containerFactory.getContainerProperties().setReaderListener(name.concat(valueToAppend));
+				Object readerListener = containerFactory.getContainerProperties().getReaderListener();
+				String updatedValue = (readerListener != null) ? readerListener + valueToAppend : valueToAppend;
+				containerFactory.getContainerProperties().setReaderListener(updatedValue);
 			}
 
 		}

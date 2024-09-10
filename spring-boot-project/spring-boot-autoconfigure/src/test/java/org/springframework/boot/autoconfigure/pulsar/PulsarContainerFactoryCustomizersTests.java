@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 
 import org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory;
 import org.springframework.pulsar.config.DefaultPulsarReaderContainerFactory;
@@ -33,10 +32,11 @@ import org.springframework.pulsar.listener.PulsarContainerProperties;
 import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Unit tests for {@link PulsarContainerFactoryCustomizers}.
+ * Tests for {@link PulsarContainerFactoryCustomizers}.
  *
  * @author Chris Bono
  */
@@ -46,11 +46,11 @@ class PulsarContainerFactoryCustomizersTests {
 	void customizeWithNullCustomizersShouldDoNothing() {
 		PulsarContainerFactory<?, ?> containerFactory = mock(PulsarContainerFactory.class);
 		new PulsarContainerFactoryCustomizers(null).customize(containerFactory);
-		BDDMockito.verifyNoInteractions(containerFactory);
+		then(containerFactory).shouldHaveNoInteractions();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void customizeSimplePulsarContainerFactory() {
 		PulsarContainerFactoryCustomizers customizers = new PulsarContainerFactoryCustomizers(
 				Collections.singletonList(new SimplePulsarContainerFactoryCustomizer()));

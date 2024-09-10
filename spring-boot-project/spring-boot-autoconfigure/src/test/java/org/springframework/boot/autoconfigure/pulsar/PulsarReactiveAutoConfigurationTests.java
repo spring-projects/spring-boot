@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.pulsar;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -397,8 +396,8 @@ class PulsarReactiveAutoConfigurationTests {
 			@Bean
 			@Order(50)
 			PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>> customizerIgnored() {
-				return (__) -> {
-					throw new RuntimeException("should-not-have-matched");
+				return (containerFactory) -> {
+					throw new IllegalStateException("should-not-have-matched");
 				};
 			}
 
@@ -416,8 +415,9 @@ class PulsarReactiveAutoConfigurationTests {
 
 			private void appendToSubscriptionName(DefaultReactivePulsarListenerContainerFactory<?> containerFactory,
 					String valueToAppend) {
-				String name = Objects.toString(containerFactory.getContainerProperties().getSubscriptionName(), "");
-				containerFactory.getContainerProperties().setSubscriptionName(name.concat(valueToAppend));
+				String subscriptionName = containerFactory.getContainerProperties().getSubscriptionName();
+				String updatedValue = (subscriptionName != null) ? subscriptionName + valueToAppend : valueToAppend;
+				containerFactory.getContainerProperties().setSubscriptionName(updatedValue);
 			}
 
 		}

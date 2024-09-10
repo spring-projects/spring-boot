@@ -178,7 +178,7 @@ public class PulsarAutoConfiguration {
 	ConcurrentPulsarListenerContainerFactory<?> pulsarListenerContainerFactory(
 			PulsarConsumerFactory<Object> pulsarConsumerFactory, SchemaResolver schemaResolver,
 			TopicResolver topicResolver, ObjectProvider<PulsarAwareTransactionManager> pulsarTransactionManager,
-			PulsarContainerFactoryCustomizers containerFactoryCustomizers, Environment environment) {
+			Environment environment, PulsarContainerFactoryCustomizers containerFactoryCustomizers) {
 		PulsarContainerProperties containerProperties = new PulsarContainerProperties();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
@@ -218,8 +218,8 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(name = "pulsarReaderContainerFactory")
 	DefaultPulsarReaderContainerFactory<?> pulsarReaderContainerFactory(PulsarReaderFactory<?> pulsarReaderFactory,
-			SchemaResolver schemaResolver, PulsarContainerFactoryCustomizers containerFactoryCustomizers,
-			Environment environment) {
+			SchemaResolver schemaResolver, Environment environment,
+			PulsarContainerFactoryCustomizers containerFactoryCustomizers) {
 		PulsarReaderContainerProperties readerContainerProperties = new PulsarReaderContainerProperties();
 		readerContainerProperties.setSchemaResolver(schemaResolver);
 		if (Threading.VIRTUAL.isActive(environment)) {
