@@ -165,7 +165,7 @@ The following component creates a reactive listener endpoint on the `someTopic` 
 include-code::MyBean[]
 
 Spring Boot auto-configuration provides all the components necessary for `ReactivePulsarListener`, such as the `ReactivePulsarListenerContainerFactory` and the consumer factory it uses to construct the underlying reactive Pulsar consumers.
-You can configure these components by specifying any of the `spring.pulsar.listener.*` and `spring.pulsar.consumer.*` prefixed application properties.
+You can configure these components by specifying any of the `spring.pulsar.listener.\*` and `spring.pulsar.consumer.*` prefixed application properties.
 
 If you need more control over the consumer factory configuration, consider registering one or more `ReactiveMessageConsumerBuilderCustomizer` beans.
 These customizers are applied to all consumers created by the factory, and therefore all `@ReactivePulsarListener` instances.
