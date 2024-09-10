@@ -17,6 +17,7 @@
 package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
+import java.util.Set;
 
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
@@ -27,6 +28,7 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.ssl.pem.PemCertificate;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.core.style.ToStringCreator;
@@ -61,7 +63,7 @@ public final class WebServerSslBundle implements SslBundle {
 	}
 
 	private static SslStoreBundle createPemKeyStoreBundle(Ssl ssl) {
-		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails(ssl.getKeyStoreType(), ssl.getCertificate(),
+		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails(ssl.getKeyStoreType(), Set.of(new PemCertificate(ssl.getCertificate())),
 				ssl.getCertificatePrivateKey())
 			.withAlias(ssl.getKeyAlias());
 		return new PemSslStoreBundle(keyStoreDetails, null);
@@ -69,7 +71,7 @@ public final class WebServerSslBundle implements SslBundle {
 
 	private static SslStoreBundle createPemTrustStoreBundle(Ssl ssl) {
 		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails(ssl.getTrustStoreType(),
-				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey())
+				Set.of(new PemCertificate(ssl.getTrustCertificate())), ssl.getTrustCertificatePrivateKey())
 			.withAlias(ssl.getKeyAlias());
 		return new PemSslStoreBundle(null, trustStoreDetails);
 	}

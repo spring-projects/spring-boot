@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.Set;
 
 import javax.net.ssl.TrustManagerFactory;
 
@@ -53,6 +54,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.pem.PemCertificate;
 import org.springframework.boot.ssl.pem.PemSslStore;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.context.annotation.Bean;
@@ -110,7 +112,7 @@ public class CouchbaseAutoConfiguration {
 		}
 		Pem pem = this.properties.getAuthentication().getPem();
 		if (pem.getCertificates() != null) {
-			PemSslStoreDetails details = new PemSslStoreDetails(null, pem.getCertificates(), pem.getPrivateKey());
+			PemSslStoreDetails details = new PemSslStoreDetails(null, Set.of(new PemCertificate(pem.getCertificates())), pem.getPrivateKey());
 			PemSslStore store = PemSslStore.load(details);
 			return CertificateAuthenticator.fromKey(store.privateKey(), pem.getPrivateKeyPassword(),
 					store.certificates());

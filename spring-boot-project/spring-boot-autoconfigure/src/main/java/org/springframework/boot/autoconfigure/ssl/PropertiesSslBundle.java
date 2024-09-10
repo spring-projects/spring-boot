@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -24,12 +27,12 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.ssl.pem.PemCertificate;
 import org.springframework.boot.ssl.pem.PemSslStore;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link SslBundle} backed by {@link JksSslBundleProperties} or
@@ -40,8 +43,6 @@ import org.springframework.util.StringUtils;
  * @since 3.1.0
  */
 public final class PropertiesSslBundle implements SslBundle {
-
-	private static final String OPTIONAL_URL_PREFIX = "optional:";
 
 	private final SslStoreBundle stores;
 
@@ -121,19 +122,12 @@ public final class PropertiesSslBundle implements SslBundle {
 	}
 
 	private static PemSslStoreDetails asPemSslStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreDetails(properties.getType(), getRawCertificate(properties.getCertificate()), properties.getPrivateKey(),
-			properties.getPrivateKeyPassword(), isCertificateOptional(properties.getCertificate()));
-	}
-
-	private static boolean isCertificateOptional(String certificate) {
-		return StringUtils.hasText(certificate) && certificate.startsWith(OPTIONAL_URL_PREFIX);
-	}
-
-	private static String getRawCertificate(String certificate)	{
-		if (isCertificateOptional(certificate)) {
-			return certificate.substring(OPTIONAL_URL_PREFIX.length());
-		}
-		return certificate;
+		PemCertificateParser converter = new PemCertificateParser();
+		Set<PemCertificate> pemCertificates = properties.getCertificates().stream()
+			.map(converter::parse)
+			.collect(Collectors.toSet());
+		return new PemSslStoreDetails(properties.getType(), pemCertificates, properties.getPrivateKey(),
+			properties.getPrivateKeyPassword());
 	}
 
 	/**

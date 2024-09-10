@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 
 /**
@@ -60,7 +63,13 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		/**
 		 * Location or content of the certificate or certificate chain in PEM format.
 		 */
+		@Deprecated
 		private String certificate;
+
+		/**
+		 * Set with location or content of the certificate or certificate chain in PEM format.
+		 */
+		private Set<String> certificates = new HashSet<>();
 
 		/**
 		 * Location or content of the private key in PEM format.
@@ -85,12 +94,27 @@ public class PemSslBundleProperties extends SslBundleProperties {
 			this.type = type;
 		}
 
+		@Deprecated
 		public String getCertificate() {
 			return this.certificate;
 		}
 
+		@Deprecated
 		public void setCertificate(String certificate) {
 			this.certificate = certificate;
+		}
+
+		public Set<String> getCertificates() {
+			if (this.certificate != null) {
+				Set<String> allCertificates = new HashSet<>(this.certificates);
+				allCertificates.add(this.certificate);
+				return allCertificates;
+			}
+			return this.certificates;
+		}
+
+		public void setCertificates(Set<String> certificates) {
+			this.certificates = certificates;
 		}
 
 		public String getPrivateKey() {

@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.pem.PemContent;
 import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -33,9 +32,12 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Moritz Halbritter
  */
-record BundleContentProperty(String name, String value) {
+record BundleContentProperty(String name, String value, boolean optional) {
 
-	private static final String OPTIONAL_URL_PREFIX = "optional:";
+	BundleContentProperty(String name, String value)
+	{
+		this(name, value,false);
+	}
 
 	/**
 	 * Return if the property value is PEM content.
@@ -53,24 +55,16 @@ record BundleContentProperty(String name, String value) {
 		return StringUtils.hasText(this.value);
 	}
 
-	boolean isOptional() {
-		return this.value.startsWith(OPTIONAL_URL_PREFIX);
-	}
-
-	String getRawValue() {
-		if (isOptional()) {
-			return this.value.substring(OPTIONAL_URL_PREFIX.length());
-		}
-		return this.value;
-	}
-
 	WatchablePath toWatchPath() {
 		try {
-			Resource resource = getResource(getRawValue());
+			if (isPemContent()) {
+				return null;
+			}
+			Resource resource = getResource();
 			if (!resource.isFile()) {
 				throw new BundleContentNotWatchableException(this);
 			}
-			return new WatchablePath(Path.of(resource.getFile().getAbsolutePath()), isOptional());
+			return new WatchablePath(this.optional, Path.of(resource.getFile().getAbsolutePath()));
 		}
 		catch (Exception ex) {
 			if (ex instanceof BundleContentNotWatchableException bundleContentNotWatchableException) {
@@ -81,9 +75,8 @@ record BundleContentProperty(String name, String value) {
 		}
 	}
 
-	private Resource getResource(String value) {
-		Assert.state(!isPemContent(), "Value contains PEM content");
-		return new ApplicationResourceLoader().getResource(value);
+	private Resource getResource() {
+		return new ApplicationResourceLoader().getResource(this.value);
 	}
 
 }

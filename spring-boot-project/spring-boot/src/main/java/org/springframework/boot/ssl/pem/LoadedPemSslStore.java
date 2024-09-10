@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -58,11 +59,13 @@ final class LoadedPemSslStore implements PemSslStore {
 	}
 
 	private static List<X509Certificate> loadCertificates(PemSslStoreDetails details) throws IOException {
-		PemContent pemContent = PemContent.load(details.certificates(), details.optional());
-		if (pemContent == null) {
-			return null;
+		List<X509Certificate> certificates = new ArrayList<>();
+		for (PemCertificate certificate : details.certificateSet()) {
+			PemContent pemContent = PemContent.load(certificate.location(), certificate.optional());
+			if (pemContent != null) {
+				certificates.addAll(pemContent.getCertificates());
+			}
 		}
-		List<X509Certificate> certificates = pemContent.getCertificates();
 		Assert.state(!CollectionUtils.isEmpty(certificates), "Loaded certificates are empty");
 		return certificates;
 	}
@@ -70,11 +73,6 @@ final class LoadedPemSslStore implements PemSslStore {
 	private static PrivateKey loadPrivateKey(PemSslStoreDetails details) throws IOException {
 		PemContent pemContent = PemContent.load(details.privateKey());
 		return (pemContent != null) ? pemContent.getPrivateKey(details.privateKeyPassword()) : null;
-	}
-
-	@Override
-	public boolean optional() {
-		return this.details.optional();
 	}
 
 	@Override

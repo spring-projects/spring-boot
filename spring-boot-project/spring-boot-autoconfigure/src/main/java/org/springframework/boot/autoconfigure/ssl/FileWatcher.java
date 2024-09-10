@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2012-2023 the original author or authors.
  *
@@ -217,8 +218,7 @@ class FileWatcher implements Closeable {
 	private record Registration(Set<WatchablePath> paths, Runnable action) {
 
 		Registration {
-			paths = paths.stream().map(watchablePath ->
-						new WatchablePath(watchablePath.path().toAbsolutePath(), watchablePath.optional()))
+			paths = paths.stream().map(watchablePath -> new WatchablePath(watchablePath.optional(), watchablePath.path().toAbsolutePath()))
 				.collect(Collectors.toSet());
 		}
 

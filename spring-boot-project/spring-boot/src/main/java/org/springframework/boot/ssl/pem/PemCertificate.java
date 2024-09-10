@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.ssl;
+package org.springframework.boot.ssl.pem;
 
-import java.nio.file.Path;
+public record PemCertificate (String location, boolean optional) {
 
-record WatchablePath(boolean optional, Path path) {
+	public PemCertificate(String location) {
+		this(location, false);
+	}
 }

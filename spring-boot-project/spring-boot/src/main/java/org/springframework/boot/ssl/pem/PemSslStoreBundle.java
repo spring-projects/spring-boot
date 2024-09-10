@@ -82,7 +82,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	}
 
 	private static KeyStore createKeyStore(String name, PemSslStore pemSslStore) {
-		if (pemSslStore == null || pemSslStore.optional() && pemSslStore.certificates() == null) {
+		if (pemSslStore == null) {
 			return null;
 		}
 		try {

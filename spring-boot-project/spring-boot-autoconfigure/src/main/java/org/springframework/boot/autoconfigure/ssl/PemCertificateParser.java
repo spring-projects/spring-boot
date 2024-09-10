@@ -16,7 +16,15 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.nio.file.Path;
+import org.springframework.boot.ssl.pem.PemCertificate;
 
-record WatchablePath(boolean optional, Path path) {
+class PemCertificateParser {
+
+	public static final String OPTIONAL_PREFIX = "optional:";
+
+	public PemCertificate parse(String source) {
+		boolean optional = source.startsWith(OPTIONAL_PREFIX);
+		String location = optional ? source.substring(OPTIONAL_PREFIX.length()) : source;
+		return new PemCertificate(location, optional);
+	}
 }
