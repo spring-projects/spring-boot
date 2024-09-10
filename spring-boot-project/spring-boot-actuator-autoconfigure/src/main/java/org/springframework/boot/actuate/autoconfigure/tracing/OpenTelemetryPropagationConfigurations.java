@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * OpenTelemetry propagation configurations. They are imported by
- * {@link OpenTelemetryAutoConfiguration}.
+ * {@link OpenTelemetryTracingAutoConfiguration}.
  *
  * @author Moritz Halbritter
  */

@@ -109,7 +109,7 @@ org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributor
 org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.NoopTracerAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusExemplarsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusSimpleclientExemplarsAutoConfiguration

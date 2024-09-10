@@ -66,7 +66,7 @@ class OtlpAutoConfigurationIntegrationTests {
 		.withPropertyValues("management.tracing.sampling.probability=1.0")
 		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
 				MicrometerTracingAutoConfiguration.class, OpenTelemetryAutoConfiguration.class,
-				org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration.class,
+				org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration.class,
 				OtlpAutoConfiguration.class));
 
 	private final MockWebServer mockWebServer = new MockWebServer();
