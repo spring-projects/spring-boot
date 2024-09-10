@@ -26,19 +26,17 @@ import org.springframework.util.StringUtils;
  *
  * @param name the application name
  * @param version the version of the application
- * @param environment the name of the environment the application is running in
- * @param nodeName the name of the node the application is running on
  * @author Samuel Lissner
  * @since 3.4.0
  */
-public record GraylogExtendedLogFormatService(String name, String version, String environment, String nodeName) {
+public record GraylogExtendedLogFormatService(String name, String version) {
 
-	static final GraylogExtendedLogFormatService NONE = new GraylogExtendedLogFormatService(null, null, null, null);
+	static final GraylogExtendedLogFormatService NONE = new GraylogExtendedLogFormatService(null, null);
 
 	private GraylogExtendedLogFormatService withDefaults(Environment environment) {
 		String name = withFallbackProperty(environment, this.name, "spring.application.name");
 		String version = withFallbackProperty(environment, this.version, "spring.application.version");
-		return new GraylogExtendedLogFormatService(name, version, this.environment, this.nodeName);
+		return new GraylogExtendedLogFormatService(name, version);
 	}
 
 	private String withFallbackProperty(Environment environment, String value, String property) {
@@ -53,8 +51,6 @@ public record GraylogExtendedLogFormatService(String name, String version, Strin
 		// note "host" is a field name prescribed by GELF
 		members.add("host", this::name).whenHasLength();
 		members.add("_service_version", this::version).whenHasLength();
-		members.add("_service_environment", this::environment).whenHasLength();
-		members.add("_service_node_name", this::nodeName).whenHasLength();
 	}
 
 	/**

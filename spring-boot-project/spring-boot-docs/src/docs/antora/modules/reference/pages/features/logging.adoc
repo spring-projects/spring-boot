@@ -516,7 +516,7 @@ A log line looks like this:
 
 [source,json]
 ----
-{"version":"1.1","short_message":"Hello structured logging!","timestamp":1.725530750186E9,"level":6,"_level_name":"INFO","_process_pid":9086,"_process_thread_name":"main","host":"spring-boot-gelf","_log_logger":"com.slissner.springbootgelf.ExampleLogger","_userId":"1","_testkey_testmessage":"test"}
+{"version":"1.1","short_message":"No active profile set, falling back to 1 default profile: \"default\"","timestamp":1725958035.857,"level":6,"_level_name":"INFO","_process_pid":47649,"_process_thread_name":"main","_log_logger":"org.example.Application"}
 ----
 
 This format also adds every key value pair contained in the MDC to the JSON object.
@@ -532,8 +532,6 @@ logging:
       service:
         name: MyService
         version: 1.0
-        environment: Production
-        node-name: Primary
 ----
 
 NOTE: configprop:logging.structured.gelf.service.name[] will default to configprop:spring.application.name[] if not specified.

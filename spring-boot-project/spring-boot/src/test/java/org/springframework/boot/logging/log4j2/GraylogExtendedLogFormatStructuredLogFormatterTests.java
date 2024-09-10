@@ -22,7 +22,10 @@ import org.apache.logging.log4j.core.impl.JdkMapAdapterStringMap;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +34,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link GraylogExtendedLogFormatStructuredLogFormatter}.
  *
  * @author Samuel Lissner
+ * @author Moritz Halbritter
  */
+@ExtendWith(OutputCaptureExtension.class)
 class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
 
 	private GraylogExtendedLogFormatStructuredLogFormatter formatter;
@@ -41,8 +46,6 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.gelf.service.name", "name");
 		environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
-		environment.setProperty("logging.structured.gelf.service.environment", "test");
-		environment.setProperty("logging.structured.gelf.service.node-name", "node-1");
 		environment.setProperty("spring.application.pid", "1");
 		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(environment);
 	}
@@ -54,23 +57,72 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		String json = this.formatter.format(event);
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(
+				map("version", "1.1", "host", "name", "timestamp", 1719910193.0, "level", 6, "_level_name", "INFO",
+						"_process_pid", 1, "_process_thread_name", "main", "_service_version", "1.0.0", "_log_logger",
+						"org.example.Test", "short_message", "message", "_mdc-1", "mdc-v-1"));
+	}
+
+	@Test
+	void shouldFormatMillisecondsInTimestamp() {
+		MutableLogEvent event = createEvent();
+		event.setTimeMillis(1719910193123L);
+		String json = this.formatter.format(event);
+		assertThat(json).contains("\"timestamp\":1719910193.123");
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("version", "1.1", "host", "name", "timestamp",
-				1719910193.000D, "level", 6, "_level_name", "INFO", "_process_pid", 1, "_process_thread_name", "main",
-				"_service_version", "1.0.0", "_service_environment", "test", "_service_node_name", "node-1",
-				"_log_logger", "org.example.Test", "short_message", "message", "_mdc-1", "mdc-v-1"));
+				1719910193.123, "level", 6, "_level_name", "INFO", "_process_pid", 1, "_process_thread_name", "main",
+				"_service_version", "1.0.0", "_log_logger", "org.example.Test", "short_message", "message"));
+	}
+
+	@Test
+	void shouldNotAllowInvalidFieldNames(CapturedOutput output) {
+		MutableLogEvent event = createEvent();
+		event.setContextData(new JdkMapAdapterStringMap(Map.of("/", "value"), true));
+		String json = this.formatter.format(event);
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("version", "1.1", "host", "name", "timestamp",
+				1719910193.0, "level", 6, "_level_name", "INFO", "_process_pid", 1, "_process_thread_name", "main",
+				"_service_version", "1.0.0", "_log_logger", "org.example.Test", "short_message", "message"));
+		assertThat(output).contains("'/' is not a valid field name according to GELF standard");
+	}
+
+	@Test
+	void shouldNotAllowIllegalFieldNames(CapturedOutput output) {
+		MutableLogEvent event = createEvent();
+		event.setContextData(new JdkMapAdapterStringMap(Map.of("id", "1"), true));
+		String json = this.formatter.format(event);
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("version", "1.1", "host", "name", "timestamp",
+				1719910193.0, "level", 6, "_level_name", "INFO", "_process_pid", 1, "_process_thread_name", "main",
+				"_service_version", "1.0.0", "_log_logger", "org.example.Test", "short_message", "message"));
+		assertThat(output).contains("'id' is an illegal field name according to GELF standard");
+	}
+
+	@Test
+	void shouldNotAddDoubleUnderscoreToCustomFields() {
+		MutableLogEvent event = createEvent();
+		event.setContextData(new JdkMapAdapterStringMap(Map.of("_custom", "value"), true));
+		String json = this.formatter.format(event);
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(
+				map("version", "1.1", "host", "name", "timestamp", 1719910193.0, "level", 6, "_level_name", "INFO",
+						"_process_pid", 1, "_process_thread_name", "main", "_service_version", "1.0.0", "_log_logger",
+						"org.example.Test", "short_message", "message", "_custom", "value"));
 	}
 
 	@Test
 	void shouldFormatException() {
 		MutableLogEvent event = createEvent();
 		event.setThrown(new RuntimeException("Boom"));
-
 		String json = this.formatter.format(event);
 		Map<String, Object> deserialized = deserialize(json);
-
 		String fullMessage = (String) deserialized.get("full_message");
 		String stackTrace = (String) deserialized.get("_error_stack_trace");
-
 		assertThat(fullMessage).startsWith(
 				"""
 						message

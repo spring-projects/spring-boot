@@ -35,10 +35,8 @@ class GraylogExtendedLogFormatServiceTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.gelf.service.name", "spring");
 		environment.setProperty("logging.structured.gelf.service.version", "1.2.3");
-		environment.setProperty("logging.structured.gelf.service.environment", "prod");
-		environment.setProperty("logging.structured.gelf.service.node-name", "boot");
 		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService("spring", "1.2.3", "prod", "boot"));
+		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService("spring", "1.2.3"));
 	}
 
 	@Test
@@ -46,7 +44,7 @@ class GraylogExtendedLogFormatServiceTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.application.name", "spring");
 		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService("spring", null, null, null));
+		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService("spring", null));
 	}
 
 	@Test
@@ -54,23 +52,21 @@ class GraylogExtendedLogFormatServiceTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.application.version", "1.2.3");
 		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService(null, "1.2.3", null, null));
+		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService(null, "1.2.3"));
 	}
 
 	@Test
 	void getWhenNoPropertiesToBind() {
 		MockEnvironment environment = new MockEnvironment();
 		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService(null, null, null, null));
+		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService(null, null));
 	}
 
 	@Test
 	void addToJsonMembersCreatesValidJson() {
-		GraylogExtendedLogFormatService service = new GraylogExtendedLogFormatService("spring", "1.2.3", "prod",
-				"boot");
+		GraylogExtendedLogFormatService service = new GraylogExtendedLogFormatService("spring", "1.2.3");
 		JsonWriter<GraylogExtendedLogFormatService> writer = JsonWriter.of(service::jsonMembers);
-		assertThat(writer.writeToString(service)).isEqualTo("{\"host\":\"spring\",\"_service_version\":\"1.2.3\","
-				+ "\"_service_environment\":\"prod\",\"_service_node_name\":\"boot\"}");
+		assertThat(writer.writeToString(service)).isEqualTo("{\"host\":\"spring\",\"_service_version\":\"1.2.3\"}");
 	}
 
 }

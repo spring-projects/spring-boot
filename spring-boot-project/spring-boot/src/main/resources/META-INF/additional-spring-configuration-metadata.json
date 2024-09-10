@@ -255,19 +255,9 @@
       "description": "Structured logging format for output to a file. Must be either a format id or a fully qualified class name."
     },
     {
-      "name": "logging.structured.gelf.service.environment",
-      "type": "java.lang.String",
-      "description": "Structured GELF service environment."
-    },
-    {
       "name": "logging.structured.gelf.service.name",
       "type": "java.lang.String",
       "description": "Structured GELF service name (defaults to 'spring.application.name')."
-    },
-    {
-      "name": "logging.structured.gelf.service.node-name",
-      "type": "java.lang.String",
-      "description": "Structured GELF service node name."
     },
     {
       "name": "logging.structured.gelf.service.version",
