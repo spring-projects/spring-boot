@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link AntoraAsciidocAttributes}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  */
 class AntoraAsciidocAttributesTests {
 
@@ -78,10 +79,19 @@ class AntoraAsciidocAttributesTests {
 	}
 
 	@Test
-	void versionReferenceFromSpringDataDependencyVersion() {
+	void versionReferenceFromSpringDataDependencyReleaseVersion() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
-				mockDependencyVersions(), null);
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "1.2.3");
+				mockDependencyVersions("3.2.5"), null);
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2");
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
+	}
+
+	@Test
+	void versionReferenceFromSpringDataDependencySnapshotVersion() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+				mockDependencyVersions("3.2.0-SNAPSHOT"), null);
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2-SNAPSHOT");
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
 	}
 
 	@Test
@@ -173,29 +183,33 @@ class AntoraAsciidocAttributesTests {
 	}
 
 	private Map<String, String> mockDependencyVersions() {
+		return mockDependencyVersions("1.2.3");
+	}
+
+	private Map<String, String> mockDependencyVersions(String version) {
 		Map<String, String> versions = new LinkedHashMap<>();
-		addMockSpringDataVersion(versions, "spring-data-commons");
-		addMockSpringDataVersion(versions, "spring-data-cassandra");
-		addMockSpringDataVersion(versions, "spring-data-couchbase");
-		addMockSpringDataVersion(versions, "spring-data-elasticsearch");
-		addMockSpringDataVersion(versions, "spring-data-jdbc");
-		addMockSpringDataVersion(versions, "spring-data-jpa");
-		addMockSpringDataVersion(versions, "spring-data-mongodb");
-		addMockSpringDataVersion(versions, "spring-data-neo4j");
-		addMockSpringDataVersion(versions, "spring-data-r2dbc");
-		addMockSpringDataVersion(versions, "spring-data-rest-core");
-		addMockJacksonVersion(versions, "jackson-annotations");
-		addMockJacksonVersion(versions, "jackson-core");
-		addMockJacksonVersion(versions, "jackson-databind");
+		addMockSpringDataVersion(versions, "spring-data-commons", version);
+		addMockSpringDataVersion(versions, "spring-data-cassandra", version);
+		addMockSpringDataVersion(versions, "spring-data-couchbase", version);
+		addMockSpringDataVersion(versions, "spring-data-elasticsearch", version);
+		addMockSpringDataVersion(versions, "spring-data-jdbc", version);
+		addMockSpringDataVersion(versions, "spring-data-jpa", version);
+		addMockSpringDataVersion(versions, "spring-data-mongodb", version);
+		addMockSpringDataVersion(versions, "spring-data-neo4j", version);
+		addMockSpringDataVersion(versions, "spring-data-r2dbc", version);
+		addMockSpringDataVersion(versions, "spring-data-rest-core", version);
+		addMockJacksonVersion(versions, "jackson-annotations", version);
+		addMockJacksonVersion(versions, "jackson-core", version);
+		addMockJacksonVersion(versions, "jackson-databind", version);
 		return versions;
 	}
 
-	private void addMockSpringDataVersion(Map<String, String> versions, String artifactId) {
-		versions.put("org.springframework.data:" + artifactId, "1.2.3");
+	private void addMockSpringDataVersion(Map<String, String> versions, String artifactId, String version) {
+		versions.put("org.springframework.data:" + artifactId, version);
 	}
 
-	private void addMockJacksonVersion(Map<String, String> versions, String artifactId) {
-		versions.put("com.fasterxml.jackson.core:" + artifactId, "2.3.4");
+	private void addMockJacksonVersion(Map<String, String> versions, String artifactId, String version) {
+		versions.put("com.fasterxml.jackson.core:" + artifactId, version);
 	}
 
 }

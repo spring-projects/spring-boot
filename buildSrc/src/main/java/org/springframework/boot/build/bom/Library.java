@@ -253,6 +253,15 @@ public class Library {
 			return result;
 		}
 
+		public String forMajorMinorGeneration() {
+			String[] parts = parts();
+			String result = parts[0] + "." + parts[1] + ".x";
+			if (toString().endsWith("SNAPSHOT")) {
+				result += "-SNAPSHOT";
+			}
+			return result;
+		}
+
 		private String[] parts() {
 			return toString().split("[.-]");
 		}

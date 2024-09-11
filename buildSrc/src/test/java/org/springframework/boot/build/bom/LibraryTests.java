@@ -72,4 +72,16 @@ class LibraryTests {
 		assertThat(library.getLinkRootName()).isEqualTo("spring-data");
 	}
 
+	@Test
+	void toMajorMinorGenerationWithRelease() {
+		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
+		assertThat(version.forMajorMinorGeneration()).isEqualTo("1.2.x");
+	}
+
+	@Test
+	void toMajorMinorGenerationWithSnapshot() {
+		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("2.0.0-SNAPSHOT"));
+		assertThat(version.forMajorMinorGeneration()).isEqualTo("2.0.x-SNAPSHOT");
+	}
+
 }

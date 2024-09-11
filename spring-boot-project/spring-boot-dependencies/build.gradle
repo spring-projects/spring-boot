@@ -1911,8 +1911,10 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-amqp")
 			github("https://github.com/spring-projects/spring-amqp")
-			javadoc("https://docs.spring.io/spring-amqp/docs/{version}/api")
-			docs("https://docs.spring.io/spring-amqp/reference/{version}")
+			javadoc { version -> "https://docs.spring.io/spring-amqp/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
+			docs { version -> "https://docs.spring.io/spring-amqp/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
 		}
 	}
@@ -1926,7 +1928,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-authorization-server")
 			github("https://github.com/spring-projects/spring-authorization-server")
-			javadoc("https://docs.spring.io/spring-authorization-server/docs/{version}/api")
+			javadoc {version -> "https://docs.spring.io/spring-authorization-server/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-authorization-server/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-authorization-server/releases/tag/{version}")
@@ -1942,7 +1945,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-batch")
 			github("https://github.com/spring-projects/spring-batch")
-			javadoc("https://docs.spring.io/spring-batch/docs/{version}/api")
+			javadoc { version -> "https://docs.spring.io/spring-batch/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-batch/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-batch/releases/tag/v{version}")
@@ -1972,8 +1976,10 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-framework")
 			github("https://github.com/spring-projects/spring-framework")
-			javadoc("https://docs.spring.io/spring-framework/docs/{version}/javadoc-api")
-			docs("https://docs.spring.io/spring-framework/reference/{version}")
+			javadoc { version ->"https://docs.spring.io/spring-framework/docs/%s/javadoc-api"
+				.formatted(version.forMajorMinorGeneration()) }
+			docs { version -> "https://docs.spring.io/spring-framework/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
@@ -1988,7 +1994,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-graphql")
 			github("https://github.com/spring-projects/spring-graphql")
-			javadoc("https://docs.spring.io/spring-graphql/docs/{version}/api")
+			javadoc { version -> "https://docs.spring.io/spring-graphql/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-graphql/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
@@ -2004,8 +2011,10 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-hateoas")
 			github("https://github.com/spring-projects/spring-hateoas")
-			javadoc("https://docs.spring.io/spring-hateoas/docs/{version}/api")
-			docs("https://docs.spring.io/spring-hateoas/docs/{version}/reference/html")
+			javadoc { version -> "https://docs.spring.io/spring-hateoas/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
+			docs { version -> "https://docs.spring.io/spring-hateoas/docs/%s/reference/html"
+				.formatted(version.forMajorMinorGeneration()) }
 			releaseNotes("https://github.com/spring-projects/spring-hateoas/releases/tag/{version}")
 		}
 	}
@@ -2019,7 +2028,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-integration")
 			github("https://github.com/spring-projects/spring-integration")
-			javadoc("https://docs.spring.io/spring-integration/docs/{version}/api")
+			javadoc { version -> "https://docs.spring.io/spring-integration/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-integration/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-integration/releases/tag/v{version}")
@@ -2036,7 +2046,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-kafka")
 			github("https://github.com/spring-projects/spring-kafka")
-			javadoc("https://docs.spring.io/spring-kafka/docs/{version}/api")
+			javadoc { version -> "https://docs.spring.io/spring-kafka/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-kafka/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-kafka/releases/tag/v{version}")
@@ -2055,8 +2066,10 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-ldap")
 			github("https://github.com/spring-projects/spring-ldap")
-			javadoc("https://docs.spring.io/spring-ldap/docs/{version}/api")
-			docs("https://docs.spring.io/spring-ldap/reference/{version}")
+			javadoc { version -> "https://docs.spring.io/spring-ldap/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
+			docs { version -> "https://docs.spring.io/spring-ldap/reference/%s"
+				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-ldap/releases/tag/{version}")
 		}
 	}
@@ -2070,8 +2083,10 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-pulsar")
 			github("https://github.com/spring-projects/spring-pulsar")
-			javadoc("https://docs.spring.io/spring-pulsar/docs/{version}/api/")
-			docs("https://docs.spring.io/spring-pulsar/docs/{version}/reference")
+			javadoc { version -> "https://docs.spring.io/spring-pulsar/docs/%s/api/"
+				.formatted(version.forMajorMinorGeneration()) }
+			docs { version -> "https://docs.spring.io/spring-pulsar/docs/%s/reference"
+				.formatted(version.forMajorMinorGeneration()) }
 			releaseNotes("https://github.com/spring-projects/spring-pulsar/releases/tag/v{version}")
 		}
 	}
@@ -2085,8 +2100,10 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-restdocs")
 			github("https://github.com/spring-projects/spring-restdocs")
-			javadoc("https://docs.spring.io/spring-restdocs/docs/{version}/api/")
-			docs("https://docs.spring.io/spring-restdocs/docs/{version}/reference/htmlsingle/")
+			javadoc { version -> "https://docs.spring.io/spring-restdocs/docs/%s/api/"
+				.formatted(version.forMajorMinorGeneration()) }
+			docs { version -> "https://docs.spring.io/spring-restdocs/docs/%s/reference/htmlsingle/"
+					.formatted(version.forMajorMinorGeneration()) }
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
 	}
@@ -2112,7 +2129,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-security")
 			github("https://github.com/spring-projects/spring-security")
-			javadoc("https://docs.spring.io/spring-security/site/docs/{version}/api")
+			javadoc { version -> "https://docs.spring.io/spring-security/site/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-security/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
@@ -2132,7 +2150,8 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-session")
 			github("https://github.com/spring-projects/spring-session")
-			javadoc("https://docs.spring.io/spring-session/docs/{version}/api")
+			javadoc { version -> "https://docs.spring.io/spring-session/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-session/reference/%s"
 				.formatted(version.forAntora()) }
 			releaseNotes("https://github.com/spring-projects/spring-session/releases/tag/{version}")
@@ -2148,8 +2167,10 @@ bom {
 		links("spring-webservices") {
 			site("https://spring.io/projects/spring-ws")
 			github("https://github.com/spring-projects/spring-ws")
-			javadoc("https://docs.spring.io/spring-ws/docs/{version}/api")
-			docs("https://docs.spring.io/spring-ws/docs/{version}/reference/html")
+			javadoc { version -> "https://docs.spring.io/spring-ws/docs/%s/api"
+				.formatted(version.forMajorMinorGeneration()) }
+			docs { version -> "https://docs.spring.io/spring-ws/docs/%s/reference/html"
+				.formatted(version.forMajorMinorGeneration()) }
 			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/v{version}")
 		}
 	}
