@@ -54,14 +54,12 @@ import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEventPublisherApplicationListener.EventPublisherBeansContextWrapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -92,11 +90,6 @@ class OpenTelemetryTracingAutoConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(
 				org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration.class,
 				OpenTelemetryTracingAutoConfiguration.class));
-
-	@BeforeAll
-	static void addWrapper() {
-		EventPublisherBeansContextWrapper.addWrapperIfNecessary();
-	}
 
 	@Test
 	void shouldSupplyBeans() {
@@ -354,7 +347,7 @@ class OpenTelemetryTracingAutoConfigurationTests {
 	}
 
 	private void initializeOpenTelemetry(ConfigurableApplicationContext context) {
-		context.addApplicationListener(new OpenTelemetryEventPublisherApplicationListener());
+		context.addApplicationListener(new OpenTelemetryEventPublisherBeansApplicationListener());
 		Span.current();
 	}
 

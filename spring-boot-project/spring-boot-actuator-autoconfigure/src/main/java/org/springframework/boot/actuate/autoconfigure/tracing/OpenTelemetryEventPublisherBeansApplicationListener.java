@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.UnaryOperator;
 
 import io.micrometer.tracing.otel.bridge.EventPublishingContextWrapper;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
@@ -42,17 +41,25 @@ import org.springframework.util.MultiValueMap;
 /**
  * {@link ApplicationListener} to add an OpenTelemetry {@link ContextStorage} wrapper for
  * {@link EventPublisher} bean support. A single {@link ContextStorage} wrapper is added
- * as early as possible then updated with {@link EventPublisher} beans as needed.
+ * on the {@link ApplicationStartingEvent} then updated with {@link EventPublisher} beans
+ * as needed.
+ * <p>
+ * The {@link #addWrapper()} method may also be called directly if the
+ * {@link ApplicationStartingEvent} isn't called early enough or isn't fired.
  *
  * @author Phillip Webb
+ * @since 3.4.0
+ * @see OpenTelemetryEventPublisherBeansTestExecutionListener
  */
-class OpenTelemetryEventPublisherApplicationListener implements GenericApplicationListener {
+public class OpenTelemetryEventPublisherBeansApplicationListener implements GenericApplicationListener {
 
 	private static final boolean OTEL_CONTEXT_PRESENT = ClassUtils.isPresent("io.opentelemetry.context.ContextStorage",
 			null);
 
 	private static final boolean MICROMETER_OTEL_PRESENT = ClassUtils
 		.isPresent("io.micrometer.tracing.otel.bridge.OtelTracer", null);
+
+	private static final AtomicBoolean added = new AtomicBoolean();
 
 	@Override
 	public int getOrder() {
@@ -69,11 +76,11 @@ class OpenTelemetryEventPublisherApplicationListener implements GenericApplicati
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (!OTEL_CONTEXT_PRESENT || !MICROMETER_OTEL_PRESENT) {
+		if (!isInstallable()) {
 			return;
 		}
 		if (event instanceof ApplicationStartingEvent) {
-			EventPublisherBeansContextWrapper.addWrapperIfNecessary();
+			addWrapper();
 		}
 		if (event instanceof ContextRefreshedEvent contextRefreshedEvent) {
 			ApplicationContext applicationContext = contextRefreshedEvent.getApplicationContext();
@@ -83,92 +90,105 @@ class OpenTelemetryEventPublisherApplicationListener implements GenericApplicati
 				.stream()
 				.map(EventPublishingContextWrapper::new)
 				.toList();
-			EventPublisherBeansContextWrapper.instance.put(applicationContext, publishers);
+			Wrapper.instance.put(applicationContext, publishers);
 		}
 		if (event instanceof ContextClosedEvent contextClosedEvent) {
-			EventPublisherBeansContextWrapper.instance.remove(contextClosedEvent.getApplicationContext());
+			Wrapper.instance.remove(contextClosedEvent.getApplicationContext());
 		}
 	}
 
 	/**
-	 * The single {@link ContextStorage} wrapper that delegates to {@link EventPublisher}
+	 * {@link ContextStorage#addWrapper(java.util.function.Function) Add} the
+	 * {@link ContextStorage} wrapper to ensure that {@link EventPublisher} are propagated
+	 * correctly.
+	 */
+	public static void addWrapper() {
+		if (isInstallable() && added.compareAndSet(false, true)) {
+			Wrapper.instance.addWrapper();
+		}
+	}
+
+	private static boolean isInstallable() {
+		return OTEL_CONTEXT_PRESENT && MICROMETER_OTEL_PRESENT;
+	}
+
+	/**
+	 * Single instance class used to add the wrapper and manage the {@link EventPublisher}
 	 * beans.
 	 */
-	static class EventPublisherBeansContextWrapper implements UnaryOperator<ContextStorage> {
+	static final class Wrapper {
 
-		private static final AtomicBoolean added = new AtomicBoolean();
+		static Wrapper instance = new Wrapper();
 
-		private static final EventPublisherBeansContextWrapper instance = new EventPublisherBeansContextWrapper();
+		private final MultiValueMap<ApplicationContext, EventPublishingContextWrapper> beans = new LinkedMultiValueMap<>();
 
-		private final MultiValueMap<ApplicationContext, EventPublishingContextWrapper> publishers = new LinkedMultiValueMap<>();
+		private volatile ContextStorage storageDelegate;
 
-		private volatile ContextStorage delegate;
-
-		static void addWrapperIfNecessary() {
-			if (added.compareAndSet(false, true)) {
-				ContextStorage.addWrapper(instance);
-			}
+		private Wrapper() {
 		}
 
-		@Override
-		public ContextStorage apply(ContextStorage contextStorage) {
-			return new EventPublisherBeansContextStorage(contextStorage);
+		private void addWrapper() {
+			ContextStorage.addWrapper(Storage::new);
 		}
 
 		void put(ApplicationContext applicationContext, List<EventPublishingContextWrapper> publishers) {
 			synchronized (this) {
-				this.publishers.addAll(applicationContext, publishers);
-				this.delegate = null;
+				this.beans.addAll(applicationContext, publishers);
+				this.storageDelegate = null;
 			}
 		}
 
 		void remove(ApplicationContext applicationContext) {
 			synchronized (this) {
-				this.publishers.remove(applicationContext);
-				this.delegate = null;
+				this.beans.remove(applicationContext);
+				this.storageDelegate = null;
 			}
 		}
 
-		private ContextStorage getDelegate(ContextStorage parent) {
-			ContextStorage delegate = this.delegate;
+		ContextStorage getStorageDelegate(ContextStorage parent) {
+			ContextStorage delegate = this.storageDelegate;
 			if (delegate == null) {
 				synchronized (this) {
 					delegate = parent;
-					for (List<EventPublishingContextWrapper> publishers : this.publishers.values()) {
+					for (List<EventPublishingContextWrapper> publishers : this.beans.values()) {
 						for (EventPublishingContextWrapper publisher : publishers) {
 							delegate = publisher.apply(delegate);
 						}
 					}
+					this.storageDelegate = delegate;
 				}
 			}
 			return delegate;
 		}
 
 		/**
-		 * The wrapped {@link ContextStorage} that delegates to the
-		 * {@link EventPublisherBeansContextWrapper}.
+		 * {@link ContextStorage} that delegates to the {@link EventPublisher} beans.
 		 */
-		class EventPublisherBeansContextStorage implements ContextStorage {
+		class Storage implements ContextStorage {
 
 			private final ContextStorage parent;
 
-			EventPublisherBeansContextStorage(ContextStorage wrapped) {
-				this.parent = wrapped;
+			Storage(ContextStorage parent) {
+				this.parent = parent;
 			}
 
 			@Override
 			public Scope attach(Context toAttach) {
-				return getDelegate(this.parent).attach(toAttach);
+				return getDelegate().attach(toAttach);
 			}
 
 			@Override
 			public Context current() {
-				return getDelegate(this.parent).current();
+				return getDelegate().current();
 			}
 
 			@Override
 			public Context root() {
-				return getDelegate(this.parent).root();
+				return getDelegate().root();
+			}
+
+			private ContextStorage getDelegate() {
+				return getStorageDelegate(this.parent);
 			}
 
 		}

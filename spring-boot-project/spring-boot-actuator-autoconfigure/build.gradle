@@ -106,6 +106,7 @@ dependencies {
 	optional("org.hibernate.orm:hibernate-micrometer")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
+	optional("org.junit.platform:junit-platform-launcher")
 	optional("org.liquibase:liquibase-core") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}

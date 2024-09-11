@@ -31,7 +31,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.slf4j.MDC;
 
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEventPublisherApplicationListener.EventPublisherBeansContextWrapper;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
@@ -58,7 +57,7 @@ class BaggagePropagationIntegrationTests {
 	@BeforeEach
 	@AfterEach
 	void setup() {
-		EventPublisherBeansContextWrapper.addWrapperIfNecessary();
+		OpenTelemetryEventPublisherBeansApplicationListener.addWrapper();
 		MDC.clear();
 	}
 
@@ -291,7 +290,7 @@ class BaggagePropagationIntegrationTests {
 
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
-			applicationContext.addApplicationListener(new OpenTelemetryEventPublisherApplicationListener());
+			applicationContext.addApplicationListener(new OpenTelemetryEventPublisherBeansApplicationListener());
 		}
 
 	}
