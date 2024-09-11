@@ -54,7 +54,7 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/angus-mail/releases/tag/{version}")
 		}
 	}
-	library("Artemis", "2.36.0") {
+	library("Artemis", "2.37.0") {
 		group("org.apache.activemq") {
 			imports = [
 				"artemis-bom"
