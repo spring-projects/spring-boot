@@ -646,7 +646,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			LogFile logFile = getLogFile(file.getPath(), null);
 			initialize(this.initializationContext, null, logFile);
 			assertThat(output).contains("LevelChangePropagator")
-				.contains("SizeAndTimeBasedFNATP")
+				.contains("SizeAndTimeBasedFileNamingAndTriggeringPolicy")
 				.contains("DebugLogbackConfigurator");
 		}
 		finally {
