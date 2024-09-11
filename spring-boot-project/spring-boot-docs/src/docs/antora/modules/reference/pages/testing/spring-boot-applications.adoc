@@ -417,14 +417,14 @@ dependencies {
 }
 ----
 
-This testing module ships the {url-spring-graphql-docs}/#testing-graphqltester[GraphQlTester].
+This testing module ships the {url-spring-graphql-docs}/testing.html#testing.graphqltester[GraphQlTester].
 The tester is heavily used in test, so be sure to become familiar with using it.
 There are `GraphQlTester` variants and Spring Boot will auto-configure them depending on the type of tests:
 
 * the `ExecutionGraphQlServiceTester` performs tests on the server side, without a client nor a transport
 * the `HttpGraphQlTester` performs tests with a client that connects to a server, with or without a live server
 
-Spring Boot helps you to test your {url-spring-graphql-docs}/#controllers[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
+Spring Boot helps you to test your {url-spring-graphql-docs}/controllers.html[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
 `@GraphQlTest` auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
 This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComponent`, `Converter`, `GenericConverter`, `DataFetcherExceptionResolver`, `Instrumentation` and `GraphQlSourceBuilderCustomizer`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@GraphQlTest` annotation is used.
