@@ -248,7 +248,7 @@ For JPA components (such as converters) that are created as Spring beans, use `O
 ====
 
 TIP: We have barely scratched the surface of Spring Data JPA.
-For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference documentation].
+For complete details, see the {spring-data-jpa-docs}/[Spring Data JPA reference documentation].
 
 
 
@@ -260,7 +260,7 @@ To use Spring Data Envers, make sure your repository extends from `RevisionRepos
 
 include::code:CountryRepository[]
 
-NOTE: For more details, check the {spring-data-jpa-docs}/#envers[Spring Data Envers reference documentation].
+NOTE: For more details, check the {spring-data-jpa-docs}/envers.html[Spring Data Envers reference documentation].
 
 
 
@@ -312,7 +312,7 @@ Spring Boot will auto-configure Spring Data's JDBC repositories when the necessa
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
 If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or an `AbstractJdbcConfiguration` subclass to your application.
 
-TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}[reference documentation].
+TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}/[reference documentation].
 
 
 
@@ -522,4 +522,4 @@ The following example shows a typical Spring Data repository interface definitio
 
 include::code:CityRepository[]
 
-TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].
+TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}/[Spring Data R2DBC reference documentation].

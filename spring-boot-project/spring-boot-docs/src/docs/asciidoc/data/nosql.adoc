@@ -259,7 +259,7 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 [[data.nosql.neo4j.repositories]]
 ==== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
-For complete details of Spring Data Neo4j, see the {spring-data-neo4j-docs}[reference documentation].
+For complete details of Spring Data Neo4j, see the {spring-data-neo4j-docs}/[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
 You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
@@ -386,7 +386,7 @@ Repositories and documents are found through scanning.
 By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableElasticsearchRepositories` and `@EntityScan` respectively.
 
-TIP: For complete details of Spring Data Elasticsearch, see the {spring-data-elasticsearch-docs}[reference documentation].
+TIP: For complete details of Spring Data Elasticsearch, see the {spring-data-elasticsearch-docs}/[reference documentation].
 
 Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans.
 Most likely those beans are auto-configured by Spring Boot given the required dependencies are present.
@@ -501,7 +501,7 @@ Repositories and entities are found through scanning.
 By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and entities by using `@EnableCassandraRepositories` and `@EntityScan` respectively.
 
-TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
+TIP: For complete details of Spring Data Cassandra, see the {spring-data-cassandra-docs}/[reference documentation].
 
 
 
@@ -555,7 +555,7 @@ Repositories and documents are found through scanning.
 By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableCouchbaseRepositories` and `@EntityScan` respectively.
 
-For complete details of Spring Data Couchbase, see the {spring-data-couchbase-docs}[reference documentation].
+For complete details of Spring Data Couchbase, see the {spring-data-couchbase-docs}/[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
 This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
@@ -625,7 +625,7 @@ Repositories and documents are found through scanning.
 By default, the <<using#using.auto-configuration.packages,auto-configuration packages>> are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableLdapRepositories` and `@EntityScan` respectively.
 
-For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+For complete details of Spring Data LDAP, see the {spring-data-ldap-docs}/[reference documentation].
 
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
