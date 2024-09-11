@@ -19,8 +19,7 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.develocity" version "3.17.5"
-	id "io.spring.develocity.conventions" version "0.0.19"
+	id "io.spring.develocity.conventions" version "0.0.21"
 }
 
 rootProject.name="spring-boot-build"
