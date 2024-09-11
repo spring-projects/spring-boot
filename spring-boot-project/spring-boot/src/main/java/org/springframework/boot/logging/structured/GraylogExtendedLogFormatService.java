@@ -48,7 +48,6 @@ public record GraylogExtendedLogFormatService(String name, String version) {
 	 * @param members the members to add to
 	 */
 	public void jsonMembers(JsonWriter.Members<?> members) {
-		// note "host" is a field name prescribed by GELF
 		members.add("host", this::name).whenHasLength();
 		members.add("_service_version", this::version).whenHasLength();
 	}
@@ -65,4 +64,5 @@ public record GraylogExtendedLogFormatService(String name, String version) {
 			.orElse(NONE)
 			.withDefaults(environment);
 	}
+
 }

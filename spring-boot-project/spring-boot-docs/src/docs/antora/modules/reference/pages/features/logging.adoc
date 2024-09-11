@@ -454,6 +454,7 @@ To enable structured logging, set the property configprop:logging.structured.for
 
 [[features.logging.structured.ecs]]
 === Elastic Common Schema
+
 https://www.elastic.co/guide/en/ecs/8.11/ecs-reference.html[Elastic Common Schema] is a JSON based logging format.
 
 To enable the Elastic Common Schema log format, set the appropriate `format` property to `ecs`:
@@ -499,6 +500,7 @@ NOTE: configprop:logging.structured.ecs.service.version[] will default to config
 
 [[features.logging.structured.gelf]]
 === Graylog Extended Log Format (GELF)
+
 https://go2docs.graylog.org/current/getting_in_log_data/gelf.html[Graylog Extended Log Format] is a JSON based logging format for the Graylog log analytics platform.
 
 To enable the Graylog Extended Log Format, set the appropriate `format` property to `gelf`:

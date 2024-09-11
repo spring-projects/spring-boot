@@ -134,7 +134,6 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 					.formatted());
 		assertThat(deserialized)
 			.containsAllEntriesOf(map("_error_type", "java.lang.RuntimeException", "_error_message", "Boom"));
-
 		assertThat(stackTrace).startsWith(
 				"java.lang.RuntimeException: Boom%n\tat org.springframework.boot.logging.logback.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException"
 					.formatted());

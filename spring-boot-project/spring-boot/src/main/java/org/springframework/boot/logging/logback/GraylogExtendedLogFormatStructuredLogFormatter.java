@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.logback;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -28,8 +29,10 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.util.LevelToSyslogSeverity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.WritableJson;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatService;
@@ -39,6 +42,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Logback {@link StructuredLogFormatter} for
@@ -59,12 +63,6 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	private static final Pattern FIELD_NAME_VALID_PATTERN = Pattern.compile("^[\\w.\\-]*$");
 
 	/**
-	 * Every field been sent and prefixed with an underscore "_" will be treated as an
-	 * additional field.
-	 */
-	private static final String ADDITIONAL_FIELD_PREFIX = "_";
-
-	/**
 	 * Libraries SHOULD not allow to send id as additional field ("_id"). Graylog server
 	 * nodes omit this field automatically.
 	 */
@@ -78,9 +76,8 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	private static void jsonMembers(Environment environment, ThrowableProxyConverter throwableProxyConverter,
 			JsonWriter.Members<ILoggingEvent> members) {
 		members.add("version", "1.1");
-		// note: a blank message will lead to a Graylog error as of Graylog v6.0.x. We are
-		// ignoring this here.
-		members.add("short_message", ILoggingEvent::getFormattedMessage);
+		members.add("short_message", ILoggingEvent::getFormattedMessage)
+			.as(GraylogExtendedLogFormatStructuredLogFormatter::getMessageText);
 		members.add("timestamp", ILoggingEvent::getTimeStamp)
 			.as(GraylogExtendedLogFormatStructuredLogFormatter::formatTimeStamp);
 		members.add("level", LevelToSyslogSeverity::convert);
@@ -95,15 +92,15 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 			.usingPairs((mdc, pairs) -> mdc.forEach((key, value) -> createAdditionalField(key, value, pairs)));
 		members.from(ILoggingEvent::getKeyValuePairs)
 			.when((keyValuePairs) -> !CollectionUtils.isEmpty(keyValuePairs))
-			.usingPairs((keyValuePairs, pairs) -> keyValuePairs
-				.forEach((keyValuePair) -> createAdditionalField(keyValuePair.key, keyValuePair.value, pairs)));
-		members.add().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
-			throwableMembers.add("full_message",
-					(event) -> formatFullMessageWithThrowable(throwableProxyConverter, event));
-			throwableMembers.add("_error_type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
-			throwableMembers.add("_error_stack_trace", throwableProxyConverter::convert);
-			throwableMembers.add("_error_message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
-		});
+			.usingPairs(GraylogExtendedLogFormatStructuredLogFormatter::createAdditionalField);
+		members.add()
+			.whenNotNull(ILoggingEvent::getThrowableProxy)
+			.usingMembers((throwableMembers) -> throwableMembers(throwableMembers, throwableProxyConverter));
+	}
+
+	private static String getMessageText(String formattedMessage) {
+		// Always return text as a blank message will lead to a error as of Graylog v6
+		return (!StringUtils.hasText(formattedMessage)) ? "(blank)" : formattedMessage;
 	}
 
 	/**
@@ -117,23 +114,38 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		return (out) -> out.append(new BigDecimal(timeStamp).movePointLeft(3).toPlainString());
 	}
 
+	private static void throwableMembers(Members<ILoggingEvent> members,
+			ThrowableProxyConverter throwableProxyConverter) {
+		members.add("full_message", (event) -> formatFullMessageWithThrowable(throwableProxyConverter, event));
+		members.add("_error_type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
+		members.add("_error_stack_trace", throwableProxyConverter::convert);
+		members.add("_error_message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
+	}
+
 	private static String formatFullMessageWithThrowable(ThrowableProxyConverter throwableProxyConverter,
 			ILoggingEvent event) {
 		return event.getFormattedMessage() + "\n\n" + throwableProxyConverter.convert(event);
 	}
 
-	private static void createAdditionalField(String key, Object value, BiConsumer<Object, Object> pairs) {
-		Assert.notNull(key, "fieldName must not be null");
-		if (!FIELD_NAME_VALID_PATTERN.matcher(key).matches()) {
-			logger.warn(LogMessage.format("'%s' is not a valid field name according to GELF standard", key));
+	private static void createAdditionalField(List<KeyValuePair> keyValuePairs, BiConsumer<Object, Object> pairs) {
+		keyValuePairs.forEach((keyValuePair) -> createAdditionalField(keyValuePair.key, keyValuePair.value, pairs));
+	}
+
+	private static void createAdditionalField(String name, Object value, BiConsumer<Object, Object> pairs) {
+		Assert.notNull(name, "fieldName must not be null");
+		if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {
+			logger.warn(LogMessage.format("'%s' is not a valid field name according to GELF standard", name));
 			return;
 		}
-		if (ADDITIONAL_FIELD_ILLEGAL_KEYS.contains(key)) {
-			logger.warn(LogMessage.format("'%s' is an illegal field name according to GELF standard", key));
+		if (ADDITIONAL_FIELD_ILLEGAL_KEYS.contains(name)) {
+			logger.warn(LogMessage.format("'%s' is an illegal field name according to GELF standard", name));
 			return;
 		}
-		String keyWithPrefix = (key.startsWith(ADDITIONAL_FIELD_PREFIX)) ? key : ADDITIONAL_FIELD_PREFIX + key;
-		pairs.accept(keyWithPrefix, value);
+		pairs.accept(asAdditionalFieldName(name), value);
+	}
+
+	private static Object asAdditionalFieldName(String name) {
+		return (!name.startsWith("_")) ? "_" + name : name;
 	}
 
 }

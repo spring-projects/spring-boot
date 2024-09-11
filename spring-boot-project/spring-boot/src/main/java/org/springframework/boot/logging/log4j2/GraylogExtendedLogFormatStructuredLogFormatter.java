@@ -32,6 +32,7 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.WritableJson;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatService;
@@ -41,6 +42,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Log4j2 {@link StructuredLogFormatter} for
@@ -61,12 +63,6 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	private static final Pattern FIELD_NAME_VALID_PATTERN = Pattern.compile("^[\\w.\\-]*$");
 
 	/**
-	 * Every field been sent and prefixed with an underscore "_" will be treated as an
-	 * additional field.
-	 */
-	private static final String ADDITIONAL_FIELD_PREFIX = "_";
-
-	/**
 	 * Libraries SHOULD not allow to send id as additional field ("_id"). Graylog server
 	 * nodes omit this field automatically.
 	 */
@@ -78,9 +74,8 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 
 	private static void jsonMembers(Environment environment, JsonWriter.Members<LogEvent> members) {
 		members.add("version", "1.1");
-		// note: a blank message will lead to a Graylog error as of Graylog v6.0.x. We are
-		// ignoring this here.
-		members.add("short_message", LogEvent::getMessage).as(Message::getFormattedMessage);
+		members.add("short_message", LogEvent::getMessage)
+			.as(GraylogExtendedLogFormatStructuredLogFormatter::getMessageText);
 		members.add("timestamp", LogEvent::getInstant)
 			.as(GraylogExtendedLogFormatStructuredLogFormatter::formatTimeStamp);
 		members.add("level", GraylogExtendedLogFormatStructuredLogFormatter::convertLevel);
@@ -92,25 +87,23 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		members.add("_log_logger", LogEvent::getLoggerName);
 		members.from(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
-			.usingPairs((contextData, pairs) -> contextData
-				.forEach((key, value) -> createAdditionalField(key, value, pairs)));
-		members.add().whenNotNull(LogEvent::getThrownProxy).usingMembers((eventMembers) -> {
-			eventMembers.add("full_message",
-					GraylogExtendedLogFormatStructuredLogFormatter::formatFullMessageWithThrowable);
-			eventMembers.add("_error_type", (event) -> event.getThrownProxy().getThrowable())
-				.whenNotNull()
-				.as(ObjectUtils::nullSafeClassName);
-			eventMembers.add("_error_stack_trace", (event) -> event.getThrownProxy().getExtendedStackTraceAsString());
-			eventMembers.add("_error_message", (event) -> event.getThrownProxy().getMessage());
-		});
+			.usingPairs(GraylogExtendedLogFormatStructuredLogFormatter::createAdditionalFields);
+		members.add()
+			.whenNotNull(LogEvent::getThrownProxy)
+			.usingMembers(GraylogExtendedLogFormatStructuredLogFormatter::throwableMembers);
+	}
+
+	private static String getMessageText(Message message) {
+		// Always return text as a blank message will lead to a error as of Graylog v6
+		String formattedMessage = message.getFormattedMessage();
+		return (!StringUtils.hasText(formattedMessage)) ? "(blank)" : formattedMessage;
 	}
 
 	/**
 	 * GELF requires "seconds since UNIX epoch with optional <b>decimal places for
 	 * milliseconds</b>". To comply with this requirement, we format a POSIX timestamp
 	 * with millisecond precision as e.g. "1725459730385" -> "1725459730.385"
-	 * @param timeStamp the timestamp of the log message. Note it is not the standard Java
-	 * `Instant` type but {@link org.apache.logging.log4j.core.time}
+	 * @param timeStamp the timestamp of the log message.
 	 * @return the timestamp formatted as string with millisecond precision
 	 */
 	private static WritableJson formatTimeStamp(Instant timeStamp) {
@@ -127,23 +120,39 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 		return Severity.getSeverity(event.getLevel()).getCode();
 	}
 
+	private static void throwableMembers(Members<LogEvent> members) {
+		members.add("full_message", GraylogExtendedLogFormatStructuredLogFormatter::formatFullMessageWithThrowable);
+		members.add("_error_type", (event) -> event.getThrownProxy().getThrowable())
+			.whenNotNull()
+			.as(ObjectUtils::nullSafeClassName);
+		members.add("_error_stack_trace", (event) -> event.getThrownProxy().getExtendedStackTraceAsString());
+		members.add("_error_message", (event) -> event.getThrownProxy().getMessage());
+	}
+
 	private static String formatFullMessageWithThrowable(LogEvent event) {
 		return event.getMessage().getFormattedMessage() + "\n\n"
 				+ event.getThrownProxy().getExtendedStackTraceAsString();
 	}
 
-	private static void createAdditionalField(String fieldName, Object value, BiConsumer<Object, Object> pairs) {
-		Assert.notNull(fieldName, "fieldName must not be null");
-		if (!FIELD_NAME_VALID_PATTERN.matcher(fieldName).matches()) {
-			logger.warn(LogMessage.format("'%s' is not a valid field name according to GELF standard", fieldName));
+	private static void createAdditionalFields(ReadOnlyStringMap contextData, BiConsumer<Object, Object> pairs) {
+		contextData.forEach((name, value) -> createAdditionalField(name, value, pairs));
+	}
+
+	private static void createAdditionalField(String name, Object value, BiConsumer<Object, Object> pairs) {
+		Assert.notNull(name, "fieldName must not be null");
+		if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {
+			logger.warn(LogMessage.format("'%s' is not a valid field name according to GELF standard", name));
 			return;
 		}
-		if (ADDITIONAL_FIELD_ILLEGAL_KEYS.contains(fieldName)) {
-			logger.warn(LogMessage.format("'%s' is an illegal field name according to GELF standard", fieldName));
+		if (ADDITIONAL_FIELD_ILLEGAL_KEYS.contains(name)) {
+			logger.warn(LogMessage.format("'%s' is an illegal field name according to GELF standard", name));
 			return;
 		}
-		String key = (fieldName.startsWith(ADDITIONAL_FIELD_PREFIX)) ? fieldName : ADDITIONAL_FIELD_PREFIX + fieldName;
-		pairs.accept(key, value);
+		pairs.accept(asAdditionalFieldName(name), value);
+	}
+
+	private static Object asAdditionalFieldName(String name) {
+		return (!name.startsWith("_")) ? "_" + name : name;
 	}
 
 }

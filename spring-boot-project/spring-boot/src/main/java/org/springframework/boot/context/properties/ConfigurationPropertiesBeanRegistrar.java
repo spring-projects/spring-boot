@@ -102,12 +102,11 @@ final class ConfigurationPropertiesBeanRegistrar {
 
 	static BeanDefinitionHolder applyScopedProxyMode(ScopeMetadata metadata, BeanDefinitionHolder definition,
 			BeanDefinitionRegistry registry) {
-		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
-		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
-			return definition;
+		ScopedProxyMode mode = metadata.getScopedProxyMode();
+		if (mode != ScopedProxyMode.NO) {
+			return ScopedProxyUtils.createScopedProxy(definition, registry, mode == ScopedProxyMode.TARGET_CLASS);
 		}
-		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
-		return ScopedProxyUtils.createScopedProxy(definition, registry, proxyTargetClass);
+		return definition;
 	}
 
 }
