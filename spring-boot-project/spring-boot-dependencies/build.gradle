@@ -747,7 +747,7 @@ bom {
 				.formatted(version.major(), version.minor()) }
 		}
 	}
-	library("Jakarta Servlet JSP JSTL", "3.0.1") {
+	library("Jakarta Servlet JSP JSTL", "3.0.2") {
 		group("jakarta.servlet.jsp.jstl") {
 			modules = [
 				"jakarta.servlet.jsp.jstl-api"
