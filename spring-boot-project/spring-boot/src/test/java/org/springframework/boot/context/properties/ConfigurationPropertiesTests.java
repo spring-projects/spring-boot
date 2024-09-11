@@ -48,6 +48,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -584,13 +585,21 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadShouldSupportRebindableConfigurationProperties() {
-		// gh-9160
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testRebindableConfigurationProperties(PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testRebindableConfigurationProperties(PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testRebindableConfigurationProperties(Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
 		assertThat(first.getOne()).isEqualTo("foo");
@@ -602,12 +611,24 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties() {
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+			Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.register(PropertySourcesPlaceholderConfigurer.class);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
@@ -1495,14 +1516,26 @@ class ConfigurationPropertiesTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	static class PrototypePropertiesConfiguration {
+	static class PrototypePropertiesBeanConfiguration {
 
 		@Bean
-		@Scope("prototype")
+		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 		@ConfigurationProperties("example")
 		PrototypeBean prototypeBean() {
 			return new PrototypeBean();
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(PrototypeBeanProperties.class)
+	static class PrototypePropertiesRegistrarConfiguration {
+
+	}
+
+	@ConfigurationProperties("example")
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	static class PrototypeBeanProperties extends PrototypeBean {
 
 	}
 
