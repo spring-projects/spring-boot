@@ -48,11 +48,8 @@ class SpringBootBanner implements Banner {
 		printStream.println();
 		printStream.println(BANNER);
 		String version = String.format(" (v%s)", SpringBootVersion.getVersion());
-		StringBuilder padding = new StringBuilder();
-		while (padding.length() < STRAP_LINE_SIZE - (version.length() + SPRING_BOOT.length())) {
-			padding.append(" ");
-		}
-		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding.toString(),
+		String padding = " ".repeat(Math.max(0, STRAP_LINE_SIZE - (version.length() + SPRING_BOOT.length())));
+		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding,
 				AnsiStyle.FAINT, version));
 		printStream.println();
 	}

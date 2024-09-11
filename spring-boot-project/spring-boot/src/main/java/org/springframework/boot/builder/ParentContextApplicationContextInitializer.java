@@ -83,7 +83,6 @@ public class ParentContextApplicationContextInitializer
 	/**
 	 * {@link ApplicationEvent} fired when a parent context is available.
 	 */
-	@SuppressWarnings("serial")
 	public static class ParentContextAvailableEvent extends ApplicationEvent {
 
 		public ParentContextAvailableEvent(ConfigurableApplicationContext applicationContext) {
