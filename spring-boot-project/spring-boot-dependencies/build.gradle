@@ -1618,7 +1618,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC MySQL", "1.1.3") {
+	library("R2DBC MySQL", "1.3.0") {
 		group("io.asyncer") {
 			modules = [
 				"r2dbc-mysql"
