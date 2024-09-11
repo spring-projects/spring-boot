@@ -1363,7 +1363,7 @@ bom {
 			releaseNotes("https://github.com/mongodb/mongo-java-driver/releases/tag/r{version}")
 		}
 	}
-	library("MSSQL JDBC", "12.8.0.jre11") {
+	library("MSSQL JDBC", "12.8.1.jre11") {
 		prohibit {
 			endsWith(".jre8")
 			because "we want to use the jre11 version"
