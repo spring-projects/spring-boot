@@ -1203,7 +1203,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Dependency Plugin", "3.7.1") {
+	library("Maven Dependency Plugin", "3.8.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-dependency-plugin"
