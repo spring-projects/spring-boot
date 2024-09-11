@@ -554,7 +554,7 @@ NOTE: The lookup key should be specified in kebab case (such as `my.property-nam
 
 [[features.logging.log4j2-extensions.environment-property-source]]
 ==== Log4j2 System Properties
-Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties[System Properties] that can be used to configure various items.
+Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/systemproperties.html[System Properties] that can be used to configure various items.
 For example, the `log4j2.skipJansi` system property can be used to configure if the `ConsoleAppender` will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.
 
 All system properties that are loaded after the Log4j2 initialization can be obtained from the Spring `Environment`.
