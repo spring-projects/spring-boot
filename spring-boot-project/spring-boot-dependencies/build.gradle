@@ -229,7 +229,7 @@ bom {
 			site("https://commons.apache.org/proper/commons-dbcp")
 		}
 	}
-	library("Commons Lang3", "3.16.0") {
+	library("Commons Lang3", "3.17.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-lang3"
