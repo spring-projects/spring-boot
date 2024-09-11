@@ -225,12 +225,18 @@ task aggregatedJavadoc(type: Javadoc) {
 		}
 		doFirst {
 			def versionConstraints = dependencyVersions.versionConstraints
+			def toMajorMinorVersion = version -> {
+				String formatted = version.split("\\.").take(2).join('.') + '.x'
+				return version.endsWith("-SNAPSHOT") ? formatted + "-SNAPSHOT" : formatted
+			}
+			def springFrameworkVersion = toMajorMinorVersion(versionConstraints["org.springframework:spring-core"])
+			def springSecurityVersion = toMajorMinorVersion(versionConstraints["org.springframework.security:spring-security-core"])
 			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
 			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
 			options.links = [
 				"https://docs.oracle.com/en/java/javase/17/docs/api/",
-				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
-				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
+				"https://docs.spring.io/spring-framework/docs/${springFrameworkVersion}/javadoc-api/",
+				"https://docs.spring.io/spring-security/site/docs/${springSecurityVersion}/api/",
 				"https://jakarta.ee/specifications/platform/9/apidocs/",
 				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
 			] as String[]

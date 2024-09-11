@@ -19,11 +19,13 @@ package org.springframework.boot.build.antora;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 
@@ -130,13 +132,21 @@ public class AntoraAsciidocAttributes {
 	}
 
 	private void addSpringDataDependencyVersion(Map<String, String> attributes, String name, String artifactId) {
-		addDependencyVersion(attributes, name, "org.springframework.data:" + artifactId);
+		String version = getVersion("org.springframework.data:" + artifactId);
+		String majorMinor = Arrays.stream(version.split("\\.")).limit(2).collect(Collectors.joining("."));
+		String antoraVersion = version.endsWith(DASH_SNAPSHOT) ? majorMinor + DASH_SNAPSHOT : majorMinor;
+		attributes.put("version-" + name + "-docs", antoraVersion);
+		attributes.put("version-" + name + "-javadoc", majorMinor + ".x");
 	}
 
 	private void addDependencyVersion(Map<String, String> attributes, String name, String groupAndArtifactId) {
+		attributes.put("version-" + name, getVersion(groupAndArtifactId));
+	}
+
+	private String getVersion(String groupAndArtifactId) {
 		String version = this.dependencyVersions.get(groupAndArtifactId);
 		Assert.notNull(version, () -> "No version found for " + groupAndArtifactId);
-		attributes.put("version-" + name, version);
+		return version;
 	}
 
 	private void addArtifactAttributes(Map<String, String> attributes) {
