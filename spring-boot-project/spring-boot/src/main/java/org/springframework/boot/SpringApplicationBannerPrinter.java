@@ -20,6 +20,13 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.core.env.Environment;
 
+/**
+ * Interface class used to print the application banner.
+ *
+ * @author Phillip Webb
+ * @author Junhyung Park
+ * @since 3.4.0
+ */
 public interface SpringApplicationBannerPrinter {
 
 	String BANNER_LOCATION_PROPERTY = "spring.banner.location";
