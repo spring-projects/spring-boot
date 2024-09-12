@@ -213,10 +213,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 			else if (value instanceof String) {
 				properties.put(name, value);
 			}
-			else if (value instanceof Number) {
-				properties.put(name, value.toString());
-			}
-			else if (value instanceof Boolean) {
+			else if (value instanceof Number || value instanceof Boolean) {
 				properties.put(name, value.toString());
 			}
 			else {
