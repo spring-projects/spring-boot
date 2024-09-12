@@ -29,7 +29,7 @@ import org.springframework.jmx.support.RegistrationPolicy;
 public class JmxProperties {
 
 	/**
-	 * Expose management beans to the JMX domain.
+	 * Expose Spring's management beans to the JMX domain.
 	 */
 	private boolean enabled = false;
 
