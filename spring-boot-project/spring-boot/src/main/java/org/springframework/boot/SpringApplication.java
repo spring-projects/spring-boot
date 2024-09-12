@@ -563,7 +563,8 @@ public class SpringApplication {
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
 				: new DefaultResourceLoader(null);
 
-		SpringApplicationBannerPrinter bannerPrinter = Objects.requireNonNullElseGet(this.bannerPrinter, () -> new DefaultSpringApplicationBannerPrinter(resourceLoader, this.banner));
+		SpringApplicationBannerPrinter bannerPrinter = Objects.requireNonNullElseGet(this.bannerPrinter,
+				() -> new DefaultSpringApplicationBannerPrinter(resourceLoader, this.banner));
 		return bannerPrinter.print(environment, this.mainApplicationClass, this.properties.getBannerMode(environment));
 	}
 
@@ -1038,9 +1039,8 @@ public class SpringApplication {
 	}
 
 	/**
-	 * Sets the {@link SpringApplicationBannerPrinter} used to print the banner. Defaults to
-	 * {@link SpringApplicationBannerPrinter}.
-	 *
+	 * Sets the {@link SpringApplicationBannerPrinter} used to print the banner. Defaults
+	 * to {@link SpringApplicationBannerPrinter}.
 	 * @param bannerPrinter the printer used to print the banner
 	 */
 	public void setBannerPrinter(SpringApplicationBannerPrinter bannerPrinter) {

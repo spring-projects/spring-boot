@@ -89,6 +89,7 @@ public class SpringApplicationBannerPrinterTests {
 			banner.printBanner(environment, sourceClass, System.out);
 			return banner;
 		}
+
 	}
 
 	static class DummyBanner implements Banner {
