@@ -16,27 +16,40 @@
 
 package org.springframework.boot;
 
-import org.apache.commons.logging.Log;
+import java.io.PrintStream;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.mock.env.MockEnvironment;
+import org.springframework.boot.Banner.Mode;
+import org.springframework.boot.BannerTests.Config;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SpringApplicationBannerPrinter}.
  *
  * @author Moritz Halbritter
+ * @author Junhyung Park
  */
-class SpringApplicationBannerPrinterTests {
+@ExtendWith(OutputCaptureExtension.class)
+public class SpringApplicationBannerPrinterTests {
+
+	private ConfigurableApplicationContext context;
+
+	@AfterEach
+	void cleanUp() {
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
 	@Test
 	void shouldRegisterRuntimeHints() {
@@ -47,16 +60,44 @@ class SpringApplicationBannerPrinterTests {
 	}
 
 	@Test
-	void shouldUseUtf8() {
-		ResourceLoader resourceLoader = new GenericApplicationContext();
-		Resource resource = resourceLoader.getResource("classpath:/banner-utf8.txt");
-		SpringApplicationBannerPrinter printer = new SpringApplicationBannerPrinter(resourceLoader,
-				new ResourceBanner(resource));
-		Log log = mock(Log.class);
-		printer.print(new MockEnvironment(), SpringApplicationBannerPrinterTests.class, log);
-		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-		then(log).should().info(captor.capture());
-		assertThat(captor.getValue()).isEqualToIgnoringNewLines("\uD83D\uDE0D Spring Boot! \uD83D\uDE0D");
+	void shouldPrintWithCustomPrinter(CapturedOutput capturedOutput) {
+		SpringApplication application = createSpringApplicationWithBannerModeLog();
+		this.context = application.run();
+		assertThat(capturedOutput).contains(DefaultSpringApplicationBannerPrinter.class.getSimpleName());
+	}
+
+	@Test
+	void shouldPrintWithDefaultPrinter(CapturedOutput capturedOutput) {
+		SpringApplication application = createSpringApplicationWithBannerModeLog();
+		application.setBannerPrinter(new CustomSpringApplicationBannerPrinter());
+		this.context = application.run();
+		assertThat(capturedOutput).doesNotContain(DefaultSpringApplicationBannerPrinter.class.getSimpleName());
+	}
+
+	private SpringApplication createSpringApplicationWithBannerModeLog() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setBannerMode(Mode.LOG);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		return application;
+	}
+
+	static class CustomSpringApplicationBannerPrinter implements SpringApplicationBannerPrinter {
+
+		@Override
+		public Banner print(Environment environment, Class<?> sourceClass, Mode bannerMode) {
+			Banner banner = new DummyBanner();
+			banner.printBanner(environment, sourceClass, System.out);
+			return banner;
+		}
+	}
+
+	static class DummyBanner implements Banner {
+
+		@Override
+		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+			out.println("My Banner");
+		}
+
 	}
 
 }

@@ -34,6 +34,7 @@ import org.springframework.boot.Banner;
 import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.BootstrapRegistryInitializer;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringApplicationBannerPrinter;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.ApplicationContext;
@@ -334,6 +335,11 @@ public class SpringApplicationBuilder {
 
 	public SpringApplicationBuilder bannerMode(Banner.Mode bannerMode) {
 		this.application.setBannerMode(bannerMode);
+		return this;
+	}
+
+	public SpringApplicationBuilder bannerPrinter(SpringApplicationBannerPrinter bannerPrinter) {
+		this.application.setBannerPrinter(bannerPrinter);
 		return this;
 	}
 

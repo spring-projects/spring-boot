@@ -180,6 +180,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Tadaya Tsuyukubo
  * @author Lasse Wulff
  * @author Yanming Zhou
+ * @author Junhyung Park
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -214,6 +215,8 @@ public class SpringApplication {
 	private boolean addConversionService = true;
 
 	private Banner banner;
+
+	private SpringApplicationBannerPrinter bannerPrinter;
 
 	private ResourceLoader resourceLoader;
 
@@ -559,11 +562,9 @@ public class SpringApplication {
 		}
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
 				: new DefaultResourceLoader(null);
-		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
-		if (this.properties.getBannerMode(environment) == Mode.LOG) {
-			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
-		}
-		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
+
+		SpringApplicationBannerPrinter bannerPrinter = Objects.requireNonNullElseGet(this.bannerPrinter, () -> new DefaultSpringApplicationBannerPrinter(resourceLoader, this.banner));
+		return bannerPrinter.print(environment, this.mainApplicationClass, this.properties.getBannerMode(environment));
 	}
 
 	/**
@@ -1034,6 +1035,16 @@ public class SpringApplication {
 	 */
 	public void setBannerMode(Banner.Mode bannerMode) {
 		this.properties.setBannerMode(bannerMode);
+	}
+
+	/**
+	 * Sets the {@link SpringApplicationBannerPrinter} used to print the banner. Defaults to
+	 * {@link SpringApplicationBannerPrinter}.
+	 *
+	 * @param bannerPrinter the printer used to print the banner
+	 */
+	public void setBannerPrinter(SpringApplicationBannerPrinter bannerPrinter) {
+		this.bannerPrinter = bannerPrinter;
 	}
 
 	/**
