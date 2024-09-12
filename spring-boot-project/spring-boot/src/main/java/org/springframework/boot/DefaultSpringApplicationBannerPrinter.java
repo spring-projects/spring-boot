@@ -17,7 +17,6 @@
 package org.springframework.boot;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -25,84 +24,34 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.Banner.Mode;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 
 /**
  * Class used by {@link SpringApplication} to print the application banner.
  *
  * @author Phillip Webb
+ * @author Junhyung Park
  */
 class DefaultSpringApplicationBannerPrinter implements SpringApplicationBannerPrinter {
 
 	private static final Log logger = LogFactory.getLog(DefaultSpringApplicationBannerPrinter.class);
 
-	private static final Banner DEFAULT_BANNER = new SpringBootBanner();
-
-	private final ResourceLoader resourceLoader;
-
-	private final Banner fallbackBanner;
-
-	DefaultSpringApplicationBannerPrinter(ResourceLoader resourceLoader, Banner fallbackBanner) {
-		this.resourceLoader = resourceLoader;
-		this.fallbackBanner = fallbackBanner;
-	}
-
 	@Override
-	public Banner print(Environment environment, Class<?> sourceClass, Mode bannerMode) {
+	public Banner print(Environment environment, Class<?> sourceClass, Banner.Mode bannerMode, Banner banner) {
+		banner.printBanner(environment, sourceClass, System.out);
 		switch (bannerMode) {
-			case CONSOLE -> {
-				return print(environment, sourceClass, System.out);
-			}
-			case LOG -> {
-				return print(environment, sourceClass, logger);
-			}
-		}
-		return new PrintedBanner(getBanner(environment), sourceClass);
-	}
-
-	private Banner print(Environment environment, Class<?> sourceClass, Log logger) {
-		Banner banner = getBanner(environment);
-		try {
-			logger.info(createStringFromBanner(banner, environment, sourceClass));
-		}
-		catch (UnsupportedEncodingException ex) {
-			logger.warn("Failed to create String for banner", ex);
+			case OFF:
+			case LOG:
+				try {
+					logger.info(createStringFromBanner(banner, environment, sourceClass));
+				}
+				catch (UnsupportedEncodingException ex) {
+					logger.warn("Failed to create String for banner", ex);
+				}
+			case CONSOLE:
+				banner.printBanner(environment, sourceClass, System.out);
 		}
 		return new PrintedBanner(banner, sourceClass);
-	}
-
-	private Banner print(Environment environment, Class<?> sourceClass, PrintStream out) {
-		Banner banner = getBanner(environment);
-		banner.printBanner(environment, sourceClass, out);
-		return new PrintedBanner(banner, sourceClass);
-	}
-
-	private Banner getBanner(Environment environment) {
-		Banner textBanner = getTextBanner(environment);
-		if (textBanner != null) {
-			return textBanner;
-		}
-		if (this.fallbackBanner != null) {
-			return this.fallbackBanner;
-		}
-		return DEFAULT_BANNER;
-	}
-
-	private Banner getTextBanner(Environment environment) {
-		String location = environment.getProperty(BANNER_LOCATION_PROPERTY, DEFAULT_BANNER_LOCATION);
-		Resource resource = this.resourceLoader.getResource(location);
-		try {
-			if (resource.exists() && !resource.getURL().toExternalForm().contains("liquibase-core")) {
-				return new ResourceBanner(resource);
-			}
-		}
-		catch (IOException ex) {
-			// Ignore
-		}
-		return null;
 	}
 
 	private String createStringFromBanner(Banner banner, Environment environment, Class<?> mainApplicationClass)

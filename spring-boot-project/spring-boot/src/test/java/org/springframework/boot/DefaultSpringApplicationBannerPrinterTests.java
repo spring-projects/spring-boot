@@ -42,9 +42,9 @@ class DefaultSpringApplicationBannerPrinterTests {
 	void shouldUseUtf8(CapturedOutput capturedOutput) {
 		ResourceLoader resourceLoader = new GenericApplicationContext();
 		Resource resource = resourceLoader.getResource("classpath:/banner-utf8.txt");
-		SpringApplicationBannerPrinter printer = new DefaultSpringApplicationBannerPrinter(resourceLoader,
+		SpringApplicationBannerPrinter printer = new DefaultSpringApplicationBannerPrinter();
+		printer.print(new MockEnvironment(), DefaultSpringApplicationBannerPrinterTests.class, Mode.LOG,
 				new ResourceBanner(resource));
-		printer.print(new MockEnvironment(), DefaultSpringApplicationBannerPrinterTests.class, Mode.LOG);
 		assertThat(capturedOutput).containsIgnoringNewLines("\uD83D\uDE0D Spring Boot! \uD83D\uDE0D");
 	}
 

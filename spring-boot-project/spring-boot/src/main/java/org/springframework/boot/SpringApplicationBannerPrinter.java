@@ -33,7 +33,7 @@ public interface SpringApplicationBannerPrinter {
 
 	String DEFAULT_BANNER_LOCATION = "banner.txt";
 
-	Banner print(Environment environment, Class<?> sourceClass, Banner.Mode bannerMode);
+	Banner print(Environment environment, Class<?> sourceClass, Banner.Mode mode, Banner banner);
 
 	class SpringApplicationBannerPrinterRuntimeHints implements RuntimeHintsRegistrar {
 

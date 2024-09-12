@@ -77,6 +77,7 @@ public class SpringApplicationBannerPrinterTests {
 	private SpringApplication createSpringApplicationWithBannerModeLog() {
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setBannerMode(Mode.LOG);
+		application.setBanner(new DummyBanner());
 		application.setWebApplicationType(WebApplicationType.NONE);
 		return application;
 	}
@@ -84,8 +85,10 @@ public class SpringApplicationBannerPrinterTests {
 	static class CustomSpringApplicationBannerPrinter implements SpringApplicationBannerPrinter {
 
 		@Override
-		public Banner print(Environment environment, Class<?> sourceClass, Mode bannerMode) {
-			Banner banner = new DummyBanner();
+		public Banner print(Environment environment, Class<?> sourceClass, Mode bannerMode, Banner banner) {
+			if (banner == null) {
+				return null;
+			}
 			banner.printBanner(environment, sourceClass, System.out);
 			return banner;
 		}

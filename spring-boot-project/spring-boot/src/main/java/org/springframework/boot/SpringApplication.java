@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.io.IOException;
 import java.lang.StackWalker.StackFrame;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
@@ -56,7 +57,6 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -93,6 +93,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
@@ -560,12 +561,39 @@ public class SpringApplication {
 		if (this.properties.getBannerMode(environment) == Banner.Mode.OFF) {
 			return null;
 		}
-		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
-				: new DefaultResourceLoader(null);
-
 		SpringApplicationBannerPrinter bannerPrinter = Objects.requireNonNullElseGet(this.bannerPrinter,
-				() -> new DefaultSpringApplicationBannerPrinter(resourceLoader, this.banner));
-		return bannerPrinter.print(environment, this.mainApplicationClass, this.properties.getBannerMode(environment));
+				DefaultSpringApplicationBannerPrinter::new);
+		Banner banner = this.banner;
+		if (banner == null) {
+			banner = getFallbackBanner(environment);
+		}
+		return bannerPrinter.print(environment, this.mainApplicationClass, this.properties.getBannerMode(environment),
+				banner);
+	}
+
+	private Banner getFallbackBanner(Environment environment) {
+		Banner textBanner = getTextBanner(environment);
+		if (textBanner != null) {
+			return textBanner;
+		}
+		return new SpringBootBanner();
+	}
+
+	private Banner getTextBanner(Environment environment) {
+		if (this.resourceLoader == null) {
+			return null;
+		}
+		String location = environment.getProperty(BANNER_LOCATION_PROPERTY, BANNER_LOCATION_PROPERTY_VALUE);
+		Resource resource = this.resourceLoader.getResource(location);
+		try {
+			if (resource.exists() && !resource.getURL().toExternalForm().contains("liquibase-core")) {
+				return new ResourceBanner(resource);
+			}
+		}
+		catch (IOException ex) {
+			// Ignore
+		}
+		return null;
 	}
 
 	/**
