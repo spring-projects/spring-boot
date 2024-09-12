@@ -37,7 +37,7 @@ class OAuth2ClientPropertiesTests {
 		registration.setProvider("google");
 		this.properties.getRegistration().put("foo", registration);
 		assertThatIllegalStateException().isThrownBy(this.properties::validate)
-			.withMessageContaining("Client id must not be empty.");
+			.withMessageContaining("Client id of registration 'foo' must not be empty.");
 	}
 
 	@Test
