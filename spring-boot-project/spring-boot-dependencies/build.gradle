@@ -2001,7 +2001,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-graphql/releases/tag/v{version}")
 		}
 	}
-	library("Spring HATEOAS", "2.3.2") {
+	library("Spring HATEOAS", "2.3.3") {
 		considerSnapshots()
 		group("org.springframework.hateoas") {
 			modules = [
@@ -2171,7 +2171,7 @@ bom {
 				.formatted(version.forMajorMinorGeneration()) }
 			docs { version -> "https://docs.spring.io/spring-ws/docs/%s/reference/html"
 				.formatted(version.forMajorMinorGeneration()) }
-			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/v{version}")
+			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/vversion}")
 		}
 	}
 	library("SQLite JDBC", "3.45.3.0") {
