@@ -343,6 +343,10 @@ public enum TestImage {
 		}
 	}
 
+	public String getTag() {
+		return this.tag;
+	}
+
 	@Override
 	public String toString() {
 		return (this.tag != null) ? this.name + ":" + this.tag : this.name;

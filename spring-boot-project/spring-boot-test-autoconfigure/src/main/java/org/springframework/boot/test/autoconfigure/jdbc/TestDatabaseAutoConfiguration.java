@@ -107,6 +107,8 @@ public class TestDatabaseAutoConfiguration {
 		private static final ConfigurationPropertyName DATASOURCE_URL_PROPERTY = ConfigurationPropertyName
 			.of("spring.datasource.url");
 
+		private static final Bindable<String> BINDABLE_STRING = Bindable.of(String.class);
+
 		private static final String DYNAMIC_VALUES_PROPERTY_SOURCE_CLASS = "org.springframework.test.context.support.DynamicValuesPropertySource";
 
 		private static final Log logger = LogFactory.getLog(EmbeddedDataSourceBeanFactoryPostProcessor.class);
@@ -190,7 +192,7 @@ public class TestDatabaseAutoConfiguration {
 		}
 
 		private boolean isConnectingToTestDatabase(ConfigurableListableBeanFactory beanFactory) {
-			return isUsingTestServiceConnection(beanFactory) || isUsingDynamicPropertySournce();
+			return isUsingTestServiceConnection(beanFactory) || isUsingTestDatasourceUrl();
 		}
 
 		private boolean isUsingTestServiceConnection(ConfigurableListableBeanFactory beanFactory) {
@@ -208,11 +210,16 @@ public class TestDatabaseAutoConfiguration {
 			return false;
 		}
 
-		private boolean isUsingDynamicPropertySournce() {
+		private boolean isUsingTestDatasourceUrl() {
 			List<ConfigurationProperty> bound = new ArrayList<>();
 			Binder.get(this.environment, new BoundPropertiesTrackingBindHandler(bound::add))
-				.bind(DATASOURCE_URL_PROPERTY, Bindable.of(String.class));
-			return (!bound.isEmpty()) ? isBoundToDynamicValuesPropertySource(bound.get(0)) : false;
+				.bind(DATASOURCE_URL_PROPERTY, BINDABLE_STRING);
+			return (!bound.isEmpty()) ? isUsingTestDatasourceUrl(bound.get(0)) : false;
+		}
+
+		private boolean isUsingTestDatasourceUrl(ConfigurationProperty configurationProperty) {
+			return isBoundToDynamicValuesPropertySource(configurationProperty)
+					|| isTestcontainersUrl(configurationProperty);
 		}
 
 		private boolean isBoundToDynamicValuesPropertySource(ConfigurationProperty configurationProperty) {
@@ -225,6 +232,11 @@ public class TestDatabaseAutoConfiguration {
 		private boolean isDynamicValuesPropertySource(PropertySource<?> propertySource) {
 			return propertySource != null
 					&& DYNAMIC_VALUES_PROPERTY_SOURCE_CLASS.equals(propertySource.getClass().getName());
+		}
+
+		private boolean isTestcontainersUrl(ConfigurationProperty configurationProperty) {
+			Object value = configurationProperty.getValue();
+			return (value != null) && value.toString().startsWith("jdbc:tc:");
 		}
 
 	}

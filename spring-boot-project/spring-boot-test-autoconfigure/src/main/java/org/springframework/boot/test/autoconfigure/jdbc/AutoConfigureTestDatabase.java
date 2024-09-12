@@ -81,6 +81,8 @@ public @interface AutoConfigureTestDatabase {
 		 * created using Docker Compose)</li>
 		 * <li>Any connection configured using a {@code spring.datasource.url} backed by a
 		 * {@link DynamicPropertySource @DynamicPropertySource}</li>
+		 * <li>Any connection configured using a {@code spring.datasource.url} with the
+		 * Testcontainers JDBC syntax</li>
 		 * </ul>
 		 * @since 3.4.0
 		 */
