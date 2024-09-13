@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefiniti
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
 import org.springframework.context.annotation.ScopeMetadata;
 import org.springframework.context.annotation.ScopeMetadataResolver;
@@ -42,6 +42,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 final class ConfigurationPropertiesBeanRegistrar {
 
@@ -88,7 +89,8 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinitionHolder createBeanDefinition(String beanName, Class<?> type) {
-		GenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
+		AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
+		AnnotationConfigUtils.processCommonDefinitionAnnotations(definition);
 		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
 		BindMethodAttribute.set(definition, bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
