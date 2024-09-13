@@ -245,6 +245,13 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 
 	@Test
 	@Override
+	@Disabled("https://issues.redhat.com/browse/UNDERTOW-2420")
+	protected void portClashOfSecondaryConnectorResultsInPortInUseException() throws Exception {
+		super.portClashOfSecondaryConnectorResultsInPortInUseException();
+	}
+
+	@Test
+	@Override
 	@Disabled("Restart after stop is not supported with Undertow")
 	protected void restartAfterStop() {
 	}
