@@ -26,6 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Madhura Bhave
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConfigurationPropertiesBeanRegistrarTests {
 
@@ -122,6 +124,15 @@ class ConfigurationPropertiesBeanRegistrarTests {
 		assertThat(beanDefinition.getScope()).isEqualTo(BeanDefinition.SCOPE_PROTOTYPE);
 	}
 
+	@Test
+	void registerBeanDefinitionWithCommonDefinitionAnnotations() {
+		String beanName = "beancp-" + PrimaryConfigurationProperties.class.getName();
+		this.registrar.register(PrimaryConfigurationProperties.class);
+		BeanDefinition beanDefinition = this.registry.getBeanDefinition(beanName);
+		assertThat(beanDefinition).isNotNull();
+		assertThat(beanDefinition.isPrimary()).isEqualTo(true);
+	}
+
 	private Consumer<BeanDefinition> hasBindMethodAttribute(BindMethod bindMethod) {
 		return (definition) -> {
 			assertThat(definition.hasAttribute(BindMethod.class.getName())).isTrue();
@@ -143,6 +154,12 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@ConfigurationProperties(prefix = "beancp")
 	@Scope(scopeName = BeanDefinition.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	static class ProxyScopedBeanConfigurationProperties {
+
+	}
+
+	@ConfigurationProperties(prefix = "beancp")
+	@Primary
+	static class PrimaryConfigurationProperties {
 
 	}
 
