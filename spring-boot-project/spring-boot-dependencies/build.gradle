@@ -1765,11 +1765,7 @@ bom {
 			]
 		}
 	}
-	library("Undertow", "2.3.13.Final") {
-		prohibit {
-			versionRange "[2.3.14.Final,2.3.15.Final]"
-			because "it contains a regression (https://issues.redhat.com/browse/UNDERTOW-2420)"
-		}
+	library("Undertow", "2.3.17.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
