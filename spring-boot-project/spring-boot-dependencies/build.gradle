@@ -1139,6 +1139,7 @@ bom {
 		}
 		links {
 			site("https://logging.apache.org/log4j")
+			docs { version -> "https://logging.apache.org/log4j/%s.x/manual".formatted(version.major()) }
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
 		}
 	}
@@ -1582,6 +1583,7 @@ bom {
 		}
 		links {
 			site("https://github.com/quartz-scheduler/quartz")
+			javadoc("https://www.javadoc.io/doc/org.quartz-scheduler/quartz/{version}")
 		}
 	}
 	library("QueryDSL", "5.1.0") {
