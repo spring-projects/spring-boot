@@ -597,10 +597,13 @@ public class FlywayProperties {
 		this.cleanDisabled = cleanDisabled;
 	}
 
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(since = "3.4.0")
 	public boolean isCleanOnValidationError() {
 		return this.cleanOnValidationError;
 	}
 
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public void setCleanOnValidationError(boolean cleanOnValidationError) {
 		this.cleanOnValidationError = cleanOnValidationError;
 	}
