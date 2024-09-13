@@ -37,6 +37,7 @@ import org.gradle.StartParameter;
 import org.gradle.api.Project;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskContainer;
 
@@ -118,8 +119,7 @@ public class AntoraConventions {
 		generateAntoraYmlTask.setProperty("outputFile",
 				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
 		generateAntoraYmlTask.setProperty("yml", getDefaultYml(project));
-		generateAntoraYmlTask.doFirst((task) -> generateAntoraYmlTask.getAsciidocAttributes()
-			.putAll(project.provider(() -> getAsciidocAttributes(project, dependencyVersionsTask))));
+		generateAntoraYmlTask.getAsciidocAttributes().putAll(getAsciidocAttributes(project, dependencyVersionsTask));
 	}
 
 	private Map<String, ?> getDefaultYml(Project project) {
@@ -138,12 +138,14 @@ public class AntoraConventions {
 		return defaultYml;
 	}
 
-	private Map<String, String> getAsciidocAttributes(Project project,
+	private Provider<Map<String, String>> getAsciidocAttributes(Project project,
 			ExtractVersionConstraints dependencyVersionsTask) {
-		BomExtension bom = (BomExtension) project.project(DEPENDENCIES_PATH).getExtensions().getByName("bom");
-		Map<String, String> dependencyVersions = dependencyVersionsTask.getVersionConstraints();
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes(project, bom, dependencyVersions);
-		return attributes.get();
+		return project.provider(() -> {
+			BomExtension bom = (BomExtension) project.project(DEPENDENCIES_PATH).getExtensions().getByName("bom");
+			Map<String, String> dependencyVersions = dependencyVersionsTask.getVersionConstraints();
+			AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes(project, bom, dependencyVersions);
+			return attributes.get();
+		});
 	}
 
 	private void configureAntoraTask(Project project, AntoraTask antoraTask, NpmInstallTask npmInstallTask,
