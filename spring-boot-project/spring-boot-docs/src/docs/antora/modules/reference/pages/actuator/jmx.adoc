@@ -10,6 +10,9 @@ Any of your beans that are annotated with Spring JMX annotations (`@ManagedResou
 If your platform provides a standard `MBeanServer`, Spring Boot uses that and defaults to the VM `MBeanServer`, if necessary.
 If all that fails, a new `MBeanServer` is created.
 
+NOTE: `spring.jmx.enabled` affects only the management beans provided by Spring.
+Enabling management beans provided by other libraries (for example {url-log4j2-docs}/jmx.html[Log4j2] or {url-quartz-javadoc}/constant-values.html#org.quartz.impl.StdSchedulerFactory.PROP_SCHED_JMX_EXPORT[Quartz]) is independent.
+
 See the {code-spring-boot-autoconfigure-src}/jmx/JmxAutoConfiguration.java[`JmxAutoConfiguration`] class for more details.
 
 By default, Spring Boot also exposes management endpoints as JMX MBeans under the `org.springframework.boot` domain.
