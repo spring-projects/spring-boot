@@ -69,7 +69,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 		ConfigurationMetadataAnnotationProcessor.REST_CONTROLLER_ENDPOINT_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.SERVLET_ENDPOINT_ANNOTATION,
 		ConfigurationMetadataAnnotationProcessor.WEB_ENDPOINT_ANNOTATION,
-		"org.springframework.context.annotation.Configuration" })
+		ConfigurationMetadataAnnotationProcessor.CONFIGURATION_ANNOTATION })
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
 	static final String ADDITIONAL_METADATA_LOCATIONS_OPTION = "org.springframework.boot.configurationprocessor.additionalMetadataLocations";
@@ -103,6 +103,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String NAME_ANNOTATION = "org.springframework.boot.context.properties.bind.Name";
 
 	static final String AUTO_CONFIGURATION_ANNOTATION = "org.springframework.boot.autoconfigure.AutoConfiguration";
+
+	static final String CONFIGURATION_ANNOTATION = "org.springframework.context.annotation.Configuration";
 
 	private static final Set<String> SUPPORTED_OPTIONS = Collections
 		.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
