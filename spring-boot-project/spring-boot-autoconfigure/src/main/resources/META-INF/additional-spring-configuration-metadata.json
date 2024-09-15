@@ -144,6 +144,10 @@
       "description": "Name for the cookie."
     },
     {
+      "name": "server.reactive.session.cookie.partitioned",
+      "description": "Whether the generated cookie carries the Partitioned attribute."
+    },
+    {
       "name": "server.reactive.session.cookie.path",
       "description": "Path of the cookie."
     },
@@ -228,6 +232,10 @@
     {
       "name": "server.servlet.session.cookie.name",
       "description": "Name of the cookie."
+    },
+    {
+      "name": "server.servlet.session.cookie.partitioned",
+      "description": "Whether the generated cookie carries the Partitioned attribute."
     },
     {
       "name": "server.servlet.session.cookie.path",
