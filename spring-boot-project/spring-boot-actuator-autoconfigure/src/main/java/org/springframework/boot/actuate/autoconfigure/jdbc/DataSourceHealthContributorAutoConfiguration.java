@@ -89,7 +89,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
 			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
 				.stream()
-				.filter((e) -> !isAbstractRoutingDataSource(e.getValue()))
+				.filter((e) -> !isRoutingDataSource(e.getValue()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return createContributor(filteredDatasources);
 		}
@@ -105,9 +105,8 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	}
 
 	private HealthContributor createContributor(DataSource source) {
-		if (isAbstractRoutingDataSource(source)) {
-			return new RoutingDataSourceHealthContributor(unwrapAbstractRoutingDataSource(source),
-					this::createContributor);
+		if (isRoutingDataSource(source)) {
+			return new RoutingDataSourceHealthContributor(extractRoutingDataSource(source), this::createContributor);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
@@ -117,7 +116,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		return (poolMetadata != null) ? poolMetadata.getValidationQuery() : null;
 	}
 
-	private static boolean isAbstractRoutingDataSource(DataSource dataSource) {
+	private static boolean isRoutingDataSource(DataSource dataSource) {
 		if (dataSource instanceof AbstractRoutingDataSource) {
 			return true;
 		}
@@ -129,7 +128,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 		}
 	}
 
-	private static AbstractRoutingDataSource unwrapAbstractRoutingDataSource(DataSource dataSource) {
+	private static AbstractRoutingDataSource extractRoutingDataSource(DataSource dataSource) {
 		if (dataSource instanceof AbstractRoutingDataSource routingDataSource) {
 			return routingDataSource;
 		}
@@ -137,8 +136,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 			return dataSource.unwrap(AbstractRoutingDataSource.class);
 		}
 		catch (SQLException ex) {
-			throw new IllegalStateException(
-					"DataSource '%s' failed to unwrap '%s'".formatted(dataSource, AbstractRoutingDataSource.class), ex);
+			throw new IllegalStateException("Failed to unwrap AbstractRoutingDataSource from " + dataSource, ex);
 		}
 	}
 

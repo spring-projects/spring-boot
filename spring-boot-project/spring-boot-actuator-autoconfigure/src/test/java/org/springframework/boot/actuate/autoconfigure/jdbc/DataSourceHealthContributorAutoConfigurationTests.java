@@ -16,15 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.jdbc;
 
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.ConnectionBuilder;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.ShardingKeyBuilder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -256,9 +250,22 @@ class DataSourceHealthContributorAutoConfigurationTests {
 		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof DataSource dataSource) {
-				return new ProxyDataSource(dataSource);
+				return proxyDataSource(dataSource);
 			}
 			return bean;
+		}
+
+		private static DataSource proxyDataSource(DataSource dataSource) {
+			try {
+				DataSource mock = mock(DataSource.class);
+				given(mock.isWrapperFor(AbstractRoutingDataSource.class))
+					.willReturn(dataSource instanceof AbstractRoutingDataSource);
+				given(mock.unwrap(AbstractRoutingDataSource.class)).willAnswer((invocation) -> dataSource);
+				return mock;
+			}
+			catch (SQLException ex) {
+				throw new IllegalStateException(ex);
+			}
 		}
 
 	}
@@ -276,72 +283,6 @@ class DataSourceHealthContributorAutoConfigurationTests {
 			given(routingDataSource.unwrap(AbstractRoutingDataSource.class)).willReturn(routingDataSource);
 			given(routingDataSource.getResolvedDataSources()).willReturn(dataSources);
 			return routingDataSource;
-		}
-
-	}
-
-	static class ProxyDataSource implements DataSource {
-
-		private final DataSource dataSource;
-
-		ProxyDataSource(DataSource dataSource) {
-			this.dataSource = dataSource;
-		}
-
-		@Override
-		public void setLogWriter(PrintWriter out) throws SQLException {
-			this.dataSource.setLogWriter(out);
-		}
-
-		@Override
-		public Connection getConnection() throws SQLException {
-			return this.dataSource.getConnection();
-		}
-
-		@Override
-		public Connection getConnection(String username, String password) throws SQLException {
-			return this.dataSource.getConnection(username, password);
-		}
-
-		@Override
-		public PrintWriter getLogWriter() throws SQLException {
-			return this.dataSource.getLogWriter();
-		}
-
-		@Override
-		public void setLoginTimeout(int seconds) throws SQLException {
-			this.dataSource.setLoginTimeout(seconds);
-		}
-
-		@Override
-		public int getLoginTimeout() throws SQLException {
-			return this.dataSource.getLoginTimeout();
-		}
-
-		@Override
-		public ConnectionBuilder createConnectionBuilder() throws SQLException {
-			return this.dataSource.createConnectionBuilder();
-		}
-
-		@Override
-		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-			return this.dataSource.getParentLogger();
-		}
-
-		@Override
-		public ShardingKeyBuilder createShardingKeyBuilder() throws SQLException {
-			return this.dataSource.createShardingKeyBuilder();
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public <T> T unwrap(Class<T> iface) throws SQLException {
-			return iface.isInstance(this) ? (T) this : this.dataSource.unwrap(iface);
-		}
-
-		@Override
-		public boolean isWrapperFor(Class<?> iface) throws SQLException {
-			return (iface.isInstance(this) || this.dataSource.isWrapperFor(iface));
 		}
 
 	}
