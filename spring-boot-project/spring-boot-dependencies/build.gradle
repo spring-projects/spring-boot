@@ -1615,7 +1615,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC MariaDB", "1.2.1") {
+	library("R2DBC MariaDB", "1.2.2") {
 		group("org.mariadb") {
 			modules = [
 				"r2dbc-mariadb"
