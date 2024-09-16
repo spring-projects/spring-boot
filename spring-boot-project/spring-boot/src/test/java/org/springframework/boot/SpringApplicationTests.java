@@ -92,6 +92,7 @@ import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -1409,7 +1410,8 @@ class SpringApplicationTests {
 		then(listener).should(never()).onApplicationEvent(any(ApplicationFailedEvent.class));
 	}
 
-	@Test // gh-32555
+	@Test
+	// gh-32555
 	void shouldUseAotInitializer() {
 		SpringApplication application = new SpringApplication(ExampleAotProcessedMainClass.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -1466,6 +1468,17 @@ class SpringApplicationTests {
 			.run()
 			.getApplicationContext();
 		assertThatNoException().isThrownBy(() -> this.context.getBean(SingleUseAdditionalConfig.class));
+	}
+
+	@Test
+	void fromAppliesProfiles() {
+		this.context = SpringApplication.from(ExampleFromMainMethod::main)
+			.with(ProfileConfig.class)
+			.withAdditionalProfiles("custom")
+			.run()
+			.getApplicationContext();
+		assertThat(this.context).isNotNull();
+		assertThat(this.context.getBeanProvider(Example.class).getIfAvailable()).isNotNull();
 	}
 
 	@Test
@@ -2155,6 +2168,17 @@ class SpringApplicationTests {
 			if (!used.compareAndSet(false, true)) {
 				throw new IllegalStateException("Single-use configuration has already been used");
 			}
+		}
+
+	}
+
+	@Configuration
+	static class ProfileConfig {
+
+		@Bean
+		@Profile("custom")
+		Example example() {
+			return new Example();
 		}
 
 	}
