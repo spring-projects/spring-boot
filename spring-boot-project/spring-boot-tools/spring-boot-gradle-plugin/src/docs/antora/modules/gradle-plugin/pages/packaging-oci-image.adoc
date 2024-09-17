@@ -152,7 +152,7 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `environment`
 |
 | Environment variables that should be passed to the builder.
-| Empty or `['BP_NATIVE_IMAGE': 'true']` when {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied.
+| Empty.
 
 | `buildpacks`
 |

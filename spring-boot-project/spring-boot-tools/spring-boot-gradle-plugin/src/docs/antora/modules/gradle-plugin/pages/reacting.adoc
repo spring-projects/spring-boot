@@ -89,6 +89,6 @@ When the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin
 . Configures the GraalVM extension to disable Toolchain detection.
 . Configures each GraalVM native binary to require GraalVM 22.3 or later.
 . Configures the `bootJar` task to include the reachability metadata produced by the `collectReachabilityMetadata` task in its jar.
-. Configures the `bootBuildImage` task to set `BP_NATIVE_IMAGE` to `true` in its environment.
+. Configures the `bootJar` task to add the `Spring-Boot-Native-Processed: true` manifest entry.
 
 

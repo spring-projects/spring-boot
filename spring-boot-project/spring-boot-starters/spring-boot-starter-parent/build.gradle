@@ -265,13 +265,6 @@ publishing.publications.withType(MavenPublication) {
 								plugin {
 									delegate.groupId('org.springframework.boot')
 									delegate.artifactId('spring-boot-maven-plugin')
-									configuration {
-										image {
-											env {
-												delegate.BP_NATIVE_IMAGE("true")
-											}
-										}
-									}
 									executions {
 										execution {
 											delegate.id('process-aot')
