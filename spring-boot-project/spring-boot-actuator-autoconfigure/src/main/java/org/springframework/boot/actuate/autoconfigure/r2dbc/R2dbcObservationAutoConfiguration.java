@@ -50,6 +50,7 @@ public class R2dbcObservationAutoConfiguration {
 
 	/**
 	 * {@code @Order} value of the observation customizer.
+	 * @since 3.4.0
 	 */
 	public static final int R2DBC_PROXY_OBSERVATION_CUSTOMIZER_ORDER = 0;
 

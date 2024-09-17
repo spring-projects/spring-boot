@@ -41,7 +41,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConfluentKafkaContainerConnectionDetailsFactory}.
+ * Tests for {@link ApacheKafkaContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

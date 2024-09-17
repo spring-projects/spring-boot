@@ -243,7 +243,7 @@ If this causes issues, you can diagnose the problem by using the `spring.devtool
 By default, any open project in your IDE is loaded with the "`restart`" classloader, and any regular `.jar` file is loaded with the "`base`" classloader.
 The same is true if you use `mvn spring-boot:run` or `gradle bootRun`: the project containing your `@SpringBootApplication` is loaded with the "`restart`" classloader, and everything else with the "`base`" classloader.
 The classpath is printed on the console when you start the app, which can help to identify any problematic entries.
-Classes used reflectively, especially annotations, can be loaded into the parent (fixed) classloader on startup before the application classes which uses them, and this might lead to them not being detected by Spring in the application.
+Classes used reflectively, especially annotations, can be loaded into the parent (fixed) classloader on startup before the application classes which use them, and this might lead to them not being detected by Spring in the application.
 
 You can instruct Spring Boot to load parts of your project with a different classloader by creating a `META-INF/spring-devtools.properties` file.
 The `spring-devtools.properties` file can contain properties prefixed with `restart.exclude` and `restart.include`.
