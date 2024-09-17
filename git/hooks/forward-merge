@@ -112,12 +112,16 @@ message_file=ARGV[0]
 forward_merges = find_forward_merges(message_file)
 exit 0 unless forward_merges
 
-$log.debug "Loading config from ~/.spring-boot/forward_merge.yml"
+$log.debug "Loading config from ~/.spring-boot/forward-merge.yml"
 config = YAML.load_file(File.join(Dir.home, '.spring-boot', 'forward-merge.yml'))
 username = config['github']['credentials']['username']
 password = config['github']['credentials']['password']
 dry_run = config['dry_run']
-repository = 'spring-projects/spring-boot'
+
+gradleProperties = IO.read('gradle.properties')
+springBuildType = gradleProperties.match(/^spring\.build-type\s?=\s?(.*)$/)
+repository = (springBuildType && springBuildType[1] != 'oss') ? "spring-projects/spring-boot-#{springBuildType[1]}" : "spring-projects/spring-boot";
+$log.debug "Targeting repository #{repository}"
 
 forward_merges.each do |forward_merge|
   existing_issue = get_issue(username, password, repository, forward_merge.issue)
