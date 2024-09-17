@@ -21,7 +21,7 @@ on:
 jobs:
   verify:
     name: Verify
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Release Verification Tests
         uses: actions/checkout@v4
