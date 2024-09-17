@@ -66,7 +66,7 @@ class MainMethodTests {
 	}
 
 	@Test // gh-39733
-	void vaiJarLauncher() throws Exception {
+	void viaJarLauncher() throws Exception {
 		FakeJarLauncher.action = (args) -> Valid.main(args);
 		MainMethod method = new TestThread(FakeJarLauncher::main).test();
 		Method expectedMain = Valid.class.getMethod("main", String[].class);
