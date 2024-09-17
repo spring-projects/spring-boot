@@ -135,6 +135,7 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		map.from(listenerProperties::isAutoStartup).to(factory::setAutoStartup);
 		map.from(listenerProperties::formatConcurrency).to(factory::setConcurrency);
 		map.from(listenerProperties::getReceiveTimeout).as(Duration::toMillis).to(factory::setReceiveTimeout);
+		map.from(listenerProperties::getMaxMessagesPerTask).to(factory::setMaxMessagesPerTask);
 	}
 
 }
