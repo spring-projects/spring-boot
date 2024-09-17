@@ -8,7 +8,7 @@ concurrency:
 jobs:
   build-and-stage-release:
     name: Build and Stage Release
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_MEDIUIM || 'ubuntu-latest' }}
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     steps:
       - name: Check Out Code
@@ -49,7 +49,7 @@ jobs:
     needs:
       - build-and-stage-release
       - verify
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -66,7 +66,7 @@ jobs:
     needs:
       - build-and-stage-release
       - sync-to-maven-central
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Set up JFrog CLI
         uses: jfrog/setup-jfrog-cli@9fe0f98bd45b19e6e931d457f4e98f8f84461fb5 # v4.4.1
@@ -79,7 +79,7 @@ jobs:
     needs:
       - build-and-stage-release
       - sync-to-maven-central
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -95,7 +95,7 @@ jobs:
     needs:
       - build-and-stage-release
       - sync-to-maven-central
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -111,7 +111,7 @@ jobs:
     needs:
       - build-and-stage-release
       - sync-to-maven-central
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -128,7 +128,7 @@ jobs:
       - publish-gradle-plugin
       - publish-to-sdkman
       - update-homebrew-tap
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1

@@ -8,7 +8,7 @@ concurrency:
 jobs:
   run-system-tests:
     name: 'Java ${{ matrix.java.version}}'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
     strategy:
       matrix:
