@@ -26,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
+import org.springframework.boot.gradle.testkit.PluginClasspathGradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.Dsl;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
@@ -60,8 +61,8 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			GradleBuild gradleBuild = new GradleBuild(this.dsl);
-			gradleBuild.gradleVersion(GradleVersions.minimumCompatible());
+			GradleBuild gradleBuild = new PluginClasspathGradleBuild(this.dsl)
+				.gradleVersion(GradleVersions.minimumCompatible());
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
