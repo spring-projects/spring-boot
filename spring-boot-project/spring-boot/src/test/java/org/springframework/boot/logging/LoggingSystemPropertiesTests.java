@@ -164,19 +164,19 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
-	void loggedApplicationGroupWhenHasApplicationGroup() {
+	void applicationGroupWhenHasApplicationGroup() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.group", "test")).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isEqualTo("test");
 	}
 
 	@Test
-	void loggedApplicationGroupWhenHasNoApplicationGroup() {
+	void applicationGroupWhenHasNoApplicationGroup() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isNull();
 	}
 
 	@Test
-	void loggedApplicationGroupWhenApplicationGroupLoggingDisabled() {
+	void applicationGroupWhenApplicationGroupLoggingDisabled() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.group", "test")
 			.withProperty("logging.include-application-group", "false")).apply(null);
 		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isNull();

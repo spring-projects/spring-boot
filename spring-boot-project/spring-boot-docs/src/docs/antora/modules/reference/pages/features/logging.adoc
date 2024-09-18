@@ -712,13 +712,13 @@ The following listing shows three sample profiles:
 If you want to refer to properties from your Spring `Environment` within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
 Doing so can be useful if you want to access values from your `application.properties` file in your Log4j2 configuration.
 
-The following example shows how to set a Log4j2 property named `applicationName` and `applicationGroup` that reads `spring.application.name` and `spring.application.group` from the Spring `Environment`:
+The following example shows how to set Log4j2 properties named `applicationName` and `applicationGroup` that read `spring.application.name` and `spring.application.group` from the Spring `Environment`:
 
 [source,xml]
 ----
 <Properties>
 	<Property name="applicationName">${spring:spring.application.name}</Property>
-	<Property name="applicationProperty">${spring:spring.application.property}</Property>
+	<Property name="applicationGroup">${spring:spring.application.group}</Property>
 </Properties>
 ----
 
