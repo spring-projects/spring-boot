@@ -1079,6 +1079,10 @@ bom {
 		}
 	}
 	library("Kotlin Coroutines", "1.8.1") {
+		prohibit {
+			versionRange "[1.9.0,)"
+			because "it requires Kotlin 2"
+		}
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
