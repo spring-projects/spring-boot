@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +106,8 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractApplicationContextRunner<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> {
 
+	private static final Class<?>[] NO_ADDITIONAL_CONTEXT_INTERFACES = {};
+
 	private final RunnerConfiguration<C> runnerConfiguration;
 
 	private final Function<RunnerConfiguration<C>, SELF> instanceFactory;
@@ -115,13 +117,29 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param contextFactory the factory used to create the actual context
 	 * @param instanceFactory the factory used to create new instance of the runner
 	 * @since 2.6.0
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #AbstractApplicationContextRunner(Function, Supplier, Class...)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
 			Function<RunnerConfiguration<C>, SELF> instanceFactory) {
-		Assert.notNull(contextFactory, "ContextFactory must not be null");
-		Assert.notNull(contextFactory, "RunnerConfiguration must not be null");
-		this.runnerConfiguration = new RunnerConfiguration<>(contextFactory);
+		this(instanceFactory, contextFactory, NO_ADDITIONAL_CONTEXT_INTERFACES);
+	}
+
+	/**
+	 * Create a new {@link AbstractApplicationContextRunner} instance.
+	 * @param instanceFactory the factory used to create new instance of the runner
+	 * @param contextFactory the factory used to create the actual context
+	 * @param additionalContextInterfaces any additional application context interfaces to
+	 * be added to the application context proxy
+	 * @since 3.4.0
+	 */
+	protected AbstractApplicationContextRunner(Function<RunnerConfiguration<C>, SELF> instanceFactory,
+			Supplier<C> contextFactory, Class<?>... additionalContextInterfaces) {
+		Assert.notNull(instanceFactory, "'instanceFactory' must not be null");
+		Assert.notNull(contextFactory, "'contextFactory' must not be null");
 		this.instanceFactory = instanceFactory;
+		this.runnerConfiguration = new RunnerConfiguration<>(contextFactory, additionalContextInterfaces);
 	}
 
 	/**
@@ -386,7 +404,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);
 		Class<C> contextType = (Class<C>) resolvableType.resolveGeneric(2);
-		return ApplicationContextAssertProvider.get(assertType, contextType, () -> createAndLoadContext(refresh));
+		return ApplicationContextAssertProvider.get(assertType, contextType, () -> createAndLoadContext(refresh),
+				this.runnerConfiguration.additionalContextInterfaces);
 	}
 
 	private C createAndLoadContext(boolean refresh) {
@@ -472,6 +491,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private final Supplier<C> contextFactory;
 
+		private final Class<?>[] additionalContextInterfaces;
+
 		private boolean allowBeanDefinitionOverriding = false;
 
 		private boolean allowCircularReferences = false;
@@ -490,12 +511,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 		private List<Configurations> configurations = Collections.emptyList();
 
-		private RunnerConfiguration(Supplier<C> contextFactory) {
+		private RunnerConfiguration(Supplier<C> contextFactory, Class<?>[] additionalContextInterfaces) {
 			this.contextFactory = contextFactory;
+			this.additionalContextInterfaces = additionalContextInterfaces;
 		}
 
 		private RunnerConfiguration(RunnerConfiguration<C> source) {
 			this.contextFactory = source.contextFactory;
+			this.additionalContextInterfaces = source.additionalContextInterfaces;
 			this.allowBeanDefinitionOverriding = source.allowBeanDefinitionOverriding;
 			this.allowCircularReferences = source.allowCircularReferences;
 			this.initializers = source.initializers;
