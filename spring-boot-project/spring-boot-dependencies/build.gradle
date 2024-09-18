@@ -1667,7 +1667,7 @@ bom {
 			javadoc("https://r2dbc.io/spec/{version}/api")
 		}
 	}
-	library("Rabbit AMQP Client", "5.21.0") {
+	library("Rabbit AMQP Client", "5.22.0") {
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
