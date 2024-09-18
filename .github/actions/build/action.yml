@@ -13,6 +13,10 @@ inputs:
     required: false
     default: 'false'
     description: 'Whether a Java toolchain should be used'
+  java-distribution:
+    required: false
+    default: 'liberica'
+    description: 'The distribution of Java to use'
   publish:
     required: false
     default: 'false'
@@ -37,6 +41,7 @@ runs:
         java-version: ${{ inputs.java-version }}
         java-early-access: ${{ inputs.java-early-access }}
         java-toolchain: ${{ inputs.java-toolchain }}
+        java-distribution: ${{ inputs.java-distribution }}
     - name: Build
       id: build
       if: ${{ inputs.publish == 'false' }}
