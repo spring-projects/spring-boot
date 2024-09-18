@@ -32,6 +32,7 @@ public enum LoggingSystemProperty {
 
 	/**
 	 * Logging system property for the application group that should be logged.
+	 * @since 3.4.0
 	 */
 	APPLICATION_GROUP("APPLICATION_GROUP", "spring.application.group", "logging.include-application-group"),
 

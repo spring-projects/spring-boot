@@ -22,7 +22,7 @@ import ch.qos.logback.core.pattern.CompositeConverter;
 import org.springframework.util.StringUtils;
 
 /**
- * Logback {@link CompositeConverter} used help format optional values that should be
+ * Logback {@link CompositeConverter} used to help format optional values that should be
  * shown enclosed in square brackets.
  *
  * @author Phillip Webb

@@ -29,8 +29,8 @@ import org.apache.logging.log4j.core.pattern.PatternFormatter;
 import org.apache.logging.log4j.core.pattern.PatternParser;
 
 /**
- * Log4j2 {@link LogEventPatternConverter} used help format optional values that should be
- * shown enclosed in square brackets.
+ * Log4j2 {@link LogEventPatternConverter} used to help format optional values that should
+ * be shown enclosed in square brackets.
  *
  * @author Phillip Webb
  * @since 3.4.0
