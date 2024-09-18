@@ -8,11 +8,15 @@ inputs:
   java-early-access:
     required: false
     default: 'false'
-    description: 'Whether the Java version is in early access'
+    description: 'Whether the Java version is in early access. When true, forces java-distribution to temurin'
   java-toolchain:
     required: false
     default: 'false'
     description: 'Whether a Java toolchain should be used'
+  java-distribution:
+    required: false
+    default: 'liberica'
+    description: 'The distribution of Java to use'
   develocity-access-key:
     required: false
     description: 'The access key for authentication with ge.spring.io'
@@ -27,7 +31,7 @@ runs:
     - name: Set Up Java
       uses: actions/setup-java@v4
       with:
-        distribution: ${{ inputs.java-early-access == 'true' && 'temurin' || 'liberica' }}
+        distribution: ${{ inputs.java-early-access == 'true' && 'temurin' || (inputs.java-distribution || 'liberica') }}
         java-version: |
           ${{ inputs.java-early-access == 'true' && format('{0}-ea', inputs.java-version) || inputs.java-version }}
           ${{ inputs.java-toolchain == 'true' && '17' || '' }}

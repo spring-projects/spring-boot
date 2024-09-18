@@ -26,8 +26,8 @@ jobs:
           - version: 22
             toolchain: false
           - version: 23
-            early-access: true
-            toolchain: false
+            distribution: oracle
+            toolchain: true
         exclude:
           - os:
               name: Linux
@@ -49,6 +49,7 @@ jobs:
           java-version: ${{ matrix.java.version }}
           java-early-access: ${{ matrix.java.early-access || 'false' }}
           java-toolchain: ${{ matrix.java.toolchain }}
+          java-distribution: ${{ matrix.java.distribution }}
           develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
       - name: Send Notification
         uses: ./.github/actions/send-notification
