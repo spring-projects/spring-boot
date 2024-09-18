@@ -63,8 +63,7 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 							fieldWithPath("cron.[].expression").description("Cron expression."),
 							fieldWithPath("fixedDelay").description("Fixed delay tasks, if any."),
 							targetFieldWithPrefix("fixedDelay.[]."), initialDelayWithPrefix("fixedDelay.[]."),
-							nextExecutionWithPrefix("fixedDelay.[].")
-								.description("Time of the next scheduled execution."),
+							nextExecutionWithPrefix("fixedDelay.[]."),
 							fieldWithPath("fixedDelay.[].interval")
 								.description("Interval, in milliseconds, between the end of the last"
 										+ " execution and the start of the next."),
@@ -72,9 +71,7 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 							targetFieldWithPrefix("fixedRate.[]."),
 							fieldWithPath("fixedRate.[].interval")
 								.description("Interval, in milliseconds, between the start of each execution."),
-							initialDelayWithPrefix("fixedRate.[]."),
-							nextExecutionWithPrefix("fixedRate.[].")
-								.description("Time of the next scheduled execution."),
+							initialDelayWithPrefix("fixedRate.[]."), nextExecutionWithPrefix("fixedRate.[]."),
 							fieldWithPath("custom").description("Tasks with custom triggers, if any."),
 							targetFieldWithPrefix("custom.[]."),
 							fieldWithPath("custom.[].trigger").description("Trigger for the task."))
@@ -93,7 +90,10 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 	}
 
 	private FieldDescriptor nextExecutionWithPrefix(String prefix) {
-		return fieldWithPath(prefix + "nextExecution.time").description("Time of the next scheduled execution.");
+		return fieldWithPath(prefix + "nextExecution.time")
+			.description("Time of the next scheduled execution, if known.")
+			.type(JsonFieldType.STRING)
+			.optional();
 	}
 
 	private FieldDescriptor[] lastExecution() {
