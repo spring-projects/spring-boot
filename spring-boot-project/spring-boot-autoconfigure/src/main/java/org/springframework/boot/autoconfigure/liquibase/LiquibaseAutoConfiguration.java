@@ -182,7 +182,7 @@ public class LiquibaseAutoConfiguration {
 
 		@Bean
 		@ConditionalOnBean(Customizer.class)
-		SpringLiquibaseCustomizer customizerSpringLiquibaseCustomizer(Customizer<Liquibase> customizer) {
+		SpringLiquibaseCustomizer springLiquibaseCustomizer(Customizer<Liquibase> customizer) {
 			return (springLiquibase) -> springLiquibase.setCustomizer(customizer);
 		}
 

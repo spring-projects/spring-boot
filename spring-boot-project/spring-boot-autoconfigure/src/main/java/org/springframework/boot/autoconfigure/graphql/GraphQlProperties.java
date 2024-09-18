@@ -220,7 +220,7 @@ public class GraphQlProperties {
 		/**
 		 * Maximum idle period before a server keep-alive ping is sent to client.
 		 */
-		private Duration keepAlive = null;
+		private Duration keepAlive;
 
 		public String getPath() {
 			return this.path;
