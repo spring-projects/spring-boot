@@ -47,10 +47,21 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.fasterxml.jackson.core:jackson-databind")
+	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.tngtech.archunit:archunit-junit5:0.22.0")
+	testImplementation("net.java.dev.jna:jna-platform")
+	testImplementation("org.apache.commons:commons-compress")
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.graalvm.buildtools:native-gradle-plugin")
+	testImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
+	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.tomlj:tomlj:1.0.0")
 }
 
 repositories {

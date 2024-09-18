@@ -28,10 +28,7 @@ bootJar {
 	manifest {
 		attributes(
 				'Implementation-Version': '1.0.0',
-				'Implementation-Title': 'Paketo Test',
-				// This shouldn't be necessary.
-				// See https://github.com/spring-projects/spring-boot/issues/42338
-				'Spring-Boot-Native-Processed': 'true'
+				'Implementation-Title': 'Paketo Test'
 		)
 	}
 }
