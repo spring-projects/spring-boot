@@ -31,7 +31,7 @@ runs:
     - name: Set Up Java
       uses: actions/setup-java@v4
       with:
-        distribution: ${{ inputs.java-early-access == 'true' && 'temurin' || inputs.java-distribution }}
+        distribution: ${{ inputs.java-early-access == 'true' && 'temurin' || (inputs.java-distribution || 'liberica') }}
         java-version: |
           ${{ inputs.java-early-access == 'true' && format('{0}-ea', inputs.java-version) || inputs.java-version }}
           ${{ inputs.java-toolchain == 'true' && '17' || '' }}
