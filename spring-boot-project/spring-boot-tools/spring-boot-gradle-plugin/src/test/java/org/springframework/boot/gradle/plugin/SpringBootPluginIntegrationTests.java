@@ -22,6 +22,7 @@ import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.gradle.testkit.PluginClasspathGradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
 
@@ -35,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(GradleBuildExtension.class)
 class SpringBootPluginIntegrationTests {
 
-	final GradleBuild gradleBuild = new GradleBuild();
+	final GradleBuild gradleBuild = new PluginClasspathGradleBuild();
 
 	@Test
 	@DisabledForJreRange(min = JRE.JAVA_20)
