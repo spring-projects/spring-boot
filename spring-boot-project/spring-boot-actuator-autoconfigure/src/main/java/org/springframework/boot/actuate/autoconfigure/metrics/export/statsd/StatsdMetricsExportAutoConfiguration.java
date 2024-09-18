@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdMeterRegistry;
+import jakarta.annotation.PreDestroy;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -59,4 +60,8 @@ public class StatsdMetricsExportAutoConfiguration {
 		return new StatsdMeterRegistry(statsdConfig, clock);
 	}
 
+	@PreDestroy
+	public void destroy(StatsdMeterRegistry statsdMeterRegistry) {
+		statsdMeterRegistry.close();
+	}
 }
