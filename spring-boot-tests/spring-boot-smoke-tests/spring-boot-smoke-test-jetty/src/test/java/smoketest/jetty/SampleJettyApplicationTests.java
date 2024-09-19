@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Weidmann
  * @author Moritz Halbritter
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "logging.level.org.eclipse:trace")
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SampleJettyApplicationTests {
 
 	@Autowired
