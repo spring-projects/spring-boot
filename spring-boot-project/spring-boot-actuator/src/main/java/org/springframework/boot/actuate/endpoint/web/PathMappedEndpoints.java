@@ -20,12 +20,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * A collection of {@link PathMappedEndpoint path mapped endpoints}.
@@ -101,7 +103,7 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	/**
-	 * Return the root paths for each mapped endpoint.
+	 * Return the root paths for each mapped endpoint (excluding additional paths).
 	 * @return all root paths
 	 */
 	public Collection<String> getAllRootPaths() {
@@ -109,11 +111,34 @@ public class PathMappedEndpoints implements Iterable<PathMappedEndpoint> {
 	}
 
 	/**
-	 * Return the full paths for each mapped endpoint.
+	 * Return the full paths for each mapped endpoint (excluding additional paths).
 	 * @return all root paths
 	 */
 	public Collection<String> getAllPaths() {
 		return stream().map(this::getPath).toList();
+	}
+
+	/**
+	 * Return the additional paths for each mapped endpoint.
+	 * @param webServerNamespace the web server namespace
+	 * @param endpointId the endpoint ID
+	 * @return all additional paths
+	 * @since 3.4.0
+	 */
+	public Collection<String> getAdditionalPaths(WebServerNamespace webServerNamespace, EndpointId endpointId) {
+		return getAdditionalPaths(webServerNamespace, getEndpoint(endpointId)).toList();
+	}
+
+	private Stream<String> getAdditionalPaths(WebServerNamespace webServerNamespace, PathMappedEndpoint endpoint) {
+		List<String> additionalPaths = (endpoint != null) ? endpoint.getAdditionalPaths(webServerNamespace) : null;
+		if (CollectionUtils.isEmpty(additionalPaths)) {
+			return Stream.empty();
+		}
+		return additionalPaths.stream().map(this::getAdditionalPath);
+	}
+
+	private String getAdditionalPath(String path) {
+		return path.startsWith("/") ? path : "/" + path;
 	}
 
 	/**
