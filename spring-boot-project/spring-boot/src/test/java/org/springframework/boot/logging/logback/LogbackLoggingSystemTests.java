@@ -20,7 +20,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -571,8 +570,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		Stream.of(LoggingSystemProperty.values())
 			.map(LoggingSystemProperty::getEnvironmentVariableName)
 			.forEach(expectedProperties::add);
-		expectedProperties
-			.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH", "LOGGED_APPLICATION_NAME", "LOGGED_APPLICATION_GROUP"));
+		expectedProperties.removeAll(List.of("LOG_FILE", "LOG_PATH"));
 		expectedProperties.add("org.jboss.logging.provider");
 		expectedProperties.add("LOG_CORRELATION_PATTERN");
 		expectedProperties.add("CONSOLE_LOG_STRUCTURED_FORMAT");
@@ -822,7 +820,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void applicationNameLoggingToFileWhenDisabled(CapturedOutput output) {
+	void applicationNameLoggingToFileWhenDisabled() {
 		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
 		File file = new File(tmpDir(), "logback-test.log");
@@ -939,7 +937,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void applicationGroupLoggingToFileWhenDisabled(CapturedOutput output) {
+	void applicationGroupLoggingToFileWhenDisabled() {
 		this.environment.setProperty("spring.application.group", "myGroup");
 		this.environment.setProperty("logging.include-application-group", "false");
 		File file = new File(tmpDir(), "logback-test.log");
