@@ -29,13 +29,12 @@ import org.springframework.pulsar.core.PulsarConsumerFactory;
  * for a given {@link PulsarConsumerFactory}.
  *
  * @author Chris Bono
- * @since 3.4.0
  */
-public class PulsarContainerFactoryCustomizers {
+class PulsarContainerFactoryCustomizers {
 
 	private final List<PulsarContainerFactoryCustomizer<?>> customizers;
 
-	public PulsarContainerFactoryCustomizers(List<? extends PulsarContainerFactoryCustomizer<?>> customizers) {
+	PulsarContainerFactoryCustomizers(List<? extends PulsarContainerFactoryCustomizer<?>> customizers) {
 		this.customizers = (customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList();
 	}
 
@@ -48,7 +47,7 @@ public class PulsarContainerFactoryCustomizers {
 	 * @return the customized container factory
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends PulsarContainerFactory<?, ?>> T customize(T containerFactory) {
+	<T extends PulsarContainerFactory<?, ?>> T customize(T containerFactory) {
 		LambdaSafe.callbacks(PulsarContainerFactoryCustomizer.class, this.customizers, containerFactory)
 			.withLogger(PulsarContainerFactoryCustomizers.class)
 			.invoke((customizer) -> customizer.customize(containerFactory));
