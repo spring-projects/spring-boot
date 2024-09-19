@@ -14,8 +14,6 @@ spring:
     timeout-per-shutdown-phase: "20s"
 ----
 
-NOTE: Graceful shutdown with Tomcat requires Tomcat 9.0.33 or later.
-
 IMPORTANT: Shutdown in your IDE may be immediate rather than graceful if it does not send a proper `SIGTERM` signal.
 See the documentation of your IDE for more details.
 
