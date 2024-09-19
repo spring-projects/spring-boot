@@ -1868,7 +1868,7 @@ bom {
 			releaseNotes("https://github.com/SeleniumHQ/htmlunit-driver/releases/tag/htmlunit-driver-{version}")
 		}
 	}
-	library("SendGrid", "4.10.2") {
+	library("SendGrid", "4.10.3") {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
