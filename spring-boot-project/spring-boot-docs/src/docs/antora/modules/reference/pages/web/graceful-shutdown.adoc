@@ -14,8 +14,6 @@ TIP: To learn about more the specific method used with your web server, see the 
 Jetty, Reactor Netty, and Tomcat will stop accepting new requests at the network layer.
 Undertow will accept new connections but respond immediately with a service unavailable (503) response.
 
-NOTE: Graceful shutdown with Tomcat requires Tomcat 9.0.33 or later.
-
 To enable graceful shutdown, configure the configprop:server.shutdown[] property, as shown in the following example:
 
 [configprops,yaml]
