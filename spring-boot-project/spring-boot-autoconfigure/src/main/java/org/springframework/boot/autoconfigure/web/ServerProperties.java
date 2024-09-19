@@ -109,7 +109,7 @@ public class ServerProperties {
 	/**
 	 * Type of shutdown that the server will support.
 	 */
-	private Shutdown shutdown = Shutdown.IMMEDIATE;
+	private Shutdown shutdown = Shutdown.GRACEFUL;
 
 	@NestedConfigurationProperty
 	private Ssl ssl;
