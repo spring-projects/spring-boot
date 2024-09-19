@@ -598,7 +598,7 @@ public class FlywayProperties {
 	}
 
 	@Deprecated(since = "3.4.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(since = "3.4.0")
+	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18")
 	public boolean isCleanOnValidationError() {
 		return this.cleanOnValidationError;
 	}
