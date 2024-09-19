@@ -77,7 +77,8 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 							fieldWithPath("custom.[].trigger").description("Trigger for the task."))
 						.andWithPrefix("*.[].",
 								fieldWithPath("lastExecution").description("Last execution of this task, if any.")
-									.optional())
+									.optional()
+									.type(JsonFieldType.OBJECT))
 						.andWithPrefix("*.[].lastExecution.", lastExecution())));
 	}
 
@@ -98,7 +99,8 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 
 	private FieldDescriptor[] lastExecution() {
 		return new FieldDescriptor[] {
-				fieldWithPath("status").description("Status of the last execution (STARTED, SUCCESS, ERROR)."),
+				fieldWithPath("status").description("Status of the last execution (STARTED, SUCCESS, ERROR).")
+					.type(JsonFieldType.STRING),
 				fieldWithPath("time").description("Time of the last execution.").type(JsonFieldType.STRING),
 				fieldWithPath("exception.type").description("Exception type thrown by the task, if any.")
 					.type(JsonFieldType.STRING)
