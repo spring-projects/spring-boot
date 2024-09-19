@@ -26,7 +26,6 @@ jobs:
           - version: 22
             toolchain: false
           - version: 23
-            distribution: oracle
             toolchain: true
         exclude:
           - os:
