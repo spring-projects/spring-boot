@@ -186,6 +186,13 @@ public class JmsProperties {
 		 */
 		private Duration receiveTimeout = Duration.ofSeconds(1);
 
+		/**
+		 * Specify the maximum number of messages to process in one task. By default,
+		 * unlimited unless a SchedulingTaskExecutor is configured on the listener (10
+		 * messages), as it indicates a preference for short-lived tasks.
+		 */
+		private Integer maxMessagesPerTask;
+
 		private final Session session = new Session();
 
 		public boolean isAutoStartup() {
@@ -248,6 +255,14 @@ public class JmsProperties {
 
 		public void setReceiveTimeout(Duration receiveTimeout) {
 			this.receiveTimeout = receiveTimeout;
+		}
+
+		public Integer getMaxMessagesPerTask() {
+			return this.maxMessagesPerTask;
+		}
+
+		public void setMaxMessagesPerTask(Integer maxMessagesPerTask) {
+			this.maxMessagesPerTask = maxMessagesPerTask;
 		}
 
 		public Session getSession() {

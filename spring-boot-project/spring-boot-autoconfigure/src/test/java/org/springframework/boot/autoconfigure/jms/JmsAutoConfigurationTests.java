@@ -176,7 +176,8 @@ class JmsAutoConfigurationTests {
 					"spring.jms.listener.session.acknowledgeMode=client",
 					"spring.jms.listener.session.transacted=false", "spring.jms.listener.minConcurrency=2",
 					"spring.jms.listener.receiveTimeout=2s", "spring.jms.listener.maxConcurrency=10",
-					"spring.jms.subscription-durable=true", "spring.jms.client-id=exampleId")
+					"spring.jms.subscription-durable=true", "spring.jms.client-id=exampleId",
+					"spring.jms.listener.max-messages-per-task=5")
 			.run(this::testJmsListenerContainerFactoryWithCustomSettings);
 	}
 
@@ -188,6 +189,7 @@ class JmsAutoConfigurationTests {
 		assertThat(container.getConcurrentConsumers()).isEqualTo(2);
 		assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
 		assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 2000L);
+		assertThat(container).hasFieldOrPropertyWithValue("maxMessagesPerTask", 5);
 		assertThat(container.isSubscriptionDurable()).isTrue();
 		assertThat(container.getClientId()).isEqualTo("exampleId");
 	}
