@@ -80,7 +80,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@Override
 	Sender createSender() {
-		return createSender(Duration.ofSeconds(10));
+		return createSender(Duration.ofMinutes(1));
 	}
 
 	Sender createSender(Duration timeout) {

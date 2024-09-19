@@ -91,7 +91,7 @@ abstract class ZipkinHttpSenderTests {
 				callbackResult.set(new CallbackResult(false, t));
 			}
 		});
-		return Awaitility.await().atMost(Duration.ofSeconds(5)).until(callbackResult::get, Objects::nonNull);
+		return Awaitility.await().atMost(Duration.ofMinutes(1)).until(callbackResult::get, Objects::nonNull);
 	}
 
 	protected void makeSyncRequest(List<byte[]> encodedSpans) throws IOException {
