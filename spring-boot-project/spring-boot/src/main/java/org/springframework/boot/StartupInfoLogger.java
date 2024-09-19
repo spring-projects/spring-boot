@@ -64,6 +64,7 @@ class StartupInfoLogger {
 		StringBuilder message = new StringBuilder();
 		message.append("Starting");
 		appendAotMode(message);
+		appendApplicationClassName(message);
 		appendApplicationName(message);
 		appendApplicationVersion(message);
 		appendJavaVersion(message);
@@ -84,6 +85,7 @@ class StartupInfoLogger {
 	private CharSequence getStartedMessage(Startup startup) {
 		StringBuilder message = new StringBuilder();
 		message.append(startup.action());
+		appendApplicationClassName(message);
 		appendApplicationName(message);
 		message.append(" in ");
 		message.append(startup.timeTakenToStarted().toMillis() / 1000.0);
@@ -101,6 +103,10 @@ class StartupInfoLogger {
 	}
 
 	private void appendApplicationName(StringBuilder message) {
+		append(message, "\"", "\"", () -> this.environment.getProperty("spring.application.name"));
+	}
+
+	private void appendApplicationClassName(StringBuilder message) {
 		append(message, "",
 				() -> (this.sourceClass != null) ? ClassUtils.getShortName(this.sourceClass) : "application");
 	}
@@ -137,10 +143,15 @@ class StartupInfoLogger {
 	}
 
 	private void append(StringBuilder message, String prefix, Callable<Object> call) {
-		append(message, prefix, call, "");
+		append(message, prefix, "", call);
 	}
 
-	private void append(StringBuilder message, String prefix, Callable<Object> call, String defaultValue) {
+	private void append(StringBuilder message, String prefix, String suffix, Callable<Object> call) {
+		append(message, prefix, suffix, call, "");
+	}
+
+	private void append(StringBuilder message, String prefix, String suffix, Callable<Object> call,
+			String defaultValue) {
 		Object result = callIfPossible(call);
 		String value = (result != null) ? result.toString() : null;
 		if (!StringUtils.hasLength(value)) {
@@ -150,6 +161,7 @@ class StartupInfoLogger {
 			message.append((!message.isEmpty()) ? " " : "");
 			message.append(prefix);
 			message.append(value);
+			message.append(suffix);
 		}
 	}
 
