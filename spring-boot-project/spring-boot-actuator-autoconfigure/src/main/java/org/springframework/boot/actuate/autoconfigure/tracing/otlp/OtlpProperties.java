@@ -48,6 +48,7 @@ public class OtlpProperties {
 
 	/**
 	 * Transport used to send the spans.
+	 * @since 3.4.0
 	 */
 	private Transport transport = Transport.HTTP;
 

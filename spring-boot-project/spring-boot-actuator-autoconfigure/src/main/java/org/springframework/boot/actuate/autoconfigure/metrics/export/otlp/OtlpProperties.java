@@ -60,11 +60,13 @@ public class OtlpProperties extends StepRegistryProperties {
 
 	/**
 	 * Histogram type to be preferred when histogram publishing is enabled.
+	 * @since 3.4.0
 	 */
 	private HistogramFlavor histogramFlavor = HistogramFlavor.EXPLICIT_BUCKET_HISTOGRAM;
 
 	/**
 	 * Max scale to use for exponential histograms, if configured.
+	 * @since 3.4.0
 	 */
 	private int maxScale = 20;
 
