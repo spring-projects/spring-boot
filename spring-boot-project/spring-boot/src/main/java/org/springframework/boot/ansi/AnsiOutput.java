@@ -153,9 +153,6 @@ public abstract class AnsiOutput {
 
 	private static boolean detectIfAnsiCapable() {
 		try {
-			if (Boolean.FALSE.equals(consoleAvailable)) {
-				return false;
-			}
 			if (consoleAvailable == null) {
 				Console console = System.console();
 				if (console == null) {
@@ -168,6 +165,9 @@ public abstract class AnsiOutput {
 						return false;
 					}
 				}
+			}
+			if (!consoleAvailable) {
+				return false;
 			}
 			return !(OPERATING_SYSTEM_NAME.contains("win"));
 		}

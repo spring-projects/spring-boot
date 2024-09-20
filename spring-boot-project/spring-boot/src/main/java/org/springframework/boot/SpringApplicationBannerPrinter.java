@@ -105,27 +105,18 @@ class SpringApplicationBannerPrinter {
 	}
 
 	/**
-	 * Decorator that allows a {@link Banner} to be printed again without needing to
-	 * specify the source class.
-	 */
-	private static class PrintedBanner implements Banner {
-
-		private final Banner banner;
-
-		private final Class<?> sourceClass;
-
-		PrintedBanner(Banner banner, Class<?> sourceClass) {
-			this.banner = banner;
-			this.sourceClass = sourceClass;
-		}
+		 * Decorator that allows a {@link Banner} to be printed again without needing to
+		 * specify the source class.
+		 */
+		private record PrintedBanner(Banner banner, Class<?> sourceClass) implements Banner {
 
 		@Override
-		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
-			sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
-			this.banner.printBanner(environment, sourceClass, out);
-		}
+			public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
+				sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
+				this.banner.printBanner(environment, sourceClass, out);
+			}
 
-	}
+		}
 
 	static class SpringApplicationBannerPrinterRuntimeHints implements RuntimeHintsRegistrar {
 
