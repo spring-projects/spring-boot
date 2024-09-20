@@ -69,7 +69,9 @@ class SpringEnvironmentLookupTests {
 		this.loggerContext.removeObject(Log4J2LoggingSystem.ENVIRONMENT_KEY);
 		Interpolator lookup = createLookup(this.loggerContext);
 		assertThatIllegalStateException().isThrownBy(() -> lookup.lookup("spring:test"))
-			.withMessage("Unable to obtain Spring Environment from LoggerContext");
+			.withMessage("Unable to obtain Spring Environment from LoggerContext. "
+					+ "This can happen if your log4j2 configuration filename does not end with '-spring' "
+					+ "(for example using 'log4j2.xml' instead of 'log4j2-spring.xml')");
 	}
 
 	private Interpolator createLookup(LoggerContext context) {
