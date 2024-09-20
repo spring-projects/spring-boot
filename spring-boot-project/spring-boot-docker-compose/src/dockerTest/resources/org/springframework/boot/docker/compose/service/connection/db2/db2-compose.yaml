@@ -1,0 +1,18 @@
+services:
+  database:
+    image: '{imageName}'
+    ports:
+      - '50000'
+    privileged: true
+    environment:
+      - 'LICENSE=accept'
+      - 'DB2INSTANCE=db2inst1'
+      - 'DB2INST1_PASSWORD=secret'
+      - 'DBNAME=testdb'
+      - 'AUTOCONFIG=false'
+      - 'ARCHIVE_LOGS=false'
+    healthcheck:
+      test: 'su - db2inst1 -c "db2 connect to testdb user db2inst1 using secret"'
+      start_period: 90s
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true

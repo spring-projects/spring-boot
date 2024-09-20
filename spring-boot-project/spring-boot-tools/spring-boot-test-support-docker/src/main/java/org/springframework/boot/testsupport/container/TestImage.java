@@ -29,6 +29,7 @@ import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.containers.Container;
+import org.testcontainers.containers.Db2Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MongoDBContainer;
@@ -54,6 +55,7 @@ import org.springframework.util.Assert;
  * @author Moritz Halbritter
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 public enum TestImage {
 
@@ -89,6 +91,12 @@ public enum TestImage {
 	COUCHBASE("couchbase/server", "7.1.4", () -> CouchbaseContainer.class,
 			(container) -> ((CouchbaseContainer) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
+
+	/**
+	 * A container image suitable for testing DB2.
+	 */
+	DB2("icr.io/db2_community/db2", "11.5.8.0", () -> Db2Container.class,
+			(container) -> ((Db2Container) container).withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
 	 * A container image suitable for testing Elasticsearch 7.
