@@ -120,6 +120,19 @@ jobs:
         with:
           spring-boot-version: ${{ needs.build-and-stage-release.outputs.version }}
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+  trigger-docs-build:
+    name: Trigger Docs Build
+    runs-on: ubuntu-latest
+    needs:
+      - build-and-stage-release
+      - sync-to-maven-central
+    permissions:
+      actions: write
+    steps:
+      - name: Run Deploy Docs Workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy-docs.yml --repo spring-projects/spring-boot -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ needs.build-and-stage-release.outputs.version }}
   create-github-release:
     name: Create GitHub Release
     needs:
@@ -127,6 +140,7 @@ jobs:
       - promote-release
       - publish-gradle-plugin
       - publish-to-sdkman
+      - trigger-docs-build
       - update-homebrew-tap
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
