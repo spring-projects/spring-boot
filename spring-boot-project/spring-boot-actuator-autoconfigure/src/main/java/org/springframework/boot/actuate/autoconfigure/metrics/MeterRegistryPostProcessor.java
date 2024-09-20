@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import org.springframework.context.ApplicationContext;
  */
 class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializingSingleton {
 
-	private final boolean hasNoCompositeMeterRegistryBeans;
+	private final CompositeMeterRegistries compositeMeterRegistries;
 
 	private final ObjectProvider<MetricsProperties> properties;
 
@@ -59,17 +59,13 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	MeterRegistryPostProcessor(ApplicationContext applicationContext,
 			ObjectProvider<MetricsProperties> metricsProperties, ObjectProvider<MeterRegistryCustomizer<?>> customizers,
 			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders) {
-		this(hasNoCompositeMeterRegistryBeans(applicationContext), metricsProperties, customizers, filters, binders);
+		this(CompositeMeterRegistries.of(applicationContext), metricsProperties, customizers, filters, binders);
 	}
 
-	private static boolean hasNoCompositeMeterRegistryBeans(ApplicationContext applicationContext) {
-		return applicationContext.getBeanNamesForType(CompositeMeterRegistry.class, false, false).length == 0;
-	}
-
-	MeterRegistryPostProcessor(boolean hasNoCompositeMeterRegistryBeans, ObjectProvider<MetricsProperties> properties,
-			ObjectProvider<MeterRegistryCustomizer<?>> customizers, ObjectProvider<MeterFilter> filters,
-			ObjectProvider<MeterBinder> binders) {
-		this.hasNoCompositeMeterRegistryBeans = hasNoCompositeMeterRegistryBeans;
+	MeterRegistryPostProcessor(CompositeMeterRegistries compositeMeterRegistries,
+			ObjectProvider<MetricsProperties> properties, ObjectProvider<MeterRegistryCustomizer<?>> customizers,
+			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders) {
+		this.compositeMeterRegistries = compositeMeterRegistries;
 		this.properties = properties;
 		this.customizers = customizers;
 		this.filters = filters;
@@ -130,11 +126,21 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	private boolean isBindable(MeterRegistry meterRegistry) {
-		return this.hasNoCompositeMeterRegistryBeans || isCompositeMeterRegistry(meterRegistry);
+		return isAutoConfiguredComposite(meterRegistry) || isCompositeWithOnlyUserDefinedComposites(meterRegistry)
+				|| noCompositeMeterRegistries();
 	}
 
-	private boolean isCompositeMeterRegistry(MeterRegistry meterRegistry) {
-		return meterRegistry instanceof CompositeMeterRegistry;
+	private boolean isAutoConfiguredComposite(MeterRegistry meterRegistry) {
+		return meterRegistry instanceof AutoConfiguredCompositeMeterRegistry;
+	}
+
+	private boolean isCompositeWithOnlyUserDefinedComposites(MeterRegistry meterRegistry) {
+		return this.compositeMeterRegistries == CompositeMeterRegistries.ONLY_USER_DEFINED
+				&& meterRegistry instanceof CompositeMeterRegistry;
+	}
+
+	private boolean noCompositeMeterRegistries() {
+		return this.compositeMeterRegistries == CompositeMeterRegistries.NONE;
 	}
 
 	void applyBinders(MeterRegistry meterRegistry) {
@@ -147,6 +153,23 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 			}
 		}
 		this.binders.orderedStream().forEach((binder) -> binder.bindTo(meterRegistry));
+	}
+
+	enum CompositeMeterRegistries {
+
+		NONE, AUTO_CONFIGURED, ONLY_USER_DEFINED;
+
+		private static CompositeMeterRegistries of(ApplicationContext context) {
+			if (hasBeansOfType(AutoConfiguredCompositeMeterRegistry.class, context)) {
+				return AUTO_CONFIGURED;
+			}
+			return hasBeansOfType(CompositeMeterRegistry.class, context) ? ONLY_USER_DEFINED : NONE;
+		}
+
+		private static boolean hasBeansOfType(Class<?> type, ApplicationContext context) {
+			return context.getBeanNamesForType(type, false, false).length > 0;
+		}
+
 	}
 
 }
