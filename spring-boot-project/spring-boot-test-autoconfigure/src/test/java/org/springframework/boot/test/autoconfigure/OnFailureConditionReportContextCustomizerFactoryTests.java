@@ -19,44 +19,46 @@ package org.springframework.boot.test.autoconfigure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.TestContextManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link ConditionReportApplicationContextFailureProcessor}.
+ * Tests for {@link OnFailureConditionReportContextCustomizerFactory}.
  *
- * @author Phillip Webb
- * @author Scott Frederick
- * @deprecated since 3.2.11 for removal in 3.6.0
+ * @author Andy Wilkinson
  */
 @ExtendWith(OutputCaptureExtension.class)
-@Deprecated(since = "3.2.11", forRemoval = true)
-@SuppressWarnings("removal")
-class ConditionReportApplicationContextFailureProcessorTests {
+class OnFailureConditionReportContextCustomizerFactoryTests {
 
 	@Test
 	void loadFailureShouldPrintReport(CapturedOutput output) {
-		SpringApplication application = new SpringApplication(TestConfig.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
-		ConfigurableApplicationContext applicationContext = application.run();
-		ConditionReportApplicationContextFailureProcessor processor = new ConditionReportApplicationContextFailureProcessor();
-		processor.processLoadFailure(applicationContext, new IllegalStateException());
-		assertThat(output).contains("CONDITIONS EVALUATION REPORT")
-			.contains("Positive matches")
-			.contains("Negative matches");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new TestContextManager(FailingTests.class).getTestContext().getApplicationContext());
+		assertThat(output).contains("JacksonAutoConfiguration matched");
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(JacksonAutoConfiguration.class)
-	static class TestConfig {
+	@SpringBootTest
+	static class FailingTests {
+
+		@Configuration(proxyBeanMethods = false)
+		@ImportAutoConfiguration(JacksonAutoConfiguration.class)
+		static class TestConfig {
+
+			@Bean
+			String faultyBean() {
+				throw new IllegalStateException();
+			}
+
+		}
 
 	}
 
