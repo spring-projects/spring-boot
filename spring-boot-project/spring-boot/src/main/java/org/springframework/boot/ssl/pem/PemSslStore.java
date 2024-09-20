@@ -62,6 +62,10 @@ public interface PemSslStore {
 	 */
 	List<X509Certificate> certificates();
 
+	default boolean allowEmptyCertificates() {
+		return false;
+	}
+
 	/**
 	 * The private key for this store or {@code null}.
 	 * @return the private key

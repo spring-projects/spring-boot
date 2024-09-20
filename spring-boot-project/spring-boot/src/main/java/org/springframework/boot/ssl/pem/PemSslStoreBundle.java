@@ -86,7 +86,9 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			return null;
 		}
 		try {
-			Assert.notEmpty(pemSslStore.certificates(), "Certificates must not be empty");
+			if (!pemSslStore.allowEmptyCertificates()) {
+				Assert.notEmpty(pemSslStore.certificates(), "Certificates must not be empty");
+			}
 			String alias = (pemSslStore.alias() != null) ? pemSslStore.alias() : DEFAULT_ALIAS;
 			KeyStore store = createKeyStore(pemSslStore.type());
 			List<X509Certificate> certificates = pemSslStore.certificates();

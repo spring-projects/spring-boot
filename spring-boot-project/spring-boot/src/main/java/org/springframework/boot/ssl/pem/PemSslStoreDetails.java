@@ -20,7 +20,6 @@ import java.security.KeyStore;
 import java.util.Collections;
 import java.util.Set;
 
-import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.util.StringUtils;
 
 /**
@@ -193,19 +192,15 @@ public record PemSslStoreDetails(String type, String alias, String password, Set
 	}
 
 	boolean isEmpty() {
-		return isEmpty(this.type) && isCertificatesEmpty() && isEmpty(this.privateKey);
+		return isEmpty(this.type) && this.certificateSet.isEmpty() && isEmpty(this.privateKey);
 	}
 
 	private boolean isEmpty(String value) {
 		return !StringUtils.hasText(value);
 	}
 
-	private boolean isContentEmpty(PemCertificate value) {
-		return value.optional() ? !new ApplicationResourceLoader().getResource(value.location()).exists() : isEmpty(value.location());
-	}
-
-	boolean isCertificatesEmpty() {
-		return this.certificateSet == null || this.certificateSet.isEmpty() || this.certificateSet.stream().allMatch(this::isContentEmpty);
+	boolean allCertificatesOptional() {
+		return this.certificateSet.stream().allMatch(PemCertificate::optional);
 	}
 
 	/**

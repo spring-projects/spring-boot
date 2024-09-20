@@ -16,6 +16,9 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.util.Enumeration;
 import java.util.Map;
 
 import org.apache.catalina.connector.Connector;
@@ -139,10 +142,26 @@ class SslConnectorCustomizer {
 			}
 			if (stores.getTrustStore() != null) {
 				sslHostConfig.setTrustStore(stores.getTrustStore());
+				setTrustManagerClassName(sslHostConfig, stores.getTrustStore());
 			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not load store: " + ex.getMessage(), ex);
+		}
+	}
+
+	private void setTrustManagerClassName(SSLHostConfig sslHostConfig, KeyStore keyStore) throws KeyStoreException {
+		boolean hasEntries = false;
+		Enumeration<String> aliases = keyStore.aliases();
+		while (aliases.hasMoreElements()) {
+			String alias = aliases.nextElement();
+			if (keyStore.isCertificateEntry(alias)) {
+				hasEntries = true;
+			}
+		}
+
+		if (!hasEntries) {
+			sslHostConfig.setTrustManagerClassName("org.springframework.boot.web.embedded.tomcat.DenyAllTrustManager");
 		}
 	}
 
