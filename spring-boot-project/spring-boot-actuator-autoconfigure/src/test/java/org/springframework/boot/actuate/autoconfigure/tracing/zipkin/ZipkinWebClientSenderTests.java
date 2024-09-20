@@ -81,7 +81,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@Override
 	BytesMessageSender createSender() {
-		return createSender(Encoding.JSON, Duration.ofMinutes(1));
+		return createSender(Encoding.JSON, Duration.ofSeconds(10));
 	}
 
 	ZipkinWebClientSender createSender(Encoding encoding, Duration timeout) {
@@ -110,7 +110,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	void sendShouldSendSpansToZipkinInProto3() throws IOException, InterruptedException {
 		mockBackEnd.enqueue(new MockResponse());
 		List<byte[]> encodedSpans = List.of(toByteArray("span1"), toByteArray("span2"));
-		try (BytesMessageSender sender = createSender(Encoding.PROTO3, Duration.ofMinutes(1))) {
+		try (BytesMessageSender sender = createSender(Encoding.PROTO3, Duration.ofSeconds(10))) {
 			sender.send(encodedSpans);
 		}
 		requestAssertions((request) -> {
@@ -126,7 +126,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		mockBackEnd.enqueue(new MockResponse());
 		try (HttpEndpointSupplier httpEndpointSupplier = new TestHttpEndpointSupplier(ZIPKIN_URL)) {
 			try (BytesMessageSender sender = createSender((endpoint) -> httpEndpointSupplier, Encoding.JSON,
-					Duration.ofMinutes(1))) {
+					Duration.ofSeconds(10))) {
 				sender.send(Collections.emptyList());
 				sender.send(Collections.emptyList());
 			}
