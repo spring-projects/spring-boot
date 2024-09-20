@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MeterRegistry.Config;
 import io.micrometer.core.instrument.Metrics;
@@ -32,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryPostProcessor.CompositeMeterRegistries;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -76,12 +79,25 @@ class MeterRegistryPostProcessorTests {
 	}
 
 	@Test
-	void postProcessAndInitializeWhenCompositeAppliesCustomizer() {
+	void postProcessAndInitializeWhenUserDefinedCompositeAppliesCustomizer() {
 		this.customizers.add(this.mockCustomizer);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(false,
-				createObjectProvider(this.properties), createObjectProvider(this.customizers),
-				createObjectProvider(this.filters), createObjectProvider(this.binders));
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
+				CompositeMeterRegistries.ONLY_USER_DEFINED, createObjectProvider(this.properties),
+				createObjectProvider(this.customizers), createObjectProvider(this.filters),
+				createObjectProvider(this.binders));
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		postProcessAndInitialize(processor, composite);
+		then(this.mockCustomizer).should().customize(composite);
+	}
+
+	@Test
+	void postProcessAndInitializeWhenAutoConfiguredCompositeAppliesCustomizer() {
+		this.customizers.add(this.mockCustomizer);
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.AUTO_CONFIGURED,
+				createObjectProvider(this.properties), createObjectProvider(this.customizers), null,
+				createObjectProvider(this.binders));
+		AutoConfiguredCompositeMeterRegistry composite = new AutoConfiguredCompositeMeterRegistry(Clock.SYSTEM,
+				Collections.emptyList());
 		postProcessAndInitialize(processor, composite);
 		then(this.mockCustomizer).should().customize(composite);
 	}
@@ -90,7 +106,7 @@ class MeterRegistryPostProcessorTests {
 	void postProcessAndInitializeAppliesCustomizer() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 		this.customizers.add(this.mockCustomizer);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(true,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.NONE,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		postProcessAndInitialize(processor, this.mockRegistry);
@@ -101,7 +117,7 @@ class MeterRegistryPostProcessorTests {
 	void postProcessAndInitializeAppliesFilter() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 		this.filters.add(this.mockFilter);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(true,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.NONE,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		postProcessAndInitialize(processor, this.mockRegistry);
@@ -112,7 +128,7 @@ class MeterRegistryPostProcessorTests {
 	void postProcessAndInitializeBindsTo() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 		this.binders.add(this.mockBinder);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(true,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.NONE,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		postProcessAndInitialize(processor, this.mockRegistry);
@@ -120,20 +136,54 @@ class MeterRegistryPostProcessorTests {
 	}
 
 	@Test
-	void postProcessAndInitializeWhenCompositeBindsTo() {
+	void whenUserDefinedCompositeThenPostProcessAndInitializeCompositeBindsTo() {
 		this.binders.add(this.mockBinder);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(false,
-				createObjectProvider(this.properties), createObjectProvider(this.customizers),
-				createObjectProvider(this.filters), createObjectProvider(this.binders));
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
+				CompositeMeterRegistries.ONLY_USER_DEFINED, createObjectProvider(this.properties),
+				createObjectProvider(this.customizers), createObjectProvider(this.filters),
+				createObjectProvider(this.binders));
 		CompositeMeterRegistry composite = new CompositeMeterRegistry();
 		postProcessAndInitialize(processor, composite);
 		then(this.mockBinder).should().bindTo(composite);
 	}
 
 	@Test
-	void postProcessAndInitializeWhenCompositeExistsDoesNotBindTo() {
+	void whenUserDefinedCompositeThenPostProcessAndInitializeStandardRegistryDoesNotBindTo() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(false,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(
+				CompositeMeterRegistries.ONLY_USER_DEFINED, createObjectProvider(this.properties),
+				createObjectProvider(this.customizers), createObjectProvider(this.filters), null);
+		postProcessAndInitialize(processor, this.mockRegistry);
+		then(this.mockBinder).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void whenAutoConfiguredCompositeThenPostProcessAndInitializeAutoConfiguredCompositeBindsTo() {
+		this.binders.add(this.mockBinder);
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.AUTO_CONFIGURED,
+				createObjectProvider(this.properties), createObjectProvider(this.customizers), null,
+				createObjectProvider(this.binders));
+		AutoConfiguredCompositeMeterRegistry composite = new AutoConfiguredCompositeMeterRegistry(Clock.SYSTEM,
+				Collections.emptyList());
+		postProcessAndInitialize(processor, composite);
+		then(this.mockBinder).should().bindTo(composite);
+	}
+
+	@Test
+	void whenAutoConfiguredCompositeThenPostProcessAndInitializeCompositeDoesNotBindTo() {
+		this.binders.add(this.mockBinder);
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.AUTO_CONFIGURED,
+				createObjectProvider(this.properties), createObjectProvider(this.customizers),
+				createObjectProvider(this.filters), null);
+		CompositeMeterRegistry composite = new CompositeMeterRegistry();
+		postProcessAndInitialize(processor, composite);
+		then(this.mockBinder).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void whenAutoConfiguredCompositeThenPostProcessAndInitializeStandardRegistryDoesNotBindTo() {
+		given(this.mockRegistry.config()).willReturn(this.mockConfig);
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.AUTO_CONFIGURED,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), null);
 		postProcessAndInitialize(processor, this.mockRegistry);
@@ -141,12 +191,12 @@ class MeterRegistryPostProcessorTests {
 	}
 
 	@Test
-	void postProcessAndInitializeBeOrderedCustomizerThenFilterThenBindTo() {
+	void postProcessAndInitializeIsOrderedCustomizerThenFilterThenBindTo() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 		this.customizers.add(this.mockCustomizer);
 		this.filters.add(this.mockFilter);
 		this.binders.add(this.mockBinder);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(true,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.NONE,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		postProcessAndInitialize(processor, this.mockRegistry);
@@ -160,7 +210,7 @@ class MeterRegistryPostProcessorTests {
 	void postProcessAndInitializeWhenUseGlobalRegistryTrueAddsToGlobalRegistry() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 		this.properties.setUseGlobalRegistry(true);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(true,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.NONE,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		try {
@@ -175,7 +225,7 @@ class MeterRegistryPostProcessorTests {
 	@Test
 	void postProcessAndInitializeWhenUseGlobalRegistryFalseDoesNotAddToGlobalRegistry() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(true,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.NONE,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		postProcessAndInitialize(processor, this.mockRegistry);
@@ -186,7 +236,7 @@ class MeterRegistryPostProcessorTests {
 	void postProcessDoesNotBindToUntilSingletonsInitialized() {
 		given(this.mockRegistry.config()).willReturn(this.mockConfig);
 		this.binders.add(this.mockBinder);
-		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(true,
+		MeterRegistryPostProcessor processor = new MeterRegistryPostProcessor(CompositeMeterRegistries.NONE,
 				createObjectProvider(this.properties), createObjectProvider(this.customizers),
 				createObjectProvider(this.filters), createObjectProvider(this.binders));
 		processor.postProcessAfterInitialization(this.mockRegistry, "meterRegistry");
