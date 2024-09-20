@@ -25,8 +25,9 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
  * application.
  *
  * @author Phillip Webb
+ * @since 3.2.0
  */
-class NotReactiveWebApplicationCondition extends NoneNestedConditions {
+public class NotReactiveWebApplicationCondition extends NoneNestedConditions {
 
 	NotReactiveWebApplicationCondition() {
 		super(ConfigurationPhase.PARSE_CONFIGURATION);

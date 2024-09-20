@@ -256,6 +256,16 @@ bom {
 			site("https://commons.apache.org/proper/commons-pool")
 		}
 	}
+	library("Commons Text", "1.12.0") {
+		group("org.apache.commons") {
+			modules = [
+					"commons-text"
+			]
+		}
+		links {
+			site("https://commons.apache.org/proper/commons-text")
+		}
+	}
 	library("Couchbase Client", "3.7.2") {
 		group("com.couchbase.client") {
 			modules = [
@@ -1759,6 +1769,7 @@ bom {
 				"spring-boot-configuration-processor",
 				"spring-boot-devtools",
 				"spring-boot-docker-compose",
+				"spring-boot-interface-clients",
 				"spring-boot-jarmode-tools",
 				"spring-boot-loader",
 				"spring-boot-loader-classic",

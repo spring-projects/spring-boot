@@ -1612,6 +1612,18 @@
       "defaultValue": "classpath:git.properties"
     },
     {
+      "name": "spring.interfaceclients.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to automatically instantiate client beans from annotated interfaces.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.interfaceclients.http.resttemplate.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use RestTemplate as the underlying HTTP client for interface clients.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.jackson.constructor-detector",
       "defaultValue": "default"
     },

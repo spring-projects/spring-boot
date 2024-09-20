@@ -23,6 +23,10 @@ configurations.all {
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
+//	TODO: Have added it to be able to use CaseUtils and avoid rewriting the code;
+//	 can remove it and duplicate the required method instead
+	implementation("org.apache.commons:commons-text")
+
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("com.redis:testcontainers-redis")
