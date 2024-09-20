@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 the original author or authors.
+ * Copyright 2021-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.build.bom.bomr;
 
-import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -34,6 +34,10 @@ import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.bomr.ReleaseSchedule.Release;
 import org.springframework.boot.build.bom.bomr.github.Milestone;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
+import org.springframework.boot.build.properties.BuildProperties;
+import org.springframework.boot.build.properties.BuildType;
+import org.springframework.boot.build.repository.SpringRepository;
+import org.springframework.boot.build.repository.SpringRepository.RepositoryType;
 
 /**
  * A {@link Task} to move to snapshot dependencies.
@@ -44,12 +48,20 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 
 	private static final Logger log = LoggerFactory.getLogger(MoveToSnapshots.class);
 
-	private final URI REPOSITORY_URI = URI.create("https://repo.spring.io/snapshot/");
-
 	@Inject
 	public MoveToSnapshots(BomExtension bom) {
 		super(bom, true);
-		getRepositoryUris().add(this.REPOSITORY_URI);
+		BuildType buildType = BuildProperties.get(this).buildType();
+		getRepositoryNames().addAll(getSnapshotRepositoryNames(buildType));
+	}
+
+	public static List<String> getSnapshotRepositoryNames(BuildType buildType) {
+		return Arrays.stream(SpringRepository.values())
+			.filter((repository) -> repository.getRepositoryType() == RepositoryType.SNAPSHOT)
+			.filter((repository) -> repository.getBuildType() == BuildType.OPEN_SOURCE
+					|| repository.getBuildType() == buildType)
+			.map(SpringRepository::getName)
+			.toList();
 	}
 
 	@Override
@@ -83,26 +95,31 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 
 	@Override
 	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
-		ReleaseSchedule releaseSchedule = new ReleaseSchedule();
-		Map<String, List<Release>> releases = releaseSchedule.releasesBetween(OffsetDateTime.now(),
-				milestone.getDueOn());
+		return switch (BuildProperties.get(this).buildType()) {
+			case OPEN_SOURCE -> determineOpenSourceUpdatePredicates(milestone);
+			case COMMERCIAL -> super.determineUpdatePredicates(milestone);
+		};
+	}
+
+	private List<BiPredicate<Library, DependencyVersion>> determineOpenSourceUpdatePredicates(Milestone milestone) {
+		Map<String, List<Release>> scheduledReleases = getScheduledOpenSourceReleases(milestone);
 		List<BiPredicate<Library, DependencyVersion>> predicates = super.determineUpdatePredicates(milestone);
 		predicates.add((library, candidate) -> {
-			List<Release> releasesForLibrary = releases.get(library.getCalendarName());
-			if (releasesForLibrary != null) {
-				for (Release release : releasesForLibrary) {
-					if (candidate.isSnapshotFor(release.getVersion())) {
-						return true;
-					}
-				}
+			List<Release> releases = scheduledReleases.get(library.getCalendarName());
+			boolean match = (releases != null)
+					&& releases.stream().anyMatch((release) -> candidate.isSnapshotFor(release.getVersion()));
+			if (log.isInfoEnabled() && !match) {
+				log.info("Ignoring {}. No release of {} scheduled before {}", candidate, library.getName(),
+						milestone.getDueOn());
 			}
-			if (log.isInfoEnabled()) {
-				log.info("Ignoring " + candidate + ". No release of " + library.getName() + " scheduled before "
-						+ milestone.getDueOn());
-			}
-			return false;
+			return match;
 		});
 		return predicates;
+	}
+
+	private Map<String, List<Release>> getScheduledOpenSourceReleases(Milestone milestone) {
+		ReleaseSchedule releaseSchedule = new ReleaseSchedule();
+		return releaseSchedule.releasesBetween(OffsetDateTime.now(), milestone.getDueOn());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 package org.springframework.boot.build.bom.bomr;
 
-import java.net.URI;
-
 import javax.inject.Inject;
 
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.ArtifactRepositoryContainer;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
+import org.springframework.boot.build.properties.BuildProperties;
+import org.springframework.boot.build.repository.SpringRepository;
 
 /**
  * {@link Task} to upgrade the libraries managed by a bom.
@@ -36,12 +37,27 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	@Inject
 	public UpgradeBom(BomExtension bom) {
 		super(bom);
+		switch (BuildProperties.get(this).buildType()) {
+			case OPEN_SOURCE -> addOpenSourceRepositories();
+			case COMMERCIAL -> addCommercialRepositories();
+		}
+	}
+
+	private void addOpenSourceRepositories() {
 		getProject().getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
-			URI repositoryUrl = repository.getUrl();
-			if (!repositoryUrl.toString().endsWith("snapshot")) {
-				getRepositoryUris().add(repositoryUrl);
+			if (!isSnaphotRepository(repository)) {
+				getRepositoryNames().add(repository.getName());
 			}
 		});
+	}
+
+	private void addCommercialRepositories() {
+		getRepositoryNames().addAll(ArtifactRepositoryContainer.DEFAULT_MAVEN_CENTRAL_REPO_NAME,
+				SpringRepository.COMMERCIAL_RELEASE.getName());
+	}
+
+	private boolean isSnaphotRepository(MavenArtifactRepository repository) {
+		return repository.getUrl().toString().endsWith("snapshot");
 	}
 
 	@Override
