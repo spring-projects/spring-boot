@@ -16,8 +16,6 @@
 
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
-import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -39,7 +37,6 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
-	@Test
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
 	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
