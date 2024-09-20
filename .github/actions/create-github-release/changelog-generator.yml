@@ -1,5 +1,5 @@
 changelog:
-  repository: spring-projects/spring-boot
+  repository: ${{ github.repository }}
   sections:
     - title: ":star: New Features"
       labels:
@@ -16,6 +16,7 @@ changelog:
       labels:
         - "type: dependency-upgrade"
   issues:
+    generate_links: ${{ !vars.COMMERCIAL }}
     ports:
       - label: "status: forward-port"
         bodyExpression: 'Forward port of issue #(\d+).*'
