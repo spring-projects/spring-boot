@@ -58,11 +58,25 @@ jobs:
           JF_ENV_SPRING: ${{ secrets.JF_ARTIFACTORY_SPRING }}
       - name: Promote build
         run: jfrog rt build-promote ${{ format('spring-boot-{0}', needs.build-and-stage-release.outputs.version)}} ${{ github.run_number }} libs-milestone-local
+  trigger-docs-build:
+    name: Trigger Docs Build
+    runs-on: ubuntu-latest
+    needs:
+      - build-and-stage-release
+      - verify
+    permissions:
+      actions: write
+    steps:
+      - name: Run Deploy Docs Workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy-docs.yml --repo spring-projects/spring-boot -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ needs.build-and-stage-release.outputs.version }}
   create-github-release:
     name: Create GitHub Release
     needs:
       - build-and-stage-release
       - promote-release
+      - trigger-docs-build
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
