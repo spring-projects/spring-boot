@@ -20,10 +20,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -35,6 +35,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
@@ -54,7 +55,7 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.StringUtils;
 
 /**
- * Base class for tasks that upgrade dependencies in a bom.
+ * Base class for tasks that upgrade dependencies in a BOM.
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
@@ -91,7 +92,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	public abstract Property<String> getLibraries();
 
 	@Input
-	abstract ListProperty<URI> getRepositoryUris();
+	abstract ListProperty<String> getRepositoryNames();
 
 	@TaskAction
 	void upgradeDependencies() {
@@ -217,12 +218,27 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	@SuppressWarnings("deprecation")
 	private List<Upgrade> resolveUpgrades(Milestone milestone) {
-		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
-				new MultithreadedLibraryUpdateResolver(getThreads().get(),
-						new StandardLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
-								determineUpdatePredicates(milestone))))
-			.resolveUpgrades(matchingLibraries(), this.bom.getLibraries());
-		return upgrades;
+		InteractiveUpgradeResolver upgradeResolver = new InteractiveUpgradeResolver(
+				getServices().get(UserInputHandler.class), getLibraryUpdateResolver(milestone));
+		return upgradeResolver.resolveUpgrades(matchingLibraries(), this.bom.getLibraries());
+	}
+
+	private LibraryUpdateResolver getLibraryUpdateResolver(Milestone milestone) {
+		VersionResolver versionResolver = new MavenMetadataVersionResolver(getRepositories());
+		LibraryUpdateResolver libraryResolver = new StandardLibraryUpdateResolver(versionResolver,
+				determineUpdatePredicates(milestone));
+		return new MultithreadedLibraryUpdateResolver(getThreads().get(), libraryResolver);
+	}
+
+	private Collection<MavenArtifactRepository> getRepositories() {
+		return getRepositoryNames().map(this::asRepositories).get();
+	}
+
+	private List<MavenArtifactRepository> asRepositories(List<String> repositoryNames) {
+		return repositoryNames.stream()
+			.map(getProject().getRepositories()::getByName)
+			.map(MavenArtifactRepository.class::cast)
+			.toList();
 	}
 
 	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
