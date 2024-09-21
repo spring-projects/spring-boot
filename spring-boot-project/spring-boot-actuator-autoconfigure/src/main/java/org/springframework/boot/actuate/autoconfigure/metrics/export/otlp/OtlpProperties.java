@@ -79,6 +79,11 @@ public class OtlpProperties extends StepRegistryProperties {
 	 */
 	private TimeUnit baseTimeUnit = TimeUnit.MILLISECONDS;
 
+	/**
+	 * Whether virtual threads should be used for publishing metrics.
+	 */
+	private boolean virtualThreadsEnabled = false;
+
 	public String getUrl() {
 		return this.url;
 	}
@@ -144,6 +149,14 @@ public class OtlpProperties extends StepRegistryProperties {
 
 	public void setBaseTimeUnit(TimeUnit baseTimeUnit) {
 		this.baseTimeUnit = baseTimeUnit;
+	}
+
+	public boolean isVirtualThreadsEnabled() {
+		return this.virtualThreadsEnabled;
+	}
+
+	public void setVirtualThreadsEnabled(boolean virtualThreadsEnabled) {
+		this.virtualThreadsEnabled = virtualThreadsEnabled;
 	}
 
 }

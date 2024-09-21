@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.assertj.ScheduledExecutorServiceAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -74,6 +77,35 @@ class OtlpMetricsExportAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(OtlpMeterRegistry.class)
 				.hasSingleBean(OtlpConfig.class)
 				.hasBean("customConfig"));
+	}
+
+	@Test
+	void allowsPlatformThreadsToBeUsed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+			OtlpProperties properties = context.getBean(OtlpProperties.class);
+			assertThat(properties.isVirtualThreadsEnabled()).isFalse();
+			OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+			assertThat(registry).extracting("scheduledExecutorService")
+				.satisfies((executor) -> ScheduledExecutorServiceAssert.assertThat((ScheduledExecutorService) executor)
+					.usesPlatformThreads());
+		});
+	}
+
+	@Test
+	void allowsVirtualThreadsToBeUsed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withPropertyValues("management.otlp.metrics.export.virtualThreadsEnabled=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+				OtlpProperties properties = context.getBean(OtlpProperties.class);
+				assertThat(properties.isVirtualThreadsEnabled()).isTrue();
+				OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+				assertThat(registry).extracting("scheduledExecutorService")
+					.satisfies(
+							(executor) -> ScheduledExecutorServiceAssert.assertThat((ScheduledExecutorService) executor)
+								.usesVirtualThreads());
+			});
 	}
 
 	@Test

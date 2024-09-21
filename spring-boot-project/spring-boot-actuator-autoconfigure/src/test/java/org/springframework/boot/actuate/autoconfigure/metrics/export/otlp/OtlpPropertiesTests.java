@@ -43,4 +43,10 @@ class OtlpPropertiesTests extends StepRegistryPropertiesTests {
 		assertThat(properties.getBaseTimeUnit()).isSameAs(config.baseTimeUnit());
 	}
 
+	@Test
+	void virtualThreadsDisabledByDefault() {
+		OtlpProperties properties = new OtlpProperties();
+		assertThat(properties.isVirtualThreadsEnabled()).isFalse();
+	}
+
 }

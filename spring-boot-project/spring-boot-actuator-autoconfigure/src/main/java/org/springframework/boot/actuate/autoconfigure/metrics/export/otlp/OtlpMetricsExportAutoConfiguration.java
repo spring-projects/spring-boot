@@ -73,6 +73,9 @@ public class OtlpMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
+		if (this.properties.isVirtualThreadsEnabled()) {
+			return new OtlpMeterRegistry(otlpConfig, clock, Thread.ofVirtual().factory());
+		}
 		return new OtlpMeterRegistry(otlpConfig, clock);
 	}
 
