@@ -60,8 +60,7 @@ public class BomPlugin implements Plugin<Project> {
 		JavaPlatformExtension javaPlatform = project.getExtensions().getByType(JavaPlatformExtension.class);
 		javaPlatform.allowDependencies();
 		createApiEnforcedConfiguration(project);
-		BomExtension bom = project.getExtensions()
-			.create("bom", BomExtension.class, project.getDependencies(), project);
+		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project);
 		CheckBom checkBom = project.getTasks().create("bomrCheck", CheckBom.class, bom);
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
 		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);

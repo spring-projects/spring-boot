@@ -66,6 +66,7 @@ import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.mavenplugin.MavenExec;
+import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
@@ -78,22 +79,19 @@ import org.springframework.util.PropertyPlaceholderHelper.PlaceholderResolver;
  */
 public class BomExtension {
 
+	private final Project project;
+
+	private final UpgradeHandler upgradeHandler;
+
 	private final Map<String, DependencyVersion> properties = new LinkedHashMap<>();
 
 	private final Map<String, String> artifactVersionProperties = new HashMap<>();
 
 	private final List<Library> libraries = new ArrayList<>();
 
-	private final UpgradeHandler upgradeHandler;
-
-	private final DependencyHandler dependencyHandler;
-
-	private final Project project;
-
-	public BomExtension(DependencyHandler dependencyHandler, Project project) {
-		this.dependencyHandler = dependencyHandler;
-		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class);
+	public BomExtension(Project project) {
 		this.project = project;
+		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class, project);
 	}
 
 	public List<Library> getLibraries() {
@@ -105,8 +103,9 @@ public class BomExtension {
 	}
 
 	public Upgrade getUpgrade() {
-		return new Upgrade(this.upgradeHandler.upgradePolicy, new GitHub(this.upgradeHandler.gitHub.organization,
-				this.upgradeHandler.gitHub.repository, this.upgradeHandler.gitHub.issueLabels));
+		GitHubHandler gitHub = this.upgradeHandler.gitHub;
+		return new Upgrade(this.upgradeHandler.upgradePolicy,
+				new GitHub(gitHub.organization, gitHub.repository, gitHub.issueLabels));
 	}
 
 	public void library(String name, Action<LibraryHandler> action) {
@@ -196,6 +195,7 @@ public class BomExtension {
 	}
 
 	private void addLibrary(Library library) {
+		DependencyHandler dependencies = this.project.getDependencies();
 		this.libraries.add(library);
 		String versionProperty = library.getVersionProperty();
 		if (versionProperty != null) {
@@ -203,21 +203,28 @@ public class BomExtension {
 		}
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
-				putArtifactVersionProperty(group.getId(), module.getName(), module.getClassifier(), versionProperty);
-				this.dependencyHandler.getConstraints()
-					.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, createDependencyNotation(group.getId(),
-							module.getName(), library.getVersion().getVersion()));
+				addModule(library, dependencies, versionProperty, group, module);
 			}
 			for (String bomImport : group.getBoms()) {
-				putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
-				String bomDependency = createDependencyNotation(group.getId(), bomImport,
-						library.getVersion().getVersion());
-				this.dependencyHandler.add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
-						this.dependencyHandler.platform(bomDependency));
-				this.dependencyHandler.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME,
-						this.dependencyHandler.enforcedPlatform(bomDependency));
+				addBomImport(library, dependencies, versionProperty, group, bomImport);
 			}
 		}
+	}
+
+	private void addModule(Library library, DependencyHandler dependencies, String versionProperty, Group group,
+			Module module) {
+		putArtifactVersionProperty(group.getId(), module.getName(), module.getClassifier(), versionProperty);
+		String constraint = createDependencyNotation(group.getId(), module.getName(),
+				library.getVersion().getVersion());
+		dependencies.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME, constraint);
+	}
+
+	private void addBomImport(Library library, DependencyHandler dependencies, String versionProperty, Group group,
+			String bomImport) {
+		putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
+		String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion().getVersion());
+		dependencies.add(JavaPlatformPlugin.API_CONFIGURATION_NAME, dependencies.platform(bomDependency));
+		dependencies.add(BomPlugin.API_ENFORCED_CONFIGURATION_NAME, dependencies.enforcedPlatform(bomDependency));
 	}
 
 	public static class LibraryHandler {
@@ -501,7 +508,12 @@ public class BomExtension {
 
 		private UpgradePolicy upgradePolicy;
 
-		private final GitHubHandler gitHub = new GitHubHandler();
+		private final GitHubHandler gitHub;
+
+		@Inject
+		public UpgradeHandler(Project project) {
+			this.gitHub = new GitHubHandler(project);
+		}
 
 		public void setPolicy(UpgradePolicy upgradePolicy) {
 			this.upgradePolicy = upgradePolicy;
@@ -536,11 +548,17 @@ public class BomExtension {
 
 	public static class GitHubHandler {
 
-		private String organization = "spring-projects";
+		private String organization;
 
-		private String repository = "spring-boot";
+		private String repository;
 
 		private List<String> issueLabels;
+
+		public GitHubHandler(Project project) {
+			BuildProperties buildProperties = BuildProperties.get(project);
+			this.organization = buildProperties.gitHub().organization();
+			this.repository = buildProperties.gitHub().repository();
+		}
 
 		public void setOrganization(String organization) {
 			this.organization = organization;
@@ -558,9 +576,9 @@ public class BomExtension {
 
 	public static final class GitHub {
 
-		private String organization = "spring-projects";
+		private String organization;
 
-		private String repository = "spring-boot";
+		private String repository;
 
 		private final List<String> issueLabels;
 
