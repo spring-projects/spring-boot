@@ -64,7 +64,7 @@ public abstract class CheckLinks extends DefaultTask {
 				try {
 					uri = new URI(link);
 					ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.HEAD, null, String.class);
-					System.out.printf("[%3d] %s - %s (%s)", response.getStatusCode().value(),
+					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(),
 							library.getName(), name, uri);
 				}
 				catch (URISyntaxException ex) {
