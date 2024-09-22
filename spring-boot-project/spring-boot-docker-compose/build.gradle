@@ -12,11 +12,13 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.hazelcast:hazelcast")
 	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
+
 
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
@@ -33,6 +35,7 @@ dependencies {
 	optional("org.mongodb:mongodb-driver-core")
 	optional("org.neo4j.driver:neo4j-java-driver")
 	optional("org.springframework.data:spring-data-r2dbc")
+	optional("com.hazelcast:hazelcast")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

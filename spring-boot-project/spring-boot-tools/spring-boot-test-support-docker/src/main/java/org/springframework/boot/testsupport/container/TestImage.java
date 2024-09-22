@@ -110,6 +110,11 @@ public enum TestImage {
 			(container) -> ((LgtmStackContainer) container).withStartupTimeout(Duration.ofMinutes(2))),
 
 	/**
+	 * A container image suitable for testing Hazelcast.
+	 */
+	HAZELCAST("hazelcast/hazelcast", "5.5.0-slim", () -> HazelcastContainer.class),
+
+	/**
 	 * A container image suitable for testing Confluent's distribution of Kafka.
 	 */
 	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),

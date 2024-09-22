@@ -95,6 +95,9 @@ The following service connections are currently supported:
 | `ElasticsearchConnectionDetails`
 | Containers named "elasticsearch" or "bitnami/elasticsearch"
 
+| `HazelcastConnectionDetails`
+| Containers named "hazelcast/hazelcast".
+
 | `JdbcConnectionDetails`
 | Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 

@@ -20,6 +20,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	dockerTestImplementation("com.couchbase.client:java-client")
+	dockerTestImplementation("com.hazelcast:hazelcast")
 	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
 	dockerTestImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -81,6 +82,7 @@ dependencies {
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
 	optional("com.redis:testcontainers-redis")
+	optional("com.hazelcast:hazelcast")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
