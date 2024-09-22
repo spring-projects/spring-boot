@@ -28,7 +28,7 @@ final class UriPathEncoder {
 
 	// Based on org.springframework.web.util.UriUtils
 
-	private static char[] ALLOWED = "/:@-._~!$&\'()*+,;=".toCharArray();
+	private static final char[] ALLOWED = "/:@-._~!$&\'()*+,;=".toCharArray();
 
 	private UriPathEncoder() {
 	}
