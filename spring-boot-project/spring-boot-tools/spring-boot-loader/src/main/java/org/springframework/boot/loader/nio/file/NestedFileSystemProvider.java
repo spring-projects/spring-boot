@@ -50,7 +50,7 @@ import org.springframework.boot.loader.net.protocol.nested.NestedLocation;
  */
 public class NestedFileSystemProvider extends FileSystemProvider {
 
-	private Map<Path, NestedFileSystem> fileSystems = new HashMap<>();
+	private final Map<Path, NestedFileSystem> fileSystems = new HashMap<>();
 
 	@Override
 	public String getScheme() {

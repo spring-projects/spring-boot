@@ -73,13 +73,10 @@ public final class UrlDecoder {
 
 	private static int fillByteBuffer(ByteBuffer byteBuffer, String string, int index, int length) {
 		byteBuffer.clear();
-		while (true) {
+		do {
 			byteBuffer.put(unescape(string, index));
 			index += 3;
-			if (index >= length || string.charAt(index) != '%') {
-				break;
-			}
-		}
+		} while (index < length && string.charAt(index) == '%');
 		byteBuffer.flip();
 		return index;
 	}

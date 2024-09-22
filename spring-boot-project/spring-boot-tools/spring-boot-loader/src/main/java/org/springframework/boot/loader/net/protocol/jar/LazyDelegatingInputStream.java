@@ -64,9 +64,9 @@ abstract class LazyDelegatingInputStream extends InputStream {
 	}
 
 	@Override
-	public synchronized void mark(int readlimit) {
+	public synchronized void mark(int readLimit) {
 		try {
-			in().mark(readlimit);
+			in().mark(readLimit);
 		}
 		catch (IOException ex) {
 			// Ignore

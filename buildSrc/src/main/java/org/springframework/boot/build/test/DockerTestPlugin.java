@@ -100,7 +100,7 @@ public class DockerTestPlugin implements Plugin<Project> {
 
 	private Provider<Test> createTestTask(Project project, SourceSet dockerTestSourceSet,
 			Provider<DockerTestBuildService> buildService) {
-		Provider<Test> dockerTest = project.getTasks().register(DOCKER_TEST_TASK_NAME, Test.class, (task) -> {
+		return project.getTasks().register(DOCKER_TEST_TASK_NAME, Test.class, (task) -> {
 			task.usesService(buildService);
 			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 			task.setDescription("Runs Docker-based tests.");
@@ -108,7 +108,6 @@ public class DockerTestPlugin implements Plugin<Project> {
 			task.setClasspath(dockerTestSourceSet.getRuntimeClasspath());
 			task.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
 		});
-		return dockerTest;
 	}
 
 }
