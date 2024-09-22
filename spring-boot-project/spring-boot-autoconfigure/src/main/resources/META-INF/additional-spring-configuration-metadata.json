@@ -1126,6 +1126,10 @@
       }
     },
     {
+      "name": "spring.data.web.pageable.serialization-mode",
+      "defaultValue": "direct"
+    },
+    {
       "name" : "spring.datasource.continue-on-error",
       "type" : "java.lang.Boolean",
       "deprecation" : {
