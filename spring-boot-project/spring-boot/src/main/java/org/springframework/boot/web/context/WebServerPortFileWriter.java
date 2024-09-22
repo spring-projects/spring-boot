@@ -109,18 +109,17 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 			return this.file;
 		}
 		String name = this.file.getName();
-		String extension = StringUtils.getFilenameExtension(this.file.getName());
-		name = name.substring(0, name.length() - extension.length() - 1);
-		if (isUpperCase(name)) {
-			name = name + "-" + namespace.toUpperCase(Locale.ENGLISH);
-		}
-		else {
-			name = name + "-" + namespace.toLowerCase(Locale.ENGLISH);
-		}
-		if (StringUtils.hasLength(extension)) {
-			name = name + "." + extension;
-		}
-		return new File(this.file.getParentFile(), name);
+		String extension = StringUtils.getFilenameExtension(name);
+
+		StringBuilder builder = new StringBuilder(name);
+
+		String suffix = "-" + (isUpperCase(name) ? namespace.toUpperCase(Locale.ENGLISH) : namespace.toLowerCase(Locale.ENGLISH));
+		if (StringUtils.hasLength(extension))
+			builder.insert(name.lastIndexOf(extension) - 1, suffix);
+		else
+			builder.append(suffix);
+
+		return new File(this.file.getParentFile(), builder.toString());
 	}
 
 	private String getServerNamespace(ApplicationContext applicationContext) {
