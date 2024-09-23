@@ -69,6 +69,7 @@ public class PrometheusScrapeEndpoint {
 	 * @param prometheusRegistry the Prometheus registry to use
 	 * @param exporterProperties the properties used to configure Prometheus'
 	 * {@link ExpositionFormats}
+	 * @since 3.3.1
 	 */
 	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry, Properties exporterProperties) {
 		this.prometheusRegistry = prometheusRegistry;
