@@ -37,7 +37,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -53,6 +52,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class })
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
+@EnableConfigurationProperties(JooqProperties.class)
 public class JooqAutoConfiguration {
 
 	@Bean
@@ -81,31 +81,25 @@ public class JooqAutoConfiguration {
 		return ExceptionTranslatorExecuteListener.DEFAULT;
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@Bean
 	@ConditionalOnMissingBean(DSLContext.class)
-	@EnableConfigurationProperties(JooqProperties.class)
-	public static class DslContextConfiguration {
+	public DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
+		return new DefaultDSLContext(configuration);
+	}
 
-		@Bean
-		public DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
-			return new DefaultDSLContext(configuration);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(org.jooq.Configuration.class)
-		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
-				DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
-				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
-				ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
-			DefaultConfiguration configuration = new DefaultConfiguration();
-			configuration.set(properties.determineSqlDialect(dataSource));
-			configuration.set(connectionProvider);
-			transactionProvider.ifAvailable(configuration::set);
-			configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
-			configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
-			return configuration;
-		}
-
+	@Bean
+	@ConditionalOnMissingBean(org.jooq.Configuration.class)
+	public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
+			DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
+			ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
+			ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
+		DefaultConfiguration configuration = new DefaultConfiguration();
+		configuration.set(properties.determineSqlDialect(dataSource));
+		configuration.set(connectionProvider);
+		transactionProvider.ifAvailable(configuration::set);
+		configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
+		configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
+		return configuration;
 	}
 
 }
