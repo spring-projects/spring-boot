@@ -64,6 +64,8 @@ import static org.assertj.core.api.Assertions.entry;
 @EnabledForJreRange(max = JRE.JAVA_21)
 class PaketoBuilderTests {
 
+	private static final String PAKETO_IMAGE_PREFIX = "paketo-integration/";
+
 	GradleBuild gradleBuild;
 
 	@BeforeEach
@@ -80,7 +82,7 @@ class PaketoBuilderTests {
 	@Test
 	void executableJarApp() throws Exception {
 		writeMainClass();
-		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		String imageName = PAKETO_IMAGE_PREFIX + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -112,7 +114,7 @@ class PaketoBuilderTests {
 	@Test
 	void executableJarAppWithAdditionalArgs() throws Exception {
 		writeMainClass();
-		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		String imageName = PAKETO_IMAGE_PREFIX + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -130,7 +132,7 @@ class PaketoBuilderTests {
 	@Test
 	void executableJarAppBuiltTwiceWithCaching() throws Exception {
 		writeMainClass();
-		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		String imageName = PAKETO_IMAGE_PREFIX + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -157,7 +159,7 @@ class PaketoBuilderTests {
 	void bootDistZipJarApp() throws Exception {
 		writeMainClass();
 		String projectName = this.gradleBuild.getProjectDir().getName();
-		String imageName = "paketo-integration/" + projectName;
+		String imageName = PAKETO_IMAGE_PREFIX + projectName;
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName, "assemble", "bootDistZip");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -194,7 +196,7 @@ class PaketoBuilderTests {
 	void plainDistZipJarApp() throws Exception {
 		writeMainClass();
 		String projectName = this.gradleBuild.getProjectDir().getName();
-		String imageName = "paketo-integration/" + projectName;
+		String imageName = PAKETO_IMAGE_PREFIX + projectName;
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName, "assemble", "bootDistZip");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -232,7 +234,7 @@ class PaketoBuilderTests {
 	void executableWarApp() throws Exception {
 		writeMainClass();
 		writeServletInitializerClass();
-		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		String imageName = PAKETO_IMAGE_PREFIX + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -265,7 +267,7 @@ class PaketoBuilderTests {
 	void plainWarApp() throws Exception {
 		writeMainClass();
 		writeServletInitializerClass();
-		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		String imageName = PAKETO_IMAGE_PREFIX + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -312,7 +314,7 @@ class PaketoBuilderTests {
 			.expectDeprecationMessages("has been deprecated. This is scheduled to be removed in Gradle 9.0");
 		this.gradleBuild.expectDeprecationMessages("upgrading_version_8.html#deprecated_access_to_convention");
 		writeMainClass();
-		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		String imageName = PAKETO_IMAGE_PREFIX + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -342,7 +344,7 @@ class PaketoBuilderTests {
 	@Test
 	void classDataSharingApp() throws Exception {
 		writeMainClass();
-		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
+		String imageName = PAKETO_IMAGE_PREFIX + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
