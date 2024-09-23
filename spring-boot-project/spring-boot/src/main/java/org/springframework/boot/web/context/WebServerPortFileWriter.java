@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,19 +108,13 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		if (!StringUtils.hasLength(namespace)) {
 			return this.file;
 		}
-		String name = this.file.getName();
-		String extension = StringUtils.getFilenameExtension(this.file.getName());
-		name = name.substring(0, name.length() - extension.length() - 1);
-		if (isUpperCase(name)) {
-			name = name + "-" + namespace.toUpperCase(Locale.ENGLISH);
-		}
-		else {
-			name = name + "-" + namespace.toLowerCase(Locale.ENGLISH);
-		}
-		if (StringUtils.hasLength(extension)) {
-			name = name + "." + extension;
-		}
-		return new File(this.file.getParentFile(), name);
+		String filename = this.file.getName();
+		String extension = StringUtils.getFilenameExtension(filename);
+		String filenameWithoutExtension = filename.substring(0, filename.length() - extension.length() - 1);
+		String suffix = (!isUpperCase(filename)) ? namespace.toLowerCase(Locale.ENGLISH)
+				: namespace.toUpperCase(Locale.ENGLISH);
+		return new File(this.file.getParentFile(),
+				filenameWithoutExtension + "-" + suffix + ((!StringUtils.hasLength(extension)) ? "" : "." + extension));
 	}
 
 	private String getServerNamespace(ApplicationContext applicationContext) {
