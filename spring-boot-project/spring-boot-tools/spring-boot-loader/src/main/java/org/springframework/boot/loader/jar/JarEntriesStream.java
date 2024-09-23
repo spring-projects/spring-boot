@@ -54,9 +54,6 @@ class JarEntriesStream implements Closeable {
 
 	JarEntry getNextEntry() throws IOException {
 		this.entry = this.in.getNextJarEntry();
-		if (this.entry != null) {
-			this.entry.getSize();
-		}
 		this.inflater.reset();
 		return this.entry;
 	}
