@@ -24,7 +24,7 @@ if ("${springFrameworkVersion}".contains("-")) {
 }
 
 checkstyle {
-	toolVersion = "{checkstyleToolVersion}"
+	toolVersion = "${checkstyleToolVersion}"
 }
 
 dependencies {
