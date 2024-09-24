@@ -80,8 +80,8 @@ class KotlinConfigurationPropertiesTests {
 	}
 
 	@Test
-	fun `mutable data class properties can be imported`() {
-		this.context.register(MutableDataClassPropertiesImporter::class.java)
+	fun `mutable data class properties can be bound`() {
+		this.context.register(EnableMutableDataClassProperties::class.java)
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "mutable.prop=alpha")
 		this.context.refresh()
 		assertThat(this.context.getBean(MutableDataClassProperties::class.java).prop).isEqualTo("alpha")
@@ -120,7 +120,7 @@ class KotlinConfigurationPropertiesTests {
 	@EnableConfigurationProperties
 	@Configuration(proxyBeanMethods = false)
 	@Import(MutableDataClassProperties::class)
-	class MutableDataClassPropertiesImporter
+	class EnableMutableDataClassProperties
 
 	@ConfigurationProperties(prefix = "mutable")
 	data class MutableDataClassProperties(
