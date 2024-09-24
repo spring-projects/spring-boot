@@ -1,6 +1,5 @@
 plugins {
 	id 'java-gradle-plugin'
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.system-test"
 }
 

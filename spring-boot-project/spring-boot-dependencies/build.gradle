@@ -1,6 +1,5 @@
 plugins {
 	id "org.springframework.boot.bom"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 }
 

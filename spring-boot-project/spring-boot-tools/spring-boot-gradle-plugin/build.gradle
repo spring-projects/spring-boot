@@ -6,7 +6,6 @@ plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
 	id "org.antora"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.maven-repository"
 	id "org.springframework.boot.optional-dependencies"

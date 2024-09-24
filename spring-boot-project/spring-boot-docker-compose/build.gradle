@@ -1,7 +1,6 @@
 plugins {
 	id "java-library"
 	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"

@@ -2,7 +2,6 @@ plugins {
 	id "java"
 	id "eclipse"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.integration-test"
 }
 

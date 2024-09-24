@@ -24,3 +24,7 @@ allprojects {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
+
+subprojects {
+	apply plugin: "org.springframework.boot.conventions"
+}

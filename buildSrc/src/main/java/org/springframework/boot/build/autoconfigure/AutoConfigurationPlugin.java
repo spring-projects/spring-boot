@@ -98,21 +98,33 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 					.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME, task.getOutputFile(),
 							(artifact) -> artifact.builtBy(task));
 			});
-			project.getPlugins().withType(ArchitecturePlugin.class, (architecturePlugin) -> {
-				project.getTasks().named("checkArchitectureMain", ArchitectureCheck.class).configure((task) -> {
-					SourceSet main = project.getExtensions()
-						.getByType(JavaPluginExtension.class)
-						.getSourceSets()
-						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-					File resourcesDirectory = main.getOutput().getResourcesDir();
-					task.dependsOn(main.getProcessResourcesTaskName());
-					task.getInputs().files(resourcesDirectory).optional().withPathSensitivity(PathSensitivity.RELATIVE);
-					task.getRules()
-						.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
-								autoConfigurationImports(project, resourcesDirectory)));
-				});
-			});
+			project.getPlugins()
+				.withType(ArchitecturePlugin.class, (plugin) -> configureArchitecturePluginTasks(project));
 		});
+	}
+
+	private void configureArchitecturePluginTasks(Project project) {
+		project.getTasks().configureEach((task) -> {
+			if ("checkArchitectureMain".equals(task.getName()) && task instanceof ArchitectureCheck architectureCheck) {
+				configureCheckArchitectureMain(project, architectureCheck);
+			}
+		});
+	}
+
+	private void configureCheckArchitectureMain(Project project, ArchitectureCheck architectureCheck) {
+		SourceSet main = project.getExtensions()
+			.getByType(JavaPluginExtension.class)
+			.getSourceSets()
+			.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+		File resourcesDirectory = main.getOutput().getResourcesDir();
+		architectureCheck.dependsOn(main.getProcessResourcesTaskName());
+		architectureCheck.getInputs()
+			.files(resourcesDirectory)
+			.optional()
+			.withPathSensitivity(PathSensitivity.RELATIVE);
+		architectureCheck.getRules()
+			.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
+					autoConfigurationImports(project, resourcesDirectory)));
 	}
 
 	private ArchRule allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
