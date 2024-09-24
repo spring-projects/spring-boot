@@ -1,6 +1,5 @@
 plugins {
 	id "org.asciidoctor.jvm.convert"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.docker-test"
@@ -26,7 +25,7 @@ dependencies {
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
-	
+
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
 	dockerTestImplementation("org.apache.maven.shared:maven-invoker") {
 		exclude(group: "javax.inject", module: "javax.inject")

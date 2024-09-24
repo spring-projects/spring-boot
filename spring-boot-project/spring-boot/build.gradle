@@ -2,7 +2,6 @@ plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java-library"
 	id "org.jetbrains.kotlin.jvm"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"

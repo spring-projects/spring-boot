@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.docker-test"
 }
 
@@ -41,7 +40,7 @@ dependencies {
 	hazelcast(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	hazelcast("com.hazelcast:hazelcast")
 	hazelcast("com.hazelcast:hazelcast-spring")
-	
+
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-cache"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
@@ -60,7 +59,7 @@ dependencies {
 			replacedBy("org.infinispan:infinispan-core-jakarta", "Java EE 9 baseline")
 		}
 	}
-	
+
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }
 
