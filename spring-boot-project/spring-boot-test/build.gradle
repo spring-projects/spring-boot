@@ -1,4 +1,5 @@
 plugins {
+	id "dev.adamko.dokkatoo-html"
 	id "java-library"
 	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.conventions"

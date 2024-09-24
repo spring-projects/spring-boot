@@ -82,11 +82,11 @@ def configureArchive(archive) {
 		into "lib/"
 	}
 	archive.from(file("src/main/content")) {
-		dirMode = 0755
-		fileMode = 0644
+		dirPermissions { unix(0755) }
+		filePermissions { unix(0644) }
 	}
 	archive.from(file("src/main/executablecontent")) {
-		fileMode = 0755
+		filePermissions { unix(0755) }
 	}
 }
 

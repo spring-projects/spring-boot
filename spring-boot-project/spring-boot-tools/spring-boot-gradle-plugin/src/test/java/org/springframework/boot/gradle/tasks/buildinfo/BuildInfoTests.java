@@ -176,7 +176,7 @@ class BuildInfoTests {
 		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
 		((ProjectInternal) project).getServices()
 			.get(GradlePropertiesController.class)
-			.loadGradlePropertiesFrom(projectDir);
+			.loadGradlePropertiesFrom(projectDir, false);
 		return project;
 	}
 

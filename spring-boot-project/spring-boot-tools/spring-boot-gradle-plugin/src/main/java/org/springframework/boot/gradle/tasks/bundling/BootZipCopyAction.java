@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Method;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Collection;
@@ -488,17 +487,12 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private int getPermissions(FileCopyDetails details) {
-			if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
-				try {
-					Method getPermissionsMethod = details.getClass().getMethod("getPermissions");
-					getPermissionsMethod.setAccessible(true);
-					Object permissions = getPermissionsMethod.invoke(details);
-					return (int) permissions.getClass().getMethod("toUnixNumeric").invoke(permissions);
-				}
-				catch (Exception ex) {
-					throw new GradleException("Failed to get permissions", ex);
-				}
-			}
+			return (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0)
+					? details.getPermissions().toUnixNumeric() : getMode(details);
+		}
+
+		@SuppressWarnings("deprecation")
+		private int getMode(FileCopyDetails details) {
 			return details.getMode();
 		}
 

@@ -10,8 +10,11 @@ repositories {
 	gradlePluginPortal()
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+	sourceCompatibility = 17
+	targetCompatibility = 17
+}
+
 
 if ("${springFrameworkVersion}".contains("-")) {
 	repositories {
@@ -34,6 +37,7 @@ dependencies {
 	implementation("com.tngtech.archunit:archunit:1.3.0")
 	implementation("commons-codec:commons-codec:${commonsCodecVersion}")
 	implementation("de.undercouch.download:de.undercouch.download.gradle.plugin:5.5.0")
+	implementation("dev.adamko.dokkatoo:dokkatoo-plugin:2.3.1")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("org.apache.maven:maven-embedder:${mavenVersion}")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:4.0.2")
