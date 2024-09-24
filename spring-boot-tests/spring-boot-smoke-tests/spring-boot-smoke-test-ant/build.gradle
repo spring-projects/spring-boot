@@ -1,5 +1,4 @@
 plugins {
-	id "org.springframework.boot.conventions"
 	id "java-base"
 }
 

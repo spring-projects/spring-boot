@@ -1,6 +1,5 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.docker-test"
@@ -11,7 +10,7 @@ description = "Spring Boot Actuator"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
-	
+
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
