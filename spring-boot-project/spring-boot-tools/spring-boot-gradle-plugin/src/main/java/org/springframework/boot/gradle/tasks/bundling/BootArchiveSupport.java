@@ -26,9 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import org.gradle.api.GradleException;
+import org.gradle.api.file.ConfigurableFilePermissions;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
@@ -133,8 +132,8 @@ class BootArchiveSupport {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
-		Integer dirMode = getDirMode(jar);
-		Integer fileMode = getFileMode(jar);
+		Integer dirPermissions = getUnixNumericDirPermissions(jar);
+		Integer filePermissions = getUnixNumericFilePermissions(jar);
 		boolean includeDefaultLoader = isUsingDefaultLoader(jar);
 		Spec<FileTreeElement> requiresUnpack = this.requiresUnpack.getAsSpec();
 		Spec<FileTreeElement> exclusions = this.exclusions.getAsExcludeSpec();
@@ -142,35 +141,35 @@ class BootArchiveSupport {
 		Spec<FileCopyDetails> librarySpec = this.librarySpec;
 		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
 		String encoding = jar.getMetadataCharset();
-		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirMode, fileMode,
-				includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec,
-				compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver,
+		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirPermissions,
+				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript,
+				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver,
 				loaderImplementation);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 
+	private Integer getUnixNumericDirPermissions(CopySpec copySpec) {
+		return (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0)
+				? asUnixNumeric(copySpec.getDirPermissions()) : getDirMode(copySpec);
+	}
+
+	private Integer getUnixNumericFilePermissions(CopySpec copySpec) {
+		return (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0)
+				? asUnixNumeric(copySpec.getFilePermissions()) : getFileMode(copySpec);
+	}
+
+	private Integer asUnixNumeric(Property<ConfigurableFilePermissions> permissions) {
+		return permissions.isPresent() ? permissions.get().toUnixNumeric() : null;
+	}
+
+	@SuppressWarnings("deprecation")
 	private Integer getDirMode(CopySpec copySpec) {
-		return getMode(copySpec, "getDirPermissions", () -> copySpec.getDirMode());
+		return copySpec.getDirMode();
 	}
 
+	@SuppressWarnings("deprecation")
 	private Integer getFileMode(CopySpec copySpec) {
-		return getMode(copySpec, "getFilePermissions", () -> copySpec.getFileMode());
-	}
-
-	@SuppressWarnings("unchecked")
-	private Integer getMode(CopySpec copySpec, String methodName, Supplier<Integer> fallback) {
-		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
-			try {
-				Object filePermissions = ((Property<Object>) copySpec.getClass().getMethod(methodName).invoke(copySpec))
-					.getOrNull();
-				return (filePermissions != null)
-						? (int) filePermissions.getClass().getMethod("toUnixNumeric").invoke(filePermissions) : null;
-			}
-			catch (Exception ex) {
-				throw new GradleException("Failed to get permissions", ex);
-			}
-		}
-		return fallback.get();
+		return copySpec.getFileMode();
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {

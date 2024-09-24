@@ -59,27 +59,32 @@ dependencies {
 def testCaffeine = tasks.register("testCaffeine", Test) {
 	description = "Runs the tests against Caffeine"
 	classpath = sourceSets.test.runtimeClasspath + configurations.caffeine
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 }
 
 def testCouchbase = tasks.register("testCouchbase", Test) {
 	description = "Runs the tests against Couchbase"
 	classpath = sourceSets.test.runtimeClasspath + configurations.couchbase
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 }
 
 def testEhcache = tasks.register("testEhcache", Test) {
 	description = "Runs the tests against Ehcache"
 	classpath = sourceSets.test.runtimeClasspath + configurations.ehcache
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 	systemProperties = ["spring.cache.jcache.config" : "classpath:ehcache3.xml"]
 }
 
 def testHazelcast = tasks.register("testHazelcast", Test) {
 	description = "Runs the tests against Hazelcast"
 	classpath = sourceSets.test.runtimeClasspath + configurations.hazelcast
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 }
 
 def testInfinispan = tasks.register("testInfinispan", Test) {
 	description = "Runs the tests against Infinispan"
 	classpath = sourceSets.test.runtimeClasspath + configurations.infinispan
+	testClassesDirs = testing.suites.test.sources.output.classesDirs
 	systemProperties = ["spring.cache.jcache.config" : "classpath:infinispan.xml"]
 }
 
