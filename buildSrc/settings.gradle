@@ -4,3 +4,11 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
+
+gradle.rootProject((project) -> {
+	new File(rootDir.parentFile, "gradle.properties").withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+		properties.forEach(project.ext::set)
+	}
+});
