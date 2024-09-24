@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.adamko.dokkatoo.DokkatooExtension;
+import dev.adamko.dokkatoo.formats.DokkatooHtmlPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -28,8 +29,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions;
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 
 /**
- * Conventions that are applied in the presence of the
- * {@code org.jetbrains.kotlin.jvm} plugin. When the plugin is applied:
+ * Conventions that are applied in the presence of the {@code org.jetbrains.kotlin.jvm}
+ * plugin. When the plugin is applied:
  *
  * <ul>
  * <li>{@link KotlinCompile} tasks are configured to:
@@ -50,7 +51,7 @@ class KotlinConventions {
 	void apply(Project project) {
 		project.getPlugins().withId("org.jetbrains.kotlin.jvm", (plugin) -> {
 			project.getTasks().withType(KotlinCompile.class, this::configure);
-			configureDokkatoo(project);
+			project.getPlugins().withType(DokkatooHtmlPlugin.class, (dokkatooPlugin) -> configureDokkatoo(project));
 		});
 	}
 
@@ -69,15 +70,18 @@ class KotlinConventions {
 		DokkatooExtension dokkatoo = project.getExtensions().getByType(DokkatooExtension.class);
 		dokkatoo.getDokkatooSourceSets().named(SourceSet.MAIN_SOURCE_SET_NAME).configure((sourceSet) -> {
 			sourceSet.getSourceRoots().setFrom(project.file("src/main/kotlin"));
-			sourceSet.getClasspath().from(project.getExtensions().getByType(SourceSetContainer.class)
-					.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput());
+			sourceSet.getClasspath()
+				.from(project.getExtensions()
+					.getByType(SourceSetContainer.class)
+					.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+					.getOutput());
 			sourceSet.getExternalDocumentationLinks().create("spring-boot-javadoc", (link) -> {
 				link.getUrl().set(URI.create("https://docs.spring.io/spring-boot/api/java/"));
 				link.getPackageListUrl().set(URI.create("https://docs.spring.io/spring-boot/api/java/element-list"));
 			});
 			sourceSet.getExternalDocumentationLinks().create("spring-framework-javadoc", (link) -> {
 				String url = "https://docs.spring.io/spring-framework/docs/%s/javadoc-api/"
-						.formatted(project.property("springFrameworkVersion"));
+					.formatted(project.property("springFrameworkVersion"));
 				link.getUrl().set(URI.create(url));
 				link.getPackageListUrl().set(URI.create(url + "/element-list"));
 			});
