@@ -24,7 +24,7 @@ jobs:
           - version: 21
             toolchain: false
           - version: 22
-            toolchain: false
+            toolchain: true
           - version: 23
             toolchain: true
         exclude:
