@@ -25,6 +25,7 @@ import com.rabbitmq.stream.EnvironmentBuilder;
 import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Stream;
 import org.springframework.boot.autoconfigure.amqp.RabbitProperties.StreamContainer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -50,6 +51,12 @@ import org.springframework.rabbit.stream.support.converter.StreamMessageConverte
 @ConditionalOnClass(StreamRabbitListenerContainerFactory.class)
 class RabbitStreamConfiguration {
 
+	@Bean
+	@ConditionalOnMissingBean(RabbitStreamConnectionDetails.class)
+	RabbitStreamConnectionDetails rabbitStreamConnectionDetails(RabbitProperties rabbitProperties) {
+		return new PropertiesRabbitStreamConnectionDetails(rabbitProperties.getStream());
+	}
+
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
@@ -68,9 +75,9 @@ class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitStreamEnvironment")
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
-	Environment rabbitStreamEnvironment(RabbitProperties properties,
+	Environment rabbitStreamEnvironment(RabbitProperties properties, RabbitStreamConnectionDetails connectionDetails,
 			ObjectProvider<EnvironmentBuilderCustomizer> customizers) {
-		EnvironmentBuilder builder = configure(Environment.builder(), properties);
+		EnvironmentBuilder builder = configure(Environment.builder(), properties, connectionDetails);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -99,12 +106,13 @@ class RabbitStreamConfiguration {
 		return template;
 	}
 
-	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
+	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties,
+			RabbitStreamConnectionDetails connectionDetails) {
 		builder.lazyInitialization(true);
 		RabbitProperties.Stream stream = properties.getStream();
 		PropertyMapper map = PropertyMapper.get();
-		map.from(stream.getHost()).to(builder::host);
-		map.from(stream.getPort()).to(builder::port);
+		map.from(connectionDetails.getHost()).to(builder::host);
+		map.from(connectionDetails.getPort()).to(builder::port);
 		map.from(stream.getVirtualHost())
 			.as(withFallback(properties::getVirtualHost))
 			.whenNonNull()
@@ -116,6 +124,26 @@ class RabbitStreamConfiguration {
 
 	private static Function<String, String> withFallback(Supplier<String> fallback) {
 		return (value) -> (value != null) ? value : fallback.get();
+	}
+
+	static class PropertiesRabbitStreamConnectionDetails implements RabbitStreamConnectionDetails {
+
+		private final Stream streamProperties;
+
+		PropertiesRabbitStreamConnectionDetails(Stream streamProperties) {
+			this.streamProperties = streamProperties;
+		}
+
+		@Override
+		public String getHost() {
+			return this.streamProperties.getHost();
+		}
+
+		@Override
+		public int getPort() {
+			return this.streamProperties.getPort();
+		}
+
 	}
 
 }

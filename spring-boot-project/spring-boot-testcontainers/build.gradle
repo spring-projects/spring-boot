@@ -46,6 +46,7 @@ dependencies {
 	dockerTestImplementation("org.springframework:spring-jms")
 	dockerTestImplementation("org.springframework:spring-r2dbc")
 	dockerTestImplementation("org.springframework.amqp:spring-rabbit")
+	dockerTestImplementation("org.springframework.amqp:spring-rabbit-stream")
 	dockerTestImplementation("org.springframework.data:spring-data-redis")
 	dockerTestImplementation("org.springframework.kafka:spring-kafka")
 	dockerTestImplementation("org.springframework.ldap:spring-ldap-core")

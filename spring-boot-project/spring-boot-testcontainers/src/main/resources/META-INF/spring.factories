@@ -12,6 +12,7 @@ org.springframework.boot.testcontainers.service.connection.activemq.ActiveMQClas
 org.springframework.boot.testcontainers.service.connection.activemq.ActiveMQContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.activemq.ArtemisContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.amqp.RabbitContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.amqp.RabbitStreamContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.cassandra.CassandraContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.couchbase.CouchbaseContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.flyway.FlywayContainerConnectionDetailsFactory,\
