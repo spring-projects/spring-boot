@@ -19,6 +19,7 @@ package org.springframework.boot.amqp.autoconfigure;
 import java.time.Duration;
 import java.util.List;
 
+import com.rabbitmq.stream.Address;
 import com.rabbitmq.stream.BackOffDelayPolicy;
 import com.rabbitmq.stream.Codec;
 import com.rabbitmq.stream.Environment;
@@ -32,6 +33,7 @@ import org.springframework.amqp.rabbit.config.ContainerCustomizer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.amqp.autoconfigure.RabbitStreamConfiguration.PropertiesRabbitStreamConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +50,7 @@ import org.springframework.rabbit.stream.micrometer.RabbitStreamTemplateObservat
 import org.springframework.rabbit.stream.producer.ProducerCustomizer;
 import org.springframework.rabbit.stream.producer.RabbitStreamTemplate;
 import org.springframework.rabbit.stream.support.converter.StreamMessageConverter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -146,7 +149,8 @@ class RabbitStreamConfigurationTests {
 		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
 		RabbitProperties properties = new RabbitProperties();
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"),
+				getRabbitStreamConnectionDetails(properties));
 		then(builder).should().port(5552);
 		then(builder).should().host("localhost");
 		then(builder).should().virtualHost("vhost");
@@ -162,7 +166,8 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setPort(5553);
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"),
+				getRabbitStreamConnectionDetails(properties));
 		then(builder).should().port(5553);
 	}
 
@@ -172,7 +177,8 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setHost("stream.rabbit.example.com");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"),
+				getRabbitStreamConnectionDetails(properties));
 		then(builder).should().host("stream.rabbit.example.com");
 	}
 
@@ -182,7 +188,8 @@ class RabbitStreamConfigurationTests {
 		RabbitProperties properties = new RabbitProperties();
 		properties.getStream().setVirtualHost("stream-virtual-host");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"),
+				getRabbitStreamConnectionDetails(properties));
 		then(builder).should().virtualHost("stream-virtual-host");
 	}
 
@@ -190,9 +197,10 @@ class RabbitStreamConfigurationTests {
 	void whenStreamVirtualHostIsNotSetButDefaultVirtualHostIsSetThenEnvironmentUsesDefaultVirtualHost() {
 		EnvironmentBuilder builder = mock(EnvironmentBuilder.class);
 		RabbitProperties properties = new RabbitProperties();
-		properties.setVirtualHost("properties-virtual-host");
+		properties.setVirtualHost("default-virtual-host");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("guest", "guest", "default-virtual-host"));
+				new TestRabbitConnectionDetails("guest", "guest", "default-virtual-host"),
+				getRabbitStreamConnectionDetails(properties));
 		then(builder).should().virtualHost("default-virtual-host");
 	}
 
@@ -203,7 +211,8 @@ class RabbitStreamConfigurationTests {
 		properties.setUsername("alice");
 		properties.setPassword("secret");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("bob", "password", "vhost"));
+				new TestRabbitConnectionDetails("bob", "password", "vhost"),
+				getRabbitStreamConnectionDetails(properties));
 		then(builder).should().username("bob");
 		then(builder).should().password("password");
 	}
@@ -217,7 +226,8 @@ class RabbitStreamConfigurationTests {
 		properties.getStream().setUsername("bob");
 		properties.getStream().setPassword("confidential");
 		RabbitStreamConfiguration.configure(builder, properties,
-				new TestRabbitConnectionDetails("charlotte", "hidden", "vhost"));
+				new TestRabbitConnectionDetails("guest", "guest", "vhost"),
+				getRabbitStreamConnectionDetails(properties));
 		then(builder).should().username("bob");
 		then(builder).should().password("confidential");
 	}
@@ -295,6 +305,22 @@ class RabbitStreamConfigurationTests {
 			assertThat(environment).extracting("recoveryBackOffDelayPolicy")
 				.isEqualTo(context.getBean(EnvironmentBuilderCustomizers.class).recoveryBackOffDelayPolicy);
 		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void connectionDetailsAreApplied() {
+		this.contextRunner.withPropertyValues("spring.rabbitmq.stream.name:stream-test")
+			.withUserConfiguration(CustomConnectionDetails.class)
+			.run((context) -> assertThat(context.getBean(Environment.class))
+				.extracting((environment) -> (List<Address>) ReflectionTestUtils.getField(environment, "addresses"))
+				.extracting((address) -> address.get(0))
+				.extracting("host", "port")
+				.containsExactly("rabbitmq", 5555));
+	}
+
+	private RabbitStreamConnectionDetails getRabbitStreamConnectionDetails(RabbitProperties properties) {
+		return new PropertiesRabbitStreamConnectionDetails(properties.getStream());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -414,6 +440,26 @@ class RabbitStreamConfigurationTests {
 		@Override
 		public List<Address> getAddresses() {
 			throw new UnsupportedOperationException();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomConnectionDetails {
+
+		@Bean
+		RabbitStreamConnectionDetails customRabbitMqStreamConnectionDetails() {
+			return new RabbitStreamConnectionDetails() {
+				@Override
+				public String getHost() {
+					return "rabbitmq";
+				}
+
+				@Override
+				public int getPort() {
+					return 5555;
+				}
+			};
 		}
 
 	}
