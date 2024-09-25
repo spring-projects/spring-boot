@@ -64,6 +64,16 @@ class RabbitStreamContainerConnectionDetailsFactory
 			return getContainer().getMappedPort(5552);
 		}
 
+		@Override
+		public String getUsername() {
+			return getContainer().getAdminUsername();
+		}
+
+		@Override
+		public String getPassword() {
+			return getContainer().getAdminPassword();
+		}
+
 	}
 
 }

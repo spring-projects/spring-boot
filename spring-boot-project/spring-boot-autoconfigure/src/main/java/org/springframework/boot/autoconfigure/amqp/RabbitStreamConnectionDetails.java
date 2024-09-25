@@ -38,4 +38,28 @@ public interface RabbitStreamConnectionDetails extends ConnectionDetails {
 	 */
 	int getPort();
 
+	/**
+	 * Login user to authenticate to the broker.
+	 * @return the login user to authenticate to the broker or {@code null}
+	 */
+	default String getUsername() {
+		return null;
+	}
+
+	/**
+	 * Login to authenticate against the broker.
+	 * @return the login to authenticate against the broker or {@code null}
+	 */
+	default String getPassword() {
+		return null;
+	}
+
+	/**
+	 * Virtual host to use when connecting to the broker.
+	 * @return the virtual host to use when connecting to the broker or {@code null}
+	 */
+	default String getVirtualHost() {
+		return null;
+	}
+
 }

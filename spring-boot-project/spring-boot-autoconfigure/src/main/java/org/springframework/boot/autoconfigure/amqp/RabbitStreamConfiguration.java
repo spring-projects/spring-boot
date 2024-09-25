@@ -113,12 +113,18 @@ class RabbitStreamConfiguration {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(connectionDetails.getHost()).to(builder::host);
 		map.from(connectionDetails.getPort()).to(builder::port);
-		map.from(stream.getVirtualHost())
+		map.from(connectionDetails.getVirtualHost())
 			.as(withFallback(properties::getVirtualHost))
 			.whenNonNull()
 			.to(builder::virtualHost);
-		map.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
-		map.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
+		map.from(connectionDetails.getUsername())
+			.as(withFallback(properties::getUsername))
+			.whenNonNull()
+			.to(builder::username);
+		map.from(connectionDetails.getPassword())
+			.as(withFallback(properties::getPassword))
+			.whenNonNull()
+			.to(builder::password);
 		return builder;
 	}
 
@@ -142,6 +148,21 @@ class RabbitStreamConfiguration {
 		@Override
 		public int getPort() {
 			return this.streamProperties.getPort();
+		}
+
+		@Override
+		public String getVirtualHost() {
+			return this.streamProperties.getVirtualHost();
+		}
+
+		@Override
+		public String getUsername() {
+			return this.streamProperties.getUsername();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.streamProperties.getPassword();
 		}
 
 	}
