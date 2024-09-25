@@ -25,10 +25,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
-import org.springframework.boot.testcontainers.properties.TestcontainersPropertySource.EventPublisherRegistrar;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -40,10 +41,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link TestcontainersPropertySource}.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 class TestcontainersPropertySourceTests {
 
-	private MockEnvironment environment = new MockEnvironment();
+	private MockEnvironment environment = new MockEnvironment()
+		.withProperty("spring.testcontainers.dynamic-property-registry-injection", "allow");
 
 	private GenericApplicationContext context = new GenericApplicationContext();
 
@@ -121,7 +126,8 @@ class TestcontainersPropertySourceTests {
 		TestcontainersPropertySource.attach(this.environment, this.context);
 		PropertySource<?> propertySource = this.environment.getPropertySources().get(TestcontainersPropertySource.NAME);
 		assertThat(propertySource).isNotNull();
-		assertThat(this.context.containsBean(EventPublisherRegistrar.NAME));
+		assertThat(this.context.containsBean(
+				org.springframework.boot.testcontainers.properties.TestcontainersPropertySource.EventPublisherRegistrar.NAME));
 	}
 
 	@Test
@@ -137,15 +143,19 @@ class TestcontainersPropertySourceTests {
 	@Test
 	void getPropertyPublishesEvent() {
 		try (GenericApplicationContext applicationContext = new GenericApplicationContext()) {
+			ConfigurableEnvironment environment = applicationContext.getEnvironment();
+			environment.getPropertySources()
+				.addLast(new MapPropertySource("test",
+						Map.of("spring.testcontainers.dynamic-property-registry-injection", "allow")));
 			List<ApplicationEvent> events = new ArrayList<>();
 			applicationContext.addApplicationListener(events::add);
-			DynamicPropertyRegistry registry = TestcontainersPropertySource.attach(applicationContext.getEnvironment(),
+			DynamicPropertyRegistry registry = TestcontainersPropertySource.attach(environment,
 					(BeanDefinitionRegistry) applicationContext.getBeanFactory());
 			applicationContext.refresh();
 			registry.add("test", () -> "spring");
-			assertThat(applicationContext.getEnvironment().containsProperty("test")).isTrue();
+			assertThat(environment.containsProperty("test")).isTrue();
 			assertThat(events.isEmpty());
-			assertThat(applicationContext.getEnvironment().getProperty("test")).isEqualTo("spring");
+			assertThat(environment.getProperty("test")).isEqualTo("spring");
 			assertThat(events.stream().filter(BeforeTestcontainerUsedEvent.class::isInstance)).hasSize(1);
 		}
 	}
