@@ -22,6 +22,8 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -83,8 +85,6 @@ class OtlpMetricsExportAutoConfigurationTests {
 	void allowsPlatformThreadsToBeUsed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
-			OtlpProperties properties = context.getBean(OtlpProperties.class);
-			assertThat(properties.isVirtualThreadsEnabled()).isFalse();
 			OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
 			assertThat(registry).extracting("scheduledExecutorService")
 				.satisfies((executor) -> ScheduledExecutorServiceAssert.assertThat((ScheduledExecutorService) executor)
@@ -93,13 +93,12 @@ class OtlpMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
 	void allowsVirtualThreadsToBeUsed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-			.withPropertyValues("management.otlp.metrics.export.virtualThreadsEnabled=true")
+			.withPropertyValues("spring.threads.virtual.enabled=true")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
-				OtlpProperties properties = context.getBean(OtlpProperties.class);
-				assertThat(properties.isVirtualThreadsEnabled()).isTrue();
 				OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
 				assertThat(registry).extracting("scheduledExecutorService")
 					.satisfies(

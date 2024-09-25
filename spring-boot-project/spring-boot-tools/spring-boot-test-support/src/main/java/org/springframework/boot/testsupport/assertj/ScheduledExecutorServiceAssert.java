@@ -65,7 +65,14 @@ public final class ScheduledExecutorServiceAssert
 
 	private boolean producesVirtualThreads() {
 		try {
-			return this.actual.schedule(() -> Thread.currentThread().isVirtual(), 0, TimeUnit.SECONDS).get();
+			return this.actual.schedule(() -> {
+				// https://openjdk.org/jeps/444
+				// jep 444 specifies that virtual threads will belong to
+				// a special thread group given the name "VirtualThreads"
+				ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
+				String threadGroupName = (threadGroup != null) ? threadGroup.getName() : "";
+				return threadGroupName.equalsIgnoreCase("VirtualThreads");
+			}, 0, TimeUnit.SECONDS).get();
 		}
 		catch (InterruptedException | ExecutionException ex) {
 			throw new AssertionError(ex);

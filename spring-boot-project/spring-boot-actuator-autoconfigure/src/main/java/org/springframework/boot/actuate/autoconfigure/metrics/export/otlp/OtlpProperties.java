@@ -151,12 +151,4 @@ public class OtlpProperties extends StepRegistryProperties {
 		this.baseTimeUnit = baseTimeUnit;
 	}
 
-	public boolean isVirtualThreadsEnabled() {
-		return this.virtualThreadsEnabled;
-	}
-
-	public void setVirtualThreadsEnabled(boolean virtualThreadsEnabled) {
-		this.virtualThreadsEnabled = virtualThreadsEnabled;
-	}
-
 }
