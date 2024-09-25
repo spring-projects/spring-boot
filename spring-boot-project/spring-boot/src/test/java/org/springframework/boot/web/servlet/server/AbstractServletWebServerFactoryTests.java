@@ -873,8 +873,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(sessionCookieConfig.getPath()).isEqualTo("/testpath");
 		assertThat(sessionCookieConfig.isHttpOnly()).isTrue();
 		assertThat(sessionCookieConfig.isSecure()).isTrue();
-		assertThat(sessionCookieConfig.getAttribute(AbstractServletWebServerFactory.PARTITIONED_ATTRIBUTE_NAME))
-			.isEqualTo("true");
+		assertThat(sessionCookieConfig.getAttribute("Partitioned")).isEqualTo("true");
 		assertThat(sessionCookieConfig.getMaxAge()).isEqualTo(60);
 	}
 
@@ -1182,8 +1181,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(servletContext.getSessionCookieConfig().isHttpOnly()).isTrue();
 		assertThat(servletContext.getSessionCookieConfig().isSecure()).isTrue();
 		assertThat(servletContext.getSessionCookieConfig().getMaxAge()).isEqualTo(60);
-		assertThat(servletContext.getSessionCookieConfig()
-			.getAttribute(AbstractServletWebServerFactory.PARTITIONED_ATTRIBUTE_NAME)).isEqualTo("false");
+		assertThat(servletContext.getSessionCookieConfig().getAttribute("Partitioned")).isEqualTo("false");
 	}
 
 	@Test

@@ -60,7 +60,7 @@ import org.springframework.util.ClassUtils;
 public abstract class AbstractServletWebServerFactory extends AbstractConfigurableWebServerFactory
 		implements ConfigurableServletWebServerFactory {
 
-	static final String PARTITIONED_ATTRIBUTE_NAME = "Partitioned";
+	private static final String PARTITIONED_ATTRIBUTE_NAME = "Partitioned";
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
