@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
@@ -93,7 +94,11 @@ public class JettyWebServerFactoryCustomizer
 		map.from(properties::getMaxHttpFormPostSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
-			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
+			.to((maxHttpFormPostSize) -> customizeServletContextHandler(factory, contextHandler -> contextHandler.setMaxFormContentSize(maxHttpFormPostSize)));
+		map.from(properties::getMaxFormKeys)
+				.when(this::isPositive)
+				.to((maxFormKeys) -> customizeServletContextHandler(factory, contextHandler -> contextHandler.setMaxFormKeys(maxFormKeys)));
+
 		map.from(properties::getConnectionIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		map.from(properties::getAccesslog)
 			.when(ServerProperties.Jetty.Accesslog::isEnabled)
@@ -122,7 +127,7 @@ public class JettyWebServerFactoryCustomizer
 		});
 	}
 
-	private void customizeMaxHttpFormPostSize(ConfigurableJettyWebServerFactory factory, int maxHttpFormPostSize) {
+	private void customizeServletContextHandler(ConfigurableJettyWebServerFactory factory, Consumer<ServletContextHandler> customFunc) {
 		factory.addServerCustomizers(new JettyServerCustomizer() {
 
 			@Override
@@ -138,7 +143,7 @@ public class JettyWebServerFactoryCustomizer
 
 			private void setHandlerMaxHttpFormPostSize(Handler handler) {
 				if (handler instanceof ServletContextHandler contextHandler) {
-					contextHandler.setMaxFormContentSize(maxHttpFormPostSize);
+					customFunc.accept(contextHandler);
 				}
 				else if (handler instanceof Handler.Wrapper wrapper) {
 					setHandlerMaxHttpFormPostSize(wrapper.getHandler());
