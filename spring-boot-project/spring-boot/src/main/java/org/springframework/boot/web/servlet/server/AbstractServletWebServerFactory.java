@@ -60,6 +60,8 @@ import org.springframework.util.ClassUtils;
 public abstract class AbstractServletWebServerFactory extends AbstractConfigurableWebServerFactory
 		implements ConfigurableServletWebServerFactory {
 
+	private static final String PARTITIONED_ATTRIBUTE_NAME = "Partitioned";
+
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private String contextPath = "";
@@ -350,6 +352,9 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 			map.from(cookie::getHttpOnly).to(config::setHttpOnly);
 			map.from(cookie::getSecure).to(config::setSecure);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(config::setMaxAge);
+			map.from(cookie::getPartitioned)
+				.as(Object::toString)
+				.to((partitioned) -> config.setAttribute(PARTITIONED_ATTRIBUTE_NAME, partitioned));
 		}
 
 		private Set<jakarta.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {

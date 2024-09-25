@@ -863,6 +863,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		factory.getSession().getCookie().setPath("/testpath");
 		factory.getSession().getCookie().setHttpOnly(true);
 		factory.getSession().getCookie().setSecure(true);
+		factory.getSession().getCookie().setPartitioned(true);
 		factory.getSession().getCookie().setMaxAge(Duration.ofSeconds(60));
 		final AtomicReference<SessionCookieConfig> configReference = new AtomicReference<>();
 		this.webServer = factory.getWebServer((context) -> configReference.set(context.getSessionCookieConfig()));
@@ -872,6 +873,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(sessionCookieConfig.getPath()).isEqualTo("/testpath");
 		assertThat(sessionCookieConfig.isHttpOnly()).isTrue();
 		assertThat(sessionCookieConfig.isSecure()).isTrue();
+		assertThat(sessionCookieConfig.getAttribute("Partitioned")).isEqualTo("true");
 		assertThat(sessionCookieConfig.getMaxAge()).isEqualTo(60);
 	}
 
@@ -1166,6 +1168,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		factory.getSession().getCookie().setPath("/testpath");
 		factory.getSession().getCookie().setHttpOnly(true);
 		factory.getSession().getCookie().setSecure(true);
+		factory.getSession().getCookie().setPartitioned(false);
 		factory.getSession().getCookie().setMaxAge(Duration.ofMinutes(1));
 		AtomicReference<ServletContext> contextReference = new AtomicReference<>();
 		factory.getWebServer(contextReference::set).start();
@@ -1178,6 +1181,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		assertThat(servletContext.getSessionCookieConfig().isHttpOnly()).isTrue();
 		assertThat(servletContext.getSessionCookieConfig().isSecure()).isTrue();
 		assertThat(servletContext.getSessionCookieConfig().getMaxAge()).isEqualTo(60);
+		assertThat(servletContext.getSessionCookieConfig().getAttribute("Partitioned")).isEqualTo("false");
 	}
 
 	@Test
