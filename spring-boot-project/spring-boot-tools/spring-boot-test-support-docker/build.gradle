@@ -15,7 +15,6 @@ dependencies {
 	compileOnly("org.springframework:spring-core")
 
 	optional("org.testcontainers:cassandra")
-	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
 	optional("org.testcontainers:junit-jupiter")
