@@ -1149,6 +1149,11 @@ public class ServerProperties {
 		private DataSize maxHttpFormPostSize = DataSize.ofBytes(200000);
 
 		/**
+		 * Maximum number of form keys.
+		 */
+		private int maxFormKeys = 1000;
+
+		/**
 		 * Time that the connection can be idle before it is closed.
 		 */
 		private Duration connectionIdleTimeout;
@@ -1178,6 +1183,14 @@ public class ServerProperties {
 
 		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
 			this.maxHttpFormPostSize = maxHttpFormPostSize;
+		}
+
+		public int getMaxFormKeys() {
+			return this.maxFormKeys;
+		}
+
+		public void setMaxFormKeys(int maxFormKeys) {
+			this.maxFormKeys = maxFormKeys;
 		}
 
 		public Duration getConnectionIdleTimeout() {
