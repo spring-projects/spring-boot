@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -50,9 +51,8 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner;
 
 	OpenTelemetryLoggingAutoConfigurationTests() {
-		this.contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(
-				org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration.class,
-				OpenTelemetryLoggingAutoConfiguration.class));
+		this.contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
+			.of(OpenTelemetryAutoConfiguration.class, OpenTelemetryLoggingAutoConfiguration.class));
 	}
 
 	@Test
@@ -82,8 +82,8 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldAllowMultipleLogRecordExporter() {
-		this.contextRunner.withUserConfiguration(MultipleLogRecordExporterConfig.class).run((context) -> {
+	void shouldAllowMultipleLogRecordExporters() {
+		this.contextRunner.withUserConfiguration(MultipleLogRecordExportersConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(BatchLogRecordProcessor.class);
 			assertThat(context.getBeansOfType(LogRecordExporter.class)).hasSize(2);
 			assertThat(context).hasBean("customLogRecordExporter1");
@@ -92,8 +92,8 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldAllowMultipleLogRecordProcessorInAdditionToBatchLogRecordProcessor() {
-		this.contextRunner.withUserConfiguration(MultipleLogRecordProcessorConfig.class).run((context) -> {
+	void shouldAllowMultipleLogRecordProcessorsInAdditionToBatchLogRecordProcessor() {
+		this.contextRunner.withUserConfiguration(MultipleLogRecordProcessorsConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(BatchLogRecordProcessor.class);
 			assertThat(context).hasSingleBean(SdkLoggerProvider.class);
 			assertThat(context.getBeansOfType(LogRecordProcessor.class)).hasSize(3);
@@ -104,11 +104,11 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldAllowMultipleSdkLoggerProviderBuilderCustomizer() {
-		this.contextRunner.withUserConfiguration(MultipleSdkLoggerProviderBuilderCustomizerConfig.class)
+	void shouldAllowMultipleSdkLoggerProviderBuilderCustomizers() {
+		this.contextRunner.withUserConfiguration(MultipleSdkLoggerProviderBuilderCustomizersConfig.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(SdkLoggerProvider.class);
-				assertThat(context.getBeansOfType(NoopSdkLoggerProviderBuilderCustomizer.class)).hasSize(2);
+				assertThat(context.getBeansOfType(SdkLoggerProviderBuilderCustomizer.class)).hasSize(2);
 				assertThat(context).hasBean("customSdkLoggerProviderBuilderCustomizer1");
 				assertThat(context).hasBean("customSdkLoggerProviderBuilderCustomizer2");
 				assertThat(context
@@ -136,7 +136,7 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class MultipleLogRecordExporterConfig {
+	public static class MultipleLogRecordExportersConfig {
 
 		@Bean
 		public LogRecordExporter customLogRecordExporter1() {
@@ -151,7 +151,7 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class MultipleLogRecordProcessorConfig {
+	public static class MultipleLogRecordProcessorsConfig {
 
 		@Bean
 		public LogRecordProcessor customLogRecordProcessor1() {
@@ -166,7 +166,7 @@ class OpenTelemetryLoggingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class MultipleSdkLoggerProviderBuilderCustomizerConfig {
+	public static class MultipleSdkLoggerProviderBuilderCustomizersConfig {
 
 		@Bean
 		public SdkLoggerProviderBuilderCustomizer customSdkLoggerProviderBuilderCustomizer1() {

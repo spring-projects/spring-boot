@@ -40,7 +40,7 @@ class OnEnabledTracingConditionTests {
 	@Test
 	void shouldMatchIfNoPropertyIsSet() {
 		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(), mockMetaData(""));
+		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(), mockMetadata(""));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledTracing tracing is enabled by default");
 	}
@@ -49,7 +49,7 @@ class OnEnabledTracingConditionTests {
 	void shouldNotMatchIfGlobalPropertyIsFalse() {
 		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
 		ConditionOutcome outcome = condition
-			.getMatchOutcome(mockConditionContext(Map.of("management.tracing.enabled", "false")), mockMetaData(""));
+			.getMatchOutcome(mockConditionContext(Map.of("management.tracing.enabled", "false")), mockMetadata(""));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledTracing management.tracing.enabled is false");
 	}
@@ -58,7 +58,7 @@ class OnEnabledTracingConditionTests {
 	void shouldMatchIfGlobalPropertyIsTrue() {
 		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
 		ConditionOutcome outcome = condition
-			.getMatchOutcome(mockConditionContext(Map.of("management.tracing.enabled", "true")), mockMetaData(""));
+			.getMatchOutcome(mockConditionContext(Map.of("management.tracing.enabled", "true")), mockMetadata(""));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledTracing management.tracing.enabled is true");
 	}
@@ -68,7 +68,7 @@ class OnEnabledTracingConditionTests {
 		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.zipkin.tracing.export.enabled", "false")),
-				mockMetaData("zipkin"));
+				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is false");
@@ -79,7 +79,7 @@ class OnEnabledTracingConditionTests {
 		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.zipkin.tracing.export.enabled", "true")),
-				mockMetaData("zipkin"));
+				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is true");
@@ -90,7 +90,7 @@ class OnEnabledTracingConditionTests {
 		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
 				Map.of("management.tracing.enabled", "false", "management.zipkin.tracing.export.enabled", "true")),
-				mockMetaData("zipkin"));
+				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is true");
@@ -101,7 +101,7 @@ class OnEnabledTracingConditionTests {
 		OnEnabledTracingCondition condition = new OnEnabledTracingCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
 				Map.of("management.tracing.enabled", "true", "management.zipkin.tracing.export.enabled", "false")),
-				mockMetaData("zipkin"));
+				mockMetadata("zipkin"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledTracing management.zipkin.tracing.export.enabled is false");
@@ -119,7 +119,7 @@ class OnEnabledTracingConditionTests {
 		return context;
 	}
 
-	private AnnotatedTypeMetadata mockMetaData(String exporter) {
+	private AnnotatedTypeMetadata mockMetadata(String exporter) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
 		given(metadata.getAnnotationAttributes(ConditionalOnEnabledTracing.class.getName()))
 			.willReturn(Map.of("value", exporter));

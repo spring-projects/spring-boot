@@ -65,12 +65,12 @@ class ConditionalOnExpressionTests {
 		MockEnvironment environment = new MockEnvironment();
 		ConditionContext conditionContext = mock(ConditionContext.class);
 		given(conditionContext.getEnvironment()).willReturn(environment);
-		ConditionOutcome outcome = condition.getMatchOutcome(conditionContext, mockMetaData("invalid-spel"));
+		ConditionOutcome outcome = condition.getMatchOutcome(conditionContext, mockMetadata("invalid-spel"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage()).contains("invalid-spel").contains("no BeanFactory available");
 	}
 
-	private AnnotatedTypeMetadata mockMetaData(String value) {
+	private AnnotatedTypeMetadata mockMetadata(String value) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
 		given(metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName()))
 			.willReturn(Collections.singletonMap("value", value));

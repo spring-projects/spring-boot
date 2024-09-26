@@ -89,8 +89,8 @@ class OtlpLoggingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldBackOffWhenCustomOtlpLogsConnectionDetailsIsDefined() {
-		this.contextRunner.withUserConfiguration(CustomOtlpLogsConnectionDetails.class).run((context) -> {
+	void shouldBackOffWhenCustomOtlpLoggingConnectionDetailsIsDefined() {
+		this.contextRunner.withUserConfiguration(CustomOtlpLoggingConnectionDetails.class).run((context) -> {
 			assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class)
 				.doesNotHaveBean(PropertiesOtlpLoggingConnectionDetails.class);
 			OtlpHttpLogRecordExporter otlpHttpLogRecordExporter = context.getBean(OtlpHttpLogRecordExporter.class);
@@ -121,10 +121,10 @@ class OtlpLoggingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	public static class CustomOtlpLogsConnectionDetails {
+	public static class CustomOtlpLoggingConnectionDetails {
 
 		@Bean
-		public OtlpLoggingConnectionDetails customOtlpLogsConnectionDetails() {
+		public OtlpLoggingConnectionDetails customOtlpLoggingConnectionDetails() {
 			return (transport) -> "https://otel.example.com/v1/logs";
 		}
 
