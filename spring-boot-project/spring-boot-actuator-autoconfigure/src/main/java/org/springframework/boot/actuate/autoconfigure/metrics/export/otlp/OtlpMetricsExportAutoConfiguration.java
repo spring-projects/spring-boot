@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class OtlpMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.PLATFORM)
-	public OtlpMeterRegistry otlpMeterRegistryPlatformThreads(OtlpConfig otlpConfig, Clock clock) {
+	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
 		return new OtlpMeterRegistry(otlpConfig, clock);
 	}
 
@@ -84,7 +84,7 @@ public class OtlpMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnThreading(Threading.VIRTUAL)
 	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock) {
-		VirtualThreadTaskExecutor taskExecutor = new VirtualThreadTaskExecutor("otlp-meter-registry");
+		VirtualThreadTaskExecutor taskExecutor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
 		return new OtlpMeterRegistry(otlpConfig, clock, taskExecutor.getVirtualThreadFactory());
 	}
 

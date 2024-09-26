@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testsupport.assertj;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -23,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assert;
+
+import org.springframework.util.ReflectionUtils;
 
 /**
  * AssertJ {@link Assert} for {@link ScheduledThreadPoolExecutor}.
@@ -66,12 +69,11 @@ public final class ScheduledExecutorServiceAssert
 	private boolean producesVirtualThreads() {
 		try {
 			return this.actual.schedule(() -> {
-				// https://openjdk.org/jeps/444
-				// jep 444 specifies that virtual threads will belong to
-				// a special thread group given the name "VirtualThreads"
-				ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
-				String threadGroupName = (threadGroup != null) ? threadGroup.getName() : "";
-				return threadGroupName.equalsIgnoreCase("VirtualThreads");
+				Method isVirtual = ReflectionUtils.findMethod(Thread.class, "isVirtual");
+				if (isVirtual == null) {
+					return false;
+				}
+				return (boolean) ReflectionUtils.invokeMethod(isVirtual, Thread.currentThread());
 			}, 0, TimeUnit.SECONDS).get();
 		}
 		catch (InterruptedException | ExecutionException ex) {
