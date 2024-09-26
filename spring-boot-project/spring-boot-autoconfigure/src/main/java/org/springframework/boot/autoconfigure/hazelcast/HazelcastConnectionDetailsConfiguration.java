@@ -32,10 +32,11 @@ import org.springframework.core.io.ResourceLoader;
  * @author Moritz Halbritter
  */
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnMissingBean(HazelcastConnectionDetails.class)
 class HazelcastConnectionDetailsConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean({ ClientConfig.class, HazelcastConnectionDetails.class })
+	@ConditionalOnMissingBean(ClientConfig.class)
 	@Conditional(HazelcastClientConfigAvailableCondition.class)
 	static class HazelcastClientConfigFileConfiguration {
 
@@ -48,7 +49,6 @@ class HazelcastConnectionDetailsConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(HazelcastConnectionDetails.class)
 	@ConditionalOnSingleCandidate(ClientConfig.class)
 	static class HazelcastClientConfigConfiguration {
 
