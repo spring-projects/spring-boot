@@ -33,12 +33,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics
  * aspects.
  *
  * @author Jonatan Ivanov
+ * @author Yanming Zhou
  * @since 3.2.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
@@ -47,12 +50,14 @@ import org.springframework.context.annotation.Conditional;
 @ConditionalOnBean(MeterRegistry.class)
 public class MetricsAspectsAutoConfiguration {
 
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@Bean
 	@ConditionalOnMissingBean
 	CountedAspect countedAspect(MeterRegistry registry) {
 		return new CountedAspect(registry);
 	}
 
+	@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 	@Bean
 	@ConditionalOnMissingBean
 	TimedAspect timedAspect(MeterRegistry registry,
