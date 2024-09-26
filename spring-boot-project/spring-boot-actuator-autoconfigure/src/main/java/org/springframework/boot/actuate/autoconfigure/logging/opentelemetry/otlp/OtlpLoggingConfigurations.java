@@ -44,7 +44,7 @@ final class OtlpLoggingConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "endpoint")
-		OtlpLoggingConnectionDetails otlpLogsConnectionDetails(OtlpLoggingProperties properties) {
+		OtlpLoggingConnectionDetails otlpLoggingConnectionDetails(OtlpLoggingProperties properties) {
 			return new PropertiesOtlpLoggingConnectionDetails(properties);
 		}
 

@@ -1489,7 +1489,6 @@ bom {
 		group("com.oracle.database.security") {
 			modules = [
 				"oraclepki"
-
 			]
 		}
 		group("com.oracle.database.xml") {

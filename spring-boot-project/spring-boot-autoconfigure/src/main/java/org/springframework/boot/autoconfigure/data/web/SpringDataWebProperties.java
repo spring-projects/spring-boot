@@ -84,7 +84,7 @@ public class SpringDataWebProperties {
 		private int maxPageSize = 2000;
 
 		/**
-		 * Configures how to render spring data Pageable instances.
+		 * Configures how to render Spring Data Pageable instances.
 		 */
 		private PageSerializationMode serializationMode = PageSerializationMode.DIRECT;
 
