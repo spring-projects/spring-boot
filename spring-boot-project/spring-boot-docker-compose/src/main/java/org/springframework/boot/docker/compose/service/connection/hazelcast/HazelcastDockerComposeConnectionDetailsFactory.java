@@ -66,7 +66,9 @@ class HazelcastDockerComposeConnectionDetailsFactory
 		@Override
 		public ClientConfig getClientConfig() {
 			ClientConfig config = new ClientConfig();
-			this.environment.getClusterName().ifPresent(config::setClusterName);
+			if (this.environment.getClusterName() != null) {
+				config.setClusterName(this.environment.getClusterName());
+			}
 			config.getNetworkConfig().addAddress(this.host + ":" + this.port);
 			return config;
 		}

@@ -17,17 +17,12 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.core.HazelcastInstance;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ResourceLoader;
 
 /**
  * Configuration for Hazelcast client.
@@ -38,34 +33,9 @@ import org.springframework.core.io.ResourceLoader;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HazelcastClient.class)
 @ConditionalOnMissingBean(HazelcastInstance.class)
-@Import(HazelcastClientInstanceConfiguration.class)
+@Import({ HazelcastConnectionDetailsConfiguration.class, HazelcastClientInstanceConfiguration.class })
 class HazelcastClientConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.client.config";
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean({ ClientConfig.class, HazelcastConnectionDetails.class })
-	@Conditional(HazelcastClientConfigAvailableCondition.class)
-	static class HazelcastClientConfigFileConfiguration {
-
-		@Bean
-		HazelcastConnectionDetails hazelcastConnectionDetails(HazelcastProperties properties,
-				ResourceLoader resourceLoader) {
-			return new PropertiesHazelcastConnectionDetails(properties, resourceLoader);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(HazelcastConnectionDetails.class)
-	@ConditionalOnSingleCandidate(ClientConfig.class)
-	static class HazelcastClientConfigConfiguration {
-
-		@Bean
-		HazelcastConnectionDetails hazelcastConnectionDetails(ClientConfig config) {
-			return () -> config;
-		}
-
-	}
 
 }

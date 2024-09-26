@@ -52,7 +52,7 @@ class CustomClusterNameHazelcastContainerConnectionDetailsFactoryIntegrationTest
 	@Container
 	@ServiceConnection
 	static final HazelcastContainer hazelcast = TestImage.container(HazelcastContainer.class)
-		.withEnv("HZ_CLUSTERNAME", "spring-boot");
+		.withClusterName("spring-boot");
 
 	@Autowired(required = false)
 	private HazelcastConnectionDetails connectionDetails;

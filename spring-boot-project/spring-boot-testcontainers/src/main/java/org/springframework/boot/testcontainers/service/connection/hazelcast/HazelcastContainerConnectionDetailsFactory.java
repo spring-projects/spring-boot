@@ -17,7 +17,6 @@
 package org.springframework.boot.testcontainers.service.connection.hazelcast;
 
 import java.util.Map;
-import java.util.Optional;
 
 import com.hazelcast.client.config.ClientConfig;
 import org.testcontainers.containers.Container;
@@ -66,7 +65,10 @@ class HazelcastContainerConnectionDetailsFactory
 			ClientConfig config = new ClientConfig();
 			Container<?> container = getContainer();
 			Map<String, String> env = container.getEnvMap();
-			Optional.ofNullable(env.get(CLUSTER_NAME_ENV)).ifPresent(config::setClusterName);
+			String clusterName = env.get(CLUSTER_NAME_ENV);
+			if (clusterName != null) {
+				config.setClusterName(clusterName);
+			}
 			config.getNetworkConfig().addAddress(container.getHost() + ":" + container.getMappedPort(DEFAULT_PORT));
 			return config;
 		}

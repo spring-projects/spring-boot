@@ -17,7 +17,6 @@
 package org.springframework.boot.docker.compose.service.connection.hazelcast;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Hazelcast environment details.
@@ -32,8 +31,8 @@ class HazelcastEnvironment {
 		this.clusterName = env.get("HZ_CLUSTERNAME");
 	}
 
-	Optional<String> getClusterName() {
-		return Optional.ofNullable(this.clusterName);
+	String getClusterName() {
+		return this.clusterName;
 	}
 
 }

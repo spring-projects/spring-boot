@@ -19,7 +19,6 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
-
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("io.r2dbc:r2dbc-mssql")
@@ -31,11 +30,11 @@ dependencies {
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional("com.hazelcast:hazelcast")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("org.mongodb:mongodb-driver-core")
 	optional("org.neo4j.driver:neo4j-java-driver")
 	optional("org.springframework.data:spring-data-r2dbc")
-	optional("com.hazelcast:hazelcast")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

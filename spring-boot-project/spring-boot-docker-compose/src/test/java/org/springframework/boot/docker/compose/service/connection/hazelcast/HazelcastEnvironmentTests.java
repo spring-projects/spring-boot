@@ -33,13 +33,13 @@ class HazelcastEnvironmentTests {
 	@Test
 	void getClusterNameWhenHasNoHzClusterNameSet() {
 		HazelcastEnvironment environment = new HazelcastEnvironment(Collections.emptyMap());
-		assertThat(environment.getClusterName()).isEmpty();
+		assertThat(environment.getClusterName()).isNull();
 	}
 
 	@Test
 	void getClusterNameWhenHzClusterNameSet() {
 		HazelcastEnvironment environment = new HazelcastEnvironment(Map.of("HZ_CLUSTERNAME", "spring-boot"));
-		assertThat(environment.getClusterName()).isNotEmpty().hasValue("spring-boot");
+		assertThat(environment.getClusterName()).isEqualTo("spring-boot");
 	}
 
 }

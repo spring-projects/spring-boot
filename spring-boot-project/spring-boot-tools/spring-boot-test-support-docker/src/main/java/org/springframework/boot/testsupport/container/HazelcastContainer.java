@@ -33,4 +33,13 @@ public final class HazelcastContainer extends GenericContainer<HazelcastContaine
 		addExposedPorts(DEFAULT_PORT);
 	}
 
+	/**
+	 * Sets the cluster name.
+	 * @param clusterName the cluster name
+	 * @return this instance
+	 */
+	public HazelcastContainer withClusterName(String clusterName) {
+		return withEnv("HZ_CLUSTERNAME", clusterName);
+	}
+
 }
