@@ -165,7 +165,7 @@ spring:
 [[data.sql.jdbc-template]]
 == Using JdbcTemplate
 
-Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured, and you can `@Autowire` them directly into your own beans, as shown in the following example:
+Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
 include-code::MyBean[]
 
@@ -528,7 +528,7 @@ If you want to make sure that each context has a separate embedded database, you
 [[data.sql.r2dbc.using-database-client]]
 === Using DatabaseClient
 
-A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
+A `DatabaseClient` bean is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
 
 include-code::MyBean[]
 
