@@ -49,7 +49,7 @@ jobs:
           java-early-access: ${{ matrix.java.early-access || 'false' }}
           java-toolchain: ${{ matrix.java.toolchain }}
           java-distribution: ${{ matrix.java.distribution }}
-          develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
       - name: Send Notification
         uses: ./.github/actions/send-notification
         if: always()
