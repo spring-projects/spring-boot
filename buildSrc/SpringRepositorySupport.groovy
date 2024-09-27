@@ -36,8 +36,17 @@ def apply(settings) {
 }
 
 private def property(settings, name) {
-	def value = settings.gradle.parent?.rootProject?.findProperty(name)
-	value = (value != null) ? value : settings.ext.find(name)
+	def value = null
+	try {
+		value = settings.gradle.parent?.rootProject?.findProperty(name)
+	}
+	catch (Exception ex) {
+	}
+	try {
+		value = (value != null) ? value : settings.ext.find(name)
+	}
+	catch (Exception ex) {
+	}
 	value = (value != null) ? value : loadProperty(settings, name)
 	return value
 }
