@@ -1,10 +1,9 @@
 pluginManagement {
+	evaluate(new File("${rootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
-		if (version.endsWith('-SNAPSHOT')) {
-			maven { url "https://repo.spring.io/snapshot" }
-		}
+		spring.mavenRepositories();
 	}
 	resolutionStrategy {
 		eachPlugin {

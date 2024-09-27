@@ -15,12 +15,8 @@ java {
 	targetCompatibility = 17
 }
 
-
-if ("${springFrameworkVersion}".contains("-")) {
-	repositories {
-		maven { url "https://repo.spring.io/milestone" }
-		maven { url "https://repo.spring.io/snapshot" }
-	}
+repositories {
+	spring.mavenRepositories("${springFrameworkVersion}".contains("-"))
 }
 
 checkstyle {
@@ -51,6 +47,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:${assertjVersion}")
 	testImplementation("org.hamcrest:hamcrest:${hamcrestVersion}")
 	testImplementation("org.junit.jupiter:junit-jupiter:${junitJupiterVersion}")
+	testImplementation("org.mockito:mockito-core:${mockitoVersion}")
 	testImplementation("org.springframework:spring-test")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
