@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 public class EndpointMapping {
 
 	private final String path;
+	private static final String SLASH = "/";
 
 	/**
 	 * Creates a new {@code EndpointMapping} using the given {@code path}.
@@ -53,10 +54,10 @@ public class EndpointMapping {
 			return path;
 		}
 		String normalizedPath = path;
-		if (!normalizedPath.startsWith("/")) {
-			normalizedPath = "/" + normalizedPath;
+		if (!normalizedPath.startsWith(SLASH)) {
+			normalizedPath = SLASH + normalizedPath;
 		}
-		if (normalizedPath.endsWith("/")) {
+		if (normalizedPath.endsWith(SLASH)) {
 			normalizedPath = normalizedPath.substring(0, normalizedPath.length() - 1);
 		}
 		return normalizedPath;
