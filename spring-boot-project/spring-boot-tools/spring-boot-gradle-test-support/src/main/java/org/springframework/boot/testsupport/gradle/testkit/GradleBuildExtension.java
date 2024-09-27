@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testsupport.gradle.testkit;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.regex.Pattern;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -43,6 +45,7 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		GradleBuild gradleBuild = extractGradleBuild(context);
+		gradleBuild.scriptProperty("parentRootDir", findParentRootDir().getAbsolutePath());
 		URL scriptUrl = findDefaultScript(context);
 		if (scriptUrl != null) {
 			gradleBuild.script(scriptUrl.getFile());
@@ -52,6 +55,22 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 			gradleBuild.settings(settingsUrl.getFile());
 		}
 		gradleBuild.before();
+	}
+
+	private File findParentRootDir() {
+		File dir = new File("").getAbsoluteFile();
+		int depth = 0;
+		while (dir != null && !hasGradleBuildFiles(dir)) {
+			Assert.state(depth++ < 5, "Unable to find parent root");
+			dir = dir.getParentFile();
+		}
+		Assert.state(dir != null, "Unable to find parent root");
+		return dir;
+	}
+
+	private boolean hasGradleBuildFiles(File dir) {
+		return new File(dir, "settings.gradle").exists() && new File(dir, "build.gradle").exists()
+				&& new File(dir, "gradle.properties").exists();
 	}
 
 	private GradleBuild extractGradleBuild(ExtensionContext context) throws Exception {
