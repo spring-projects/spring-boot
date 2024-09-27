@@ -23,7 +23,7 @@ jobs:
       - name: Prepare Gradle Build
         uses: ./.github/actions/prepare-gradle-build
         with:
-          develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           java-version: ${{ matrix.java.version }}
           java-toolchain: ${{ matrix.java.toolchain }}
       - name: Run System Tests
