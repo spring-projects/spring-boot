@@ -36,8 +36,19 @@ def apply(settings) {
 }
 
 private def property(settings, name) {
-	def parentValue = settings.gradle.parent?.rootProject?.findProperty(name)
-	return (parentValue != null) ? parentValue : settings.ext[name]
+	def value = settings.gradle.parent?.rootProject?.findProperty(name)
+	value = (value != null) ? value : settings.ext.find(name)
+	value = (value != null) ? value : loadProperty(settings, name)
+	return value
+}
+
+private def loadProperty(settings, name) {
+	def scriptDir = new File(getClass().protectionDomain.codeSource.location.path).parent
+	new File(scriptDir, "../gradle.properties").withInputStream {
+		def properties = new Properties()
+		properties.load(it)
+		return properties.get(name)
+	}
 }
 
 return this

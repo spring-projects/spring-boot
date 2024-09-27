@@ -1,4 +1,5 @@
 pluginManagement {
+	evaluate(new File("{parentRootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		exclusiveContent {
 			forRepository {
