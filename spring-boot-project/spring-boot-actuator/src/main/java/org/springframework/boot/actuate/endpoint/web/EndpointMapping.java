@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 public class EndpointMapping {
 
 	private final String path;
+
 	private static final String SLASH = "/";
 
 	/**
