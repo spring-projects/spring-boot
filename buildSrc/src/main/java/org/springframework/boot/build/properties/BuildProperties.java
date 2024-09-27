@@ -17,7 +17,6 @@
 package org.springframework.boot.build.properties;
 
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 
 /**
  * Properties that can influence the build.
@@ -29,15 +28,6 @@ import org.gradle.api.Task;
 public record BuildProperties(BuildType buildType, GitHub gitHub) {
 
 	private static final String PROPERTY_NAME = BuildProperties.class.getName();
-
-	/**
-	 * Get the {@link BuildProperties} for the given {@link Task}.
-	 * @param task the source task
-	 * @return the build properties
-	 */
-	public static BuildProperties get(Task task) {
-		return get(task.getProject());
-	}
 
 	/**
 	 * Get the {@link BuildProperties} for the given {@link Project}.

@@ -24,7 +24,6 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.properties.BuildProperties;
-import org.springframework.boot.build.repository.SpringRepository;
 
 /**
  * {@link Task} to upgrade the libraries managed by a bom.
@@ -37,7 +36,7 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	@Inject
 	public UpgradeBom(BomExtension bom) {
 		super(bom);
-		switch (BuildProperties.get(this).buildType()) {
+		switch (BuildProperties.get(getProject()).buildType()) {
 			case OPEN_SOURCE -> addOpenSourceRepositories();
 			case COMMERCIAL -> addCommercialRepositories();
 		}
@@ -45,19 +44,16 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 
 	private void addOpenSourceRepositories() {
 		getProject().getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
-			if (!isSnaphotRepository(repository)) {
-				getRepositoryNames().add(repository.getName());
+			String name = repository.getName();
+			if (name.startsWith("spring-") && !name.endsWith("-snapshot")) {
+				getRepositoryNames().add(name);
 			}
 		});
 	}
 
 	private void addCommercialRepositories() {
 		getRepositoryNames().addAll(ArtifactRepositoryContainer.DEFAULT_MAVEN_CENTRAL_REPO_NAME,
-				SpringRepository.COMMERCIAL_RELEASE.getName());
-	}
-
-	private boolean isSnaphotRepository(MavenArtifactRepository repository) {
-		return repository.getUrl().toString().endsWith("snapshot");
+				"spring-commerical-release");
 	}
 
 	@Override
