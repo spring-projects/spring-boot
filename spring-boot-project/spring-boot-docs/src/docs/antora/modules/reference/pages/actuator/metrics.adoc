@@ -1126,7 +1126,7 @@ Metrics for Jetty's `Connector` instances are bound by using Micrometer's `Jetty
 === @Timed Annotation Support
 
 To enable scanning of `@Timed` annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
-Please refer to the {url-micrometer-docs-concepts}#_the_timed_annotation[Micrometer documentation].
+Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer documentation].
 
 
 
@@ -1236,7 +1236,7 @@ configurable buffer length.
 | Publish a cumulative histogram with buckets defined by your service-level objectives.
 |===
 
-For more details on the concepts behind `percentiles-histogram`, `percentiles`, and `slo`, see the {url-micrometer-docs-concepts}#_histograms_and_percentiles[Histograms and percentiles] section of the Micrometer documentation.
+For more details on the concepts behind `percentiles-histogram`, `percentiles`, and `slo`, see the {url-micrometer-docs-concepts}/histogram-quantiles.html[Histograms and percentiles] section of the Micrometer documentation.
 
 
 
