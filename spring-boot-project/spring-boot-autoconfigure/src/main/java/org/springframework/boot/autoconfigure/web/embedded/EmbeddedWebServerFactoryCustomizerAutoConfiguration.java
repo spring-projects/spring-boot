@@ -34,15 +34,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for embedded servlet and reactive
  * web servers customizations.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @AutoConfiguration
@@ -105,6 +108,12 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 		public UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(Environment environment,
 				ServerProperties serverProperties) {
 			return new UndertowWebServerFactoryCustomizer(environment, serverProperties);
+		}
+
+		@Bean
+		@ConditionalOnThreading(Threading.VIRTUAL)
+		UndertowDeploymentInfoCustomizer virtualThreadsUndertowDeploymentInfoCustomizer() {
+			return (deploymentInfo) -> deploymentInfo.setExecutor(new VirtualThreadTaskExecutor("undertow-"));
 		}
 
 	}
