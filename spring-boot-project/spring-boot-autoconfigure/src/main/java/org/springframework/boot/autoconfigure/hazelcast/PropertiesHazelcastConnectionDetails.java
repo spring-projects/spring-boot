@@ -54,7 +54,7 @@ class PropertiesHazelcastConnectionDetails implements HazelcastConnectionDetails
 	private ClientConfig loadClientConfig(Resource configLocation) {
 		try {
 			URL configUrl = configLocation.getURL();
-			String configFileName = configUrl.getPath();
+			String configFileName = configUrl.getPath().toLowerCase();
 			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
 				return new YamlClientConfigBuilder(configUrl).build();
 			}
