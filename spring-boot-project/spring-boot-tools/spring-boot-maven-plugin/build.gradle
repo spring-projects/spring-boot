@@ -91,12 +91,18 @@ ext {
 	xsdVersion = versionElements[0] + "." + versionElements[1]
 }
 
+task copySettingsXml(type: Copy) {
+	from file("src/intTest/projects/settings.xml")
+	into "${buildDir}/generated-resources/settings"
+	filter(springRepoistoryTransformers.mavenSettings())
+}
+
 sourceSets {
 	main {
 		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
 	}
 	intTest {
-		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
+		output.dir("${buildDir}/generated-resources", builtBy: ["extractVersionProperties", "copySettingsXml"])
 	}
 	dockerTest {
 		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")

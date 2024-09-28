@@ -28,6 +28,7 @@ dependencies {
 task copyIntegrationTestSources(type: Copy) {
 	from file("src/it")
 	into "${buildDir}/it"
+	filter(springRepoistoryTransformers.ant())
 }
 
 processResources {
