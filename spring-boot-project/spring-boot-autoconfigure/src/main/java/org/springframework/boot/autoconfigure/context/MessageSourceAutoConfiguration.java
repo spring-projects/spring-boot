@@ -16,7 +16,10 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
+import java.util.Properties;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -41,6 +44,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
@@ -81,6 +85,19 @@ public class MessageSourceAutoConfiguration {
 		}
 		messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
 		messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
+
+		try {
+			if (properties.getCommonMessages() != null) {
+				Properties commonProperties = new Properties();
+				for (Resource commonResource : properties.getCommonMessages()) {
+					PropertiesLoaderUtils.fillProperties(commonProperties, commonResource);
+				}
+				messageSource.setCommonMessages(commonProperties);
+			}
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException("Failed to load common messages", ex);
+		}
 		return messageSource;
 	}
 
