@@ -117,6 +117,12 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	void testCommonMessages() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.common-messages:test/common-messages")
+			.run((context) -> assertThat(context.getMessage("hello", null, "Hello!", Locale.UK)).isEqualTo("world"));
+	}
+	
+	@Test
 	void testFallbackDefault() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))

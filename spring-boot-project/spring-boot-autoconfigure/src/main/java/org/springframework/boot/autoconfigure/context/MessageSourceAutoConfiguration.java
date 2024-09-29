@@ -16,10 +16,16 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -39,7 +45,9 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ConcurrentReferenceHashMap;
@@ -81,6 +89,25 @@ public class MessageSourceAutoConfiguration {
 		}
 		messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
 		messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
+
+		try {
+			if (StringUtils.hasText(properties.getCommonMessages())) {
+				PropertiesFactoryBean propertiesFactory = new PropertiesFactoryBean();
+				ResourceLoader resourceLoader = new DefaultResourceLoader();
+				String[] commonMessages = StringUtils.commaDelimitedListToStringArray(
+						StringUtils.trimAllWhitespace(properties.getCommonMessages()));
+				List<Resource> commonResources = Arrays.stream(commonMessages)
+						.map(resourceLoader::getResource)
+						.toList();
+				propertiesFactory.setLocations(commonResources.toArray(Resource[]::new));
+				propertiesFactory.setSingleton(true);
+				propertiesFactory.setIgnoreResourceNotFound(true);
+				propertiesFactory.afterPropertiesSet();
+				messageSource.setCommonMessages(propertiesFactory.getObject());
+			}
+		} catch (IOException e) {
+			throw new UncheckedIOException("Failed to load common messages", e);
+		}
 		return messageSource;
 	}
 
