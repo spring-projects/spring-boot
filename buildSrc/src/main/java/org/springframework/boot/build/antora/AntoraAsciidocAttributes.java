@@ -32,6 +32,8 @@ import org.gradle.api.Project;
 import org.springframework.boot.build.artifacts.ArtifactRelease;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.properties.BuildProperties;
+import org.springframework.boot.build.properties.BuildType;
 import org.springframework.util.Assert;
 
 /**
@@ -47,6 +49,8 @@ public class AntoraAsciidocAttributes {
 
 	private final boolean latestVersion;
 
+	private final BuildType buildType;
+
 	private final ArtifactRelease artifactRelease;
 
 	private final List<Library> libraries;
@@ -59,16 +63,18 @@ public class AntoraAsciidocAttributes {
 			Map<String, String> dependencyVersions) {
 		this.version = String.valueOf(project.getVersion());
 		this.latestVersion = Boolean.parseBoolean(String.valueOf(project.findProperty("latestVersion")));
+		this.buildType = BuildProperties.get(project).buildType();
 		this.artifactRelease = ArtifactRelease.forProject(project);
 		this.libraries = dependencyBom.getLibraries();
 		this.dependencyVersions = dependencyVersions;
 		this.projectProperties = project.getProperties();
 	}
 
-	AntoraAsciidocAttributes(String version, boolean latestVersion, List<Library> libraries,
+	AntoraAsciidocAttributes(String version, boolean latestVersion, BuildType buildType, List<Library> libraries,
 			Map<String, String> dependencyVersions, Map<String, ?> projectProperties) {
 		this.version = version;
 		this.latestVersion = latestVersion;
+		this.buildType = buildType;
 		this.artifactRelease = ArtifactRelease.forVersion(version);
 		this.libraries = (libraries != null) ? libraries : Collections.emptyList();
 		this.dependencyVersions = (dependencyVersions != null) ? dependencyVersions : Collections.emptyMap();
@@ -77,6 +83,7 @@ public class AntoraAsciidocAttributes {
 
 	public Map<String, String> get() {
 		Map<String, String> attributes = new LinkedHashMap<>();
+		addBuildTypeAttribute(attributes);
 		addGitHubAttributes(attributes);
 		addVersionAttributes(attributes);
 		addArtifactAttributes(attributes);
@@ -84,6 +91,10 @@ public class AntoraAsciidocAttributes {
 		addUrlLibraryLinkAttributes(attributes);
 		addPropertyAttributes(attributes);
 		return attributes;
+	}
+
+	private void addBuildTypeAttribute(Map<String, String> attributes) {
+		attributes.put("build-type", this.buildType.toIdentifier());
 	}
 
 	private void addGitHubAttributes(Map<String, String> attributes) {
@@ -152,6 +163,8 @@ public class AntoraAsciidocAttributes {
 	private void addArtifactAttributes(Map<String, String> attributes) {
 		attributes.put("url-artifact-repository", this.artifactRelease.getDownloadRepo());
 		attributes.put("artifact-release-type", this.artifactRelease.getType());
+		attributes.put("build-and-artifact-release-type",
+				this.buildType.toIdentifier() + "-" + this.artifactRelease.getType());
 	}
 
 	private void addUrlJava(Map<String, String> attributes) {
@@ -177,8 +190,7 @@ public class AntoraAsciidocAttributes {
 		};
 		try (InputStream in = getClass().getResourceAsStream("antora-asciidoc-attributes.properties")) {
 			properties.load(in);
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
 	}

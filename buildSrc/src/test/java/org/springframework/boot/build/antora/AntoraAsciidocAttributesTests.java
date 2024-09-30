@@ -31,6 +31,7 @@ import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
+import org.springframework.boot.build.properties.BuildType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,44 +44,58 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AntoraAsciidocAttributesTests {
 
 	@Test
+	void buildTypeWhenOpenSource() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
+				mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("build-type", "opensource");
+	}
+
+	@Test
+	void buildTypeWhenCommercial() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.COMMERCIAL, null,
+				mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("build-type", "commercial");
+	}
+
+	@Test
 	void githubRefWhenReleasedVersionIsTag() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "v1.2.3");
 	}
 
 	@Test
 	void githubRefWhenLatestSnapshotVersionIsMainBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
-				mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true,
+				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "main");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotVersionIsBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", false, null,
-				mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", false,
+				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "1.2.x");
 	}
 
 	@Test
 	void githubRefWhenOlderSnapshotHotFixVersionIsBranch() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, null,
-				mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
+				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("github-ref", "1.2.3.x");
 	}
 
 	@Test
 	void versionReferenceFromLibrary() {
 		Library library = mockLibrary(Collections.emptyMap());
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, List.of(library),
-				mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
+				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("version-spring-framework", "1.2.3");
 	}
 
 	@Test
 	void versionReferenceFromSpringDataDependencyReleaseVersion() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.5"), null);
 		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2");
 		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
@@ -88,7 +103,7 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void versionReferenceFromSpringDataDependencySnapshotVersion() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.0-SNAPSHOT"), null);
 		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2-SNAPSHOT");
 		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
@@ -96,51 +111,78 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void versionNativeBuildTools() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), Map.of("nativeBuildToolsVersion", "3.4.5"));
 		assertThat(attributes.get()).containsEntry("version-native-build-tools", "3.4.5");
 	}
 
 	@Test
 	void urlArtifactRepositoryWhenRelease() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.maven.apache.org/maven2");
 	}
 
 	@Test
 	void urlArtifactRepositoryWhenMilestone() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, null,
-				mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, BuildType.OPEN_SOURCE,
+				null, mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/milestone");
 	}
 
 	@Test
 	void urlArtifactRepositoryWhenSnapshot() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
-				mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true,
+				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-artifact-repository", "https://repo.spring.io/snapshot");
 	}
 
 	@Test
-	void artifactReleaseTypeWhenRelease() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, null,
+	void artifactReleaseTypeWhenOpenSourceRelease() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "release");
+		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "opensource-release");
 	}
 
 	@Test
-	void artifactReleaseTypeWhenMilestone() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, null,
+	void artifactReleaseTypeWhenOpenSourceMilestone() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, BuildType.OPEN_SOURCE,
+				null, mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("artifact-release-type", "milestone");
+		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "opensource-milestone");
+	}
+
+	@Test
+	void artifactReleaseTypeWhenOpenSourceSnapshot() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true,
+				BuildType.OPEN_SOURCE, null, mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("artifact-release-type", "snapshot");
+		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "opensource-snapshot");
+	}
+
+	@Test
+	void artifactReleaseTypeWhenCommercialRelease() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.COMMERCIAL, null,
+				mockDependencyVersions(), null);
+		assertThat(attributes.get()).containsEntry("artifact-release-type", "release");
+		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "commercial-release");
+	}
+
+	@Test
+	void artifactReleaseTypeWhenCommercialMilestone() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-M1", true, BuildType.COMMERCIAL, null,
 				mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "milestone");
+		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "commercial-milestone");
 	}
 
 	@Test
-	void artifactReleaseTypeWhenSnapshot() {
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
-				mockDependencyVersions(), null);
+	void artifactReleaseTypeWhenCommercialSnapshot() {
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, BuildType.COMMERCIAL,
+				null, mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("artifact-release-type", "snapshot");
+		assertThat(attributes.get()).containsEntry("build-and-artifact-release-type", "commercial-snapshot");
 	}
 
 	@Test
@@ -149,16 +191,16 @@ class AntoraAsciidocAttributesTests {
 		links.put("site", (version) -> "https://example.com/site/" + version);
 		links.put("docs", (version) -> "https://example.com/docs/" + version);
 		Library library = mockLibrary(links);
-		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false, List.of(library),
-				mockDependencyVersions(), null);
+		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
+				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-spring-framework-site", "https://example.com/site/1.2.3")
 			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3");
 	}
 
 	@Test
 	void linksFromProperties() {
-		Map<String, String> attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, null,
-				mockDependencyVersions(), null)
+		Map<String, String> attributes = new AntoraAsciidocAttributes("1.2.3-SNAPSHOT", true, BuildType.OPEN_SOURCE,
+				null, mockDependencyVersions(), null)
 			.get();
 		assertThat(attributes).containsEntry("include-java", "ROOT:example$java/org/springframework/boot/docs");
 		assertThat(attributes).containsEntry("url-spring-data-cassandra-site",

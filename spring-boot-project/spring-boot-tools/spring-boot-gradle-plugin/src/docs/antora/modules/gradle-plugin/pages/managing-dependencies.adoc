@@ -70,7 +70,25 @@ The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be u
 
 First, configure the project to depend on the Spring Boot plugin but do not apply it:
 
-ifeval::["{artifact-release-type}" == "release"]
+ifeval::["{build-type}" == "commercial"]
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-commercial.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-commercial.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-release"]
 [tabs]
 ======
 Groovy::
@@ -88,7 +106,7 @@ include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ======
 endif::[]
 
-ifeval::["{artifact-release-type}" == "milestone"]
+ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
 [tabs]
 ======
 Groovy::
@@ -106,7 +124,7 @@ include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ======
 endif::[]
 
-ifeval::["{artifact-release-type}" == "snapshot"]
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 [tabs]
 ======
 Groovy::
