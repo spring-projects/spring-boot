@@ -16,11 +16,16 @@
 
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBuilder;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link JdbcConnectionDetails}
@@ -30,6 +35,7 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Dmytro Nosan
  */
 class PostgresJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
@@ -42,7 +48,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 
 	@Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new PostgresJdbcDockerComposeConnectionDetails(source.getRunningService());
+		return new PostgresJdbcDockerComposeConnectionDetails(source.getRunningService(), source.getEnvironment());
 	}
 
 	/**
@@ -53,14 +59,16 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 
 		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("postgresql", 5432);
 
+		private static final String APPLICATION_NAME = "ApplicationName";
+
 		private final PostgresEnvironment environment;
 
 		private final String jdbcUrl;
 
-		PostgresJdbcDockerComposeConnectionDetails(RunningService service) {
+		PostgresJdbcDockerComposeConnectionDetails(RunningService service, Environment environment) {
 			super(service);
 			this.environment = new PostgresEnvironment(service.env());
-			this.jdbcUrl = jdbcUrlBuilder.build(service, this.environment.getDatabase());
+			this.jdbcUrl = getJdbcUrl(service, this.environment.getDatabase(), environment);
 		}
 
 		@Override
@@ -76,6 +84,20 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 		@Override
 		public String getJdbcUrl() {
 			return this.jdbcUrl;
+		}
+
+		private static String getJdbcUrl(RunningService service, String database, Environment environment) {
+			PostgresJdbcUrl jdbcUrl = new PostgresJdbcUrl(jdbcUrlBuilder.build(service, database));
+			addApplicationNameIfNecessary(jdbcUrl, environment);
+			return jdbcUrl.toString();
+		}
+
+		private static void addApplicationNameIfNecessary(PostgresJdbcUrl jdbcUrl, Environment environment) {
+			String applicationName = environment.getProperty("spring.application.name");
+			if (StringUtils.hasText(applicationName)) {
+				jdbcUrl.addParameterIfDoesNotExist(APPLICATION_NAME,
+						URLEncoder.encode(applicationName, StandardCharsets.UTF_8));
+			}
 		}
 
 	}
