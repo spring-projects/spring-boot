@@ -41,7 +41,7 @@ import org.springframework.boot.build.bom.Library;
  */
 class MultithreadedLibraryUpdateResolver implements LibraryUpdateResolver {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MultithreadedLibraryUpdateResolver.class);
+	private static final Logger logger = LoggerFactory.getLogger(MultithreadedLibraryUpdateResolver.class);
 
 	private final int threads;
 
@@ -55,7 +55,7 @@ class MultithreadedLibraryUpdateResolver implements LibraryUpdateResolver {
 	@Override
 	public List<LibraryWithVersionOptions> findLibraryUpdates(Collection<Library> librariesToUpgrade,
 			Map<String, Library> librariesByName) {
-		LOGGER.info("Looking for updates using {} threads", this.threads);
+		logger.info("Looking for updates using {} threads", this.threads);
 		ExecutorService executorService = Executors.newFixedThreadPool(this.threads);
 		try {
 			return librariesToUpgrade.stream().map((library) -> {
