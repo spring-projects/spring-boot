@@ -41,6 +41,12 @@ The `native` profile configures the following:
 ** Validate that a suitable GraalVM version is available.
 ** Download third-party reachability metadata.
 
+[WARNING]
+====
+The use of the raw classpath means that native image does not know about the generated `MANIFEST`.
+If you need to read the content of the manifest in a native image, for instance to get the implementation version of your application, configure the `classesDirectory` option to use the regular jar.
+====
+
 To benefit from the `native` profile, a module that represents an application should define two plugins, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
