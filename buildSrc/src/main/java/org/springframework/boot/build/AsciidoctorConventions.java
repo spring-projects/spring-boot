@@ -31,6 +31,7 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
 
 import org.springframework.boot.build.artifacts.ArtifactRelease;
+import org.springframework.boot.build.properties.BuildProperties;
 import org.springframework.util.StringUtils;
 
 /**
@@ -117,11 +118,14 @@ class AsciidoctorConventions {
 	}
 
 	private void configureCommonAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+		String buildType = BuildProperties.get(project).buildType().toIdentifier();
 		ArtifactRelease artifacts = ArtifactRelease.forProject(project);
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("attribute-missing", "warn");
 		attributes.put("github-tag", determineGitHubTag(project));
+		attributes.put("build-type", buildType);
 		attributes.put("artifact-release-type", artifacts.getType());
+		attributes.put("build-and-artifact-release-type", buildType + "-" + artifacts.getType());
 		attributes.put("artifact-download-repo", artifacts.getDownloadRepo());
 		attributes.put("revnumber", project.getVersion());
 		asciidoctorTask.attributes(attributes);

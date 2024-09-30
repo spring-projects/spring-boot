@@ -58,7 +58,21 @@ The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be u
 
 First, configure the project to depend on the Spring Boot plugin but do not apply it:
 
-ifeval::["{artifact-release-type}" == "release"]
+ifeval::["{build-type}" == "commercial"]
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/managing-dependencies/depend-on-plugin-commercial.gradle[]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/managing-dependencies/depend-on-plugin-commercial.gradle.kts[]
+----
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-release"]
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
@@ -71,7 +85,8 @@ include::../gradle/managing-dependencies/depend-on-plugin-release.gradle[]
 include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ----
 endif::[]
-ifeval::["{artifact-release-type}" == "milestone"]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
@@ -83,7 +98,8 @@ include::../gradle/managing-dependencies/depend-on-plugin-milestone.gradle[]
 include::../gradle/managing-dependencies/depend-on-plugin-release.gradle.kts[]
 ----
 endif::[]
-ifeval::["{artifact-release-type}" == "snapshot"]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
