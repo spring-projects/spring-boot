@@ -31,6 +31,10 @@ public enum BuildType {
 	/**
 	 * A commercial build.
 	 */
-	COMMERCIAL
+	COMMERCIAL;
+
+	public String toIdentifier() {
+		return toString().replace("_", "").toLowerCase();
+	}
 
 }

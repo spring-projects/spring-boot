@@ -100,34 +100,61 @@ Open your favorite text editor and add the following:
 
 	<!-- Additional lines to be added here... -->
 
-ifeval::["{artifact-release-type}" != "release"]
-	<!-- (you only need this if you are using a milestone or snapshot version) -->
-	<repositories>
-		<repository>
-			<id>spring-snapshots</id>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots><enabled>true</enabled></snapshots>
-		</repository>
-		<repository>
-			<id>spring-milestones</id>
-			<url>https://repo.spring.io/milestone</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<url>https://repo.spring.io/snapshot</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<url>https://repo.spring.io/milestone</url>
-		</pluginRepository>
-	</pluginRepositories>
+ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
+		<!-- (you don't need this if you are using a release version) -->
+		<repositories>
+			<repository>
+				<id>spring-milestones</id>
+				<url>https://repo.spring.io/milestone</url>
+			</repository>
+		</repositories>
+		<pluginRepositories>
+			<pluginRepository>
+				<id>spring-milestones</id>
+				<url>https://repo.spring.io/milestone</url>
+			</pluginRepository>
+		</pluginRepositories>
+endif::[]
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
+		<!-- (you don't need this if you are using a release version) -->
+		<repositories>
+			<repository>
+				<id>spring-snapshots</id>
+				<url>https://repo.spring.io/snapshot</url>
+				<snapshots><enabled>true</enabled></snapshots>
+			</repository>
+			<repository>
+				<id>spring-milestones</id>
+				<url>https://repo.spring.io/milestone</url>
+			</repository>
+		</repositories>
+		<pluginRepositories>
+			<pluginRepository>
+				<id>spring-snapshots</id>
+				<url>https://repo.spring.io/snapshot</url>
+			</pluginRepository>
+			<pluginRepository>
+				<id>spring-milestones</id>
+				<url>https://repo.spring.io/milestone</url>
+			</pluginRepository>
+		</pluginRepositories>
 endif::[]
 </project>
 ----
 
+ifeval::["{build-type}" == "opensource"]
 The preceding listing should give you a working build.
+endif::[]
+
+ifeval::["{build-type}" == "commercial"]
+You will also have to configure your build to access the Spring Commercial repository.
+This is usual done through a local artifact repository that mirrors the content of the Spring Commercial repository.
+Alternatively, while it is not recommended, the Spring Commercial repository can also be accessed directly.
+In either case, see https://docs.vmware.com/en/Tanzu-Spring-Runtime/Commercial/Tanzu-Spring-Runtime/spring-enterprise-subscription.html[the Tanzu Spring Runtime documentation] for further details.
+
+With the addition of the necessary repository configuration, the preceding listing should give you a working build.
+endif::[]
+
 You can test it by running `mvn package` (for now, you can ignore the "`jar will be empty - no content was marked for inclusion!`" warning).
 
 NOTE: At this point, you could import the project into an IDE (most modern Java IDEs include built-in support for Maven).
