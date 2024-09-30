@@ -126,7 +126,7 @@ public class ProcessInfo {
 				return this.memoryUsage.getUsed();
 			}
 
-			public long getCommited() {
+			public long getCommitted() {
 				return this.memoryUsage.getCommitted();
 			}
 
