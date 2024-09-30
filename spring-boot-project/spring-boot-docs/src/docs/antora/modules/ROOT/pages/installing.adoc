@@ -49,7 +49,7 @@ More details on getting started with Spring Boot and Maven can be found in the x
 [[getting-started.installing.java.gradle]]
 === Gradle Installation
 
-Spring Boot is compatible with Gradle 7.x (7.6.4 or later) or 8.x (8.3 or later).
+Spring Boot is compatible with Gradle 7.x (7.6.4 or later) or 8.x (8.4 or later).
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
