@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
- * Details required to establish a connection to a RabbitMQ service.
+ * Details required to establish a connection to a RabbitMQ Stream service.
  *
  * @author Eddú Meléndez
  * @since 3.4.0
@@ -33,8 +33,8 @@ public interface RabbitStreamConnectionDetails extends ConnectionDetails {
 	String getHost();
 
 	/**
-	 * Rabbit server port.
-	 * @return the rabbit server port
+	 * Rabbit Stream server port.
+	 * @return the rabbit stream server port
 	 */
 	int getPort();
 
