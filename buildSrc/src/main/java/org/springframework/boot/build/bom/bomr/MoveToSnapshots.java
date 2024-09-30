@@ -43,7 +43,7 @@ import org.springframework.boot.build.properties.BuildProperties;
  */
 public abstract class MoveToSnapshots extends UpgradeDependencies {
 
-	private static final Logger log = LoggerFactory.getLogger(MoveToSnapshots.class);
+	private static final Logger logger = LoggerFactory.getLogger(MoveToSnapshots.class);
 
 	@Inject
 	public MoveToSnapshots(BomExtension bom) {
@@ -100,8 +100,8 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 			List<Release> releases = scheduledReleases.get(library.getCalendarName());
 			boolean match = (releases != null)
 					&& releases.stream().anyMatch((release) -> candidate.isSnapshotFor(release.getVersion()));
-			if (log.isInfoEnabled() && !match) {
-				log.info("Ignoring {}. No release of {} scheduled before {}", candidate, library.getName(),
+			if (logger.isInfoEnabled() && !match) {
+				logger.info("Ignoring {}. No release of {} scheduled before {}", candidate, library.getName(),
 						milestone.getDueOn());
 			}
 			return match;
