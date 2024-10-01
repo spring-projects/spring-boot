@@ -9,7 +9,7 @@ jobs:
   build-and-deploy-snapshot:
     name: Build and Deploy Snapshot
     runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    if: ${{ github.repository == 'spring-projects/spring-boot' || github.repository == 'spring-projects/spring-boot-commercial' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
@@ -26,11 +26,12 @@ jobs:
       - name: Deploy
         uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
         with:
-          uri: 'https://repo.spring.io'
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          build-name: 'spring-boot-3.3.x'
-          repository: 'libs-snapshot-local'
+          uri: ${{ vars.COMMERCIAL_DEPLOY_REPO_URL || 'https://repo.spring.io' }}
+          username: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_USERNAME || secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', github.ref_name) || format('spring-boot-{0}', github.ref_name) }}
+          repository: ${{ vars.COMMERCIAL && 'spring-commercial-snapshot-local' || 'libs-snapshot-local' }}
+          project: ${{ vars.COMMERCIAL && 'spring' }}
           folder: 'deployment-repository'
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}

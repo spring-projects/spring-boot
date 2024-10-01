@@ -9,7 +9,7 @@ jobs:
   ci:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
     runs-on: ${{ matrix.os.id }}
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    if: ${{ github.repository == 'spring-projects/spring-boot' || github.repository == 'spring-projects/spring-boot-commercial' }}
     strategy:
       fail-fast: false
       matrix:
