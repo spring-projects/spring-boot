@@ -24,6 +24,18 @@ inputs:
   develocity-access-key:
     required: false
     description: 'The access key for authentication with ge.spring.io'
+  commercial-repository-username:
+    required: false
+    description: 'Username for authentication with the commercial repository'
+  commercial-repository-password:
+    required: false
+    description: 'Password for authentication with the commercial repository'
+  commercial-release-repository-url:
+    required: false
+    description: 'URL of the release repository'
+  commercial-snapshot-repository-url:
+    required: false
+    description: 'URL of the snapshot repository'
 outputs:
   build-scan-url:
     description: 'The URL, if any, of the build scan produced by the build'
@@ -46,11 +58,21 @@ runs:
       id: build
       if: ${{ inputs.publish == 'false' }}
       shell: bash
+      env:
+        COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
+        COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
+        COMMERCIAL_RELEASE_REPO_URL: ${{ inputs.commercial-release-repository-url }}
+        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
       run: ./gradlew build
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}
       shell: bash
+      env:
+        COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
+        COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
+        COMMERCIAL_RELEASE_REPO_URL: ${{ inputs.commercial-release-repository-url }}
+        COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
       run: ./gradlew -PdeploymentRepository=$(pwd)/deployment-repository ${{ !startsWith(github.event.head_commit.message, 'Next development version') && 'build' || '' }} publishAllPublicationsToDeploymentRepository
     - name: Read Version From gradle.properties
       id: read-version

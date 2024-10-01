@@ -10,9 +10,13 @@ on:
         default: false
         type: boolean
     secrets:
-      repository-username:
+      opensource-repository-username:
         required: false
-      repository-password:
+      opensource-repository-password:
+        required: false
+      commercial-repository-username:
+        required: false
+      commercial-repository-password:
         required: false
       google-chat-webhook-url:
         required: true
@@ -55,8 +59,10 @@ jobs:
           RVT_VERSION: ${{ inputs.version }}
           RVT_RELEASE_TYPE: oss
           RVT_STAGING: ${{ inputs.staging }}
-          RVT_OSS_REPOSITORY_USERNAME: ${{ secrets.repository-username }}
-          RVT_OSS_REPOSITORY_PASSWORD: ${{ secrets.repository-password }}
+          RVT_OSS_REPOSITORY_USERNAME: ${{ secrets.opensource-repository-username }}
+          RVT_OSS_REPOSITORY_PASSWORD: ${{ secrets.opensource-repository-password }}
+          RVT_COMMERCIAL_REPOSITORY_USERNAME: ${{ secrets.commercial-repository-username }}
+          RVT_COMMERCIAL_REPOSITORY_PASSWORD: ${{ secrets.commercial-repository-password }}
         run: ./gradlew spring-boot-release-verification-tests:test
       - name: Upload Build Reports on Failure
         uses: actions/upload-artifact@v4
