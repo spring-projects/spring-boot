@@ -49,12 +49,11 @@ task syncTestRepository(type: Sync) {
 task copyAntSources(type: Copy) {
 	from project.layout.projectDirectory
 	include "*.xml"
-	into "${buildDir}/antbuild"
+	into "${buildDir}/ant"
 	filter(springRepoistoryTransformers.ant())
 }
 
 task antRun(type: JavaExec) {
-	workingDir "${buildDir}/antbuild"
 	dependsOn syncTestRepository, copyAntSources, configurations.antDependencies
 	classpath = configurations.antDependencies;
 	mainClass = "org.apache.tools.ant.launch.Launcher"
