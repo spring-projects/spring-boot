@@ -31,12 +31,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: spring-projects/spring-boot-release-verification
-          ref: 'v0.0.3'
+          ref: 'v0.0.6'
           token: ${{ secrets.token }}
       - name: Check Out Send Notification Action
         uses: actions/checkout@v4
         with:
-          path: spring-boot
+          path: ${{ vars.COMMERCIAL && 'spring-boot' || 'spring-boot-commercial' }}
           sparse-checkout: .github/actions/send-notification
       - name: Set Up Java
         uses: actions/setup-java@v4
@@ -44,6 +44,7 @@ jobs:
           distribution: 'liberica'
           java-version: 17
       - name: Set Up Homebrew
+        if: ${{ !vars.COMMERCIAL }}
         uses: Homebrew/actions/setup-homebrew@7657c9512f50e1c35b640971116425935bab3eea
       - name: Set Up Gradle
         uses: gradle/actions/setup-gradle@d156388eb19639ec20ade50009f3d199ce1e2808 # v4.1.0
@@ -57,7 +58,7 @@ jobs:
       - name: Run Release Verification Tests
         env:
           RVT_VERSION: ${{ inputs.version }}
-          RVT_RELEASE_TYPE: oss
+          RVT_RELEASE_TYPE: ${{ vars.COMMERCIAL && 'commercial' || 'oss' }}
           RVT_STAGING: ${{ inputs.staging }}
           RVT_OSS_REPOSITORY_USERNAME: ${{ secrets.opensource-repository-username }}
           RVT_OSS_REPOSITORY_PASSWORD: ${{ secrets.opensource-repository-password }}
@@ -71,7 +72,7 @@ jobs:
           name: build-reports
           path: '**/build/reports/'
       - name: Send Notification
-        uses: ./spring-boot/.github/actions/send-notification
+        uses: ${{ vars.COMMERCIAL && './spring-boot-commercial/.github/actions/send-notification' || './spring-boot/.github/actions/send-notification' }}
         if: always()
         with:
           webhook-url: ${{ secrets.google-chat-webhook-url }}
