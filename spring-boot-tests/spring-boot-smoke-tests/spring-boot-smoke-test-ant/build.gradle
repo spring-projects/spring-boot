@@ -54,6 +54,7 @@ task copyAntSources(type: Copy) {
 }
 
 task antRun(type: JavaExec) {
+	workingDir "${buildDir}/ant"
 	dependsOn syncTestRepository, copyAntSources, configurations.antDependencies
 	classpath = configurations.antDependencies;
 	mainClass = "org.apache.tools.ant.launch.Launcher"
