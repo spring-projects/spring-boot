@@ -53,7 +53,7 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 
 	private void addCommercialRepositories() {
 		getRepositoryNames().addAll(ArtifactRepositoryContainer.DEFAULT_MAVEN_CENTRAL_REPO_NAME,
-				"spring-commerical-release");
+				"spring-commercial-release");
 	}
 
 	@Override
