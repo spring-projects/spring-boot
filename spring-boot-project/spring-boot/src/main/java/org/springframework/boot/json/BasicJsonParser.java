@@ -121,7 +121,7 @@ public class BasicJsonParser extends AbstractJsonParser {
 		return trimTrailingCharacter(trimLeadingCharacter(string, leadingChar), trailingChar);
 	}
 
-	private static List<String> tokenize(String json) {
+	private List<String> tokenize(String json) {
         List<String> list = new ArrayList<>();
         int inData = 0;
         boolean inQuote = false;
