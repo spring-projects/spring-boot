@@ -121,53 +121,39 @@ public class BasicJsonParser extends AbstractJsonParser {
 		return trimTrailingCharacter(trimLeadingCharacter(string, leadingChar), trailingChar);
 	}
 
-	private List<String> tokenize(String json) {
-		List<String> list = new ArrayList<>();
-		int index = 0;
-		int inObject = 0;
-		int inList = 0;
-		boolean inValue = false;
-		boolean inEscape = false;
-		StringBuilder build = new StringBuilder();
-		while (index < json.length()) {
-			char current = json.charAt(index);
-			if (inEscape) {
-				build.append(current);
-				index++;
-				inEscape = false;
-				continue;
-			}
-			if (current == '{') {
-				inObject++;
-			}
-			if (current == '}') {
-				inObject--;
-			}
-			if (current == '[') {
-				inList++;
-			}
-			if (current == ']') {
-				inList--;
-			}
-			if (current == '"') {
-				inValue = !inValue;
-			}
-			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
-				list.add(build.toString());
-				build.setLength(0);
-			}
-			else if (current == '\\') {
-				inEscape = true;
-			}
-			else {
-				build.append(current);
-			}
-			index++;
-		}
-		if (!build.isEmpty()) {
-			list.add(build.toString().trim());
-		}
-		return list;
-	}
+	private static List<String> tokenize(String json) {
+        List<String> list = new ArrayList<>();
+        int inData = 0;
+        boolean inQuote = false;
+        boolean inEscape = false;
+        StringBuilder build = new StringBuilder();
 
+        for (char current : json.toCharArray()) {
+            if (inEscape) {
+                build.append(current);
+                inEscape = false;
+                continue;
+            }
+
+            switch (current) {
+                case '{', '[' -> inData++;
+                case '}', ']' -> inData--;
+                case '"' -> inQuote = !inQuote;
+            }
+
+            if (current == ',' && inData == 0 && !inQuote) {
+                list.add(build.toString());
+                build.setLength(0);
+            } else if (current == '\\') {
+                inEscape = true;
+            } else {
+                build.append(current);
+            }
+        }
+
+        if (build.isEmpty()) {
+            list.add(build.toString().trim());
+        }
+        return list;
+    }
 }
