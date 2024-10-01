@@ -36,7 +36,7 @@ jobs:
       - name: Check Out Send Notification Action
         uses: actions/checkout@v4
         with:
-          path: ${{ vars.COMMERCIAL && 'spring-boot' || 'spring-boot-commercial' }}
+          path: send-notification
           sparse-checkout: .github/actions/send-notification
       - name: Set Up Java
         uses: actions/setup-java@v4
@@ -72,7 +72,7 @@ jobs:
           name: build-reports
           path: '**/build/reports/'
       - name: Send Notification
-        uses: ${{ vars.COMMERCIAL && './spring-boot-commercial/.github/actions/send-notification' || './spring-boot/.github/actions/send-notification' }}
+        uses: ./send-notification/.github/actions/send-notification
         if: always()
         with:
           webhook-url: ${{ secrets.google-chat-webhook-url }}
