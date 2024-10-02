@@ -1987,6 +1987,12 @@
       "defaultValue": false
     },
     {
+      "name": "spring.messages.basename",
+      "defaultValue": [
+        "messages"
+      ]
+    },
+    {
       "name": "spring.mustache.prefix",
       "defaultValue": "classpath:/templates/"
     },

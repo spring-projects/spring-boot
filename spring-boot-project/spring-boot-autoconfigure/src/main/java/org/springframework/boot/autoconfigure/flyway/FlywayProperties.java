@@ -319,8 +319,8 @@ public class FlywayProperties {
 	private Boolean skipExecutingMigrations;
 
 	/**
-	 * Ignore migrations that match this comma-separated list of patterns when validating
-	 * migrations. Requires Flyway Teams.
+	 * List of patterns that identify migrations to ignore when performing validation.
+	 * Requires Flyway Teams.
 	 */
 	private List<String> ignoreMigrationPatterns;
 

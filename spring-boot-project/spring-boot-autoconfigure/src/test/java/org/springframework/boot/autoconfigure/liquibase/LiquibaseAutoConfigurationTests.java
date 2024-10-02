@@ -238,7 +238,7 @@ class LiquibaseAutoConfigurationTests {
 	void overrideContexts() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.liquibase.contexts:test, production")
-			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getContexts()).isEqualTo("test, production")));
+			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getContexts()).isEqualTo("test,production")));
 	}
 
 	@Test
@@ -391,7 +391,7 @@ class LiquibaseAutoConfigurationTests {
 	void overrideLabelFilter() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.liquibase.label-filter:test, production")
-			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getLabelFilter()).isEqualTo("test, production")));
+			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getLabelFilter()).isEqualTo("test,production")));
 	}
 
 	@Test

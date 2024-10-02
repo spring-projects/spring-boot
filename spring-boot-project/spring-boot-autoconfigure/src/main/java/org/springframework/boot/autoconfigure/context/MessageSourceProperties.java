@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
@@ -35,12 +37,12 @@ import org.springframework.boot.convert.DurationUnit;
 public class MessageSourceProperties {
 
 	/**
-	 * Comma-separated list of basenames (essentially a fully-qualified classpath
-	 * location), each following the ResourceBundle convention with relaxed support for
-	 * slash based locations. If it doesn't contain a package qualifier (such as
-	 * "org.mypackage"), it will be resolved from the classpath root.
+	 * List of basenames (essentially a fully-qualified classpath location), each
+	 * following the ResourceBundle convention with relaxed support for slash based
+	 * locations. If it doesn't contain a package qualifier (such as "org.mypackage"), it
+	 * will be resolved from the classpath root.
 	 */
-	private String basename = "messages";
+	private List<String> basename = new ArrayList<>(List.of("messages"));
 
 	/**
 	 * Message bundles encoding.
@@ -73,11 +75,11 @@ public class MessageSourceProperties {
 	 */
 	private boolean useCodeAsDefaultMessage = false;
 
-	public String getBasename() {
+	public List<String> getBasename() {
 		return this.basename;
 	}
 
-	public void setBasename(String basename) {
+	public void setBasename(List<String> basename) {
 		this.basename = basename;
 	}
 

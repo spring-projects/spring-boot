@@ -52,6 +52,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -105,7 +106,9 @@ public class LiquibaseAutoConfiguration {
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
 			liquibase.setClearCheckSums(properties.isClearChecksums());
-			liquibase.setContexts(properties.getContexts());
+			if (!CollectionUtils.isEmpty(properties.getContexts())) {
+				liquibase.setContexts(StringUtils.collectionToCommaDelimitedString(properties.getContexts()));
+			}
 			liquibase.setDefaultSchema(properties.getDefaultSchema());
 			liquibase.setLiquibaseSchema(properties.getLiquibaseSchema());
 			liquibase.setLiquibaseTablespace(properties.getLiquibaseTablespace());
@@ -113,7 +116,9 @@ public class LiquibaseAutoConfiguration {
 			liquibase.setDatabaseChangeLogLockTable(properties.getDatabaseChangeLogLockTable());
 			liquibase.setDropFirst(properties.isDropFirst());
 			liquibase.setShouldRun(properties.isEnabled());
-			liquibase.setLabelFilter(properties.getLabelFilter());
+			if (!CollectionUtils.isEmpty(properties.getLabelFilter())) {
+				liquibase.setLabelFilter(StringUtils.collectionToCommaDelimitedString(properties.getLabelFilter()));
+			}
 			liquibase.setChangeLogParameters(properties.getParameters());
 			liquibase.setRollbackFile(properties.getRollbackFile());
 			liquibase.setTestRollbackOnUpdate(properties.isTestRollbackOnUpdate());

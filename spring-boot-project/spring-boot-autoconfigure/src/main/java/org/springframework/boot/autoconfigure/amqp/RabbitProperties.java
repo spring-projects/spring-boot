@@ -92,10 +92,10 @@ public class RabbitProperties {
 	private String virtualHost;
 
 	/**
-	 * Comma-separated list of addresses to which the client should connect. When set, the
-	 * host and port are ignored.
+	 * List of addresses to which the client should connect. When set, the host and port
+	 * are ignored.
 	 */
-	private String addresses;
+	private List<String> addresses;
 
 	/**
 	 * Mode used to shuffle configured addresses.
@@ -163,7 +163,7 @@ public class RabbitProperties {
 	 * Returns the host from the first address, or the configured host if no addresses
 	 * have been set.
 	 * @return the host
-	 * @see #setAddresses(String)
+	 * @see #setAddresses(List)
 	 * @see #getHost()
 	 */
 	public String determineHost() {
@@ -185,7 +185,7 @@ public class RabbitProperties {
 	 * Returns the port from the first address, or the configured port if no addresses
 	 * have been set.
 	 * @return the port
-	 * @see #setAddresses(String)
+	 * @see #setAddresses(List)
 	 * @see #getPort()
 	 */
 	public int determinePort() {
@@ -203,38 +203,38 @@ public class RabbitProperties {
 		this.port = port;
 	}
 
-	public String getAddresses() {
+	public List<String> getAddresses() {
 		return this.addresses;
 	}
 
 	/**
-	 * Returns the comma-separated addresses or a single address ({@code host:port})
-	 * created from the configured host and port if no addresses have been set.
+	 * Returns the configured addresses or a single address ({@code host:port}) created
+	 * from the configured host and port if no addresses have been set.
 	 * @return the addresses
 	 */
-	public String determineAddresses() {
+	public List<String> determineAddresses() {
 		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
 			if (this.host.contains(",")) {
 				throw new InvalidConfigurationPropertyValueException("spring.rabbitmq.host", this.host,
 						"Invalid character ','. Value must be a single host. For multiple hosts, use property 'spring.rabbitmq.addresses' instead.");
 			}
-			return this.host + ":" + determinePort();
+			return List.of(this.host + ":" + determinePort());
 		}
 		List<String> addressStrings = new ArrayList<>();
 		for (Address parsedAddress : this.parsedAddresses) {
 			addressStrings.add(parsedAddress.host + ":" + parsedAddress.port);
 		}
-		return StringUtils.collectionToCommaDelimitedString(addressStrings);
+		return addressStrings;
 	}
 
-	public void setAddresses(String addresses) {
+	public void setAddresses(List<String> addresses) {
 		this.addresses = addresses;
 		this.parsedAddresses = parseAddresses(addresses);
 	}
 
-	private List<Address> parseAddresses(String addresses) {
+	private List<Address> parseAddresses(List<String> addresses) {
 		List<Address> parsedAddresses = new ArrayList<>();
-		for (String address : StringUtils.commaDelimitedListToStringArray(addresses)) {
+		for (String address : addresses) {
 			parsedAddresses.add(new Address(address, Optional.ofNullable(getSsl().getEnabled()).orElse(false)));
 		}
 		return parsedAddresses;
@@ -248,7 +248,7 @@ public class RabbitProperties {
 	 * If addresses have been set and the first address has a username it is returned.
 	 * Otherwise returns the result of calling {@code getUsername()}.
 	 * @return the username
-	 * @see #setAddresses(String)
+	 * @see #setAddresses(List)
 	 * @see #getUsername()
 	 */
 	public String determineUsername() {
@@ -271,7 +271,7 @@ public class RabbitProperties {
 	 * If addresses have been set and the first address has a password it is returned.
 	 * Otherwise returns the result of calling {@code getPassword()}.
 	 * @return the password or {@code null}
-	 * @see #setAddresses(String)
+	 * @see #setAddresses(List)
 	 * @see #getPassword()
 	 */
 	public String determinePassword() {
@@ -298,7 +298,7 @@ public class RabbitProperties {
 	 * If addresses have been set and the first address has a virtual host it is returned.
 	 * Otherwise returns the result of calling {@code getVirtualHost()}.
 	 * @return the virtual host or {@code null}
-	 * @see #setAddresses(String)
+	 * @see #setAddresses(List)
 	 * @see #getVirtualHost()
 	 */
 	public String determineVirtualHost() {
@@ -471,7 +471,7 @@ public class RabbitProperties {
 		 * Returns whether SSL is enabled from the first address, or the configured ssl
 		 * enabled flag if no addresses have been set.
 		 * @return whether ssl is enabled
-		 * @see #setAddresses(String)
+		 * @see #setAddresses(List)
 		 * @see #getEnabled() ()
 		 */
 		public boolean determineEnabled() {
