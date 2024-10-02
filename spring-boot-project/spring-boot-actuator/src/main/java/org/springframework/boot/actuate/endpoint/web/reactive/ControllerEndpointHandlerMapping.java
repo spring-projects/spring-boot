@@ -41,7 +41,9 @@ import org.springframework.web.util.pattern.PathPattern;
  *
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated since 3.3.5 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
  */
+@Deprecated(since = "3.3.5", forRemoval = true)
 @SuppressWarnings("removal")
 public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMapping {
 
