@@ -57,8 +57,10 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @deprecated since 3.3.5 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
  */
-@SuppressWarnings({ "deprecation", "removal" })
+@SuppressWarnings("removal")
+@Deprecated(since = "3.3.5", forRemoval = true)
 class ControllerEndpointHandlerMappingIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
