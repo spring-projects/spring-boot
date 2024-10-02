@@ -26,6 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.function.Function;
 
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -322,6 +323,23 @@ class JettyWebServerFactoryCustomizerTests {
 		JettyWebServer server = customizeAndGetServer();
 		List<Long> timeouts = connectorsIdleTimeouts(server);
 		assertThat(timeouts).containsOnly(60000L);
+	}
+
+	@Test
+	void customMaxFormKeys() {
+		bind("server.jetty.max-form-keys=2048");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> maxFormKeys = getMaxFormKeys(server);
+		assertThat(maxFormKeys).containsOnly(2048);
+	}
+
+	private List<Integer> getMaxFormKeys(JettyWebServer server) {
+		server.start();
+		server.stop();
+		return server.getServer().getHandlers().stream()
+				.filter(handler -> handler instanceof ServletContextHandler)
+				.map(handler -> ((ServletContextHandler) handler).getMaxFormKeys())
+				.toList();
 	}
 
 	private List<Long> connectorsIdleTimeouts(JettyWebServer server) {

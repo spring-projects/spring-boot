@@ -1149,7 +1149,7 @@ public class ServerProperties {
 		private DataSize maxHttpFormPostSize = DataSize.ofBytes(200000);
 
 		/**
-		 * Maximum size of the form keys.
+		 * Maximum number of form keys.
 		 */
 		private int maxFormKeys = 1000;
 
@@ -1186,7 +1186,7 @@ public class ServerProperties {
 		}
 
 		public int getMaxFormKeys() {
-			return maxFormKeys;
+			return this.maxFormKeys;
 		}
 
 		public void setMaxFormKeys(int maxFormKeys) {

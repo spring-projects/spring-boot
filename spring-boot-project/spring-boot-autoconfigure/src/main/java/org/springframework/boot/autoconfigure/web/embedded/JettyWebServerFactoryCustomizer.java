@@ -132,24 +132,24 @@ public class JettyWebServerFactoryCustomizer
 
 			@Override
 			public void customize(Server server) {
-				setHandlerMaxHttpFormPostSize(server.getHandlers());
+				acceptCustomizeServletContextHandler(server.getHandlers());
 			}
 
-			private void setHandlerMaxHttpFormPostSize(List<Handler> handlers) {
+			private void acceptCustomizeServletContextHandler(List<Handler> handlers) {
 				for (Handler handler : handlers) {
-					setHandlerMaxHttpFormPostSize(handler);
+					acceptCustomizeServletContextHandler(handler);
 				}
 			}
 
-			private void setHandlerMaxHttpFormPostSize(Handler handler) {
+			private void acceptCustomizeServletContextHandler(Handler handler) {
 				if (handler instanceof ServletContextHandler contextHandler) {
 					customFunc.accept(contextHandler);
 				}
 				else if (handler instanceof Handler.Wrapper wrapper) {
-					setHandlerMaxHttpFormPostSize(wrapper.getHandler());
+					acceptCustomizeServletContextHandler(wrapper.getHandler());
 				}
 				else if (handler instanceof Handler.Collection collection) {
-					setHandlerMaxHttpFormPostSize(collection.getHandlers());
+					acceptCustomizeServletContextHandler(collection.getHandlers());
 				}
 			}
 
