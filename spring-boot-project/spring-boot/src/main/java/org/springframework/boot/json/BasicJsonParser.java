@@ -142,7 +142,9 @@ public class BasicJsonParser extends AbstractJsonParser {
 				case '}' -> inObject--;
 				case '[' -> inList++;
 				case ']' -> inList--;
-				case '"' -> inValue = !inValue;
+			}
+			if (current == '"') {
+				inValue = !inValue;
 			}
 			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
 				list.add(build.toString());
