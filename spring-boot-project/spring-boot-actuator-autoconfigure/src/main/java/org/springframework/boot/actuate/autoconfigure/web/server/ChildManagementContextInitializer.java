@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.aot.ApplicationContextAotGenerator;
-import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -51,8 +50,8 @@ import org.springframework.javapoet.ClassName;
 import org.springframework.util.Assert;
 
 /**
- * {@link ApplicationListener} used to initialize the management context when it's running
- * on a different port.
+ * {@link SmartLifecycle} used to initialize the management context when it's running on a
+ * different port.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -61,20 +60,20 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 
 	private final ManagementContextFactory managementContextFactory;
 
-	private final ApplicationContext parentContext;
+	private final AbstractApplicationContext parentContext;
 
 	private final ApplicationContextInitializer<ConfigurableApplicationContext> applicationContextInitializer;
 
 	private volatile ConfigurableApplicationContext managementContext;
 
 	ChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
-			ApplicationContext parentContext) {
+			AbstractApplicationContext parentContext) {
 		this(managementContextFactory, parentContext, null);
 	}
 
 	@SuppressWarnings("unchecked")
 	private ChildManagementContextInitializer(ManagementContextFactory managementContextFactory,
-			ApplicationContext parentContext,
+			AbstractApplicationContext parentContext,
 			ApplicationContextInitializer<? extends ConfigurableApplicationContext> applicationContextInitializer) {
 		this.managementContextFactory = managementContextFactory;
 		this.parentContext = parentContext;
@@ -100,7 +99,12 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	@Override
 	public void stop() {
 		if (this.managementContext != null) {
-			this.managementContext.stop();
+			if (this.parentContext.isClosed()) {
+				this.managementContext.close();
+			}
+			else {
+				this.managementContext.stop();
+			}
 		}
 	}
 
@@ -111,7 +115,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 
 	@Override
 	public int getPhase() {
-		return WebServerGracefulShutdownLifecycle.SMART_LIFECYCLE_PHASE + 512;
+		return WebServerGracefulShutdownLifecycle.SMART_LIFECYCLE_PHASE - 512;
 	}
 
 	@Override
@@ -161,8 +165,7 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	}
 
 	private boolean isLazyInitialization() {
-		AbstractApplicationContext context = (AbstractApplicationContext) this.parentContext;
-		List<BeanFactoryPostProcessor> postProcessors = context.getBeanFactoryPostProcessors();
+		List<BeanFactoryPostProcessor> postProcessors = this.parentContext.getBeanFactoryPostProcessors();
 		return postProcessors.stream().anyMatch(LazyInitializationBeanFactoryPostProcessor.class::isInstance);
 	}
 
@@ -205,8 +208,8 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 	}
 
 	/**
-	 * {@link ApplicationListener} to propagate the {@link ContextClosedEvent} and
-	 * {@link ApplicationFailedEvent} from a parent to a child.
+	 * {@link ApplicationListener} to propagate the {@link ApplicationFailedEvent} from a
+	 * parent to a child.
 	 */
 	private static class CloseManagementContextListener implements ApplicationListener<ApplicationEvent> {
 
@@ -221,16 +224,9 @@ class ChildManagementContextInitializer implements BeanRegistrationAotProcessor,
 
 		@Override
 		public void onApplicationEvent(ApplicationEvent event) {
-			if (event instanceof ContextClosedEvent contextClosedEvent) {
-				onContextClosedEvent(contextClosedEvent);
-			}
 			if (event instanceof ApplicationFailedEvent applicationFailedEvent) {
 				onApplicationFailedEvent(applicationFailedEvent);
 			}
-		}
-
-		private void onContextClosedEvent(ContextClosedEvent event) {
-			propagateCloseIfNecessary(event.getApplicationContext());
 		}
 
 		private void onApplicationFailedEvent(ApplicationFailedEvent event) {
