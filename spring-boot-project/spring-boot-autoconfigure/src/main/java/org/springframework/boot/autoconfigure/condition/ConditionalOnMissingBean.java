@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
 /**
@@ -32,8 +33,9 @@ import org.springframework.context.annotation.Conditional;
  * must be met for the condition to match and the requirements do not have to be met by
  * the same bean.
  * <p>
- * When placed on a {@code @Bean} method, the bean class defaults to the return type of
- * the factory method:
+ * When placed on a {@link Bean @Bean} method and none of {@link #value}, {@link #type},
+ * or {@link #name} has been specified, the bean type to match defaults to the return type
+ * of the {@code @Bean} method:
  *
  * <pre class="code">
  * &#064;Configuration
