@@ -35,8 +35,9 @@ import org.springframework.context.annotation.Conditional;
  * must be met for the condition to match and the requirements do not have to be met by
  * the same bean.
  * <p>
- * When placed on a {@code @Bean} method, the bean class defaults to the return type of
- * the factory method:
+ * When placed on a {@link Bean @Bean} method and none of {@link #value}, {@link #type},
+ * {@link #name}, or {@link #annotation} has been specified, the bean type to match
+ * defaults to the return type of the {@code @Bean} method:
  *
  * <pre class="code">
  * &#064;Configuration
