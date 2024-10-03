@@ -56,8 +56,7 @@ class OpenLdapContainerConnectionDetailsFactoryIntegrationTests {
 	void connectionCanBeMadeToLdapContainer() {
 		List<String> cn = this.ldapTemplate.search(LdapQueryBuilder.query().where("objectclass").is("dcObject"),
 				(AttributesMapper<String>) (attributes) -> attributes.get("dc").get().toString());
-		assertThat(cn).hasSize(1);
-		assertThat(cn.get(0)).isEqualTo("example");
+		assertThat(cn).singleElement().isEqualTo("example");
 	}
 
 	@Configuration(proxyBeanMethods = false)
