@@ -57,7 +57,6 @@ class BaggagePropagationIntegrationTests {
 	@BeforeEach
 	@AfterEach
 	void setup() {
-		OpenTelemetryEventPublisherBeansApplicationListener.addWrapper();
 		MDC.clear();
 	}
 
