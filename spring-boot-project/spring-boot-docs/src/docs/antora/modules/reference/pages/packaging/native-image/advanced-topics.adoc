@@ -66,7 +66,7 @@ Assuming an AOT processed Spring Boot executable jar built as `myproject-0.0.1-S
 
 [source,shell]
 ----
-$ pack build --builder paketobuildpacks/builder-jammy-tiny \
+$ pack build --builder paketobuildpacks/builder-jammy-java-tiny \
     --path target/myproject-0.0.1-SNAPSHOT.jar \
     --env 'BP_NATIVE_IMAGE=true' \
     my-application:0.0.1-SNAPSHOT
