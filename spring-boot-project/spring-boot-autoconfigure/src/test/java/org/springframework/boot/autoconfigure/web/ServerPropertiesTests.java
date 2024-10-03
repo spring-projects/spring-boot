@@ -466,6 +466,15 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	void jettyMaxFormKeysMatchesDefault() {
+		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
+		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
+		Server server = jetty.getServer();
+		assertThat(this.properties.getJetty().getMaxFormKeys())
+			.isEqualTo(((ServletContextHandler) server.getHandler()).getMaxFormKeys());
+	}
+
+	@Test
 	void undertowMaxHttpPostSizeMatchesDefault() {
 		assertThat(this.properties.getUndertow().getMaxHttpPostSize().toBytes())
 			.isEqualTo(UndertowOptions.DEFAULT_MAX_ENTITY_SIZE);
