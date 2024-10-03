@@ -471,7 +471,7 @@ class ServerPropertiesTests {
 		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
 		Server server = jetty.getServer();
 		assertThat(this.properties.getJetty().getMaxFormKeys())
-				.isEqualTo(((ServletContextHandler) server.getHandler()).getMaxFormKeys());
+			.isEqualTo(((ServletContextHandler) server.getHandler()).getMaxFormKeys());
 	}
 
 	@Test

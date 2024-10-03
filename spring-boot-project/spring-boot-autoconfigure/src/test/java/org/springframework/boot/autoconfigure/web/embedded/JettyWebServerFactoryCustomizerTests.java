@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -329,23 +329,19 @@ class JettyWebServerFactoryCustomizerTests {
 	void customMaxFormKeys() {
 		bind("server.jetty.max-form-keys=2048");
 		JettyWebServer server = customizeAndGetServer();
-		List<Integer> maxFormKeys = getMaxFormKeys(server);
+		startAndStopToMakeInternalsAvailable(server);
+		List<Integer> maxFormKeys = server.getServer()
+			.getHandlers()
+			.stream()
+			.filter(ServletContextHandler.class::isInstance)
+			.map(ServletContextHandler.class::cast)
+			.map(ServletContextHandler::getMaxFormKeys)
+			.toList();
 		assertThat(maxFormKeys).containsOnly(2048);
 	}
 
-	private List<Integer> getMaxFormKeys(JettyWebServer server) {
-		server.start();
-		server.stop();
-		return server.getServer().getHandlers().stream()
-				.filter(handler -> handler instanceof ServletContextHandler)
-				.map(handler -> ((ServletContextHandler) handler).getMaxFormKeys())
-				.toList();
-	}
-
 	private List<Long> connectorsIdleTimeouts(JettyWebServer server) {
-		// Start (and directly stop) server to have connectors available
-		server.start();
-		server.stop();
+		startAndStopToMakeInternalsAvailable(server);
 		return Arrays.stream(server.getServer().getConnectors())
 			.filter((connector) -> connector instanceof AbstractConnector)
 			.map(Connector::getIdleTimeout)
@@ -362,9 +358,7 @@ class JettyWebServerFactoryCustomizerTests {
 
 	private List<Integer> getHeaderSizes(JettyWebServer server, Function<HttpConfiguration, Integer> provider) {
 		List<Integer> requestHeaderSizes = new ArrayList<>();
-		// Start (and directly stop) server to have connectors available
-		server.start();
-		server.stop();
+		startAndStopToMakeInternalsAvailable(server);
 		Connector[] connectors = server.getServer().getConnectors();
 		for (Connector connector : connectors) {
 			connector.getConnectionFactories()
@@ -377,6 +371,11 @@ class JettyWebServerFactoryCustomizerTests {
 				});
 		}
 		return requestHeaderSizes;
+	}
+
+	private void startAndStopToMakeInternalsAvailable(JettyWebServer server) {
+		server.start();
+		server.stop();
 	}
 
 	private BlockingQueue<?> getQueue(ThreadPool threadPool) {
