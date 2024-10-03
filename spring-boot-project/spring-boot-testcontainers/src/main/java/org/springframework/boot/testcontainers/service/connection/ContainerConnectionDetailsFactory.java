@@ -117,7 +117,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	}
 
 	/**
-	 * Return if the give source accepts the connection. By default this method checks
+	 * Return if the given source accepts the connection. By default this method checks
 	 * each connection name.
 	 * @param source the container connection source
 	 * @param requiredContainerType the required container type

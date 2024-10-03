@@ -99,8 +99,8 @@ public class OpenTelemetryEventPublisherBeansApplicationListener implements Gene
 
 	/**
 	 * {@link ContextStorage#addWrapper(java.util.function.Function) Add} the
-	 * {@link ContextStorage} wrapper to ensure that {@link EventPublisher} are propagated
-	 * correctly.
+	 * {@link ContextStorage} wrapper to ensure that {@link EventPublisher
+	 * EventPublishers} are propagated correctly.
 	 */
 	public static void addWrapper() {
 		if (isInstallable() && added.compareAndSet(false, true)) {
@@ -118,7 +118,7 @@ public class OpenTelemetryEventPublisherBeansApplicationListener implements Gene
 	 */
 	static final class Wrapper {
 
-		static Wrapper instance = new Wrapper();
+		static final Wrapper instance = new Wrapper();
 
 		private final MultiValueMap<ApplicationContext, EventPublishingContextWrapper> beans = new LinkedMultiValueMap<>();
 
@@ -149,13 +149,16 @@ public class OpenTelemetryEventPublisherBeansApplicationListener implements Gene
 			ContextStorage delegate = this.storageDelegate;
 			if (delegate == null) {
 				synchronized (this) {
-					delegate = parent;
-					for (List<EventPublishingContextWrapper> publishers : this.beans.values()) {
-						for (EventPublishingContextWrapper publisher : publishers) {
-							delegate = publisher.apply(delegate);
+					delegate = this.storageDelegate;
+					if (delegate == null) {
+						delegate = parent;
+						for (List<EventPublishingContextWrapper> publishers : this.beans.values()) {
+							for (EventPublishingContextWrapper publisher : publishers) {
+								delegate = publisher.apply(delegate);
+							}
 						}
+						this.storageDelegate = delegate;
 					}
-					this.storageDelegate = delegate;
 				}
 			}
 			return delegate;
