@@ -1,25 +1,25 @@
-name: 'Prepare Gradle Build'
+name: Prepare Gradle Build
 description: 'Prepares a Gradle build. Sets up Java and Gradle and configures Gradle properties'
 inputs:
-  java-version:
+  develocity-access-key:
+    description: 'Access key for authentication with ge.spring.io'
     required: false
-    default: '17'
-    description: 'The Java version to use for the build'
-  java-early-access:
-    required: false
-    default: 'false'
-    description: 'Whether the Java version is in early access. When true, forces java-distribution to temurin'
-  java-toolchain:
-    required: false
-    default: 'false'
-    description: 'Whether a Java toolchain should be used'
   java-distribution:
+    description: 'Java distribution to use'
     required: false
     default: 'liberica'
-    description: 'The distribution of Java to use'
-  develocity-access-key:
+  java-early-access:
+    description: 'Whether the Java version is in early access. When true, forces java-distribution to temurin'
     required: false
-    description: 'The access key for authentication with ge.spring.io'
+    default: 'false'
+  java-toolchain:
+    description: 'Whether a Java toolchain should be used'
+    required: false
+    default: 'false'
+  java-version:
+    description: 'Java version to use for the build'
+    required: false
+    default: '17'
 runs:
   using: composite
   steps:

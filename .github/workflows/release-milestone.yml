@@ -9,8 +9,8 @@ concurrency:
 jobs:
   build-and-stage-release:
     name: Build and Stage Release
-    runs-on: ${{ vars.UBUNTU_MEDIUIM || 'ubuntu-latest' }}
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUIM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
         uses: actions/checkout@v4
@@ -23,14 +23,14 @@ jobs:
       - name: Stage Release
         uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
         with:
-          uri: 'https://repo.spring.io'
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           build-name: ${{ format('spring-boot-{0}', steps.build-and-publish.outputs.version)}}
-          repository: 'libs-staging-local'
           folder: 'deployment-repository'
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          repository: 'libs-staging-local'
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          uri: 'https://repo.spring.io'
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
     outputs:
       version: ${{ steps.build-and-publish.outputs.version }}
   verify:
@@ -60,12 +60,12 @@ jobs:
         run: jfrog rt build-promote ${{ format('spring-boot-{0}', needs.build-and-stage-release.outputs.version)}} ${{ github.run_number }} libs-milestone-local
   trigger-docs-build:
     name: Trigger Docs Build
-    runs-on: ubuntu-latest
     needs:
       - build-and-stage-release
       - verify
     permissions:
       actions: write
+    runs-on: ubuntu-latest
     steps:
       - name: Run Deploy Docs Workflow
         env:
@@ -85,5 +85,5 @@ jobs:
         uses: ./.github/actions/create-github-release
         with:
           milestone: ${{ needs.build-and-stage-release.outputs.version }}
-          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
           pre-release: true
+          token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
