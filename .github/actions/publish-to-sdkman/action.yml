@@ -1,6 +1,10 @@
 name: Publish to SDKMAN!
-description: Publishes the release as a new candidate version on SDKMAN!
+description: 'Publishes the release as a new candidate version on SDKMAN!'
 inputs:
+  make-default:
+    description: 'Whether the release should be made the default version'
+    required: false
+    default: 'false'
   sdkman-consumer-key:
     description: 'Key for publishing to SDKMAN!'
     required: true
@@ -8,16 +12,13 @@ inputs:
     description: 'Token for publishing to SDKMAN!'
     required: true
   spring-boot-version:
-    description: 'The version to publish'
+    description: 'Version to publish'
     required: true
-  make-default:
-    description: 'Whether the release should be made the default version'
-    required: false
-    default: false
 runs:
   using: composite
   steps:
-    - shell: bash
+    - name: Publish Release
+      shell: bash
       run: >
         curl -X POST \
           -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \
@@ -26,8 +27,9 @@ runs:
           -H "Accept: application/json" \
           -d '{"candidate": "springboot", "version": "${{ inputs.spring-boot-version }}", "url": "${{ format('https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/{0}/spring-boot-cli-{0}-bin.zip', inputs.spring-boot-version) }}"}' \
           https://vendors.sdkman.io/release
-    - shell: bash
+    - name: Flag Release as Default
       if: ${{ inputs.make-default == 'true' }}
+      shell: bash
       run: >
         curl -X PUT \
           -H "Consumer-Key: ${{ inputs.sdkman-consumer-key }}" \

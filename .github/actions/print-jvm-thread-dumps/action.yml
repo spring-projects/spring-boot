@@ -1,5 +1,5 @@
 name: Print JVM thread dumps
-description: Prints a thread dump for all running JVMs
+description: 'Prints a thread dump for all running JVMs'
 runs:
   using: composite
   steps:

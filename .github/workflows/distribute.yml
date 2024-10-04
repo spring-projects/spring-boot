@@ -2,12 +2,8 @@ name: Distribute
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'The version to bundle and distribute'
-        required: true
-        type: string
       build-number:
-        description: 'The number of the build to use to create the bundle'
+        description: 'Number of the build to use to create the bundle'
         required: true
         type: string
       create-bundle:
@@ -15,6 +11,10 @@ on:
         required: true
         type: boolean
         default: true
+      version:
+        description: 'Version to bundle and distribute'
+        required: true
+        type: string
 jobs:
   distribute-spring-enterprise-release-bundle:
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}

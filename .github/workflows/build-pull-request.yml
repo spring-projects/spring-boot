@@ -5,19 +5,19 @@ permissions:
 jobs:
   build:
     name: Build Pull Request
-    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
         with:
-          large-packages: false
           docker-images: false
+          large-packages: false
       - name: Set Up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'liberica'
+          java-version: '17'
       - name: Check Out
         uses: actions/checkout@v4
       - name: Validate Gradle Wrapper
@@ -30,11 +30,11 @@ jobs:
           GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
         run: ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false --no-daemon --no-parallel --continue build
       - name: Print JVM Thread Dumps When Cancelled
-        uses: ./.github/actions/print-jvm-thread-dumps
         if: cancelled()
+        uses: ./.github/actions/print-jvm-thread-dumps
       - name: Upload Build Reports
-        uses: actions/upload-artifact@v4
         if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: build-reports
           path: '**/build/reports/'
