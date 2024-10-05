@@ -75,6 +75,8 @@ class DockerComposeLifecycleManagerTests {
 
 	private Set<String> activeProfiles;
 
+	private List<String> arguments;
+
 	private GenericApplicationContext applicationContext;
 
 	private TestSpringApplicationShutdownHandlers shutdownHandlers;
@@ -359,6 +361,14 @@ class DockerComposeLifecycleManagerTests {
 	}
 
 	@Test
+	void startGetsDockerComposeWithArguments() {
+		this.properties.getArguments().add("--project-name=test");
+		setUpRunningServices();
+		this.lifecycleManager.start();
+		assertThat(this.arguments).containsExactly("--project-name=test");
+	}
+
+	@Test
 	void startPublishesEvent() {
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
@@ -519,8 +529,10 @@ class DockerComposeLifecycleManagerTests {
 		}
 
 		@Override
-		protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles) {
+		protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles,
+				List<String> arguments) {
 			DockerComposeLifecycleManagerTests.this.activeProfiles = activeProfiles;
+			DockerComposeLifecycleManagerTests.this.arguments = arguments;
 			return DockerComposeLifecycleManagerTests.this.dockerCompose;
 		}
 

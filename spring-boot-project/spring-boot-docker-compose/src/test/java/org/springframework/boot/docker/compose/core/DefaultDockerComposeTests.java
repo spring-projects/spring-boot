@@ -106,6 +106,7 @@ class DefaultDockerComposeTests {
 		HostConfig hostConfig = null;
 		DockerCliInspectResponse inspectResponse = new DockerCliInspectResponse(id, config, networkSettings,
 				hostConfig);
+		willReturn(mock(DockerCompose.Options.class)).given(this.cli).getDockerComposeOptions();
 		willReturn(List.of(psResponse)).given(this.cli).run(new DockerCliCommand.ComposePs());
 		willReturn(List.of(inspectResponse)).given(this.cli).run(new DockerCliCommand.Inspect(List.of(id)));
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
@@ -132,6 +133,7 @@ class DefaultDockerComposeTests {
 				hostConfig);
 		willReturn(List.of(new DockerCliContextResponse("test", true, "https://192.168.1.1"))).given(this.cli)
 			.run(new DockerCliCommand.Context());
+		willReturn(mock(DockerCompose.Options.class)).given(this.cli).getDockerComposeOptions();
 		willReturn(List.of(psResponse)).given(this.cli).run(new DockerCliCommand.ComposePs());
 		willReturn(List.of(inspectResponse)).given(this.cli).run(new DockerCliCommand.Inspect(List.of(id)));
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, null);
@@ -148,6 +150,7 @@ class DefaultDockerComposeTests {
 		DockerCliComposePsResponse psResponse = new DockerCliComposePsResponse(shortId, "name", "redis", "running");
 		Config config = new Config("redis", Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
 		DockerCliInspectResponse inspectResponse = new DockerCliInspectResponse(longId, config, null, null);
+		willReturn(mock(DockerCompose.Options.class)).given(this.cli).getDockerComposeOptions();
 		willReturn(List.of(new DockerCliContextResponse("test", true, "https://192.168.1.1"))).given(this.cli)
 			.run(new DockerCliCommand.Context());
 		willReturn(List.of(psResponse)).given(this.cli).run(new DockerCliCommand.ComposePs());
