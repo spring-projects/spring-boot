@@ -97,7 +97,8 @@ class DefaultDockerCompose implements DockerCompose {
 		if (runningPsResponses.isEmpty()) {
 			return Collections.emptyList();
 		}
-		DockerComposeFile dockerComposeFile = this.cli.getDockerComposeFile();
+		DockerCompose.Options options = this.cli.getDockerComposeOptions();
+		DockerComposeFile dockerComposeFile = options.getComposeFile();
 		List<RunningService> result = new ArrayList<>();
 		Map<String, DockerCliInspectResponse> inspected = inspect(runningPsResponses);
 		for (DockerCliComposePsResponse psResponse : runningPsResponses) {
