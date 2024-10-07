@@ -7,11 +7,11 @@ inputs:
   ossrh-s01-staging-profile:
     description: 'Staging profile to use when syncing to Central'
     required: true
-  ossrh-s01-token-username:
-    description: 'Username for authentication with s01.oss.sonatype.org'
-    required: true
   ossrh-s01-token-password:
     description: 'Password for authentication with s01.oss.sonatype.org'
+    required: true
+  ossrh-s01-token-username:
+    description: 'Username for authentication with s01.oss.sonatype.org'
     required: true
   spring-boot-version:
     description: 'Version of Spring Boot that is being synced to Central'
