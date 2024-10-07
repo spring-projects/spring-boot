@@ -135,12 +135,12 @@ The following table summarizes the available parameters and their default values
 | `builder` +
 (`spring-boot.build-image.builder`)
 | Name of the builder image to use.
-| `paketobuildpacks/builder-jammy-tiny:latest`
+| `paketobuildpacks/builder-jammy-java-tiny:latest`
 
 | `trustBuilder` +
 (`spring-boot.build-image.trustBuilder`)
 | Whether to treat the builder as https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
-| `true` if the builder is one of `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
+| `true` if the builder is one of `paketobuildpacks/builder-jammy-java-tiny`, `paketobuildpacks/builder-noble-java-tiny`, `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
 
 | `imagePlatform` +
 (`spring-boot.build-image.imagePlatform`)

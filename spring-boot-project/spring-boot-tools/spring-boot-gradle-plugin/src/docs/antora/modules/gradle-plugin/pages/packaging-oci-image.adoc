@@ -119,12 +119,12 @@ The following table summarizes the available properties and their default values
 | `builder`
 | `--builder`
 | Name of the builder image to use.
-| `paketobuildpacks/builder-jammy-tiny:latest`
+| `paketobuildpacks/builder-jammy-java-tiny:latest`
 
 | `trustBuilder`
 | `--trustBuilder`
 | Whether to treat the builder as https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
-| `true` if the builder is one of `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
+| `true` if the builder is one of `paketobuildpacks/builder-jammy-java-tiny`, `paketobuildpacks/builder-noble-java-tiny`, `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
 
 | `imagePlatform`
 | `--imagePlatform`
@@ -251,7 +251,7 @@ NOTE: The plugin detects the target Java compatibility of the project using the 
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
 You can override this behavior as shown in the xref:packaging-oci-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
 
-NOTE: The default builder `paketobuildpacks/builder-jammy-tiny:latest` does not include a shell.
+NOTE: The default builder `paketobuildpacks/builder-jammy-java-tiny:latest` does not include a shell.
 Applications that require a shell to run a start script, as might be the case when the {url-gradle-docs-application-plugin}[`application` plugin] has been applied to generate a distribution zip archive, should override the `builder` configuration to use one that includes a shell, such as `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-full:latest`.
 
 
