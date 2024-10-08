@@ -33,14 +33,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
- * Tests for {@link OtlpPropertiesConfigAdapter}.
+ * Tests for {@link OtlpMetricsPropertiesConfigAdapter}.
  *
  * @author Eddú Meléndez
  * @author Moritz Halbritter
  */
-class OtlpPropertiesConfigAdapterTests {
+class OtlpMetricsPropertiesConfigAdapterTests {
 
-	private OtlpProperties properties;
+	private OtlpMetricsProperties properties;
 
 	private OpenTelemetryProperties openTelemetryProperties;
 
@@ -50,7 +50,7 @@ class OtlpPropertiesConfigAdapterTests {
 
 	@BeforeEach
 	void setUp() {
-		this.properties = new OtlpProperties();
+		this.properties = new OtlpMetricsProperties();
 		this.openTelemetryProperties = new OpenTelemetryProperties();
 		this.environment = new MockEnvironment();
 		this.connectionDetails = new PropertiesOtlpMetricsConnectionDetails(this.properties);
@@ -199,9 +199,9 @@ class OtlpPropertiesConfigAdapterTests {
 		assertThat(createAdapter().resourceAttributes()).doesNotContainKey("service.group");
 	}
 
-	private OtlpPropertiesConfigAdapter createAdapter() {
-		return new OtlpPropertiesConfigAdapter(this.properties, this.openTelemetryProperties, this.connectionDetails,
-				this.environment);
+	private OtlpMetricsPropertiesConfigAdapter createAdapter() {
+		return new OtlpMetricsPropertiesConfigAdapter(this.properties, this.openTelemetryProperties,
+				this.connectionDetails, this.environment);
 	}
 
 }

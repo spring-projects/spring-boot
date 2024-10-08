@@ -32,13 +32,14 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Adapter to convert {@link OtlpProperties} to an {@link OtlpConfig}.
+ * Adapter to convert {@link OtlpMetricsProperties} to an {@link OtlpConfig}.
  *
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  */
-class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<OtlpProperties> implements OtlpConfig {
+class OtlpMetricsPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<OtlpMetricsProperties>
+		implements OtlpConfig {
 
 	/**
 	 * Default value for application name if {@code spring.application.name} is not set.
@@ -51,8 +52,9 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 
 	private final Environment environment;
 
-	OtlpPropertiesConfigAdapter(OtlpProperties properties, OpenTelemetryProperties openTelemetryProperties,
-			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
+	OtlpMetricsPropertiesConfigAdapter(OtlpMetricsProperties properties,
+			OpenTelemetryProperties openTelemetryProperties, OtlpMetricsConnectionDetails connectionDetails,
+			Environment environment) {
 		super(properties);
 		this.connectionDetails = connectionDetails;
 		this.openTelemetryProperties = openTelemetryProperties;
@@ -71,7 +73,7 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 
 	@Override
 	public AggregationTemporality aggregationTemporality() {
-		return get(OtlpProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
+		return get(OtlpMetricsProperties::getAggregationTemporality, OtlpConfig.super::aggregationTemporality);
 	}
 
 	@Override
@@ -79,7 +81,7 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 	public Map<String, String> resourceAttributes() {
 		Map<String, String> resourceAttributes = this.openTelemetryProperties.getResourceAttributes();
 		Map<String, String> result = new HashMap<>((!CollectionUtils.isEmpty(resourceAttributes)) ? resourceAttributes
-				: get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
+				: get(OtlpMetricsProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes));
 		result.computeIfAbsent("service.name", (key) -> getApplicationName());
 		result.computeIfAbsent("service.group", (key) -> getApplicationGroup());
 		return Collections.unmodifiableMap(result);
@@ -96,27 +98,27 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 
 	@Override
 	public Map<String, String> headers() {
-		return get(OtlpProperties::getHeaders, OtlpConfig.super::headers);
+		return get(OtlpMetricsProperties::getHeaders, OtlpConfig.super::headers);
 	}
 
 	@Override
 	public HistogramFlavor histogramFlavor() {
-		return get(OtlpProperties::getHistogramFlavor, OtlpConfig.super::histogramFlavor);
+		return get(OtlpMetricsProperties::getHistogramFlavor, OtlpConfig.super::histogramFlavor);
 	}
 
 	@Override
 	public int maxScale() {
-		return get(OtlpProperties::getMaxScale, OtlpConfig.super::maxScale);
+		return get(OtlpMetricsProperties::getMaxScale, OtlpConfig.super::maxScale);
 	}
 
 	@Override
 	public int maxBucketCount() {
-		return get(OtlpProperties::getMaxBucketCount, OtlpConfig.super::maxBucketCount);
+		return get(OtlpMetricsProperties::getMaxBucketCount, OtlpConfig.super::maxBucketCount);
 	}
 
 	@Override
 	public TimeUnit baseTimeUnit() {
-		return get(OtlpProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
+		return get(OtlpMetricsProperties::getBaseTimeUnit, OtlpConfig.super::baseTimeUnit);
 	}
 
 }

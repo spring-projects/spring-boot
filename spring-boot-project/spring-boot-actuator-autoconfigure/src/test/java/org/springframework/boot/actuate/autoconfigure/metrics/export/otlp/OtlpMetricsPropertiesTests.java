@@ -24,15 +24,15 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OtlpProperties}.
+ * Tests for {@link OtlpMetricsProperties}.
  *
  * @author Eddú Meléndez
  */
-class OtlpPropertiesTests extends StepRegistryPropertiesTests {
+class OtlpMetricsPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
 	void defaultValuesAreConsistent() {
-		OtlpProperties properties = new OtlpProperties();
+		OtlpMetricsProperties properties = new OtlpMetricsProperties();
 		OtlpConfig config = OtlpConfig.DEFAULT;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getUrl()).isEqualTo(config.url());

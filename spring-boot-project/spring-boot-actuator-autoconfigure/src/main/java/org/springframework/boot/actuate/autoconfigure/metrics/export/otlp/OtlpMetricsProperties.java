@@ -35,10 +35,10 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @since 3.0.0
  */
 @ConfigurationProperties(prefix = "management.otlp.metrics.export")
-public class OtlpProperties extends StepRegistryProperties {
+public class OtlpMetricsProperties extends StepRegistryProperties {
 
 	/**
-	 * URI of the OLTP server.
+	 * URI of the OTLP server.
 	 */
 	private String url = "http://localhost:4318/v1/metrics";
 
