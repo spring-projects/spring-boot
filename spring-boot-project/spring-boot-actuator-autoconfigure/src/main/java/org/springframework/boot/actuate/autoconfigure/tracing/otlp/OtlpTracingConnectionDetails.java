@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**

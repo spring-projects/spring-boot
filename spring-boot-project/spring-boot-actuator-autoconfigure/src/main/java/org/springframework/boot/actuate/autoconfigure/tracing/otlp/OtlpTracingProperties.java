@@ -20,8 +20,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Compression;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -31,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @since 3.1.0
  */
 @ConfigurationProperties("management.otlp.tracing")
-public class OtlpProperties {
+public class OtlpTracingProperties {
 
 	/**
 	 * URL to the OTel collector's HTTP API.
@@ -45,6 +43,11 @@ public class OtlpProperties {
 	 * retries all must complete within one timeout period.
 	 */
 	private Duration timeout = Duration.ofSeconds(10);
+
+	/**
+	 * Connect timeout for the OTel collector connection.
+	 */
+	private Duration connectTimeout = Duration.ofSeconds(10);
 
 	/**
 	 * Transport used to send the spans.
@@ -77,6 +80,14 @@ public class OtlpProperties {
 		this.timeout = timeout;
 	}
 
+	public Duration getConnectTimeout() {
+		return this.connectTimeout;
+	}
+
+	public void setConnectTimeout(Duration connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
 	public Transport getTransport() {
 		return this.transport;
 	}
@@ -99,6 +110,20 @@ public class OtlpProperties {
 
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
+	}
+
+	public enum Compression {
+
+		/**
+		 * Gzip compression.
+		 */
+		GZIP,
+
+		/**
+		 * No compression.
+		 */
+		NONE
+
 	}
 
 }

@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp;
+package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
 /**
- * Algorithm used to compress OTLP data.
+ * Transport used to send OTLP data.
  *
  * @author Moritz Halbritter
  * @since 3.4.0
  */
-public enum Compression {
+public enum Transport {
 
 	/**
-	 * Gzip compression.
+	 * HTTP transport.
 	 */
-	GZIP,
+	HTTP,
 
 	/**
-	 * No compression.
+	 * gRPC transport.
 	 */
-	NONE
+	GRPC
 
 }
