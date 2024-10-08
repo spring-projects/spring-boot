@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.otlp;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Compression;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -44,6 +43,16 @@ public class OtlpLoggingProperties {
 	 * retries all must complete within one timeout period.
 	 */
 	private Duration timeout = Duration.ofSeconds(10);
+
+	/**
+	 * Connect timeout for the OTel collector connection.
+	 */
+	private Duration connectTimeout = Duration.ofSeconds(10);
+
+	/**
+	 * Transport used to send the spans.
+	 */
+	private Transport transport = Transport.HTTP;
 
 	/**
 	 * Method used to compress the payload.
@@ -71,6 +80,22 @@ public class OtlpLoggingProperties {
 		this.timeout = timeout;
 	}
 
+	public Duration getConnectTimeout() {
+		return this.connectTimeout;
+	}
+
+	public void setConnectTimeout(Duration connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public Transport getTransport() {
+		return this.transport;
+	}
+
+	public void setTransport(Transport transport) {
+		this.transport = transport;
+	}
+
 	public Compression getCompression() {
 		return this.compression;
 	}
@@ -81,6 +106,20 @@ public class OtlpLoggingProperties {
 
 	public Map<String, String> getHeaders() {
 		return this.headers;
+	}
+
+	public enum Compression {
+
+		/**
+		 * Gzip compression.
+		 */
+		GZIP,
+
+		/**
+		 * No compression.
+		 */
+		NONE
+
 	}
 
 }

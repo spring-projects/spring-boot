@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+package org.springframework.boot.actuate.autoconfigure.logging;
+
+import io.opentelemetry.sdk.logs.SdkLoggerProvider;
+import io.opentelemetry.sdk.logs.SdkLoggerProviderBuilder;
+
 /**
- * Auto-configuration for OpenTelemetry logging.
+ * Callback interface that can be used to customize the {@link SdkLoggerProviderBuilder}
+ * that is used to create the auto-configured {@link SdkLoggerProvider}.
+ *
+ * @author Toshiaki Maki
+ * @since 3.4.0
  */
-package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;
+@FunctionalInterface
+public interface SdkLoggerProviderBuilderCustomizer {
+
+	/**
+	 * Customize the given {@code builder}.
+	 * @param builder the builder to customize
+	 */
+	void customize(SdkLoggerProviderBuilder builder);
+
+}

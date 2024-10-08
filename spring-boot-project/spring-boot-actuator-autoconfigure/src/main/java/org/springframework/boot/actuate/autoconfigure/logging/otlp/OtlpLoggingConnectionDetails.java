@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.otlp;
+
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
- * Transport used to send OTLP data.
+ * Details required to establish a connection to an OpenTelemetry logging service.
  *
- * @author Moritz Halbritter
+ * @author Toshiaki Maki
  * @since 3.4.0
  */
-public enum Transport {
+public interface OtlpLoggingConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * HTTP transport.
+	 * Address to where logs will be published.
+	 * @param transport the transport to use
+	 * @return the address to where logs will be published
 	 */
-	HTTP,
-
-	/**
-	 * gRPC transport.
-	 */
-	GRPC
+	String getUrl(Transport transport);
 
 }

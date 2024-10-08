@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;
+package org.springframework.boot.actuate.autoconfigure.logging;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;

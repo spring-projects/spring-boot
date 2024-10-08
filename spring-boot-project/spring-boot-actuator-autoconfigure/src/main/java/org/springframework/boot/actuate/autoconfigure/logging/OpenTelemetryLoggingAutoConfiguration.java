@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry;
+package org.springframework.boot.actuate.autoconfigure.logging;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.sdk.logs.LogRecordProcessor;

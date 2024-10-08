@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.otlp;
 
 import java.util.Locale;
 
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporterBuilder;
+import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
+import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporterBuilder;
 
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 
 /**
  * Configurations imported by {@link OtlpLoggingAutoConfiguration}.
@@ -61,6 +63,9 @@ final class OtlpLoggingConfigurations {
 
 			@Override
 			public String getUrl(Transport transport) {
+				Assert.state(transport == this.properties.getTransport(),
+						"Requested transport %s doesn't match configured transport %s".formatted(transport,
+								this.properties.getTransport()));
 				return this.properties.getEndpoint();
 			}
 
@@ -69,18 +74,33 @@ final class OtlpLoggingConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean({ OtlpGrpcLogRecordExporter.class, OtlpHttpLogRecordExporter.class })
+	@ConditionalOnBean(OtlpLoggingConnectionDetails.class)
 	static class Exporters {
 
-		@ConditionalOnMissingBean(value = OtlpHttpLogRecordExporter.class,
-				type = "io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter")
-		@ConditionalOnBean(OtlpLoggingConnectionDetails.class)
 		@Bean
+		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "transport", havingValue = "http",
+				matchIfMissing = true)
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpLoggingConnectionDetails connectionDetails) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
 				.setEndpoint(connectionDetails.getUrl(Transport.HTTP))
-				.setCompression(properties.getCompression().name().toLowerCase(Locale.US))
-				.setTimeout(properties.getTimeout());
+				.setTimeout(properties.getTimeout())
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
+			properties.getHeaders().forEach(builder::addHeader);
+			return builder.build();
+		}
+
+		@Bean
+		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "transport", havingValue = "grpc")
+		OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter(OtlpLoggingProperties properties,
+				OtlpLoggingConnectionDetails connectionDetails) {
+			OtlpGrpcLogRecordExporterBuilder builder = OtlpGrpcLogRecordExporter.builder()
+				.setEndpoint(connectionDetails.getUrl(Transport.GRPC))
+				.setTimeout(properties.getTimeout())
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setCompression(properties.getCompression().name().toLowerCase(Locale.US));
 			properties.getHeaders().forEach(builder::addHeader);
 			return builder.build();
 		}

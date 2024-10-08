@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp;
+package org.springframework.boot.actuate.autoconfigure.logging.otlp;
 
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
@@ -24,8 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
+import org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConfigurations.ConnectionDetails.PropertiesOtlpLoggingConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -98,6 +97,40 @@ class OtlpLoggingAutoConfigurationTests {
 				.isEqualTo(HttpUrl.get("https://otel.example.com/v1/logs"));
 		});
 
+	}
+
+	@Test
+	void shouldUseHttpExporterIfTransportIsNotSet() {
+		this.contextRunner.withPropertyValues("management.otlp.logging.endpoint=http://localhost:4318/v1/logs")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class)
+					.hasSingleBean(LogRecordExporter.class);
+				assertThat(context).doesNotHaveBean(OtlpGrpcLogRecordExporter.class);
+			});
+	}
+
+	@Test
+	void shouldUseHttpExporterIfTransportIsSetToHttp() {
+		this.contextRunner
+			.withPropertyValues("management.otlp.logging.endpoint=http://localhost:4318/v1/logs",
+					"management.otlp.logging.transport=http")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpHttpLogRecordExporter.class)
+					.hasSingleBean(LogRecordExporter.class);
+				assertThat(context).doesNotHaveBean(OtlpGrpcLogRecordExporter.class);
+			});
+	}
+
+	@Test
+	void shouldUseGrpcExporterIfTransportIsSetToGrpc() {
+		this.contextRunner
+			.withPropertyValues("management.otlp.logging.endpoint=http://localhost:4318/v1/logs",
+					"management.otlp.logging.transport=grpc")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpGrpcLogRecordExporter.class)
+					.hasSingleBean(LogRecordExporter.class);
+				assertThat(context).doesNotHaveBean(OtlpHttpLogRecordExporter.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
