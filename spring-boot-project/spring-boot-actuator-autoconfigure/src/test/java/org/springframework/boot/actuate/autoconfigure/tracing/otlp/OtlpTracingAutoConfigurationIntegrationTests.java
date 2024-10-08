@@ -49,25 +49,25 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfigurationIntegrationTests.MockGrpcServer.RecordedGrpcRequest;
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfigurationIntegrationTests.MockGrpcServer.RecordedGrpcRequest;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link OtlpAutoConfiguration}.
+ * Integration tests for {@link OtlpTracingAutoConfiguration}.
  *
  * @author Jonatan Ivanov
  */
-class OtlpAutoConfigurationIntegrationTests {
+class OtlpTracingAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withPropertyValues("management.tracing.sampling.probability=1.0")
 		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
 				MicrometerTracingAutoConfiguration.class, OpenTelemetryAutoConfiguration.class,
 				org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration.class,
-				OtlpAutoConfiguration.class));
+				OtlpTracingAutoConfiguration.class));
 
 	private final MockWebServer mockWebServer = new MockWebServer();
 

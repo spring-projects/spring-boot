@@ -32,16 +32,16 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OtlpAutoConfiguration}.
+ * Tests for {@link OtlpTracingAutoConfiguration}.
  *
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  * @author Eddú Meléndez
  */
-class OtlpAutoConfigurationTests {
+class OtlpTracingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(OtlpAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(OtlpTracingAutoConfiguration.class));
 
 	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
 		.withPropertyValues("management.tracing.enabled=false");
