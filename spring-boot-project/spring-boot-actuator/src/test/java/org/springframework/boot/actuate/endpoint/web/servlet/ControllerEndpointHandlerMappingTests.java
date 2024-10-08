@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
@@ -95,7 +96,7 @@ class ControllerEndpointHandlerMappingTests {
 
 	private ControllerEndpointHandlerMapping createMapping(String prefix, ExposableControllerEndpoint... endpoints) {
 		ControllerEndpointHandlerMapping mapping = new ControllerEndpointHandlerMapping(new EndpointMapping(prefix),
-				Arrays.asList(endpoints), null);
+				Arrays.asList(endpoints), null, (endpointId, defaultAccess) -> Access.UNRESTRICTED);
 		mapping.setApplicationContext(this.context);
 		mapping.afterPropertiesSet();
 		return mapping;

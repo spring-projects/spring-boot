@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.FilteredEndpoint;
 import org.springframework.core.annotation.AliasFor;
@@ -50,8 +51,18 @@ public @interface WebEndpoint {
 	/**
 	 * If the endpoint should be enabled or disabled by default.
 	 * @return {@code true} if the endpoint is enabled by default
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	@AliasFor(annotation = Endpoint.class)
 	boolean enableByDefault() default true;
+
+	/**
+	 * Level of access to the endpoint that is permitted by default.
+	 * @return the default level of access
+	 * @since 3.4.0
+	 */
+	@AliasFor(annotation = Endpoint.class)
+	Access defaultAccess() default Access.UNRESTRICTED;
 
 }

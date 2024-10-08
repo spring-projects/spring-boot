@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -34,6 +35,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
  *
  * @author Andy Wilkinson
  */
+@TestPropertySource(properties = "management.endpoint.shutdown.access=unrestricted")
 class ShutdownEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test

@@ -271,7 +271,8 @@ class WebEndpointDiscovererTests {
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(context, parameterMapper, mediaTypes,
 					Collections.singletonList(endpointPathMapper),
 					(additionalPathsMapper != null) ? Collections.singletonList(additionalPathsMapper) : null,
-					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), Collections.emptyList());
+					Collections.singleton(new CachingOperationInvokerAdvisor(timeToLive)), Collections.emptyList(),
+					Collections.emptyList());
 			consumer.accept(discoverer);
 		}
 	}

@@ -236,6 +236,7 @@ class MockitoTestExecutionListenerIntegrationTests {
 	@Nested
 	@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 	@TestInstance(Lifecycle.PER_CLASS)
+	@Disabled("https://github.com/spring-projects/spring-framework/issues/33690")
 	class ConfigureMockInBeforeAll {
 
 		@Mock

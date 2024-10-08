@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
@@ -40,9 +41,9 @@ class DiscoveredWebEndpoint extends AbstractDiscoveredEndpoint<WebOperation> imp
 	private Collection<AdditionalPathsMapper> additionalPathsMappers;
 
 	DiscoveredWebEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
-			boolean enabledByDefault, Collection<WebOperation> operations,
+			Access defaultAccess, Collection<WebOperation> operations,
 			Collection<AdditionalPathsMapper> additionalPathsMappers) {
-		super(discoverer, endpointBean, id, enabledByDefault, operations);
+		super(discoverer, endpointBean, id, defaultAccess, operations);
 		this.rootPath = rootPath;
 		this.additionalPathsMappers = additionalPathsMappers;
 	}

@@ -69,7 +69,7 @@ class BaseConfiguration {
 				DefaultConversionService.getSharedInstance());
 		return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes,
 				pathMappers.orderedStream().toList(), Collections.emptyList(), Collections.emptyList(),
-				Collections.emptyList());
+				Collections.emptyList(), Collections.emptyList());
 	}
 
 	@Bean

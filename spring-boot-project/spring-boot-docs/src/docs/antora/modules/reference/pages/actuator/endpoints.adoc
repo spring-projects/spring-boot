@@ -5,8 +5,8 @@ Actuator endpoints let you monitor and interact with your application.
 Spring Boot includes a number of built-in endpoints and lets you add your own.
 For example, the `health` endpoint provides basic application health information.
 
-You can xref:actuator/endpoints.adoc#actuator.endpoints.enabling[enable or disable] each individual endpoint and xref:actuator/endpoints.adoc#actuator.endpoints.exposing[expose them (make them remotely accessible) over HTTP or JMX].
-An endpoint is considered to be available when it is both enabled and exposed.
+You can xref:actuator/endpoints.adoc#actuator.endpoints.controlling-access[control access] to each individual endpoint and xref:actuator/endpoints.adoc#actuator.endpoints.exposing[expose them (make them remotely accessible) over HTTP or JMX].
+An endpoint is considered to be available when access to it is permitted and it is exposed.
 The built-in endpoints are auto-configured only when they are available.
 Most applications choose exposure over HTTP, where the ID of the endpoint and a prefix of `/actuator` is mapped to a URL.
 For example, by default, the `health` endpoint is mapped to `/actuator/health`.
@@ -117,36 +117,50 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 
 
 
-[[actuator.endpoints.enabling]]
-== Enabling Endpoints
+[[actuator.endpoints.controlling-access]]
+== Controlling Access to Endpoints
 
-By default, all endpoints except for `shutdown` are enabled.
-To configure the enablement of an endpoint, use its `management.endpoint.<id>.enabled` property.
-The following example enables the `shutdown` endpoint:
+By default, access to all endpoints except for `shutdown` is unrestricted.
+To configure the permitted access to an endpoint, use its `management.endpoint.<id>.access` property.
+The following example allows unrestricted access to the `shutdown` endpoint:
 
 [configprops,yaml]
 ----
 management:
   endpoint:
     shutdown:
-      enabled: true
+      access: unrestricted
 ----
 
-If you prefer endpoint enablement to be opt-in rather than opt-out, set the configprop:management.endpoints.enabled-by-default[] property to `false` and use individual endpoint `enabled` properties to opt back in.
-The following example enables the `info` endpoint and disables all other endpoints:
+If you prefer access to be opt-in rather than opt-out, set the configprop:management.endpoints.access.default[] property to `disabled` and use individual endpoint `access` properties to opt back in.
+The following example allows read-only access to the `loggers` endpoint and disables all other endpoints:
 
 [configprops,yaml]
 ----
 management:
   endpoints:
-    enabled-by-default: false
+    access:
+      default: disabled
   endpoint:
-    info:
-      enabled: true
+    loggers:
+      access: read-only
 ----
 
-NOTE: Disabled endpoints are removed entirely from the application context.
+NOTE: Inaccessible endpoints are removed entirely from the application context.
 If you want to change only the technologies over which an endpoint is exposed, use the xref:actuator/endpoints.adoc#actuator.endpoints.exposing[`include` and `exclude` properties] instead.
+
+
+[[actuator.endpoints.controlling-access.limiting]]
+=== Limiting Access
+
+Application-wide endpoint access can be limited using the configprop:management.endpoints.access.max-permitted[] property.
+This property takes precedence over the default access or an individual endpoint's access level.
+Set it to `none` to make all endpoints inaccessible.
+Set it to `read-only` to only allow read access to endpoints.
+
+For `@Endpoint`, `@JmxEndpoint`, and `@WebEndpoint`, read access equates to the endpoint methods annotated with `@ReadEndpoint`.
+For `@ControllerEndpoint` and `@RestControllerEndpoint`, read access equates to request mappings that can handle `GET` and `HEAD` requests.
+For `@ServletEndpoint`, read access equates to `GET` and `HEAD` requests.
 
 
 

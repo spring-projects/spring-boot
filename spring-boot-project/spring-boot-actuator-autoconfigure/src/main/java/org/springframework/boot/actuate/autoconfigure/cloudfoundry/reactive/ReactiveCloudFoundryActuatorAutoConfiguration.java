@@ -113,7 +113,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
 			ApplicationContext applicationContext) {
 		CloudFoundryWebEndpointDiscoverer endpointDiscoverer = new CloudFoundryWebEndpointDiscoverer(applicationContext,
-				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList());
+				parameterMapper, endpointMediaTypes, null, Collections.emptyList(), Collections.emptyList(),
+				Collections.emptyList());
 		CloudFoundrySecurityInterceptor securityInterceptor = getSecurityInterceptor(webClientBuilder,
 				applicationContext.getEnvironment());
 		Collection<ExposableWebEndpoint> webEndpoints = endpointDiscoverer.getEndpoints();

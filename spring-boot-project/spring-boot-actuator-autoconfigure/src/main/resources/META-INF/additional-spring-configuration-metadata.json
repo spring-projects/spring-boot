@@ -58,9 +58,23 @@
       "defaultValue": true
     },
     {
+      "name": "management.endpoints.access.default",
+      "type": "java.lang.Boolean",
+      "description": "Default access level for all endpoints."
+    },
+    {
+      "name": "management.endpoints.access.max-permitted",
+      "description": "The maximum level of endpoint access that is permitted. Caps an endpoint's individual access level (management.endpoint.<id>.access) and the default access (management.endpoints.access.default).'",
+      "defaultValue": "unrestricted"
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable or disable all endpoints by default."
+      "description": "Whether to enable or disable all endpoints by default.",
+      "deprecation": {
+        "replacement": "management.endpoints.access.default",
+        "since": "3.4.0"
+      }
     },
     {
       "name": "management.endpoints.jackson.isolated-object-mapper",
