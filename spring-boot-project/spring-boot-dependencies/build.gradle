@@ -1661,7 +1661,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Retry", "2.0.9") {
+	library("Spring Retry", "2.0.10-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.retry") {
 			modules = [
