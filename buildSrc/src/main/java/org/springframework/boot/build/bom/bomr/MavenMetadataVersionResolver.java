@@ -43,6 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * A {@link VersionResolver} that examines {@code maven-metadata.xml} to determine the
@@ -76,7 +77,10 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 
 	private Set<String> resolveVersions(String groupId, String artifactId, MavenArtifactRepository repository) {
 		Set<String> versions = new HashSet<>();
-		URI url = repository.getUrl().resolve(groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
+		URI url = UriComponentsBuilder.fromUri(repository.getUrl())
+			.pathSegment(groupId.replace('.', '/'), artifactId, "maven-metadata.xml")
+			.build()
+			.toUri();
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			String username = repository.getCredentials().getUsername();
