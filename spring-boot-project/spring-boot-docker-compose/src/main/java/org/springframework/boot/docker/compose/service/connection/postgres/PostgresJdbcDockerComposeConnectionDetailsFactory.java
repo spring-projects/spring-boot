@@ -87,17 +87,38 @@ class PostgresJdbcDockerComposeConnectionDetailsFactory
 		}
 
 		private static String getJdbcUrl(RunningService service, String database, Environment environment) {
-			PostgresJdbcUrl jdbcUrl = new PostgresJdbcUrl(jdbcUrlBuilder.build(service, database));
-			addApplicationNameIfNecessary(jdbcUrl, environment);
-			return jdbcUrl.toString();
+			String jdbcUrl = jdbcUrlBuilder.build(service, database);
+			return addApplicationNameIfNecessary(jdbcUrl, environment);
 		}
 
-		private static void addApplicationNameIfNecessary(PostgresJdbcUrl jdbcUrl, Environment environment) {
-			String applicationName = environment.getProperty("spring.application.name");
-			if (StringUtils.hasText(applicationName)) {
-				jdbcUrl.addParameterIfDoesNotExist(APPLICATION_NAME,
-						URLEncoder.encode(applicationName, StandardCharsets.UTF_8));
+		private static String addApplicationNameIfNecessary(String jdbcUrl, Environment environment) {
+			if (hasParameter(jdbcUrl, APPLICATION_NAME)) {
+				return jdbcUrl;
 			}
+			String applicationName = environment.getProperty("spring.application.name");
+			if (!StringUtils.hasText(applicationName)) {
+				return jdbcUrl;
+			}
+			return addParameter(jdbcUrl, APPLICATION_NAME, applicationName);
+		}
+
+		private static String addParameter(String jdbcUrl, String name, String value) {
+			StringBuilder jdbcUrlBuilder = new StringBuilder(jdbcUrl);
+			if (!jdbcUrl.contains("?")) {
+				jdbcUrlBuilder.append('?');
+			}
+			else if (!jdbcUrl.endsWith("&")) {
+				jdbcUrlBuilder.append('&');
+			}
+			return jdbcUrlBuilder.append(name)
+				.append('=')
+				.append(URLEncoder.encode(value, StandardCharsets.UTF_8))
+				.toString();
+		}
+
+		private static boolean hasParameter(String jdbcUrl, String parameterName) {
+			return jdbcUrl.contains("?%s=".formatted(parameterName))
+					|| jdbcUrl.contains("&%s=".formatted(parameterName));
 		}
 
 	}
