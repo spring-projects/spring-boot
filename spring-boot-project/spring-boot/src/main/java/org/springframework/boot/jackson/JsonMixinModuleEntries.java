@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -89,7 +90,10 @@ public final class JsonMixinModuleEntries {
 		MergedAnnotation<JsonMixin> annotation = MergedAnnotations
 			.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 			.get(JsonMixin.class);
-		for (Class<?> targetType : annotation.getClassArray("type")) {
+		Class<?>[] types = annotation.getClassArray("type");
+		Assert.notEmpty(types,
+				"@JsonMixin annotation on class '" + mixinClass.getName() + "' does not specify any types");
+		for (Class<?> targetType : types) {
 			builder.and(targetType, mixinClass);
 		}
 
