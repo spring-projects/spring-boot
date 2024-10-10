@@ -16,12 +16,6 @@
 
 package org.springframework.boot.json;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,15 +25,10 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.json.JsonWriter.PairExtractor;
-import org.springframework.boot.json.JsonWriter.WritableJson;
-import org.springframework.core.io.FileSystemResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -51,9 +40,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class JsonWriterTests {
 
 	private static final Person PERSON = new Person("Spring", "Boot", 10);
-
-	@TempDir
-	File temp;
 
 	@Test
 	void writeToStringWritesToString() {
@@ -464,119 +450,6 @@ class JsonWriterTests {
 					.usingPairs(Map::forEach)
 					.usingMembers((mapMembers) -> mapMembers.add("test"))))
 				.withMessage("Members cannot be declared when using pairs");
-		}
-
-	}
-
-	@Nested
-	class WritableJsonTests {
-
-		@Test
-		void toJsonStringReturnsString() {
-			WritableJson writable = (out) -> out.append("{}");
-			assertThat(writable.toJsonString()).isEqualTo("{}");
-		}
-
-		@Test
-		void toJsonStringWhenIOExceptionIsThrownThrowsUncheckedIOException() {
-			WritableJson writable = (out) -> {
-				throw new IOException("bad");
-			};
-			assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(() -> writable.toJsonString())
-				.havingCause()
-				.withMessage("bad");
-		}
-
-		@Test
-		void toByteArrayReturnsByteArray() {
-			WritableJson writable = (out) -> out.append("{}");
-			assertThat(writable.toByteArray()).isEqualTo("{}".getBytes());
-		}
-
-		@Test
-		void toResourceWritesJson() throws Exception {
-			File file = new File(JsonWriterTests.this.temp, "out.json");
-			WritableJson writable = (out) -> out.append("{}");
-			writable.toResource(new FileSystemResource(file));
-			assertThat(file).content().isEqualTo("{}");
-		}
-
-		@Test
-		void toResourceWithCharsetWritesJson() throws Exception {
-			File file = new File(JsonWriterTests.this.temp, "out.json");
-			WritableJson writable = (out) -> out.append("{}");
-			writable.toResource(new FileSystemResource(file), StandardCharsets.ISO_8859_1);
-			assertThat(file).content(StandardCharsets.ISO_8859_1).isEqualTo("{}");
-		}
-
-		@Test
-		void toResourceWithCharsetWhenOutIsNullThrowsException() {
-			WritableJson writable = (out) -> out.append("{}");
-			assertThatIllegalArgumentException().isThrownBy(() -> writable.toResource(null, StandardCharsets.UTF_8))
-				.withMessage("'out' must not be null");
-		}
-
-		@Test
-		void toResourceWithCharsetWhenCharsetIsNullThrowsException() {
-			File file = new File(JsonWriterTests.this.temp, "out.json");
-			WritableJson writable = (out) -> out.append("{}");
-			assertThatIllegalArgumentException()
-				.isThrownBy(() -> writable.toResource(new FileSystemResource(file), null))
-				.withMessage("'charset' must not be null");
-		}
-
-		@Test
-		void toOutputStreamWritesJson() throws Exception {
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			WritableJson writable = (out) -> out.append("{}");
-			writable.toOutputStream(outputStream);
-			assertThat(outputStream.toString(StandardCharsets.UTF_8)).isEqualTo("{}");
-		}
-
-		@Test
-		void toOutputStreamWithCharsetWritesJson() throws Exception {
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			WritableJson writable = (out) -> out.append("{}");
-			writable.toOutputStream(outputStream, StandardCharsets.ISO_8859_1);
-			assertThat(outputStream.toString(StandardCharsets.ISO_8859_1)).isEqualTo("{}");
-		}
-
-		@Test
-		void toOutputStreamWithCharsetWhenOutIsNullThrowsException() {
-			WritableJson writable = (out) -> out.append("{}");
-			assertThatIllegalArgumentException().isThrownBy(() -> writable.toOutputStream(null, StandardCharsets.UTF_8))
-				.withMessage("'out' must not be null");
-		}
-
-		@Test
-		void toOutputStreamWithCharsetWhenCharsetIsNullThrowsException() {
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			WritableJson writable = (out) -> out.append("{}");
-			assertThatIllegalArgumentException().isThrownBy(() -> writable.toOutputStream(outputStream, null))
-				.withMessage("'charset' must not be null");
-		}
-
-		//
-
-		@Test
-		void toWriterWritesJson() throws Exception {
-			StringWriter writer = new StringWriter();
-			WritableJson writable = (out) -> out.append("{}");
-			writable.toWriter(writer);
-			assertThat(writer).hasToString("{}");
-		}
-
-		@Test
-		void toWriterWhenWriterIsNullThrowsException() {
-			WritableJson writable = (out) -> out.append("{}");
-			assertThatIllegalArgumentException().isThrownBy(() -> writable.toWriter(null))
-				.withMessage("'out' must not be null");
-		}
-
-		@Test
-		void ofReturnsInstanceWithSensibleToString() {
-			WritableJson writable = WritableJson.of((out) -> out.append("{}"));
-			assertThat(writable).hasToString("{}");
 		}
 
 	}

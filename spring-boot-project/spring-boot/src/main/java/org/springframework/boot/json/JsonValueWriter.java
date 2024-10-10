@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.springframework.boot.json.JsonWriter.WritableJson;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.function.ThrowingConsumer;

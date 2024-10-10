@@ -33,7 +33,7 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
-import org.springframework.boot.json.JsonWriter.WritableJson;
+import org.springframework.boot.json.WritableJson;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatService;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;

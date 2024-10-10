@@ -16,14 +16,7 @@
 
 package org.springframework.boot.json;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +30,6 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.json.JsonValueWriter.Series;
 import org.springframework.boot.json.JsonWriter.Member.Extractor;
-import org.springframework.core.io.WritableResource;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -157,148 +149,6 @@ public interface JsonWriter<T> {
 	static <T> JsonWriter<T> of(Consumer<Members<T>> members) {
 		Members<T> initializedMembers = new Members<>(members, false); // Don't inline
 		return (instance, out) -> initializedMembers.write(instance, new JsonValueWriter(out));
-	}
-
-	/**
-	 * JSON content that can be written out.
-	 */
-	@FunctionalInterface
-	interface WritableJson {
-
-		/**
-		 * Write the JSON to the provided {@link Appendable}.
-		 * @param out the {@link Appendable} to receive the JSON
-		 * @throws IOException on IO error
-		 */
-		void to(Appendable out) throws IOException;
-
-		/**
-		 * Write the JSON to a {@link String}.
-		 * @return the JSON string
-		 */
-		default String toJsonString() {
-			try {
-				StringBuilder stringBuilder = new StringBuilder();
-				to(stringBuilder);
-				return stringBuilder.toString();
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
-		}
-
-		/**
-		 * Write the JSON to a UTF-8 encoded byte array.
-		 * @return the JSON bytes
-		 */
-		default byte[] toByteArray() {
-			return toByteArray(StandardCharsets.UTF_8);
-		}
-
-		/**
-		 * Write the JSON to a byte array.
-		 * @param charset the charset
-		 * @return the JSON bytes
-		 */
-		default byte[] toByteArray(Charset charset) {
-			Assert.notNull(charset, "'charset' must not be null");
-			try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-				toWriter(new OutputStreamWriter(out, charset));
-				return out.toByteArray();
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
-		}
-
-		/**
-		 * Write the JSON to the provided {@link WritableResource} using
-		 * {@link StandardCharsets#UTF_8 UTF8} encoding.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @throws IOException on IO error
-		 */
-		default void toResource(WritableResource out) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			try (OutputStream outputStream = out.getOutputStream()) {
-				toOutputStream(outputStream);
-			}
-		}
-
-		/**
-		 * Write the JSON to the provided {@link WritableResource} using the given
-		 * {@link Charset}.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @param charset the charset to use
-		 * @throws IOException on IO error
-		 */
-		default void toResource(WritableResource out, Charset charset) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			Assert.notNull(charset, "'charset' must not be null");
-			try (OutputStream outputStream = out.getOutputStream()) {
-				toOutputStream(outputStream, charset);
-			}
-		}
-
-		/**
-		 * Write the JSON to the provided {@link OutputStream} using
-		 * {@link StandardCharsets#UTF_8 UTF8} encoding. The output stream will not be
-		 * closed.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @throws IOException on IO error
-		 * @see #toOutputStream(OutputStream, Charset)
-		 */
-		default void toOutputStream(OutputStream out) throws IOException {
-			toOutputStream(out, StandardCharsets.UTF_8);
-		}
-
-		/**
-		 * Write the JSON to the provided {@link OutputStream} using the given
-		 * {@link Charset}. The output stream will not be closed.
-		 * @param out the {@link OutputStream} to receive the JSON
-		 * @param charset the charset to use
-		 * @throws IOException on IO error
-		 */
-		default void toOutputStream(OutputStream out, Charset charset) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			Assert.notNull(charset, "'charset' must not be null");
-			toWriter(new OutputStreamWriter(out, charset));
-		}
-
-		/**
-		 * Write the JSON to the provided {@link Writer}. The writer will be flushed but
-		 * not closed.
-		 * @param out the {@link Writer} to receive the JSON
-		 * @throws IOException on IO error
-		 * @see #toOutputStream(OutputStream, Charset)
-		 */
-		default void toWriter(Writer out) throws IOException {
-			Assert.notNull(out, "'out' must not be null");
-			to(out);
-			out.flush();
-		}
-
-		/**
-		 * Factory method used to create a {@link WritableJson} with a sensible
-		 * {@link Object#toString()} that delegate to {@link WritableJson#toJsonString()}.
-		 * @param writableJson the source {@link WritableJson}
-		 * @return a new {@link WritableJson} with a sensible {@link Object#toString()}.
-		 */
-		static WritableJson of(WritableJson writableJson) {
-			return new WritableJson() {
-
-				@Override
-				public void to(Appendable out) throws IOException {
-					writableJson.to(out);
-				}
-
-				@Override
-				public String toString() {
-					return toJsonString();
-				}
-
-			};
-		}
-
 	}
 
 	/**
