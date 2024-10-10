@@ -202,6 +202,9 @@ class JsonWriterTests {
 		return (instance, out) -> out.append(json.formatted(instance));
 	}
 
+	/**
+	 * Tests for {@link JsonWriter#standard()}.
+	 */
 	@Nested
 	class StandardWriterTests {
 
@@ -230,8 +233,11 @@ class JsonWriterTests {
 
 	}
 
+	/**
+	 * Tests for {@link Members} and {@link Member}.
+	 */
 	@Nested
-	class MemberTest {
+	class MembersTest {
 
 		@Test
 		void whenNotNull() {
@@ -396,12 +402,12 @@ class JsonWriterTests {
 		@Test
 		void usingMembers() {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
-			JsonWriter<Couple> writer = JsonWriter.of((member) -> {
-				member.add("personOne", Couple::person1).usingMembers((personMembers) -> {
+			JsonWriter<Couple> writer = JsonWriter.of((members) -> {
+				members.add("personOne", Couple::person1).usingMembers((personMembers) -> {
 					personMembers.add("fn", Person::firstName);
 					personMembers.add("ln", Person::lastName);
 				});
-				member.add("personTwo", Couple::person2).usingMembers((personMembers) -> {
+				members.add("personTwo", Couple::person2).usingMembers((personMembers) -> {
 					personMembers.add("details", Person::toString);
 					personMembers.add("eldest", true);
 				});
@@ -414,11 +420,11 @@ class JsonWriterTests {
 		@Test
 		void usingMembersWithoutName() {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
-			JsonWriter<Couple> writer = JsonWriter.of((member) -> {
-				member.add("version", 1);
-				member.from(Couple::person1)
+			JsonWriter<Couple> writer = JsonWriter.of((members) -> {
+				members.add("version", 1);
+				members.from(Couple::person1)
 					.usingMembers((personMembers) -> personMembers.add("one", Person::toString));
-				member.from(Couple::person2)
+				members.from(Couple::person2)
 					.usingMembers((personMembers) -> personMembers.add("two", Person::toString));
 			});
 			assertThat(writer.writeToString(couple)).isEqualTo("""
@@ -428,7 +434,7 @@ class JsonWriterTests {
 		@Test
 		void usingMembersWithoutNameInMember() {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
-			JsonWriter<Couple> writer = JsonWriter.of((member) -> member.add("only", Couple::person2)
+			JsonWriter<Couple> writer = JsonWriter.of((members) -> members.add("only", Couple::person2)
 				.usingMembers((personMembers) -> personMembers.from(Person::toString)));
 			assertThat(writer.writeToString(couple)).isEqualTo("""
 					{"only":"Spring Framework (20)"}""");
@@ -437,7 +443,7 @@ class JsonWriterTests {
 		@Test
 		void usingMemebersWithoutNameAtAll() {
 			Couple couple = new Couple(PERSON, new Person("Spring", "Framework", 20));
-			JsonWriter<Couple> writer = JsonWriter.of((member) -> member.from(Couple::person2)
+			JsonWriter<Couple> writer = JsonWriter.of((members) -> members.from(Couple::person2)
 				.usingMembers((personMembers) -> personMembers.from(Person::toString)));
 			assertThat(writer.writeToString(couple)).isEqualTo(quoted("Spring Framework (20)"));
 		}
