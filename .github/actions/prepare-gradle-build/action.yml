@@ -1,6 +1,10 @@
 name: Prepare Gradle Build
 description: 'Prepares a Gradle build. Sets up Java and Gradle and configures Gradle properties'
 inputs:
+  cache-read-only:
+    description: 'Whether Gradle''s cache should be read only'
+    required: false
+    default: 'true'
   develocity-access-key:
     description: 'Access key for authentication with ge.spring.io'
     required: false
@@ -38,7 +42,7 @@ runs:
     - name: Set Up Gradle
       uses: gradle/actions/setup-gradle@d156388eb19639ec20ade50009f3d199ce1e2808 # v4.1.0
       with:
-        cache-read-only: false
+        cache-read-only: ${{ inputs.cache-read-only }}
         develocity-access-key: ${{ inputs.develocity-access-key }}
     - name: Configure Gradle Properties
       shell: bash
