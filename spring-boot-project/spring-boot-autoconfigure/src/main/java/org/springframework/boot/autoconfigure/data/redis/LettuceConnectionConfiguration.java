@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
@@ -163,10 +164,25 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
+			String readFrom = lettuce.getReadFrom();
+			if (readFrom != null) {
+				builder.readFrom(getReadFrom(readFrom));
+			}
 		}
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
 		}
+	}
+
+	private static ReadFrom getReadFrom(String readFrom) {
+		int index = readFrom.indexOf(':');
+		if (index == -1) {
+			String name = readFrom.replaceAll("-", "");
+			return ReadFrom.valueOf(name);
+		}
+		String name = readFrom.substring(0, index).replaceAll("-", "");
+		String value = readFrom.substring(index + 1);
+		return ReadFrom.valueOf(name + ":" + value);
 	}
 
 	private ClientOptions createClientOptions(
