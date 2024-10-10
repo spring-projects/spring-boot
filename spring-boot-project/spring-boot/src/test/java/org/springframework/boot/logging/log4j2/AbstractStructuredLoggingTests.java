@@ -27,6 +27,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,11 +40,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
+@ExtendWith(MockitoExtension.class)
 abstract class AbstractStructuredLoggingTests {
 
 	static final Instant EVENT_TIME = Instant.ofEpochMilli(1719910193000L);
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	@Mock
+	StructureLoggingJsonMembersCustomizer<?> customizer;
 
 	protected Map<String, Object> map(Object... values) {
 		assertThat(values.length).isEven();

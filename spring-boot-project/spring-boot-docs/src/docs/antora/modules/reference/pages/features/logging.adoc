@@ -572,8 +572,50 @@ If you add https://www.slf4j.org/api/org/slf4j/Marker.html[markers], these will 
 
 
 
-[[features.logging.structured.custom-format]]
-=== Custom Structured Logging formats
+[[features.logging.structured.customizing-json]]
+=== Customizing Structured Logging JSON
+
+Spring Boot attempts to pick sensible defaults for the JSON names and values output for structured logging.
+Sometimes, however, you may want to make small adjustments to the JSON for your own needs.
+For example, it's possible that you might want to change some of the names to match the expectations of your log ingestion system.
+You might also want to filter out certain members since you don't find them useful.
+
+The following properties allow you to change the way that structured logging JSON is written:
+
+|===
+| Property | Description
+
+| configprop:logging.structured.json.include[] & configprop:logging.structured.json.exclude[]
+| Filters specific paths from the JSON
+
+| configprop:logging.structured.json.rename[]
+| Renames a specific member in the JSON
+
+| configprop:logging.structured.json.add[]
+| Adds additional members to the JSON
+|===
+
+For example, the following will exclude `log.level`, rename `process.id` to `procid` and add a fixed `corpname` field:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      exclude: log.level
+      rename:
+        process.id: procid
+      add:
+        corpname: mycorp
+----
+
+TIP: For more advanced customizations, you can write your own class that implements the javadoc:org.springframework.boot.logging.structured.StructuredLogFormatter[] interface and declare it using the configprop:logging.structured.json.customizer[] property.
+You can also declare implementations by listing them in a `META-INF/spring.factories` file.
+
+
+
+[[features.logging.structured.other-formats]]
+=== Supporting Other Structured Logging Formats
 
 The structured logging support in Spring Boot is extensible, allowing you to define your own custom format.
 To do this, implement the `StructuredLoggingFormatter` interface. The generic type argument has to be `ILoggingEvent` when using Logback and `LogEvent` when using Log4j2 (that means your implementation is tied to a specific logging system).

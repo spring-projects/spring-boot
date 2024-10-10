@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link ElasticCommonSchemaStructuredLogFormatter}.
@@ -47,7 +49,13 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		environment.setProperty("logging.structured.ecs.service.environment", "test");
 		environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
 		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(environment, getThrowableProxyConverter());
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(environment, getThrowableProxyConverter(),
+				this.customizer);
+	}
+
+	@Test
+	void callsCustomizer() {
+		then(this.customizer).should().customize(any());
 	}
 
 	@Test

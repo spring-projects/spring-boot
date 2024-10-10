@@ -30,9 +30,11 @@ import org.apache.logging.log4j.core.config.plugins.PluginLoggerContext;
 import org.apache.logging.log4j.core.layout.AbstractStringLayout;
 
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
+import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
+import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
@@ -102,14 +104,29 @@ final class StructuredLogLayout extends AbstractStringLayout {
 		}
 
 		private void addCommonFormatters(CommonFormatters<LogEvent> commonFormatters) {
-			commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
-					(instantiator) -> new ElasticCommonSchemaStructuredLogFormatter(
-							instantiator.getArg(Environment.class)));
-			commonFormatters.add(CommonStructuredLogFormat.GRAYLOG_EXTENDED_LOG_FORMAT,
-					(instantiator) -> new GraylogExtendedLogFormatStructuredLogFormatter(
-							instantiator.getArg(Environment.class)));
-			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH,
-					(instantiator) -> new LogstashStructuredLogFormatter());
+			commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA, this::createEcsFormatter);
+			commonFormatters.add(CommonStructuredLogFormat.GRAYLOG_EXTENDED_LOG_FORMAT, this::createGraylogFormatter);
+			commonFormatters.add(CommonStructuredLogFormat.LOGSTASH, this::createLogstashFormatter);
+		}
+
+		private ElasticCommonSchemaStructuredLogFormatter createEcsFormatter(Instantiator<?> instantiator) {
+			Environment environment = instantiator.getArg(Environment.class);
+			StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
+				.getArg(StructureLoggingJsonMembersCustomizer.class);
+			return new ElasticCommonSchemaStructuredLogFormatter(environment, jsonMembersCustomizer);
+		}
+
+		private GraylogExtendedLogFormatStructuredLogFormatter createGraylogFormatter(Instantiator<?> instantiator) {
+			Environment environment = instantiator.getArg(Environment.class);
+			StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
+				.getArg(StructureLoggingJsonMembersCustomizer.class);
+			return new GraylogExtendedLogFormatStructuredLogFormatter(environment, jsonMembersCustomizer);
+		}
+
+		private LogstashStructuredLogFormatter createLogstashFormatter(Instantiator<?> instantiator) {
+			StructureLoggingJsonMembersCustomizer<?> jsonMembersCustomizer = instantiator
+				.getArg(StructureLoggingJsonMembersCustomizer.class);
+			return new LogstashStructuredLogFormatter(jsonMembersCustomizer);
 		}
 
 	}

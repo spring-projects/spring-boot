@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.logging.structured.customformat;
+package smoketest.structuredlogging;
 
-import ch.qos.logback.classic.spi.ILoggingEvent;
+import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.json.JsonWriter.ValueProcessor;
+import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 
-import org.springframework.boot.logging.structured.StructuredLogFormatter;
-
-class MyCustomFormat implements StructuredLogFormatter<ILoggingEvent> {
+public class SampleJsonMembersCustomizer implements StructureLoggingJsonMembersCustomizer<Object> {
 
 	@Override
-	public String format(ILoggingEvent event) {
-		return "time=" + event.getInstant() + " level=" + event.getLevel() + " message=" + event.getMessage() + "\n";
+	public void customize(Members<Object> members) {
+		members.applyingValueProcessor(
+				ValueProcessor.of(String.class, "!!%s!!"::formatted).whenHasUnescapedPath("process.thread.name"));
 	}
 
 }

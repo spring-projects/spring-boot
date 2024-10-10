@@ -31,9 +31,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 import org.slf4j.helpers.BasicMarkerFactory;
+
+import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Moritz Halbritter
  */
+@ExtendWith(MockitoExtension.class)
 abstract class AbstractStructuredLoggingTests {
 
 	static final Instant EVENT_TIME = Instant.ofEpochSecond(1719910193L);
@@ -51,6 +57,9 @@ abstract class AbstractStructuredLoggingTests {
 	private ThrowableProxyConverter throwableProxyConverter;
 
 	private BasicMarkerFactory markerFactory;
+
+	@Mock
+	StructureLoggingJsonMembersCustomizer<?> customizer;
 
 	@BeforeEach
 	void setUp() {

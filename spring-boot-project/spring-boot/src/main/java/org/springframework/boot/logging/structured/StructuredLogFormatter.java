@@ -28,6 +28,7 @@ import org.springframework.core.env.Environment;
  * Implementing classes can declare the following parameter types in the constructor:
  * <ul>
  * <li>{@link Environment}</li>
+ * <li>{@link StructureLoggingJsonMembersCustomizer}</li>
  * </ul>
  * When using Logback, implementing classes can also use the following parameter types in
  * the constructor:

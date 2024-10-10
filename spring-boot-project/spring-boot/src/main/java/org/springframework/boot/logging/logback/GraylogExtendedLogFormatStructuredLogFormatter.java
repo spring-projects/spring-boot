@@ -37,6 +37,7 @@ import org.springframework.boot.json.WritableJson;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
@@ -69,8 +70,8 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	private static final Set<String> ADDITIONAL_FIELD_ILLEGAL_KEYS = Set.of("id", "_id");
 
 	GraylogExtendedLogFormatStructuredLogFormatter(Environment environment,
-			ThrowableProxyConverter throwableProxyConverter) {
-		super((members) -> jsonMembers(environment, throwableProxyConverter, members));
+			ThrowableProxyConverter throwableProxyConverter, StructureLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(environment, throwableProxyConverter, members), customizer);
 	}
 
 	private static void jsonMembers(Environment environment, ThrowableProxyConverter throwableProxyConverter,

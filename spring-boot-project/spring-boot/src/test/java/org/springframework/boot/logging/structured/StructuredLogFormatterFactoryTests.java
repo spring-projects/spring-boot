@@ -16,15 +16,23 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.json.JsonWriter.ValueProcessor;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link StructuredLogFormatterFactory}.
@@ -95,6 +103,19 @@ class StructuredLogFormatterFactoryTests {
 		assertThat(formatter.getCustom()).hasToString("Hello");
 	}
 
+	@Test
+	void getInjectCustomizers() {
+		this.environment.setProperty("logging.structured.json.rename.spring", "test");
+		SpringFactoriesLoader factoriesLoader = mock(SpringFactoriesLoader.class);
+		StructureLoggingJsonMembersCustomizer<?> customizer = (members) -> members
+			.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+		given(factoriesLoader.load(any(), any(ArgumentResolver.class))).willReturn(List.of(customizer));
+		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(factoriesLoader,
+				LogEvent.class, this.environment, this::addAvailableParameters, this::addCommonFormatters);
+		CutomizedFormatter formatter = (CutomizedFormatter) factory.get(CutomizedFormatter.class.getName());
+		assertThat(formatter.format(new LogEvent())).contains("\"test\":\"BOOT\"");
+	}
+
 	static class LogEvent {
 
 	}
@@ -142,6 +163,14 @@ class StructuredLogFormatterFactoryTests {
 		@Override
 		public String format(DifferentLogEvent event) {
 			return "";
+		}
+
+	}
+
+	static class CutomizedFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
+
+		CutomizedFormatter(StructureLoggingJsonMembersCustomizer<?> customizer) {
+			super((members) -> members.add("spring", "boot"), customizer);
 		}
 
 	}

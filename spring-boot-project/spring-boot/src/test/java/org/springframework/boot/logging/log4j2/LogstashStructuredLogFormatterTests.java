@@ -30,6 +30,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link LogstashStructuredLogFormatter}.
@@ -42,7 +44,12 @@ class LogstashStructuredLogFormatterTests extends AbstractStructuredLoggingTests
 
 	@BeforeEach
 	void setUp() {
-		this.formatter = new LogstashStructuredLogFormatter();
+		this.formatter = new LogstashStructuredLogFormatter(this.customizer);
+	}
+
+	@Test
+	void callsCustomizer() {
+		then(this.customizer).should().customize(any());
 	}
 
 	@Test
