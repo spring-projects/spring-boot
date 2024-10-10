@@ -17,8 +17,10 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.time.Duration;
+import java.util.regex.Pattern;
 
 import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
@@ -51,6 +53,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -163,6 +166,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
+			RedisProperties.Lettuce.ReadFrom readFrom = lettuce.getReadFrom();
+			if (readFrom.getType() != null) {
+				builder.readFrom(getReadFrom(readFrom));
+			}
 		}
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
@@ -216,6 +223,24 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (urlUsesSsl()) {
 			builder.useSsl();
 		}
+	}
+
+	private static ReadFrom getReadFrom(RedisProperties.Lettuce.ReadFrom readFrom) {
+		return switch (readFrom.getType()) {
+			case ANY -> ReadFrom.ANY;
+			case ANY_REPLICA -> ReadFrom.ANY_REPLICA;
+			case LOWEST_LATENCY -> ReadFrom.LOWEST_LATENCY;
+			case REGEX -> {
+				Assert.notNull(readFrom.getPattern(),
+						"Regex pattern must be present when type is '" + readFrom.getType() + "'");
+				yield ReadFrom.regex(Pattern.compile(readFrom.getPattern()));
+			}
+			case REPLICA -> ReadFrom.REPLICA;
+			case REPLICA_PREFERRED -> ReadFrom.REPLICA_PREFERRED;
+			case SUBNET -> ReadFrom.subnet(readFrom.getCidrNotations().toArray(new String[0]));
+			case UPSTREAM -> ReadFrom.UPSTREAM;
+			case UPSTREAM_PREFERRED -> ReadFrom.UPSTREAM_PREFERRED;
+		};
 	}
 
 	/**

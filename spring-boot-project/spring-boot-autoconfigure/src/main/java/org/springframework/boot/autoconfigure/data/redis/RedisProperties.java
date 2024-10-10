@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -468,6 +469,11 @@ public class RedisProperties {
 		private Duration shutdownTimeout = Duration.ofMillis(100);
 
 		/**
+		 * Defines from which Redis nodes data is read.
+		 */
+		private final ReadFrom readFrom = new ReadFrom();
+
+		/**
 		 * Lettuce pool configuration.
 		 */
 		private final Pool pool = new Pool();
@@ -482,12 +488,109 @@ public class RedisProperties {
 			this.shutdownTimeout = shutdownTimeout;
 		}
 
+		public ReadFrom getReadFrom() {
+			return this.readFrom;
+		}
+
 		public Pool getPool() {
 			return this.pool;
 		}
 
 		public Cluster getCluster() {
 			return this.cluster;
+		}
+
+		public static class ReadFrom {
+
+			/**
+			 * Type from which Redis nodes data is read.
+			 */
+			private Type type;
+
+			/**
+			 * CIDR-block notations to use in conjunction with SUBNET type.
+			 */
+			private final List<String> cidrNotations = new ArrayList<>();
+
+			/**
+			 * The Regex pattern to use in conjunction with REGEX type.
+			 */
+			private String pattern;
+
+			public Type getType() {
+				return this.type;
+			}
+
+			public void setType(Type type) {
+				this.type = type;
+			}
+
+			public List<String> getCidrNotations() {
+				return this.cidrNotations;
+			}
+
+			public String getPattern() {
+				return this.pattern;
+			}
+
+			public void setPattern(String pattern) {
+				this.pattern = pattern;
+			}
+
+			public enum Type {
+
+				/**
+				 * Read from any node.
+				 *
+				 */
+				ANY,
+				/**
+				 * Read from any replica node.
+				 */
+				ANY_REPLICA,
+				/**
+				 * Read from the node with the lowest latency during topology discovery.
+				 * Note that latency measurements are momentary snapshots that can change
+				 * in rapid succession. Requires dynamic refresh sources to obtain
+				 * topologies and latencies from all nodes in the cluster.
+				 *
+				 */
+				LOWEST_LATENCY,
+
+				/**
+				 * Read from any node that has RedisURI matching with the given pattern.
+				 */
+				REGEX,
+				/**
+				 * Read from the replica only.
+				 *
+				 */
+				REPLICA,
+				/**
+				 * Read preferred from replica and fall back to upstream if no replica is
+				 * available.
+				 *
+				 */
+				REPLICA_PREFERRED,
+				/**
+				 * Read from any node in the subnets.
+				 */
+				SUBNET,
+
+				/**
+				 * Read from the upstream only.
+				 *
+				 */
+				UPSTREAM,
+				/**
+				 * Read preferred from the upstream and fall back to a replica if the
+				 * upstream is not available.
+				 *
+				 */
+				UPSTREAM_PREFERRED
+
+			}
+
 		}
 
 		public static class Cluster {
