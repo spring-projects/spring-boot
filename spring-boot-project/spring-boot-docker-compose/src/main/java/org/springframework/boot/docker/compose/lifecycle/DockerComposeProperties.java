@@ -47,6 +47,11 @@ public class DockerComposeProperties {
 	private boolean enabled = true;
 
 	/**
+	 * Arguments to pass to the Docker Compose command.
+	 */
+	private final List<String> arguments = new ArrayList<>();
+
+	/**
 	 * Paths to the Docker Compose configuration files.
 	 */
 	private final List<File> file = new ArrayList<>();
@@ -86,6 +91,10 @@ public class DockerComposeProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public List<String> getArguments() {
+		return this.arguments;
 	}
 
 	public List<File> getFile() {

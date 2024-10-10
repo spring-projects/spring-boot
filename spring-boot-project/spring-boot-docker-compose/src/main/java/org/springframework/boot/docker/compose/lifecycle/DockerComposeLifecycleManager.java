@@ -109,7 +109,8 @@ class DockerComposeLifecycleManager {
 		}
 		DockerComposeFile composeFile = getComposeFile();
 		Set<String> activeProfiles = this.properties.getProfiles().getActive();
-		DockerCompose dockerCompose = getDockerCompose(composeFile, activeProfiles);
+		List<String> arguments = this.properties.getArguments();
+		DockerCompose dockerCompose = getDockerCompose(composeFile, activeProfiles, arguments);
 		if (!dockerCompose.hasDefinedServices()) {
 			logger.warn(LogMessage.format("No services defined in Docker Compose file %s with active profiles %s",
 					composeFile, activeProfiles));
@@ -159,8 +160,9 @@ class DockerComposeLifecycleManager {
 		return composeFile;
 	}
 
-	protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles) {
-		return DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles);
+	protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles,
+			List<String> arguments) {
+		return DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles, arguments);
 	}
 
 	private boolean isIgnored(RunningService service) {
