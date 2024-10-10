@@ -1,6 +1,6 @@
 services:
   redis1:
-    profiles: [ dev ]
+    profiles: [ 'dev' ]
     image: '{imageName}'
     ports:
       - '6379'

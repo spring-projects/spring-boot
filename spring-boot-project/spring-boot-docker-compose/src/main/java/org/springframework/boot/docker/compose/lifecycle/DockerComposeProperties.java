@@ -47,7 +47,7 @@ public class DockerComposeProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Arguments to pass to the docker compose command.
+	 * Arguments to pass to the Docker Compose command.
 	 */
 	private final List<String> arguments = new ArrayList<>();
 

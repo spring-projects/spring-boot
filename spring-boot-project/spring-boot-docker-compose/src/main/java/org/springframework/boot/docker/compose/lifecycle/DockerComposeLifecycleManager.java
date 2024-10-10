@@ -162,8 +162,7 @@ class DockerComposeLifecycleManager {
 
 	protected DockerCompose getDockerCompose(DockerComposeFile composeFile, Set<String> activeProfiles,
 			List<String> arguments) {
-		DockerCompose.Options options = DockerCompose.Options.get(composeFile, activeProfiles, arguments);
-		return DockerCompose.get(this.properties.getHost(), options);
+		return DockerCompose.get(composeFile, this.properties.getHost(), activeProfiles, arguments);
 	}
 
 	private boolean isIgnored(RunningService service) {

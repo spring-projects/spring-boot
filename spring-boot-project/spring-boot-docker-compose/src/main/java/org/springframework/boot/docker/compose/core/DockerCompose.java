@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.boot.docker.compose.core.DockerCli.DockerComposeOptions;
 import org.springframework.boot.logging.LogLevel;
 
 /**
@@ -126,61 +127,23 @@ public interface DockerCompose {
 	 * @return a {@link DockerCompose} instance
 	 */
 	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles) {
-		DockerCli cli = new DockerCli(null, Options.get(file, activeProfiles, Collections.emptyList()));
-		return new DefaultDockerCompose(cli, hostname);
+		return get(file, hostname, activeProfiles, Collections.emptyList());
 	}
 
 	/**
 	 * Factory method used to create a {@link DockerCompose} instance.
+	 * @param file the Docker Compose file
 	 * @param hostname the hostname used for services or {@code null} if the hostname
-	 * @param options the Docker Compose options or {@code null}
+	 * should be deduced
+	 * @param activeProfiles a set of the profiles that should be activated
+	 * @param arguments the arguments to pass to Docker Compose
 	 * @return a {@link DockerCompose} instance
 	 * @since 3.4.0
 	 */
-	static DockerCompose get(String hostname, Options options) {
-		DockerCli cli = new DockerCli(null, options);
+	static DockerCompose get(DockerComposeFile file, String hostname, Set<String> activeProfiles,
+			List<String> arguments) {
+		DockerCli cli = new DockerCli(null, new DockerComposeOptions(file, activeProfiles, arguments));
 		return new DefaultDockerCompose(cli, hostname);
-	}
-
-	/**
-	 * Docker Compose options that should be applied before any subcommand.
-	 */
-	interface Options {
-
-		/**
-		 * No options.
-		 */
-		Options NONE = get(null, Collections.emptySet(), Collections.emptyList());
-
-		/**
-		 * Factory method used to create a {@link DockerCompose.Options} instance.
-		 * @param file the Docker Compose file to use
-		 * @param activeProfiles the Docker Compose profiles to activate
-		 * @param arguments the additional Docker Compose arguments
-		 * @return the Docker Compose options
-		 */
-		static Options get(DockerComposeFile file, Set<String> activeProfiles, List<String> arguments) {
-			return new DockerComposeOptions(file, activeProfiles, arguments);
-		}
-
-		/**
-		 * the Docker Compose a file to use.
-		 * @return compose a file to use
-		 */
-		DockerComposeFile getComposeFile();
-
-		/**
-		 * the Docker Compose profiles to activate.
-		 * @return profiles to activate
-		 */
-		Set<String> getActiveProfiles();
-
-		/**
-		 * the additional Docker Compose arguments.
-		 * @return additional arguments
-		 */
-		List<String> getArguments();
-
 	}
 
 }

@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.docker.compose.core.DockerCli.DockerComposeOptions;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeConfig;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeDown;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposePs;
@@ -37,7 +38,6 @@ import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeStar
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeStop;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeUp;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.Inspect;
-import org.springframework.boot.docker.compose.core.DockerCompose.Options;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -72,9 +72,8 @@ class DockerCliIntegrationTests {
 	void runLifecycle() throws IOException {
 		File composeFile = createComposeFile("redis-compose.yaml");
 		String projectName = UUID.randomUUID().toString();
-		Options options = Options.get(DockerComposeFile.of(composeFile), Collections.emptySet(),
-				List.of("--project-name=" + projectName));
-		DockerCli cli = new DockerCli(null, options);
+		DockerCli cli = new DockerCli(null, new DockerComposeOptions(DockerComposeFile.of(composeFile),
+				Collections.emptySet(), List.of("--project-name=" + projectName)));
 		try {
 			// Verify that no services are running (this is a fresh compose project)
 			List<DockerCliComposePsResponse> ps = cli.run(new ComposePs());
@@ -113,8 +112,8 @@ class DockerCliIntegrationTests {
 	@Test
 	void shouldWorkWithMultipleComposeFiles() throws IOException {
 		List<File> composeFiles = createComposeFiles();
-		Options options = Options.get(DockerComposeFile.of(composeFiles), Set.of("dev"), Collections.emptyList());
-		DockerCli cli = new DockerCli(null, options);
+		DockerCli cli = new DockerCli(null,
+				new DockerComposeOptions(DockerComposeFile.of(composeFiles), Set.of("dev"), Collections.emptyList()));
 		try {
 			// List the config and verify that both redis are there
 			DockerCliComposeConfigResponse config = cli.run(new ComposeConfig());

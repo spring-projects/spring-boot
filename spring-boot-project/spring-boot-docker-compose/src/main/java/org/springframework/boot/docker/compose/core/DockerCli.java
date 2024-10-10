@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,18 +50,18 @@ class DockerCli {
 
 	private final DockerCommands dockerCommands;
 
-	private final DockerCompose.Options dockerComposeOptions;
+	private final DockerComposeOptions dockerComposeOptions;
 
 	/**
 	 * Create a new {@link DockerCli} instance.
 	 * @param workingDirectory the working directory or {@code null}
 	 * @param dockerComposeOptions the Docker Compose options to use or {@code null}.
 	 */
-	DockerCli(File workingDirectory, DockerCompose.Options dockerComposeOptions) {
+	DockerCli(File workingDirectory, DockerComposeOptions dockerComposeOptions) {
 		this.processRunner = new ProcessRunner(workingDirectory);
 		this.dockerCommands = dockerCommandsCache.computeIfAbsent(workingDirectory,
 				(key) -> new DockerCommands(this.processRunner));
-		this.dockerComposeOptions = (dockerComposeOptions != null) ? dockerComposeOptions : DockerCompose.Options.NONE;
+		this.dockerComposeOptions = (dockerComposeOptions != null) ? dockerComposeOptions : DockerComposeOptions.none();
 	}
 
 	/**
@@ -89,8 +90,7 @@ class DockerCli {
 			case DOCKER -> new ArrayList<>(this.dockerCommands.get(type));
 			case DOCKER_COMPOSE -> {
 				List<String> result = new ArrayList<>(this.dockerCommands.get(type));
-				DockerCompose.Options options = this.dockerComposeOptions;
-				DockerComposeFile composeFile = options.getComposeFile();
+				DockerComposeFile composeFile = this.dockerComposeOptions.composeFile();
 				if (composeFile != null) {
 					for (File file : composeFile.getFiles()) {
 						result.add("--file");
@@ -99,14 +99,14 @@ class DockerCli {
 				}
 				result.add("--ansi");
 				result.add("never");
-				Set<String> activeProfiles = options.getActiveProfiles();
+				Set<String> activeProfiles = this.dockerComposeOptions.activeProfiles();
 				if (!CollectionUtils.isEmpty(activeProfiles)) {
 					for (String profile : activeProfiles) {
 						result.add("--profile");
 						result.add(profile);
 					}
 				}
-				List<String> arguments = options.getArguments();
+				List<String> arguments = this.dockerComposeOptions.arguments();
 				if (!CollectionUtils.isEmpty(arguments)) {
 					result.addAll(arguments);
 				}
@@ -116,11 +116,11 @@ class DockerCli {
 	}
 
 	/**
-	 * Return the {@link DockerCompose.Options} being used by this CLI instance.
-	 * @return the Docker Compose options
+	 * Return the {@link DockerComposeFile} being used by this CLI instance.
+	 * @return the Docker Compose file
 	 */
-	DockerCompose.Options getDockerComposeOptions() {
-		return this.dockerComposeOptions;
+	DockerComposeFile getDockerComposeFile() {
+		return this.dockerComposeOptions.composeFile();
 	}
 
 	/**
@@ -188,6 +188,24 @@ class DockerCli {
 			};
 		}
 
+	}
+
+	/**
+	 * Options for Docker Compose.
+	 *
+	 * @param composeFile the Docker Compose file to use
+	 * @param activeProfiles the profiles to activate
+	 * @param arguments the arguments to pass to Docker Compose
+	 */
+	record DockerComposeOptions(DockerComposeFile composeFile, Set<String> activeProfiles, List<String> arguments) {
+		DockerComposeOptions {
+			activeProfiles = (activeProfiles != null) ? activeProfiles : Collections.emptySet();
+			arguments = (arguments != null) ? arguments : Collections.emptyList();
+		}
+
+		static DockerComposeOptions none() {
+			return new DockerComposeOptions(null, null, null);
+		}
 	}
 
 }
