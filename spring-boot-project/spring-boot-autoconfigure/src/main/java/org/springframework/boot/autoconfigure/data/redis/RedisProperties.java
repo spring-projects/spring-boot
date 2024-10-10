@@ -468,6 +468,11 @@ public class RedisProperties {
 		private Duration shutdownTimeout = Duration.ofMillis(100);
 
 		/**
+		 * Defines from which Redis nodes data is read.
+		 */
+		private String readFrom;
+
+		/**
 		 * Lettuce pool configuration.
 		 */
 		private final Pool pool = new Pool();
@@ -480,6 +485,14 @@ public class RedisProperties {
 
 		public void setShutdownTimeout(Duration shutdownTimeout) {
 			this.shutdownTimeout = shutdownTimeout;
+		}
+
+		public void setReadFrom(String readFrom) {
+			this.readFrom = readFrom;
+		}
+
+		public String getReadFrom() {
+			return this.readFrom;
 		}
 
 		public Pool getPool() {
