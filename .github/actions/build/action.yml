@@ -16,6 +16,10 @@ inputs:
   develocity-access-key:
     description: 'Access key for authentication with ge.spring.io'
     required: false
+  gradle-cache-read-only:
+    description: 'Whether Gradle''s cache should be read only'
+    required: false
+    default: 'true'
   java-distribution:
     description: 'Java distribution to use'
     required: false
@@ -49,6 +53,7 @@ runs:
     - name: Prepare Gradle Build
       uses: ./.github/actions/prepare-gradle-build
       with:
+        cache-read-only: ${{ inputs.gradle-cache-read-only }}
         develocity-access-key: ${{ inputs.develocity-access-key }}
         java-distribution: ${{ inputs.java-distribution }}
         java-early-access: ${{ inputs.java-early-access }}

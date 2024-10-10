@@ -19,6 +19,7 @@ jobs:
         uses: ./.github/actions/build
         with:
           develocity-access-key: ${{ secrets.GRADLE_ENTERPRISE_SECRET_ACCESS_KEY }}
+          gradle-cache-read-only: false
           publish: true
       - name: Stage Release
         uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
