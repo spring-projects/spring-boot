@@ -136,6 +136,7 @@ public class AntoraAsciidocAttributes {
 		addSpringDataDependencyVersion(attributes, "spring-data-neo4j");
 		addSpringDataDependencyVersion(attributes, "spring-data-r2dbc");
 		addSpringDataDependencyVersion(attributes, "spring-data-rest", "spring-data-rest-core");
+		addSpringDataDependencyVersion(attributes, "spring-data-ldap");
 	}
 
 	private void addSpringDataDependencyVersion(Map<String, String> attributes, String artifactId) {

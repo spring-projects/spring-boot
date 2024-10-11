@@ -525,7 +525,7 @@ Repositories and entities are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
 You can customize the locations to look for repositories and entities by using `@EnableCassandraRepositories` and `@EntityScan` respectively.
 
-TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
+TIP: For complete details of Spring Data Cassandra, see the {url-spring-data-cassandra-docs}[reference documentation].
 
 
 
@@ -688,7 +688,7 @@ Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
 You can customize the locations to look for repositories and documents by using `@EnableLdapRepositories` and `@EntityScan` respectively.
 
-For complete details of Spring Data LDAP, see the https://docs.spring.io/spring-data/ldap/docs/1.0.x/reference/html/[reference documentation].
+TIP: For complete details of Spring Data LDAP, see the {url-spring-data-ldap-docs}[reference documentation].
 
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
