@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -124,6 +125,13 @@ public interface BuildLog {
 	 * @since 3.2.6
 	 */
 	void failedCleaningWorkDir(Cache cache, Exception exception);
+
+	/**
+	 * Log that a binding with a sensitive target has been detected.
+	 * @param binding the binding
+	 * @since 3.4.0
+	 */
+	void sensitiveTargetBindingDetected(Binding binding);
 
 	/**
 	 * Factory method that returns a {@link BuildLog} the outputs to {@link System#out}.

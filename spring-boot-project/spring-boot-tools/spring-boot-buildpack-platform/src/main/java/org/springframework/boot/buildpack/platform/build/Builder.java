@@ -28,6 +28,7 @@ import org.springframework.boot.buildpack.platform.docker.UpdateListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -98,6 +99,7 @@ public class Builder {
 	public void build(BuildRequest request) throws DockerEngineException, IOException {
 		Assert.notNull(request, "Request must not be null");
 		this.log.start(request);
+		validateBindings(request.getBindings());
 		String domain = request.getBuilder().getDomain();
 		PullPolicy pullPolicy = request.getPullPolicy();
 		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy,
@@ -122,6 +124,14 @@ public class Builder {
 		}
 		finally {
 			this.docker.image().remove(ephemeralBuilder.getName(), true);
+		}
+	}
+
+	private void validateBindings(List<Binding> bindings) {
+		for (Binding binding : bindings) {
+			if (binding.usesSensitiveContainerPath()) {
+				this.log.sensitiveTargetBindingDetected(binding);
+			}
 		}
 	}
 
