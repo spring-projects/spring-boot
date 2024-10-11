@@ -5,7 +5,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-cassandra}[Cassandra]
 * {spring-data-couchbase}[Couchbase]
 * {spring-data-elasticsearch}[Elasticsearch]
-* {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
+* {spring-data-geode}[Geode]
 * {spring-data-ldap}[LDAP]
 * {spring-data-mongodb}[MongoDB]
 * {spring-data-neo4j}[Neo4J]

@@ -66,7 +66,6 @@
 :spring-data-elasticsearch: https://spring.io/projects/spring-data-elasticsearch
 :spring-data-elasticsearch-docs: https://docs.spring.io/spring-data/elasticsearch/reference/{spring-data-elasticsearch-version-antora}
 :spring-data-envers: https://spring.io/projects/spring-data-envers
-:spring-data-gemfire: https://spring.io/projects/spring-data-gemfire
 :spring-data-geode: https://spring.io/projects/spring-data-geode
 :spring-data-jdbc-docs: https://docs.spring.io/spring-data/relational/reference/{spring-data-jdbc-version-antora}
 :spring-data-jpa: https://spring.io/projects/spring-data-jpa
