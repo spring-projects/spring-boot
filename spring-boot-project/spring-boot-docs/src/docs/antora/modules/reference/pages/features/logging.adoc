@@ -524,19 +524,19 @@ A log line looks like this:
 This format also adds every key value pair contained in the MDC to the JSON object.
 You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
 
-The `service` values can be customized using `logging.structured.gelf.service` properties:
+Several fields can be customized using `logging.structured.gelf` properties:
 
 [configprops,yaml]
 ----
 logging:
   structured:
     gelf:
+      host: MyService
       service:
-        name: MyService
         version: 1.0
 ----
 
-NOTE: configprop:logging.structured.gelf.service.name[] will default to configprop:spring.application.name[] if not specified.
+NOTE: configprop:logging.structured.gelf.host[] will default to configprop:spring.application.name[] if not specified.
 
 NOTE: configprop:logging.structured.gelf.service.version[] will default to configprop:spring.application.version[] if not specified.
 

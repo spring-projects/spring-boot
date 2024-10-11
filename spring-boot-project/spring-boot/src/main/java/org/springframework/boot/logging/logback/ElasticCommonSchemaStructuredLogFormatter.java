@@ -26,7 +26,7 @@ import org.slf4j.event.KeyValuePair;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
-import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.core.env.Environment;
@@ -55,7 +55,7 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		members.add("process.pid", environment.getProperty("spring.application.pid", Long.class))
 			.when(Objects::nonNull);
 		members.add("process.thread.name", ILoggingEvent::getThreadName);
-		ElasticCommonSchemaService.get(environment).jsonMembers(members);
+		ElasticCommonSchemaProperties.get(environment).jsonMembers(members);
 		members.add("log.logger", ILoggingEvent::getLoggerName);
 		members.add("message", ILoggingEvent::getFormattedMessage);
 		members.addMapEntries(ILoggingEvent::getMDCPropertyMap);

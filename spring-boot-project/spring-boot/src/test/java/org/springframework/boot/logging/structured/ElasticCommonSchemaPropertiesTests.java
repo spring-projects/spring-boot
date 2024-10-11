@@ -19,17 +19,18 @@ package org.springframework.boot.logging.structured;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties.Service;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ElasticCommonSchemaService}.
+ * Tests for {@link ElasticCommonSchemaProperties}.
  *
  * @author Phillip Webb
  * @author Moritz Halbritter
  */
-class ElasticCommonSchemaServiceTests {
+class ElasticCommonSchemaPropertiesTests {
 
 	@Test
 	void getBindsFromEnvironment() {
@@ -38,38 +39,40 @@ class ElasticCommonSchemaServiceTests {
 		environment.setProperty("logging.structured.ecs.service.version", "1.2.3");
 		environment.setProperty("logging.structured.ecs.service.environment", "prod");
 		environment.setProperty("logging.structured.ecs.service.node-name", "boot");
-		ElasticCommonSchemaService service = ElasticCommonSchemaService.get(environment);
-		assertThat(service).isEqualTo(new ElasticCommonSchemaService("spring", "1.2.3", "prod", "boot"));
+		ElasticCommonSchemaProperties properties = ElasticCommonSchemaProperties.get(environment);
+		assertThat(properties)
+			.isEqualTo(new ElasticCommonSchemaProperties(new Service("spring", "1.2.3", "prod", "boot")));
 	}
 
 	@Test
 	void getWhenNoServiceNameUsesApplicationName() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.application.name", "spring");
-		ElasticCommonSchemaService service = ElasticCommonSchemaService.get(environment);
-		assertThat(service).isEqualTo(new ElasticCommonSchemaService("spring", null, null, null));
+		ElasticCommonSchemaProperties properties = ElasticCommonSchemaProperties.get(environment);
+		assertThat(properties).isEqualTo(new ElasticCommonSchemaProperties(new Service("spring", null, null, null)));
 	}
 
 	@Test
 	void getWhenNoServiceVersionUsesApplicationVersion() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.application.version", "1.2.3");
-		ElasticCommonSchemaService service = ElasticCommonSchemaService.get(environment);
-		assertThat(service).isEqualTo(new ElasticCommonSchemaService(null, "1.2.3", null, null));
+		ElasticCommonSchemaProperties properties = ElasticCommonSchemaProperties.get(environment);
+		assertThat(properties).isEqualTo(new ElasticCommonSchemaProperties(new Service(null, "1.2.3", null, null)));
 	}
 
 	@Test
 	void getWhenNoPropertiesToBind() {
 		MockEnvironment environment = new MockEnvironment();
-		ElasticCommonSchemaService service = ElasticCommonSchemaService.get(environment);
-		assertThat(service).isEqualTo(new ElasticCommonSchemaService(null, null, null, null));
+		ElasticCommonSchemaProperties properties = ElasticCommonSchemaProperties.get(environment);
+		assertThat(properties).isEqualTo(new ElasticCommonSchemaProperties(new Service(null, null, null, null)));
 	}
 
 	@Test
 	void addToJsonMembersCreatesValidJson() {
-		ElasticCommonSchemaService service = new ElasticCommonSchemaService("spring", "1.2.3", "prod", "boot");
-		JsonWriter<ElasticCommonSchemaService> writer = JsonWriter.of(service::jsonMembers);
-		assertThat(writer.writeToString(service))
+		ElasticCommonSchemaProperties properties = new ElasticCommonSchemaProperties(
+				new Service("spring", "1.2.3", "prod", "boot"));
+		JsonWriter<ElasticCommonSchemaProperties> writer = JsonWriter.of(properties::jsonMembers);
+		assertThat(writer.writeToString(properties))
 			.isEqualTo("{\"service.name\":\"spring\",\"service.version\":\"1.2.3\","
 					+ "\"service.environment\":\"prod\",\"service.node.name\":\"boot\"}");
 	}

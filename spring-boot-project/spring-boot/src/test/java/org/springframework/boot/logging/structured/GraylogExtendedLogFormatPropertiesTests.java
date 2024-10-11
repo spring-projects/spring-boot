@@ -19,54 +19,57 @@ package org.springframework.boot.logging.structured;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.logging.structured.GraylogExtendedLogFormatProperties.Service;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link GraylogExtendedLogFormatService}.
+ * Tests for {@link GraylogExtendedLogFormatProperties}.
  *
  * @author Samuel Lissner
+ * @author Phillip Webb
  */
-class GraylogExtendedLogFormatServiceTests {
+class GraylogExtendedLogFormatPropertiesTests {
 
 	@Test
 	void getBindsFromEnvironment() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.structured.gelf.service.name", "spring");
+		environment.setProperty("logging.structured.gelf.host", "spring");
 		environment.setProperty("logging.structured.gelf.service.version", "1.2.3");
-		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService("spring", "1.2.3"));
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service("1.2.3")));
 	}
 
 	@Test
 	void getWhenNoServiceNameUsesApplicationName() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.application.name", "spring");
-		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService("spring", null));
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service(null)));
 	}
 
 	@Test
 	void getWhenNoServiceVersionUsesApplicationVersion() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.application.version", "1.2.3");
-		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService(null, "1.2.3"));
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties(null, new Service("1.2.3")));
 	}
 
 	@Test
 	void getWhenNoPropertiesToBind() {
 		MockEnvironment environment = new MockEnvironment();
-		GraylogExtendedLogFormatService service = GraylogExtendedLogFormatService.get(environment);
-		assertThat(service).isEqualTo(new GraylogExtendedLogFormatService(null, null));
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties(null, new Service(null)));
 	}
 
 	@Test
 	void addToJsonMembersCreatesValidJson() {
-		GraylogExtendedLogFormatService service = new GraylogExtendedLogFormatService("spring", "1.2.3");
-		JsonWriter<GraylogExtendedLogFormatService> writer = JsonWriter.of(service::jsonMembers);
-		assertThat(writer.writeToString(service)).isEqualTo("{\"host\":\"spring\",\"_service_version\":\"1.2.3\"}");
+		GraylogExtendedLogFormatProperties properties = new GraylogExtendedLogFormatProperties("spring",
+				new Service("1.2.3"));
+		JsonWriter<GraylogExtendedLogFormatProperties> writer = JsonWriter.of(properties::jsonMembers);
+		assertThat(writer.writeToString(properties)).isEqualTo("{\"host\":\"spring\",\"_service_version\":\"1.2.3\"}");
 	}
 
 }
