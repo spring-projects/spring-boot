@@ -39,6 +39,7 @@ import org.springframework.stereotype.Indexed;
  * values are externalized.
  *
  * @author Dave Syer
+ * @author Yanming Zhou
  * @since 1.0.0
  * @see ConfigurationPropertiesScan
  * @see ConstructorBinding
@@ -68,6 +69,14 @@ public @interface ConfigurationProperties {
 	 */
 	@AliasFor("value")
 	String prefix() default "";
+
+	/**
+	 * The prefix of the properties that {@link #prefix()} will inherit, It's used for
+	 * configuring multiple beans which share common properties.
+	 * @return the prefix of the properties to inherit
+	 * @see #prefix()
+	 */
+	String inheritedPrefix() default "";
 
 	/**
 	 * Flag to indicate that when binding to this object invalid fields should be ignored.

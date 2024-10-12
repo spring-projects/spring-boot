@@ -128,6 +128,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Vladislav Kisel
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ConfigurationPropertiesTests {
@@ -1268,6 +1269,25 @@ class ConfigurationPropertiesTests {
 	void loadWhenBindingToJavaBeanWithConversionToCustomListImplementation() {
 		load(SetterBoundCustomListPropertiesConfiguration.class, "test.values=a,b");
 		assertThat(this.context.getBean(SetterBoundCustomListProperties.class).getValues()).containsExactly("a", "b");
+	}
+
+	@Test
+	void loadWhenUsingInheritedPrefixForJavaBeanBinder() {
+		load(SetterBoundInheritedPrefixConfiguration.class, "spring.service.host=127.0.0.1", "spring.service.port=6379",
+				"additional.service.port=6380");
+		SetterBoundServiceProperties properties = this.context.getBean("additionalServiceProperties",
+				SetterBoundServiceProperties.class);
+		assertThat(properties.getPort()).isEqualTo(6380);
+		assertThat(properties.getHost()).isEqualTo("127.0.0.1");
+	}
+
+	@Test
+	void loadWhenUsingInheritedPrefixForValueObjectBinder() {
+		load(ConstructorBoundInheritedPrefixConfiguration.class, "spring.service.host=127.0.0.1",
+				"spring.service.port=6379", "additional.service.port=6380");
+		ConstructorBoundServiceProperties properties = this.context.getBean(ConstructorBoundServiceProperties.class);
+		assertThat(properties.getPort()).isEqualTo(6380);
+		assertThat(properties.getHost()).isEqualTo("127.0.0.1");
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -3307,6 +3327,70 @@ class ConfigurationPropertiesTests {
 		CustomList(List<E> delegate) {
 			super(delegate);
 		}
+
+	}
+
+	@ConfigurationProperties(prefix = "spring.service")
+	static class SetterBoundServiceProperties {
+
+		private String host = "localhost";
+
+		private int port = 6379;
+
+		String getHost() {
+			return this.host;
+		}
+
+		void setHost(String host) {
+			this.host = host;
+		}
+
+		int getPort() {
+			return this.port;
+		}
+
+		void setPort(int port) {
+			this.port = port;
+		}
+
+	}
+
+	@EnableConfigurationProperties(SetterBoundServiceProperties.class)
+	static class SetterBoundInheritedPrefixConfiguration {
+
+		@Bean(autowireCandidate = false) // do not back off auto-configured one
+		@ConfigurationProperties(prefix = "additional.service", inheritedPrefix = "spring.service")
+		SetterBoundServiceProperties additionalServiceProperties() {
+			return new SetterBoundServiceProperties();
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "additional.service", inheritedPrefix = "spring.service")
+	static class ConstructorBoundServiceProperties {
+
+		private final String host;
+
+		private final int port;
+
+		public ConstructorBoundServiceProperties(@DefaultValue("localhost") String host,
+				@DefaultValue("6379") int port) {
+			this.host = host;
+			this.port = port;
+		}
+
+		String getHost() {
+			return this.host;
+		}
+
+		int getPort() {
+			return this.port;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ConstructorBoundServiceProperties.class)
+	static class ConstructorBoundInheritedPrefixConfiguration {
 
 	}
 
