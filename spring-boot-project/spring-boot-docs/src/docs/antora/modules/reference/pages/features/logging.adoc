@@ -222,7 +222,7 @@ It is also possible to set logging levels using environment variables.
 For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springframework.web` to `DEBUG`.
 
 NOTE: The above approach will only work for package level logging.
-Since relaxed binding always converts environment variables to lowercase, it is not possible to configure logging for an individual class in this way.
+Since relaxed binding xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.maps-from-environment-variables[always converts environment variables to lowercase], it is not possible to configure logging for an individual class in this way.
 If you need to configure logging for a class, you can use xref:features/external-config.adoc#features.external-config.application-json[the `SPRING_APPLICATION_JSON`] variable.
 
 

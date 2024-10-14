@@ -962,6 +962,24 @@ For example, the configuration property `my.service[0].other` would use an envir
 Support for binding from environment variables is applied to the `systemEnvironment` property source and to any additional property source whose name ends with `-systemEnvironment`.
 
 
+
+[[features.external-config.typesafe-configuration-properties.relaxed-binding.maps-from-environment-variables]]
+==== Binding Maps from environment variables
+
+When Spring Boot binds an environment variable to a property class, it lowercases the environment variable name before binding.
+Most of the time this detail isn't important, except when binding to `Map` properties.
+
+The keys in the `Map` are always in lowercase, as seen in the following example:
+
+include-code::MyMapsProperties[]
+
+When setting `MY_PROPS_VALUES_KEY=value`, the `values` `Map` contains a `{"key"="value"}` entry.
+
+Only the environment variable *name* is lower-cased, not the value.
+When setting `MY_PROPS_VALUES_KEY=VALUE`, the `values` `Map` contains a `{"key"="VALUE"}` entry.
+
+
+
 [[features.external-config.typesafe-configuration-properties.relaxed-binding.caching]]
 ==== Caching
 
