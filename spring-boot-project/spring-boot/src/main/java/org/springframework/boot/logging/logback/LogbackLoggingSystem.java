@@ -84,17 +84,20 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
-	private static final LogLevels<Level> LEVELS = new LogLevels<>();
+	private static final LogLevels<Level> LEVELS = createLogLevels();
 
-	static {
-		LEVELS.map(LogLevel.TRACE, Level.TRACE);
-		LEVELS.map(LogLevel.TRACE, Level.ALL);
-		LEVELS.map(LogLevel.DEBUG, Level.DEBUG);
-		LEVELS.map(LogLevel.INFO, Level.INFO);
-		LEVELS.map(LogLevel.WARN, Level.WARN);
-		LEVELS.map(LogLevel.ERROR, Level.ERROR);
-		LEVELS.map(LogLevel.FATAL, Level.ERROR);
-		LEVELS.map(LogLevel.OFF, Level.OFF);
+	@SuppressWarnings("deprecation")
+	private static LogLevels<Level> createLogLevels() {
+		LogLevels<Level> levels = new LogLevels<>();
+		levels.map(LogLevel.TRACE, Level.TRACE);
+		levels.map(LogLevel.TRACE, Level.ALL);
+		levels.map(LogLevel.DEBUG, Level.DEBUG);
+		levels.map(LogLevel.INFO, Level.INFO);
+		levels.map(LogLevel.WARN, Level.WARN);
+		levels.map(LogLevel.ERROR, Level.ERROR);
+		levels.map(LogLevel.FATAL, Level.ERROR);
+		levels.map(LogLevel.OFF, Level.OFF);
+		return levels;
 	}
 
 	private static final TurboFilter SUPPRESS_ALL_FILTER = new TurboFilter() {
