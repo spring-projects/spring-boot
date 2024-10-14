@@ -156,7 +156,7 @@ class ConfigurationPropertiesBinder {
 			return (value instanceof Validator validator) ? validator : null;
 		}
 		Class<?> type = target.getType().resolve();
-		if (Validator.class.isAssignableFrom(type)) {
+		if (type != null && Validator.class.isAssignableFrom(type)) {
 			return new SelfValidatingConstructorBoundBindableValidator(type);
 		}
 		return null;
@@ -208,7 +208,7 @@ class ConfigurationPropertiesBinder {
 				.rootBeanDefinition(ConfigurationPropertiesBinderFactory.class)
 				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
+			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 	}
 
