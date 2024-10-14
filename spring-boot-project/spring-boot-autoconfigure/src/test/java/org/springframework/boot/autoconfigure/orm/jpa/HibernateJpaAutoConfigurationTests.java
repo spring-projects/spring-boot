@@ -30,7 +30,10 @@ import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.transaction.Synchronization;
@@ -40,6 +43,7 @@ import jakarta.transaction.UserTransaction;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.ManagedBeanSettings;
 import org.hibernate.cfg.SchemaToolingSettings;
 import org.hibernate.dialect.H2Dialect;
@@ -47,6 +51,8 @@ import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper;
+import org.hibernate.type.format.jakartajson.JsonBJsonFormatMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -59,8 +65,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurationTests.JpaUsingApplicationListenerConfiguration.EventCapturingApplicationListener;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaConfiguration.HibernateRuntimeHints;
@@ -385,6 +393,62 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 						entry("hibernate.implicit_naming_strategy", configuration.implicitNamingStrategy));
 				assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 			});
+	}
+
+	@Test
+	void jacksonJsonFormatMapperHibernatePropertiesCustomizerUsedAutoConfiguredObjectMapper() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.auto-configure.json-format-mapper=jackson")
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isInstanceOf(JacksonJsonFormatMapper.class)));
+	}
+
+	@Test
+	void jacksonJsonFormatMapperHibernatePropertiesCustomizerShouldNotBeRegisteredIfNoSingleCandidate() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.auto-configure.json-format-mapper=jackson")
+			.withBean("objectMapper1", ObjectMapper.class, ObjectMapper::new)
+			.withBean("objectMapper2", ObjectMapper.class, ObjectMapper::new)
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isNull()));
+	}
+
+	@Test
+	void jacksonJsonFormatMapperHibernatePropertiesCustomizerShouldNotBeRegistered() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.auto-configure.json-format-mapper=none")
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isNull()));
+	}
+
+	@Test
+	void jsonbJsonFormatMapperHibernatePropertiesCustomizerUsedAutoConfiguredObjectMapper() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.auto-configure.json-format-mapper=jsonb")
+			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isInstanceOf(JsonBJsonFormatMapper.class)));
+	}
+
+	@Test
+	void jsonbJsonFormatMapperHibernatePropertiesCustomizerShouldNotBeRegisteredIfNoSingleCandidate() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.auto-configure.json-format-mapper=jsonb")
+			.withBean("jsonb1", Jsonb.class, JsonbBuilder::create)
+			.withBean("jsonb2", Jsonb.class, JsonbBuilder::create)
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isNull()));
+	}
+
+	@Test
+	void jsonbJsonFormatMapperHibernatePropertiesCustomizerShouldNotBeRegistered() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.auto-configure.json-format-mapper=none")
+			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isNull()));
 	}
 
 	@Test

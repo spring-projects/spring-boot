@@ -27,12 +27,17 @@ import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.json.bind.Jsonb;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.ManagedBeanSettings;
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper;
+import org.hibernate.type.format.jakartajson.JsonBJsonFormatMapper;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -42,6 +47,8 @@ import org.springframework.aot.hint.TypeHint.Builder;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,8 +58,10 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
@@ -231,6 +240,36 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 		throw new IllegalStateException(
 				"No available JtaPlatform candidates amongst " + Arrays.toString(NO_JTA_PLATFORM_CLASSES));
+	}
+
+	@ConditionalOnClass({ ObjectMapper.class, JacksonJsonFormatMapper.class })
+	@ConditionalOnSingleCandidate(ObjectMapper.class)
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(name = "spring.jpa.hibernate.auto-configure.json-format-mapper", havingValue = "jackson")
+	static class HibernateJacksonJsonFormatMapperConfiguration {
+
+		@Bean
+		@Order(0)
+		HibernatePropertiesCustomizer jacksonJsonFormatMapperHibernatePropertiesCustomizer(ObjectMapper objectMapper) {
+			return (properties) -> properties.put(AvailableSettings.JSON_FORMAT_MAPPER,
+					new JacksonJsonFormatMapper(objectMapper));
+		}
+
+	}
+
+	@ConditionalOnClass({ Jsonb.class, JsonBJsonFormatMapper.class })
+	@ConditionalOnSingleCandidate(Jsonb.class)
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(name = "spring.jpa.hibernate.auto-configure.json-format-mapper", havingValue = "jsonb")
+	static class HibernateJsonbJsonFormatMapperConfiguration {
+
+		@Bean
+		@Order(0)
+		HibernatePropertiesCustomizer jsonbJsonFormatMapperHibernatePropertiesCustomizer(Jsonb jsonb) {
+			return (properties) -> properties.putIfAbsent(AvailableSettings.JSON_FORMAT_MAPPER,
+					new JsonBJsonFormatMapper(jsonb));
+		}
+
 	}
 
 	private static class NamingStrategiesHibernatePropertiesCustomizer implements HibernatePropertiesCustomizer {

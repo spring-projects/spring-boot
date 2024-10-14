@@ -1642,6 +1642,12 @@
       }
     },
     {
+      "name": "spring.jpa.hibernate.auto-configure.json-format-mapper",
+      "type": "java.lang.String",
+      "description": "Preferred Hibernate JSON format mapper to use.",
+      "defaultValue": "none"
+    },
+    {
       "name": "spring.jpa.hibernate.use-new-id-generator-mappings",
       "type": "java.lang.Boolean",
       "description": "Whether to use Hibernate's newer IdentifierGenerator for AUTO, TABLE and SEQUENCE. This is actually a shortcut for the \"hibernate.id.new_generator_mappings\" property. When not specified will default to \"true\".",
@@ -3106,6 +3112,25 @@
           "parameters": {
             "target": "javax.management.MBeanServer"
           }
+        }
+      ]
+    },
+    {
+      "name": "spring.jpa.hibernate.auto-configure.json-format-mapper",
+      "values": [
+        {
+          "value": "jackson"
+        },
+        {
+          "value": "jsonb"
+        },
+        {
+          "value": "none"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
         }
       ]
     },
