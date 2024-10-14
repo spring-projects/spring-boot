@@ -70,10 +70,10 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		BeanDefinitionRegistry registry = (BeanDefinitionRegistry) context.getBeanFactory();
 		ConfigurationClassPostProcessor configurationAnnotationPostProcessor = mock(
 				ConfigurationClassPostProcessor.class);
-		BeanDefinition beanDefinition = BeanDefinitionBuilder
-			.genericBeanDefinition(ConfigurationClassPostProcessor.class)
+		AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
+			.rootBeanDefinition(ConfigurationClassPostProcessor.class)
 			.getBeanDefinition();
-		((AbstractBeanDefinition) beanDefinition).setInstanceSupplier(() -> configurationAnnotationPostProcessor);
+		beanDefinition.setInstanceSupplier(() -> configurationAnnotationPostProcessor);
 		registry.registerBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME,
 				beanDefinition);
 		CachingMetadataReaderFactoryPostProcessor postProcessor = new CachingMetadataReaderFactoryPostProcessor(

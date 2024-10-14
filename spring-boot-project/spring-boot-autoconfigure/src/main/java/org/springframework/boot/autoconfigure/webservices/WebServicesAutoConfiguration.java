@@ -124,7 +124,7 @@ public class WebServicesAutoConfiguration {
 				Function<Resource, T> beanSupplier, BeanDefinitionRegistry registry) {
 			for (Resource resource : getResources(location, pattern)) {
 				BeanDefinition beanDefinition = BeanDefinitionBuilder
-					.genericBeanDefinition(type, () -> beanSupplier.apply(resource))
+					.rootBeanDefinition(type, () -> beanSupplier.apply(resource))
 					.getBeanDefinition();
 				registry.registerBeanDefinition(StringUtils.stripFilenameExtension(resource.getFilename()),
 						beanDefinition);
