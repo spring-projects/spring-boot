@@ -1351,7 +1351,7 @@ bom {
 			releaseNotes("https://github.com/mockito/mockito/releases/tag/v{version}")
 		}
 	}
-	library("MongoDB", "5.1.4") {
+	library("MongoDB", "5.2.0") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
