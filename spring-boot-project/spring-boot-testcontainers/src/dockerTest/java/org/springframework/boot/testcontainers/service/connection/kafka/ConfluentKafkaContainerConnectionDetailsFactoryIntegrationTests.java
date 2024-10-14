@@ -22,9 +22,9 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -55,7 +55,7 @@ class ConfluentKafkaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final KafkaContainer kafka = TestImage.container(KafkaContainer.class);
+	static final ConfluentKafkaContainer kafka = TestImage.container(ConfluentKafkaContainer.class);
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;

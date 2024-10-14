@@ -20,9 +20,9 @@ import java.time.Duration;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.utility.MountableFile;
 import smoketest.kafka.Consumer;
 import smoketest.kafka.Producer;
