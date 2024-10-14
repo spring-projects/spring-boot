@@ -1275,32 +1275,9 @@ If you reach the `info` endpoint, you should see a response that contains the fo
 The `sbom` endpoint exposes the https://en.wikipedia.org/wiki/Software_supply_chain[Software Bill of Materials].
 CycloneDX SBOMs can be auto-detected, but other formats can be manually configured, too.
 
-The `spring-boot-starter-parent` Maven parent and the Spring Boot Gradle plugin configure the https://github.com/CycloneDX/cyclonedx-maven-plugin[CycloneDX Maven plugin] and the https://github.com/CycloneDX/cyclonedx-gradle-plugin[CycloneDX Gradle plugin] respectively.
-
-To get a CycloneDX SBOM, you'll need to add this to your Maven build:
-
-[source,xml]
-----
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.cyclonedx</groupId>
-            <artifactId>cyclonedx-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-</build>
-----
-
-For Gradle, you'll need to apply the CycloneDX Gradle plugin:
-
-[source,groovy]
-----
-plugins {
-    id 'org.cyclonedx.bom' version '1.10.0'
-}
-----
-
 The `sbom` actuator endpoint will then expose an SBOM called "application", which describes the contents of your application.
+
+TIP: To automatically generate a CycloneDX SBOM at project build time, please see the xref:how-to:build.adoc#howto.build.generate-cyclonedx-sbom[] section.
 
 
 

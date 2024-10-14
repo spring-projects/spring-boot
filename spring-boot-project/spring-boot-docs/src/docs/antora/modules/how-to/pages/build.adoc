@@ -87,6 +87,37 @@ Using this format lets the time be parsed into a `Date` and its format, when ser
 
 
 
+[[howto.build.generate-cyclonedx-sbom]]
+== Generate a CycloneDX SBOM
+
+Both Maven and Gradle allow generating a CycloneDX SBOM at project build time.
+
+For Maven users, the `spring-boot-starter-parent` POM includes a pre-configured plugin to generate the SBOM.
+To use it, add the following declaration for the {url-cyclonedx-docs-maven-plugin}[`cyclonedx-maven-plugin`] to your POM:
+
+[source,xml]
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+----
+
+Gradle users can achieve the same result by using the {url-cyclonedx-docs-gradle-plugin}[`cyclonedx-gradle-plugin`] plugin, as shown in the following example:
+
+[source,gradle]
+----
+plugins {
+    id 'org.cyclonedx.bom' version '1.10.0'
+}
+----
+
+
+
 [[howto.build.customize-dependency-versions]]
 == Customize Dependency Versions
 
