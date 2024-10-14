@@ -1647,7 +1647,7 @@ bom {
 			releaseNotes("https://github.com/r2dbc/r2dbc-pool/releases/tag/v{version}")
 		}
 	}
-	library("R2DBC Postgresql", "1.0.5.RELEASE") {
+	library("R2DBC Postgresql", "1.0.6.RELEASE") {
 		considerSnapshots()
 		group("org.postgresql") {
 			modules = [
