@@ -28,7 +28,7 @@ dependencies {
 task syncIntegrationTestSources(type: Sync) {
 	destinationDir file("${buildDir}/it")
 	from file("src/it")
-	filter(springRepoistoryTransformers.ant())
+	filter(springRepositoryTransformers.ant())
 }
 
 processResources {

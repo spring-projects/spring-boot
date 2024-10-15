@@ -50,7 +50,7 @@ task syncAntSources(type: Sync) {
 	destinationDir file("${buildDir}/ant")
 	from project.layout.projectDirectory
 	include "*.xml"
-	filter(springRepoistoryTransformers.ant())
+	filter(springRepositoryTransformers.ant())
 }
 
 task antRun(type: JavaExec) {
