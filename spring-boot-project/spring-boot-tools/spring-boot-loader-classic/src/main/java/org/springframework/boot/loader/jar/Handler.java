@@ -150,7 +150,7 @@ public class Handler extends URLStreamHandler {
 		if (file.startsWith(TOMCAT_WARFILE_PROTOCOL) || !file.contains("*/")) {
 			try {
 				URLConnection connection = new URL(file).openConnection();
-				if (connection.getClass().getName().startsWith("org.apache.catalina")) {
+				if (connection.getClass().getName().startsWith("org.apache.catalina.")) {
 					return true;
 				}
 			}

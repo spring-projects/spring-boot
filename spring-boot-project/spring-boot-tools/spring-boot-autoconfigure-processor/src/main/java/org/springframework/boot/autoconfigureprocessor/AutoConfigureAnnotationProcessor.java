@@ -280,7 +280,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		}
 
 		private boolean isSpringClass(String type) {
-			return type.startsWith("org.springframework");
+			return type.startsWith("org.springframework.");
 		}
 
 	}
