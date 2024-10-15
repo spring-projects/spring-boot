@@ -24,7 +24,7 @@ import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
@@ -60,7 +60,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@Test
 	void registerWhenAlreadyContainsNameDoesNotReplace() {
 		String beanName = "beancp-" + BeanConfigurationProperties.class.getName();
-		this.registry.registerBeanDefinition(beanName, new GenericBeanDefinition());
+		this.registry.registerBeanDefinition(beanName, new RootBeanDefinition());
 		this.registrar.register(BeanConfigurationProperties.class);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
 		assertThat(definition).isNotNull();
