@@ -102,7 +102,7 @@ syncDocumentationSourceForAsciidoctor {
 task copySettingsXml(type: Copy) {
 	from file("src/intTest/projects/settings.xml")
 	into "${buildDir}/generated-resources/settings"
-	filter(springRepoistoryTransformers.mavenSettings())
+	filter(springRepositoryTransformers.mavenSettings())
 }
 
 sourceSets {
