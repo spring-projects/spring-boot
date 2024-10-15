@@ -50,7 +50,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		new KotlinConventions().apply(project);
 		new WarConventions().apply(project);
 		new EclipseConventions().apply(project);
-		RepoistoryTransformersExtension.apply(project);
+		RepositoryTransformersExtension.apply(project);
 	}
 
 }

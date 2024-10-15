@@ -31,7 +31,7 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</pluginRepository>
-				<!-- {spring.mavenRepositories} -->
+				<!-- {spring.mavenPluginRepositories} -->
 			</pluginRepositories>
 		</profile>
 	</profiles>
