@@ -15,6 +15,6 @@
     "patch-package": "^8.0.0"
   },
   "config": {
-    "ui-bundle-url": "https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.16/ui-bundle.zip"
+    "ui-bundle-url": "https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.17/ui-bundle.zip"
   }
 }
