@@ -49,6 +49,7 @@ runs:
       uses: gradle/actions/setup-gradle@d156388eb19639ec20ade50009f3d199ce1e2808 # v4.1.0
       with:
         develocity-access-key: ${{ inputs.develocity-access-key }}
+        develocity-token-expiry: 4
     - name: Configure Gradle Properties
       shell: bash
       run: |
