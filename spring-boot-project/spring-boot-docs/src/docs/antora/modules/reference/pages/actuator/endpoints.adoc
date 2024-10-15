@@ -550,7 +550,7 @@ The information exposed by the `health` endpoint depends on the configprop:manag
 | `never`
 | Details are never shown.
 
-| `when-authorized`
+| `when_authorized`
 | Details are shown only to authorized users.
   Authorized roles can be configured by using `management.endpoint.health.roles`.
 
@@ -851,7 +851,7 @@ management:
     health:
       group:
         custom:
-          show-details: "when-authorized"
+          show-details: "when_authorized"
           roles: "admin"
           status:
             order: "fatal,up"
