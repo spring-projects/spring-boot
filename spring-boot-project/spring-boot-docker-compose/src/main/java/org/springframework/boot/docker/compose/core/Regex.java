@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
  *
  * @author Scott Frederick
  * @author Phillip Webb
- * @see <a href= "https://github.com/distribution/reference/blob/main/reference.go">OCI
+ * @see <a href="https://github.com/distribution/reference/blob/main/reference.go">OCI
  * Image grammar reference</a>
- * @see <a href= "https://github.com/distribution/reference/blob/main/regexp.go">OCI Image
+ * @see <a href="https://github.com/distribution/reference/blob/main/regexp.go">OCI Image
  * grammar implementation</a>
  * @see <a href=
  * "https://stackoverflow.com/questions/37861791/how-are-docker-image-names-parsed">How
