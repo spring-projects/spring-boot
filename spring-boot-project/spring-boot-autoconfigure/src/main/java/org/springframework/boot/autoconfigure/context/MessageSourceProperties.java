@@ -20,9 +20,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for Message Source.
@@ -45,7 +47,7 @@ public class MessageSourceProperties {
 	/**
 	 * Comma-separated list of locale-independent common messages.
 	 */
-	private String commonMessages;
+	private List<Resource> commonMessages;
 	
 	/**
 	 * Message bundles encoding.
@@ -126,11 +128,11 @@ public class MessageSourceProperties {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
 	}
 
-	public String getCommonMessages() {
+	public List<Resource> getCommonMessages() {
 		return this.commonMessages;
 	}
 
-	public void setCommonMessages(String commonMessages) {
+	public void setCommonMessages(List<Resource> commonMessages) {
 		this.commonMessages = commonMessages;
 	}
 }
