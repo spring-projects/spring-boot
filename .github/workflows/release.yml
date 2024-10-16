@@ -43,9 +43,11 @@ jobs:
     needs: build-and-stage-release
     uses: ./.github/workflows/verify.yml
     secrets:
+      commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
+      commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
       google-chat-webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-      repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-      repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+      opensource-repository-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+      opensource-repository-username: ${{ secrets.ARTIFACTORY_USERNAME }}
       token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
     with:
       staging: true
