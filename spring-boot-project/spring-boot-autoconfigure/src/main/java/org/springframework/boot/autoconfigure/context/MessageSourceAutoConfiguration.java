@@ -95,8 +95,8 @@ public class MessageSourceAutoConfiguration {
 				messageSource.setCommonMessages(commonProperties);
 			}
 		}
-		catch (IOException e) {
-			throw new UncheckedIOException("Failed to load common messages", e);
+		catch (IOException ex) {
+			throw new UncheckedIOException("Failed to load common messages", ex);
 		}
 		return messageSource;
 	}
