@@ -110,7 +110,7 @@ The following sample component creates a listener endpoint on the `someQueue` qu
 
 include-code::MyBean[]
 
-TIP: See javadoc:{url-spring-amqp-javadoc}/org.springframework.amqp.rabbit.annotation.EnableRabbit.html[format=annotation] for more details.
+TIP: See javadoc:{url-spring-amqp-javadoc}/org.springframework.amqp.rabbit.annotation.EnableRabbit[format=annotation] for more details.
 
 If you need to create more `RabbitListenerContainerFactory` instances or if you want to override the default, Spring Boot provides a `SimpleRabbitListenerContainerFactoryConfigurer` and a `DirectRabbitListenerContainerFactoryConfigurer` that you can use to initialize a `SimpleRabbitListenerContainerFactory` and a `DirectRabbitListenerContainerFactory` with the same settings as the factories used by the auto-configuration.
 
