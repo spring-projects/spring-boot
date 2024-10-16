@@ -3,8 +3,6 @@ plugins {
 	id "org.springframework.boot"
 }
 
-apply plugin: "io.spring.dependency-management"
-
 repositories {
 	maven { url "file:${rootDir}/../docker-test-maven-repository"}
 	mavenCentral()
@@ -12,6 +10,7 @@ repositories {
 }
 
 dependencies {
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 }
 
