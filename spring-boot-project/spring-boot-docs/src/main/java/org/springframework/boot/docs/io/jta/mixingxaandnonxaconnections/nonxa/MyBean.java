@@ -22,10 +22,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 public class MyBean {
 
-	// tag::code[]
 	public MyBean(@Qualifier("nonXaJmsConnectionFactory") ConnectionFactory connectionFactory) {
 		// ...
 	}
-	// end::code[]
 
 }
