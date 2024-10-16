@@ -37,6 +37,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator.VALIDATION_QUERY;
+import static org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator.DATABASE;
 
 /**
  * Tests for {@link DataSourceHealthIndicator}.
@@ -69,8 +71,8 @@ class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(this.dataSource);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"),
-				entry("validationQuery", "isValid()"));
+		assertThat(health.getDetails()).containsOnly(entry(DATABASE, "HSQL Database Engine"),
+				entry(VALIDATION_QUERY, "isValid()"));
 	}
 
 	@Test
@@ -81,8 +83,8 @@ class DataSourceHealthIndicatorTests {
 		this.indicator.setQuery(customValidationQuery);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"), entry("result", 0L),
-				entry("validationQuery", customValidationQuery));
+		assertThat(health.getDetails()).containsOnly(entry(DATABASE, "HSQL Database Engine"), entry("result", 0L),
+				entry(VALIDATION_QUERY, customValidationQuery));
 	}
 
 	@Test
@@ -92,9 +94,9 @@ class DataSourceHealthIndicatorTests {
 		this.indicator.setQuery(invalidValidationQuery);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails()).contains(entry("database", "HSQL Database Engine"),
-				entry("validationQuery", invalidValidationQuery));
-		assertThat(health.getDetails()).containsOnlyKeys("database", "error", "validationQuery");
+		assertThat(health.getDetails()).contains(entry(DATABASE, "HSQL Database Engine"),
+				entry(VALIDATION_QUERY, invalidValidationQuery));
+		assertThat(health.getDetails()).containsOnlyKeys(DATABASE, "error", VALIDATION_QUERY);
 	}
 
 	@Test
@@ -105,7 +107,7 @@ class DataSourceHealthIndicatorTests {
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
-		assertThat(health.getDetails()).containsKey("database");
+		assertThat(health.getDetails()).containsKey(DATABASE);
 		then(connection).should(times(2)).close();
 	}
 
@@ -119,8 +121,8 @@ class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"),
-				entry("validationQuery", "isValid()"));
+		assertThat(health.getDetails()).containsOnly(entry(DATABASE, "HSQL Database Engine"),
+				entry(VALIDATION_QUERY, "isValid()"));
 	}
 
 }

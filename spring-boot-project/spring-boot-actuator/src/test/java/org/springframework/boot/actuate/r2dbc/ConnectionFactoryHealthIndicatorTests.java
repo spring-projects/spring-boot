@@ -39,6 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.boot.actuate.r2dbc.ConnectionFactoryHealthIndicator.VALIDATION_QUERY;
+import static org.springframework.boot.actuate.r2dbc.ConnectionFactoryHealthIndicator.DATABASE;
 
 /**
  * Tests for {@link ConnectionFactoryHealthIndicator}.
@@ -55,8 +57,8 @@ class ConnectionFactoryHealthIndicatorTests {
 			ConnectionFactoryHealthIndicator healthIndicator = new ConnectionFactoryHealthIndicator(connectionFactory);
 			healthIndicator.health().as(StepVerifier::create).assertNext((actual) -> {
 				assertThat(actual.getStatus()).isEqualTo(Status.UP);
-				assertThat(actual.getDetails()).containsOnly(entry("database", "H2"),
-						entry("validationQuery", "validate(REMOTE)"));
+				assertThat(actual.getDetails()).containsOnly(entry(DATABASE, "H2"),
+						entry(VALIDATION_QUERY, "validate(REMOTE)"));
 			}).expectComplete().verify(Duration.ofSeconds(30));
 		}
 		finally {
@@ -73,8 +75,8 @@ class ConnectionFactoryHealthIndicatorTests {
 		ConnectionFactoryHealthIndicator healthIndicator = new ConnectionFactoryHealthIndicator(connectionFactory);
 		healthIndicator.health().as(StepVerifier::create).assertNext((actual) -> {
 			assertThat(actual.getStatus()).isEqualTo(Status.DOWN);
-			assertThat(actual.getDetails()).containsOnly(entry("database", "mock"),
-					entry("validationQuery", "validate(REMOTE)"), entry("error", "java.lang.RuntimeException: test"));
+			assertThat(actual.getDetails()).containsOnly(entry(DATABASE, "mock"),
+					entry(VALIDATION_QUERY, "validate(REMOTE)"), entry("error", "java.lang.RuntimeException: test"));
 		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
@@ -89,8 +91,8 @@ class ConnectionFactoryHealthIndicatorTests {
 		ConnectionFactoryHealthIndicator healthIndicator = new ConnectionFactoryHealthIndicator(connectionFactory);
 		healthIndicator.health().as(StepVerifier::create).assertNext((actual) -> {
 			assertThat(actual.getStatus()).isEqualTo(Status.DOWN);
-			assertThat(actual.getDetails()).containsOnly(entry("database", "mock"),
-					entry("validationQuery", "validate(REMOTE)"));
+			assertThat(actual.getDetails()).containsOnly(entry(DATABASE, "mock"),
+					entry(VALIDATION_QUERY, "validate(REMOTE)"));
 		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
@@ -111,8 +113,8 @@ class ConnectionFactoryHealthIndicatorTests {
 					customValidationQuery);
 			healthIndicator.health().as(StepVerifier::create).assertNext((actual) -> {
 				assertThat(actual.getStatus()).isEqualTo(Status.UP);
-				assertThat(actual.getDetails()).containsOnly(entry("database", "H2"), entry("result", 0L),
-						entry("validationQuery", customValidationQuery));
+				assertThat(actual.getDetails()).containsOnly(entry(DATABASE, "H2"), entry("result", 0L),
+						entry(VALIDATION_QUERY, customValidationQuery));
 			}).expectComplete().verify(Duration.ofSeconds(30));
 		}
 		finally {
@@ -130,9 +132,9 @@ class ConnectionFactoryHealthIndicatorTests {
 					invalidValidationQuery);
 			healthIndicator.health().as(StepVerifier::create).assertNext((actual) -> {
 				assertThat(actual.getStatus()).isEqualTo(Status.DOWN);
-				assertThat(actual.getDetails()).contains(entry("database", "H2"),
-						entry("validationQuery", invalidValidationQuery));
-				assertThat(actual.getDetails()).containsOnlyKeys("database", "error", "validationQuery");
+				assertThat(actual.getDetails()).contains(entry(DATABASE, "H2"),
+						entry(VALIDATION_QUERY, invalidValidationQuery));
+				assertThat(actual.getDetails()).containsOnlyKeys(DATABASE, "error", VALIDATION_QUERY);
 			}).expectComplete().verify(Duration.ofSeconds(30));
 		}
 		finally {

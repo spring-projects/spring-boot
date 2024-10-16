@@ -45,6 +45,10 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 
 	private final String validationQuery;
 
+	public static final String DATABASE = "database";
+
+	public static final String VALIDATION_QUERY = "validationQuery";
+
 	/**
 	 * Create a new {@link ConnectionFactoryHealthIndicator} using the specified
 	 * {@link ConnectionFactory} and no validation query.
@@ -75,13 +79,13 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 	}
 
 	private Mono<Health> validate(Builder builder) {
-		builder.withDetail("database", this.connectionFactory.getMetadata().getName());
+		builder.withDetail(DATABASE, this.connectionFactory.getMetadata().getName());
 		return (StringUtils.hasText(this.validationQuery)) ? validateWithQuery(builder)
 				: validateWithConnectionValidation(builder);
 	}
 
 	private Mono<Health> validateWithQuery(Builder builder) {
-		builder.withDetail("validationQuery", this.validationQuery);
+		builder.withDetail(VALIDATION_QUERY, this.validationQuery);
 		Mono<Object> connectionValidation = Mono.usingWhen(this.connectionFactory.create(),
 				(conn) -> Flux.from(conn.createStatement(this.validationQuery).execute())
 					.flatMap((it) -> it.map(this::extractResult))
@@ -91,7 +95,7 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 	}
 
 	private Mono<Health> validateWithConnectionValidation(Builder builder) {
-		builder.withDetail("validationQuery", "validate(REMOTE)");
+		builder.withDetail(VALIDATION_QUERY, "validate(REMOTE)");
 		Mono<Boolean> connectionValidation = Mono.usingWhen(this.connectionFactory.create(),
 				(connection) -> Mono.from(connection.validate(ValidationDepth.REMOTE)), Connection::close,
 				(connection, ex) -> connection.close(), Connection::close);

@@ -57,9 +57,9 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	private JdbcTemplate jdbcTemplate;
 
-	private static final String DATABASE = "database";
+	public static final String DATABASE = "database";
 
-	private static final String VALIDATION_QUERY = "validationQuery";
+	public static final String VALIDATION_QUERY = "validationQuery";
 
 	/**
 	 * Create a new {@link DataSourceHealthIndicator} instance.
