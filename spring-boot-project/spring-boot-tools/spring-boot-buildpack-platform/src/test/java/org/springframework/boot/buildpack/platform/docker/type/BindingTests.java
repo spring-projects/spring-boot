@@ -107,14 +107,14 @@ class BindingTests {
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
-			/cnb,			true
-			/layers,		true
-			/workspace,		true
-			/something,		false
-			c:\\cnb,		true
-			c:\\layers,		true
-			c:\\workspace,	true
-			c:\\something,	false
+			/cnb, true
+			/layers, true
+			/workspace, true
+			/something, false
+			c:\\cnb, true
+			c:\\layers, true
+			c:\\workspace, true
+			c:\\something, false
 			""")
 	void shouldDetectSensitiveContainerPaths(String containerPath, boolean sensitive) {
 		Binding binding = Binding.from("/host", containerPath);

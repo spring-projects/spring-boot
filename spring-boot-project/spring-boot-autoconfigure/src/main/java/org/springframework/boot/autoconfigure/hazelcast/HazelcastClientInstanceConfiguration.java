@@ -37,10 +37,8 @@ class HazelcastClientInstanceConfiguration {
 	@Bean
 	HazelcastInstance hazelcastInstance(HazelcastConnectionDetails hazelcastConnectionDetails) {
 		ClientConfig config = hazelcastConnectionDetails.getClientConfig();
-		if (StringUtils.hasText(config.getInstanceName())) {
-			return HazelcastClient.getOrCreateHazelcastClient(config);
-		}
-		return HazelcastClient.newHazelcastClient(config);
+		return (!StringUtils.hasText(config.getInstanceName())) ? HazelcastClient.newHazelcastClient(config)
+				: HazelcastClient.getOrCreateHazelcastClient(config);
 	}
 
 }

@@ -66,42 +66,41 @@ public final class Binding {
 	}
 
 	/**
-	 * Returns the container destination path.
-	 * @return the container destination path
-	 */
-	String getContainerDestinationPath() {
-		List<String> parts = split(this.value, ':', '\\');
-		// Format is <host>:<container>:[<options>]
-		Assert.state(parts.size() >= 2, () -> "Expected 2 or more parts, but found %d".formatted(parts.size()));
-		return parts.get(1);
-	}
-
-	private List<String> split(String input, char delimiter, char notFollowedBy) {
-		Assert.state(notFollowedBy != '\0', "notFollowedBy must not be the null terminator");
-		List<String> parts = new ArrayList<>();
-		StringBuilder accumulator = new StringBuilder();
-		for (int i = 0; i < input.length(); i++) {
-			char c = input.charAt(i);
-			char nextChar = (i + 1 < input.length()) ? input.charAt(i + 1) : '\0';
-			if (c == delimiter && nextChar != notFollowedBy) {
-				parts.add(accumulator.toString());
-				accumulator.setLength(0);
-			}
-			else {
-				accumulator.append(c);
-			}
-		}
-		parts.add(accumulator.toString());
-		return parts;
-	}
-
-	/**
 	 * Whether the binding uses a sensitive container path.
 	 * @return whether the binding uses a sensitive container path
 	 * @since 3.4.0
 	 */
 	public boolean usesSensitiveContainerPath() {
 		return SENSITIVE_CONTAINER_PATHS.contains(getContainerDestinationPath());
+	}
+
+	/**
+	 * Returns the container destination path.
+	 * @return the container destination path
+	 */
+	String getContainerDestinationPath() {
+		List<String> parts = getParts();
+		Assert.state(parts.size() >= 2, () -> "Expected 2 or more parts, but found %d".formatted(parts.size()));
+		return parts.get(1);
+	}
+
+	private List<String> getParts() {
+		// Format is <host>:<container>:[<options>]
+		List<String> parts = new ArrayList<>();
+		StringBuilder buffer = new StringBuilder();
+		for (int i = 0; i < this.value.length(); i++) {
+			char ch = this.value.charAt(i);
+			char nextChar = (i + 1 < this.value.length()) ? this.value.charAt(i + 1) : '\0';
+			if (ch == ':' && nextChar != '\\') {
+				parts.add(buffer.toString());
+				buffer.setLength(0);
+			}
+			else {
+				buffer.append(ch);
+			}
+		}
+		parts.add(buffer.toString());
+		return parts;
 	}
 
 	/**

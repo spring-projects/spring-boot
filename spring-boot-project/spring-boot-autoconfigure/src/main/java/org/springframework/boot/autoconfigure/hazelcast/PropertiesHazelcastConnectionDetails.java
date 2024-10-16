@@ -55,14 +55,16 @@ class PropertiesHazelcastConnectionDetails implements HazelcastConnectionDetails
 		try {
 			URL configUrl = configLocation.getURL();
 			String configFileName = configUrl.getPath().toLowerCase();
-			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
-				return new YamlClientConfigBuilder(configUrl).build();
-			}
-			return new XmlClientConfigBuilder(configUrl).build();
+			return (!isYaml(configFileName)) ? new XmlClientConfigBuilder(configUrl).build()
+					: new YamlClientConfigBuilder(configUrl).build();
 		}
 		catch (IOException ex) {
 			throw new UncheckedIOException("Failed to load Hazelcast config", ex);
 		}
+	}
+
+	private boolean isYaml(String configFileName) {
+		return configFileName.endsWith(".yaml") || configFileName.endsWith(".yml");
 	}
 
 }
