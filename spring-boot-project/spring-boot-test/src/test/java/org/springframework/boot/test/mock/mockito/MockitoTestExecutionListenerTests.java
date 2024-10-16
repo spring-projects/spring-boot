@@ -57,6 +57,14 @@ class MockitoTestExecutionListenerTests {
 	private MockitoPostProcessor postProcessor;
 
 	@Test
+	void prepareTestInstanceShouldInitMockitoAnnotations() throws Exception {
+		WithMockitoAnnotations instance = new WithMockitoAnnotations();
+		this.listener.prepareTestInstance(mockTestContext(instance));
+		assertThat(instance.mock).isNotNull();
+		assertThat(instance.captor).isNotNull();
+	}
+
+	@Test
 	void prepareTestInstanceShouldInjectMockBean() throws Exception {
 		given(this.applicationContext.getBean(MockitoPostProcessor.class)).willReturn(this.postProcessor);
 		WithMockBean instance = new WithMockBean();

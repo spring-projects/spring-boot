@@ -54,7 +54,6 @@ import static org.mockito.BDDMockito.given;
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)
 @ExtendWith(SpringExtension.class)
-@Disabled("https://github.com/spring-projects/spring-framework/issues/33690")
 class MockitoTestExecutionListenerIntegrationTests {
 
 	@Nested

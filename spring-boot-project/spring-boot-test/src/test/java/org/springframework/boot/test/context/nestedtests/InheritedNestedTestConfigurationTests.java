@@ -16,7 +16,6 @@
 
 package org.springframework.boot.test.context.nestedtests;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +39,6 @@ import static org.mockito.Mockito.times;
  */
 @SpringBootTest(classes = AppConfiguration.class)
 @Import(ActionPerformer.class)
-@Disabled("https://github.com/spring-projects/spring-framework/issues/33676")
 class InheritedNestedTestConfigurationTests {
 
 	@MockitoBean

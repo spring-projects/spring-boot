@@ -16,18 +16,29 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.BiConsumer;
+
+import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
  * {@link TestExecutionListener} to enable {@link MockBean @MockBean} and
- * {@link SpyBean @SpyBean} support.
+ * {@link SpyBean @SpyBean} support. Also triggers
+ * {@link MockitoAnnotations#openMocks(Object)} when any Mockito annotations used,
+ * primarily to allow {@link Captor @Captor} annotations.
  * <p>
  * To use the automatic reset support of {@code @MockBean} and {@code @SpyBean}, configure
  * {@link ResetMocksTestExecutionListener} as well.
@@ -37,12 +48,14 @@ import org.springframework.util.ReflectionUtils;
  * @author Moritz Halbritter
  * @since 1.4.2
  * @see ResetMocksTestExecutionListener
- * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
- * {@link org.springframework.test.context.bean.override.mockito.MockitoTestExecutionListener}
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's support for
+ * {@link MockitoBean} and {@link MockitoSpyBean}.
  */
 @SuppressWarnings("removal")
 @Deprecated(since = "3.4.0", forRemoval = true)
 public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
+
+	private static final String MOCKS_ATTRIBUTE_NAME = MockitoTestExecutionListener.class.getName() + ".mocks";
 
 	@Override
 	public final int getOrder() {
@@ -51,6 +64,8 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 
 	@Override
 	public void prepareTestInstance(TestContext testContext) throws Exception {
+		closeMocks(testContext);
+		initMocks(testContext);
 		injectFields(testContext);
 	}
 
@@ -58,8 +73,39 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 	public void beforeTestMethod(TestContext testContext) throws Exception {
 		if (Boolean.TRUE.equals(
 				testContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))) {
+			closeMocks(testContext);
+			initMocks(testContext);
 			reinjectFields(testContext);
 		}
+	}
+
+	@Override
+	public void afterTestMethod(TestContext testContext) throws Exception {
+		closeMocks(testContext);
+	}
+
+	@Override
+	public void afterTestClass(TestContext testContext) throws Exception {
+		closeMocks(testContext);
+	}
+
+	private void initMocks(TestContext testContext) {
+		if (hasMockitoAnnotations(testContext)) {
+			testContext.setAttribute(MOCKS_ATTRIBUTE_NAME, MockitoAnnotations.openMocks(testContext.getTestInstance()));
+		}
+	}
+
+	private void closeMocks(TestContext testContext) throws Exception {
+		Object mocks = testContext.getAttribute(MOCKS_ATTRIBUTE_NAME);
+		if (mocks instanceof AutoCloseable closeable) {
+			closeable.close();
+		}
+	}
+
+	private boolean hasMockitoAnnotations(TestContext testContext) {
+		MockitoAnnotationCollection collector = new MockitoAnnotationCollection();
+		ReflectionUtils.doWithFields(testContext.getTestClass(), collector);
+		return collector.hasAnnotations();
 	}
 
 	private void injectFields(TestContext testContext) {
@@ -88,6 +134,28 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 				}
 			}
 		}
+	}
+
+	/**
+	 * {@link FieldCallback} to collect Mockito annotations.
+	 */
+	private static final class MockitoAnnotationCollection implements FieldCallback {
+
+		private final Set<Annotation> annotations = new LinkedHashSet<>();
+
+		@Override
+		public void doWith(Field field) throws IllegalArgumentException {
+			for (Annotation annotation : field.getDeclaredAnnotations()) {
+				if (annotation.annotationType().getName().startsWith("org.mockito")) {
+					this.annotations.add(annotation);
+				}
+			}
+		}
+
+		boolean hasAnnotations() {
+			return !this.annotations.isEmpty();
+		}
+
 	}
 
 	private static final class MockitoField {
