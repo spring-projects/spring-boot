@@ -44,6 +44,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Kedar Joshi
  * @author Marc Becker
+ * @author Misagh Moayyed
+ * @author Phillip Webb
  */
 class MessageSourceAutoConfigurationTests {
 

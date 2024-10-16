@@ -59,6 +59,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Eddú Meléndez
  * @author Marc Becker
+ * @author Misagh Moayyed
  * @since 1.5.0
  */
 @AutoConfiguration
