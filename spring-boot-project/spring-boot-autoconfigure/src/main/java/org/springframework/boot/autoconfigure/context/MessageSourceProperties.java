@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for Message Source.
@@ -43,6 +44,11 @@ public class MessageSourceProperties {
 	 * will be resolved from the classpath root.
 	 */
 	private List<String> basename = new ArrayList<>(List.of("messages"));
+
+	/**
+	 * List of locale-independent property file resources containing common messages.
+	 */
+	private List<Resource> commonMessages;
 
 	/**
 	 * Message bundles encoding.
@@ -121,6 +127,14 @@ public class MessageSourceProperties {
 
 	public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
+	}
+
+	public List<Resource> getCommonMessages() {
+		return this.commonMessages;
+	}
+
+	public void setCommonMessages(List<Resource> commonMessages) {
+		this.commonMessages = commonMessages;
 	}
 
 }
