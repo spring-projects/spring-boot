@@ -57,6 +57,10 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	private JdbcTemplate jdbcTemplate;
 
+	private static final String DATABASE = "database";
+
+	private static final String VALIDATION_QUERY = "validationQuery";
+
 	/**
 	 * Create a new {@link DataSourceHealthIndicator} instance.
 	 */
@@ -94,7 +98,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		if (this.dataSource == null) {
-			builder.up().withDetail("database", "unknown");
+			builder.up().withDetail(DATABASE, "unknown");
 		}
 		else {
 			doDataSourceHealthCheck(builder);
@@ -102,17 +106,17 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	}
 
 	private void doDataSourceHealthCheck(Health.Builder builder) {
-		builder.up().withDetail("database", getProduct());
+		builder.up().withDetail(DATABASE, getProduct());
 		String validationQuery = this.query;
 		if (StringUtils.hasText(validationQuery)) {
-			builder.withDetail("validationQuery", validationQuery);
+			builder.withDetail(VALIDATION_QUERY, validationQuery);
 			// Avoid calling getObject as it breaks MySQL on Java 7 and later
 			List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
 			Object result = DataAccessUtils.requiredSingleResult(results);
 			builder.withDetail("result", result);
 		}
 		else {
-			builder.withDetail("validationQuery", "isValid()");
+			builder.withDetail(VALIDATION_QUERY, "isValid()");
 			boolean valid = isConnectionValid();
 			builder.status((valid) ? Status.UP : Status.DOWN);
 		}
