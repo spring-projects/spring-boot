@@ -3,8 +3,6 @@ plugins {
 	id "org.springframework.boot"
 }
 
-apply plugin: "io.spring.dependency-management"
-
 repositories {
 	maven { url "file:${rootDir}/../int-test-maven-repository"}
 	mavenCentral()
@@ -13,5 +11,6 @@ repositories {
 }
 
 dependencies {
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
 	implementation("org.springframework.boot:spring-boot-starter-web")
 }
