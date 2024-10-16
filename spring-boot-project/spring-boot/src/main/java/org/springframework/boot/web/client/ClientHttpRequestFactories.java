@@ -36,8 +36,8 @@ import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
 import org.eclipse.jetty.io.ClientConnector;
@@ -209,9 +209,8 @@ public final class ClientHttpRequestFactories {
 			}
 			if (sslBundle != null) {
 				SslOptions options = sslBundle.getOptions();
-				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslBundle.createSslContext(),
-						options.getEnabledProtocols(), options.getCiphers(), new DefaultHostnameVerifier());
-				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
+				connectionManagerBuilder.setTlsSocketStrategy(new DefaultClientTlsStrategy(sslBundle.createSslContext(),
+						options.getEnabledProtocols(), options.getCiphers(), null, new DefaultHostnameVerifier()));
 			}
 			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.useSystemProperties()
 				.build();

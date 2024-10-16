@@ -38,8 +38,8 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.ssl.TLS;
@@ -992,7 +992,7 @@ public class TestRestTemplate {
 		ENABLE_REDIRECTS,
 
 		/**
-		 * Use a {@link SSLConnectionSocketFactory} that trusts self-signed certificates.
+		 * Use a {@link TlsSocketStrategy} that trusts self-signed certificates.
 		 */
 		SSL
 
@@ -1038,7 +1038,7 @@ public class TestRestTemplate {
 				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 			PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
 			if (ssl) {
-				builder.setSSLSocketFactory(createSocketFactory());
+				builder.setTlsSocketStrategy(createTlsSocketStrategy());
 			}
 			if (readTimeout != null) {
 				SocketConfig socketConfig = SocketConfig.custom()
@@ -1049,14 +1049,12 @@ public class TestRestTemplate {
 			return builder.build();
 		}
 
-		private SSLConnectionSocketFactory createSocketFactory()
-				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+		private TlsSocketStrategy createTlsSocketStrategy()
+				throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 				.build();
-			return SSLConnectionSocketFactoryBuilder.create()
-				.setSslContext(sslContext)
-				.setTlsVersions(TLS.V_1_3, TLS.V_1_2)
-				.build();
+			return new DefaultClientTlsStrategy(sslContext, new String[] { TLS.V_1_3.getId(), TLS.V_1_2.getId() }, null,
+					null, null);
 		}
 
 		@Override
