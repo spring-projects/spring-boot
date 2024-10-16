@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class MessageSourceAutoConfigurationTests {
 
 	@Test
 	void propertiesBundleWithSlashIsDetected() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/messages").run((context) -> {
 			assertThat(context).hasSingleBean(MessageSource.class);
 			assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 		});
@@ -66,7 +66,7 @@ class MessageSourceAutoConfigurationTests {
 
 	@Test
 	void propertiesBundleWithDotIsDetected() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test.messages").run((context) -> {
+		this.contextRunner.withPropertyValues("spring.messages.basename=test.messages").run((context) -> {
 			assertThat(context).hasSingleBean(MessageSource.class);
 			assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 		});
@@ -74,7 +74,7 @@ class MessageSourceAutoConfigurationTests {
 
 	@Test
 	void testEncodingWorks() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/swedish")
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/swedish")
 			.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
 				.isEqualTo("Some text with some swedish öäå!"));
 	}
@@ -82,14 +82,14 @@ class MessageSourceAutoConfigurationTests {
 	@Test
 	void testCacheDurationNoUnit() {
 		this.contextRunner
-			.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=10")
+			.withPropertyValues("spring.messages.basename=test/messages", "spring.messages.cache-duration=10")
 			.run(assertCache(10 * 1000));
 	}
 
 	@Test
 	void testCacheDurationWithUnit() {
 		this.contextRunner
-			.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=1m")
+			.withPropertyValues("spring.messages.basename=test/messages", "spring.messages.cache-duration=1m")
 			.run(assertCache(60 * 1000));
 	}
 
@@ -102,7 +102,7 @@ class MessageSourceAutoConfigurationTests {
 
 	@Test
 	void testMultipleMessageSourceCreated() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages,test/messages2")
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/messages,test/messages2")
 			.run((context) -> {
 				assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 				assertThat(context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK)).isEqualTo("bar-bar");
@@ -119,14 +119,24 @@ class MessageSourceAutoConfigurationTests {
 	@Test
 	void testCommonMessages() {
 		this.contextRunner
-			.withPropertyValues("spring.messages.basename:test/messages",
-					"spring.messages.common-messages:test/common-messages")
+			.withPropertyValues("spring.messages.basename=test/messages",
+					"spring.messages.common-messages=classpath:test/common-messages.properties")
 			.run((context) -> assertThat(context.getMessage("hello", null, "Hello!", Locale.UK)).isEqualTo("world"));
 	}
 
 	@Test
+	void testCommonMessagesWhenNotFound() {
+		this.contextRunner
+			.withPropertyValues("spring.messages.basename=test/messages",
+					"spring.messages.common-messages=classpath:test/common-messages-missing.properties")
+			.run((context) -> assertThat(context).getFailure()
+				.hasMessageContaining(
+						"Failed to load common messages from 'class path resource [test/common-messages-missing.properties]'"));
+	}
+
+	@Test
 	void testFallbackDefault() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/messages")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
 				.hasFieldOrPropertyWithValue("fallbackToSystemLocale", true));
 	}
@@ -134,7 +144,7 @@ class MessageSourceAutoConfigurationTests {
 	@Test
 	void testFallbackTurnOff() {
 		this.contextRunner
-			.withPropertyValues("spring.messages.basename:test/messages",
+			.withPropertyValues("spring.messages.basename=test/messages",
 					"spring.messages.fallback-to-system-locale:false")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
 				.hasFieldOrPropertyWithValue("fallbackToSystemLocale", false));
@@ -142,7 +152,7 @@ class MessageSourceAutoConfigurationTests {
 
 	@Test
 	void testFormatMessageDefault() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/messages")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
 				.hasFieldOrPropertyWithValue("alwaysUseMessageFormat", false));
 	}
@@ -150,7 +160,7 @@ class MessageSourceAutoConfigurationTests {
 	@Test
 	void testFormatMessageOn() {
 		this.contextRunner
-			.withPropertyValues("spring.messages.basename:test/messages",
+			.withPropertyValues("spring.messages.basename=test/messages",
 					"spring.messages.always-use-message-format:true")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
 				.hasFieldOrPropertyWithValue("alwaysUseMessageFormat", true));
@@ -158,7 +168,7 @@ class MessageSourceAutoConfigurationTests {
 
 	@Test
 	void testUseCodeAsDefaultMessageDefault() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/messages")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
 				.hasFieldOrPropertyWithValue("useCodeAsDefaultMessage", false));
 	}
@@ -166,8 +176,8 @@ class MessageSourceAutoConfigurationTests {
 	@Test
 	void testUseCodeAsDefaultMessageOn() {
 		this.contextRunner
-			.withPropertyValues("spring.messages.basename:test/messages",
-					"spring.messages.use-code-as-default-message:true")
+			.withPropertyValues("spring.messages.basename=test/messages",
+					"spring.messages.use-code-as-default-message=true")
 			.run((context) -> assertThat(context.getBean(MessageSource.class))
 				.hasFieldOrPropertyWithValue("useCodeAsDefaultMessage", true));
 	}
@@ -181,13 +191,13 @@ class MessageSourceAutoConfigurationTests {
 	@Test
 	void existingMessageSourceInParentIsIgnored() {
 		this.contextRunner.run((parent) -> this.contextRunner.withParent(parent)
-			.withPropertyValues("spring.messages.basename:test/messages")
+			.withPropertyValues("spring.messages.basename=test/messages")
 			.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar")));
 	}
 
 	@Test
 	void messageSourceWithNonStandardBeanNameIsIgnored() {
-		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+		this.contextRunner.withPropertyValues("spring.messages.basename=test/messages")
 			.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
 			.run((context) -> assertThat(context.getMessage("foo", null, Locale.US)).isEqualTo("bar"));
 	}

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.context;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
+import java.util.List;
 import java.util.Properties;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -41,6 +42,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.CollectionFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -85,20 +87,24 @@ public class MessageSourceAutoConfiguration {
 		}
 		messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
 		messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
+		messageSource.setCommonMessages(loadCommonMessages(properties.getCommonMessages()));
+		return messageSource;
+	}
 
-		try {
-			if (properties.getCommonMessages() != null) {
-				Properties commonProperties = new Properties();
-				for (Resource commonResource : properties.getCommonMessages()) {
-					PropertiesLoaderUtils.fillProperties(commonProperties, commonResource);
-				}
-				messageSource.setCommonMessages(commonProperties);
+	private Properties loadCommonMessages(List<Resource> resources) {
+		if (CollectionUtils.isEmpty(resources)) {
+			return null;
+		}
+		Properties properties = CollectionFactory.createSortedProperties(false);
+		for (Resource resource : resources) {
+			try {
+				PropertiesLoaderUtils.fillProperties(properties, resource);
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException("Failed to load common messages from '%s'".formatted(resource), ex);
 			}
 		}
-		catch (IOException ex) {
-			throw new UncheckedIOException("Failed to load common messages", ex);
-		}
-		return messageSource;
+		return properties;
 	}
 
 	protected static class ResourceBundleCondition extends SpringBootCondition {

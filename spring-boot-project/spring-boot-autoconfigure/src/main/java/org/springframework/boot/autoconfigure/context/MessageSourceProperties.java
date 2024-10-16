@@ -46,7 +46,7 @@ public class MessageSourceProperties {
 	private List<String> basename = new ArrayList<>(List.of("messages"));
 
 	/**
-	 * Comma-separated list of locale-independent common messages.
+	 * List of locale-independent property file resources containing common messages.
 	 */
 	private List<Resource> commonMessages;
 
