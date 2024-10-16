@@ -26,6 +26,8 @@ import org.springframework.core.annotation.MergedAnnotations;
 
 /**
  * {@link RootBeanDefinition} used for testcontainer bean definitions.
+ * This bean definition links a Testcontainers {@link Container} instance to a field and its 
+ * associated annotations.
  *
  * @author Phillip Webb
  */
@@ -35,12 +37,26 @@ class TestcontainerFieldBeanDefinition extends RootBeanDefinition implements Tes
 
 	private final MergedAnnotations annotations;
 
+	/**
+     * Create a new {@link TestcontainerFieldBeanDefinition} instance.
+     *
+     * @param field the field associated with the Testcontainer
+     * @param container the container instance associated with the field
+     * @throws NullPointerException if field or container is null
+     */
 	TestcontainerFieldBeanDefinition(Field field, Container<?> container) {
-		this.container = container;
-		this.annotations = MergedAnnotations.from(field);
-		this.setBeanClass(container.getClass());
-		setInstanceSupplier(() -> container);
-		setRole(ROLE_INFRASTRUCTURE);
+		// Ensure non-null values for the field and container
+        this.container = Objects.requireNonNull(container, "Container must not be null");
+        this.annotations = MergedAnnotations.from(Objects.requireNonNull(field, "Field must not be null"));
+        
+        // Set the bean class to the container's class
+        this.setBeanClass(container.getClass());
+        
+        // Provide the container as the instance supplier
+        setInstanceSupplier(() -> container);
+        
+        // Set the role as infrastructure
+        setRole(ROLE_INFRASTRUCTURE);
 	}
 
 	@Override
