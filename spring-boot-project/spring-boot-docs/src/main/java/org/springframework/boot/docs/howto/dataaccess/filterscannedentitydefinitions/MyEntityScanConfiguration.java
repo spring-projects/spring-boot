@@ -25,7 +25,7 @@ public class MyEntityScanConfiguration {
 
 	@Bean
 	public ManagedClassNameFilter entityScanFilter() {
-		return (className) -> className.startsWith("com.example.app.customer");
+		return (className) -> className.startsWith("com.example.app.customer.");
 	}
 
 }

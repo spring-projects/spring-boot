@@ -138,7 +138,7 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	}
 
 	private boolean retainKey(String key) {
-		return key.startsWith("java.") || key.equals("JAVA_HOME") || key.startsWith("com.example");
+		return key.startsWith("java.") || key.equals("JAVA_HOME") || key.startsWith("com.example.");
 	}
 
 	@Configuration(proxyBeanMethods = false)
