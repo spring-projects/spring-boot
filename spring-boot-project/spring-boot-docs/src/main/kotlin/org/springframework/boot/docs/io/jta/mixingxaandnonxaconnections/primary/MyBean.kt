@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-// tag::code[]
 package org.springframework.boot.docs.io.jta.mixingxaandnonxaconnections.primary
 
 import jakarta.jms.ConnectionFactory
 
 @Suppress("UNUSED_PARAMETER")
 class MyBean(connectionFactory: ConnectionFactory?)
-// end::code[]

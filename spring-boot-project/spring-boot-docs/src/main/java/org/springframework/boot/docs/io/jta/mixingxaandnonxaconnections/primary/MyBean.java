@@ -20,10 +20,8 @@ import jakarta.jms.ConnectionFactory;
 
 public class MyBean {
 
-	// tag::code[]
 	public MyBean(ConnectionFactory connectionFactory) {
 		// ...
 	}
-	// end::code[]
 
 }
