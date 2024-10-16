@@ -49,7 +49,7 @@ public class MessageSourceProperties {
 	 * Comma-separated list of locale-independent common messages.
 	 */
 	private List<Resource> commonMessages;
-	
+
 	/**
 	 * Message bundles encoding.
 	 */
@@ -136,4 +136,5 @@ public class MessageSourceProperties {
 	public void setCommonMessages(List<Resource> commonMessages) {
 		this.commonMessages = commonMessages;
 	}
+
 }
