@@ -298,9 +298,9 @@ Values can only be viewed in an unsanitized form when:
 
 The `show-values` property can be configured for sanitizable endpoints to one of the following values:
 
-- `NEVER`  - values are always fully sanitized (replaced by `+******+`)
-- `ALWAYS` - values are shown to all users (as long as no `SanitizingFunction` bean applies)
-- `WHEN_AUTHORIZED` - values are shown only to authorized users (as long as no `SanitizingFunction` bean applies)
+- `never`  - values are always fully sanitized (replaced by `+******+`)
+- `always` - values are shown to all users (as long as no `SanitizingFunction` bean applies)
+- `when-authorized` - values are shown only to authorized users (as long as no `SanitizingFunction` bean applies)
 
 For HTTP endpoints, a user is considered to be authorized if they have authenticated and have the roles configured by the endpoint's roles property.
 By default, any authenticated user is authorized.
@@ -315,7 +315,7 @@ Unauthorized users, or users without the `admin` role, will see only sanitized v
 management:
   endpoint:
     env:
-      show-values: WHEN_AUTHORIZED
+      show-values: when-authorized
       roles: "admin"
 ----
 
