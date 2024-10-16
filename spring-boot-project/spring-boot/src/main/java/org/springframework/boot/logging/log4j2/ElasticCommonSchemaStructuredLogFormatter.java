@@ -26,8 +26,9 @@ import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
-import org.springframework.boot.logging.structured.ElasticCommonSchemaService;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
@@ -41,8 +42,9 @@ import org.springframework.util.ObjectUtils;
  */
 class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-	ElasticCommonSchemaStructuredLogFormatter(Environment environment) {
-		super((members) -> jsonMembers(environment, members));
+	ElasticCommonSchemaStructuredLogFormatter(Environment environment,
+			StructureLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(environment, members), customizer);
 	}
 
 	private static void jsonMembers(Environment environment, JsonWriter.Members<LogEvent> members) {
@@ -51,7 +53,7 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		members.add("process.pid", environment.getProperty("spring.application.pid", Long.class))
 			.when(Objects::nonNull);
 		members.add("process.thread.name", LogEvent::getThreadName);
-		ElasticCommonSchemaService.get(environment).jsonMembers(members);
+		ElasticCommonSchemaProperties.get(environment).jsonMembers(members);
 		members.add("log.logger", LogEvent::getLoggerName);
 		members.add("message", LogEvent::getMessage).as(StructuredMessage::get);
 		members.from(LogEvent::getContextData)

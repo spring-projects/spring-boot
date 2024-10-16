@@ -22,9 +22,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
-import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.Transport;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -59,7 +59,7 @@ class OpenTelemetryTracingContainerConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(OtlpAutoConfiguration.class)
+	@ImportAutoConfiguration(OtlpTracingAutoConfiguration.class)
 	static class TestConfiguration {
 
 	}

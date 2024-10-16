@@ -465,21 +465,21 @@ public class ServerProperties {
 		private int maxKeepAliveRequests = 100;
 
 		/**
-		 * Comma-separated list of additional patterns that match jars to ignore for TLD
-		 * scanning. The special '?' and '*' characters can be used in the pattern to
-		 * match one and only one character and zero or more characters respectively.
+		 * List of additional patterns that match jars to ignore for TLD scanning. The
+		 * special '?' and '*' characters can be used in the pattern to match one and only
+		 * one character and zero or more characters respectively.
 		 */
 		private List<String> additionalTldSkipPatterns = new ArrayList<>();
 
 		/**
-		 * Comma-separated list of additional unencoded characters that should be allowed
-		 * in URI paths. Only "< > [ \ ] ^ ` { | }" are allowed.
+		 * List of additional unencoded characters that should be allowed in URI paths.
+		 * Only "< > [ \ ] ^ ` { | }" are allowed.
 		 */
 		private List<Character> relaxedPathChars = new ArrayList<>();
 
 		/**
-		 * Comma-separated list of additional unencoded characters that should be allowed
-		 * in URI query strings. Only "< > [ \ ] ^ ` { | }" are allowed.
+		 * List of additional unencoded characters that should be allowed in URI query
+		 * strings. Only "< > [ \ ] ^ ` { | }" are allowed.
 		 */
 		private List<Character> relaxedQueryChars = new ArrayList<>();
 
@@ -1149,6 +1149,11 @@ public class ServerProperties {
 		private DataSize maxHttpFormPostSize = DataSize.ofBytes(200000);
 
 		/**
+		 * Maximum number of form keys.
+		 */
+		private int maxFormKeys = 1000;
+
+		/**
 		 * Time that the connection can be idle before it is closed.
 		 */
 		private Duration connectionIdleTimeout;
@@ -1178,6 +1183,14 @@ public class ServerProperties {
 
 		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
 			this.maxHttpFormPostSize = maxHttpFormPostSize;
+		}
+
+		public int getMaxFormKeys() {
+			return this.maxFormKeys;
+		}
+
+		public void setMaxFormKeys(int maxFormKeys) {
+			this.maxFormKeys = maxFormKeys;
 		}
 
 		public Duration getConnectionIdleTimeout() {

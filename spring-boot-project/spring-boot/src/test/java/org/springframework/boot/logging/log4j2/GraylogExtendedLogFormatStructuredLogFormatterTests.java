@@ -29,6 +29,8 @@ import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link GraylogExtendedLogFormatStructuredLogFormatter}.
@@ -44,10 +46,15 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 	@BeforeEach
 	void setUp() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.structured.gelf.service.name", "name");
+		environment.setProperty("logging.structured.gelf.host", "name");
 		environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
 		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(environment);
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(environment, this.customizer);
+	}
+
+	@Test
+	void callsCustomizer() {
+		then(this.customizer).should().customize(any());
 	}
 
 	@Test

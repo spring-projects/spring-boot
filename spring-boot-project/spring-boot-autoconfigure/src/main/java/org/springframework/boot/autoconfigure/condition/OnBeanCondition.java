@@ -546,7 +546,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			this.strategy = annotation.getValue("search", SearchStrategy.class).orElse(null);
 			Set<String> types = extractTypes(attributes);
 			BeanTypeDeductionException deductionException = null;
-			if (types.isEmpty() && this.names.isEmpty()) {
+			if (types.isEmpty() && this.names.isEmpty() && this.annotations.isEmpty()) {
 				try {
 					types = deducedBeanType(context, metadata);
 				}
@@ -602,7 +602,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 
 		protected void validate(BeanTypeDeductionException ex) {
-			if (!hasAtLeastOneElement(this.types, this.names, this.annotations)) {
+			if (!hasAtLeastOneElement(getTypes(), getNames(), getAnnotations())) {
 				String message = getAnnotationName() + " did not specify a bean using type, name or annotation";
 				if (ex == null) {
 					throw new IllegalStateException(message);

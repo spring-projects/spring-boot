@@ -58,6 +58,7 @@ import org.springframework.core.log.LogMessage;
  * @author Scott Frederick
  * @see TestcontainersLifecycleApplicationContextInitializer
  */
+@SuppressWarnings({ "removal", "deprecation" })
 @Order(Ordered.LOWEST_PRECEDENCE)
 class TestcontainersLifecycleBeanPostProcessor
 		implements DestructionAwareBeanPostProcessor, ApplicationListener<BeforeTestcontainerUsedEvent> {
@@ -79,6 +80,7 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	@Override
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public void onApplicationEvent(BeforeTestcontainerUsedEvent event) {
 		initializeContainers();
 	}

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for tracing with OTLP.
+ * Auto-configuration for exporting traces with OTLP.
  */
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;

@@ -30,16 +30,12 @@ import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
-import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactoryTests.TestContainerConnectionDetailsFactory.TestContainerConnectionDetails;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -135,14 +131,11 @@ class ContainerConnectionDetailsFactoryTests {
 	}
 
 	@Test
-	void getContainerWhenInitializedPublishesEventAndReturnsSuppliedContainer() throws Exception {
+	void getContainerWhenInitializedReturnsSuppliedContainer() throws Exception {
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		TestContainerConnectionDetails connectionDetails = getConnectionDetails(factory, this.source);
-		ApplicationContext context = mock(ApplicationContext.class);
-		connectionDetails.setApplicationContext(context);
 		connectionDetails.afterPropertiesSet();
 		assertThat(connectionDetails.callGetContainer()).isSameAs(this.container);
-		then(context).should().publishEvent(any(BeforeTestcontainerUsedEvent.class));
 	}
 
 	@Test

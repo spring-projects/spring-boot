@@ -42,7 +42,7 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
  */
 class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(StandardLibraryUpdateResolver.class);
+	private static final Logger logger = LoggerFactory.getLogger(StandardLibraryUpdateResolver.class);
 
 	private final VersionResolver versionResolver;
 
@@ -63,11 +63,11 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 			if (isLibraryExcluded(library)) {
 				continue;
 			}
-			LOGGER.info("Looking for updates for {}", library.getName());
+			logger.info("Looking for updates for {}", library.getName());
 			long start = System.nanoTime();
 			List<VersionOption> versionOptions = getVersionOptions(library);
 			result.add(new LibraryWithVersionOptions(library, versionOptions));
-			LOGGER.info("Found {} updates for {}, took {}", versionOptions.size(), library.getName(),
+			logger.info("Found {} updates for {}, took {}", versionOptions.size(), library.getName(),
 					Duration.ofNanos(System.nanoTime() - start));
 		}
 		return result;

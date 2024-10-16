@@ -1,5 +1,4 @@
 changelog:
-  repository: ${{ github.repository }}
   sections:
     - title: ":star: New Features"
       labels:

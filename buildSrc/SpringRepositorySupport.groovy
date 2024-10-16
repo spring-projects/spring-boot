@@ -26,6 +26,8 @@
 // version being built.
 //
 
+import java.util.function.*
+
 def apply(settings) {
 	def version =  property(settings, 'version')
 	def buildType = property(settings, 'spring.build-type')
@@ -67,7 +69,7 @@ class SpringRepositoriesExtension {
 	private final def repositories
 	private final def version
 	private final def buildType
-	private final def environment
+	private final UnaryOperator<String> environment
 
 	@javax.inject.Inject
 	SpringRepositoriesExtension(repositories, version, buildType) {

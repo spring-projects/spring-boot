@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.util.MultiFormatStringBuilderFormattable;
 
-import org.springframework.boot.json.JsonWriter.WritableJson;
+import org.springframework.boot.json.WritableJson;
 
 /**
  * Helper used to adapt {@link Message} for structured writing.

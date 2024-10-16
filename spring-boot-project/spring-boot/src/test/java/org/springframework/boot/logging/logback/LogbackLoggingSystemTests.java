@@ -286,6 +286,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.3.5", forRemoval = true)
 	void getLoggerConfigurationForALL() {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);

@@ -52,8 +52,11 @@ class SampleStructuredLoggingApplicationTests {
 	@Test
 	void json(CapturedOutput output) {
 		SampleStructuredLoggingApplication.main(new String[0]);
-		assertThat(output).contains("{\"@timestamp\"")
-			.contains("\"message\":\"Starting SampleStructuredLoggingApplication");
+		assertThat(output).doesNotContain("{\"@timestamp\"")
+			.contains("\"process.thread.name\":\"!!")
+			.contains("\"process.procid\"")
+			.contains("\"message\":\"Starting SampleStructuredLoggingApplication")
+			.contains("\"foo\":\"hello");
 	}
 
 	@Test

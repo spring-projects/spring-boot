@@ -42,8 +42,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @deprecated since 3.3.5 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
  */
-@SuppressWarnings({ "deprecation", "removal" })
+@Deprecated(since = "3.3.5", forRemoval = true)
+@SuppressWarnings("removal")
 class ControllerEndpointHandlerMappingTests {
 
 	private final StaticApplicationContext context = new StaticApplicationContext();

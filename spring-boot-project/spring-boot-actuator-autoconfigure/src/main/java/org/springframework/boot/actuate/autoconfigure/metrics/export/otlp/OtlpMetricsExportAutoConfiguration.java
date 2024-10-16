@@ -50,12 +50,12 @@ import org.springframework.core.task.VirtualThreadTaskExecutor;
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(OtlpMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("otlp")
-@EnableConfigurationProperties({ OtlpProperties.class, OpenTelemetryProperties.class })
+@EnableConfigurationProperties({ OtlpMetricsProperties.class, OpenTelemetryProperties.class })
 public class OtlpMetricsExportAutoConfiguration {
 
-	private final OtlpProperties properties;
+	private final OtlpMetricsProperties properties;
 
-	OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
+	OtlpMetricsExportAutoConfiguration(OtlpMetricsProperties properties) {
 		this.properties = properties;
 	}
 
@@ -69,7 +69,7 @@ public class OtlpMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	OtlpConfig otlpConfig(OpenTelemetryProperties openTelemetryProperties,
 			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
-		return new OtlpPropertiesConfigAdapter(this.properties, openTelemetryProperties, connectionDetails,
+		return new OtlpMetricsPropertiesConfigAdapter(this.properties, openTelemetryProperties, connectionDetails,
 				environment);
 	}
 
@@ -89,13 +89,13 @@ public class OtlpMetricsExportAutoConfiguration {
 	}
 
 	/**
-	 * Adapts {@link OtlpProperties} to {@link OtlpMetricsConnectionDetails}.
+	 * Adapts {@link OtlpMetricsProperties} to {@link OtlpMetricsConnectionDetails}.
 	 */
 	static class PropertiesOtlpMetricsConnectionDetails implements OtlpMetricsConnectionDetails {
 
-		private final OtlpProperties properties;
+		private final OtlpMetricsProperties properties;
 
-		PropertiesOtlpMetricsConnectionDetails(OtlpProperties properties) {
+		PropertiesOtlpMetricsConnectionDetails(OtlpMetricsProperties properties) {
 			this.properties = properties;
 		}
 

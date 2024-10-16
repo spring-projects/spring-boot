@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
-import org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingConnectionDetails;
-import org.springframework.boot.actuate.autoconfigure.opentelemetry.otlp.Transport;
+import org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.logging.otlp.Transport;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -40,7 +40,7 @@ class OpenTelemetryLoggingDockerComposeConnectionDetailsFactory
 
 	OpenTelemetryLoggingDockerComposeConnectionDetailsFactory() {
 		super(OPENTELEMETRY_IMAGE_NAMES,
-				"org.springframework.boot.actuate.autoconfigure.logging.opentelemetry.otlp.OtlpLoggingAutoConfiguration");
+				"org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingAutoConfiguration");
 	}
 
 	@Override

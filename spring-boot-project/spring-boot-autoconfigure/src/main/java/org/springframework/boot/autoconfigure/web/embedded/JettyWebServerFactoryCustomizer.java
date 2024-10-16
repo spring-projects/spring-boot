@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,23 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.RequestLogWriter;
-import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
-import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
@@ -83,18 +85,21 @@ public class JettyWebServerFactoryCustomizer
 		map.from(this.serverProperties::getMaxHttpRequestHeaderSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
-			.to((maxHttpRequestHeaderSize) -> factory
-				.addServerCustomizers(new MaxHttpRequestHeaderSizeCustomizer(maxHttpRequestHeaderSize)));
+			.to(customizeHttpConfigurations(factory, HttpConfiguration::setRequestHeaderSize));
 		map.from(properties::getMaxHttpResponseHeaderSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
-			.to((maxHttpResponseHeaderSize) -> factory
-				.addServerCustomizers(new MaxHttpResponseHeaderSizeCustomizer(maxHttpResponseHeaderSize)));
+			.to(customizeHttpConfigurations(factory, HttpConfiguration::setResponseHeaderSize));
 		map.from(properties::getMaxHttpFormPostSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
-			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
-		map.from(properties::getConnectionIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
+			.to(customizeServletContextHandler(factory, ServletContextHandler::setMaxFormContentSize));
+		map.from(properties::getMaxFormKeys)
+			.when(this::isPositive)
+			.to(customizeServletContextHandler(factory, ServletContextHandler::setMaxFormKeys));
+		map.from(properties::getConnectionIdleTimeout)
+			.as(Duration::toMillis)
+			.to(customizeAbstractConnectors(factory, AbstractConnector::setIdleTimeout));
 		map.from(properties::getAccesslog)
 			.when(ServerProperties.Jetty.Accesslog::isEnabled)
 			.to((accesslog) -> customizeAccessLog(factory, accesslog));
@@ -112,43 +117,63 @@ public class JettyWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
-	private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
-		factory.addServerCustomizers((server) -> {
-			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
-				if (connector instanceof AbstractConnector abstractConnector) {
-					abstractConnector.setIdleTimeout(connectionTimeout.toMillis());
-				}
-			}
+	private <T> Consumer<T> customizeHttpConfigurations(ConfigurableJettyWebServerFactory factory,
+			BiConsumer<HttpConfiguration, T> action) {
+		return customizeConnectionFactories(factory, HttpConfiguration.ConnectionFactory.class,
+				(connectionFactory, value) -> action.accept(connectionFactory.getHttpConfiguration(), value));
+	}
+
+	private <V, F> Consumer<V> customizeConnectionFactories(ConfigurableJettyWebServerFactory factory,
+			Class<F> connectionFactoryType, BiConsumer<F, V> action) {
+		return customizeConnectors(factory, Connector.class, (connector, value) -> {
+			Stream<ConnectionFactory> connectionFactories = connector.getConnectionFactories().stream();
+			forEach(connectionFactories, connectionFactoryType, action, value);
 		});
 	}
 
-	private void customizeMaxHttpFormPostSize(ConfigurableJettyWebServerFactory factory, int maxHttpFormPostSize) {
-		factory.addServerCustomizers(new JettyServerCustomizer() {
+	private <V> Consumer<V> customizeAbstractConnectors(ConfigurableJettyWebServerFactory factory,
+			BiConsumer<AbstractConnector, V> action) {
+		return customizeConnectors(factory, AbstractConnector.class, action);
+	}
 
-			@Override
-			public void customize(Server server) {
-				setHandlerMaxHttpFormPostSize(server.getHandlers());
-			}
-
-			private void setHandlerMaxHttpFormPostSize(List<Handler> handlers) {
-				for (Handler handler : handlers) {
-					setHandlerMaxHttpFormPostSize(handler);
-				}
-			}
-
-			private void setHandlerMaxHttpFormPostSize(Handler handler) {
-				if (handler instanceof ServletContextHandler contextHandler) {
-					contextHandler.setMaxFormContentSize(maxHttpFormPostSize);
-				}
-				else if (handler instanceof Handler.Wrapper wrapper) {
-					setHandlerMaxHttpFormPostSize(wrapper.getHandler());
-				}
-				else if (handler instanceof Handler.Collection collection) {
-					setHandlerMaxHttpFormPostSize(collection.getHandlers());
-				}
-			}
-
+	private <V, C> Consumer<V> customizeConnectors(ConfigurableJettyWebServerFactory factory, Class<C> connectorType,
+			BiConsumer<C, V> action) {
+		return (value) -> factory.addServerCustomizers((server) -> {
+			Stream<Connector> connectors = Arrays.stream(server.getConnectors());
+			forEach(connectors, connectorType, action, value);
 		});
+	}
+
+	private <V> Consumer<V> customizeServletContextHandler(ConfigurableJettyWebServerFactory factory,
+			BiConsumer<ServletContextHandler, V> action) {
+		return customizeHandlers(factory, ServletContextHandler.class, action);
+	}
+
+	private <V, H> Consumer<V> customizeHandlers(ConfigurableJettyWebServerFactory factory, Class<H> handlerType,
+			BiConsumer<H, V> action) {
+		return (value) -> factory.addServerCustomizers((server) -> {
+			List<Handler> handlers = server.getHandlers();
+			forEachHandler(handlers, handlerType, action, value);
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	private <V, H> void forEachHandler(List<Handler> handlers, Class<H> handlerType, BiConsumer<H, V> action, V value) {
+		for (Handler handler : handlers) {
+			if (handlerType.isInstance(handler)) {
+				action.accept((H) handler, value);
+			}
+			if (handler instanceof Handler.Wrapper wrapper) {
+				forEachHandler(wrapper.getHandlers(), handlerType, action, value);
+			}
+			if (handler instanceof Handler.Collection collection) {
+				forEachHandler(collection.getHandlers(), handlerType, action, value);
+			}
+		}
+	}
+
+	private <T, V> void forEach(Stream<?> elements, Class<T> type, BiConsumer<T, V> action, V value) {
+		elements.filter(type::isInstance).map(type::cast).forEach((element) -> action.accept(element, value));
 	}
 
 	private void customizeAccessLog(ConfigurableJettyWebServerFactory factory,
@@ -176,61 +201,10 @@ public class JettyWebServerFactoryCustomizer
 		if (properties.getCustomFormat() != null) {
 			return properties.getCustomFormat();
 		}
-		else if (ServerProperties.Jetty.Accesslog.FORMAT.EXTENDED_NCSA.equals(properties.getFormat())) {
+		if (ServerProperties.Jetty.Accesslog.FORMAT.EXTENDED_NCSA.equals(properties.getFormat())) {
 			return CustomRequestLog.EXTENDED_NCSA_FORMAT;
 		}
 		return CustomRequestLog.NCSA_FORMAT;
-	}
-
-	private static class MaxHttpRequestHeaderSizeCustomizer implements JettyServerCustomizer {
-
-		private final int maxRequestHeaderSize;
-
-		MaxHttpRequestHeaderSizeCustomizer(int maxRequestHeaderSize) {
-			this.maxRequestHeaderSize = maxRequestHeaderSize;
-		}
-
-		@Override
-		public void customize(Server server) {
-			Arrays.stream(server.getConnectors()).forEach(this::customize);
-		}
-
-		private void customize(org.eclipse.jetty.server.Connector connector) {
-			connector.getConnectionFactories().forEach(this::customize);
-		}
-
-		private void customize(ConnectionFactory factory) {
-			if (factory instanceof HttpConfiguration.ConnectionFactory) {
-				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
-					.setRequestHeaderSize(this.maxRequestHeaderSize);
-			}
-		}
-
-	}
-
-	private static class MaxHttpResponseHeaderSizeCustomizer implements JettyServerCustomizer {
-
-		private final int maxResponseHeaderSize;
-
-		MaxHttpResponseHeaderSizeCustomizer(int maxResponseHeaderSize) {
-			this.maxResponseHeaderSize = maxResponseHeaderSize;
-		}
-
-		@Override
-		public void customize(Server server) {
-			Arrays.stream(server.getConnectors()).forEach(this::customize);
-		}
-
-		private void customize(org.eclipse.jetty.server.Connector connector) {
-			connector.getConnectionFactories().forEach(this::customize);
-		}
-
-		private void customize(ConnectionFactory factory) {
-			if (factory instanceof HttpConfiguration.ConnectionFactory httpConnectionFactory) {
-				httpConnectionFactory.getHttpConfiguration().setResponseHeaderSize(this.maxResponseHeaderSize);
-			}
-		}
-
 	}
 
 }

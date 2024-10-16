@@ -137,6 +137,14 @@ class ConditionalOnMissingBeanTests {
 			});
 	}
 
+	@Test // gh-42484
+	void testAnnotationOnMissingBeanConditionOnMethodWhenNoAnnotatedBeans() {
+		// There are no beans with @TestAnnotation but there is an UnrelatedExampleBean
+		this.contextRunner
+			.withUserConfiguration(UnrelatedExampleBeanConfiguration.class, OnAnnotationMethodConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("conditional"));
+	}
+
 	@Test
 	void testOnMissingBeanConditionOutputShouldNotContainConditionalOnBeanClassInMessage() {
 		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class).run((context) -> {
@@ -595,6 +603,17 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class OnAnnotationMethodConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(annotation = TestAnnotation.class)
+		UnrelatedExampleBean conditional() {
+			return new UnrelatedExampleBean("conditional");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(annotation = TestAnnotation.class)
 	static class OnAnnotationWithFactoryBeanConfiguration {
 
@@ -664,6 +683,16 @@ class ConditionalOnMissingBeanTests {
 		@Bean
 		ExampleBean exampleBean() {
 			return new ExampleBean("test");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UnrelatedExampleBeanConfiguration {
+
+		@Bean
+		UnrelatedExampleBean unrelatedExampleBean() {
+			return new UnrelatedExampleBean("test");
 		}
 
 	}
@@ -847,6 +876,21 @@ class ConditionalOnMissingBeanTests {
 
 		OtherExampleBean() {
 			super("other subclass");
+		}
+
+	}
+
+	static class UnrelatedExampleBean {
+
+		private final String value;
+
+		UnrelatedExampleBean(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
 		}
 
 	}

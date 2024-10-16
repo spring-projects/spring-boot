@@ -45,6 +45,8 @@ When used to secure a client-side connection, a `truststore` is typically config
 
 See javadoc:org.springframework.boot.autoconfigure.ssl.JksSslBundleProperties[] for the full set of supported properties.
 
+NOTE: If you're using environment variables to configure the bundle, the name of the bundle is xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.maps-from-environment-variables[always converted to lowercase].
+
 
 
 [[features.ssl.pem]]
@@ -108,6 +110,8 @@ The following example shows how a truststore certificate can be defined:
 ====
 
 See javadoc:org.springframework.boot.autoconfigure.ssl.PemSslBundleProperties[] for the full set of supported properties.
+
+NOTE: If you're using environment variables to configure the bundle, the name of the bundle is xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.maps-from-environment-variables[always converted to lowercase].
 
 
 

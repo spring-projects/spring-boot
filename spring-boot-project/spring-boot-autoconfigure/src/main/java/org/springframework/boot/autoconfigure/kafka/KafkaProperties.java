@@ -65,8 +65,8 @@ import org.springframework.util.unit.DataSize;
 public class KafkaProperties {
 
 	/**
-	 * Comma-delimited list of host:port pairs to use for establishing the initial
-	 * connections to the Kafka cluster. Applies to all components unless overridden.
+	 * List of host:port pairs to use for establishing the initial connections to the
+	 * Kafka cluster. Applies to all components unless overridden.
 	 */
 	private List<String> bootstrapServers = new ArrayList<>(Collections.singletonList("localhost:9092"));
 
@@ -255,8 +255,8 @@ public class KafkaProperties {
 		private String autoOffsetReset;
 
 		/**
-		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connections to the Kafka cluster. Overrides the global property, for consumers.
+		 * List of host:port pairs to use for establishing the initial connections to the
+		 * Kafka cluster. Overrides the global property, for consumers.
 		 */
 		private List<String> bootstrapServers;
 
@@ -483,8 +483,8 @@ public class KafkaProperties {
 		private DataSize batchSize;
 
 		/**
-		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connections to the Kafka cluster. Overrides the global property, for producers.
+		 * List of host:port pairs to use for establishing the initial connections to the
+		 * Kafka cluster. Overrides the global property, for producers.
 		 */
 		private List<String> bootstrapServers;
 
@@ -773,8 +773,8 @@ public class KafkaProperties {
 		private boolean autoStartup = true;
 
 		/**
-		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connections to the Kafka cluster. Overrides the global property, for streams.
+		 * List of host:port pairs to use for establishing the initial connections to the
+		 * Kafka cluster. Overrides the global property, for streams.
 		 */
 		private List<String> bootstrapServers;
 

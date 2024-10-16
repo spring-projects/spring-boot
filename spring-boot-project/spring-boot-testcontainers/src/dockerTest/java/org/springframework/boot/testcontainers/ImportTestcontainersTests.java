@@ -103,7 +103,7 @@ class ImportTestcontainersTests {
 	void importWhenHasContainerDefinitionsWithDynamicPropertySource() {
 		this.applicationContext = new AnnotationConfigApplicationContext(
 				ContainerDefinitionsWithDynamicPropertySource.class);
-		assertThat(this.applicationContext.getEnvironment().containsProperty("container.port")).isTrue();
+		assertThat(this.applicationContext.getEnvironment().getProperty("container.port")).isNotNull();
 	}
 
 	@Test

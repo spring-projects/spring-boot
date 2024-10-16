@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.util.Assert;
 
@@ -24,9 +27,16 @@ import org.springframework.util.Assert;
  * Volume bindings to apply when creating a container.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.5.0
  */
 public final class Binding {
+
+	/**
+	 * Sensitive container paths, which lead to problems if used in a binding.
+	 */
+	private static final Set<String> SENSITIVE_CONTAINER_PATHS = Set.of("/cnb", "/layers", "/workspace", "c:\\cnb",
+			"c:\\layers", "c:\\workspace");
 
 	private final String value;
 
@@ -53,6 +63,45 @@ public final class Binding {
 	@Override
 	public String toString() {
 		return this.value;
+	}
+
+	/**
+	 * Returns the container destination path.
+	 * @return the container destination path
+	 */
+	String getContainerDestinationPath() {
+		List<String> parts = split(this.value, ':', '\\');
+		// Format is <host>:<container>:[<options>]
+		Assert.state(parts.size() >= 2, () -> "Expected 2 or more parts, but found %d".formatted(parts.size()));
+		return parts.get(1);
+	}
+
+	private List<String> split(String input, char delimiter, char notFollowedBy) {
+		Assert.state(notFollowedBy != '\0', "notFollowedBy must not be the null terminator");
+		List<String> parts = new ArrayList<>();
+		StringBuilder accumulator = new StringBuilder();
+		for (int i = 0; i < input.length(); i++) {
+			char c = input.charAt(i);
+			char nextChar = (i + 1 < input.length()) ? input.charAt(i + 1) : '\0';
+			if (c == delimiter && nextChar != notFollowedBy) {
+				parts.add(accumulator.toString());
+				accumulator.setLength(0);
+			}
+			else {
+				accumulator.append(c);
+			}
+		}
+		parts.add(accumulator.toString());
+		return parts;
+	}
+
+	/**
+	 * Whether the binding uses a sensitive container path.
+	 * @return whether the binding uses a sensitive container path
+	 * @since 3.4.0
+	 */
+	public boolean usesSensitiveContainerPath() {
+		return SENSITIVE_CONTAINER_PATHS.contains(getContainerDestinationPath());
 	}
 
 	/**

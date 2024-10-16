@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.Container;
+import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -32,10 +33,8 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
-import org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader.FailureHandler;
@@ -117,7 +116,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	}
 
 	/**
-	 * Return if the give source accepts the connection. By default this method checks
+	 * Return if the given source accepts the connection. By default this method checks
 	 * each connection name.
 	 * @param source the container connection source
 	 * @param requiredContainerType the required container type
@@ -164,8 +163,6 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 
 		private final ContainerConnectionSource<C> source;
 
-		private volatile ApplicationEventPublisher eventPublisher;
-
 		private volatile C container;
 
 		/**
@@ -190,7 +187,9 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		protected final C getContainer() {
 			Assert.state(this.container != null,
 					"Container cannot be obtained before the connection details bean has been initialized");
-			this.eventPublisher.publishEvent(new BeforeTestcontainerUsedEvent(this));
+			if (this.container instanceof Startable startable) {
+				startable.start();
+			}
 			return this.container;
 		}
 
@@ -200,8 +199,8 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		}
 
 		@Override
+		@Deprecated(since = "3.4.0", forRemoval = true)
 		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-			this.eventPublisher = applicationContext;
 		}
 
 	}

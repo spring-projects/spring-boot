@@ -35,6 +35,7 @@ import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
 
 /**
@@ -48,8 +49,9 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	LogstashStructuredLogFormatter(ThrowableProxyConverter throwableProxyConverter) {
-		super((members) -> jsonMembers(throwableProxyConverter, members));
+	LogstashStructuredLogFormatter(ThrowableProxyConverter throwableProxyConverter,
+			StructureLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(throwableProxyConverter, members), customizer);
 	}
 
 	private static void jsonMembers(ThrowableProxyConverter throwableProxyConverter,

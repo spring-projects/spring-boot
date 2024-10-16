@@ -27,10 +27,9 @@ import com.redis.testcontainers.RedisContainer;
 import com.redis.testcontainers.RedisStackContainer;
 import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.activemq.ArtemisContainer;
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -39,6 +38,7 @@ import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.grafana.LgtmStackContainer;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.redpanda.RedpandaContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -81,7 +81,17 @@ public enum TestImage {
 	 * A container image suitable for testing Cassandra.
 	 */
 	CASSANDRA("cassandra", "3.11.10", () -> CassandraContainer.class,
-			(container) -> ((CassandraContainer<?>) container).withStartupTimeout(Duration.ofMinutes(10))),
+			(container) -> ((CassandraContainer) container).withStartupTimeout(Duration.ofMinutes(10))),
+
+	/**
+	 * A container image suitable for testing Cassandra using the deprecated
+	 * {@link org.testcontainers.containers.CassandraContainer}.
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #CASSANDRA}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	CASSANDRA_DEPRECATED("cassandra", "3.11.10", () -> org.testcontainers.containers.CassandraContainer.class,
+			(container) -> ((org.testcontainers.containers.CassandraContainer<?>) container)
+				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
 	 * A container image suitable for testing Couchbase.
@@ -117,7 +127,16 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Confluent's distribution of Kafka.
 	 */
-	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> KafkaContainer.class),
+	CONFLUENT_KAFKA("confluentinc/cp-kafka", "7.4.0", () -> ConfluentKafkaContainer.class),
+
+	/**
+	 * A container image suitable for testing Confluent's distribution of Kafka using the
+	 * deprecated {@link org.testcontainers.containers.KafkaContainer}.
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #CONFLUENT_KAFKA}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	CONFLUENT_KAFKA_DEPRECATED("confluentinc/cp-kafka", "7.4.0",
+			() -> org.testcontainers.containers.KafkaContainer.class),
 
 	/**
 	 * A container image suitable for testing OpenLDAP.

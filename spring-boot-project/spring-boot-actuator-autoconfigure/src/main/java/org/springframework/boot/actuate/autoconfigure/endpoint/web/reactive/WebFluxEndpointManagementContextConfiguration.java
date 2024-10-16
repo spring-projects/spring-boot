@@ -47,7 +47,6 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.reactive.AdditionalHealthEndpointPathsWebFluxHandlerMapping;
-import org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
@@ -128,12 +127,13 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@SuppressWarnings("removal")
-	public ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
+	@Deprecated(since = "3.3.5", forRemoval = true)
+	public org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
 			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
 			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties) {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
-		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
-				corsProperties.toCorsConfiguration());
+		return new org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping(
+				endpointMapping, controllerEndpointsSupplier.getEndpoints(), corsProperties.toCorsConfiguration());
 	}
 
 	@Bean

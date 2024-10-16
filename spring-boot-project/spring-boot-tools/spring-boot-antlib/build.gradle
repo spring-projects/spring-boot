@@ -18,17 +18,17 @@ dependencies {
 	antUnit "org.apache.ant:ant-antunit:1.3"
 	antIvy "org.apache.ivy:ivy:2.5.0"
 
-	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-classic"))
+	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 	compileOnly("org.apache.ant:ant:${antVersion}")
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("org.springframework:spring-core")
 }
 
-task copyIntegrationTestSources(type: Copy) {
+task syncIntegrationTestSources(type: Sync) {
+	destinationDir file("${buildDir}/it")
 	from file("src/it")
-	into "${buildDir}/it"
-	filter(springRepoistoryTransformers.ant())
+	filter(springRepositoryTransformers.ant())
 }
 
 processResources {
@@ -39,7 +39,7 @@ processResources {
 }
 
 task integrationTest {
-	dependsOn copyIntegrationTestSources, jar
+	dependsOn syncIntegrationTestSources, jar
 	def resultsDir = file("${buildDir}/test-results/integrationTest")
 	inputs.dir(file("src/it")).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("source")
 	inputs.files(sourceSets.main.runtimeClasspath).withNormalizer(ClasspathNormalizer).withPropertyName("classpath")

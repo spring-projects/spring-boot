@@ -17,6 +17,7 @@
 package org.springframework.boot.json;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,44 +124,33 @@ public class BasicJsonParser extends AbstractJsonParser {
 
 	private List<String> tokenize(String json) {
 		List<String> list = new ArrayList<>();
-		int index = 0;
-		int inObject = 0;
-		int inList = 0;
-		boolean inValue = false;
-		boolean inEscape = false;
+		Tracking tracking = new Tracking();
 		StringBuilder build = new StringBuilder();
+		int index = 0;
 		while (index < json.length()) {
-			char current = json.charAt(index);
-			if (inEscape) {
-				build.append(current);
+			char ch = json.charAt(index);
+			if (tracking.in(Tracked.ESCAPE)) {
+				build.append(ch);
 				index++;
-				inEscape = false;
+				tracking.set(Tracked.ESCAPE, 0);
 				continue;
 			}
-			if (current == '{') {
-				inObject++;
+			switch (ch) {
+				case '{' -> tracking.update(Tracked.OBJECT, +1);
+				case '}' -> tracking.update(Tracked.OBJECT, -1);
+				case '[' -> tracking.update(Tracked.LIST, +1);
+				case ']' -> tracking.update(Tracked.LIST, -1);
+				case '"' -> tracking.toggle(Tracked.VALUE);
 			}
-			if (current == '}') {
-				inObject--;
-			}
-			if (current == '[') {
-				inList++;
-			}
-			if (current == ']') {
-				inList--;
-			}
-			if (current == '"') {
-				inValue = !inValue;
-			}
-			if (current == ',' && inObject == 0 && inList == 0 && !inValue) {
+			if (ch == ',' && !tracking.in(Tracked.OBJECT, Tracked.LIST, Tracked.VALUE)) {
 				list.add(build.toString());
 				build.setLength(0);
 			}
-			else if (current == '\\') {
-				inEscape = true;
+			else if (ch == '\\') {
+				tracking.set(Tracked.ESCAPE, 1);
 			}
 			else {
-				build.append(current);
+				build.append(ch);
 			}
 			index++;
 		}
@@ -168,6 +158,38 @@ public class BasicJsonParser extends AbstractJsonParser {
 			list.add(build.toString().trim());
 		}
 		return list;
+	}
+
+	private static final class Tracking {
+
+		private final int[] counts = new int[Tracked.values().length];
+
+		boolean in(Tracked... tracked) {
+			return Arrays.stream(tracked).mapToInt(this::get).anyMatch((i) -> i > 0);
+		}
+
+		void toggle(Tracked tracked) {
+			set(tracked, (get(tracked) != 0) ? 0 : 1);
+		}
+
+		void update(Tracked tracked, int delta) {
+			set(tracked, get(tracked) + delta);
+		}
+
+		private int get(Tracked tracked) {
+			return this.counts[tracked.ordinal()];
+		}
+
+		void set(Tracked tracked, int count) {
+			this.counts[tracked.ordinal()] = count;
+		}
+
+	}
+
+	private enum Tracked {
+
+		OBJECT, LIST, VALUE, ESCAPE
+
 	}
 
 }

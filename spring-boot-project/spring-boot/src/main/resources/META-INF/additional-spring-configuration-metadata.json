@@ -255,14 +255,39 @@
       "description": "Structured logging format for output to a file. Must be either a format id or a fully qualified class name."
     },
     {
-      "name": "logging.structured.gelf.service.name",
+      "name": "logging.structured.gelf.host",
       "type": "java.lang.String",
-      "description": "Structured GELF service name (defaults to 'spring.application.name')."
+      "description": "Structured GELF host (defaults to 'spring.application.name')."
     },
     {
       "name": "logging.structured.gelf.service.version",
       "type": "java.lang.String",
       "description": "Structured GELF service version (defaults to 'spring.application.version')."
+    },
+    {
+      "name": "logging.structured.json.add",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional members that should be added to structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.customizer",
+      "type": "java.lang.String",
+      "description": "The fully qualified class name of a StructureLoggingJsonMembersCustomizer"
+    },
+    {
+      "name": "logging.structured.json.exclude",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be excluded from structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.include",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be included in structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.rename",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Mapping between member paths and an alternative name that should be used in structured logging JSON"
     },
     {
       "name": "logging.threshold.console",

@@ -95,7 +95,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 	}
 
 	/**
-	 * Return is this source accepts the given connection.
+	 * Return if this source accepts the given connection.
 	 * @param requiredConnectionName the required connection name or {@code null}
 	 * @param requiredContainerType the required container type
 	 * @param requiredConnectionDetailsType the required connection details type

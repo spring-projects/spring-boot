@@ -1,27 +1,27 @@
 name: Create GitHub Release
-description: Create the release on GitHub with a changelog
+description: 'Create the release on GitHub with a changelog'
 inputs:
   milestone:
-    description: Name of the GitHub milestone for which a release will be created
-    required: true
-  token:
-    description: Token to use for authentication with GitHub
+    description: 'Name of the GitHub milestone for which a release will be created'
     required: true
   pre-release:
-    description: Whether the release is a pre-release (a milestone or release candidate)
+    description: 'Whether the release is a pre-release (a milestone or release candidate)'
     required: false
     default: 'false'
+  token:
+    description: 'Token to use for authentication with GitHub'
+    required: true
 runs:
   using: composite
   steps:
     - name: Generate Changelog
       uses: spring-io/github-changelog-generator@185319ad7eaa75b0e8e72e4b6db19c8b2cb8c4c1 #v0.0.11
       with:
+        config-file: .github/actions/create-github-release/changelog-generator.yml
         milestone: ${{ inputs.milestone }}
         token: ${{ inputs.token }}
-        config-file: .github/actions/create-github-release/changelog-generator.yml
     - name: Create GitHub Release
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
-      shell: bash
       run: gh release create ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md ${{ inputs.pre-release == 'true' && '--prerelease' || '' }}
