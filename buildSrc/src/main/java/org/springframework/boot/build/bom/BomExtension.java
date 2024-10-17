@@ -135,7 +135,11 @@ public class BomExtension {
 			.all((task) -> {
 				Sync syncBom = this.project.getTasks().create("syncBom", Sync.class);
 				syncBom.dependsOn(task);
-				File generatedBomDir = new File(this.project.getBuildDir(), "generated/bom");
+				File generatedBomDir = this.project.getLayout()
+					.getBuildDirectory()
+					.dir("generated/bom")
+					.get()
+					.getAsFile();
 				syncBom.setDestinationDir(generatedBomDir);
 				syncBom.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
 				try {
@@ -144,7 +148,12 @@ public class BomExtension {
 								getClass().getClassLoader().getResourceAsStream("effective-bom-settings.xml"),
 								StandardCharsets.UTF_8))
 						.replace("localRepositoryPath",
-								new File(this.project.getBuildDir(), "local-m2-repository").getAbsolutePath());
+								this.project.getLayout()
+									.getBuildDirectory()
+									.dir("local-m2-repository")
+									.get()
+									.getAsFile()
+									.getAbsolutePath());
 					syncBom.from(this.project.getResources().getText().fromString(settingsXmlContent),
 							(settingsXml) -> settingsXml.rename((name) -> "settings.xml"));
 				}
@@ -154,8 +163,11 @@ public class BomExtension {
 				MavenExec generateEffectiveBom = this.project.getTasks()
 					.create("generateEffectiveBom", MavenExec.class);
 				generateEffectiveBom.getProjectDir().set(generatedBomDir);
-				File effectiveBom = new File(this.project.getBuildDir(),
-						"generated/effective-bom/" + this.project.getName() + "-effective-bom.xml");
+				File effectiveBom = this.project.getLayout()
+					.getBuildDirectory()
+					.file("generated/effective-bom/" + this.project.getName() + "-effective-bom.xml")
+					.get()
+					.getAsFile();
 				generateEffectiveBom.args("--settings", "settings.xml", "help:effective-pom",
 						"-Doutput=" + effectiveBom);
 				generateEffectiveBom.dependsOn(syncBom);

@@ -93,7 +93,8 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());
-				task.getOutputFile().set(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
+				task.getOutputFile()
+					.set(project.getLayout().getBuildDirectory().file("auto-configuration-metadata.properties"));
 				project.getArtifacts()
 					.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME, task.getOutputFile(),
 							(artifact) -> artifact.builtBy(task));

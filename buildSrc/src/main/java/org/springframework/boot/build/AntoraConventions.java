@@ -35,6 +35,7 @@ import org.antora.gradle.AntoraPlugin;
 import org.antora.gradle.AntoraTask;
 import org.gradle.StartParameter;
 import org.gradle.api.Project;
+import org.gradle.api.file.Directory;
 import org.gradle.api.logging.LogLevel;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Provider;
@@ -86,15 +87,16 @@ public class AntoraConventions {
 
 	private void configureGenerateAntoraPlaybookTask(Project project,
 			GenerateAntoraPlaybook generateAntoraPlaybookTask) {
-		File nodeProjectDir = getNodeProjectDir(project.getBuildDir());
-		generateAntoraPlaybookTask.getOutputFile().set(new File(nodeProjectDir, "antora-playbook.yml"));
+		Provider<Directory> nodeProjectDir = getNodeProjectDir(project);
+		generateAntoraPlaybookTask.getOutputFile()
+			.set(nodeProjectDir.map((directory) -> directory.file("antora-playbook.yml")));
 	}
 
 	private void configureCopyAntoraPackageJsonTask(Project project, Copy copyAntoraPackageJsonTask) {
 		copyAntoraPackageJsonTask
 			.from(project.getRootProject().file("antora"),
 					(spec) -> spec.include("package.json", "package-lock.json", "patches/**"))
-			.into(getNodeProjectDir(project.getBuildDir()));
+			.into(getNodeProjectDir(project));
 	}
 
 	private void configureNpmInstallTask(Project project, NpmInstallTask npmInstallTask, Copy copyAntoraPackageJson) {
@@ -118,7 +120,7 @@ public class AntoraConventions {
 		generateAntoraYmlTask.dependsOn(dependencyVersionsTask);
 		generateAntoraYmlTask.setProperty("componentName", "boot");
 		generateAntoraYmlTask.setProperty("outputFile",
-				new File(project.getBuildDir(), "generated/docs/antora-yml/antora.yml"));
+				project.getLayout().getBuildDirectory().file("generated/docs/antora-yml/antora.yml"));
 		generateAntoraYmlTask.setProperty("yml", getDefaultYml(project));
 		generateAntoraYmlTask.getAsciidocAttributes().putAll(getAsciidocAttributes(project, dependencyVersionsTask));
 	}
@@ -203,14 +205,13 @@ public class AntoraConventions {
 	}
 
 	private void configureNodeExtension(Project project, NodeExtension nodeExtension) {
-		File buildDir = project.getBuildDir();
-		nodeExtension.getWorkDir().set(buildDir.toPath().resolve(".gradle/nodejs").toFile());
-		nodeExtension.getNpmWorkDir().set(buildDir.toPath().resolve(".gradle/npm").toFile());
-		nodeExtension.getNodeProjectDir().set(getNodeProjectDir(buildDir));
+		nodeExtension.getWorkDir().set(project.getLayout().getBuildDirectory().dir(".gradle/nodejs"));
+		nodeExtension.getNpmWorkDir().set(project.getLayout().getBuildDirectory().dir(".gradle/npm"));
+		nodeExtension.getNodeProjectDir().set(getNodeProjectDir(project));
 	}
 
-	private File getNodeProjectDir(File buildDir) {
-		return buildDir.toPath().resolve(".gradle/nodeproject").toFile();
+	private Provider<Directory> getNodeProjectDir(Project project) {
+		return project.getLayout().getBuildDirectory().dir(".gradle/nodeproject");
 	}
 
 }
