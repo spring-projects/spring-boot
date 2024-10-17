@@ -240,7 +240,7 @@ def documentationTest = tasks.register("documentationTest", Test) {
 		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
 	}
 	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
-	outputs.dir("${buildDir}/generated-snippets")
+	outputs.dir(layout.buildDirectory.dir("generated-snippets"))
 	develocity {
 		predictiveTestSelection {
 			enabled = false
@@ -261,5 +261,5 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		attributes "spring-integration-docs": integrationDocs
 	}
 	dependsOn documentationTest
-	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
+	inputs.dir(layout.buildDirectory.dir("generated-snippets")).withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
 }

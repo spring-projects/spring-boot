@@ -106,12 +106,12 @@ task tar(type: Tar) {
 
 task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
 	dependsOn tar
-	outputDir = file("${buildDir}/homebrew")
+	outputDir = layout.buildDirectory.dir("homebrew")
 	template = file("src/main/homebrew/spring-boot.rb")
 	archive = tar.archiveFile
 }
 
-def homebrewFormulaArtifact = artifacts.add("archives", file("${buildDir}/homebrew/spring-boot.rb")) {
+def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
 	type "rb"
 	classifier "homebrew"
 	builtBy "homebrewFormula"

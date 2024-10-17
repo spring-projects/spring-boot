@@ -130,5 +130,5 @@ test {
 
 task testSliceMetadata(type: org.springframework.boot.build.test.autoconfigure.TestSliceMetadata) {
 	sourceSet = sourceSets.main
-	outputFile = file("${buildDir}/test-slice-metadata.properties")
+	outputFile = layout.buildDirectory.file("test-slice-metadata.properties")
 }

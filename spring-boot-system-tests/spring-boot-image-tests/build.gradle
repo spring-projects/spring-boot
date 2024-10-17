@@ -30,7 +30,7 @@ configurations {
 
 task syncMavenRepository(type: Sync) {
 	from configurations.app
-	into "${buildDir}/system-test-maven-repository"
+	into layout.buildDirectory.dir("system-test-maven-repository")
 }
 
 systemTest {

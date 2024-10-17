@@ -84,7 +84,7 @@ dependencies {
 }
 
 task syncIntTestDependencies(type: Sync) {
-	destinationDir = file("${buildDir}/dependencies")
+	destinationDir = file(layout.buildDirectory.dir("dependencies"))
 	from {
 		configurations.intTestDependencies
 	}
