@@ -117,16 +117,25 @@ public class ServletEndpointRegistrar implements ServletContextInitializer {
 				throws IOException, ServletException {
 			if (request instanceof HttpServletRequest httpRequest
 					&& response instanceof HttpServletResponse httpResponse) {
-				if (READ_ONLY_ACCESS_REQUEST_METHODS.contains(httpRequest.getMethod().toUpperCase(Locale.ROOT))) {
-					chain.doFilter(httpRequest, response);
-				}
-				else {
-					httpResponse.sendError(METHOD_NOT_ALLOWED);
-				}
+				doFilter(httpRequest, httpResponse, chain);
 			}
 			else {
 				throw new ServletException();
 			}
+		}
+
+		private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+				throws IOException, ServletException {
+			if (isReadOnlyAccessMethod(request)) {
+				chain.doFilter(request, response);
+			}
+			else {
+				response.sendError(METHOD_NOT_ALLOWED);
+			}
+		}
+
+		private boolean isReadOnlyAccessMethod(HttpServletRequest request) {
+			return READ_ONLY_ACCESS_REQUEST_METHODS.contains(request.getMethod().toUpperCase(Locale.ROOT));
 		}
 
 	}

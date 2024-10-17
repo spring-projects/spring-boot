@@ -80,7 +80,7 @@ public class PropertiesEndpointAccessResolver implements EndpointAccessResolver 
 	@Override
 	public Access accessFor(EndpointId endpointId, Access defaultAccess) {
 		return this.accessCache.computeIfAbsent(endpointId,
-				(key) -> capAccess(resolveAccess(endpointId, defaultAccess)));
+				(key) -> resolveAccess(endpointId, defaultAccess).cap(this.maxPermittedAccess));
 	}
 
 	private Access resolveAccess(EndpointId endpointId, Access defaultAccess) {
@@ -99,10 +99,6 @@ public class PropertiesEndpointAccessResolver implements EndpointAccessResolver 
 			return (enabled) ? Access.UNRESTRICTED : Access.NONE;
 		}
 		return (this.endpointsDefaultAccess != null) ? this.endpointsDefaultAccess : defaultAccess;
-	}
-
-	private Access capAccess(Access access) {
-		return Access.values()[Math.min(access.ordinal(), this.maxPermittedAccess.ordinal())];
 	}
 
 }

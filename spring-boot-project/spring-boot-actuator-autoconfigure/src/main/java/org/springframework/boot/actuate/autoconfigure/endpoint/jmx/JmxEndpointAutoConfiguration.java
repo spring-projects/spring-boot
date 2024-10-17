@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.LazyInitializationExcludeFilter;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAccessOperationFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
@@ -123,9 +122,8 @@ public class JmxEndpointAutoConfiguration {
 	}
 
 	@Bean
-	EndpointAccessOperationFilter<JmxOperation> jmxAccessPropertiesOperationFilter(
-			EndpointAccessResolver endpointAccessResolver) {
-		return new EndpointAccessOperationFilter<>(endpointAccessResolver);
+	OperationFilter<JmxOperation> jmxAccessPropertiesOperationFilter(EndpointAccessResolver endpointAccessResolver) {
+		return OperationFilter.byAccess(endpointAccessResolver);
 	}
 
 }

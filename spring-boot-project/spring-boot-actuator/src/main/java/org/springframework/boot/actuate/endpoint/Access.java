@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import org.springframework.util.Assert;
+
 /**
  * Permitted level of access to an endpoint and its operations.
  *
@@ -37,6 +39,16 @@ public enum Access {
 	/**
 	 * Unrestricted access to the endpoint is permitted.
 	 */
-	UNRESTRICTED
+	UNRESTRICTED;
+
+	/**
+	 * Cap access to a maximum permitted.
+	 * @param maxPermitted the maximum permitted access
+	 * @return this access if less than the maximum or the maximum permitted
+	 */
+	public Access cap(Access maxPermitted) {
+		Assert.notNull(maxPermitted, "'maxPermittedAccess' must not be null");
+		return (ordinal() <= maxPermitted.ordinal()) ? this : maxPermitted;
+	}
 
 }

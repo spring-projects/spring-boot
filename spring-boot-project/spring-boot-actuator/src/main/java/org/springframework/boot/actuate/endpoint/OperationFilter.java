@@ -35,4 +35,22 @@ public interface OperationFilter<O extends Operation> {
 	 */
 	boolean match(O operation, EndpointId endpointId, Access defaultAccess);
 
+	/**
+	 * Return an {@link OperationFilter} that filters based on the allowed {@link Access
+	 * access} as determined by an {@link EndpointAccessResolver access resolver}.
+	 * @param <O> the operation type
+	 * @param accessResolver the access resolver
+	 * @return a new {@link OperationFilter}
+	 */
+	static <O extends Operation> OperationFilter<O> byAccess(EndpointAccessResolver accessResolver) {
+		return (operation, endpointId, defaultAccess) -> {
+			Access access = accessResolver.accessFor(endpointId, defaultAccess);
+			return switch (access) {
+				case NONE -> false;
+				case READ_ONLY -> operation.getType() == OperationType.READ;
+				case UNRESTRICTED -> true;
+			};
+		};
+	}
+
 }

@@ -14,33 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.endpoint;
+package org.springframework.boot.actuate.endpoint;
 
 import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.actuate.endpoint.Access;
-import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
-import org.springframework.boot.actuate.endpoint.EndpointId;
-import org.springframework.boot.actuate.endpoint.Operation;
-import org.springframework.boot.actuate.endpoint.OperationType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link EndpointAccessOperationFilter}.
+ * Tests for {@link OperationFilter}.
  *
  * @author Andy Wilkinson
  */
-class EndpointAccessOperationFilterTests {
+class OperationFilterTests {
 
 	private final EndpointAccessResolver accessResolver = mock(EndpointAccessResolver.class);
 
 	private final Operation operation = mock(Operation.class);
 
-	private final EndpointAccessOperationFilter<Operation> filter = new EndpointAccessOperationFilter<>(
-			this.accessResolver);
+	private final OperationFilter<Operation> filter = OperationFilter.byAccess(this.accessResolver);
 
 	@Test
 	void whenAccessIsUnrestrictedThenMatchReturnsTrue() {

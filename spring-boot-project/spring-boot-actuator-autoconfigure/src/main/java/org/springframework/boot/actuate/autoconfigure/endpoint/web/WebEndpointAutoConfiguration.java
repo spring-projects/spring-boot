@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAccessOperationFilter;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
@@ -130,9 +129,8 @@ public class WebEndpointAutoConfiguration {
 	}
 
 	@Bean
-	EndpointAccessOperationFilter<WebOperation> webAccessPropertiesOperationFilter(
-			EndpointAccessResolver endpointAccessResolver) {
-		return new EndpointAccessOperationFilter<>(endpointAccessResolver);
+	OperationFilter<WebOperation> webAccessPropertiesOperationFilter(EndpointAccessResolver endpointAccessResolver) {
+		return OperationFilter.byAccess(endpointAccessResolver);
 	}
 
 	@Configuration(proxyBeanMethods = false)

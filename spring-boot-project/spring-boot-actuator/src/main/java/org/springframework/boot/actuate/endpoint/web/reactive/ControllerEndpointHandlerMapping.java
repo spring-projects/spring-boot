@@ -125,15 +125,14 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	}
 
 	private RequestMappingInfo withReadOnlyAccess(Access access, RequestMappingInfo mapping) {
-		Set<RequestMethod> methods = mapping.getMethodsCondition().getMethods();
-		Set<RequestMethod> modifiedMethods = new HashSet<>(methods);
-		if (modifiedMethods.isEmpty()) {
-			modifiedMethods.addAll(READ_ONLY_ACCESS_REQUEST_METHODS);
+		Set<RequestMethod> methods = new HashSet<>(mapping.getMethodsCondition().getMethods());
+		if (methods.isEmpty()) {
+			methods.addAll(READ_ONLY_ACCESS_REQUEST_METHODS);
 		}
 		else {
-			modifiedMethods.retainAll(READ_ONLY_ACCESS_REQUEST_METHODS);
+			methods.retainAll(READ_ONLY_ACCESS_REQUEST_METHODS);
 		}
-		return mapping.mutate().methods(modifiedMethods.toArray(new RequestMethod[0])).build();
+		return mapping.mutate().methods(methods.toArray(new RequestMethod[0])).build();
 	}
 
 	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
