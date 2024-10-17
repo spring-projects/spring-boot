@@ -93,19 +93,19 @@ ext {
 
 task copySettingsXml(type: Copy) {
 	from file("src/intTest/projects/settings.xml")
-	into "${buildDir}/generated-resources/settings"
+	into layout.buildDirectory.dir("generated-resources/settings")
 	filter(springRepositoryTransformers.mavenSettings())
 }
 
 sourceSets {
 	main {
-		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
+		output.dir(layout.buildDirectory.dir("generated/resources/xsd"), builtBy: "xsdResources")
 	}
 	intTest {
-		output.dir("${buildDir}/generated-resources", builtBy: ["extractVersionProperties", "copySettingsXml"])
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties", "copySettingsXml"])
 	}
 	dockerTest {
-		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: "extractVersionProperties")
 	}
 }
 
@@ -124,7 +124,7 @@ javadoc {
 
 task xsdResources(type: Sync) {
 	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
-	into "${buildDir}/generated/resources/xsd/org/springframework/boot/maven"
+	into layout.buildDirectory.dir("generated/resources/xsd/org/springframework/boot/maven")
 	rename { fileName -> "layers.xsd" }
 }
 
