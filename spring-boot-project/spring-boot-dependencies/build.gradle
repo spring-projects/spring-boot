@@ -353,7 +353,7 @@ bom {
 			releaseNotes("https://www.elastic.co/guide/en/elasticsearch/reference/current/release-notes-{version}.html")
 		}
 	}
-	library("Flyway", "10.19.0") {
+	library("Flyway", "10.20.0") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-commandline",
