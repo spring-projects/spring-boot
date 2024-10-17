@@ -197,6 +197,7 @@ class ConfigurationPropertiesBeanTests {
 	void getWhenHasValidatedBeanBindsWithBeanAnnotation() throws Throwable {
 		get(ValidatedBeanConfiguration.class, "validatedBean", (propertiesBean) -> {
 			Validated validated = propertiesBean.asBindTarget().getAnnotation(Validated.class);
+			assertThat(validated).isNotNull();
 			assertThat(validated.value()).containsExactly(BeanGroup.class);
 		});
 	}
@@ -205,6 +206,7 @@ class ConfigurationPropertiesBeanTests {
 	void getWhenHasValidatedFactoryMethodBindsWithFactoryMethodAnnotation() throws Throwable {
 		get(ValidatedMethodConfiguration.class, "annotatedBean", (propertiesBean) -> {
 			Validated validated = propertiesBean.asBindTarget().getAnnotation(Validated.class);
+			assertThat(validated).isNotNull();
 			assertThat(validated.value()).containsExactly(FactoryMethodGroup.class);
 		});
 	}
@@ -213,6 +215,7 @@ class ConfigurationPropertiesBeanTests {
 	void getWhenHasValidatedBeanAndFactoryMethodBindsWithFactoryMethodAnnotation() throws Throwable {
 		get(ValidatedMethodAndBeanConfiguration.class, "validatedBean", (propertiesBean) -> {
 			Validated validated = propertiesBean.asBindTarget().getAnnotation(Validated.class);
+			assertThat(validated).isNotNull();
 			assertThat(validated.value()).containsExactly(FactoryMethodGroup.class);
 		});
 	}

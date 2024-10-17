@@ -1197,6 +1197,7 @@ class ConfigurationPropertiesTests {
 	void boundPropertiesShouldBeRecorded() {
 		load(NestedConfiguration.class, "name=foo", "nested.name=bar");
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.context);
+		assertThat(bound).isNotNull();
 		Set<ConfigurationPropertyName> keys = bound.getAll().keySet();
 		assertThat(keys.stream().map(ConfigurationPropertyName::toString)).contains("name", "nested.name");
 	}
