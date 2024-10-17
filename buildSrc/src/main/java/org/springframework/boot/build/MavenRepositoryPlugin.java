@@ -58,7 +58,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-		File repositoryLocation = new File(project.getBuildDir(), "maven-repository");
+		File repositoryLocation = project.getLayout().getBuildDirectory().dir("maven-repository").get().getAsFile();
 		publishing.getRepositories().maven((mavenRepository) -> {
 			mavenRepository.setName("project");
 			mavenRepository.setUrl(repositoryLocation.toURI());

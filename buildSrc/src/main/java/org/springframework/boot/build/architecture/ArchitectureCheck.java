@@ -82,7 +82,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
 				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
-				noClassesShouldCallStringToUpperCaseWithoutLocale(), noClassesShouldCallStringToLowerCaseWithoutLocale());
+				noClassesShouldCallStringToUpperCaseWithoutLocale(),
+				noClassesShouldCallStringToLowerCaseWithoutLocale());
 		getRules().addAll(getProhibitObjectsRequireNonNull()
 			.map((prohibit) -> prohibit ? noClassesShouldCallObjectsRequireNonNull() : Collections.emptyList()));
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));

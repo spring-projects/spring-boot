@@ -60,7 +60,12 @@ class ArchitectureCheckTests {
 	}
 
 	File failureReport(ArchitectureCheck architectureCheck) {
-		return new File(architectureCheck.getProject().getBuildDir(), "checkArchitecture/failure-report.txt");
+		return architectureCheck.getProject()
+			.getLayout()
+			.getBuildDirectory()
+			.file("checkArchitecture/failure-report.txt")
+			.get()
+			.getAsFile();
 	}
 
 	@Test
