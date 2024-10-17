@@ -19,22 +19,32 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ReadFrom;
+import io.lettuce.core.ReadFrom.Nodes;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
+import io.lettuce.core.models.role.RedisNodeDescription;
 import io.lettuce.core.resource.DefaultClientResources;
 import io.lettuce.core.tracing.Tracing;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -62,6 +72,7 @@ import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -109,6 +120,57 @@ class RedisAutoConfigurationTests {
 				assertThat(cf.getPassword()).isNull();
 				assertThat(cf.isUseSsl()).isFalse();
 				assertThat(cf.getShutdownTimeout()).isEqualTo(500);
+			});
+	}
+
+	@ParameterizedTest
+	@MethodSource
+	void shouldConfigureLettuceReadFromProperty(Lettuce.ReadFrom.Type when, io.lettuce.core.ReadFrom expected) {
+		this.contextRunner.withPropertyValues("spring.data.redis.lettuce.read-from.type:" + when).run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.getClientConfiguration().getReadFrom()).hasValue(expected);
+		});
+	}
+
+	@Test
+	void shouldConfigureLettuceReadFromPropertyRegexType() {
+		RedisNodeDescription node1 = mock(RedisNodeDescription.class);
+		given(node1.getUri()).willReturn(new RedisURI("127.0.0.1", 6379, Duration.ZERO));
+		RedisNodeDescription node2 = mock(RedisNodeDescription.class);
+		given(node2.getUri()).willReturn(new RedisURI("192.12.128.0", 6379, Duration.ZERO));
+		RedisNodeDescription node3 = mock(RedisNodeDescription.class);
+		given(node3.getUri()).willReturn(new RedisURI("192.168.255.255", 6379, Duration.ZERO));
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.lettuce.read-from.type:" + Lettuce.ReadFrom.Type.REGEX,
+					"spring.data.redis.lettuce.read-from.pattern:192.*")
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.getClientConfiguration().getReadFrom()).isNotEmpty();
+				ReadFrom readFrom = cf.getClientConfiguration().getReadFrom().get();
+				List<RedisNodeDescription> selected = readFrom.select(new RedisNodes(node1, node2, node3));
+				assertThat(selected).hasSize(2);
+				assertThat(selected).contains(node2, node3);
+			});
+	}
+
+	@Test
+	void shouldConfigureLettuceReadFromPropertySubnetType() {
+		RedisNodeDescription node1 = mock(RedisNodeDescription.class);
+		given(node1.getUri()).willReturn(new RedisURI("127.0.0.1", 6379, Duration.ZERO));
+		RedisNodeDescription node2 = mock(RedisNodeDescription.class);
+		given(node2.getUri()).willReturn(new RedisURI("192.12.128.0", 6379, Duration.ZERO));
+		RedisNodeDescription node3 = mock(RedisNodeDescription.class);
+		given(node3.getUri()).willReturn(new RedisURI("192.168.255.255", 6379, Duration.ZERO));
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.lettuce.read-from.type:" + Lettuce.ReadFrom.Type.SUBNET,
+					"spring.data.redis.lettuce.read-from.cidr-notations:192.12.128.0/32,192.168.255.255/32")
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.getClientConfiguration().getReadFrom()).isNotEmpty();
+				ReadFrom readFrom = cf.getClientConfiguration().getReadFrom().get();
+				List<RedisNodeDescription> selected = readFrom.select(new RedisNodes(node1, node2, node3));
+				assertThat(selected).hasSize(2);
+				assertThat(selected).contains(node2, node3);
 			});
 	}
 
@@ -630,6 +692,36 @@ class RedisAutoConfigurationTests {
 
 	private String getUserName(LettuceConnectionFactory factory) {
 		return ReflectionTestUtils.invokeMethod(factory, "getRedisUsername");
+	}
+
+	static Stream<Arguments> shouldConfigureLettuceReadFromProperty() {
+		return Stream.of(Arguments.of(Lettuce.ReadFrom.Type.ANY, ReadFrom.ANY),
+				Arguments.of(Lettuce.ReadFrom.Type.ANY_REPLICA, ReadFrom.ANY_REPLICA),
+				Arguments.of(Lettuce.ReadFrom.Type.LOWEST_LATENCY, ReadFrom.LOWEST_LATENCY),
+				Arguments.of(Lettuce.ReadFrom.Type.REPLICA, ReadFrom.REPLICA),
+				Arguments.of(Lettuce.ReadFrom.Type.REPLICA_PREFERRED, ReadFrom.REPLICA_PREFERRED),
+				Arguments.of(Lettuce.ReadFrom.Type.UPSTREAM, ReadFrom.UPSTREAM),
+				Arguments.of(Lettuce.ReadFrom.Type.UPSTREAM_PREFERRED, ReadFrom.UPSTREAM_PREFERRED));
+	}
+
+	private static final class RedisNodes implements Nodes {
+
+		private final List<RedisNodeDescription> descriptions;
+
+		RedisNodes(RedisNodeDescription... descriptions) {
+			this.descriptions = List.of(descriptions);
+		}
+
+		@Override
+		public List<RedisNodeDescription> getNodes() {
+			return this.descriptions;
+		}
+
+		@Override
+		public Iterator<RedisNodeDescription> iterator() {
+			return this.descriptions.iterator();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
