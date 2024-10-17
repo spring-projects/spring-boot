@@ -19,6 +19,7 @@ package org.springframework.boot.logging.logback;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import ch.qos.logback.classic.Level;
@@ -46,7 +47,7 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		Map<String, AnsiElement> ansiElements = new HashMap<>();
 		Arrays.stream(AnsiColor.values())
 			.filter((color) -> color != AnsiColor.DEFAULT)
-			.forEach((color) -> ansiElements.put(color.name().toLowerCase(), color));
+			.forEach((color) -> ansiElements.put(color.name().toLowerCase(Locale.ROOT), color));
 		ansiElements.put("faint", AnsiStyle.FAINT);
 		ELEMENTS = Collections.unmodifiableMap(ansiElements);
 	}

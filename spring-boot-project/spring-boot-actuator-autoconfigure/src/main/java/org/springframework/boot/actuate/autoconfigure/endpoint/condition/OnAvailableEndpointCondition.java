@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -206,7 +207,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 
 		StandardExposureOutcomeContributor(Environment environment, EndpointExposure exposure) {
 			this.exposure = exposure;
-			String name = exposure.name().toLowerCase().replace('_', '-');
+			String name = exposure.name().toLowerCase(Locale.ROOT).replace('_', '-');
 			this.property = "management.endpoints." + name + ".exposure";
 			this.filter = new IncludeExcludeEndpointFilter<>(ExposableEndpoint.class, environment, this.property,
 					exposure.getDefaultIncludes());

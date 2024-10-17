@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -743,14 +744,14 @@ class JsonWriterTests {
 
 		@Test
 		void whenInstanceOfWhenInstanceMatches() {
-			ValueProcessor<Object> processor = ValueProcessor.of((value) -> value.toString().toUpperCase())
+			ValueProcessor<Object> processor = ValueProcessor.of((value) -> value.toString().toUpperCase(Locale.ROOT))
 				.whenInstanceOf(String.class);
 			assertThat(processor.processValue(null, "test")).hasToString("TEST");
 		}
 
 		@Test
 		void whenInstanceOfWhenInstanceDoesNotMatch() {
-			ValueProcessor<Object> processor = ValueProcessor.of((value) -> value.toString().toUpperCase())
+			ValueProcessor<Object> processor = ValueProcessor.of((value) -> value.toString().toUpperCase(Locale.ROOT))
 				.whenInstanceOf(String.class);
 			assertThat(processor.processValue(null, new StringBuilder("test"))).hasToString("test");
 		}

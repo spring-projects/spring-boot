@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
 				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
-				noClassesShouldLoadResourcesUsingResourceUtils());
+				noClassesShouldLoadResourcesUsingResourceUtils(), noClassesShouldCallStringToUpperCaseWithoutLocale(),
+				noClassesShouldCallStringToLowerCaseWithoutLocale());
 		getRules().addAll(getProhibitObjectsRequireNonNull()
 			.map((prohibit) -> prohibit ? noClassesShouldCallObjectsRequireNonNull() : Collections.emptyList()));
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
@@ -189,6 +190,20 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			}
 
 		};
+	}
+
+	private ArchRule noClassesShouldCallStringToLowerCaseWithoutLocale() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(String.class, "toLowerCase")
+			.because("String.toLowerCase(Locale.ROOT) should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallStringToUpperCaseWithoutLocale() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(String.class, "toUpperCase")
+			.because("String.toUpperCase(Locale.ROOT) should be used instead");
 	}
 
 	private ArchRule noClassesShouldCallStepVerifierStepVerifyComplete() {

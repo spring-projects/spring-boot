@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -239,7 +240,7 @@ class SpringConfigurationPropertySourceTests {
 
 		@Override
 		public Object getProperty(String name) {
-			name = name.toLowerCase();
+			name = name.toLowerCase(Locale.ROOT);
 			if (!name.startsWith(this.prefix)) {
 				return null;
 			}

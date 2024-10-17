@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docs.messaging.kafka.streams;
 
+import java.util.Locale;
+
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -39,7 +41,7 @@ public class MyKafkaStreamsConfiguration {
 	}
 
 	private KeyValue<Integer, String> uppercaseValue(Integer key, String value) {
-		return new KeyValue<>(key, value.toUpperCase());
+		return new KeyValue<>(key, value.toUpperCase(Locale.getDefault()));
 	}
 
 }

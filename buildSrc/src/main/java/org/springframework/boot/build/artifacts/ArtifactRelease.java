@@ -16,6 +16,8 @@
 
 package org.springframework.boot.build.artifacts;
 
+import java.util.Locale;
+
 import org.gradle.api.Project;
 
 /**
@@ -37,7 +39,7 @@ public final class ArtifactRelease {
 	}
 
 	public String getType() {
-		return this.type.toString().toLowerCase();
+		return this.type.toString().toLowerCase(Locale.ROOT);
 	}
 
 	public String getDownloadRepo() {
