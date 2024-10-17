@@ -858,7 +858,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "5.0.5.java11") {
+	library("Jaybird", "5.0.6.java11") {
 		prohibit {
 			endsWith ".java8"
 			because "we use the .java11 version"
