@@ -333,7 +333,7 @@ bom {
 			releaseNotes("https://github.com/ehcache/ehcache3/releases/tag/v{version}")
 		}
 	}
-	library("Elasticsearch Client", "8.15.2") {
+	library("Elasticsearch Client", "8.15.3") {
 		group("org.elasticsearch.client") {
 			modules = [
 				"elasticsearch-rest-client" {
