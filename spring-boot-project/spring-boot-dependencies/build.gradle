@@ -423,7 +423,7 @@ bom {
 			]
 		}
 	}
-	library("GraphQL Java", "22.3") {
+	library("GraphQL Java", "22.1") {
 		prohibit {
 			startsWith(["2018-", "2019-", "2020-", "2021-", "230521-"])
 			because "These are snapshots that we don't want to see"
@@ -1978,7 +1978,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-framework/releases/tag/v{version}")
 		}
 	}
-	library("Spring GraphQL", "1.3.3-SNAPSHOT") {
+	library("Spring GraphQL", "1.3.2") {
 		considerSnapshots()
 		group("org.springframework.graphql") {
 			modules = [
