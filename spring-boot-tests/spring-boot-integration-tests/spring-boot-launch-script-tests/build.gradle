@@ -25,17 +25,17 @@ dependencies {
 
 task syncMavenRepository(type: Sync) {
 	from configurations.app
-	into "${buildDir}/docker-test-maven-repository"
+	into layout.buildDirectory.dir("docker-test-maven-repository")
 }
 
 task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-launch-script-tests-app")
-	destinationDirectory = file("${buildDir}/spring-boot-launch-script-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-launch-script-tests-app"))
 }
 
 task buildApp(type: GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-launch-script-tests-app"
+	dir = layout.buildDirectory.dir("spring-boot-launch-script-tests-app")
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }
@@ -54,7 +54,7 @@ task syncJdkDownloads(type: Sync) {
 	dependsOn downloadJdk
 	from "${project.gradle.gradleUserHomeDir}/caches/springboot/downloads/jdk/bellsoft/"
 	include "bellsoft-jdk${jdkVersion}-linux-${jdkArch}.tar.gz"
-	into "${project.buildDir}/downloads/jdk/bellsoft/"
+	into layout.buildDirectory.dir("downloads/jdk/bellsoft/")
 }
 
 tasks.named("processDockerTestResources").configure {

@@ -22,17 +22,17 @@ dependencies {
 
 task syncMavenRepository(type: Sync) {
 	from configurations.app
-	into "${buildDir}/docker-test-maven-repository"
+	into layout.buildDirectory.dir("docker-test-maven-repository")
 }
 
 task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-loader-classic-tests-app")
-	destinationDirectory = file("${buildDir}/spring-boot-loader-classic-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-loader-classic-tests-app"))
 }
 
 task buildApp(type: GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-loader-classic-tests-app"
+	dir = layout.buildDirectory.dir("spring-boot-loader-classic-tests-app")
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }

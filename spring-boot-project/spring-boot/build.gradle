@@ -9,7 +9,7 @@ plugins {
 
 description = "Spring Boot"
 
-def tomcatConfigProperties = "$buildDir/tomcat-config-properties"
+def tomcatConfigProperties = layout.buildDirectory.dir("tomcat-config-properties")
 
 configurations {
 	tomcatDistribution

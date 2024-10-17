@@ -28,29 +28,29 @@ dependencies {
 
 task syncMavenRepository(type: Sync) {
 	from configurations.app
-	into "${buildDir}/docker-test-maven-repository"
+	into layout.buildDirectory.dir("docker-test-maven-repository")
 }
 
 task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-loader-tests-app")
-	destinationDirectory = file("${buildDir}/spring-boot-loader-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-loader-tests-app"))
 }
 
 task buildApp(type: GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-loader-tests-app"
+	dir = layout.buildDirectory.dir("spring-boot-loader-tests-app")
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }
 
 task syncSignedJarAppSource(type: org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-loader-tests-signed-jar")
-	destinationDirectory = file("${buildDir}/spring-boot-loader-tests-signed-jar")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-loader-tests-signed-jar"))
 }
 
 task buildSignedJarApp(type: GradleBuild) {
 	dependsOn syncSignedJarAppSource, syncMavenRepository
-	dir = "${buildDir}/spring-boot-loader-tests-signed-jar"
+	dir = layout.buildDirectory.dir("spring-boot-loader-tests-signed-jar")
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }
@@ -69,7 +69,7 @@ task syncJdkDownloads(type: Sync) {
 	dependsOn downloadJdk
 	from "${project.gradle.gradleUserHomeDir}/caches/springboot/downloads/jdk/oracle/"
 	include "jdk-${oracleJdkVersion}_linux-${oracleJdkArch}_bin.tar.gz"
-	into "${project.buildDir}/downloads/jdk/oracle/"
+	into layout.buildDirectory.dir("downloads/jdk/oracle/")
 }
 
 tasks.named("processDockerTestResources").configure {

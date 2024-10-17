@@ -5,7 +5,7 @@ plugins {
 
 description = "Spring Boot Loader Tools"
 
-def generatedResources = "${buildDir}/generated-resources/main"
+Provider<Directory> generatedResources = layout.buildDirectory.dir("generated-resources/main")
 
 configurations {
 	loader {
@@ -51,7 +51,7 @@ task reproducibleLoaderJar(type: Jar) {
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
 	archiveFileName = "spring-boot-loader.jar"
-	destinationDirectory = file("${generatedResources}/META-INF/loader")
+	destinationDirectory = file(generatedResources.map {it.dir("META-INF/loader") })
 }
 
 task reproducibleLoaderClassicJar(type: Jar) {
@@ -66,7 +66,7 @@ task reproducibleLoaderClassicJar(type: Jar) {
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
 	archiveFileName = "spring-boot-loader-classic.jar"
-	destinationDirectory = file("${generatedResources}/META-INF/loader")
+	destinationDirectory = file(generatedResources.map { it.dir("META-INF/loader") })
 }
 
 task toolsJar(type: Sync) {
@@ -75,7 +75,7 @@ task toolsJar(type: Sync) {
 		file(configurations.jarmode.incoming.files.singleFile)
 	}
 	rename({ "spring-boot-jarmode-tools.jar" })
-	into(file("${generatedResources}/META-INF/jarmode"))
+	into(file(generatedResources.map { it.dir("META-INF/jarmode") }))
 }
 
 sourceSets {

@@ -211,7 +211,7 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	filter {
 		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
 	}
-	outputs.dir("${buildDir}/generated-snippets")
+	outputs.dir(layout.buildDirectory.dir("generated-snippets"))
 	develocity {
 		predictiveTestSelection {
 			enabled = false
@@ -229,12 +229,12 @@ def antoraActuatorRestApiLocalAggregateContent  = tasks.register("antoraActuator
 
 def antoraActuatorRestApiAggregateContent = tasks.register("antoraActuatorRestApiAggregateContent", Zip) {
 	dependsOn documentationTest
-	inputs.dir("${buildDir}/generated-snippets")
+	inputs.dir(layout.buildDirectory.dir("generated-snippets"))
 		.withPathSensitivity(PathSensitivity.RELATIVE)
 		.withPropertyName("generatedSnippets")
 	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
 	archiveClassifier = "actuator-rest-api-aggregate-content"
-	from("${buildDir}/generated-snippets") {
+	from(layout.buildDirectory.dir("generated-snippets")) {
 		into "modules/api/partials/rest/actuator"
 	}
 }
