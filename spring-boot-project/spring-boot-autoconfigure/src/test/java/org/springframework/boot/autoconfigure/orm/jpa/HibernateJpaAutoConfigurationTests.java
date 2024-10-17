@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -40,6 +41,7 @@ import jakarta.transaction.UserTransaction;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.ManagedBeanSettings;
 import org.hibernate.cfg.SchemaToolingSettings;
 import org.hibernate.dialect.H2Dialect;
@@ -47,6 +49,8 @@ import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.hibernate.type.format.AbstractJsonFormatMapper;
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -59,6 +63,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -365,6 +370,35 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 						entry("hibernate.implicit_naming_strategy", configuration.implicitNamingStrategy));
 				assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
 			});
+	}
+
+	@Test
+	void jsonFormatMapperHibernatePropertiesCustomizerUsedAutoConfiguredObjectMapper() {
+		contextRunner().withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isInstanceOf(JacksonJsonFormatMapper.class)));
+	}
+
+	@Test
+	void jsonFormatMapperHibernatePropertiesCustomizerShouldNotOverrideJsonFormatMapperIfAlreadyConfigured() {
+		AbstractJsonFormatMapper jsonFormatMapper = mock(AbstractJsonFormatMapper.class);
+		contextRunner().withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withBean(HibernatePropertiesCustomizer.class,
+					() -> (hibernateProperties) -> hibernateProperties.put(AvailableSettings.JSON_FORMAT_MAPPER,
+							jsonFormatMapper))
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isSameAs(jsonFormatMapper)));
+	}
+
+	@Test
+	void jsonFormatMapperHibernatePropertiesCustomizerShouldNotBeRegisteredIfNoSingleCandidate() {
+		contextRunner().withBean("objectMapper1", ObjectMapper.class, ObjectMapper::new)
+			.withBean("objectMapper2", ObjectMapper.class, ObjectMapper::new)
+			.run(vendorProperties(
+					(vendorProperties) -> assertThat(vendorProperties.get(AvailableSettings.JSON_FORMAT_MAPPER))
+						.isNull()));
 	}
 
 	@Test
