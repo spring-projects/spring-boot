@@ -937,7 +937,8 @@ public class ServerProperties {
 			private int minSpare = 10;
 
 			/**
-			 * Maximum capacity of the thread pool's backing queue.
+			 * Maximum capacity of the thread pool's backing queue. This setting only has
+			 * an effect if the value is greater than 0.
 			 */
 			private int maxQueueCapacity = 2147483647;
 
