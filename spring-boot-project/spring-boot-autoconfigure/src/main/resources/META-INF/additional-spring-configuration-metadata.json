@@ -362,6 +362,12 @@
       }
     },
     {
+      "name": "server.tomcat.reject-illegal-header",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "server.undertow.buffers-per-region",
       "type": "java.lang.Integer",
       "description": "Number of buffer per region.",
