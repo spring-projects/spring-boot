@@ -19,6 +19,7 @@ package org.springframework.boot.testsupport.process;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -42,7 +43,7 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 
 	private static final String USR_LOCAL_BIN = "/usr/local/bin";
 
-	private static final boolean MAC_OS = System.getProperty("os.name").toLowerCase().contains("mac");
+	private static final boolean MAC_OS = System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("mac");
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {

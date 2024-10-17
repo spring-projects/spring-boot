@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -76,7 +77,7 @@ class DiscoveredOperationMethodTests {
 
 		@Override
 		public MimeType getProducedMimeType() {
-			return new MimeType(toString().toLowerCase());
+			return new MimeType(toString().toLowerCase(Locale.ROOT));
 		}
 
 	}

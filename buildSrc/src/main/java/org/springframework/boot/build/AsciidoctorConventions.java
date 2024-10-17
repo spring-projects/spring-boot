@@ -19,6 +19,7 @@ package org.springframework.boot.build;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask;
@@ -111,7 +112,7 @@ class AsciidoctorConventions {
 		asciidoctorTask.baseDirFollowsSourceDir();
 		createSyncDocumentationSourceTask(project, asciidoctorTask);
 		if (asciidoctorTask instanceof AsciidoctorTask task) {
-			boolean pdf = task.getName().toLowerCase().contains("pdf");
+			boolean pdf = task.getName().toLowerCase(Locale.ROOT).contains("pdf");
 			String backend = (!pdf) ? "spring-html" : "spring-pdf";
 			task.outputOptions((outputOptions) -> outputOptions.backends(backend));
 		}

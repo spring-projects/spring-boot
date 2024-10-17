@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -118,7 +119,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		for (ExposureFilter exposureFilter : exposureFilters) {
 			if (exposuresToCheck.contains(exposureFilter.getExposure()) && exposureFilter.isExposed(endpointId)) {
 				return ConditionOutcome.match(message.because("marked as exposed by a 'management.endpoints."
-						+ exposureFilter.getExposure().name().toLowerCase() + ".exposure' property"));
+						+ exposureFilter.getExposure().name().toLowerCase(Locale.ROOT) + ".exposure' property"));
 			}
 		}
 		return ConditionOutcome.noMatch(message.because("no 'management.endpoints' property marked it as exposed"));
@@ -187,7 +188,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 			if (EndpointExposure.CLOUD_FOUNDRY.equals(exposure)) {
 				return "cloud-foundry";
 			}
-			return exposure.name().toLowerCase();
+			return exposure.name().toLowerCase(Locale.ROOT);
 		}
 
 		EndpointExposure getExposure() {

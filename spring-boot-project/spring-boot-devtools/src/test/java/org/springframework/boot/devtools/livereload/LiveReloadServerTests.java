@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -338,7 +339,7 @@ class LiveReloadServerTests {
 		@Override
 		public void beforeRequest(Map<String, List<String>> requestHeaders) {
 			Map<String, List<String>> uppercaseRequestHeaders = new LinkedHashMap<>();
-			requestHeaders.forEach((key, value) -> uppercaseRequestHeaders.put(key.toUpperCase(), value));
+			requestHeaders.forEach((key, value) -> uppercaseRequestHeaders.put(key.toUpperCase(Locale.ROOT), value));
 			requestHeaders.clear();
 			requestHeaders.putAll(uppercaseRequestHeaders);
 			requestHeaders.putAll(this.headers);

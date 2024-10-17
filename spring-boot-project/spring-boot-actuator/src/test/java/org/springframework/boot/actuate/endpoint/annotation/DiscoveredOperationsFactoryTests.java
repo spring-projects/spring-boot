@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -254,7 +255,7 @@ class DiscoveredOperationsFactoryTests {
 
 		@Override
 		public MimeType getProducedMimeType() {
-			return new MimeType(toString().toLowerCase());
+			return new MimeType(toString().toLowerCase(Locale.ROOT));
 		}
 
 	}

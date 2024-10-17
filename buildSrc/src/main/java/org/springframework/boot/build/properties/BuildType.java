@@ -16,6 +16,8 @@
 
 package org.springframework.boot.build.properties;
 
+import java.util.Locale;
+
 /**
  * The type of build being performed.
  *
@@ -34,7 +36,7 @@ public enum BuildType {
 	COMMERCIAL;
 
 	public String toIdentifier() {
-		return toString().replace("_", "").toLowerCase();
+		return toString().replace("_", "").toLowerCase(Locale.ROOT);
 	}
 
 }

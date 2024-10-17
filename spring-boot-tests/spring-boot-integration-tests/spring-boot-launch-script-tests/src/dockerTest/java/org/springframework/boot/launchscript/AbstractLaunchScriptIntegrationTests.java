@@ -20,6 +20,7 @@ import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 import org.assertj.core.api.Condition;
@@ -115,7 +116,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 
 		private static ImageFromDockerfile createImage(String os, String version) {
 			ImageFromDockerfile image = new ImageFromDockerfile(
-					"spring-boot-launch-script/" + os.toLowerCase() + "-" + version);
+					"spring-boot-launch-script/" + os.toLowerCase(Locale.ROOT) + "-" + version);
 			image.withFileFromFile("Dockerfile",
 					new File("src/dockerTest/resources/conf/" + os + "/" + version + "/Dockerfile"));
 			for (File file : new File("build/downloads/jdk/bellsoft").listFiles()) {
