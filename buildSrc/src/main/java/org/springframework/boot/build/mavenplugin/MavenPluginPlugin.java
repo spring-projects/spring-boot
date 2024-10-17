@@ -58,6 +58,7 @@ import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.component.ConfigurationVariantDetails;
 import org.gradle.api.component.SoftwareComponent;
 import org.gradle.api.file.CopySpec;
+import org.gradle.api.file.Directory;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
@@ -65,6 +66,7 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
@@ -170,11 +172,11 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		RuntimeClasspathMavenRepository runtimeClasspathMavenRepository = project.getTasks()
 			.create("runtimeClasspathMavenRepository", RuntimeClasspathMavenRepository.class);
 		runtimeClasspathMavenRepository.getOutputDir()
-			.set(new File(project.getBuildDir(), "runtime-classpath-repository"));
+			.set(project.getLayout().getBuildDirectory().dir("runtime-classpath-repository"));
 		project.getDependencies()
 			.components((components) -> components.all(MavenRepositoryComponentMetadataRule.class));
 		Sync task = project.getTasks().create("populateTestMavenRepository", Sync.class);
-		task.setDestinationDir(new File(project.getBuildDir(), "test-maven-repository"));
+		task.setDestinationDir(project.getLayout().getBuildDirectory().dir("test-maven-repository").get().getAsFile());
 		task.with(copyIntTestMavenRepositoryFiles(project, runtimeClasspathMavenRepository));
 		task.dependsOn(project.getTasks().getByName(MavenRepositoryPlugin.PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME));
 		project.getTasks().getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME).dependsOn(task);
@@ -188,7 +190,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			RuntimeClasspathMavenRepository runtimeClasspathMavenRepository) {
 		CopySpec copySpec = project.copySpec();
 		copySpec.from(project.getConfigurations().getByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME));
-		copySpec.from(new File(project.getBuildDir(), "maven-repository"));
+		copySpec.from(project.getLayout().getBuildDirectory().dir("maven-repository"));
 		copySpec.from(runtimeClasspathMavenRepository);
 		return copySpec;
 	}
@@ -197,29 +199,29 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		DocumentPluginGoals task = project.getTasks().create("documentPluginGoals", DocumentPluginGoals.class);
 		File pluginXml = new File(generatePluginDescriptorTask.getOutputs().getFiles().getSingleFile(), "plugin.xml");
 		task.getPluginXml().set(pluginXml);
-		task.getOutputDir().set(new File(project.getBuildDir(), "generated/docs/maven-plugin-goals/"));
+		task.getOutputDir().set(project.getLayout().getBuildDirectory().dir("docs/generated/goals/"));
 		task.dependsOn(generatePluginDescriptorTask);
 	}
 
 	private MavenExec addGenerateHelpMojoTask(Project project, Jar jarTask) {
-		File helpMojoDir = new File(project.getBuildDir(), "help-mojo");
+		Provider<Directory> helpMojoDir = project.getLayout().getBuildDirectory().dir("help-mojo");
 		MavenExec task = createGenerateHelpMojoTask(project, helpMojoDir);
 		task.dependsOn(createSyncHelpMojoInputsTask(project, helpMojoDir));
 		includeHelpMojoInJar(jarTask, task);
 		return task;
 	}
 
-	private MavenExec createGenerateHelpMojoTask(Project project, File helpMojoDir) {
+	private MavenExec createGenerateHelpMojoTask(Project project, Provider<Directory> helpMojoDir) {
 		MavenExec task = project.getTasks().create("generateHelpMojo", MavenExec.class);
 		task.getProjectDir().set(helpMojoDir);
 		task.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.1:helpmojo");
-		task.getOutputs().dir(new File(helpMojoDir, "target/generated-sources/plugin"));
+		task.getOutputs().dir(helpMojoDir.map((directory) -> directory.dir("target/generated-sources/plugin")));
 		return task;
 	}
 
-	private Sync createSyncHelpMojoInputsTask(Project project, File helpMojoDir) {
+	private Sync createSyncHelpMojoInputsTask(Project project, Provider<Directory> helpMojoDir) {
 		Sync task = project.getTasks().create("syncHelpMojoInputs", Sync.class);
-		task.setDestinationDir(helpMojoDir);
+		task.setDestinationDir(helpMojoDir.get().getAsFile());
 		File pomFile = new File(project.getProjectDir(), "src/maven/resources/pom.xml");
 		task.from(pomFile, (copy) -> replaceVersionPlaceholder(copy, project));
 		return task;
@@ -231,8 +233,10 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private MavenExec addGeneratePluginDescriptorTask(Project project, Jar jarTask, MavenExec generateHelpMojoTask) {
-		File pluginDescriptorDir = new File(project.getBuildDir(), "plugin-descriptor");
-		File generatedHelpMojoDir = new File(project.getBuildDir(), "generated/sources/helpMojo");
+		Provider<Directory> pluginDescriptorDir = project.getLayout().getBuildDirectory().dir("plugin-descriptor");
+		Provider<Directory> generatedHelpMojoDir = project.getLayout()
+			.getBuildDirectory()
+			.dir("generated/sources/helpMojo");
 		SourceSet mainSourceSet = getMainSourceSet(project);
 		project.getTasks().withType(Javadoc.class, this::setJavadocOptions);
 		FormatHelpMojoSource formattedHelpMojoSource = createFormatHelpMojoSource(project, generateHelpMojoTask,
@@ -258,7 +262,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private FormatHelpMojoSource createFormatHelpMojoSource(Project project, MavenExec generateHelpMojoTask,
-			File generatedHelpMojoDir) {
+			Provider<Directory> generatedHelpMojoDir) {
 		FormatHelpMojoSource formatHelpMojoSource = project.getTasks()
 			.create("formatHelpMojoSource", FormatHelpMojoSource.class);
 		formatHelpMojoSource.setGenerator(generateHelpMojoTask);
@@ -266,9 +270,10 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		return formatHelpMojoSource;
 	}
 
-	private Sync createSyncPluginDescriptorInputs(Project project, File destination, SourceSet sourceSet) {
+	private Sync createSyncPluginDescriptorInputs(Project project, Provider<Directory> destination,
+			SourceSet sourceSet) {
 		Sync pluginDescriptorInputs = project.getTasks().create("syncPluginDescriptorInputs", Sync.class);
-		pluginDescriptorInputs.setDestinationDir(destination);
+		pluginDescriptorInputs.setDestinationDir(destination.get().getAsFile());
 		File pomFile = new File(project.getProjectDir(), "src/maven/resources/pom.xml");
 		pluginDescriptorInputs.from(pomFile, (copy) -> replaceVersionPlaceholder(copy, project));
 		pluginDescriptorInputs.from(sourceSet.getOutput().getClassesDirs(), (sync) -> sync.into("target/classes"));
@@ -277,12 +282,13 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		return pluginDescriptorInputs;
 	}
 
-	private MavenExec createGeneratePluginDescriptorTask(Project project, File mavenDir) {
+	private MavenExec createGeneratePluginDescriptorTask(Project project, Provider<Directory> mavenDir) {
 		MavenExec generatePluginDescriptor = project.getTasks().create("generatePluginDescriptor", MavenExec.class);
 		generatePluginDescriptor.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.1:descriptor");
-		generatePluginDescriptor.getOutputs().dir(new File(mavenDir, "target/classes/META-INF/maven"));
+		generatePluginDescriptor.getOutputs()
+			.dir(mavenDir.map((directory) -> directory.dir("target/classes/META-INF/maven")));
 		generatePluginDescriptor.getInputs()
-			.dir(new File(mavenDir, "target/classes/org"))
+			.dir(mavenDir.map((directory) -> directory.dir("target/classes/org")))
 			.withPathSensitivity(PathSensitivity.RELATIVE)
 			.withPropertyName("plugin classes");
 		generatePluginDescriptor.getProjectDir().set(mavenDir);
@@ -298,7 +304,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		TaskProvider<PrepareMavenBinaries> task = project.getTasks()
 			.register("prepareMavenBinaries", PrepareMavenBinaries.class,
 					(prepareMavenBinaries) -> prepareMavenBinaries.getOutputDir()
-						.set(new File(project.getBuildDir(), "maven-binaries")));
+						.set(project.getLayout().getBuildDirectory().dir("maven-binaries")));
 		project.getTasks()
 			.getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME)
 			.getInputs()
