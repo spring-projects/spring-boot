@@ -187,7 +187,7 @@ public final class ImageReference {
 	 */
 	public static ImageReference forJarFile(File jarFile) {
 		String filename = jarFile.getName();
-		Assert.isTrue(filename.toLowerCase().endsWith(".jar"), () -> "File '" + jarFile + "' is not a JAR");
+		Assert.isTrue(filename.toLowerCase(Locale.ROOT).endsWith(".jar"), () -> "File '" + jarFile + "' is not a JAR");
 		filename = filename.substring(0, filename.length() - 4);
 		int firstDot = filename.indexOf('.');
 		if (firstDot == -1) {

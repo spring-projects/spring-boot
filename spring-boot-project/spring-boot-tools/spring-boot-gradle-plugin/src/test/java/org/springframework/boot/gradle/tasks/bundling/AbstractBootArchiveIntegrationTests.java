@@ -638,7 +638,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	protected void copyApplication(String name) throws IOException {
 		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example/" + this.taskName.toLowerCase() + "/" + name);
+				"src/main/java/com/example/" + this.taskName.toLowerCase(Locale.ROOT) + "/" + name);
 		output.mkdirs();
 		FileSystemUtils.copyRecursively(
 				new File("src/test/java/com/example/" + this.taskName.toLowerCase(Locale.ENGLISH) + "/" + name),

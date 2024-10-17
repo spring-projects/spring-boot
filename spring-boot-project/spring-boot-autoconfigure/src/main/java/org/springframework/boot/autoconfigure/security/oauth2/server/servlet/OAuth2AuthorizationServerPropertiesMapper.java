@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties.Client;
 import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties.Registration;
@@ -124,7 +125,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 	}
 
 	private JwsAlgorithm jwsAlgorithm(String signingAlgorithm) {
-		String name = signingAlgorithm.toUpperCase();
+		String name = signingAlgorithm.toUpperCase(Locale.ROOT);
 		JwsAlgorithm jwsAlgorithm = SignatureAlgorithm.from(name);
 		if (jwsAlgorithm == null) {
 			jwsAlgorithm = MacAlgorithm.from(name);
@@ -133,7 +134,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 	}
 
 	private SignatureAlgorithm signatureAlgorithm(String signatureAlgorithm) {
-		return SignatureAlgorithm.from(signatureAlgorithm.toUpperCase());
+		return SignatureAlgorithm.from(signatureAlgorithm.toUpperCase(Locale.ROOT));
 	}
 
 }

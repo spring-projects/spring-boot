@@ -24,6 +24,7 @@ import java.net.SocketTimeoutException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,7 +82,7 @@ class Connection {
 	 * @throws Exception in case of errors
 	 */
 	void run() throws Exception {
-		String lowerCaseHeader = this.header.toLowerCase();
+		String lowerCaseHeader = this.header.toLowerCase(Locale.ROOT);
 		if (lowerCaseHeader.contains("upgrade: websocket") && lowerCaseHeader.contains("sec-websocket-version: 13")) {
 			runWebSocket();
 		}

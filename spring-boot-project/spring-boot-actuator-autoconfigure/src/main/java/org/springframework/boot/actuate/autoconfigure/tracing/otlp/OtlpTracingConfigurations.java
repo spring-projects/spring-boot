@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.otlp;
 
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
@@ -78,7 +79,7 @@ class OtlpTracingConfigurations {
 			OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 				.setEndpoint(connectionDetails.getUrl())
 				.setTimeout(properties.getTimeout())
-				.setCompression(properties.getCompression().name().toLowerCase());
+				.setCompression(properties.getCompression().name().toLowerCase(Locale.ROOT));
 			for (Entry<String, String> header : properties.getHeaders().entrySet()) {
 				builder.addHeader(header.getKey(), header.getValue());
 			}

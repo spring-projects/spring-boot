@@ -191,7 +191,8 @@ public class AntoraAsciidocAttributes {
 		};
 		try (InputStream in = getClass().getResourceAsStream("antora-asciidoc-attributes.properties")) {
 			properties.load(in);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
 	}

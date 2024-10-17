@@ -163,6 +163,42 @@ class ArchitectureCheckTests {
 		});
 	}
 
+	@Test
+	void whenClassCallsStringToUpperCaseWithoutLocaleFailsAndWritesReport() throws Exception {
+		prepareTask("string/toUpperCase", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty()
+				.content()
+				.contains("because String.toUpperCase(Locale.ROOT) should be used instead");
+		});
+	}
+
+	@Test
+	void whenClassCallsStringToLowerCaseWithoutLocaleFailsAndWritesReport() throws Exception {
+		prepareTask("string/toLowerCase", (architectureCheck) -> {
+			assertThatExceptionOfType(GradleException.class).isThrownBy(architectureCheck::checkArchitecture);
+			assertThat(failureReport(architectureCheck)).isNotEmpty()
+				.content()
+				.contains("because String.toLowerCase(Locale.ROOT) should be used instead");
+		});
+	}
+
+	@Test
+	void whenClassCallsStringToLowerCaseWithLocaleShouldNotFail() throws Exception {
+		prepareTask("string/toLowerCaseWithLocale", (architectureCheck) -> {
+			architectureCheck.checkArchitecture();
+			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
+	@Test
+	void whenClassCallsStringToUpperCaseWithLocaleShouldNotFail() throws Exception {
+		prepareTask("string/toUpperCaseWithLocale", (architectureCheck) -> {
+			architectureCheck.checkArchitecture();
+			assertThat(failureReport(architectureCheck)).isEmpty();
+		});
+	}
+
 	private void prepareTask(String classes, Callback<ArchitectureCheck> callback) throws Exception {
 		File projectDir = new File(this.temp, "project");
 		projectDir.mkdirs();

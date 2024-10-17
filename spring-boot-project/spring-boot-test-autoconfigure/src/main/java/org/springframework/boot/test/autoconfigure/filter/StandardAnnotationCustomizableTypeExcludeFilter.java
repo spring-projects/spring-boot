@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.filter;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -45,7 +46,7 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 		FilterType[] filterValues = FilterType.values();
 		FILTER_TYPE_ATTRIBUTES = new String[filterValues.length];
 		for (int i = 0; i < filterValues.length; i++) {
-			FILTER_TYPE_ATTRIBUTES[i] = filterValues[i].name().toLowerCase() + "Filters";
+			FILTER_TYPE_ATTRIBUTES[i] = filterValues[i].name().toLowerCase(Locale.ROOT) + "Filters";
 		}
 	}
 
