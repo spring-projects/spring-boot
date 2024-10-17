@@ -423,7 +423,7 @@ bom {
 			]
 		}
 	}
-	library("GraphQL Java", "22.1") {
+	library("GraphQL Java", "22.3") {
 		prohibit {
 			startsWith(["2018-", "2019-", "2020-", "2021-", "230521-"])
 			because "These are snapshots that we don't want to see"
