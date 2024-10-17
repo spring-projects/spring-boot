@@ -36,6 +36,7 @@ class ConfigurationPropertiesBindExceptionTests {
 		ApplicationContext applicationContext = new AnnotationConfigApplicationContext(Example.class);
 		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.get(applicationContext,
 				applicationContext.getBean(Example.class), "example");
+		assertThat(bean).isNotNull();
 		ConfigurationPropertiesBindException exception = new ConfigurationPropertiesBindException(bean,
 				new IllegalStateException());
 		assertThat(exception.getMessage()).isEqualTo("Error creating bean with name 'example': "
