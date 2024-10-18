@@ -2941,7 +2941,7 @@
         },
         {
           "value": "regex:",
-          "description": "Read from any node that has RedisURI matching with the given pattern"
+          "description": "Read from any node that has RedisURI matching with the given pattern."
         },
         {
           "value": "replica",
@@ -2949,7 +2949,7 @@
         },
         {
           "value": "replica-preferred",
-          "description": "Read preferred from replica and fall back to upstream if no replica is available"
+          "description": "Read preferred from replica and fall back to upstream if no replica is available."
         },
         {
           "value": "subnet:",

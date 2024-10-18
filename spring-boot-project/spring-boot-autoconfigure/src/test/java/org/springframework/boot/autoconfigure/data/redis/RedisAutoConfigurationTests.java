@@ -127,14 +127,15 @@ class RedisAutoConfigurationTests {
 	@MethodSource
 	void shouldConfigureLettuceReadFromProperty(String type, ReadFrom readFrom) {
 		this.contextRunner.withPropertyValues("spring.data.redis.lettuce.read-from:" + type).run((context) -> {
-			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-			assertThat(cf.getClientConfiguration().getReadFrom()).hasValue(readFrom);
+			LettuceConnectionFactory factory = context.getBean(LettuceConnectionFactory.class);
+			LettuceClientConfiguration configuration = factory.getClientConfiguration();
+			assertThat(configuration.getReadFrom()).hasValue(readFrom);
 		});
 	}
 
 	@Test
 	@Disabled("Lettuce 6.5.0.RELEASE")
-	void shouldConfigureLettuceReadFromPropertyRegexType() {
+	void shouldConfigureLettuceRegexReadFromProperty() {
 		RedisClusterNode node1 = createRedisNode("redis-node-1.region-1.example.com");
 		RedisClusterNode node2 = createRedisNode("redis-node-2.region-1.example.com");
 		RedisClusterNode node3 = createRedisNode("redis-node-1.region-2.example.com");
@@ -152,7 +153,7 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	@Disabled("Lettuce 6.5.0.RELEASE")
-	void shouldConfigureLettuceReadFromPropertySubnetType() {
+	void shouldConfigureLettuceSubnetReadFromProperty() {
 		RedisClusterNode nodeInSubnetIpv4 = createRedisNode("192.0.2.1");
 		RedisClusterNode nodeNotInSubnetIpv4 = createRedisNode("198.51.100.1");
 		RedisClusterNode nodeInSubnetIpv6 = createRedisNode("2001:db8:abcd:0000::1");
