@@ -44,6 +44,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.FileCopyUtils;
 
@@ -126,7 +127,7 @@ class DockerComposeLifecycleManagerTests {
 
 	@Test
 	void startWhenAotProcessingDoesNotStart() {
-		withSystemProperty("spring.aot.processing", "true", () -> {
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> {
 			EventCapturingListener listener = new EventCapturingListener();
 			this.eventListeners.add(listener);
 			setUpRunningServices();

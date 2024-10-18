@@ -36,6 +36,7 @@ import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Stop;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
@@ -95,7 +96,7 @@ class DockerComposeLifecycleManager {
 	}
 
 	void start() {
-		if (Boolean.getBoolean("spring.aot.processing") || AotDetector.useGeneratedArtifacts()) {
+		if (Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING) || AotDetector.useGeneratedArtifacts()) {
 			logger.trace("Docker Compose support disabled with AOT and native images");
 			return;
 		}

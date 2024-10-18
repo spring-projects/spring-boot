@@ -60,6 +60,7 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.io.ByteArrayResource;
@@ -140,7 +141,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	private boolean isAotProcessingInProgress() {
-		return Boolean.getBoolean("spring.aot.processing");
+		return Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING);
 	}
 
 	static final class LogbackConfigurationAotContribution implements BeanFactoryInitializationAotContribution {

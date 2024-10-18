@@ -40,6 +40,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.log.LogMessage;
@@ -103,7 +104,7 @@ class TestcontainersLifecycleBeanPostProcessor
 	}
 
 	private boolean isAotProcessingInProgress() {
-		return Boolean.getBoolean("spring.aot.processing");
+		return Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING);
 	}
 
 	private void initializeStartables(Startable startableBean, String startableBeanName) {

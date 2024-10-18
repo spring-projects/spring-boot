@@ -59,6 +59,7 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.boot.logging.logback.SpringBootJoranConfigurator.LogbackConfigurationAotContribution;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.io.InputStreamSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -287,7 +288,7 @@ class LogbackConfigurationAotContributionTests {
 		contextCustomizer.accept(context);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(null);
 		configurator.setContext(context);
-		withSystemProperty("spring.aot.processing", "true", () -> configurator.processModel(model));
+		withSystemProperty(AbstractAotProcessor.AOT_PROCESSING, "true", () -> configurator.processModel(model));
 		LogbackConfigurationAotContribution contribution = (LogbackConfigurationAotContribution) context
 			.getObject(BeanFactoryInitializationAotContribution.class.getName());
 		contribution.applyTo(generationContext, null);

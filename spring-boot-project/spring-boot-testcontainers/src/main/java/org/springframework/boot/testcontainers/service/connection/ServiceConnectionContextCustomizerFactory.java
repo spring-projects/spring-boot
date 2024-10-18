@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import org.testcontainers.containers.Container;
 
 import org.springframework.boot.origin.Origin;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -96,7 +97,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	}
 
 	private boolean isAotProcessingInProgress() {
-		return Boolean.getBoolean("spring.aot.processing");
+		return Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING);
 	}
 
 }
