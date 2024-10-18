@@ -118,7 +118,8 @@ Such customizer beans can be ordered (Boot's own customizer has an order of 0), 
 Any beans of type `com.fasterxml.jackson.databind.Module` are automatically registered with the auto-configured `Jackson2ObjectMapperBuilder` and are applied to any `ObjectMapper` instances that it creates.
 This provides a global mechanism for contributing custom modules when you add new features to your application.
 
-If you want to replace the default `ObjectMapper` completely, either define a `@Bean` of that type and mark it as `@Primary` or, if you prefer the builder-based approach, define a `Jackson2ObjectMapperBuilder` `@Bean`.
+If you want to replace the default `ObjectMapper` completely, either define a `@Bean` of that type or, if you prefer the builder-based approach, define a `Jackson2ObjectMapperBuilder` `@Bean`.
+When defining an `ObjectMapper` bean, marking it as `@Primary` is recommended as the auto-configuration's `ObjectMapper` that it will replace is `@Primary`.
 Note that, in either case, doing so disables all auto-configuration of the `ObjectMapper`.
 
 If you provide any `@Beans` of type `MappingJackson2HttpMessageConverter`, they replace the default value in the MVC configuration.
