@@ -241,8 +241,8 @@ class ValidationBindHandlerTests {
 		return new Validator() {
 
 			@Override
-			public boolean supports(Class<?> clazz) {
-				return ExampleWithMap.class == clazz;
+			public boolean supports(Class<?> type) {
+				return ExampleWithMap.class == type;
 
 			}
 

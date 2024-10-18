@@ -58,8 +58,8 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	}
 
 	@Override
-	public boolean supports(Class<?> clazz) {
-		return this.target.supports(clazz);
+	public boolean supports(Class<?> type) {
+		return this.target.supports(type);
 	}
 
 	@Override

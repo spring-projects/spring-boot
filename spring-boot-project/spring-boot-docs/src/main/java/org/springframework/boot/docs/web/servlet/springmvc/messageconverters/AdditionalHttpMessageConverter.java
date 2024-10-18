@@ -27,18 +27,18 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 class AdditionalHttpMessageConverter extends AbstractHttpMessageConverter<Object> {
 
 	@Override
-	protected boolean supports(Class<?> clazz) {
+	protected boolean supports(Class<?> type) {
 		return false;
 	}
 
 	@Override
-	protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
+	protected Object readInternal(Class<?> type, HttpInputMessage inputMessage)
 			throws IOException, HttpMessageNotReadableException {
 		return null;
 	}
 
 	@Override
-	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
+	protected void writeInternal(Object instance, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 	}
 

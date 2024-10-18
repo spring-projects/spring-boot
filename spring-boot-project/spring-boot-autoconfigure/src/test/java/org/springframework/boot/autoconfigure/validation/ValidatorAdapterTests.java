@@ -157,8 +157,8 @@ class ValidatorAdapterTests {
 			}
 
 			@Override
-			public boolean supports(Class<?> clazz) {
-				return this.delegate.supports(clazz);
+			public boolean supports(Class<?> type) {
+				return this.delegate.supports(type);
 			}
 
 			@Override

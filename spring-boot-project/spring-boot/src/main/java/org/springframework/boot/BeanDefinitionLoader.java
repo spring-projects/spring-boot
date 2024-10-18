@@ -132,8 +132,8 @@ class BeanDefinitionLoader {
 
 	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
-		if (source instanceof Class<?> clazz) {
-			load(clazz);
+		if (source instanceof Class<?> type) {
+			load(type);
 			return;
 		}
 		if (source instanceof Resource resource) {

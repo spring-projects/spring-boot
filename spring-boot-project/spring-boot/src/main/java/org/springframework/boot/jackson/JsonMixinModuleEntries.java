@@ -91,12 +91,11 @@ public final class JsonMixinModuleEntries {
 			.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 			.get(JsonMixin.class);
 		Class<?>[] types = annotation.getClassArray("type");
-		Assert.notEmpty(types,
-				"@JsonMixin annotation on class '" + mixinClass.getName() + "' does not specify any types");
-		for (Class<?> targetType : types) {
-			builder.and(targetType, mixinClass);
+		Assert.state(!ObjectUtils.isEmpty(types),
+				() -> "@JsonMixin annotation on class '" + mixinClass.getName() + "' does not specify any types");
+		for (Class<?> type : types) {
+			builder.and(type, mixinClass);
 		}
-
 	}
 
 	/**
@@ -110,8 +109,8 @@ public final class JsonMixinModuleEntries {
 				resolveClassNameIfNecessary(mixin, classLoader)));
 	}
 
-	private Class<?> resolveClassNameIfNecessary(Object type, ClassLoader classLoader) {
-		return (type instanceof Class<?> clazz) ? clazz : ClassUtils.resolveClassName((String) type, classLoader);
+	private Class<?> resolveClassNameIfNecessary(Object nameOrType, ClassLoader classLoader) {
+		return (nameOrType instanceof Class<?> type) ? type : ClassUtils.resolveClassName((String) nameOrType, classLoader);
 	}
 
 	/**

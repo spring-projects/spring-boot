@@ -178,7 +178,7 @@ public class MockCachingProvider implements CachingProvider {
 		}
 
 		@Override
-		public <T> T unwrap(Class<T> clazz) {
+		public <T> T unwrap(Class<T> type) {
 			throw new UnsupportedOperationException();
 		}
 
