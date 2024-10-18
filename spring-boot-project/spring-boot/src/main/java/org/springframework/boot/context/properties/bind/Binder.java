@@ -272,8 +272,8 @@ public class Binder {
 
 	/**
 	 * Bind the specified target {@link Class} using this binder's
-	 * {@link ConfigurationPropertySource property sources} or create a new instance using
-	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * {@link ConfigurationPropertySource property sources} or create a new instance of
+	 * the specified target {@link Class} if the result of the binding is {@code null}.
 	 * @param name the configuration property name to bind
 	 * @param target the target class
 	 * @param <T> the bound type
