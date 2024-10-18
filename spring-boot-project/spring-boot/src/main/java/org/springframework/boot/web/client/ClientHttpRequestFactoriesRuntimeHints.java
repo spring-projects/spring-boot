@@ -63,17 +63,6 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 			typeHint.onReachableType(HttpURLConnection.class);
 			registerReflectionHints(hints, SimpleClientHttpRequestFactory.class);
 		});
-		registerOkHttpHints(hints, classLoader);
-	}
-
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	private void registerOkHttpHints(ReflectionHints hints, ClassLoader classLoader) {
-		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, (typeHint) -> {
-			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS));
-			registerReflectionHints(hints, org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class);
-		});
-
 	}
 
 	private void registerReflectionHints(ReflectionHints hints,

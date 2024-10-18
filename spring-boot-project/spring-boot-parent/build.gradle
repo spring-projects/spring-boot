@@ -158,6 +158,13 @@ bom {
 			]
 		}
 	}
+	library("OkHttp", "4.12.0") {
+		group("com.squareup.okhttp3") {
+			imports = [
+				"okhttp-bom"
+			]
+		}
+	}
 	library("OpenTelemetry Logback Appender", "2.7.0-alpha") {
 		group("io.opentelemetry.instrumentation") {
 			modules = [

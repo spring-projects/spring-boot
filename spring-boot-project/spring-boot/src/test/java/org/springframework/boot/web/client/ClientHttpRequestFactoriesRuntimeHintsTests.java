@@ -62,24 +62,6 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.2.0")
-	@SuppressWarnings("removal")
-	void shouldRegisterOkHttpHints() {
-		RuntimeHints hints = new RuntimeHints();
-		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
-		assertThat(reflection.onMethod(method(org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class,
-				"setConnectTimeout", int.class)))
-			.accepts(hints);
-		assertThat(reflection.onMethod(method(org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class,
-				"setReadTimeout", int.class)))
-			.accepts(hints);
-		assertThat(hints.reflection()
-			.getTypeHint(org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class)
-			.methods()).hasSize(2);
-	}
-
-	@Test
 	void shouldRegisterJettyClientHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
