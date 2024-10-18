@@ -123,7 +123,7 @@ public class DockerTestPlugin implements Plugin<Project> {
 			task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
 			task.setDescription("Reclaims Docker space on CI.");
 			task.shouldRunAfter(DOCKER_TEST_TASK_NAME);
-			task.onlyIf(this::runningOnCi);
+			task.onlyIf(this::shouldReclaimDockerSpace);
 			task.executable("sh");
 			task.args("-c",
 					project.getRootDir()
@@ -133,7 +133,10 @@ public class DockerTestPlugin implements Plugin<Project> {
 		});
 	}
 
-	private boolean runningOnCi(Task task) {
+	private boolean shouldReclaimDockerSpace(Task task) {
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			return false;
+		}
 		return System.getenv("GITHUB_ACTIONS") != null || System.getenv("RECLAIM_DOCKER_SPACE") != null;
 	}
 
