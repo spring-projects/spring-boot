@@ -1,3 +1,11 @@
+---
+name: General
+about: Bugs, enhancements, documentation, tasks.
+title: ''
+labels: ''
+assignees: ''
+---
+
 <!--
 Thanks for raising a Spring Boot issue. Please take the time to review the following
 categories as some of them do not apply here.
