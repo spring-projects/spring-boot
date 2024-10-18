@@ -110,7 +110,8 @@ public final class JsonMixinModuleEntries {
 	}
 
 	private Class<?> resolveClassNameIfNecessary(Object nameOrType, ClassLoader classLoader) {
-		return (nameOrType instanceof Class<?> type) ? type : ClassUtils.resolveClassName((String) nameOrType, classLoader);
+		return (nameOrType instanceof Class<?> type) ? type
+				: ClassUtils.resolveClassName((String) nameOrType, classLoader);
 	}
 
 	/**
