@@ -65,7 +65,7 @@ def find_milestone(username, password, repository, title)
     prefix = title.delete_suffix('.x')
     $log.debug "Finding nearest milestone from candidates starting with #{prefix}"
     titles = milestones.map { |milestone| milestone['title'] }
-    titles = titles.select{ |title| title.start_with?(prefix) unless title.end_with?('.x')}
+    titles = titles.select{ |title| title.start_with?(prefix) unless title.end_with?('.x') || (title.count('.') > 2)}
     titles = titles.sort_by { |v| Gem::Version.new(v) }
     $log.debug "Considering candidates #{titles}"
     if(titles.empty?)
