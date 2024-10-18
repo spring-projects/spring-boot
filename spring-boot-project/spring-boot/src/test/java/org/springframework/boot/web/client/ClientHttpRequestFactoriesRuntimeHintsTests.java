@@ -27,6 +27,7 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ReflectionUtils;
 
@@ -69,6 +70,17 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		assertThat(reflection.onMethod(method(JettyClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
 		assertThat(reflection.onMethod(method(JettyClientHttpRequestFactory.class, "setReadTimeout", long.class)))
+			.accepts(hints);
+	}
+
+	@Test
+	void shouldRegisterReactorHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new ClientHttpRequestFactoriesRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		assertThat(reflection.onMethod(method(ReactorClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
+			.accepts(hints);
+		assertThat(reflection.onMethod(method(ReactorClientHttpRequestFactory.class, "setReadTimeout", long.class)))
 			.accepts(hints);
 	}
 

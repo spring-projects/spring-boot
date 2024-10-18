@@ -29,6 +29,7 @@ import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -62,6 +63,10 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 		hints.registerType(SimpleClientHttpRequestFactory.class, (typeHint) -> {
 			typeHint.onReachableType(HttpURLConnection.class);
 			registerReflectionHints(hints, SimpleClientHttpRequestFactory.class);
+		});
+		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.REACTOR_CLIENT_CLASS, (typeHint) -> {
+			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.REACTOR_CLIENT_CLASS));
+			registerReflectionHints(hints, ReactorClientHttpRequestFactory.class, long.class);
 		});
 	}
 
