@@ -18,31 +18,34 @@ package org.springframework.boot.webservices.client;
 
 import java.time.Duration;
 
+import io.netty.channel.ChannelOption;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HttpWebServiceMessageSenderBuilder} when no preferred HTTP clients are
- * available
+ * Tests for {@link HttpWebServiceMessageSenderBuilder} when Reactor Netty is the
+ * predominant HTTP client.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar", "okhttp*.jar", "reactor-netty-http-*.jar" })
-class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
+@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
+class HttpWebServiceMessageSenderBuilderReactorClientIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
 	@Test
-	void buildUseUseSimpleClientByDefault() {
+	void buildUsesReactorClientIfHttpComponentsAndJettyAreNotAvailable() {
 		WebServiceMessageSender messageSender = this.builder.build();
-		assertSimpleClientRequestFactory(messageSender);
+		assertReactorClientHttpRequestFactory(messageSender);
 	}
 
 	@Test
@@ -50,17 +53,20 @@ class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
 			.setReadTimeout(Duration.ofSeconds(2))
 			.build();
-		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(messageSender);
-		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 5000);
-		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 2000);
+		ReactorClientHttpRequestFactory factory = assertReactorClientHttpRequestFactory(messageSender);
+		assertThat(factory).extracting("httpClient", InstanceOfAssertFactories.type(HttpClient.class))
+			.extracting((httpClient) -> httpClient.configuration().options(), InstanceOfAssertFactories.MAP)
+			.containsEntry(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000);
+		assertThat(factory).hasFieldOrPropertyWithValue("readTimeout", Duration.ofSeconds(2));
 	}
 
-	private SimpleClientHttpRequestFactory assertSimpleClientRequestFactory(WebServiceMessageSender messageSender) {
+	private ReactorClientHttpRequestFactory assertReactorClientHttpRequestFactory(
+			WebServiceMessageSender messageSender) {
 		assertThat(messageSender).isInstanceOf(ClientHttpRequestMessageSender.class);
 		ClientHttpRequestMessageSender sender = (ClientHttpRequestMessageSender) messageSender;
 		ClientHttpRequestFactory requestFactory = sender.getRequestFactory();
-		assertThat(requestFactory).isInstanceOf(SimpleClientHttpRequestFactory.class);
-		return (SimpleClientHttpRequestFactory) requestFactory;
+		assertThat(requestFactory).isInstanceOf(ReactorClientHttpRequestFactory.class);
+		return (ReactorClientHttpRequestFactory) requestFactory;
 	}
 
 }

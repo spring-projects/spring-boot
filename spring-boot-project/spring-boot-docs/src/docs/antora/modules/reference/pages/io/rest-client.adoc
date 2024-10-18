@@ -194,6 +194,7 @@ In order of preference, the following clients are supported:
 
 . Apache HttpClient
 . Jetty HttpClient
+. Reactor Netty HttpClient
 . OkHttp (deprecated)
 . Simple JDK client (`HttpURLConnection`)
 

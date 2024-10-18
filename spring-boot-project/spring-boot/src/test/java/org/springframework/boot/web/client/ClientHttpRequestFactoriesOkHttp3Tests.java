@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @deprecated since 3.2.0 for removal in 3.4.0
  */
 @ClassPathOverrides("com.squareup.okhttp3:okhttp:3.14.9")
-@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
+@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar", "reactor-netty-http-*.jar" })
 @Deprecated(since = "3.2.0", forRemoval = true)
 @SuppressWarnings("removal")
 class ClientHttpRequestFactoriesOkHttp3Tests

@@ -27,6 +27,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +66,13 @@ class ClientHttpRequestFactoriesTests {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
 			.get(HttpComponentsClientHttpRequestFactory.class, ClientHttpRequestFactorySettings.DEFAULTS);
 		assertThat(requestFactory).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void getOfReactorFactoryReturnsReactorFactory() {
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(ReactorClientHttpRequestFactory.class,
+				ClientHttpRequestFactorySettings.DEFAULTS);
+		assertThat(requestFactory).isInstanceOf(ReactorClientHttpRequestFactory.class);
 	}
 
 	@Test

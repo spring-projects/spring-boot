@@ -16,32 +16,39 @@
 
 package org.springframework.boot.web.client;
 
+import java.time.Duration;
+
+import io.netty.channel.ChannelOption;
+import reactor.netty.http.client.HttpClient;
+
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link ClientHttpRequestFactories} when the simple JDK-based client is the
- * predominant HTTP client.
+ * Tests for {@link ClientHttpRequestFactories} when Reactor Netty is the predominant HTTP
+ * client.
  *
  * @author Andy Wilkinson
  */
-@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar", "okhttp-*.jar", "reactor-netty-http-*.jar" })
-class ClientHttpRequestFactoriesSimpleTests
-		extends AbstractClientHttpRequestFactoriesTests<SimpleClientHttpRequestFactory> {
+@ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
+class ClientHttpRequestFactoriesReactorTests
+		extends AbstractClientHttpRequestFactoriesTests<ReactorClientHttpRequestFactory> {
 
-	ClientHttpRequestFactoriesSimpleTests() {
-		super(SimpleClientHttpRequestFactory.class);
+	ClientHttpRequestFactoriesReactorTests() {
+		super(ReactorClientHttpRequestFactory.class);
 	}
 
 	@Override
-	protected long connectTimeout(SimpleClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+	protected long connectTimeout(ReactorClientHttpRequestFactory requestFactory) {
+		return (int) ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).configuration()
+			.options()
+			.get(ChannelOption.CONNECT_TIMEOUT_MILLIS);
 	}
 
 	@Override
-	protected long readTimeout(SimpleClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+	protected long readTimeout(ReactorClientHttpRequestFactory requestFactory) {
+		return ((Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout")).toMillis();
 	}
 
 	@Override
