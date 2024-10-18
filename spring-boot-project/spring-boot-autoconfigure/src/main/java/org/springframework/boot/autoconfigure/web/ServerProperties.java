@@ -102,7 +102,11 @@ public class ServerProperties {
 	private String serverHeader;
 
 	/**
-	 * Maximum size of the HTTP request header.
+	 * Maximum size of the HTTP request header. Refer to the documentation for your chosen
+	 * embedded server for details of exactly how this limit is applied. For example,
+	 * Netty applies the limit separately to each individual header in the request whereas
+	 * Tomcat applies the limit to the combined size of the request line and all of the
+	 * header names and values in the request.
 	 */
 	private DataSize maxHttpRequestHeaderSize = DataSize.ofKilobytes(8);
 
