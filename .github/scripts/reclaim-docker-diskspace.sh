@@ -6,6 +6,7 @@ docker image ls --format "{{.Size}} {{.ID}} {{.Repository}} {{.Tag}}" | LANG=en_
 	image=$( echo "$line" | cut -d' ' -f2 )
 	repository=$( echo "$line" | cut -d' ' -f3 )
 	tag=$( echo "$line" | cut -d' ' -f4 )
+	echo "Considering $image $repository:$tag $size"
 	if [[ "$tag" =~ ^[a-f0-9]{32}$ ]]; then
 		echo "Ignoring GitHub action image $image $repository:$tag"
 	elif [[ "$tag" == "<none>" ]]; then
