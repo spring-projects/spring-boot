@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "Reclaiming Docker Disk Space"
 echo
 
