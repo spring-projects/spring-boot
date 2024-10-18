@@ -124,7 +124,7 @@ public class DockerTestPlugin implements Plugin<Project> {
 			task.setDescription("Reclaims Docker space on CI.");
 			task.shouldRunAfter(DOCKER_TEST_TASK_NAME);
 			task.onlyIf(this::shouldReclaimDockerSpace);
-			task.executable("sh");
+			task.executable("bash");
 			task.args("-c",
 					project.getRootDir()
 						.toPath()
