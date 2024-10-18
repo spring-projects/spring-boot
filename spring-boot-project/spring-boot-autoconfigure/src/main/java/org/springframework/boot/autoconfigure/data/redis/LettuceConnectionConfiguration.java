@@ -174,15 +174,23 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		}
 	}
 
-	private static ReadFrom getReadFrom(String readFrom) {
+	private ReadFrom getReadFrom(String readFrom) {
 		int index = readFrom.indexOf(':');
 		if (index == -1) {
-			String name = readFrom.replaceAll("-", "");
-			return ReadFrom.valueOf(name);
+			return ReadFrom.valueOf(getCanonicalReadFromName(readFrom));
 		}
-		String name = readFrom.substring(0, index).replaceAll("-", "");
+		String name = getCanonicalReadFromName(readFrom.substring(0, index));
 		String value = readFrom.substring(index + 1);
 		return ReadFrom.valueOf(name + ":" + value);
+	}
+
+	private String getCanonicalReadFromName(String name) {
+		StringBuilder canonicalName = new StringBuilder(name.length());
+		name.chars()
+			.filter(Character::isLetterOrDigit)
+			.map(Character::toLowerCase)
+			.forEach((c) -> canonicalName.append((char) c));
+		return canonicalName.toString();
 	}
 
 	private ClientOptions createClientOptions(

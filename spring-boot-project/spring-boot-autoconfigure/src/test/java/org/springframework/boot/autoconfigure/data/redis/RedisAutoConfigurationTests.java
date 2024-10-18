@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ class RedisAutoConfigurationTests {
 			});
 	}
 
-	@ParameterizedTest
+	@ParameterizedTest(name = "{0}")
 	@MethodSource
 	void shouldConfigureLettuceReadFromProperty(String type, ReadFrom readFrom) {
 		this.contextRunner.withPropertyValues("spring.data.redis.lettuce.read-from:" + type).run((context) -> {
@@ -130,6 +130,14 @@ class RedisAutoConfigurationTests {
 			LettuceClientConfiguration configuration = factory.getClientConfiguration();
 			assertThat(configuration.getReadFrom()).hasValue(readFrom);
 		});
+	}
+
+	static Stream<Arguments> shouldConfigureLettuceReadFromProperty() {
+		return Stream.of(Arguments.of("any", ReadFrom.ANY), Arguments.of("any-replica", ReadFrom.ANY_REPLICA),
+				Arguments.of("lowest-latency", ReadFrom.LOWEST_LATENCY), Arguments.of("replica", ReadFrom.REPLICA),
+				Arguments.of("replica-preferred", ReadFrom.REPLICA_PREFERRED),
+				Arguments.of("upstream", ReadFrom.UPSTREAM),
+				Arguments.of("upstream-preferred", ReadFrom.UPSTREAM_PREFERRED));
 	}
 
 	@Test
@@ -686,14 +694,6 @@ class RedisAutoConfigurationTests {
 
 	private String getUserName(LettuceConnectionFactory factory) {
 		return ReflectionTestUtils.invokeMethod(factory, "getRedisUsername");
-	}
-
-	static Stream<Arguments> shouldConfigureLettuceReadFromProperty() {
-		return Stream.of(Arguments.of("any", ReadFrom.ANY), Arguments.of("any-replica", ReadFrom.ANY_REPLICA),
-				Arguments.of("lowest-latency", ReadFrom.LOWEST_LATENCY), Arguments.of("replica", ReadFrom.REPLICA),
-				Arguments.of("replica-preferred", ReadFrom.REPLICA_PREFERRED),
-				Arguments.of("upstream", ReadFrom.UPSTREAM),
-				Arguments.of("upstream-preferred", ReadFrom.UPSTREAM_PREFERRED));
 	}
 
 	private RedisClusterNode createRedisNode(String host) {
