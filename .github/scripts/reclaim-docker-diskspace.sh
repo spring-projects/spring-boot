@@ -6,11 +6,15 @@ docker image ls --format "{{.Size}} {{.ID}} {{.Repository}} {{.Tag}}" | LANG=en_
 	image=$( echo "$line" | cut -d' ' -f2 )
 	repository=$( echo "$line" | cut -d' ' -f3 )
 	tag=$( echo "$line" | cut -d' ' -f4 )
-	if [ "$tag" != "<none>" ]; then
-		if [ "$size" -gt 200000000 ]; then
-			echo "Cleaning $image $repository:$size"
-			docker image rm $image
-		fi
+	if [[ "$tag" =~ ^[a-f0-9]{32}$ ]]; then
+		echo "Ignoring GitHub action image $image $repository:$tag"
+	elif [[ "$tag" == "<none>" ]]; then
+		echo "Ignoring untagged image $image $repository:$tag"
+	elif [[ "$size" -lt 200000000 ]]; then
+		echo "Ignoring small image $image $repository:$tag"
+	else
+		echo "Cleaning $image $repository:$tag"
+		docker image rm $image
 	fi
 done
 
