@@ -113,6 +113,9 @@ See xref:reference:data/sql.adoc#data.sql.datasource[] in the "`Spring Boot Feat
 To define an additional `DataSource`, an approach that's similar to the previous section can be used.
 A key difference is that the `DataSource` `@Bean` must be declared with `defaultCandidate=false`.
 This prevents the auto-configured `DataSource` from backing off.
+
+NOTE: The {url-spring-framework-docs}/core/beans/dependencies/factory-autowire.html#beans-factory-autowire-candidate[Spring Framework reference documentation] describes this feature in more details.
+
 To allow the additional `DataSource` to be injected where it's needed, also annotate it with `@Qualifier` as shown in the following example:
 
 include-code::MyAdditionalDataSourceConfiguration[]
@@ -313,6 +316,8 @@ The example above creates an `EntityManagerFactory` using the `DataSource` bean 
 It scans entities located in the same package as `Order`.
 It is possible to map additional JPA properties using the `app.jpa` namespace.
 The use of `@Bean(defaultCandidate=false)` allows the `secondJpaProperties` and `secondEntityManagerFactory` beans to be defined without interfering with auto-configured beans of the same type.
+
+NOTE: The {url-spring-framework-docs}/core/beans/dependencies/factory-autowire.html#beans-factory-autowire-candidate[Spring Framework reference documentation] describes this feature in more details.
 
 You should provide a similar configuration for any more additional data sources for which you need JPA access.
 To complete the picture, you need to configure a `JpaTransactionManager` for each `EntityManagerFactory` as well.
