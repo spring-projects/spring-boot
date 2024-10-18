@@ -1,5 +1,5 @@
 ---
-name: Issue
+name: General
 about: Bugs, enhancements, documentation, tasks.
 title: ''
 labels: ''
