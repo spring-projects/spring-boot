@@ -416,7 +416,7 @@ public class TomcatWebServer implements WebServer {
 			.map(TomcatEmbeddedContext.class::cast)
 			.filter(this::imperative)
 			.map(TomcatEmbeddedContext::getPath)
-			.map((path) -> path.equals("") ? "/" : path)
+			.map((path) -> path.isEmpty() ? "/" : path)
 			.collect(Collectors.joining(" "));
 		return StringUtils.hasText(contextPath) ? contextPath : null;
 	}
