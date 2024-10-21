@@ -865,6 +865,33 @@ To customize the tags, provide a javadoc:org.springframework.context.annotation.
 
 
 
+[[actuator.metrics.supported.ssl]]
+=== SSL bundle metrics
+
+Spring Boot Actuator publishes two metrics about SSL bundles:
+
+The metric `ssl.chains` gauges how many certificate chains have been registered.
+The `status` tag can be used to differentiate between valid, not-yet-valid, expired and soon-to-be-expired certificates.
+
+The metric `ssl.chain.expiry` gauges the expiry date of each certificate chain in seconds.
+This number will be negative if the chain has already expired.
+This metric is tagged with the following information:
+
+|===
+| Tag | Description
+
+| `bundle`
+| The name of the bundle which contains the certificate chain
+
+| `certificate`
+| The serial number (in hex format) of the certificate which is the soonest to expire in the chain
+
+| `chain`
+| The name of the certificate chain.
+|===
+
+
+
 [[actuator.metrics.supported.http-clients]]
 === HTTP Client Metrics
 

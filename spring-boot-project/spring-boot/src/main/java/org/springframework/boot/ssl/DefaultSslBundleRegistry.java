@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +46,8 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 
 	private final Map<String, RegisteredSslBundle> registeredBundles = new ConcurrentHashMap<>();
 
+	private final List<BiConsumer<String, SslBundle>> registerHandlers = new CopyOnWriteArrayList<>();
+
 	public DefaultSslBundleRegistry() {
 	}
 
@@ -58,6 +61,7 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 		Assert.notNull(bundle, "'bundle' must not be null");
 		RegisteredSslBundle previous = this.registeredBundles.putIfAbsent(name, new RegisteredSslBundle(name, bundle));
 		Assert.state(previous == null, () -> "Cannot replace existing SSL bundle '%s'".formatted(name));
+		this.registerHandlers.forEach((handler) -> handler.accept(name, bundle));
 	}
 
 	@Override
@@ -73,6 +77,11 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	@Override
 	public void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException {
 		getRegistered(name).addUpdateHandler(updateHandler);
+	}
+
+	@Override
+	public void addBundleRegisterHandler(BiConsumer<String, SslBundle> registerHandler) {
+		this.registerHandlers.add(registerHandler);
 	}
 
 	@Override
