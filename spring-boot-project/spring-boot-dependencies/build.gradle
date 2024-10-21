@@ -2078,7 +2078,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-pulsar/releases/tag/v{version}")
 		}
 	}
-	library("Spring RESTDocs", "3.0.2-SNAPSHOT") {
+	library("Spring RESTDocs", "3.0.2") {
 		considerSnapshots()
 		group("org.springframework.restdocs") {
 			imports = [
