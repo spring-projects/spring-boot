@@ -55,14 +55,14 @@ inline fun <reified T : Any> runApplication(vararg args: String, init: SpringApp
  */
 inline fun <reified T : Any> fromApplication(): SpringApplication.Augmented {
 	val type = T::class
-	val ktClassName = type.qualifiedName + "Kt"
+	val ktClassName = "${type.qualifiedName}Kt"
 	try {
 		val ktClass = ClassUtils.resolveClassName(ktClassName, type.java.classLoader)
 		val mainMethod = ReflectionUtils.findMethod(ktClass, "main", Array<String>::class.java)
 		Assert.notNull(mainMethod, "Unable to find main method")
 		return SpringApplication.from { ReflectionUtils.invokeMethod(mainMethod!!, null, it) }
 	} catch (ex: Exception) {
-		throw IllegalStateException("Unable to use 'fromApplication' with " + type.qualifiedName)
+		throw IllegalStateException("Unable to use 'fromApplication' with ${type.qualifiedName}")
 	}
 }
 
