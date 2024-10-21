@@ -214,7 +214,7 @@ public class TestDatabaseAutoConfiguration {
 			List<ConfigurationProperty> bound = new ArrayList<>();
 			Binder.get(this.environment, new BoundPropertiesTrackingBindHandler(bound::add))
 				.bind(DATASOURCE_URL_PROPERTY, BINDABLE_STRING);
-			return (!bound.isEmpty()) ? isUsingTestDatasourceUrl(bound.get(0)) : false;
+			return !bound.isEmpty() && isUsingTestDatasourceUrl(bound.get(0));
 		}
 
 		private boolean isUsingTestDatasourceUrl(ConfigurationProperty configurationProperty) {
