@@ -303,7 +303,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		boolean enabledByDefaultAttribute = (boolean) elementValues.getOrDefault("enableByDefault", true);
 		String defaultAccess = (!enabledByDefaultAttribute) ? "none"
 				: (elementValues.getOrDefault("defaultAccess", "unrestricted").toString()).toLowerCase(Locale.ENGLISH);
-		boolean enabledByDefault = "none".equals(defaultAccess) ? false : enabledByDefaultAttribute;
+		boolean enabledByDefault = !"none".equals(defaultAccess) && enabledByDefaultAttribute;
 		String type = this.metadataEnv.getTypeUtils().getQualifiedName(element);
 		this.metadataCollector.addIfAbsent(ItemMetadata.newGroup(endpointKey, type, type, null));
 		ItemMetadata accessProperty = ItemMetadata.newProperty(endpointKey, "access", endpointAccessEnum(), type, null,
