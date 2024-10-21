@@ -2068,6 +2068,11 @@
       "defaultValue": false
     },
     {
+      "name": "management.otlp.logging.transport",
+      "description": "An exporter is responsible for taking a collection of LogRecordData and transmitting them to their ultimate destination.",
+      "defaultValue" : "http"
+    },
+    {
       "name": "management.otlp.tracing.export.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
@@ -2292,6 +2297,28 @@
         },
         {
           "value": "OUT_OF_SERVICE"
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "management.otlp.logging.transport",
+      "values": [
+        {
+          "value": "http",
+          "description" : "Exports logs using OTLP via HTTP, using OpenTelemetry's protobuf model"
+        },
+        {
+          "value": "grpc",
+          "description" : "Exports logs using OTLP via gRPC, using OpenTelemetry's protobuf model."
+        },
+        {
+          "value": "none",
+          "description" : "Do not exports logs by any transports."
         }
       ],
       "providers": [
