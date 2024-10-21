@@ -205,6 +205,17 @@ bom {
 			site("https://github.com/FasterXML/java-classmate")
 		}
 	}
+	library("ClickHouse", "0.6.5") {
+		group("com.clickhouse") {
+			modules = [
+				"clickhouse-jdbc"
+			]
+		}
+		links {
+			site("https://clickhouse.com")
+			releaseNotes("https://github.com/ClickHouse/clickhouse-java/releases/tag/v{version}")
+		}
+	}
 	library("Commons Codec", "${commonsCodecVersion}") {
 		group("commons-codec") {
 			modules = [
