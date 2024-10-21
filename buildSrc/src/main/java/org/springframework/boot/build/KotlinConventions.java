@@ -61,9 +61,9 @@ class KotlinConventions {
 		kotlinOptions.setLanguageVersion("1.7");
 		kotlinOptions.setJvmTarget("17");
 		kotlinOptions.setAllWarningsAsErrors(true);
-		List<String> freeCompilerArgs = new ArrayList<>(compile.getKotlinOptions().getFreeCompilerArgs());
+		List<String> freeCompilerArgs = new ArrayList<>(kotlinOptions.getFreeCompilerArgs());
 		freeCompilerArgs.add("-Xsuppress-version-warnings");
-		compile.getKotlinOptions().setFreeCompilerArgs(freeCompilerArgs);
+		kotlinOptions.setFreeCompilerArgs(freeCompilerArgs);
 	}
 
 	private void configureDokkatoo(Project project) {
