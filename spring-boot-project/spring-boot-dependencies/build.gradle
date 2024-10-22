@@ -1249,7 +1249,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Invoker Plugin", "3.8.0") {
+	library("Maven Invoker Plugin", "3.8.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-invoker-plugin"
