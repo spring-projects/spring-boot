@@ -1889,7 +1889,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "3.2.0-SNAPSHOT") {
+	library("Spring AMQP", "3.2.0-RC1") {
 		considerSnapshots()
 		group("org.springframework.amqp") {
 			imports = [
