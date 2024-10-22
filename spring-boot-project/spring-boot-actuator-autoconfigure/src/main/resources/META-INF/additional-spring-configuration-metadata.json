@@ -310,6 +310,12 @@
       "defaultValue": false
     },
     {
+      "name": "management.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export logs.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",
@@ -2066,6 +2072,11 @@
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of Micrometer annotations is enabled.",
       "defaultValue": false
+    },
+    {
+      "name": "management.otlp.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export OTLP logs."
     },
     {
       "name": "management.otlp.tracing.export.enabled",

@@ -74,6 +74,28 @@ class OtlpLoggingAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldBackOffWhenLoggingExportPropertyIsNotEnabled() {
+		this.contextRunner
+			.withPropertyValues("management.logging.export.enabled=false",
+					"management.otlp.logging.endpoint=http://localhost:4318/v1/logs")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
+			});
+	}
+
+	@Test
+	void shouldBackOffWhenOtlpLoggingExportPropertyIsNotEnabled() {
+		this.contextRunner
+			.withPropertyValues("management.otlp.logging.export.enabled=false",
+					"management.otlp.logging.endpoint=http://localhost:4318/v1/logs")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpLoggingConnectionDetails.class);
+				assertThat(context).doesNotHaveBean(LogRecordExporter.class);
+			});
+	}
+
+	@Test
 	void shouldBackOffWhenCustomHttpExporterIsDefined() {
 		this.contextRunner.withUserConfiguration(CustomHttpExporterConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("customOtlpHttpLogRecordExporter")
