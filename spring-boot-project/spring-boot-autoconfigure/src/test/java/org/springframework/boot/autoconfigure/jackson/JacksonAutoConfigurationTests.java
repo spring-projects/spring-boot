@@ -73,6 +73,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -322,6 +324,16 @@ class JacksonAutoConfigurationTests {
 			assertThat(((DefaultSerializerProvider) objectMapper.getSerializerProviderInstance())
 				.hasSerializerFor(Baz.class, null)).isTrue();
 		});
+	}
+
+	@Test
+	void customModulesRegisteredByBuilderCustomizerWithHighestPrecedenceShouldBeRetained() {
+		this.contextRunner.withUserConfiguration(ModuleConfig.class, CustomModuleBuilderCustomizerConfig.class)
+			.run((context) -> {
+				ObjectMapper objectMapper = context.getBean(Jackson2ObjectMapperBuilder.class).build();
+				assertThat(context.getBean(CustomModule.class).getOwners()).contains(objectMapper);
+				assertThat(objectMapper.getRegisteredModuleIds()).contains("customizer-module");
+			});
 	}
 
 	@Test
@@ -588,6 +600,17 @@ class JacksonAutoConfigurationTests {
 		@Bean
 		Jackson2ObjectMapperBuilderCustomizer customDateFormat() {
 			return (builder) -> builder.dateFormat(new MyDateFormat());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomModuleBuilderCustomizerConfig {
+
+		@Bean
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		Jackson2ObjectMapperBuilderCustomizer customModuleCustomizer() {
+			return (builder) -> builder.modulesToInstall(new SimpleModule("customizer-module"));
 		}
 
 	}
