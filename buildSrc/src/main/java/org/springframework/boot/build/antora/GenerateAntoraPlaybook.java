@@ -93,8 +93,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 		}
 	}
 
-	@Input
-	final Map<String, Object> getData() throws IOException {
+	private Map<String, Object> getData() throws IOException {
 		Map<String, Object> data = loadPlaybookTemplate();
 		addExtensions(data);
 		addSources(data);
