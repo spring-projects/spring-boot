@@ -212,10 +212,12 @@ public enum DatabaseDriver {
 	 * @since 3.4.0
 	 */
 	CLICKHOUSE("ClickHouse", "com.clickhouse.jdbc.ClickHouseDriver", null, "SELECT 1") {
+
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("ch", "clickhouse");
 		}
+
 	};
 
 	private final String productName;

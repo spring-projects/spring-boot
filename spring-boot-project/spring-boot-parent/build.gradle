@@ -33,6 +33,13 @@ bom {
 			]
 		}
 	}
+	library("ClickHouse", "0.6.5") {
+		group("com.clickhouse") {
+			modules = [
+				"clickhouse-jdbc"
+			]
+		}
+	}
 	library("Commons Compress", "1.25.0") {
 		group("org.apache.commons") {
 			modules = [
