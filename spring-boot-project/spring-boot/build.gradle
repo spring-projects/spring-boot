@@ -22,6 +22,7 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
+	optional("com.clickhouse:clickhouse-jdbc")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.h2database:h2")
 	optional("com.google.code.gson:gson")
