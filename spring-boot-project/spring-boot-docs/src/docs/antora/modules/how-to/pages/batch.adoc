@@ -29,6 +29,14 @@ If you do so and want two transaction managers, remember to mark the other one a
 
 
 
+[[howto.batch.specifying-a-task-executor]]
+== Specifying a Batch Task Executor
+
+Similar to xref:batch.adoc#howto.batch.specifying-a-data-source[], you can define a `TaskExecutor` for use in the batch processing by marking it as `@BatchTaskExecutor`.
+If you do so and want two task executors, remember to mark the other one as `@Primary`.
+
+
+
 [[howto.batch.running-jobs-on-startup]]
 == Running Spring Batch Jobs on Startup
 
