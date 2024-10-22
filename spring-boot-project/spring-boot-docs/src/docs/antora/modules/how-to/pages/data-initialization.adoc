@@ -146,7 +146,7 @@ Beans that implement the deprecated `FlywayCallback` interface can also be detec
 
 By default, Flyway autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
 If you like to use a different `DataSource`, you can create one and mark its `@Bean` as `@FlywayDataSource`.
-If you do so and want two data sources, remember to create another one and mark it as `@Primary`.
+If you do so and want two data sources (for example by retaining the main auto-configured `DataSource`), remember to set the `defaultCandidate` attribute of the `@Bean` annotation to `false`.
 Alternatively, you can use Flyway's native `DataSource` by setting `spring.flyway.[url,user,password]` in external properties.
 Setting either `spring.flyway.url` or `spring.flyway.user` is sufficient to cause Flyway to use its own `DataSource`.
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
@@ -184,7 +184,7 @@ In addition to YAML, Liquibase also supports JSON, XML, and SQL change log forma
 
 By default, Liquibase autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
 If you need to use a different `DataSource`, you can create one and mark its `@Bean` as `@LiquibaseDataSource`.
-If you do so and you want two data sources, remember to create another one and mark it as `@Primary`.
+If you do so and want two data sources (for example by retaining the main auto-configured `DataSource`), remember to set the `defaultCandidate` attribute of the `@Bean` annotation to `false`.
 Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[driver-class-name,url,user,password]` in external properties.
 Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own `DataSource`.
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.

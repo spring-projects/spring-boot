@@ -536,13 +536,12 @@ class BatchAutoConfigurationTests {
 	static class BatchDataSourceConfiguration {
 
 		@Bean
-		@Primary
 		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
 		}
 
 		@BatchDataSource
-		@Bean
+		@Bean(defaultCandidate = false)
 		DataSource batchDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:batchdatasource").username("sa").build();
 		}
@@ -564,7 +563,7 @@ class BatchAutoConfigurationTests {
 		}
 
 		@BatchTransactionManager
-		@Bean
+		@Bean(defaultCandidate = false)
 		PlatformTransactionManager batchTransactionManager() {
 			return mock(PlatformTransactionManager.class);
 		}
@@ -575,13 +574,12 @@ class BatchAutoConfigurationTests {
 	static class BatchTaskExecutorConfiguration {
 
 		@Bean
-		@Primary
 		TaskExecutor taskExecutor() {
 			return new SyncTaskExecutor();
 		}
 
-		@Bean
 		@BatchTaskExecutor
+		@Bean(defaultCandidate = false)
 		TaskExecutor batchTaskExecutor() {
 			return new SimpleAsyncTaskExecutor();
 		}

@@ -317,7 +317,8 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				FlywaySchemaManagementProvider schemaManagementProvider = context
 					.getBean(FlywaySchemaManagementProvider.class);
-				assertThat(schemaManagementProvider.getSchemaManagement(context.getBean(DataSource.class)))
+				assertThat(schemaManagementProvider
+					.getSchemaManagement(context.getBean("normalDataSource", DataSource.class)))
 					.isEqualTo(SchemaManagement.UNMANAGED);
 				assertThat(schemaManagementProvider
 					.getSchemaManagement(context.getBean("flywayDataSource", DataSource.class)))
@@ -928,13 +929,12 @@ class FlywayAutoConfigurationTests {
 	static class FlywayDataSourceConfiguration {
 
 		@Bean
-		@Primary
 		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
 		}
 
 		@FlywayDataSource
-		@Bean
+		@Bean(defaultCandidate = false)
 		DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
 		}
@@ -955,7 +955,7 @@ class FlywayAutoConfigurationTests {
 		}
 
 		@FlywayDataSource
-		@Bean
+		@Bean(defaultCandidate = false)
 		DataSource flywayDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:flywaytest").username("sa").build();
 		}
