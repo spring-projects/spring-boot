@@ -30,9 +30,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Moritz Halbritter
  * @author Dmytro Nosan
- * @see ConditionalOnEnabledLogging
+ * @see ConditionalOnEnabledLoggingExport
  */
-class OnEnabledLoggingCondition extends SpringBootCondition {
+class OnEnabledLoggingExportCondition extends SpringBootCondition {
 
 	private static final String GLOBAL_PROPERTY = "management.logging.export.enabled";
 
@@ -46,22 +46,23 @@ class OnEnabledLoggingCondition extends SpringBootCondition {
 				.getProperty(EXPORTER_PROPERTY.formatted(loggingExporter), Boolean.class);
 			if (exporterLoggingEnabled != null) {
 				return new ConditionOutcome(exporterLoggingEnabled,
-						ConditionMessage.forCondition(ConditionalOnEnabledLogging.class)
+						ConditionMessage.forCondition(ConditionalOnEnabledLoggingExport.class)
 							.because(EXPORTER_PROPERTY.formatted(loggingExporter) + " is " + exporterLoggingEnabled));
 			}
 		}
 		Boolean globalLoggingEnabled = context.getEnvironment().getProperty(GLOBAL_PROPERTY, Boolean.class);
 		if (globalLoggingEnabled != null) {
 			return new ConditionOutcome(globalLoggingEnabled,
-					ConditionMessage.forCondition(ConditionalOnEnabledLogging.class)
+					ConditionMessage.forCondition(ConditionalOnEnabledLoggingExport.class)
 						.because(GLOBAL_PROPERTY + " is " + globalLoggingEnabled));
 		}
-		return ConditionOutcome.match(ConditionMessage.forCondition(ConditionalOnEnabledLogging.class)
-			.because("logging is enabled by default"));
+		return ConditionOutcome.match(ConditionMessage.forCondition(ConditionalOnEnabledLoggingExport.class)
+			.because("is enabled by default"));
 	}
 
 	private static String getExporterName(AnnotatedTypeMetadata metadata) {
-		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnEnabledLogging.class.getName());
+		Map<String, Object> attributes = metadata
+			.getAnnotationAttributes(ConditionalOnEnabledLoggingExport.class.getName());
 		if (attributes == null) {
 			return null;
 		}

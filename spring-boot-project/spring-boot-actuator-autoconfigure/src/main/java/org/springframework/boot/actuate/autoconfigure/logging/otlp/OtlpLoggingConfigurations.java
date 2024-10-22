@@ -23,6 +23,7 @@ import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporterBuilder
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
 import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporterBuilder;
 
+import org.springframework.boot.actuate.autoconfigure.logging.ConditionalOnEnabledLoggingExport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -76,6 +77,7 @@ final class OtlpLoggingConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean({ OtlpGrpcLogRecordExporter.class, OtlpHttpLogRecordExporter.class })
 	@ConditionalOnBean(OtlpLoggingConnectionDetails.class)
+	@ConditionalOnEnabledLoggingExport("otlp")
 	static class Exporters {
 
 		@Bean

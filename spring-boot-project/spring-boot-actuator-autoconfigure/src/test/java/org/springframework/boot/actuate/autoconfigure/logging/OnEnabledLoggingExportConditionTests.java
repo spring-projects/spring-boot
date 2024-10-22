@@ -31,81 +31,81 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link OnEnabledLoggingCondition}.
+ * Tests for {@link OnEnabledLoggingExportCondition}.
  *
  * @author Moritz Halbritter
  * @author Dmytro Nosan
  */
-class OnEnabledLoggingConditionTests {
+class OnEnabledLoggingExportConditionTests {
 
 	@Test
 	void shouldMatchIfNoPropertyIsSet() {
-		OnEnabledLoggingCondition condition = new OnEnabledLoggingCondition();
+		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(), mockMetadata(""));
 		assertThat(outcome.isMatch()).isTrue();
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledLogging logging is enabled by default");
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnEnabledLoggingExport is enabled by default");
 	}
 
 	@Test
 	void shouldNotMatchIfGlobalPropertyIsFalse() {
-		OnEnabledLoggingCondition condition = new OnEnabledLoggingCondition();
+		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.logging.export.enabled", "false")), mockMetadata(""));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLogging management.logging.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.enabled is false");
 	}
 
 	@Test
 	void shouldMatchIfGlobalPropertyIsTrue() {
-		OnEnabledLoggingCondition condition = new OnEnabledLoggingCondition();
+		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.logging.export.enabled", "true")), mockMetadata(""));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLogging management.logging.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.enabled is true");
 	}
 
 	@Test
 	void shouldNotMatchIfExporterPropertyIsFalse() {
-		OnEnabledLoggingCondition condition = new OnEnabledLoggingCondition();
+		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.otlp.logging.export.enabled", "false")), mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLogging management.otlp.logging.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is false");
 	}
 
 	@Test
 	void shouldMatchIfExporterPropertyIsTrue() {
-		OnEnabledLoggingCondition condition = new OnEnabledLoggingCondition();
+		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(
 				mockConditionContext(Map.of("management.otlp.logging.export.enabled", "true")), mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLogging management.otlp.logging.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is true");
 	}
 
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfTrue() {
-		OnEnabledLoggingCondition condition = new OnEnabledLoggingCondition();
+		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
 				Map.of("management.logging.enabled", "false", "management.otlp.logging.export.enabled", "true")),
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLogging management.otlp.logging.export.enabled is true");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is true");
 	}
 
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfFalse() {
-		OnEnabledLoggingCondition condition = new OnEnabledLoggingCondition();
+		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
 				Map.of("management.logging.enabled", "true", "management.otlp.logging.export.enabled", "false")),
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
-			.isEqualTo("@ConditionalOnEnabledLogging management.otlp.logging.export.enabled is false");
+			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is false");
 	}
 
 	private ConditionContext mockConditionContext() {
@@ -122,7 +122,7 @@ class OnEnabledLoggingConditionTests {
 
 	private AnnotatedTypeMetadata mockMetadata(String exporter) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
-		given(metadata.getAnnotationAttributes(ConditionalOnEnabledLogging.class.getName()))
+		given(metadata.getAnnotationAttributes(ConditionalOnEnabledLoggingExport.class.getName()))
 			.willReturn(Map.of("value", exporter));
 		return metadata;
 	}

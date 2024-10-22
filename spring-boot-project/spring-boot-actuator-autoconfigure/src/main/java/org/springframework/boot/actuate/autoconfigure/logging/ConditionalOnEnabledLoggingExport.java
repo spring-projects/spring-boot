@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional @Conditional} that checks whether logging exporter is enabled. It
+ * {@link Conditional @Conditional} that checks whether logging export is enabled. It
  * matches if the value of the {@code management.logging.export.enabled} property is
  * {@code true} or if it is not configured. If the {@link #value() logging exporter name}
  * is set, the {@code management.<name>.logging.export.enabled} property can be used to
@@ -39,8 +39,8 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@Conditional(OnEnabledLoggingCondition.class)
-public @interface ConditionalOnEnabledLogging {
+@Conditional(OnEnabledLoggingExportCondition.class)
+public @interface ConditionalOnEnabledLoggingExport {
 
 	/**
 	 * Name of the logging exporter.

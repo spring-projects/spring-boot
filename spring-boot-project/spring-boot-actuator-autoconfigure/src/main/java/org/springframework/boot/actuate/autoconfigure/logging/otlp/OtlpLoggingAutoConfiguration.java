@@ -20,7 +20,6 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.exporter.otlp.http.logs.OtlpHttpLogRecordExporter;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 
-import org.springframework.boot.actuate.autoconfigure.logging.ConditionalOnEnabledLogging;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -37,7 +36,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass({ SdkLoggerProvider.class, OpenTelemetry.class, OtlpHttpLogRecordExporter.class })
 @EnableConfigurationProperties(OtlpLoggingProperties.class)
 @Import({ OtlpLoggingConfigurations.ConnectionDetails.class, OtlpLoggingConfigurations.Exporters.class })
-@ConditionalOnEnabledLogging("otlp")
 public class OtlpLoggingAutoConfiguration {
 
 }
