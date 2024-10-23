@@ -159,7 +159,7 @@ class PemContentTests {
 				+lGuHKdhNOVW9CmqPD1y76o6c8PQKuF7KZEoY2jvy3GeIfddBvqXgZ4PbWvFz1jO
 				32C9XWHwRA4=
 				-----END CERTIFICATE-----""";
-		assertThat(PemContent.load(content)).hasToString(trimmedContent);
+		assertThat(PemContent.load(content, new ApplicationResourceLoader())).hasToString(trimmedContent);
 	}
 
 	@Test
