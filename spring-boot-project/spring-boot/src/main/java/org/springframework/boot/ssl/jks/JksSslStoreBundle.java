@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslStoreBundle;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -45,6 +45,8 @@ public class JksSslStoreBundle implements SslStoreBundle {
 
 	private final JksSslStoreDetails keyStoreDetails;
 
+	private final ResourceLoader resourceLoader;
+
 	private final Supplier<KeyStore> keyStore;
 
 	private final Supplier<KeyStore> trustStore;
@@ -55,8 +57,22 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 */
 	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails) {
+		this(keyStoreDetails, trustStoreDetails, new ApplicationResourceLoader());
+	}
+
+	/**
+	 * Create a new {@link JksSslStoreBundle} instance.
+	 * @param keyStoreDetails the key store details
+	 * @param trustStoreDetails the trust store details
+	 * @param resourceLoader the resource loader used to load content
+	 * @since 3.3.5
+	 */
+	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails,
+			ResourceLoader resourceLoader) {
+		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.keyStoreDetails = keyStoreDetails;
-		this.keyStore = SingletonSupplier.of(() -> createKeyStore("key", this.keyStoreDetails));
+		this.resourceLoader = resourceLoader;
+		this.keyStore = SingletonSupplier.of(() -> createKeyStore("key", keyStoreDetails));
 		this.trustStore = SingletonSupplier.of(() -> createKeyStore("trust", trustStoreDetails));
 	}
 
@@ -116,8 +132,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	private void loadKeyStore(KeyStore store, String location, char[] password) {
 		Assert.state(StringUtils.hasText(location), () -> "Location must not be empty or null");
 		try {
-			Resource resource = new ApplicationResourceLoader().getResource(location);
-			try (InputStream stream = resource.getInputStream()) {
+			try (InputStream stream = this.resourceLoader.getResource(location).getInputStream()) {
 				store.load(stream, password);
 			}
 		}

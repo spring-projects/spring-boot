@@ -29,8 +29,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import org.springframework.boot.io.ApplicationResourceLoader;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -108,10 +107,11 @@ public final class PemContent {
 	 * Load {@link PemContent} from the given content (either the PEM content itself or a
 	 * reference to the resource to load).
 	 * @param content the content to load
+	 * @param resourceLoader the resource loader used to load content
 	 * @return a new {@link PemContent} instance
 	 * @throws IOException on IO error
 	 */
-	static PemContent load(String content) throws IOException {
+	static PemContent load(String content, ResourceLoader resourceLoader) throws IOException {
 		if (content == null) {
 			return null;
 		}
@@ -119,8 +119,7 @@ public final class PemContent {
 			return new PemContent(content);
 		}
 		try {
-			Resource resource = new ApplicationResourceLoader().getResource(content);
-			return load(resource.getInputStream());
+			return load(resourceLoader.getResource(content).getInputStream());
 		}
 		catch (IOException | UncheckedIOException ex) {
 			throw new IOException("Error reading certificate or key from file '%s'".formatted(content), ex);

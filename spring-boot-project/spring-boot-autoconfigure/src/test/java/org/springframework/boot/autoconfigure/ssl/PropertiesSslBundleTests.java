@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,15 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link PropertiesSslBundle}.
@@ -135,6 +140,22 @@ class PropertiesSslBundleTests {
 		properties.getKey().setAlias("test-alias");
 		assertThatIllegalStateException().isThrownBy(() -> PropertiesSslBundle.get(properties))
 			.withMessageContaining("Private key in keystore matches none of the certificates");
+	}
+
+	@Test
+	void getWithResourceLoader() {
+		PemSslBundleProperties properties = new PemSslBundleProperties();
+		properties.getKeystore().setCertificate("classpath:org/springframework/boot/autoconfigure/ssl/key2-chain.crt");
+		properties.getKeystore().setPrivateKey("classpath:org/springframework/boot/autoconfigure/ssl/key2.pem");
+		properties.getKeystore().setVerifyKeys(true);
+		properties.getKey().setAlias("test-alias");
+		ResourceLoader resourceLoader = spy(new DefaultResourceLoader());
+		SslBundle bundle = PropertiesSslBundle.get(properties, resourceLoader);
+		assertThat(bundle.getStores().getKeyStore()).satisfies(storeContainingCertAndKey("test-alias"));
+		then(resourceLoader).should(atLeastOnce())
+			.getResource("classpath:org/springframework/boot/autoconfigure/ssl/key2-chain.crt");
+		then(resourceLoader).should(atLeastOnce())
+			.getResource("classpath:org/springframework/boot/autoconfigure/ssl/key2.pem");
 	}
 
 	private Consumer<KeyStore> storeContainingCertAndKey(String keyAlias) {

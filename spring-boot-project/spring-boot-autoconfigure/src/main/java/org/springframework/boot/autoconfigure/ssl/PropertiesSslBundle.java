@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.ssl;
 
 import org.springframework.boot.autoconfigure.ssl.SslBundleProperties.Key;
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslManagerBundle;
@@ -27,6 +28,7 @@ import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStore;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
@@ -97,18 +99,31 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(PemSslBundleProperties properties) {
-		PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore());
+		return get(properties, new ApplicationResourceLoader());
+	}
+
+	/**
+	 * Get an {@link SslBundle} for the given {@link PemSslBundleProperties}.
+	 * @param properties the source properties
+	 * @param resourceLoader the resource loader used to load content
+	 * @return an {@link SslBundle} instance
+	 * @since 3.3.5
+	 */
+	public static SslBundle get(PemSslBundleProperties properties, ResourceLoader resourceLoader) {
+		PemSslStore keyStore = getPemSslStore("keystore", properties.getKeystore(), resourceLoader);
 		if (keyStore != null) {
 			keyStore = keyStore.withAlias(properties.getKey().getAlias())
 				.withPassword(properties.getKey().getPassword());
 		}
-		PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore());
+		PemSslStore trustStore = getPemSslStore("truststore", properties.getTruststore(), resourceLoader);
 		SslStoreBundle storeBundle = new PemSslStoreBundle(keyStore, trustStore);
 		return new PropertiesSslBundle(storeBundle, properties);
 	}
 
-	private static PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties) {
-		PemSslStore pemSslStore = PemSslStore.load(asPemSslStoreDetails(properties));
+	private static PemSslStore getPemSslStore(String propertyName, PemSslBundleProperties.Store properties,
+			ResourceLoader resourceLoader) {
+		PemSslStoreDetails details = asPemSslStoreDetails(properties);
+		PemSslStore pemSslStore = PemSslStore.load(details, resourceLoader);
 		if (properties.isVerifyKeys()) {
 			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
 			Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
@@ -128,14 +143,25 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(JksSslBundleProperties properties) {
-		SslStoreBundle storeBundle = asSslStoreBundle(properties);
+		return get(properties, new ApplicationResourceLoader());
+	}
+
+	/**
+	 * Get an {@link SslBundle} for the given {@link JksSslBundleProperties}.
+	 * @param properties the source properties
+	 * @param resourceLoader the resource loader used to load content
+	 * @return an {@link SslBundle} instance
+	 * @since 3.3.5
+	 */
+	public static SslBundle get(JksSslBundleProperties properties, ResourceLoader resourceLoader) {
+		SslStoreBundle storeBundle = asSslStoreBundle(properties, resourceLoader);
 		return new PropertiesSslBundle(storeBundle, properties);
 	}
 
-	private static SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {
+	private static SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties, ResourceLoader resourceLoader) {
 		JksSslStoreDetails keyStoreDetails = asStoreDetails(properties.getKeystore());
 		JksSslStoreDetails trustStoreDetails = asStoreDetails(properties.getTruststore());
-		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails, resourceLoader);
 	}
 
 	private static JksSslStoreDetails asStoreDetails(JksSslBundleProperties.Store properties) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ResourceLoader;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for SSL.
@@ -36,9 +38,12 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(SslProperties.class)
 public class SslAutoConfiguration {
 
+	private final ApplicationResourceLoader resourceLoader;
+
 	private final SslProperties sslProperties;
 
-	SslAutoConfiguration(SslProperties sslProperties) {
+	SslAutoConfiguration(ResourceLoader resourceLoader, SslProperties sslProperties) {
+		this.resourceLoader = new ApplicationResourceLoader(resourceLoader.getClassLoader());
 		this.sslProperties = sslProperties;
 	}
 
@@ -49,7 +54,7 @@ public class SslAutoConfiguration {
 
 	@Bean
 	SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(FileWatcher fileWatcher) {
-		return new SslPropertiesBundleRegistrar(this.sslProperties, fileWatcher);
+		return new SslPropertiesBundleRegistrar(this.sslProperties, fileWatcher, this.resourceLoader);
 	}
 
 	@Bean
