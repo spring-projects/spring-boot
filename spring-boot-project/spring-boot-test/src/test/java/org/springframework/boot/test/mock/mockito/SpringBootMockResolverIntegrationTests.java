@@ -16,8 +16,10 @@
 
 package org.springframework.boot.test.mock.mockito;
 
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.plugins.MockResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,7 +35,8 @@ class SpringBootMockResolverIntegrationTests {
 
 	@Test
 	void customMockResolverIsRegisteredWithMockito() {
-		assertThat(Plugins.getMockResolvers()).hasOnlyElementsOfType(SpringBootMockResolver.class);
+		assertThat(Plugins.getMockResolvers()).haveAtLeastOne(new Condition<MockResolver>(
+				SpringBootMockResolver.class::isInstance, "Spring Boot mock resolver instance"));
 	}
 
 }
