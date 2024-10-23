@@ -32,7 +32,6 @@ dependencies {
 	implementation("org.assertj:assertj-core")
 	implementation("org.hamcrest:hamcrest-core")
 	implementation("org.hamcrest:hamcrest-library")
-	implementation("org.springframework:spring-aop")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-test")
 	implementation("org.springframework:spring-core-test")
