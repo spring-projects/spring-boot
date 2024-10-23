@@ -31,6 +31,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import jakarta.servlet.http.Cookie;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.LifecycleListener;
 import org.eclipse.jetty.ee10.servlet.ErrorHandler;
 import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.ee10.servlet.ListenerHolder;
@@ -80,6 +83,7 @@ import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -358,6 +362,17 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			}
 		}
 		return urlResourceFactory.newResource(url + "META-INF/resources/");
+	}
+
+	@Override
+	protected void deleteOnExit(File tempDir) {
+		this.configurations.add(new AbstractConfiguration(new AbstractConfiguration.Builder()) {
+			@Override
+			public void destroy(WebAppContext context) throws Exception {
+				super.destroy(context);
+				getShutdownTempDirDeletionStrategy().deleteOnShutdown(tempDir);
+			}
+		});
 	}
 
 	/**

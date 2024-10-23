@@ -188,6 +188,10 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 		this.deletionStrategy = deletionStrategy;
 	}
 
+	public TempDirectoryDeletionStrategy getShutdownTempDirDeletionStrategy() {
+		return this.deletionStrategy;
+	}
+
 	/**
 	 * Returns the shutdown configuration that will be applied to the server.
 	 * @return the shutdown configuration
@@ -220,7 +224,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	protected final File createTempDir(String prefix) {
 		try {
 			File tempDir = Files.createTempDirectory(prefix + "." + getPort() + ".").toFile();
-			this.deletionStrategy.deleteOnShutdown(tempDir);
+			deleteOnExit(tempDir);
 			return tempDir;
 		}
 		catch (IOException ex) {
@@ -229,4 +233,13 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 		}
 	}
 
+	/**
+	 * delete the temporary directory when the application is shut down.
+	 * @param tempDir the temporary directory to delete
+	 */
+	protected void deleteOnExit(File tempDir) {
+		Runtime.getRuntime().addShutdownHook(
+				new Thread(() -> this.deletionStrategy.deleteOnShutdown(tempDir))
+		);
+	}
 }

@@ -31,12 +31,12 @@ public enum TempDirectoryDeletionStrategy {
 	 * directory is deleted. If the temporary directory is not empty, then it will
 	 * not be deleted.
 	 */
-	DELETE_ON_EXIT(File::deleteOnExit) {},
+	DELETE_ON_EXIT(File::delete) {},
 	/**
 	 * When the context is shutdown, then created temporary directory is deleted with
 	 * all its content.
 	 */
-	RECURSIVE_DELETE(TempDirectoryDeletionStrategy::deleteRecursivelyTempDir),
+	RECURSIVE_DELETE(FileSystemUtils::deleteRecursively),
 	/**
 	 * When the context is shutdown, we keep all the created temporary directory.
 	 * With this configuration, if you need to remove the directory, you need to
@@ -53,11 +53,5 @@ public enum TempDirectoryDeletionStrategy {
 
 	public void deleteOnShutdown(File file) {
 		this.deleter.accept(file);
-	}
-
-	private static void deleteRecursivelyTempDir(File tempDir) {
-		Runtime.getRuntime().addShutdownHook(
-				new Thread(() -> FileSystemUtils.deleteRecursively(tempDir), "deleteRecursivelyTempDir - " + tempDir.getName())
-		);
 	}
 }

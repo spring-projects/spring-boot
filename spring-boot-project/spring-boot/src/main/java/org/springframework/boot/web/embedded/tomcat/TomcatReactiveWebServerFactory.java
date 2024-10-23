@@ -30,6 +30,8 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Engine;
 import org.apache.catalina.Executor;
 import org.apache.catalina.Host;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
 import org.apache.catalina.LifecycleListener;
 import org.apache.catalina.Valve;
 import org.apache.catalina.connector.Connector;
@@ -48,6 +50,7 @@ import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.TomcatHttpHandlerAdapter;
@@ -250,6 +253,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 			getSslBundles().addBundleUpdateHandler(sslBundleName,
 					(sslBundle) -> customizer.update(serverName, sslBundle));
 		}
+	}
+
+	@Override
+	protected void deleteOnExit(File tempDir) {
+		this.serverLifecycleListeners.add(
+				new TempDirDeletion(tempDir, getShutdownTempDirDeletionStrategy())
+		);
 	}
 
 	@Override
@@ -472,4 +482,13 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		this.disableMBeanRegistry = disableMBeanRegistry;
 	}
 
+	private record TempDirDeletion(File tempDir, TempDirectoryDeletionStrategy deletionStrategy) implements LifecycleListener {
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.AFTER_DESTROY_EVENT)) {
+				deletionStrategy().deleteOnShutdown(tempDir());
+			}
+		}
+	}
 }

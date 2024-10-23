@@ -77,6 +77,7 @@ import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -514,6 +515,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
 		return new TomcatWebServer(tomcat, getPort() >= 0, getShutdown());
+	}
+
+	@Override
+	protected void deleteOnExit(File tempDir) {
+		this.serverLifecycleListeners.add(
+				new TempDirDeletion(tempDir, getShutdownTempDirDeletionStrategy())
+		);
 	}
 
 	@Override
@@ -1003,6 +1011,16 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			return null;
 		}
 
+	}
+
+	private record TempDirDeletion(File tempDir, TempDirectoryDeletionStrategy deletionStrategy) implements LifecycleListener {
+
+		@Override
+		public void lifecycleEvent(LifecycleEvent event) {
+			if (event.getType().equals(Lifecycle.AFTER_DESTROY_EVENT)) {
+				deletionStrategy().deleteOnShutdown(tempDir());
+			}
+		}
 	}
 
 }

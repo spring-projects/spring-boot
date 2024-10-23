@@ -49,21 +49,30 @@ import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.Deployment;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.FilterInfo;
+import io.undertow.servlet.api.LifecycleInterceptor;
 import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
+import io.undertow.servlet.api.ServletInfo;
 import io.undertow.servlet.api.ServletStackTraces;
 import io.undertow.servlet.core.DeploymentImpl;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContainerInitializer;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+import org.apache.catalina.Lifecycle;
+import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.LifecycleListener;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -105,6 +114,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	private boolean eagerFilterInit = true;
 
 	private boolean preservePathOnForward = false;
+
+	private List<LifecycleInterceptor> lifecycleInterceptors = new ArrayList<>();
 
 	/**
 	 * Create a new {@link UndertowServletWebServerFactory} instance.
@@ -336,6 +347,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		Duration timeoutDuration = getSession().getTimeout();
 		int sessionTimeout = (isZeroOrLess(timeoutDuration) ? -1 : (int) timeoutDuration.getSeconds());
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
+		this.lifecycleInterceptors.forEach(deployment::addLifecycleInterceptor);
 		return manager;
 	}
 
@@ -489,6 +501,26 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 			suppliers.addAll(getCookieSameSiteSuppliers());
 		}
 		return (!suppliers.isEmpty()) ? (next) -> new SuppliedSameSiteCookieHandler(next, suppliers) : null;
+	}
+
+	@Override
+	protected void deleteOnExit(File tempDir) {
+		this.lifecycleInterceptors.add(new TempDirDeletion(tempDir, getShutdownTempDirDeletionStrategy()));
+	}
+
+	private record TempDirDeletion(File tempDir, TempDirectoryDeletionStrategy deletionStrategy) implements LifecycleInterceptor {
+		@Override
+		public void init(ServletInfo servletInfo, Servlet servlet, LifecycleContext lifecycleContext) throws ServletException {}
+		@Override
+		public void init(FilterInfo filterInfo, Filter filter, LifecycleContext lifecycleContext) throws ServletException {}
+
+		@Override
+		public void destroy(ServletInfo servletInfo, Servlet servlet, LifecycleContext lifecycleContext) throws ServletException {
+			deletionStrategy().deleteOnShutdown(tempDir());
+		}
+
+		@Override
+		public void destroy(FilterInfo filterInfo, Filter filter, LifecycleContext lifecycleContext) throws ServletException {}
 	}
 
 	/**
