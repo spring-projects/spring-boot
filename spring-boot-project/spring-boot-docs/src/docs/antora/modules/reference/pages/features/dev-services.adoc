@@ -99,7 +99,7 @@ The following service connections are currently supported:
 | Containers named "hazelcast/hazelcast".
 
 | `JdbcConnectionDetails`
-| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 
 | `LdapConnectionDetails`
 | Containers named "osixia/openldap"
@@ -123,7 +123,7 @@ The following service connections are currently supported:
 | Containers named "apachepulsar/pulsar"
 
 | `R2dbcConnectionDetails`
-| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 
 | `RabbitConnectionDetails`
 | Containers named "rabbitmq" or "bitnami/rabbitmq"
