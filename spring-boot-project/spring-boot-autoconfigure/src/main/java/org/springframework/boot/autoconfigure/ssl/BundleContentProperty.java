@@ -18,9 +18,9 @@ package org.springframework.boot.autoconfigure.ssl;
 
 import java.nio.file.Path;
 
-import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.pem.PemContent;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -51,9 +51,10 @@ record BundleContentProperty(String name, String value) {
 		return StringUtils.hasText(this.value);
 	}
 
-	Path toWatchPath() {
+	Path toWatchPath(ResourceLoader resourceLoader) {
 		try {
-			Resource resource = getResource();
+			Assert.state(!isPemContent(), "Value contains PEM content");
+			Resource resource = resourceLoader.getResource(this.value);
 			if (!resource.isFile()) {
 				throw new BundleContentNotWatchableException(this);
 			}
@@ -66,11 +67,6 @@ record BundleContentProperty(String name, String value) {
 			throw new IllegalStateException("Unable to convert value of property '%s' to a path".formatted(this.name),
 					ex);
 		}
-	}
-
-	private Resource getResource() {
-		Assert.state(!isPemContent(), "Value contains PEM content");
-		return new ApplicationResourceLoader().getResource(this.value);
 	}
 
 }
