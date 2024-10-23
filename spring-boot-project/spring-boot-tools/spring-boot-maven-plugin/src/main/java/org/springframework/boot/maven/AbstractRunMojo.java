@@ -477,7 +477,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 
 		static ArgFile create(CharSequence content) throws IOException {
-			ArgFile argFile = new ArgFile(Files.createTempFile("spring-boot-", ".argfile"));
+			Path tempFile = Files.createTempFile("spring-boot-", ".argfile");
+			tempFile.toFile().deleteOnExit();
+			ArgFile argFile = new ArgFile(tempFile);
 			argFile.write(content);
 			return argFile;
 		}
