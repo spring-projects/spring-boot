@@ -91,6 +91,7 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
 		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
+		map.from(this.serverProperties.getTmpDeletionStrategy()).to(factory::setShutdownTempDirDeletionStrategy);
 		map.from(() -> this.sslBundles).to(factory::setSslBundles);
 		map.from(() -> this.cookieSameSiteSuppliers)
 			.whenNot(CollectionUtils::isEmpty)

@@ -29,10 +29,12 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.Jsp;
 
@@ -191,6 +193,16 @@ class ServletWebServerFactoryCustomizerTests {
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.IMMEDIATE)));
+	}
+
+	@Test
+	void whenTmpDeletionStrategyIsCustomized() {
+		Map<String, String> map = new HashMap<>();
+		map.put("server.tmp-deletion-strategy", "NOTHING");
+		bindProperties(map);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setShutdownTempDirDeletionStrategy(assertArg((tmpDeletionStrategy) -> assertThat(tmpDeletionStrategy).isEqualTo(TempDirectoryDeletionStrategy.NOTHING)));
 	}
 
 	private void bindProperties(Map<String, String> map) {

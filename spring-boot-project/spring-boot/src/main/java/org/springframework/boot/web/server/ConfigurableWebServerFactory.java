@@ -93,4 +93,13 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 
 	}
 
+	/**
+	 * Sets deletion strategy of temporary directory on shutdown.
+	 * @param deletionStrategy deletion strategy of temporary directory on shutdown
+	 * @since 2.3.0
+	 */
+	default void setShutdownTempDirDeletionStrategy(TempDirectoryDeletionStrategy deletionStrategy) {
+
+	}
+
 }

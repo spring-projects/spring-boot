@@ -40,6 +40,7 @@ import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.boot.web.servlet.server.Jsp;
 import org.springframework.boot.web.servlet.server.Session;
@@ -115,6 +116,12 @@ public class ServerProperties {
 	 */
 	private Shutdown shutdown = Shutdown.GRACEFUL;
 
+	/**
+	 * The deletion strategy of temporary directory when you shut down the server
+	 * server.tmp-deletion-strategy
+	 */
+	private TempDirectoryDeletionStrategy tmpDeletionStrategy = TempDirectoryDeletionStrategy.DELETE_ON_EXIT;
+
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
@@ -179,6 +186,14 @@ public class ServerProperties {
 
 	public void setShutdown(Shutdown shutdown) {
 		this.shutdown = shutdown;
+	}
+
+	public TempDirectoryDeletionStrategy getTmpDeletionStrategy() {
+		return this.tmpDeletionStrategy;
+	}
+
+	public void setTmpDeletionStrategy(TempDirectoryDeletionStrategy tmpDeletionStrategy) {
+		this.tmpDeletionStrategy = tmpDeletionStrategy;
 	}
 
 	public ErrorProperties getError() {

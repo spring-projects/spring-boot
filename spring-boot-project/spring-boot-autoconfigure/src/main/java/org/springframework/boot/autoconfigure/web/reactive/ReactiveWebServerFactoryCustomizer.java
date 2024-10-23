@@ -72,6 +72,7 @@ public class ReactiveWebServerFactoryCustomizer
 		map.from(this.serverProperties::getCompression).to(factory::setCompression);
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
+		map.from(this.serverProperties.getTmpDeletionStrategy()).to(factory::setShutdownTempDirDeletionStrategy);
 		map.from(() -> this.sslBundles).to(factory::setSslBundles);
 	}
 

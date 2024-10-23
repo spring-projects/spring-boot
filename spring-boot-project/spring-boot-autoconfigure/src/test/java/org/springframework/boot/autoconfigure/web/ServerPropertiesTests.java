@@ -35,6 +35,8 @@ import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import reactor.netty.http.HttpDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
@@ -48,6 +50,7 @@ import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.unit.DataSize;
 
@@ -345,6 +348,13 @@ class ServerPropertiesTests {
 	void testCustomizeNettyMaxKeepAliveRequests() {
 		bind("server.netty.max-keep-alive-requests", "100");
 		assertThat(this.properties.getNetty().getMaxKeepAliveRequests()).isEqualTo(100);
+	}
+
+	@ParameterizedTest
+	@EnumSource
+	void testTmpDeletionStrategyBinding(TempDirectoryDeletionStrategy deletionStrategy) {
+		bind("server.tmp-deletion-strategy", deletionStrategy.name());
+		assertThat(this.properties.getTmpDeletionStrategy()).isEqualTo(deletionStrategy);
 	}
 
 	@Test

@@ -27,6 +27,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.TempDirectoryDeletionStrategy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.assertArg;
@@ -88,4 +89,11 @@ class ReactiveWebServerFactoryCustomizerTests {
 		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.GRACEFUL)));
 	}
 
+	@Test
+	void whenTmpDeletionStrategyIsCustomized() {
+		this.properties.setTmpDeletionStrategy(TempDirectoryDeletionStrategy.NOTHING);
+		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().setShutdownTempDirDeletionStrategy(assertArg((tmpDeletionStrategy) -> assertThat(tmpDeletionStrategy).isEqualTo(TempDirectoryDeletionStrategy.NOTHING)));
+	}
 }
