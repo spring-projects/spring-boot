@@ -36,7 +36,8 @@ bom {
 	library("ClickHouse", "0.6.5") {
 		group("com.clickhouse") {
 			modules = [
-				"clickhouse-jdbc"
+				"clickhouse-jdbc",
+				"clickhouse-r2dbc"
 			]
 		}
 	}

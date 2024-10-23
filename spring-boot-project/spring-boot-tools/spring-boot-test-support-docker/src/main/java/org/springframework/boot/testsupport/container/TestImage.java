@@ -94,6 +94,11 @@ public enum TestImage {
 				.withStartupTimeout(Duration.ofMinutes(10))),
 
 	/**
+	 * A container image suitable for testing ClickHouse.
+	 */
+	CLICKHOUSE("clickhouse/clickhouse-server", "24.3"),
+
+	/**
 	 * A container image suitable for testing Couchbase.
 	 */
 	COUCHBASE("couchbase/server", "7.1.4", () -> CouchbaseContainer.class,
@@ -257,6 +262,11 @@ public enum TestImage {
 	 * A container image suitable for testing Cassandra via Bitnami.
 	 */
 	BITNAMI_CASSANDRA("bitnami/cassandra", "4.1.3"),
+
+	/**
+	 * A container image suitable for testing ClickHouse via Bitnami.
+	 */
+	BITNAMI_CLICKHOUSE("bitnami/clickhouse", "24.3"),
 
 	/**
 	 * A container image suitable for testing Elasticsearch via Bitnami.
