@@ -16,6 +16,7 @@ dependencies {
 
 	optional("org.testcontainers:activemq")
 	optional("org.testcontainers:cassandra")
+	optional("org.testcontainers:clickhouse")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
 	optional("org.testcontainers:grafana")

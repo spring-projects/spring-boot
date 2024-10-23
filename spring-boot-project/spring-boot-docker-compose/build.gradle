@@ -19,6 +19,8 @@ dependencies {
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	dockerTestRuntimeOnly("com.clickhouse:clickhouse-jdbc")
+	dockerTestRuntimeOnly("com.clickhouse:clickhouse-r2dbc")
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("io.r2dbc:r2dbc-mssql")

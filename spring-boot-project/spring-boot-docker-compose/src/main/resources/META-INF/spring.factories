@@ -9,6 +9,8 @@ org.springframework.boot.docker.compose.service.connection.activemq.ActiveMQClas
 org.springframework.boot.docker.compose.service.connection.activemq.ActiveMQDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.activemq.ArtemisDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.cassandra.CassandraDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouseJdbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.docker.compose.service.connection.clickhouse.ClickHouseR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.elasticsearch.ElasticsearchDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.flyway.JdbcAdaptingFlywayConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.hazelcast.HazelcastDockerComposeConnectionDetailsFactory,\

@@ -28,6 +28,7 @@ import com.redis.testcontainers.RedisStackContainer;
 import org.testcontainers.activemq.ActiveMQContainer;
 import org.testcontainers.activemq.ArtemisContainer;
 import org.testcontainers.cassandra.CassandraContainer;
+import org.testcontainers.clickhouse.ClickHouseContainer;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
@@ -99,6 +100,11 @@ public enum TestImage {
 	COUCHBASE("couchbase/server", "7.1.4", () -> CouchbaseContainer.class,
 			(container) -> ((CouchbaseContainer) container).withStartupAttempts(5)
 				.withStartupTimeout(Duration.ofMinutes(10))),
+
+	/**
+	 * A container image suitable for testing ClickHouse.
+	 */
+	CLICKHOUSE("clickhouse/clickhouse-server", "24.3-alpine", () -> ClickHouseContainer.class),
 
 	/**
 	 * A container image suitable for testing Elasticsearch 7.
