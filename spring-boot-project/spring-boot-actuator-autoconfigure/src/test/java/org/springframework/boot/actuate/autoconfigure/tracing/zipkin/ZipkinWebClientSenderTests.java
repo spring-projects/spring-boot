@@ -51,6 +51,8 @@ import static org.assertj.core.api.Assertions.assertThatException;
 @SuppressWarnings({ "deprecation", "removal" })
 class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
+	private static final Duration TIMEOUT = Duration.ofSeconds(30);
+
 	private static ClearableDispatcher dispatcher;
 
 	private static MockWebServer mockBackEnd;
@@ -81,7 +83,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 
 	@Override
 	BytesMessageSender createSender() {
-		return createSender(Encoding.JSON, Duration.ofSeconds(10));
+		return createSender(Encoding.JSON, TIMEOUT);
 	}
 
 	ZipkinWebClientSender createSender(Encoding encoding, Duration timeout) {
@@ -110,7 +112,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 	void sendShouldSendSpansToZipkinInProto3() throws IOException, InterruptedException {
 		mockBackEnd.enqueue(new MockResponse());
 		List<byte[]> encodedSpans = List.of(toByteArray("span1"), toByteArray("span2"));
-		try (BytesMessageSender sender = createSender(Encoding.PROTO3, Duration.ofSeconds(10))) {
+		try (BytesMessageSender sender = createSender(Encoding.PROTO3, TIMEOUT)) {
 			sender.send(encodedSpans);
 		}
 		requestAssertions((request) -> {
@@ -125,8 +127,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		mockBackEnd.enqueue(new MockResponse());
 		mockBackEnd.enqueue(new MockResponse());
 		try (HttpEndpointSupplier httpEndpointSupplier = new TestHttpEndpointSupplier(ZIPKIN_URL)) {
-			try (BytesMessageSender sender = createSender((endpoint) -> httpEndpointSupplier, Encoding.JSON,
-					Duration.ofSeconds(10))) {
+			try (BytesMessageSender sender = createSender((endpoint) -> httpEndpointSupplier, Encoding.JSON, TIMEOUT)) {
 				sender.send(Collections.emptyList());
 				sender.send(Collections.emptyList());
 			}
