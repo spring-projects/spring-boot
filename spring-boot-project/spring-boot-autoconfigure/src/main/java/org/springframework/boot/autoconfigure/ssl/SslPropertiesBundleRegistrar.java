@@ -111,7 +111,7 @@ class SslPropertiesBundleRegistrar implements SslBundleRegistrar {
 		try {
 			return properties.stream()
 				.filter(BundleContentProperty::hasValue)
-				.map(BundleContentProperty::toWatchPath)
+				.map((content) -> content.toWatchPath(this.resourceLoader))
 				.collect(Collectors.toSet());
 		}
 		catch (BundleContentNotWatchableException ex) {
