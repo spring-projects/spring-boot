@@ -26,11 +26,16 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link JksSslStoreBundle}.
@@ -161,6 +166,16 @@ class JksSslStoreBundleTests {
 		assertThatIllegalStateException().isThrownBy(jksSslStoreBundle::getTrustStore)
 			.withMessageContaining("trust store")
 			.withMessageContaining("does-not-exist.p12");
+	}
+
+	@Test
+	void usesResourceLoader() {
+		JksSslStoreDetails keyStoreDetails = null;
+		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails("jks", null, "classpath:test.jks", "secret");
+		ResourceLoader resourceLoader = spy(new DefaultResourceLoader());
+		JksSslStoreBundle bundle = new JksSslStoreBundle(keyStoreDetails, trustStoreDetails, resourceLoader);
+		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("jks", "test-alias", "password"));
+		then(resourceLoader).should(atLeastOnce()).getResource("classpath:test.jks");
 	}
 
 	private Consumer<KeyStore> storeContainingCertAndKey(String keyAlias, String keyPassword) {
