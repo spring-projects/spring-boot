@@ -95,7 +95,7 @@ public interface PemSslStore {
 	 * @return a loaded {@link PemSslStore} or {@code null}.
 	 */
 	static PemSslStore load(PemSslStoreDetails details) {
-		return load(details, new ApplicationResourceLoader());
+		return load(details, ApplicationResourceLoader.get());
 	}
 
 	/**

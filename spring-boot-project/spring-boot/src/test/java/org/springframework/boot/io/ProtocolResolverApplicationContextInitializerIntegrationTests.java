@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for resolving configuration properties using
- * {@code ProtocolResolver}s.
+ * {@code ProtocolResolver ProtocolResolvers}.
  *
  * @author Scott Frederick
  */

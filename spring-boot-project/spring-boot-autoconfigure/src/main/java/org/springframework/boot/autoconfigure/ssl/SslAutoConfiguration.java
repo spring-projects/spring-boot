@@ -38,12 +38,12 @@ import org.springframework.core.io.ResourceLoader;
 @EnableConfigurationProperties(SslProperties.class)
 public class SslAutoConfiguration {
 
-	private final ApplicationResourceLoader resourceLoader;
+	private final ResourceLoader resourceLoader;
 
 	private final SslProperties sslProperties;
 
 	SslAutoConfiguration(ResourceLoader resourceLoader, SslProperties sslProperties) {
-		this.resourceLoader = new ApplicationResourceLoader(resourceLoader.getClassLoader());
+		this.resourceLoader = ApplicationResourceLoader.get(resourceLoader);
 		this.sslProperties = sslProperties;
 	}
 

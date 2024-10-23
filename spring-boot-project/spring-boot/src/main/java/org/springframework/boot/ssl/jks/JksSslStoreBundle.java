@@ -57,7 +57,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 */
 	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails) {
-		this(keyStoreDetails, trustStoreDetails, new ApplicationResourceLoader());
+		this(keyStoreDetails, trustStoreDetails, ApplicationResourceLoader.get());
 	}
 
 	/**

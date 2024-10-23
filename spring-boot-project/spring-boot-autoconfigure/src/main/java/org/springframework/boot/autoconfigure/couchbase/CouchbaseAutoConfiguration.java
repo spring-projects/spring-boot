@@ -60,6 +60,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -81,9 +82,12 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
+	private final ResourceLoader resourceLoader;
+
 	private final CouchbaseProperties properties;
 
-	CouchbaseAutoConfiguration(CouchbaseProperties properties) {
+	CouchbaseAutoConfiguration(ResourceLoader resourceLoader, CouchbaseProperties properties) {
+		this.resourceLoader = ApplicationResourceLoader.get(resourceLoader);
 		this.properties = properties;
 	}
 
@@ -117,7 +121,7 @@ public class CouchbaseAutoConfiguration {
 		}
 		Jks jks = this.properties.getAuthentication().getJks();
 		if (jks.getLocation() != null) {
-			Resource resource = new ApplicationResourceLoader().getResource(jks.getLocation());
+			Resource resource = this.resourceLoader.getResource(jks.getLocation());
 			String keystorePassword = jks.getPassword();
 			try (InputStream inputStream = resource.getInputStream()) {
 				KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
