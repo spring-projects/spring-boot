@@ -29,7 +29,7 @@ jobs:
         with:
           artifact-properties: |
             /**/spring-boot-docs-*.zip::zip.type=docs,zip.deployed=false
-          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', github.ref_name) || format('spring-boot-{0}', github.ref_name) }}
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', steps.build-and-publish.outputs.version) || format('spring-boot-{0}', steps.build-and-publish.outputs.version) }}
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}
