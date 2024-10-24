@@ -413,8 +413,21 @@ public class RestTemplateBuilder {
 	 * @param connectTimeout the connection timeout
 	 * @return a new builder instance.
 	 * @since 2.1.0
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #connectTimeout(Duration)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public RestTemplateBuilder setConnectTimeout(Duration connectTimeout) {
+		return connectTimeout(connectTimeout);
+	}
+
+	/**
+	 * Sets the connection timeout on the underlying {@link ClientHttpRequestFactory}.
+	 * @param connectTimeout the connection timeout
+	 * @return a new builder instance.
+	 * @since 3.4.0
+	 */
+	public RestTemplateBuilder connectTimeout(Duration connectTimeout) {
 		return new RestTemplateBuilder(this.requestFactorySettings.withConnectTimeout(connectTimeout),
 				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors, this.requestFactory,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
@@ -426,8 +439,21 @@ public class RestTemplateBuilder {
 	 * @param readTimeout the read timeout
 	 * @return a new builder instance.
 	 * @since 2.1.0
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #readTimeout(Duration)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public RestTemplateBuilder setReadTimeout(Duration readTimeout) {
+		return readTimeout(readTimeout);
+	}
+
+	/**
+	 * Sets the read timeout on the underlying {@link ClientHttpRequestFactory}.
+	 * @param readTimeout the read timeout
+	 * @return a new builder instance.
+	 * @since 3.4.0
+	 */
+	public RestTemplateBuilder readTimeout(Duration readTimeout) {
 		return new RestTemplateBuilder(this.requestFactorySettings.withReadTimeout(readTimeout),
 				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors, this.requestFactory,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
@@ -439,8 +465,21 @@ public class RestTemplateBuilder {
 	 * @param sslBundle the SSL bundle
 	 * @return a new builder instance
 	 * @since 3.1.0
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #sslBundle(SslBundle)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public RestTemplateBuilder setSslBundle(SslBundle sslBundle) {
+		return sslBundle(sslBundle);
+	}
+
+	/**
+	 * Sets the SSL bundle on the underlying {@link ClientHttpRequestFactory}.
+	 * @param sslBundle the SSL bundle
+	 * @return a new builder instance
+	 * @since 3.4.0
+	 */
+	public RestTemplateBuilder sslBundle(SslBundle sslBundle) {
 		return new RestTemplateBuilder(this.requestFactorySettings.withSslBundle(sslBundle), this.detectRequestFactory,
 				this.rootUri, this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,

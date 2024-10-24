@@ -41,8 +41,8 @@ class MySpringBootTests(@Autowired val template: TestRestTemplate) {
 
 		@Bean
 		fun restTemplateBuilder(): RestTemplateBuilder {
-			return RestTemplateBuilder().setConnectTimeout(Duration.ofSeconds(1))
-				.setReadTimeout(Duration.ofSeconds(1))
+			return RestTemplateBuilder().connectTimeout(Duration.ofSeconds(1))
+				.readTimeout(Duration.ofSeconds(1))
 		}
 
 	}
