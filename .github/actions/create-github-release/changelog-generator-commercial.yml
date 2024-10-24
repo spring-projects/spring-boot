@@ -15,7 +15,7 @@ changelog:
       labels:
         - "type: dependency-upgrade"
   issues:
-    generate_links: ${{ !vars.COMMERCIAL }}
+    generate_links: false
     ports:
       - label: "status: forward-port"
         bodyExpression: 'Forward port of issue #(\d+).*'
