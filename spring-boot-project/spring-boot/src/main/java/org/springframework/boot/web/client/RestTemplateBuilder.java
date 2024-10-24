@@ -430,6 +430,22 @@ public class RestTemplateBuilder {
 	}
 
 	/**
+	 * Sets the {@link ClientHttpRequestFactorySettings}. This will replace any previously
+	 * set {@link #connectTimeout(Duration) connectTimeout} ,{@link #readTimeout(Duration)
+	 * readTimeout} and {@link #sslBundle(SslBundle) sslBundle} values.
+	 * @param requestFactorySettings the request factory settings
+	 * @return a new builder instance
+	 * @since 3.4.0
+	 */
+	public RestTemplateBuilder requestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
+		Assert.notNull(requestFactorySettings, "ClientHttpRequestFactorySettings must not be null");
+		return new RestTemplateBuilder(requestFactorySettings, this.detectRequestFactory, this.rootUri,
+				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
+				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
+				this.requestCustomizers);
+	}
+
+	/**
 	 * Sets the connection timeout on the underlying {@link ClientHttpRequestFactory}.
 	 * @param connectTimeout the connection timeout
 	 * @return a new builder instance.
