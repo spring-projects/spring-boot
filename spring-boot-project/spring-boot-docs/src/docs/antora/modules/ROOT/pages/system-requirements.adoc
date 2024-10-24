@@ -26,7 +26,7 @@ Spring Boot supports the following embedded servlet containers:
 |===
 | Name | Servlet Version
 
-| Tomcat 10.1
+| Tomcat 10.1 (10.1.25 or later)
 | 6.0
 
 | Jetty 12.0
