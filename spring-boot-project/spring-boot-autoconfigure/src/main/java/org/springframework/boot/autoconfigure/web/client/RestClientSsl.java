@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package org.springframework.boot.autoconfigure.web.client;
 
 import java.util.function.Consumer;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
@@ -38,8 +37,7 @@ import org.springframework.web.client.RestClient;
  * </pre> NOTE: Apply SSL configuration will replace any previously
  * {@link RestClient.Builder#requestFactory configured} {@link ClientHttpRequestFactory}.
  * If you need to configure {@link ClientHttpRequestFactory} with more than just SSL
- * consider using a {@link ClientHttpRequestFactorySettings} with
- * {@link ClientHttpRequestFactories}.
+ * consider using a {@link ClientHttpRequestFactoryBuilder}.
  *
  * @author Phillip Webb
  * @since 3.2.0

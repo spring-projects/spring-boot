@@ -36,7 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = { "management.server.port:0" })
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port:0", "spring.http.client.factory=simple" })
 class SampleActuatorUiApplicationPortTests {
 
 	@LocalServerPort

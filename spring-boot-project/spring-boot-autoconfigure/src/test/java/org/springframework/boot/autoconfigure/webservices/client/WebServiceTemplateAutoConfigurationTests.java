@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -28,6 +30,7 @@ import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -45,8 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WebServiceTemplateAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class, HttpClientAutoConfiguration.class));
 
 	@Test
 	void autoConfiguredBuilderShouldNotHaveMarshallerAndUnmarshaller() {
@@ -91,6 +94,19 @@ class WebServiceTemplateAutoConfigurationTests {
 	void builderShouldBeFreshForEachUse() {
 		this.contextRunner.withUserConfiguration(DirtyWebServiceTemplateConfig.class)
 			.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	void whenHasFactoryProperty() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withPropertyValues("spring.http.client.factory=simple")
+			.run(assertWebServiceTemplateBuilder((builder) -> {
+				WebServiceTemplate webServiceTemplate = builder.build();
+				assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
+				ClientHttpRequestMessageSender messageSender = (ClientHttpRequestMessageSender) webServiceTemplate
+					.getMessageSenders()[0];
+				assertThat(messageSender.getRequestFactory()).isInstanceOf(SimpleClientHttpRequestFactory.class);
+			}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertWebServiceTemplateBuilder(
