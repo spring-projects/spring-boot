@@ -5,11 +5,11 @@ org.springframework.boot.WebApplicationType.WebApplicationTypeRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataLocationRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataPropertiesRuntimeHints,\
 org.springframework.boot.env.PropertySourceRuntimeHints,\
+org.springframework.boot.http.client.ClientHttpRequestFactoryRuntimeHints,\
 org.springframework.boot.jdbc.DataSourceBuilderRuntimeHints,\
 org.springframework.boot.json.JacksonRuntimeHints,\
 org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
 org.springframework.boot.logging.logback.LogbackRuntimeHints,\
-org.springframework.boot.web.client.ClientHttpRequestFactoriesRuntimeHints,\
 org.springframework.boot.web.embedded.undertow.UndertowWebServer.UndertowWebServerRuntimeHints,\
 org.springframework.boot.web.server.MimeMappings.MimeMappingsRuntimeHints
 

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.client;
+package org.springframework.boot.http.client;
 
 import java.time.Duration;
 
-import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -31,16 +30,12 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 3.0.0
+ * @since 3.4.0
  * @see ClientHttpRequestFactoryBuilder
  */
 public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, SslBundle sslBundle) {
 
-	/**
-	 * Use defaults for the {@link ClientHttpRequestFactory} which can differ depending on
-	 * the implementation.
-	 */
-	public static final ClientHttpRequestFactorySettings DEFAULTS = new ClientHttpRequestFactorySettings(null, null,
+	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(null, null,
 			null);
 
 	/**
@@ -69,21 +64,28 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 * bundle setting.
 	 * @param sslBundle the new SSL bundle setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
-	 * @since 3.1.0
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
 		return new ClientHttpRequestFactorySettings(this.connectTimeout, this.readTimeout, sslBundle);
 	}
 
-	org.springframework.boot.http.client.ClientHttpRequestFactorySettings adapt() {
-		return new org.springframework.boot.http.client.ClientHttpRequestFactorySettings(connectTimeout(),
-				readTimeout(), sslBundle());
+	/**
+	 * Return a new {@link ClientHttpRequestFactorySettings} using defaults for all
+	 * settings other than the provided SSL bundle.
+	 * @param sslBundle the SSL bundle setting
+	 * @return a new {@link ClientHttpRequestFactorySettings} instance
+	 */
+	public static ClientHttpRequestFactorySettings ofSslBundle(SslBundle sslBundle) {
+		return defaults().withSslBundle(sslBundle);
 	}
 
-	static ClientHttpRequestFactorySettings of(
-			org.springframework.boot.http.client.ClientHttpRequestFactorySettings settings) {
-		return new ClientHttpRequestFactorySettings(settings.connectTimeout(), settings.readTimeout(),
-				settings.sslBundle());
+	/**
+	 * Use defaults for the {@link ClientHttpRequestFactory} which can differ depending on
+	 * the implementation.
+	 * @return default settings
+	 */
+	public static ClientHttpRequestFactorySettings defaults() {
+		return defaults;
 	}
 
 }
