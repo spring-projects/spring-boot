@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,14 @@ import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.type.format.jackson.JacksonJsonFormatMapper;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -42,6 +44,7 @@ import org.springframework.aot.hint.TypeHint.Builder;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaConfiguration.HibernateRuntimeHints;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,7 +54,9 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringJtaPlatform;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
@@ -74,6 +79,7 @@ import org.springframework.util.ClassUtils;
 @EnableConfigurationProperties(HibernateProperties.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 @ImportRuntimeHints(HibernateRuntimeHints.class)
+@Import(HibernateJpaConfiguration.HibernateJsonFormatMapperConfiguration.class)
 class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private static final Log logger = LogFactory.getLog(HibernateJpaConfiguration.class);
@@ -224,6 +230,19 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		}
 		throw new IllegalStateException(
 				"No available JtaPlatform candidates amongst " + Arrays.toString(NO_JTA_PLATFORM_CLASSES));
+	}
+
+	@ConditionalOnClass({ ObjectMapper.class, JacksonJsonFormatMapper.class })
+	@ConditionalOnSingleCandidate(ObjectMapper.class)
+	@Configuration(proxyBeanMethods = false)
+	static class HibernateJsonFormatMapperConfiguration {
+
+		@Bean
+		HibernatePropertiesCustomizer jsonFormatMapperHibernatePropertiesCustomizer(ObjectMapper objectMapper) {
+			return (properties) -> properties.putIfAbsent(AvailableSettings.JSON_FORMAT_MAPPER,
+					new JacksonJsonFormatMapper(objectMapper));
+		}
+
 	}
 
 	private static class NamingStrategiesHibernatePropertiesCustomizer implements HibernatePropertiesCustomizer {
