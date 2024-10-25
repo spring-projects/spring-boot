@@ -87,8 +87,7 @@ public final class ReactorClientHttpRequestFactoryBuilder
 
 	private boolean followRedirects(Redirects redirects) {
 		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE -> true;
-			case FOLLOW -> true;
+			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> true;
 			case DONT_FOLLOW -> false;
 		};
 	}

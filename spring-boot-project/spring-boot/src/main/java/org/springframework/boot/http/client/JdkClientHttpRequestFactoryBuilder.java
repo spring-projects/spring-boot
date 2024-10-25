@@ -78,8 +78,7 @@ public class JdkClientHttpRequestFactoryBuilder
 
 	private Redirect asHttpClientRedirect(Redirects redirects) {
 		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE -> Redirect.NORMAL;
-			case FOLLOW -> Redirect.NORMAL;
+			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> Redirect.NORMAL;
 			case DONT_FOLLOW -> Redirect.NEVER;
 		};
 	}

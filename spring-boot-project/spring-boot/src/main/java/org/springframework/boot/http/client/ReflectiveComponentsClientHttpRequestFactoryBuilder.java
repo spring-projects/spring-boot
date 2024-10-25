@@ -41,7 +41,7 @@ import org.springframework.util.ReflectionUtils;
 final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFactory>
 		implements ClientHttpRequestFactoryBuilder<T> {
 
-	private Supplier<T> requestFactorySupplier;
+	private final Supplier<T> requestFactorySupplier;
 
 	ReflectiveComponentsClientHttpRequestFactoryBuilder(Supplier<T> requestFactorySupplier) {
 		Assert.notNull(requestFactorySupplier, "'requestFactorySupplier' must not be null");

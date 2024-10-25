@@ -56,7 +56,7 @@ public class HttpClientProperties {
 	/**
 	 * Default SSL configuration for a client HTTP request.
 	 */
-	private Ssl ssl = new Ssl();
+	private final Ssl ssl = new Ssl();
 
 	public Factory getFactory() {
 		return this.factory;

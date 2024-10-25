@@ -32,7 +32,6 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuil
 import org.apache.hc.client5.http.protocol.RedirectStrategy;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
-import org.apache.hc.core5.http.HttpException;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.io.SocketConfig;
@@ -97,8 +96,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 
 	private RedirectStrategy asRedirectStrategy(Redirects redirects) {
 		return switch (redirects) {
-			case FOLLOW_WHEN_POSSIBLE -> DefaultRedirectStrategy.INSTANCE;
-			case FOLLOW -> DefaultRedirectStrategy.INSTANCE;
+			case FOLLOW_WHEN_POSSIBLE, FOLLOW -> DefaultRedirectStrategy.INSTANCE;
 			case DONT_FOLLOW -> NoFollowRedirectStrategy.INSTANCE;
 		};
 	}
@@ -113,9 +111,8 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 
 	private DefaultClientTlsStrategy createTlsSocketStrategy(SslBundle sslBundle) {
 		SslOptions options = sslBundle.getOptions();
-		DefaultClientTlsStrategy tlsSocketStrategy = new DefaultClientTlsStrategy(sslBundle.createSslContext(),
-				options.getEnabledProtocols(), options.getCiphers(), null, new DefaultHostnameVerifier());
-		return tlsSocketStrategy;
+		return new DefaultClientTlsStrategy(sslBundle.createSslContext(), options.getEnabledProtocols(),
+				options.getCiphers(), null, new DefaultHostnameVerifier());
 	}
 
 	private SocketConfig createSocketConfig(Duration readTimeout) {
@@ -133,14 +130,12 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		}
 
 		@Override
-		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
-				throws HttpException {
+		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
 			return false;
 		}
 
 		@Override
-		public URI getLocationURI(HttpRequest request, HttpResponse response, HttpContext context)
-				throws HttpException {
+		public URI getLocationURI(HttpRequest request, HttpResponse response, HttpContext context) {
 			return null;
 		}
 

@@ -48,7 +48,7 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
-	 * connect timeout setting .
+	 * connect timeout setting.
 	 * @param connectTimeout the new connect timeout setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */

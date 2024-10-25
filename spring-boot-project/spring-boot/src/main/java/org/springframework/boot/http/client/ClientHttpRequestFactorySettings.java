@@ -47,7 +47,7 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
-	 * connect timeout setting .
+	 * connect timeout setting.
 	 * @param connectTimeout the new connect timeout setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
@@ -116,12 +116,12 @@ public record ClientHttpRequestFactorySettings(Redirects redirects, Duration con
 		FOLLOW_WHEN_POSSIBLE,
 
 		/**
-		 * Follow redirects (fail if the underlying library has not support).
+		 * Follow redirects (fail if the underlying library has no support).
 		 */
 		FOLLOW,
 
 		/**
-		 * Don't follow redirects (fail if the underlying library has not support).
+		 * Don't follow redirects (fail if the underlying library has no support).
 		 */
 		DONT_FOLLOW
 
