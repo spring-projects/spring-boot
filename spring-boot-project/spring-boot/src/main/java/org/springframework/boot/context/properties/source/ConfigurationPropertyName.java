@@ -760,7 +760,6 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		private final CharSequence[] resolved;
 
 		Elements(CharSequence source, int size, int[] start, int[] end, ElementType[] type, CharSequence[] resolved) {
-			super();
 			this.source = source;
 			this.size = size;
 			this.start = start;
