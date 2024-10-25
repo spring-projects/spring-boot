@@ -330,9 +330,13 @@ public class RestTemplateBuilder {
 	 * @param requestFactoryFunction the settings to request factory function
 	 * @return a new builder instance
 	 * @since 3.0.0
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #requestFactoryBuilder(ClientHttpRequestFactoryBuilder)}
 	 * @see ClientHttpRequestFactoryBuilder
 	 * @see #requestFactoryBuilder(ClientHttpRequestFactoryBuilder)
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	public RestTemplateBuilder requestFactory(
 			Function<org.springframework.boot.web.client.ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactoryFunction) {
 		Assert.notNull(requestFactoryFunction, "RequestFactoryFunction must not be null");

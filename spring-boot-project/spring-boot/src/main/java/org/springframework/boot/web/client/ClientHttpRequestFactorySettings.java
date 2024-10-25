@@ -33,7 +33,10 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Scott Frederick
  * @since 3.0.0
  * @see ClientHttpRequestFactoryBuilder
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * {@link org.springframework.boot.http.client.ClientHttpRequestFactorySettings}
  */
+@Deprecated(since = "3.4.0", forRemoval = true)
 public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, SslBundle sslBundle) {
 
 	/**

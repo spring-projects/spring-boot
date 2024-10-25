@@ -125,7 +125,7 @@ The following code shows a typical example:
 
 include-code::MyService[]
 
-If you need to apply other customization in addition to an SSL bundle, you can use the `ClientHttpRequestFactorySettings` class with `ClientHttpRequestFactories`:
+If you need to apply other customization in addition to an SSL bundle, you can use the `ClientHttpRequestFactorySettings` class with `ClientHttpRequestFactoryBuilder`:
 
 include-code::settings/MyService[]
 

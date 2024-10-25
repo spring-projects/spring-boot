@@ -273,6 +273,7 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void requestFactoryWhenFunctionIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.requestFactory(
 				(Function<org.springframework.boot.web.client.ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))

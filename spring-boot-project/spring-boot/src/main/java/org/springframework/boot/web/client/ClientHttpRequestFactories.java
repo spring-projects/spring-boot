@@ -16,38 +16,10 @@
 
 package org.springframework.boot.web.client;
 
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLSocketFactory;
-
-import io.netty.handler.ssl.SslContextBuilder;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
-import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
-import org.apache.hc.core5.http.io.SocketConfig;
-import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
-import org.eclipse.jetty.io.ClientConnector;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import reactor.netty.tcp.SslProvider.SslContextSpec;
-
-import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.ssl.SslManagerBundle;
-import org.springframework.boot.ssl.SslOptions;
-import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
@@ -56,8 +28,6 @@ import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * Utility class that can be used to create {@link ClientHttpRequestFactory} instances
@@ -67,20 +37,11 @@ import org.springframework.util.function.ThrowingConsumer;
  * @author Phillip Webb
  * @author Scott Frederick
  * @since 3.0.0
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * {@link ClientHttpRequestFactoryBuilder}
  */
+@Deprecated(since = "3.4.0", forRemoval = true)
 public final class ClientHttpRequestFactories {
-
-	static final String APACHE_HTTP_CLIENT_CLASS = "org.apache.hc.client5.http.impl.classic.HttpClients";
-
-	private static final boolean APACHE_HTTP_CLIENT_PRESENT = ClassUtils.isPresent(APACHE_HTTP_CLIENT_CLASS, null);
-
-	static final String JETTY_CLIENT_CLASS = "org.eclipse.jetty.client.HttpClient";
-
-	private static final boolean JETTY_CLIENT_PRESENT = ClassUtils.isPresent(JETTY_CLIENT_CLASS, null);
-
-	static final String REACTOR_CLIENT_CLASS = "reactor.netty.http.client.HttpClient";
-
-	private static final boolean REACTOR_CLIENT_PRESENT = ClassUtils.isPresent(REACTOR_CLIENT_CLASS, null);
 
 	private ClientHttpRequestFactories() {
 	}
@@ -98,18 +59,10 @@ public final class ClientHttpRequestFactories {
 	 * @param settings the settings to apply
 	 * @return a new {@link ClientHttpRequestFactory}
 	 */
+	@SuppressWarnings("removal")
 	public static ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
 		Assert.notNull(settings, "Settings must not be null");
-		if (APACHE_HTTP_CLIENT_PRESENT) {
-			return HttpComponents.get(settings);
-		}
-		if (JETTY_CLIENT_PRESENT) {
-			return Jetty.get(settings);
-		}
-		if (REACTOR_CLIENT_PRESENT) {
-			return Reactor.get(settings);
-		}
-		return Simple.get(settings);
+		return detectBuilder().build(settings.adapt());
 	}
 
 	/**
@@ -131,29 +84,11 @@ public final class ClientHttpRequestFactories {
 	 * @param settings the settings to apply
 	 * @return a new {@link ClientHttpRequestFactory} instance
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("removal")
 	public static <T extends ClientHttpRequestFactory> T get(Class<T> requestFactoryType,
 			ClientHttpRequestFactorySettings settings) {
 		Assert.notNull(settings, "Settings must not be null");
-		if (requestFactoryType == ClientHttpRequestFactory.class) {
-			return (T) get(settings);
-		}
-		if (requestFactoryType == HttpComponentsClientHttpRequestFactory.class) {
-			return (T) HttpComponents.get(settings);
-		}
-		if (requestFactoryType == JettyClientHttpRequestFactory.class) {
-			return (T) Jetty.get(settings);
-		}
-		if (requestFactoryType == ReactorClientHttpRequestFactory.class) {
-			return (T) Reactor.get(settings);
-		}
-		if (requestFactoryType == JdkClientHttpRequestFactory.class) {
-			return (T) Jdk.get(settings);
-		}
-		if (requestFactoryType == SimpleClientHttpRequestFactory.class) {
-			return (T) Simple.get(settings);
-		}
-		return get(() -> createRequestFactory(requestFactoryType), settings);
+		return getBuilder(requestFactoryType).build(settings.adapt());
 	}
 
 	/**
@@ -164,278 +99,28 @@ public final class ClientHttpRequestFactories {
 	 * @param settings the settings to apply
 	 * @return a new {@link ClientHttpRequestFactory} instance
 	 */
+	@SuppressWarnings("removal")
 	public static <T extends ClientHttpRequestFactory> T get(Supplier<T> requestFactorySupplier,
 			ClientHttpRequestFactorySettings settings) {
-		return Reflective.get(requestFactorySupplier, settings);
+		return ClientHttpRequestFactoryBuilder.of(requestFactorySupplier).build(settings.adapt());
 	}
 
-	private static <T extends ClientHttpRequestFactory> T createRequestFactory(Class<T> requestFactory) {
-		try {
-			Constructor<T> constructor = requestFactory.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			return constructor.newInstance();
+	@SuppressWarnings("unchecked")
+	private static <T extends ClientHttpRequestFactory> ClientHttpRequestFactoryBuilder<T> getBuilder(
+			Class<T> requestFactoryType) {
+		if (requestFactoryType == ClientHttpRequestFactory.class) {
+			return (ClientHttpRequestFactoryBuilder<T>) detectBuilder();
 		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
+		return ClientHttpRequestFactoryBuilder.of(requestFactoryType);
 	}
 
-	/**
-	 * Support for {@link HttpComponentsClientHttpRequestFactory}.
-	 */
-	static class HttpComponents {
-
-		static HttpComponentsClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			HttpComponentsClientHttpRequestFactory requestFactory = createRequestFactory(settings.readTimeout(),
-					settings.sslBundle());
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
-			return requestFactory;
+	private static ClientHttpRequestFactoryBuilder<?> detectBuilder() {
+		ClientHttpRequestFactoryBuilder<?> builder = ClientHttpRequestFactoryBuilder.detect();
+		if (builder instanceof JdkClientHttpRequestFactoryBuilder) {
+			// Same logic as earlier versions which did not support JDK client factories
+			return ClientHttpRequestFactoryBuilder.simple();
 		}
-
-		private static HttpComponentsClientHttpRequestFactory createRequestFactory(Duration readTimeout,
-				SslBundle sslBundle) {
-			return new HttpComponentsClientHttpRequestFactory(createHttpClient(readTimeout, sslBundle));
-		}
-
-		private static HttpClient createHttpClient(Duration readTimeout, SslBundle sslBundle) {
-			PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder
-				.create();
-			if (readTimeout != null) {
-				SocketConfig socketConfig = SocketConfig.custom()
-					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
-					.build();
-				connectionManagerBuilder.setDefaultSocketConfig(socketConfig);
-			}
-			if (sslBundle != null) {
-				SslOptions options = sslBundle.getOptions();
-				connectionManagerBuilder.setTlsSocketStrategy(new DefaultClientTlsStrategy(sslBundle.createSslContext(),
-						options.getEnabledProtocols(), options.getCiphers(), null, new DefaultHostnameVerifier()));
-			}
-			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.useSystemProperties()
-				.build();
-			return HttpClientBuilder.create().useSystemProperties().setConnectionManager(connectionManager).build();
-		}
-
-	}
-
-	/**
-	 * Support for {@link JettyClientHttpRequestFactory}.
-	 */
-	static class Jetty {
-
-		static JettyClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			JettyClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
-			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
-			return requestFactory;
-		}
-
-		private static JettyClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
-			if (sslBundle != null) {
-				SSLContext sslContext = sslBundle.createSslContext();
-				SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-				sslContextFactory.setSslContext(sslContext);
-				ClientConnector connector = new ClientConnector();
-				connector.setSslContextFactory(sslContextFactory);
-				org.eclipse.jetty.client.HttpClient httpClient = new org.eclipse.jetty.client.HttpClient(
-						new HttpClientTransportDynamic(connector));
-				return new JettyClientHttpRequestFactory(httpClient);
-			}
-			return new JettyClientHttpRequestFactory();
-		}
-
-	}
-
-	/**
-	 * Support for {@link ReactorClientHttpRequestFactory}.
-	 */
-	static class Reactor {
-
-		static ReactorClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			ReactorClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
-			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
-			return requestFactory;
-		}
-
-		private static ReactorClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
-			if (sslBundle != null) {
-				reactor.netty.http.client.HttpClient httpClient = reactor.netty.http.client.HttpClient.create()
-					.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, sslBundle))));
-				return new ReactorClientHttpRequestFactory(httpClient);
-			}
-			return new ReactorClientHttpRequestFactory();
-		}
-
-		private static void configureSsl(SslContextSpec spec, SslBundle sslBundle) throws SSLException {
-			SslOptions options = sslBundle.getOptions();
-			SslManagerBundle managers = sslBundle.getManagers();
-			SslContextBuilder builder = SslContextBuilder.forClient()
-				.keyManager(managers.getKeyManagerFactory())
-				.trustManager(managers.getTrustManagerFactory())
-				.ciphers(SslOptions.asSet(options.getCiphers()))
-				.protocols(options.getEnabledProtocols());
-			spec.sslContext(builder.build());
-		}
-
-	}
-
-	/**
-	 * Support for {@link JdkClientHttpRequestFactory}.
-	 */
-	static class Jdk {
-
-		static JdkClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			java.net.http.HttpClient httpClient = createHttpClient(settings.connectTimeout(), settings.sslBundle());
-			JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(settings::readTimeout).to(requestFactory::setReadTimeout);
-			return requestFactory;
-		}
-
-		private static java.net.http.HttpClient createHttpClient(Duration connectTimeout, SslBundle sslBundle) {
-			java.net.http.HttpClient.Builder builder = java.net.http.HttpClient.newBuilder();
-			if (connectTimeout != null) {
-				builder.connectTimeout(connectTimeout);
-			}
-			if (sslBundle != null) {
-				builder.sslContext(sslBundle.createSslContext());
-			}
-			return builder.build();
-		}
-
-	}
-
-	/**
-	 * Support for {@link SimpleClientHttpRequestFactory}.
-	 */
-	static class Simple {
-
-		static SimpleClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			SslBundle sslBundle = settings.sslBundle();
-			SimpleClientHttpRequestFactory requestFactory = (sslBundle != null)
-					? new SimpleClientHttpsRequestFactory(sslBundle) : new SimpleClientHttpRequestFactory();
-			Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
-					"SSL Options cannot be specified with Java connections");
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
-			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
-			return requestFactory;
-		}
-
-		/**
-		 * {@link SimpleClientHttpsRequestFactory} to configure SSL from an
-		 * {@link SslBundle}.
-		 */
-		private static class SimpleClientHttpsRequestFactory extends SimpleClientHttpRequestFactory {
-
-			private final SslBundle sslBundle;
-
-			SimpleClientHttpsRequestFactory(SslBundle sslBundle) {
-				this.sslBundle = sslBundle;
-			}
-
-			@Override
-			protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-				super.prepareConnection(connection, httpMethod);
-				if (this.sslBundle != null && connection instanceof HttpsURLConnection secureConnection) {
-					SSLSocketFactory socketFactory = this.sslBundle.createSslContext().getSocketFactory();
-					secureConnection.setSSLSocketFactory(socketFactory);
-				}
-			}
-
-		}
-
-	}
-
-	/**
-	 * Support for reflective configuration of an unknown {@link ClientHttpRequestFactory}
-	 * implementation.
-	 */
-	static class Reflective {
-
-		static <T extends ClientHttpRequestFactory> T get(Supplier<T> requestFactorySupplier,
-				ClientHttpRequestFactorySettings settings) {
-			T requestFactory = requestFactorySupplier.get();
-			configure(requestFactory, settings);
-			return requestFactory;
-		}
-
-		private static void configure(ClientHttpRequestFactory requestFactory,
-				ClientHttpRequestFactorySettings settings) {
-			ClientHttpRequestFactory unwrapped = unwrapRequestFactoryIfNecessary(requestFactory);
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(settings::connectTimeout).to((connectTimeout) -> setConnectTimeout(unwrapped, connectTimeout));
-			map.from(settings::readTimeout).to((readTimeout) -> setReadTimeout(unwrapped, readTimeout));
-		}
-
-		private static ClientHttpRequestFactory unwrapRequestFactoryIfNecessary(
-				ClientHttpRequestFactory requestFactory) {
-			if (!(requestFactory instanceof AbstractClientHttpRequestFactoryWrapper)) {
-				return requestFactory;
-			}
-			Field field = ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
-			ReflectionUtils.makeAccessible(field);
-			ClientHttpRequestFactory unwrappedRequestFactory = requestFactory;
-			while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper) {
-				unwrappedRequestFactory = (ClientHttpRequestFactory) ReflectionUtils.getField(field,
-						unwrappedRequestFactory);
-			}
-			return unwrappedRequestFactory;
-		}
-
-		private static void setConnectTimeout(ClientHttpRequestFactory factory, Duration connectTimeout) {
-			Method method = tryFindMethod(factory, "setConnectTimeout", Duration.class);
-			if (method != null) {
-				invoke(factory, method, connectTimeout);
-				return;
-			}
-			method = findMethod(factory, "setConnectTimeout", int.class);
-			int timeout = Math.toIntExact(connectTimeout.toMillis());
-			invoke(factory, method, timeout);
-		}
-
-		private static void setReadTimeout(ClientHttpRequestFactory factory, Duration readTimeout) {
-			Method method = tryFindMethod(factory, "setReadTimeout", Duration.class);
-			if (method != null) {
-				invoke(factory, method, readTimeout);
-				return;
-			}
-			method = findMethod(factory, "setReadTimeout", int.class);
-			int timeout = Math.toIntExact(readTimeout.toMillis());
-			invoke(factory, method, timeout);
-		}
-
-		private static Method findMethod(ClientHttpRequestFactory requestFactory, String methodName,
-				Class<?>... parameters) {
-			Method method = ReflectionUtils.findMethod(requestFactory.getClass(), methodName, parameters);
-			Assert.state(method != null, () -> "Request factory %s does not have a suitable %s method"
-				.formatted(requestFactory.getClass().getName(), methodName));
-			Assert.state(!method.isAnnotationPresent(Deprecated.class),
-					() -> "Request factory %s has the %s method marked as deprecated"
-						.formatted(requestFactory.getClass().getName(), methodName));
-			return method;
-		}
-
-		private static Method tryFindMethod(ClientHttpRequestFactory requestFactory, String methodName,
-				Class<?>... parameters) {
-			Method method = ReflectionUtils.findMethod(requestFactory.getClass(), methodName, parameters);
-			if (method == null) {
-				return null;
-			}
-			if (method.isAnnotationPresent(Deprecated.class)) {
-				return null;
-			}
-			return method;
-		}
-
-		private static void invoke(ClientHttpRequestFactory requestFactory, Method method, Object... parameters) {
-			ReflectionUtils.invokeMethod(method, requestFactory, parameters);
-		}
-
+		return builder;
 	}
 
 }
