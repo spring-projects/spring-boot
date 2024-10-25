@@ -19,6 +19,8 @@ package org.springframework.boot.http.client;
 import java.net.http.HttpClient;
 import java.time.Duration;
 
+import org.junit.jupiter.api.Test;
+
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -32,6 +34,18 @@ class JdkClientHttpRequestFactoryBuilderTests
 
 	JdkClientHttpRequestFactoryBuilderTests() {
 		super(JdkClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.jdk());
+	}
+
+	@Test
+	void withCustomizers() {
+		TestCustomizer<HttpClient.Builder> httpClientCustomizer1 = new TestCustomizer<>();
+		TestCustomizer<HttpClient.Builder> httpClientCustomizer2 = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.jdk()
+			.withHttpClientCustomizer(httpClientCustomizer1)
+			.withHttpClientCustomizer(httpClientCustomizer2)
+			.build();
+		httpClientCustomizer1.assertCalled();
+		httpClientCustomizer2.assertCalled();
 	}
 
 	@Override

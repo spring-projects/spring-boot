@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -47,23 +48,77 @@ import org.springframework.util.ClassUtils;
 public final class JettyClientHttpRequestFactoryBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<JettyClientHttpRequestFactory> {
 
+	private final Consumer<HttpClient> httpClientCustomizer;
+
+	private final Consumer<HttpClientTransport> httpClientTransportCustomizer;
+
+	private final Consumer<ClientConnector> clientConnectorCustomizerCustomizer;
+
 	JettyClientHttpRequestFactoryBuilder() {
-		this(null);
+		this(null, emptyCustomizer(), emptyCustomizer(), emptyCustomizer());
 	}
 
-	private JettyClientHttpRequestFactoryBuilder(List<Consumer<JettyClientHttpRequestFactory>> customizers) {
+	private JettyClientHttpRequestFactoryBuilder(List<Consumer<JettyClientHttpRequestFactory>> customizers,
+			Consumer<HttpClient> httpClientCustomizer, Consumer<HttpClientTransport> httpClientTransportCustomizer,
+			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
 		super(customizers);
+		this.httpClientCustomizer = httpClientCustomizer;
+		this.httpClientTransportCustomizer = httpClientTransportCustomizer;
+		this.clientConnectorCustomizerCustomizer = clientConnectorCustomizerCustomizer;
 	}
 
 	@Override
 	public JettyClientHttpRequestFactoryBuilder withCustomizer(Consumer<JettyClientHttpRequestFactory> customizer) {
-		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizer));
+		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientCustomizer,
+				this.httpClientTransportCustomizer, this.clientConnectorCustomizerCustomizer);
 	}
 
 	@Override
 	public JettyClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<JettyClientHttpRequestFactory>> customizers) {
-		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
+		return new JettyClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientCustomizer,
+				this.httpClientTransportCustomizer, this.clientConnectorCustomizerCustomizer);
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies additional
+	 * customization to the underlying {@link HttpClient}.
+	 * @param httpClientCustomizer the customizer to apply
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 */
+	public JettyClientHttpRequestFactoryBuilder withHttpClientCustomizer(Consumer<HttpClient> httpClientCustomizer) {
+		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
+		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientCustomizer.andThen(httpClientCustomizer), this.httpClientTransportCustomizer,
+				this.clientConnectorCustomizerCustomizer);
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies additional
+	 * customization to the underlying {@link HttpClientTransport}.
+	 * @param httpClientTransportCustomizer the customizer to apply
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 */
+	public JettyClientHttpRequestFactoryBuilder withHttpClientTransportCustomizer(
+			Consumer<HttpClientTransport> httpClientTransportCustomizer) {
+		Assert.notNull(httpClientTransportCustomizer, "'httpClientTransportCustomizer' must not be null");
+		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
+				this.httpClientTransportCustomizer.andThen(httpClientTransportCustomizer),
+				this.clientConnectorCustomizerCustomizer);
+	}
+
+	/**
+	 * Return a new {@link JettyClientHttpRequestFactoryBuilder} that applies additional
+	 * customization to the underlying {@link ClientConnector}.
+	 * @param clientConnectorCustomizerCustomizer the customizer to apply
+	 * @return a new {@link JettyClientHttpRequestFactoryBuilder} instance
+	 */
+	public JettyClientHttpRequestFactoryBuilder withClientConnectorCustomizerCustomizer(
+			Consumer<ClientConnector> clientConnectorCustomizerCustomizer) {
+		Assert.notNull(clientConnectorCustomizerCustomizer, "'clientConnectorCustomizerCustomizer' must not be null");
+		return new JettyClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
+				this.httpClientTransportCustomizer,
+				this.clientConnectorCustomizerCustomizer.andThen(clientConnectorCustomizerCustomizer));
 	}
 
 	@Override
@@ -77,27 +132,34 @@ public final class JettyClientHttpRequestFactoryBuilder
 
 	private JettyClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactorySettings settings) {
 		HttpClientTransport transport = createTransport(settings);
+		this.httpClientTransportCustomizer.accept(transport);
 		HttpClient httpClient = new HttpClient(transport);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
+		this.httpClientCustomizer.accept(httpClient);
 		return new JettyClientHttpRequestFactory(httpClient);
 	}
 
 	private HttpClientTransport createTransport(ClientHttpRequestFactorySettings settings) {
-		if (settings.sslBundle() == null) {
-			return new HttpClientTransportOverHTTP();
-		}
 		ClientConnector connector = createClientConnector(settings.sslBundle());
-		return new HttpClientTransportDynamic(connector);
+		return (connector.getSslContextFactory() != null) ? new HttpClientTransportDynamic(connector)
+				: new HttpClientTransportOverHTTP(connector);
 	}
 
 	private ClientConnector createClientConnector(SslBundle sslBundle) {
+		ClientConnector connector = new ClientConnector();
+		if (sslBundle != null) {
+			connector.setSslContextFactory(createSslContextFactory(sslBundle));
+		}
+		this.clientConnectorCustomizerCustomizer.accept(connector);
+		return connector;
+	}
+
+	private SslContextFactory.Client createSslContextFactory(SslBundle sslBundle) {
 		SSLContext sslContext = sslBundle.createSslContext();
 		SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
 		sslContextFactory.setSslContext(sslContext);
-		ClientConnector connector = new ClientConnector();
-		connector.setSslContextFactory(sslContextFactory);
-		return connector;
+		return sslContextFactory;
 	}
 
 	private boolean followRedirects(Redirects redirects) {

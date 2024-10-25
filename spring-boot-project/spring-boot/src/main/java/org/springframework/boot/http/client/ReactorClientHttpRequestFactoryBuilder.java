@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import javax.net.ssl.SSLException;
 
@@ -33,6 +34,7 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.function.ThrowingConsumer;
 
@@ -47,23 +49,40 @@ import org.springframework.util.function.ThrowingConsumer;
 public final class ReactorClientHttpRequestFactoryBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<ReactorClientHttpRequestFactory> {
 
+	private final UnaryOperator<HttpClient> httpClientCustomizer;
+
 	ReactorClientHttpRequestFactoryBuilder() {
-		this(null);
+		this(null, UnaryOperator.identity());
 	}
 
-	private ReactorClientHttpRequestFactoryBuilder(List<Consumer<ReactorClientHttpRequestFactory>> customizers) {
+	private ReactorClientHttpRequestFactoryBuilder(List<Consumer<ReactorClientHttpRequestFactory>> customizers,
+			UnaryOperator<HttpClient> httpClientCustomizer) {
 		super(customizers);
+		this.httpClientCustomizer = httpClientCustomizer;
 	}
 
 	@Override
 	public ReactorClientHttpRequestFactoryBuilder withCustomizer(Consumer<ReactorClientHttpRequestFactory> customizer) {
-		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizer));
+		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientCustomizer);
 	}
 
 	@Override
 	public ReactorClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<ReactorClientHttpRequestFactory>> customizers) {
-		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
+		return new ReactorClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientCustomizer);
+	}
+
+	/**
+	 * Return a new {@link ReactorClientHttpRequestFactoryBuilder} that applies additional
+	 * customization to the underlying {@link HttpClient}.
+	 * @param httpClientCustomizer the customizer to apply
+	 * @return a new {@link ReactorClientHttpRequestFactoryBuilder} instance
+	 */
+	public ReactorClientHttpRequestFactoryBuilder withHttpClientCustomizer(
+			UnaryOperator<HttpClient> httpClientCustomizer) {
+		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
+		return new ReactorClientHttpRequestFactoryBuilder(getCustomizers(),
+				(t) -> httpClientCustomizer.apply(this.httpClientCustomizer.apply(t)));
 	}
 
 	@Override
@@ -82,6 +101,7 @@ public final class ReactorClientHttpRequestFactoryBuilder
 		if (settings.sslBundle() != null) {
 			httpClient = httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, settings.sslBundle()))));
 		}
+		httpClient = this.httpClientCustomizer.apply(httpClient);
 		return new ReactorClientHttpRequestFactory(httpClient);
 	}
 

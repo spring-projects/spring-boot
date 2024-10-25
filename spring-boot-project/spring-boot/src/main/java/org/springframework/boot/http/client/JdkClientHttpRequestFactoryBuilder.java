@@ -26,6 +26,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -39,23 +40,40 @@ import org.springframework.util.ClassUtils;
 public class JdkClientHttpRequestFactoryBuilder
 		extends AbstractClientHttpRequestFactoryBuilder<JdkClientHttpRequestFactory> {
 
+	private final Consumer<HttpClient.Builder> httpClientCustomizer;
+
 	JdkClientHttpRequestFactoryBuilder() {
-		this(null);
+		this(null, emptyCustomizer());
 	}
 
-	private JdkClientHttpRequestFactoryBuilder(List<Consumer<JdkClientHttpRequestFactory>> customizers) {
+	private JdkClientHttpRequestFactoryBuilder(List<Consumer<JdkClientHttpRequestFactory>> customizers,
+			Consumer<HttpClient.Builder> httpClientCustomizer) {
 		super(customizers);
+		this.httpClientCustomizer = httpClientCustomizer;
 	}
 
 	@Override
 	public JdkClientHttpRequestFactoryBuilder withCustomizer(Consumer<JdkClientHttpRequestFactory> customizer) {
-		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizer));
+		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizer), this.httpClientCustomizer);
 	}
 
 	@Override
 	public JdkClientHttpRequestFactoryBuilder withCustomizers(
 			Collection<Consumer<JdkClientHttpRequestFactory>> customizers) {
-		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizers));
+		return new JdkClientHttpRequestFactoryBuilder(mergedCustomizers(customizers), this.httpClientCustomizer);
+	}
+
+	/**
+	 * Return a new {@link JdkClientHttpRequestFactoryBuilder} that applies additional
+	 * customization to the underlying {@link java.net.http.HttpClient.Builder}.
+	 * @param httpClientCustomizer the customizer to apply
+	 * @return a new {@link JdkClientHttpRequestFactoryBuilder} instance
+	 */
+	public JdkClientHttpRequestFactoryBuilder withHttpClientCustomizer(
+			Consumer<HttpClient.Builder> httpClientCustomizer) {
+		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
+		return new JdkClientHttpRequestFactoryBuilder(getCustomizers(),
+				this.httpClientCustomizer.andThen(httpClientCustomizer));
 	}
 
 	@Override
@@ -68,12 +86,13 @@ public class JdkClientHttpRequestFactoryBuilder
 	}
 
 	private HttpClient createHttpClient(ClientHttpRequestFactorySettings settings) {
-		HttpClient.Builder httpClientBuilder = HttpClient.newBuilder();
+		HttpClient.Builder builder = HttpClient.newBuilder();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(settings::connectTimeout).to(httpClientBuilder::connectTimeout);
-		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(httpClientBuilder::sslContext);
-		map.from(settings::redirects).as(this::asHttpClientRedirect).to(httpClientBuilder::followRedirects);
-		return httpClientBuilder.build();
+		map.from(settings::connectTimeout).to(builder::connectTimeout);
+		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
+		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
+		this.httpClientCustomizer.accept(builder);
+		return builder.build();
 	}
 
 	private Redirect asHttpClientRedirect(Redirects redirects) {

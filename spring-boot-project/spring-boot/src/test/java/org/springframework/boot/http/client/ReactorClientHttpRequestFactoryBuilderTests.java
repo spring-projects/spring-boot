@@ -17,12 +17,18 @@
 package org.springframework.boot.http.client;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.UnaryOperator;
 
 import io.netty.channel.ChannelOption;
+import org.junit.jupiter.api.Test;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link ReactorClientHttpRequestFactoryBuilder}.
@@ -35,6 +41,24 @@ class ReactorClientHttpRequestFactoryBuilderTests
 
 	ReactorClientHttpRequestFactoryBuilderTests() {
 		super(ReactorClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.reactor());
+	}
+
+	@Test
+	void withCustomizers() {
+		List<HttpClient> httpClients = new ArrayList<>();
+		UnaryOperator<HttpClient> httpClientCustomizer1 = (httpClient) -> {
+			httpClients.add(httpClient);
+			return httpClient;
+		};
+		UnaryOperator<HttpClient> httpClientCustomizer2 = (httpClient) -> {
+			httpClients.add(httpClient);
+			return httpClient;
+		};
+		ClientHttpRequestFactoryBuilder.reactor()
+			.withHttpClientCustomizer(httpClientCustomizer1)
+			.withHttpClientCustomizer(httpClientCustomizer2)
+			.build();
+		assertThat(httpClients).hasSize(2);
 	}
 
 	@Override

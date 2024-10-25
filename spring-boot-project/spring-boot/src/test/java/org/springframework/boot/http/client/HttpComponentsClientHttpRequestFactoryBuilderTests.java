@@ -16,13 +16,25 @@
 
 package org.springframework.boot.http.client;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.http.io.SocketConfig.Builder;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link HttpComponentsClientHttpRequestFactoryBuilder}.
@@ -35,6 +47,38 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 
 	HttpComponentsClientHttpRequestFactoryBuilderTests() {
 		super(HttpComponentsClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.httpComponents());
+	}
+
+	@Test
+	void withCustomizers() {
+		TestCustomizer<HttpClientBuilder> httpClientCustomizer1 = new TestCustomizer<>();
+		TestCustomizer<HttpClientBuilder> httpClientCustomizer2 = new TestCustomizer<>();
+		TestCustomizer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer = new TestCustomizer<>();
+		TestCustomizer<Builder> socketConfigCustomizer = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.httpComponents()
+			.withHttpClientCustomizer(httpClientCustomizer1)
+			.withHttpClientCustomizer(httpClientCustomizer2)
+			.withConnectionManagerCustomizer(connectionManagerCustomizer)
+			.withSocketConfigCustomizer(socketConfigCustomizer)
+			.build();
+		httpClientCustomizer1.assertCalled();
+		httpClientCustomizer2.assertCalled();
+		connectionManagerCustomizer.assertCalled();
+		socketConfigCustomizer.assertCalled();
+	}
+
+	@Test
+	void withTlsSocketStrategyFactory() {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(sslBundle());
+		List<SslBundle> bundles = new ArrayList<>();
+		Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory = (bundle) -> {
+			bundles.add(bundle);
+			return (socket, target, port, attachment, context) -> null;
+		};
+		ClientHttpRequestFactoryBuilder.httpComponents()
+			.withTlsSocketStrategyFactory(tlsSocketStrategyFactory)
+			.build(settings);
+		assertThat(bundles).contains(settings.sslBundle());
 	}
 
 	@Override

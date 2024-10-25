@@ -17,6 +17,9 @@
 package org.springframework.boot.http.client;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpClientTransport;
+import org.eclipse.jetty.io.ClientConnector;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -31,6 +34,24 @@ class JettyClientHttpRequestFactoryBuilderTests
 
 	JettyClientHttpRequestFactoryBuilderTests() {
 		super(JettyClientHttpRequestFactory.class, ClientHttpRequestFactoryBuilder.jetty());
+	}
+
+	@Test
+	void withCustomizers() {
+		TestCustomizer<HttpClient> httpClientCustomizer1 = new TestCustomizer<>();
+		TestCustomizer<HttpClient> httpClientCustomizer2 = new TestCustomizer<>();
+		TestCustomizer<HttpClientTransport> httpClientTransportCustomizer = new TestCustomizer<>();
+		TestCustomizer<ClientConnector> clientConnectorCustomizerCustomizer = new TestCustomizer<>();
+		ClientHttpRequestFactoryBuilder.jetty()
+			.withHttpClientCustomizer(httpClientCustomizer1)
+			.withHttpClientCustomizer(httpClientCustomizer2)
+			.withHttpClientTransportCustomizer(httpClientTransportCustomizer)
+			.withClientConnectorCustomizerCustomizer(clientConnectorCustomizerCustomizer)
+			.build();
+		httpClientCustomizer1.assertCalled();
+		httpClientCustomizer2.assertCalled();
+		httpClientTransportCustomizer.assertCalled();
+		clientConnectorCustomizerCustomizer.assertCalled();
 	}
 
 	@Override

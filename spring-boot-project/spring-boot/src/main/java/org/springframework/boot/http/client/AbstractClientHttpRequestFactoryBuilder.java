@@ -35,10 +35,18 @@ import org.springframework.util.Assert;
 abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpRequestFactory>
 		implements ClientHttpRequestFactoryBuilder<T> {
 
+	private static final Consumer<?> EMPTY_CUSTOMIZER = (t) -> {
+	};
+
 	private final List<Consumer<T>> customizers;
 
 	protected AbstractClientHttpRequestFactoryBuilder(List<Consumer<T>> customizers) {
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static <T> Consumer<T> emptyCustomizer() {
+		return (Consumer<T>) EMPTY_CUSTOMIZER;
 	}
 
 	protected final List<Consumer<T>> getCustomizers() {
