@@ -24,11 +24,14 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLContext;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpClientTransport;
 import org.eclipse.jetty.client.transport.HttpClientTransportDynamic;
+import org.eclipse.jetty.client.transport.HttpClientTransportOverHTTP;
 import org.eclipse.jetty.io.ClientConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
@@ -65,24 +68,44 @@ public final class JettyClientHttpRequestFactoryBuilder
 
 	@Override
 	protected JettyClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
-		JettyClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
+		JettyClientHttpRequestFactory requestFactory = createRequestFactory(settings);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;
 	}
 
-	private static JettyClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
-		if (sslBundle != null) {
-			SSLContext sslContext = sslBundle.createSslContext();
-			SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-			sslContextFactory.setSslContext(sslContext);
-			ClientConnector connector = new ClientConnector();
-			connector.setSslContextFactory(sslContextFactory);
-			HttpClient httpClient = new HttpClient(new HttpClientTransportDynamic(connector));
-			return new JettyClientHttpRequestFactory(httpClient);
+	private JettyClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactorySettings settings) {
+		HttpClientTransport transport = createTransport(settings);
+		HttpClient httpClient = new HttpClient(transport);
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(settings::redirects).as(this::followRedirects).to(httpClient::setFollowRedirects);
+		return new JettyClientHttpRequestFactory(httpClient);
+	}
+
+	private HttpClientTransport createTransport(ClientHttpRequestFactorySettings settings) {
+		if (settings.sslBundle() == null) {
+			return new HttpClientTransportOverHTTP();
 		}
-		return new JettyClientHttpRequestFactory();
+		ClientConnector connector = createClientConnector(settings.sslBundle());
+		return new HttpClientTransportDynamic(connector);
+	}
+
+	private ClientConnector createClientConnector(SslBundle sslBundle) {
+		SSLContext sslContext = sslBundle.createSslContext();
+		SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+		sslContextFactory.setSslContext(sslContext);
+		ClientConnector connector = new ClientConnector();
+		connector.setSslContextFactory(sslContextFactory);
+		return connector;
+	}
+
+	private boolean followRedirects(Redirects redirects) {
+		return switch (redirects) {
+			case FOLLOW_WHEN_POSSIBLE -> true;
+			case FOLLOW -> true;
+			case DONT_FOLLOW -> false;
+		};
 	}
 
 	static class Classes {

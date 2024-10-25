@@ -1018,7 +1018,7 @@ public class TestRestTemplate {
 		@SuppressWarnings("removal")
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
-			this(httpClientOptions, new ClientHttpRequestFactorySettings(settings.connectTimeout(),
+			this(httpClientOptions, new ClientHttpRequestFactorySettings(null, settings.connectTimeout(),
 					settings.readTimeout(), settings.sslBundle()));
 		}
 

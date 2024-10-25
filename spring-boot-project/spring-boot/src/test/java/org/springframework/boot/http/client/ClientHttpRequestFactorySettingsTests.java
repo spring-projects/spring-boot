@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,8 +36,18 @@ class ClientHttpRequestFactorySettingsTests {
 	private static final Duration ONE_SECOND = Duration.ofSeconds(1);
 
 	@Test
-	void defaultsHasNullValues() {
+	void defaults() {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults();
+		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
+		assertThat(settings.connectTimeout()).isNull();
+		assertThat(settings.readTimeout()).isNull();
+		assertThat(settings.sslBundle()).isNull();
+	}
+
+	@Test
+	void createWithNullsUsesDefaults() {
+		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(null, null, null, null);
+		assertThat(settings.redirects()).isEqualTo(Redirects.FOLLOW_WHEN_POSSIBLE);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isNull();
@@ -68,6 +79,13 @@ class ClientHttpRequestFactorySettingsTests {
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.sslBundle()).isSameAs(sslBundle);
+	}
+
+	@Test
+	void withRedirectsReturnsInstanceWithUpdatedRedirect() {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.DONT_FOLLOW);
+		assertThat(settings.redirects()).isEqualTo(Redirects.DONT_FOLLOW);
 	}
 
 }

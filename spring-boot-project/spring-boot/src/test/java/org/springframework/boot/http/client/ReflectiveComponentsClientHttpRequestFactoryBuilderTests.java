@@ -22,6 +22,7 @@ import java.time.Duration;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;
@@ -50,6 +51,22 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(sslBundle());
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
 			.withMessage("Unable to set SSL bundler using reflection");
+	}
+
+	@Override
+	void redirectFollow() throws Exception {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.FOLLOW);
+		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
+			.withMessage("Unable to set redirect follow using reflection");
+	}
+
+	@Override
+	void redirectDontFollow() throws Exception {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.DONT_FOLLOW);
+		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
+			.withMessage("Unable to set redirect follow using reflection");
 	}
 
 	@Test

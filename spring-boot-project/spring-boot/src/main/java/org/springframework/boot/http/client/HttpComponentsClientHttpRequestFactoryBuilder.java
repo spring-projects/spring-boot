@@ -16,6 +16,7 @@
 
 package org.springframework.boot.http.client;
 
+import java.net.URI;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,14 +25,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.protocol.RedirectStrategy;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.http.protocol.HttpContext;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -72,31 +80,35 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	@Override
 	protected HttpComponentsClientHttpRequestFactory createClientHttpRequestFactory(
 			ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = createHttpClient(settings.readTimeout(), settings.sslBundle());
+		HttpClient httpClient = createHttpClient(settings);
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(factory::setConnectTimeout);
 		return factory;
 	}
 
-	private HttpClient createHttpClient(Duration readTimeout, SslBundle sslBundle) {
+	private HttpClient createHttpClient(ClientHttpRequestFactorySettings settings) {
 		return HttpClientBuilder.create()
 			.useSystemProperties()
-			.setConnectionManager(createConnectionManager(readTimeout, sslBundle))
+			.setRedirectStrategy(asRedirectStrategy(settings.redirects()))
+			.setConnectionManager(createConnectionManager(settings))
 			.build();
 	}
 
-	private PoolingHttpClientConnectionManager createConnectionManager(Duration readTimeout, SslBundle sslBundle) {
-		PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder
-			.create();
-		if (readTimeout != null) {
-			connectionManagerBuilder.setDefaultSocketConfig(createSocketConfig(readTimeout));
-		}
-		if (sslBundle != null) {
-			connectionManagerBuilder.setTlsSocketStrategy(createTlsSocketStrategy(sslBundle));
-		}
-		PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.useSystemProperties().build();
-		return connectionManager;
+	private RedirectStrategy asRedirectStrategy(Redirects redirects) {
+		return switch (redirects) {
+			case FOLLOW_WHEN_POSSIBLE -> DefaultRedirectStrategy.INSTANCE;
+			case FOLLOW -> DefaultRedirectStrategy.INSTANCE;
+			case DONT_FOLLOW -> NoFollowRedirectStrategy.INSTANCE;
+		};
+	}
+
+	private PoolingHttpClientConnectionManager createConnectionManager(ClientHttpRequestFactorySettings settings) {
+		PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(settings::readTimeout).as(this::createSocketConfig).to(builder::setDefaultSocketConfig);
+		map.from(settings::sslBundle).as(this::createTlsSocketStrategy).to(builder::setTlsSocketStrategy);
+		return builder.useSystemProperties().build();
 	}
 
 	private DefaultClientTlsStrategy createTlsSocketStrategy(SslBundle sslBundle) {
@@ -108,6 +120,30 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 
 	private SocketConfig createSocketConfig(Duration readTimeout) {
 		return SocketConfig.custom().setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS).build();
+	}
+
+	/**
+	 * {@link RedirectStrategy} that never follows redirects.
+	 */
+	private static final class NoFollowRedirectStrategy implements RedirectStrategy {
+
+		private static final RedirectStrategy INSTANCE = new NoFollowRedirectStrategy();
+
+		private NoFollowRedirectStrategy() {
+		}
+
+		@Override
+		public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
+				throws HttpException {
+			return false;
+		}
+
+		@Override
+		public URI getLocationURI(HttpRequest request, HttpResponse response, HttpContext context)
+				throws HttpException {
+			return null;
+		}
+
 	}
 
 	static class Classes {

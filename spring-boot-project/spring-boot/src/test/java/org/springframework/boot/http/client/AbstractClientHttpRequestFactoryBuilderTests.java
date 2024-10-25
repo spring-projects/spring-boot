@@ -18,6 +18,7 @@ package org.springframework.boot.http.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
@@ -41,8 +43,10 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -116,6 +120,45 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		}
 	}
 
+	@Test
+	void redirectDefault() throws Exception {
+		testRedirect(null, HttpStatus.OK);
+	}
+
+	@Test
+	void redirectFollow() throws Exception {
+		testRedirect(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW), HttpStatus.OK);
+	}
+
+	@Test
+	void redirectDontFollow() throws Exception {
+		testRedirect(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW),
+				HttpStatus.FOUND);
+	}
+
+	private void testRedirect(ClientHttpRequestFactorySettings settings, HttpStatus expectedStatus)
+			throws URISyntaxException, IOException {
+		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+		WebServer webServer = webServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
+		try {
+			webServer.start();
+			int port = webServer.getPort();
+			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
+			ClientHttpRequestFactory requestFactory = this.builder.build(settings);
+			ClientHttpRequest request = requestFactory.createRequest(uri, HttpMethod.GET);
+			ClientHttpResponse response = request.execute();
+			assertThat(response.getStatusCode()).isEqualTo(expectedStatus);
+			if (expectedStatus == HttpStatus.OK) {
+				assertThat(response.getBody()).asString(StandardCharsets.UTF_8)
+					.contains("Received GET request to /redirected");
+			}
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
 	private ClientHttpRequest request(ClientHttpRequestFactory factory, URI uri, String method) throws IOException {
 		return factory.createRequest(uri, HttpMethod.valueOf(method));
 	}
@@ -143,6 +186,10 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 
 		@Override
 		public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+			if ("/redirect".equals(req.getRequestURI())) {
+				res.sendRedirect("/redirected");
+				return;
+			}
 			res.getWriter().println("Received " + req.getMethod() + " request to " + req.getRequestURI());
 		}
 

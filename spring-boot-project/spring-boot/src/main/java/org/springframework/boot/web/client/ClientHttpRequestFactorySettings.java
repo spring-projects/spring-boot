@@ -79,7 +79,7 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	}
 
 	org.springframework.boot.http.client.ClientHttpRequestFactorySettings adapt() {
-		return new org.springframework.boot.http.client.ClientHttpRequestFactorySettings(connectTimeout(),
+		return new org.springframework.boot.http.client.ClientHttpRequestFactorySettings(null, connectTimeout(),
 				readTimeout(), sslBundle());
 	}
 

@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -73,7 +74,9 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 	}
 
 	private void configure(ClientHttpRequestFactory requestFactory, ClientHttpRequestFactorySettings settings) {
-		Assert.state(settings.sslBundle() == null, "Unable to set SSL bundler using reflection");
+		Assert.state(settings.sslBundle() == null, "Unable to set SSL bundle using reflection");
+		Assert.state(settings.redirects() == Redirects.FOLLOW_WHEN_POSSIBLE,
+				"Unable to set redirect follow using reflection");
 		ClientHttpRequestFactory unwrapped = unwrapRequestFactoryIfNecessary(requestFactory);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).to((connectTimeout) -> setConnectTimeout(unwrapped, connectTimeout));

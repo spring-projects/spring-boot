@@ -58,8 +58,8 @@ public class HttpClientAutoConfiguration {
 	ClientHttpRequestFactorySettings clientHttpRequestFactorySettings(HttpClientProperties httpClientProperties,
 			ObjectProvider<SslBundles> sslBundles) {
 		SslBundle sslBundle = getSslBundle(httpClientProperties.getSsl(), sslBundles);
-		return new ClientHttpRequestFactorySettings(httpClientProperties.getConnectTimeout(),
-				httpClientProperties.getReadTimeout(), sslBundle);
+		return new ClientHttpRequestFactorySettings(httpClientProperties.getRedirects(),
+				httpClientProperties.getConnectTimeout(), httpClientProperties.getReadTimeout(), sslBundle);
 	}
 
 	private SslBundle getSslBundle(HttpClientProperties.Ssl properties, ObjectProvider<SslBundles> sslBundles) {

@@ -24,6 +24,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 /**
  * Settings that can be applied when creating a {@link ClientHttpRequestFactory}.
  *
+ * @param redirects the follow redirect strategy to use or null to redirect whenever the
+ * underlying library allows it
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param sslBundle the SSL bundle providing SSL configuration
@@ -33,10 +35,15 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @since 3.4.0
  * @see ClientHttpRequestFactoryBuilder
  */
-public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, SslBundle sslBundle) {
+public record ClientHttpRequestFactorySettings(Redirects redirects, Duration connectTimeout, Duration readTimeout,
+		SslBundle sslBundle) {
 
 	private static final ClientHttpRequestFactorySettings defaults = new ClientHttpRequestFactorySettings(null, null,
-			null);
+			null, null);
+
+	public ClientHttpRequestFactorySettings {
+		redirects = (redirects != null) ? redirects : Redirects.FOLLOW_WHEN_POSSIBLE;
+	}
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
@@ -45,7 +52,7 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withConnectTimeout(Duration connectTimeout) {
-		return new ClientHttpRequestFactorySettings(connectTimeout, this.readTimeout, this.sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -56,7 +63,7 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 */
 
 	public ClientHttpRequestFactorySettings withReadTimeout(Duration readTimeout) {
-		return new ClientHttpRequestFactorySettings(this.connectTimeout, readTimeout, this.sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -66,7 +73,17 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
-		return new ClientHttpRequestFactorySettings(this.connectTimeout, this.readTimeout, sslBundle);
+		return new ClientHttpRequestFactorySettings(this.redirects, this.connectTimeout, this.readTimeout, sslBundle);
+	}
+
+	/**
+	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
+	 * redirect setting.
+	 * @param redirects the new redirects setting
+	 * @return a new {@link ClientHttpRequestFactorySettings} instance
+	 */
+	public ClientHttpRequestFactorySettings withRedirects(Redirects redirects) {
+		return new ClientHttpRequestFactorySettings(redirects, this.connectTimeout, this.readTimeout, this.sslBundle);
 	}
 
 	/**
@@ -86,6 +103,28 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 */
 	public static ClientHttpRequestFactorySettings defaults() {
 		return defaults;
+	}
+
+	/**
+	 * Redirect strategies.
+	 */
+	public enum Redirects {
+
+		/**
+		 * Follow redirects (if the underlying library has support).
+		 */
+		FOLLOW_WHEN_POSSIBLE,
+
+		/**
+		 * Follow redirects (fail if the underlying library has not support).
+		 */
+		FOLLOW,
+
+		/**
+		 * Don't follow redirects (fail if the underlying library has not support).
+		 */
+		DONT_FOLLOW
+
 	}
 
 }

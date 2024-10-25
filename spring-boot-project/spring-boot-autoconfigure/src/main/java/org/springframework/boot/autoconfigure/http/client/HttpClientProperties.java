@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for a Spring's blocking HTTP
@@ -36,6 +37,11 @@ public class HttpClientProperties {
 	 * Default factory used for a client HTTP request.
 	 */
 	private Factory factory;
+
+	/**
+	 * Handling for HTTP redirects.
+	 */
+	private Redirects redirects = Redirects.FOLLOW_WHEN_POSSIBLE;
 
 	/**
 	 * Default connect timeout for a client HTTP request.
@@ -58,6 +64,14 @@ public class HttpClientProperties {
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
+	}
+
+	public Redirects getRedirects() {
+		return this.redirects;
+	}
+
+	public void setRedirects(Redirects redirects) {
+		this.redirects = redirects;
 	}
 
 	public Duration getConnectTimeout() {

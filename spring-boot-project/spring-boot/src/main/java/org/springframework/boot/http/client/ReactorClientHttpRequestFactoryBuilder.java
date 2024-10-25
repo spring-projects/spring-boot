@@ -28,6 +28,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.SslProvider.SslContextSpec;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -68,20 +69,28 @@ public final class ReactorClientHttpRequestFactoryBuilder
 	@Override
 	protected ReactorClientHttpRequestFactory createClientHttpRequestFactory(
 			ClientHttpRequestFactorySettings settings) {
-		ReactorClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
+		ReactorClientHttpRequestFactory requestFactory = createRequestFactory(settings);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 		map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 		return requestFactory;
 	}
 
-	private ReactorClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
-		HttpClient httpClient = HttpClient.create();
-		httpClient = applyDefaults(httpClient);
-		if (sslBundle != null) {
-			httpClient = httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, sslBundle))));
+	private ReactorClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactorySettings settings) {
+		HttpClient httpClient = applyDefaults(HttpClient.create());
+		httpClient = httpClient.followRedirect(followRedirects(settings.redirects()));
+		if (settings.sslBundle() != null) {
+			httpClient = httpClient.secure((ThrowingConsumer.of((spec) -> configureSsl(spec, settings.sslBundle()))));
 		}
 		return new ReactorClientHttpRequestFactory(httpClient);
+	}
+
+	private boolean followRedirects(Redirects redirects) {
+		return switch (redirects) {
+			case FOLLOW_WHEN_POSSIBLE -> true;
+			case FOLLOW -> true;
+			case DONT_FOLLOW -> false;
+		};
 	}
 
 	HttpClient applyDefaults(HttpClient httpClient) {

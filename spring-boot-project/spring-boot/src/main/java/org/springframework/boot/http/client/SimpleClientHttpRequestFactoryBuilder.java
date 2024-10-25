@@ -27,6 +27,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -64,8 +65,7 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	@Override
 	protected SimpleClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
 		SslBundle sslBundle = settings.sslBundle();
-		SimpleClientHttpRequestFactory requestFactory = (sslBundle != null)
-				? new SimpleClientHttpsRequestFactory(sslBundle) : new SimpleClientHttpRequestFactory();
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpsRequestFactory(settings);
 		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
 				"SSL Options cannot be specified with Java connections");
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -75,22 +75,26 @@ public final class SimpleClientHttpRequestFactoryBuilder
 	}
 
 	/**
-	 * {@link SimpleClientHttpsRequestFactory} to configure SSL from an {@link SslBundle}.
+	 * {@link SimpleClientHttpsRequestFactory} to configure SSL from an {@link SslBundle}
+	 * and {@link Redirects}.
 	 */
 	private static class SimpleClientHttpsRequestFactory extends SimpleClientHttpRequestFactory {
 
-		private final SslBundle sslBundle;
+		private final ClientHttpRequestFactorySettings settings;
 
-		SimpleClientHttpsRequestFactory(SslBundle sslBundle) {
-			this.sslBundle = sslBundle;
+		SimpleClientHttpsRequestFactory(ClientHttpRequestFactorySettings settings) {
+			this.settings = settings;
 		}
 
 		@Override
 		protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
 			super.prepareConnection(connection, httpMethod);
-			if (this.sslBundle != null && connection instanceof HttpsURLConnection secureConnection) {
-				SSLSocketFactory socketFactory = this.sslBundle.createSslContext().getSocketFactory();
+			if (this.settings.sslBundle() != null && connection instanceof HttpsURLConnection secureConnection) {
+				SSLSocketFactory socketFactory = this.settings.sslBundle().createSslContext().getSocketFactory();
 				secureConnection.setSSLSocketFactory(socketFactory);
+			}
+			if (this.settings.redirects() == Redirects.DONT_FOLLOW) {
+				connection.setInstanceFollowRedirects(false);
 			}
 		}
 

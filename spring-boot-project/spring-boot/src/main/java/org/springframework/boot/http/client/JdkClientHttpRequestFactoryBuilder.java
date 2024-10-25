@@ -17,12 +17,13 @@
 package org.springframework.boot.http.client;
 
 import java.net.http.HttpClient;
-import java.time.Duration;
+import java.net.http.HttpClient.Redirect;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
@@ -59,22 +60,28 @@ public class JdkClientHttpRequestFactoryBuilder
 
 	@Override
 	protected JdkClientHttpRequestFactory createClientHttpRequestFactory(ClientHttpRequestFactorySettings settings) {
-		HttpClient httpClient = createHttpClient(settings.connectTimeout(), settings.sslBundle());
+		HttpClient httpClient = createHttpClient(settings);
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::readTimeout).to(requestFactory::setReadTimeout);
 		return requestFactory;
 	}
 
-	private HttpClient createHttpClient(Duration connectTimeout, SslBundle sslBundle) {
+	private HttpClient createHttpClient(ClientHttpRequestFactorySettings settings) {
 		HttpClient.Builder httpClientBuilder = HttpClient.newBuilder();
-		if (connectTimeout != null) {
-			httpClientBuilder.connectTimeout(connectTimeout);
-		}
-		if (sslBundle != null) {
-			httpClientBuilder.sslContext(sslBundle.createSslContext());
-		}
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(settings::connectTimeout).to(httpClientBuilder::connectTimeout);
+		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(httpClientBuilder::sslContext);
+		map.from(settings::redirects).as(this::asHttpClientRedirect).to(httpClientBuilder::followRedirects);
 		return httpClientBuilder.build();
+	}
+
+	private Redirect asHttpClientRedirect(Redirects redirects) {
+		return switch (redirects) {
+			case FOLLOW_WHEN_POSSIBLE -> Redirect.NORMAL;
+			case FOLLOW -> Redirect.NORMAL;
+			case DONT_FOLLOW -> Redirect.NEVER;
+		};
 	}
 
 	static class Classes {
