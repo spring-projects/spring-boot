@@ -46,6 +46,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Yanming Zhou
  * @since 2.0.0
  * @see #of(CharSequence)
  * @see ConfigurationPropertySource
@@ -119,6 +120,23 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 */
 	public boolean isNumericIndex(int elementIndex) {
 		return this.elements.getType(elementIndex) == ElementType.NUMERICALLY_INDEXED;
+	}
+
+	/**
+	 * Return whether the last element is non-uniform.
+	 * @return whether the last element is non-uniform
+	 */
+	public boolean isLastElementNonUniform() {
+		int size = getNumberOfElements();
+		return size != 0 && this.elements.getType(size - 1) == ElementType.NON_UNIFORM;
+	}
+
+	/**
+	 * Return the source.
+	 * @return the source
+	 */
+	public String getSource() {
+		return this.elements.source.toString();
 	}
 
 	/**

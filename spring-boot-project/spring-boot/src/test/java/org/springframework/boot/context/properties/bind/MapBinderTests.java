@@ -64,6 +64,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 class MapBinderTests {
 
@@ -649,6 +650,42 @@ class MapBinderTests {
 		Binder binder = new Binder(this.sources, null, null, null);
 		EnumMap<ExampleEnum, String> result = binder.bind("props", EXAMPLE_ENUM_STRING_ENUM_MAP).get();
 		assertThat(result).hasSize(1).containsEntry(ExampleEnum.FOO_BAR, "value");
+	}
+
+	@Test
+	void rejectNonUniformKey() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource(
+				Collections.singletonMap("props./foobar", "value"));
+		this.sources.add(source);
+		Binder binder = new Binder(this.sources, null, null, null);
+		Bindable<Map<String, String>> bindable = Bindable
+			.of(ResolvableType.forClassWithGenerics(Map.class, String.class, String.class));
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> binder.bind("props", bindable))
+			.withCauseInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void doNotRejectUnderscoreNonUniformKey() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource(
+				Collections.singletonMap("props.foo_bar", "value"));
+		this.sources.add(source);
+		Binder binder = new Binder(this.sources, null, null, null);
+		Bindable<Map<String, String>> bindable = Bindable
+			.of(ResolvableType.forClassWithGenerics(Map.class, String.class, String.class));
+		Map<String, String> result = binder.bind("props", bindable).get();
+		assertThat(result).hasSize(1).containsEntry("foo_bar", "value");
+	}
+
+	@Test
+	void doNotRejectCaseInsensitiveNonUniformKey() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource(
+				Collections.singletonMap("props.FOOBAR", "value"));
+		this.sources.add(source);
+		Binder binder = new Binder(this.sources, null, null, null);
+		Bindable<Map<String, String>> bindable = Bindable
+			.of(ResolvableType.forClassWithGenerics(Map.class, String.class, String.class));
+		Map<String, String> result = binder.bind("props", bindable).get();
+		assertThat(result).hasSize(1).containsEntry("FOOBAR", "value");
 	}
 
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {

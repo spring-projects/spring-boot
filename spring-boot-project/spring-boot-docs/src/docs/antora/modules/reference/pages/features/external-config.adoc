@@ -912,7 +912,7 @@ TIP: We recommend that, when possible, properties are stored in lower-case kebab
 ==== Binding Maps
 
 When binding to `Map` properties you may need to use a special bracket notation so that the original `key` value is preserved.
-If the key is not surrounded by `[]`, any characters that are not alpha-numeric, `-` or `.` are removed.
+A binding failure occurs if the key contains any characters that are not alpha-numeric, `-` or `.` but not surrounded by `[]`.
 
 For example, consider binding the following properties to a `Map<String,String>`:
 
@@ -927,8 +927,8 @@ my:
 
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
 
-The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
-The slash has been removed from `key3` because it was not surrounded by square brackets.
+The properties above is failed to bind to a `Map` with `/key1`, `/key2` and `/key3` as the keys in the map,
+because `/key3` was not surrounded by square brackets.
 
 When binding to scalar values, keys with `.` in them do not need to be surrounded by `[]`.
 Scalar values include enums and all types in the `java.lang` package except for `Object`.

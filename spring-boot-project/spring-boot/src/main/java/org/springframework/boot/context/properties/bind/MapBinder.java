@@ -37,6 +37,7 @@ import org.springframework.core.ResolvableType;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Yanming Zhou
  */
 class MapBinder extends AggregateBinder<Map<Object, Object>> {
 
@@ -166,6 +167,16 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 		void bindEntries(ConfigurationPropertySource source, Map<Object, Object> map) {
 			if (source instanceof IterableConfigurationPropertySource iterableSource) {
 				for (ConfigurationPropertyName name : iterableSource) {
+					if (name.isLastElementNonUniform()) {
+						String sourceName = name.getSource();
+						int index = sourceName.lastIndexOf('.');
+						String key = sourceName.substring(index + 1);
+						if (!key.equals(name.getLastElement(Form.ORIGINAL))
+								&& !key.equalsIgnoreCase(name.getLastElement(Form.UNIFORM))) {
+							throw new IllegalArgumentException("Please rewrite key '" + key + "' to '[" + key
+									+ "]' and surround it with quotes if YAML is using");
+						}
+					}
 					Bindable<?> valueBindable = getValueBindable(name);
 					ConfigurationPropertyName entryName = getEntryName(source, name);
 					Object key = getContext().getConverter().convert(getKeyName(entryName), this.keyType);
