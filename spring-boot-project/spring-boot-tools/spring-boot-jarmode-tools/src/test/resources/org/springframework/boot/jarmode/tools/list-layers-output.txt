@@ -1,4 +1,0 @@
-dependencies
-spring-boot-loader
-snapshot-dependencies
-application

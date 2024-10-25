@@ -56,8 +56,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ UrlConnectionSenderConfiguration.class, WebClientSenderConfiguration.class,
-			RestTemplateSenderConfiguration.class, HttpClientSenderConfiguration.class })
+	@Import({ HttpClientSenderConfiguration.class, UrlConnectionSenderConfiguration.class,
+			WebClientSenderConfiguration.class, RestTemplateSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}

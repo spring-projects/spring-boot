@@ -1,1 +1,0 @@
-${Ansi.GREEN} :: Sample application build with Spring Boot${spring-boot.formatted-version} ::${Ansi.DEFAULT}

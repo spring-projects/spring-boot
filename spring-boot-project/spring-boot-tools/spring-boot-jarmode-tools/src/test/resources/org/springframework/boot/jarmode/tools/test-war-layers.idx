@@ -1,6 +1,0 @@
-- "test":
-  - "WEB-INF/lib/a.jar"
-  - "WEB-INF/lib/b.jar"
-- "empty":
-- "application":
-  - "WEB-INF/classes/Demo.class"

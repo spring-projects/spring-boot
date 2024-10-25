@@ -1,4 +1,0 @@
-List layers from the jar that can be extracted
-
-Usage:
-  java -Djarmode=tools -jar test.jar list-layers
