@@ -16,6 +16,11 @@
 
 package org.springframework.boot.http.client;
 
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -40,6 +45,32 @@ class SimpleClientHttpRequestFactoryBuilderTests
 	@Override
 	protected long readTimeout(SimpleClientHttpRequestFactory requestFactory) {
 		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST", "PUT", "DELETE" })
+	@Override
+	void redirectDefault(String httpMethod) throws Exception {
+		super.redirectDefault(httpMethod);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST", "PUT", "DELETE" })
+	@Override
+	void redirectFollow(String httpMethod) throws Exception {
+		super.redirectFollow(httpMethod);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST", "PUT", "DELETE" })
+	@Override
+	void redirectDontFollow(String httpMethod) throws Exception {
+		super.redirectDontFollow(httpMethod);
+	}
+
+	@Override
+	protected HttpStatus getExpectedRedirect(HttpMethod httpMethod) {
+		return (httpMethod != HttpMethod.GET) ? HttpStatus.FOUND : HttpStatus.OK;
 	}
 
 }

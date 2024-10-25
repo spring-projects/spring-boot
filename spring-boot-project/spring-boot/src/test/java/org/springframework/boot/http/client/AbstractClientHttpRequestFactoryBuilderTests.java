@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.function.Function;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -61,6 +62,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @DirtiesUrlFactories
 abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttpRequestFactory> {
+
+	private static final Function<HttpMethod, HttpStatus> ALWAYS_FOUND = (method) -> HttpStatus.FOUND;
 
 	private final Class<T> requestFactoryType;
 
@@ -120,24 +123,31 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		}
 	}
 
-	@Test
-	void redirectDefault() throws Exception {
-		testRedirect(null, HttpStatus.OK);
+	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
+	void redirectDefault(String httpMethod) throws Exception {
+		testRedirect(null, HttpMethod.valueOf(httpMethod), this::getExpectedRedirect);
 	}
 
-	@Test
-	void redirectFollow() throws Exception {
-		testRedirect(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW), HttpStatus.OK);
+	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
+	void redirectFollow(String httpMethod) throws Exception {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.FOLLOW);
+		testRedirect(settings, HttpMethod.valueOf(httpMethod), this::getExpectedRedirect);
 	}
 
-	@Test
-	void redirectDontFollow() throws Exception {
-		testRedirect(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW),
-				HttpStatus.FOUND);
+	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
+	void redirectDontFollow(String httpMethod) throws Exception {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withRedirects(Redirects.DONT_FOLLOW);
+		testRedirect(settings, HttpMethod.valueOf(httpMethod), ALWAYS_FOUND);
 	}
 
-	private void testRedirect(ClientHttpRequestFactorySettings settings, HttpStatus expectedStatus)
-			throws URISyntaxException, IOException {
+	protected final void testRedirect(ClientHttpRequestFactorySettings settings, HttpMethod httpMethod,
+			Function<HttpMethod, HttpStatus> expectedStatusForMethod) throws URISyntaxException, IOException {
+		HttpStatus expectedStatus = expectedStatusForMethod.apply(httpMethod);
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
 		WebServer webServer = webServerFactory
 			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
@@ -146,12 +156,11 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 			int port = webServer.getPort();
 			URI uri = new URI("http://localhost:%s".formatted(port) + "/redirect");
 			ClientHttpRequestFactory requestFactory = this.builder.build(settings);
-			ClientHttpRequest request = requestFactory.createRequest(uri, HttpMethod.GET);
+			ClientHttpRequest request = requestFactory.createRequest(uri, httpMethod);
 			ClientHttpResponse response = request.execute();
 			assertThat(response.getStatusCode()).isEqualTo(expectedStatus);
 			if (expectedStatus == HttpStatus.OK) {
-				assertThat(response.getBody()).asString(StandardCharsets.UTF_8)
-					.contains("Received GET request to /redirected");
+				assertThat(response.getBody()).asString(StandardCharsets.UTF_8).contains("request to /redirected");
 			}
 		}
 		finally {
@@ -176,6 +185,10 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		JksSslStoreDetails storeDetails = JksSslStoreDetails.forLocation("classpath:test.jks");
 		JksSslStoreBundle stores = new JksSslStoreBundle(storeDetails, storeDetails);
 		return SslBundle.of(stores, SslBundleKey.of("password"));
+	}
+
+	protected HttpStatus getExpectedRedirect(HttpMethod httpMethod) {
+		return HttpStatus.OK;
 	}
 
 	protected abstract long connectTimeout(T requestFactory);

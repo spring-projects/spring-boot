@@ -54,7 +54,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	}
 
 	@Override
-	void redirectFollow() throws Exception {
+	void redirectFollow(String httpMethod) throws Exception {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withRedirects(Redirects.FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))
@@ -62,7 +62,7 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 	}
 
 	@Override
-	void redirectDontFollow() throws Exception {
+	void redirectDontFollow(String httpMethod) throws Exception {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withRedirects(Redirects.DONT_FOLLOW);
 		assertThatIllegalStateException().isThrownBy(() -> ofTestRequestFactory().build(settings))

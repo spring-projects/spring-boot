@@ -41,6 +41,10 @@ abstract class AbstractClientHttpRequestFactoryBuilder<T extends ClientHttpReque
 		this.customizers = (customizers != null) ? customizers : Collections.emptyList();
 	}
 
+	protected final List<Consumer<T>> getCustomizers() {
+		return this.customizers;
+	}
+
 	protected final List<Consumer<T>> mergedCustomizers(Consumer<T> customizer) {
 		Assert.notNull(this.customizers, "'customizer' must not be null");
 		return merge(this.customizers, List.of(customizer));
