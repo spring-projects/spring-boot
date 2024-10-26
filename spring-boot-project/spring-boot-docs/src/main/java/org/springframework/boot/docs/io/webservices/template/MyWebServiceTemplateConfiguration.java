@@ -24,7 +24,6 @@ import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.ws.transport.WebServiceMessageSender;
 
 @Configuration(proxyBeanMethods = false)
 public class MyWebServiceTemplateConfiguration {
@@ -34,8 +33,8 @@ public class MyWebServiceTemplateConfiguration {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
 			.withConnectTimeout(Duration.ofSeconds(2))
 			.withReadTimeout(Duration.ofSeconds(2));
-		WebServiceMessageSender sender = WebServiceMessageSenderFactory.http(settings).getWebServiceMessageSender();
-		return builder.messageSenders(sender).build();
+		builder.httpMessageSenderFactory(WebServiceMessageSenderFactory.http(settings));
+		return builder.build();
 	}
 
 }

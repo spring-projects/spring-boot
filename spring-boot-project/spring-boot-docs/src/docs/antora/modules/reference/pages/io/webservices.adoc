@@ -30,6 +30,8 @@ The following code shows a typical example:
 include-code::MyService[]
 
 By default, `WebServiceTemplateBuilder` detects a suitable HTTP-based `WebServiceMessageSender` using the available HTTP client libraries on the classpath.
-You can also customize read and connection timeouts as follows:
+You can also customize read and connection timeouts for an individual builder as follows:
 
 include-code::MyWebServiceTemplateConfiguration[]
+
+TIP: You can also change the xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[global HTTP client configuration] used if not specific template customization code is applied.

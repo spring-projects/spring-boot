@@ -30,10 +30,10 @@ class MyWebServiceTemplateConfiguration {
 	@Bean
 	fun webServiceTemplate(builder: WebServiceTemplateBuilder): WebServiceTemplate {
 		val settings = ClientHttpRequestFactorySettings.defaults()
-			.withConnectTimeout(Duration.ofSeconds(2))
-			.withReadTimeout(Duration.ofSeconds(2));
-		val sender = WebServiceMessageSenderFactory.http(settings).getWebServiceMessageSender();
-		return builder.messageSenders(sender).build();
+				.withConnectTimeout(Duration.ofSeconds(2))
+				.withReadTimeout(Duration.ofSeconds(2))
+		builder.httpMessageSenderFactory(WebServiceMessageSenderFactory.http(settings))
+		return builder.build()
 	}
 
 }
