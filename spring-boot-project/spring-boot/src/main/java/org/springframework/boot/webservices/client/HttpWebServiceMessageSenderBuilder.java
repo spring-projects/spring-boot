@@ -47,7 +47,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	/**
 	 * Set the connection timeout.
 	 * @param connectTimeout the connection timeout
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder setConnectTimeout(Duration connectTimeout) {
 		this.requestFactorySettings = this.requestFactorySettings.withConnectTimeout(connectTimeout);
@@ -57,7 +57,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	/**
 	 * Set the read timeout.
 	 * @param readTimeout the read timeout
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder setReadTimeout(Duration readTimeout) {
 		this.requestFactorySettings = this.requestFactorySettings.withReadTimeout(readTimeout);
@@ -67,7 +67,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	/**
 	 * Set an {@link SslBundle} that will be used to configure a secure connection.
 	 * @param sslBundle the SSL bundle
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder sslBundle(SslBundle sslBundle) {
 		this.requestFactorySettings = this.requestFactorySettings.withSslBundle(sslBundle);
@@ -78,7 +78,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	 * Set the {@code Supplier} of {@link ClientHttpRequestFactory} that should be called
 	 * to create the HTTP-based {@link WebServiceMessageSender}.
 	 * @param requestFactorySupplier the supplier for the request factory
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier) {
@@ -92,7 +92,7 @@ public class HttpWebServiceMessageSenderBuilder {
 	 * {@link ClientHttpRequestFactory} that should be called to create the HTTP-based
 	 * {@link WebServiceMessageSender}.
 	 * @param requestFactoryFunction the function for the request factory
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 * @since 3.0.0
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
