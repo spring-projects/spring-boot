@@ -1,8 +1,0 @@
-plugins {
-	id 'application'
-	id 'org.springframework.boot' version '{version}'
-}
-
-application {
-	applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
-}

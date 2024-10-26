@@ -1,7 +1,0 @@
-# ConfigData Location Resolvers
-org.springframework.boot.context.config.ConfigDataLocationResolver=\
-smoketest.bootstrapregistry.external.svn.SubversionConfigDataLocationResolver
-
-# ConfigData Loaders
-org.springframework.boot.context.config.ConfigDataLoader=\
-smoketest.bootstrapregistry.external.svn.SubversionConfigDataLoader

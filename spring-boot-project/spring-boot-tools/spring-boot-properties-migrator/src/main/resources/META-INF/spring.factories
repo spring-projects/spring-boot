@@ -1,3 +1,0 @@
-# Application Listeners
-org.springframework.context.ApplicationListener=\
-org.springframework.boot.context.properties.migrator.PropertiesMigrationListener

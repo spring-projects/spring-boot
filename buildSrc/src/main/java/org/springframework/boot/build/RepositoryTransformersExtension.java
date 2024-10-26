@@ -45,20 +45,20 @@ public class RepositoryTransformersExtension {
 	}
 
 	private String transformAnt(String line) {
-		if (line.contains(MARKER)) {
-			StringBuilder result = new StringBuilder();
-			String indent = getIndent(line);
-			this.project.getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
-				String name = repository.getName();
-				if (name.startsWith("spring-")) {
-					result.append(!result.isEmpty() ? "\n" : "");
-					result.append("%s<ibiblio name=\"%s\" m2compatible=\"true\" root=\"%s\" />".formatted(indent, name,
-							repository.getUrl()));
-				}
-			});
-			return result.toString();
-		}
-		return line;
+		if (!line.contains(MARKER))
+			return line;
+
+		StringBuilder result = new StringBuilder();
+		String indent = getIndent(line);
+		this.project.getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
+			String name = repository.getName();
+			if (name.startsWith("spring-")) {
+				result.append(!result.isEmpty() ? "\n" : "");
+				result.append("%s<ibiblio name=\"%s\" m2compatible=\"true\" root=\"%s\" />".formatted(indent, name,
+						repository.getUrl()));
+			}
+		});
+		return result.toString();
 	}
 
 	public Transformer<String, String> mavenSettings() {
