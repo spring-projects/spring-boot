@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * {@link DockerRegistryAuthentication} that uses a Base64 encoded auth header value based
  * on the JSON created from the instance.
@@ -30,6 +31,7 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
  */
 class JsonEncodedDockerRegistryAuthentication implements DockerRegistryAuthentication {
 
+	@JsonIgnore
 	private String authHeader;
 
 	@Override
