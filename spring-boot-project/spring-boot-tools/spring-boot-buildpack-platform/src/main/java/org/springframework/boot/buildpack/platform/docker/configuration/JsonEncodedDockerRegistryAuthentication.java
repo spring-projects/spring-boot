@@ -18,11 +18,10 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import java.util.Base64;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * {@link DockerRegistryAuthentication} that uses a Base64 encoded auth header value based
