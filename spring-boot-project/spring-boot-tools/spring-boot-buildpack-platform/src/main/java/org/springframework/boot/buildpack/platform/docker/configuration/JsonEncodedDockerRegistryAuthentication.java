@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import java.util.Base64;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
@@ -30,6 +31,7 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
  */
 class JsonEncodedDockerRegistryAuthentication implements DockerRegistryAuthentication {
 
+	@JsonIgnore
 	private String authHeader;
 
 	@Override
