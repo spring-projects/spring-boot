@@ -84,6 +84,16 @@ class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
+	void generatedBuildInfoReproducibleEpochSeconds(MavenBuild mavenBuild) {
+		mavenBuild.project("build-info-reproducible-epochseconds")
+			.execute(buildInfo((buildInfo) -> assertThat(buildInfo).hasBuildGroup("org.springframework.boot.maven.it")
+				.hasBuildArtifact("build-reproducible-epochseconds")
+				.hasBuildName("Generate build info with build time from project.build.outputTimestamp")
+				.hasBuildVersion("0.0.1.BUILD-SNAPSHOT")
+				.hasBuildTime("1976-01-09T12:00:00Z")));
+	}
+
+	@TestTemplate
 	void buildInfoPropertiesAreGeneratedToCustomOutputLocation(MavenBuild mavenBuild) {
 		mavenBuild.project("build-info-custom-file")
 			.execute(buildInfo("target/build.info",
