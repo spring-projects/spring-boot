@@ -65,7 +65,7 @@ class TaskSchedulingConfigurations {
 	static class ThreadPoolTaskSchedulerBuilderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(ThreadPoolTaskSchedulerBuilder.class)
+		@ConditionalOnMissingBean
 		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder(TaskSchedulingProperties properties,
 				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers) {
 			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
@@ -104,9 +104,7 @@ class TaskSchedulingConfigurations {
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilderVirtualThreads() {
-			SimpleAsyncTaskSchedulerBuilder builder = builder();
-			builder = builder.virtualThreads(true);
-			return builder;
+			return builder().virtualThreads(true);
 		}
 
 		private SimpleAsyncTaskSchedulerBuilder builder() {
