@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.env.PropertySource;
 
 /**
  * {@link AggregateBinder} for Maps.
@@ -173,8 +174,15 @@ class MapBinder extends AggregateBinder<Map<Object, Object>> {
 						String key = sourceName.substring(index + 1);
 						if (!key.equals(name.getLastElement(Form.ORIGINAL))
 								&& !key.equalsIgnoreCase(name.getLastElement(Form.UNIFORM))) {
-							throw new IllegalArgumentException("Please rewrite key '" + key + "' to '[" + key
-									+ "]' and surround it with quotes if YAML is using");
+							boolean forYaml = false;
+							if (source.getUnderlyingSource() instanceof PropertySource<?> ps) {
+								String propertySourceName = ps.getName();
+								forYaml = propertySourceName.contains(".yaml") || propertySourceName.contains(".yml");
+							}
+							String validKey = (forYaml ? "\"[" : "[") + key + (forYaml ? "]\"" : "]");
+							throw new IllegalArgumentException(
+									"Please rewrite key '" + key + "' to '" + validKey + "'");
+
 						}
 					}
 					Bindable<?> valueBindable = getValueBindable(name);
