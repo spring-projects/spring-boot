@@ -70,7 +70,7 @@ class TaskExecutorConfigurations {
 	static class ThreadPoolTaskExecutorBuilderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(ThreadPoolTaskExecutorBuilder.class)
+		@ConditionalOnMissingBean
 		ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder(TaskExecutionProperties properties,
 				ObjectProvider<ThreadPoolTaskExecutorCustomizer> threadPoolTaskExecutorCustomizers,
 				ObjectProvider<TaskDecorator> taskDecorator) {
@@ -121,9 +121,7 @@ class TaskExecutorConfigurations {
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskExecutorBuilder simpleAsyncTaskExecutorBuilderVirtualThreads() {
-			SimpleAsyncTaskExecutorBuilder builder = builder();
-			builder = builder.virtualThreads(true);
-			return builder;
+			return builder().virtualThreads(true);
 		}
 
 		private SimpleAsyncTaskExecutorBuilder builder() {
