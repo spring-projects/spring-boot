@@ -154,7 +154,7 @@ public class BuildInfoMojo extends AbstractMojo {
 		if ("off".equalsIgnoreCase(this.time)) {
 			return null;
 		}
-		return Instant.parse(this.time);
+		return new MavenBuildOutputTimestamp(this.time).toInstant();
 	}
 
 }
