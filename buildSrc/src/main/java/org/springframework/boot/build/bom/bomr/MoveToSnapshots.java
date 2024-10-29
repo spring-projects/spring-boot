@@ -35,6 +35,7 @@ import org.springframework.boot.build.bom.bomr.ReleaseSchedule.Release;
 import org.springframework.boot.build.bom.bomr.github.Milestone;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.properties.BuildProperties;
+import org.springframework.boot.build.properties.BuildType;
 
 /**
  * A {@link Task} to move to snapshot dependencies.
@@ -44,6 +45,8 @@ import org.springframework.boot.build.properties.BuildProperties;
 public abstract class MoveToSnapshots extends UpgradeDependencies {
 
 	private static final Logger logger = LoggerFactory.getLogger(MoveToSnapshots.class);
+
+	private final BuildType buildType = BuildProperties.get(getProject()).buildType();
 
 	@Inject
 	public MoveToSnapshots(BomExtension bom) {
@@ -87,7 +90,7 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 
 	@Override
 	protected List<BiPredicate<Library, DependencyVersion>> determineUpdatePredicates(Milestone milestone) {
-		return switch (BuildProperties.get(getProject()).buildType()) {
+		return switch (this.buildType) {
 			case OPEN_SOURCE -> determineOpenSourceUpdatePredicates(milestone);
 			case COMMERCIAL -> super.determineUpdatePredicates(milestone);
 		};
