@@ -129,6 +129,23 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	void threadPoolTaskExecutorBuilderUsesPlatformThreadsByDefault() {
+		this.contextRunner.run((context) -> {
+			ThreadPoolTaskExecutorBuilder builder = context.getBean(ThreadPoolTaskExecutorBuilder.class);
+			assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", null);
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void threadPoolTaskExecutorBuilderUsesVirtualThreadsWhenEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			ThreadPoolTaskExecutorBuilder builder = context.getBean(ThreadPoolTaskExecutorBuilder.class);
+			assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", true);
+		});
+	}
+
+	@Test
 	void whenThreadPoolTaskExecutorIsAutoConfiguredThenItIsLazy() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");

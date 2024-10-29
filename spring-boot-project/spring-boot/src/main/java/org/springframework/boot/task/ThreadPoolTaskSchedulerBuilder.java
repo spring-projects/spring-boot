@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.util.CollectionUtils;
  * bean and can be injected whenever a {@link ThreadPoolTaskScheduler} is needed.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 3.2.0
  */
 public class ThreadPoolTaskSchedulerBuilder {
@@ -48,6 +49,8 @@ public class ThreadPoolTaskSchedulerBuilder {
 
 	private final String threadNamePrefix;
 
+	private final Boolean virtualThreads;
+
 	private final Set<ThreadPoolTaskSchedulerCustomizer> customizers;
 
 	public ThreadPoolTaskSchedulerBuilder() {
@@ -55,15 +58,18 @@ public class ThreadPoolTaskSchedulerBuilder {
 		this.awaitTermination = null;
 		this.awaitTerminationPeriod = null;
 		this.threadNamePrefix = null;
+		this.virtualThreads = null;
 		this.customizers = null;
 	}
 
 	public ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
-			String threadNamePrefix, Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
+			String threadNamePrefix, Boolean virtualThreads,
+			Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
 		this.poolSize = poolSize;
 		this.awaitTermination = awaitTermination;
 		this.awaitTerminationPeriod = awaitTerminationPeriod;
 		this.threadNamePrefix = threadNamePrefix;
+		this.virtualThreads = virtualThreads;
 		this.customizers = taskSchedulerCustomizers;
 	}
 
@@ -74,7 +80,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder poolSize(int poolSize) {
 		return new ThreadPoolTaskSchedulerBuilder(poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.customizers);
+				this.threadNamePrefix, this.virtualThreads, this.customizers);
 	}
 
 	/**
@@ -87,7 +93,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder awaitTermination(boolean awaitTermination) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.customizers);
+				this.threadNamePrefix, this.virtualThreads, this.customizers);
 	}
 
 	/**
@@ -101,7 +107,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, awaitTerminationPeriod,
-				this.threadNamePrefix, this.customizers);
+				this.threadNamePrefix, this.virtualThreads, this.customizers);
 	}
 
 	/**
@@ -111,7 +117,17 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				threadNamePrefix, this.customizers);
+				threadNamePrefix, this.virtualThreads, this.customizers);
+	}
+
+	/**
+	 * Specify whether to use virtual threads instead of platform threads.
+	 * @param virtualThreads whether to use virtual threads instead of platform threads
+	 * @return a new builder instance
+	 */
+	public ThreadPoolTaskSchedulerBuilder virtualThreads(boolean virtualThreads) {
+		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, virtualThreads, this.customizers);
 	}
 
 	/**
@@ -143,7 +159,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 			Iterable<? extends ThreadPoolTaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, append(null, customizers));
+				this.threadNamePrefix, this.virtualThreads, append(null, customizers));
 	}
 
 	/**
@@ -173,7 +189,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 			Iterable<? extends ThreadPoolTaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, append(this.customizers, customizers));
+				this.threadNamePrefix, this.virtualThreads, append(this.customizers, customizers));
 	}
 
 	/**
@@ -199,6 +215,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 		map.from(this.awaitTermination).to(taskScheduler::setWaitForTasksToCompleteOnShutdown);
 		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskScheduler::setAwaitTerminationSeconds);
 		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
+		map.from(this.virtualThreads).to(taskScheduler::setVirtualThreads);
 		if (!CollectionUtils.isEmpty(this.customizers)) {
 			this.customizers.forEach((customizer) -> customizer.customize(taskScheduler));
 		}

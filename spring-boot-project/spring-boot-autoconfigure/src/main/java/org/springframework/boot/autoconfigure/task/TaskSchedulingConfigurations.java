@@ -39,6 +39,7 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * {@link TaskSchedulingAutoConfiguration} in a specific order.
  *
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class TaskSchedulingConfigurations {
 
@@ -64,17 +65,38 @@ class TaskSchedulingConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	static class ThreadPoolTaskSchedulerBuilderConfiguration {
 
+		private final TaskSchedulingProperties properties;
+
+		private final ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers;
+
+		ThreadPoolTaskSchedulerBuilderConfiguration(TaskSchedulingProperties properties,
+				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers) {
+			this.properties = properties;
+			this.threadPoolTaskSchedulerCustomizers = threadPoolTaskSchedulerCustomizers;
+		}
+
 		@Bean
 		@ConditionalOnMissingBean
-		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder(TaskSchedulingProperties properties,
-				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers) {
-			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
+		@ConditionalOnThreading(Threading.PLATFORM)
+		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder() {
+			return builder();
+		}
+
+		@Bean(name = "threadPoolTaskSchedulerBuilder")
+		@ConditionalOnMissingBean
+		@ConditionalOnThreading(Threading.VIRTUAL)
+		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilderVirtualThreads() {
+			return builder().virtualThreads(true);
+		}
+
+		private ThreadPoolTaskSchedulerBuilder builder() {
+			TaskSchedulingProperties.Shutdown shutdown = this.properties.getShutdown();
 			ThreadPoolTaskSchedulerBuilder builder = new ThreadPoolTaskSchedulerBuilder();
-			builder = builder.poolSize(properties.getPool().getSize());
+			builder = builder.poolSize(this.properties.getPool().getSize());
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
-			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-			builder = builder.customizers(threadPoolTaskSchedulerCustomizers);
+			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
+			builder = builder.customizers(this.threadPoolTaskSchedulerCustomizers);
 			return builder;
 		}
 

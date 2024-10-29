@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import static org.mockito.Mockito.spy;
  * Tests for {@link ThreadPoolTaskSchedulerBuilder}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  */
 class ThreadPoolTaskSchedulerBuilderTests {
 
@@ -62,6 +63,12 @@ class ThreadPoolTaskSchedulerBuilderTests {
 	void threadNamePrefixShouldApply() {
 		ThreadPoolTaskScheduler scheduler = this.builder.threadNamePrefix("test-").build();
 		assertThat(scheduler.getThreadNamePrefix()).isEqualTo("test-");
+	}
+
+	@Test
+	void virtualThreadsShouldApply() {
+		ThreadPoolTaskScheduler scheduler = this.builder.virtualThreads(true).build();
+		assertThat(scheduler).hasFieldOrPropertyWithValue("virtualThreads", true);
 	}
 
 	@Test

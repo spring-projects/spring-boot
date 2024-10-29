@@ -56,6 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class TaskSchedulingAutoConfigurationTests {
 
@@ -98,6 +99,28 @@ class TaskSchedulingAutoConfigurationTests {
 				assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationMillis", 30000L);
 				assertThat(bean.threadNames).allMatch((name) -> name.contains("scheduling-test-"));
 			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void threadPoolTaskSchedulerBuilderShouldUseVirtualThreadsIfEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withUserConfiguration(SchedulingConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ThreadPoolTaskSchedulerBuilder.class);
+				ThreadPoolTaskSchedulerBuilder builder = context.getBean(ThreadPoolTaskSchedulerBuilder.class);
+				assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", true);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void threadPoolTaskSchedulerBuilderShouldUsePlatformThreadsByDefault() {
+		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ThreadPoolTaskSchedulerBuilder.class);
+			ThreadPoolTaskSchedulerBuilder builder = context.getBean(ThreadPoolTaskSchedulerBuilder.class);
+			assertThat(builder).hasFieldOrPropertyWithValue("virtualThreads", null);
+		});
 	}
 
 	@Test

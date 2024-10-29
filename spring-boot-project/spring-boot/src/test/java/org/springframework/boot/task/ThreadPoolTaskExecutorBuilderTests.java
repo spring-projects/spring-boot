@@ -90,6 +90,12 @@ class ThreadPoolTaskExecutorBuilderTests {
 	}
 
 	@Test
+	void virtualThreadsShouldApply() {
+		ThreadPoolTaskExecutor executor = this.builder.virtualThreads(true).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("virtualThreads", true);
+	}
+
+	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((ThreadPoolTaskExecutorCustomizer[]) null))

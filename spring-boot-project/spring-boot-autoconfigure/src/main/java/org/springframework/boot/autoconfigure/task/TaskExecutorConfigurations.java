@@ -69,12 +69,36 @@ class TaskExecutorConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	static class ThreadPoolTaskExecutorBuilderConfiguration {
 
-		@Bean
-		@ConditionalOnMissingBean
-		ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder(TaskExecutionProperties properties,
+		private final TaskExecutionProperties properties;
+
+		private final ObjectProvider<ThreadPoolTaskExecutorCustomizer> threadPoolTaskExecutorCustomizers;
+
+		private final ObjectProvider<TaskDecorator> taskDecorator;
+
+		ThreadPoolTaskExecutorBuilderConfiguration(TaskExecutionProperties properties,
 				ObjectProvider<ThreadPoolTaskExecutorCustomizer> threadPoolTaskExecutorCustomizers,
 				ObjectProvider<TaskDecorator> taskDecorator) {
-			TaskExecutionProperties.Pool pool = properties.getPool();
+			this.properties = properties;
+			this.threadPoolTaskExecutorCustomizers = threadPoolTaskExecutorCustomizers;
+			this.taskDecorator = taskDecorator;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConditionalOnThreading(Threading.PLATFORM)
+		ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder() {
+			return builder();
+		}
+
+		@Bean(name = "threadPoolTaskExecutorBuilder")
+		@ConditionalOnMissingBean
+		@ConditionalOnThreading(Threading.VIRTUAL)
+		ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilderVirtualThreads() {
+			return builder().virtualThreads(true);
+		}
+
+		private ThreadPoolTaskExecutorBuilder builder() {
+			TaskExecutionProperties.Pool pool = this.properties.getPool();
 			ThreadPoolTaskExecutorBuilder builder = new ThreadPoolTaskExecutorBuilder();
 			builder = builder.queueCapacity(pool.getQueueCapacity());
 			builder = builder.corePoolSize(pool.getCoreSize());
@@ -82,12 +106,12 @@ class TaskExecutorConfigurations {
 			builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
 			builder = builder.keepAlive(pool.getKeepAlive());
 			builder = builder.acceptTasksAfterContextClose(pool.getShutdown().isAcceptTasksAfterContextClose());
-			TaskExecutionProperties.Shutdown shutdown = properties.getShutdown();
+			TaskExecutionProperties.Shutdown shutdown = this.properties.getShutdown();
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
-			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-			builder = builder.customizers(threadPoolTaskExecutorCustomizers.orderedStream()::iterator);
-			builder = builder.taskDecorator(taskDecorator.getIfUnique());
+			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
+			builder = builder.customizers(this.threadPoolTaskExecutorCustomizers.orderedStream()::iterator);
+			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 			return builder;
 		}
 
