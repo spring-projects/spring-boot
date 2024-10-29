@@ -50,12 +50,15 @@ import org.yaml.snakeyaml.Yaml;
  * Task to generate a local Antora playbook.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 public abstract class GenerateAntoraPlaybook extends DefaultTask {
 
 	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
 
 	private static final String GENERATED_DOCS = "build/generated/docs/";
+
+	private final Project project;
 
 	@OutputFile
 	public abstract RegularFileProperty getOutputFile();
@@ -76,9 +79,10 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	public abstract Property<Boolean> getExcludeJavadocExtension();
 
 	public GenerateAntoraPlaybook() {
+		this.project = getProject();
 		setGroup("Documentation");
 		setDescription("Generates an Antora playbook.yml file for local use");
-		getOutputFile().convention(getProject().getLayout()
+		getOutputFile().convention(this.project.getLayout()
 			.getBuildDirectory()
 			.file("generated/docs/antora-playbook/antora-playbook.yml"));
 		getContentSourceConfiguration().convention("antoraContent");
@@ -127,7 +131,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 			extensions.xref((xref) -> xref.stub(getXrefStubs().getOrElse(Collections.emptyList())));
 			extensions.zipContentsCollector((zipContentsCollector) -> {
 				zipContentsCollector.versionFile("gradle.properties");
-				String locationName = getProject().getName() + "-${version}-${name}-${classifier}.zip";
+				String locationName = this.project.getName() + "-${version}-${name}-${classifier}.zip";
 				Path antoraContent = getRelativeProjectPath()
 					.resolve(GENERATED_DOCS + "antora-content/" + locationName);
 				Path antoraDependencies = getRelativeProjectPath()
@@ -149,12 +153,12 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	private Map<String, Object> createContentSource() {
 		Map<String, Object> source = new LinkedHashMap<>();
 		Path playbookPath = getOutputFile().get().getAsFile().toPath().getParent();
-		Path antoraSrc = getProjectPath(getProject()).resolve(ANTORA_SOURCE_DIR);
+		Path antoraSrc = getProjectPath(this.project).resolve(ANTORA_SOURCE_DIR);
 		StringBuilder url = new StringBuilder(".");
 		relativizeFromRootProject(playbookPath).normalize().forEach((path) -> url.append(File.separator).append(".."));
 		source.put("url", url.toString());
 		source.put("branches", "HEAD");
-		source.put("version", getProject().getVersion().toString());
+		source.put("version", this.project.getVersion().toString());
 		Set<String> startPaths = new LinkedHashSet<>();
 		addAntoraContentStartPaths(startPaths);
 		startPaths.add(relativizeFromRootProject(antoraSrc).toString());
@@ -163,7 +167,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	}
 
 	private void addAntoraContentStartPaths(Set<String> startPaths) {
-		Configuration configuration = getProject().getConfigurations().findByName("antoraContent");
+		Configuration configuration = this.project.getConfigurations().findByName("antoraContent");
 		if (configuration != null) {
 			for (ProjectDependency dependency : configuration.getAllDependencies().withType(ProjectDependency.class)) {
 				Path path = dependency.getDependencyProject().getProjectDir().toPath();
@@ -175,7 +179,7 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	private void addDir(Map<String, Object> data) {
 		Path playbookDir = toRealPath(getOutputFile().get().getAsFile().toPath()).getParent();
 		Path outputDir = toRealPath(
-				getProject().getLayout().getBuildDirectory().dir("site").get().getAsFile().toPath());
+				this.project.getLayout().getBuildDirectory().dir("site").get().getAsFile().toPath());
 		data.put("output", Map.of("dir", "." + File.separator + playbookDir.relativize(outputDir)));
 	}
 
@@ -202,11 +206,11 @@ public abstract class GenerateAntoraPlaybook extends DefaultTask {
 	}
 
 	private Path getRelativeProjectPath() {
-		return relativizeFromRootProject(getProjectPath(getProject()));
+		return relativizeFromRootProject(getProjectPath(this.project));
 	}
 
 	private Path relativizeFromRootProject(Path subPath) {
-		Path rootProjectPath = getProjectPath(getProject().getRootProject());
+		Path rootProjectPath = getProjectPath(this.project.getRootProject());
 		return rootProjectPath.relativize(subPath).normalize();
 	}
 

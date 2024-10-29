@@ -32,6 +32,7 @@ task syncIntegrationTestSources(type: Sync) {
 }
 
 processResources {
+	def project = owner.project
 	eachFile {
 		filter { it.replace('${spring-boot.version}', project.version) }
 	}

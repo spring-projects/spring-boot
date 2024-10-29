@@ -47,21 +47,24 @@ import org.springframework.boot.build.properties.BuildType;
  * A {@link Task} for creating a Homebrew formula manifest.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 public abstract class HomebrewFormula extends DefaultTask {
 
 	private static final Logger logger = LoggerFactory.getLogger(HomebrewFormula.class);
 
+	private final Project project;
+
 	private final FileSystemOperations fileSystemOperations;
 
 	@Inject
 	public HomebrewFormula(FileSystemOperations fileSystemOperations) {
+		this.project = getProject();
 		this.fileSystemOperations = fileSystemOperations;
-		Project project = getProject();
 		MapProperty<String, Object> properties = getProperties();
 		properties.put("hash", getArchive().map((archive) -> sha256(archive.getAsFile())));
-		getProperties().put("repo", ArtifactRelease.forProject(project).getDownloadRepo());
-		getProperties().put("version", project.getVersion().toString());
+		getProperties().put("repo", ArtifactRelease.forProject(this.project).getDownloadRepo());
+		getProperties().put("version", this.project.getVersion().toString());
 	}
 
 	private String sha256(File file) {
@@ -90,7 +93,7 @@ public abstract class HomebrewFormula extends DefaultTask {
 
 	@TaskAction
 	void createFormula() {
-		BuildType buildType = BuildProperties.get(getProject()).buildType();
+		BuildType buildType = BuildProperties.get(this.project).buildType();
 		if (buildType != BuildType.OPEN_SOURCE) {
 			logger.debug("Skipping Homebrew formula for non open source build type");
 			return;

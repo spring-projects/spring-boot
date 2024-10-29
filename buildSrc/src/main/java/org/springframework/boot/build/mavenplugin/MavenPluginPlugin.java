@@ -106,6 +106,7 @@ import org.springframework.util.Assert;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 public class MavenPluginPlugin implements Plugin<Project> {
 
@@ -334,7 +335,13 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	public abstract static class FormatHelpMojoSource extends DefaultTask {
 
+		private final Project project;
+
 		private Task generator;
+
+		public FormatHelpMojoSource() {
+			this.project = getProject();
+		}
 
 		void setGenerator(Task generator) {
 			this.generator = generator;
@@ -350,7 +357,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		void syncAndFormat() {
 			FileFormatter formatter = new FileFormatter();
 			for (File output : this.generator.getOutputs().getFiles()) {
-				formatter.formatFiles(getProject().fileTree(output), StandardCharsets.UTF_8)
+				formatter.formatFiles(this.project.fileTree(output), StandardCharsets.UTF_8)
 					.forEach((edit) -> save(output, edit));
 			}
 		}
