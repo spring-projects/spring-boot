@@ -109,13 +109,18 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 			logger.info("Suspending Hikari pool");
 			this.dataSource.getHikariPoolMXBean().suspendPool();
 		}
+		else {
+			logger.warn(this.dataSource + " is not configured to allow pool suspension. "
+					+ "This will cause problems when the application is checkpointed. "
+					+ "Please configure allow-pool-suspension to fix this!");
+		}
 		closeConnections(Duration.ofMillis(this.dataSource.getConnectionTimeout() + 250));
 	}
 
 	private void closeConnections(Duration shutdownTimeout) {
 		logger.info("Evicting Hikari connections");
 		this.dataSource.getHikariPoolMXBean().softEvictConnections();
-		logger.debug("Waiting for Hikari connections to be closed");
+		logger.debug(LogMessage.format("Waiting %s for Hikari connections to be closed", shutdownTimeout));
 		CompletableFuture<Void> allConnectionsClosed = CompletableFuture.runAsync(this::waitForConnectionsToClose);
 		try {
 			allConnectionsClosed.get(shutdownTimeout.toMillis(), TimeUnit.MILLISECONDS);
