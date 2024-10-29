@@ -46,7 +46,7 @@ import org.apache.hc.core5.http.ssl.TLS;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
 
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -146,7 +146,7 @@ public class TestRestTemplate {
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder.requestFactory(
+				builder = builder.requestFactoryBuilder(
 						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
 		}
@@ -1007,6 +1007,26 @@ public class TestRestTemplate {
 
 		private final boolean enableRedirects;
 
+		/**
+		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
+		 * @param httpClientOptions the {@link HttpClient} options
+		 * @param settings the settings to apply
+		 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+		 * {@link #CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[], ClientHttpRequestFactorySettings)}
+		 */
+		@Deprecated(since = "3.4.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
+			this(httpClientOptions, new ClientHttpRequestFactorySettings(null, settings.connectTimeout(),
+					settings.readTimeout(), settings.sslBundle()));
+		}
+
+		/**
+		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
+		 * @param httpClientOptions the {@link HttpClient} options
+		 * @param settings the settings to apply
+		 */
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				ClientHttpRequestFactorySettings settings) {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));

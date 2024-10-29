@@ -57,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  */
 @DirtiesUrlFactories
+@SuppressWarnings("removal")
 abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpRequestFactory> {
 
 	private final Class<T> requestFactoryType;

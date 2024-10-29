@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package org.springframework.boot.docs.io.restclient.restclient.ssl.settings;
 
 import java.time.Duration;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -31,10 +31,10 @@ public class MyService {
 	private final RestClient restClient;
 
 	public MyService(RestClient.Builder restClientBuilder, SslBundles sslBundles) {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-			.withReadTimeout(Duration.ofMinutes(2))
-			.withSslBundle(sslBundles.getBundle("mybundle"));
-		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(settings);
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings
+			.ofSslBundle(sslBundles.getBundle("mybundle"))
+			.withReadTimeout(Duration.ofMinutes(2));
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactoryBuilder.detect().build(settings);
 		this.restClient = restClientBuilder.baseUrl("https://example.org").requestFactory(requestFactory).build();
 	}
 

@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
 class ClientHttpRequestFactoriesTests {
 
 	@Test
@@ -76,8 +77,6 @@ class ClientHttpRequestFactoriesTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.2.0")
-	@SuppressWarnings("removal")
 	void getOfOkHttpFactoryReturnsOkHttpFactory() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(
 				org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class,

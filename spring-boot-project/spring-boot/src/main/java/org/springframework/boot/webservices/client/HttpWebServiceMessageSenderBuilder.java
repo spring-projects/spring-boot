@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import java.time.Duration;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.JdkClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundle;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.ws.transport.WebServiceMessageSender;
-import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 
 /**
  * {@link WebServiceMessageSender} builder that can detect a suitable HTTP library based
@@ -34,44 +34,43 @@ import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
  *
  * @author Stephane Nicoll
  * @since 2.1.0
+ * @deprecated since 3.4.0 in favor of
+ * {@link WebServiceMessageSenderFactory#http(ClientHttpRequestFactorySettings)}
  */
+@Deprecated(since = "3.4.0", forRemoval = true)
 public class HttpWebServiceMessageSenderBuilder {
 
-	private Duration connectTimeout;
+	private ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
 
-	private Duration readTimeout;
-
-	private SslBundle sslBundle;
-
-	private Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactory;
+	private ClientHttpRequestFactorySettings requestFactorySettings = ClientHttpRequestFactorySettings.defaults();
 
 	/**
 	 * Set the connection timeout.
 	 * @param connectTimeout the connection timeout
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder setConnectTimeout(Duration connectTimeout) {
-		this.connectTimeout = connectTimeout;
+		this.requestFactorySettings = this.requestFactorySettings.withConnectTimeout(connectTimeout);
 		return this;
 	}
 
 	/**
 	 * Set the read timeout.
 	 * @param readTimeout the read timeout
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder setReadTimeout(Duration readTimeout) {
-		this.readTimeout = readTimeout;
+		this.requestFactorySettings = this.requestFactorySettings.withReadTimeout(readTimeout);
 		return this;
 	}
 
 	/**
 	 * Set an {@link SslBundle} that will be used to configure a secure connection.
 	 * @param sslBundle the SSL bundle
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder sslBundle(SslBundle sslBundle) {
-		this.sslBundle = sslBundle;
+		this.requestFactorySettings = this.requestFactorySettings.withSslBundle(sslBundle);
 		return this;
 	}
 
@@ -79,12 +78,12 @@ public class HttpWebServiceMessageSenderBuilder {
 	 * Set the {@code Supplier} of {@link ClientHttpRequestFactory} that should be called
 	 * to create the HTTP-based {@link WebServiceMessageSender}.
 	 * @param requestFactorySupplier the supplier for the request factory
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier) {
 		Assert.notNull(requestFactorySupplier, "RequestFactorySupplier must not be null");
-		this.requestFactory = (settings) -> ClientHttpRequestFactories.get(requestFactorySupplier, settings);
+		this.requestFactoryBuilder = ClientHttpRequestFactoryBuilder.of(requestFactorySupplier);
 		return this;
 	}
 
@@ -93,13 +92,27 @@ public class HttpWebServiceMessageSenderBuilder {
 	 * {@link ClientHttpRequestFactory} that should be called to create the HTTP-based
 	 * {@link WebServiceMessageSender}.
 	 * @param requestFactoryFunction the function for the request factory
-	 * @return a new builder instance
+	 * @return the current builder instance
 	 * @since 3.0.0
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactoryFunction) {
 		Assert.notNull(requestFactoryFunction, "RequestFactoryFunction must not be null");
-		this.requestFactory = requestFactoryFunction;
+		this.requestFactoryBuilder = requestFactoryFunction::apply;
+		return this;
+	}
+
+	/**
+	 * Set the {@link ClientHttpRequestFactoryBuilder} to use when creating the HTTP-based
+	 * {@link WebServiceMessageSender}.
+	 * @param requestFactoryBuilder the {@link ClientHttpRequestFactoryBuilder} to use
+	 * @return this builder instance
+	 * @since 3.4.0
+	 */
+	public HttpWebServiceMessageSenderBuilder requestFactoryBuilder(
+			ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
+		Assert.notNull(requestFactoryBuilder, "ClientHttpRequestFactoryBuilder must not be null");
+		this.requestFactoryBuilder = requestFactoryBuilder;
 		return this;
 	}
 
@@ -108,14 +121,21 @@ public class HttpWebServiceMessageSenderBuilder {
 	 * @return the {@link WebServiceMessageSender} instance
 	 */
 	public WebServiceMessageSender build() {
-		return new ClientHttpRequestMessageSender(getRequestFactory());
+		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = getOrDetectRequestFactoryBuilder();
+		return WebServiceMessageSenderFactory.http(requestFactoryBuilder, this.requestFactorySettings)
+			.getWebServiceMessageSender();
 	}
 
-	private ClientHttpRequestFactory getRequestFactory() {
-		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(this.connectTimeout,
-				this.readTimeout, this.sslBundle);
-		return (this.requestFactory != null) ? this.requestFactory.apply(settings)
-				: ClientHttpRequestFactories.get(settings);
+	private ClientHttpRequestFactoryBuilder<?> getOrDetectRequestFactoryBuilder() {
+		if (this.requestFactoryBuilder != null) {
+			return this.requestFactoryBuilder;
+		}
+		ClientHttpRequestFactoryBuilder<?> builder = ClientHttpRequestFactoryBuilder.detect();
+		if (builder instanceof JdkClientHttpRequestFactoryBuilder) {
+			// Same logic as earlier versions which did not support JDK client factories
+			return ClientHttpRequestFactoryBuilder.simple();
+		}
+		return builder;
 	}
 
 }

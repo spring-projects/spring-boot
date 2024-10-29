@@ -18,6 +18,7 @@ package org.springframework.boot.web.client;
 
 import java.time.Duration;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
@@ -31,8 +32,11 @@ import org.springframework.http.client.ClientHttpRequestFactory;
  * @author Phillip Webb
  * @author Scott Frederick
  * @since 3.0.0
- * @see ClientHttpRequestFactories
+ * @see ClientHttpRequestFactoryBuilder
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * {@link org.springframework.boot.http.client.ClientHttpRequestFactorySettings}
  */
+@Deprecated(since = "3.4.0", forRemoval = true)
 public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration readTimeout, SslBundle sslBundle) {
 
 	/**
@@ -44,7 +48,7 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 
 	/**
 	 * Return a new {@link ClientHttpRequestFactorySettings} instance with an updated
-	 * connect timeout setting .
+	 * connect timeout setting.
 	 * @param connectTimeout the new connect timeout setting
 	 * @return a new {@link ClientHttpRequestFactorySettings} instance
 	 */
@@ -72,6 +76,17 @@ public record ClientHttpRequestFactorySettings(Duration connectTimeout, Duration
 	 */
 	public ClientHttpRequestFactorySettings withSslBundle(SslBundle sslBundle) {
 		return new ClientHttpRequestFactorySettings(this.connectTimeout, this.readTimeout, sslBundle);
+	}
+
+	org.springframework.boot.http.client.ClientHttpRequestFactorySettings adapt() {
+		return new org.springframework.boot.http.client.ClientHttpRequestFactorySettings(null, connectTimeout(),
+				readTimeout(), sslBundle());
+	}
+
+	static ClientHttpRequestFactorySettings of(
+			org.springframework.boot.http.client.ClientHttpRequestFactorySettings settings) {
+		return new ClientHttpRequestFactorySettings(settings.connectTimeout(), settings.readTimeout(),
+				settings.sslBundle());
 	}
 
 }

@@ -32,6 +32,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  * @author Andy Wilkinson
  */
 @ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
+@SuppressWarnings("removal")
 class ClientHttpRequestFactoriesReactorTests
 		extends AbstractClientHttpRequestFactoriesTests<ReactorClientHttpRequestFactory> {
 

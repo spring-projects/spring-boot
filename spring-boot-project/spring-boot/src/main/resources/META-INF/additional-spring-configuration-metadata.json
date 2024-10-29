@@ -175,16 +175,14 @@
     {
       "name": "logging.pattern.console",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to the console.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for output to the console. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.correlation",
       "type": "java.lang.String",
-      "description": "Appender pattern for log correlation.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for log correlation. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.dateformat",
@@ -196,9 +194,8 @@
     {
       "name": "logging.pattern.file",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to a file.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for output to a file. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.level",

@@ -18,6 +18,7 @@ package org.springframework.boot.web.client;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
@@ -30,6 +31,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -271,10 +273,10 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void requestFactoryWhenFunctionIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-			.isThrownBy(() -> this.builder
-				.requestFactory((Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))
+		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.requestFactory(
+				(Function<org.springframework.boot.web.client.ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))
 			.withMessageContaining("RequestFactoryFunction must not be null");
 	}
 
@@ -341,6 +343,14 @@ class RestTemplateBuilderTests {
 		MockRestServiceServer.bindTo(template).build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("boot")));
+	}
+
+	@Test
+	void requestFactorySettingsAppliesSettings() {
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.defaults()
+			.withConnectTimeout(Duration.ofSeconds(1));
+		RestTemplate template = this.builder.requestFactorySettings(settings).build();
+		assertThat(template.getRequestFactory()).extracting("connectTimeout").isEqualTo(1000L);
 	}
 
 	@Test

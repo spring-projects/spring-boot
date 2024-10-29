@@ -54,7 +54,7 @@ jobs:
       version: ${{ needs.build-and-stage-release.outputs.version }}
   sync-to-maven-central:
     name: Sync to Maven Central
-    if: ${{ !COMMERCIAL }}
+    if: ${{ !vars.COMMERCIAL }}
     needs:
       - build-and-stage-release
       - verify
@@ -89,7 +89,7 @@ jobs:
         run: jfrog rt build-promote ${{ format('spring-boot-commercial-{0}', needs.build-and-stage-release.outputs.version)}} ${{ github.run_number }} spring-enterprise-maven-prod-local --project spring
   publish-gradle-plugin:
     name: Publish Gradle Plugin
-    if: ${{ !COMMERCIAL }}
+    if: ${{ !vars.COMMERCIAL }}
     needs:
       - build-and-stage-release
       - sync-to-maven-central
@@ -106,7 +106,7 @@ jobs:
           plugin-version: ${{ needs.build-and-stage-release.outputs.version }}
   publish-to-sdkman:
     name: Publish to SDKMAN!
-    if: ${{ !COMMERCIAL }}
+    if: ${{ !vars.COMMERCIAL }}
     needs:
       - build-and-stage-release
       - sync-to-maven-central
@@ -166,3 +166,4 @@ jobs:
         with:
           milestone: ${{ needs.build-and-stage-release.outputs.version }}
           token: ${{ secrets.GH_ACTIONS_REPO_TOKEN }}
+          commercial: ${{ vars.COMMERCIAL }}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.autoconfigure.web.client;
 
 import java.util.function.Consumer;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.web.client.ClientHttpRequestFactories;
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
@@ -32,9 +32,13 @@ import org.springframework.web.client.RestClient;
  */
 class AutoConfiguredRestClientSsl implements RestClientSsl {
 
+	private final ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder;
+
 	private final SslBundles sslBundles;
 
-	AutoConfiguredRestClientSsl(SslBundles sslBundles) {
+	AutoConfiguredRestClientSsl(ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder,
+			SslBundles sslBundles) {
+		this.clientHttpRequestFactoryBuilder = clientHttpRequestFactoryBuilder;
 		this.sslBundles = sslBundles;
 	}
 
@@ -46,8 +50,8 @@ class AutoConfiguredRestClientSsl implements RestClientSsl {
 	@Override
 	public Consumer<RestClient.Builder> fromBundle(SslBundle bundle) {
 		return (builder) -> {
-			ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(bundle);
-			ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(settings);
+			ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.ofSslBundle(bundle);
+			ClientHttpRequestFactory requestFactory = this.clientHttpRequestFactoryBuilder.build(settings);
 			builder.requestFactory(requestFactory);
 		};
 	}

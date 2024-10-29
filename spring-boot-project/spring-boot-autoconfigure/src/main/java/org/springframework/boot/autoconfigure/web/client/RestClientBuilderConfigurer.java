@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.web.client;
 
 import java.util.List;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.Builder;
@@ -30,7 +32,19 @@ import org.springframework.web.client.RestClient.Builder;
  */
 public class RestClientBuilderConfigurer {
 
+	private ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder;
+
+	private ClientHttpRequestFactorySettings requestFactorySettings;
+
 	private List<RestClientCustomizer> customizers;
+
+	void setRequestFactoryBuilder(ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder) {
+		this.requestFactoryBuilder = requestFactoryBuilder;
+	}
+
+	void setRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
+		this.requestFactorySettings = requestFactorySettings;
+	}
 
 	void setRestClientCustomizers(List<RestClientCustomizer> customizers) {
 		this.customizers = customizers;
@@ -43,6 +57,9 @@ public class RestClientBuilderConfigurer {
 	 * @return the configured builder
 	 */
 	public RestClient.Builder configure(RestClient.Builder builder) {
+		ClientHttpRequestFactoryBuilder<?> requestFactoryBuilder = (this.requestFactoryBuilder != null)
+				? this.requestFactoryBuilder : ClientHttpRequestFactoryBuilder.detect();
+		builder.requestFactory(requestFactoryBuilder.build(this.requestFactorySettings));
 		applyCustomizers(builder);
 		return builder;
 	}
