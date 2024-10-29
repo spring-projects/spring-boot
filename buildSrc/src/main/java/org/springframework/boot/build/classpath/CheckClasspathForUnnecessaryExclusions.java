@@ -59,7 +59,7 @@ public abstract class CheckClasspathForUnnecessaryExclusions extends DefaultTask
 
 	private final Dependency platform;
 
-	private final DependencyHandler dependencyHandler;
+	private final DependencyHandler dependencies;
 
 	private final ConfigurationContainer configurations;
 
@@ -68,10 +68,10 @@ public abstract class CheckClasspathForUnnecessaryExclusions extends DefaultTask
 	@Inject
 	public CheckClasspathForUnnecessaryExclusions(DependencyHandler dependencyHandler,
 			ConfigurationContainer configurations) {
-		this.dependencyHandler = getProject().getDependencies();
+		this.dependencies = getProject().getDependencies();
 		this.configurations = getProject().getConfigurations();
-		this.platform = this.dependencyHandler
-			.create(this.dependencyHandler.platform(this.dependencyHandler.project(SPRING_BOOT_DEPENDENCIES_PROJECT)));
+		this.platform = this.dependencies
+			.create(this.dependencies.platform(this.dependencies.project(SPRING_BOOT_DEPENDENCIES_PROJECT)));
 		getOutputs().upToDateWhen((task) -> true);
 	}
 
@@ -101,7 +101,7 @@ public abstract class CheckClasspathForUnnecessaryExclusions extends DefaultTask
 			.collect(Collectors.toCollection(TreeSet::new));
 		this.exclusionsByDependencyId.put(dependencyId, exclusions);
 		if (!exclusions.isEmpty()) {
-			this.dependencyById.put(dependencyId, getProject().getDependencies().create(dependencyId));
+			this.dependencyById.put(dependencyId, this.dependencies.create(dependencyId));
 		}
 	}
 

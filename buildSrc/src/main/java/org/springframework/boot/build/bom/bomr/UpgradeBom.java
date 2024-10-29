@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ArtifactRepositoryContainer;
+import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
@@ -37,14 +38,14 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	public UpgradeBom(BomExtension bom) {
 		super(bom);
 		switch (BuildProperties.get(getProject()).buildType()) {
-			case OPEN_SOURCE -> addOpenSourceRepositories();
+			case OPEN_SOURCE -> addOpenSourceRepositories(getProject().getRepositories());
 			case COMMERCIAL -> addCommercialRepositories();
 		}
 	}
 
-	private void addOpenSourceRepositories() {
+	private void addOpenSourceRepositories(RepositoryHandler repositories) {
 		getRepositoryNames().add(ArtifactRepositoryContainer.DEFAULT_MAVEN_CENTRAL_REPO_NAME);
-		getProject().getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
+		repositories.withType(MavenArtifactRepository.class, (repository) -> {
 			String name = repository.getName();
 			if (name.startsWith("spring-") && !name.endsWith("-snapshot")) {
 				getRepositoryNames().add(name);

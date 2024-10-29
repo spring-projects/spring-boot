@@ -31,6 +31,8 @@ import org.apache.maven.artifact.versioning.Restriction;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.bom.Library.Group;
@@ -47,11 +49,17 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
  */
 public abstract class CheckBom extends DefaultTask {
 
+	private final ConfigurationContainer configurations;
+
+	private final DependencyHandler dependencies;
+
 	private final BomExtension bom;
 
 	@Inject
 	public CheckBom(BomExtension bom) {
 		this.bom = bom;
+		this.configurations = getProject().getConfigurations();
+		this.dependencies = getProject().getDependencies();
 	}
 
 	@TaskAction
@@ -93,9 +101,8 @@ public abstract class CheckBom extends DefaultTask {
 	}
 
 	private void checkExclusions(String groupId, Module module, DependencyVersion version, List<String> errors) {
-		Set<String> resolved = getProject().getConfigurations()
-			.detachedConfiguration(
-					getProject().getDependencies().create(groupId + ":" + module.getName() + ":" + version))
+		Set<String> resolved = this.configurations
+			.detachedConfiguration(this.dependencies.create(groupId + ":" + module.getName() + ":" + version))
 			.getResolvedConfiguration()
 			.getResolvedArtifacts()
 			.stream()
@@ -202,8 +209,7 @@ public abstract class CheckBom extends DefaultTask {
 
 	private File resolveBom(Library library, String alignsWithBom) {
 		String coordinates = alignsWithBom + ":" + library.getVersion().getVersion() + "@pom";
-		Set<File> files = getProject().getConfigurations()
-			.detachedConfiguration(getProject().getDependencies().create(coordinates))
+		Set<File> files = this.configurations.detachedConfiguration(this.dependencies.create(coordinates))
 			.getResolvedConfiguration()
 			.getFiles();
 		if (files.size() != 1) {
