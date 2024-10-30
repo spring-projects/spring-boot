@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Properties;
 import java.util.function.Consumer;
 
@@ -85,12 +86,12 @@ class BuildInfoIntegrationTests {
 
 	@TestTemplate
 	void generatedBuildInfoReproducibleEpochSeconds(MavenBuild mavenBuild) {
-		mavenBuild.project("build-info-reproducible-epochseconds")
+		mavenBuild.project("build-info-reproducible-epoch-seconds")
 			.execute(buildInfo((buildInfo) -> assertThat(buildInfo).hasBuildGroup("org.springframework.boot.maven.it")
-				.hasBuildArtifact("build-reproducible-epochseconds")
+				.hasBuildArtifact("build-reproducible-epoch-seconds")
 				.hasBuildName("Generate build info with build time from project.build.outputTimestamp")
 				.hasBuildVersion("0.0.1.BUILD-SNAPSHOT")
-				.hasBuildTime("1976-01-09T12:00:00Z")));
+				.hasBuildTime(Instant.ofEpochSecond(1619004153).toString())));
 	}
 
 	@TestTemplate
