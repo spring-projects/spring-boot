@@ -76,7 +76,7 @@ public class JooqAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ExceptionTranslatorExecuteListener.class)
+	@ConditionalOnMissingBean
 	public ExceptionTranslatorExecuteListener jooqExceptionTranslator() {
 		return ExceptionTranslatorExecuteListener.DEFAULT;
 	}

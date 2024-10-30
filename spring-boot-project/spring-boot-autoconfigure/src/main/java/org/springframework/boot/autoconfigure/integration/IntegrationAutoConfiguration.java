@@ -251,7 +251,7 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJdbcConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+		@ConditionalOnMissingBean
 		public IntegrationDataSourceScriptDatabaseInitializer integrationDataSourceInitializer(DataSource dataSource,
 				IntegrationProperties properties) {
 			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
