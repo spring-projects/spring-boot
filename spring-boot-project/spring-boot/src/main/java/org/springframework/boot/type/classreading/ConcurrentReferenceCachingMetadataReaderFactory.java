@@ -38,7 +38,9 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  */
 public class ConcurrentReferenceCachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 
-	private final Map<Resource, MetadataReader> cache = new ConcurrentReferenceHashMap<>();
+	private final Map<String, MetadataReader> classNameCache = new ConcurrentReferenceHashMap<>();
+
+	private final Map<Resource, MetadataReader> resourceCache = new ConcurrentReferenceHashMap<>();
 
 	/**
 	 * Create a new {@link ConcurrentReferenceCachingMetadataReaderFactory} instance for
@@ -67,11 +69,21 @@ public class ConcurrentReferenceCachingMetadataReaderFactory extends SimpleMetad
 	}
 
 	@Override
+	public MetadataReader getMetadataReader(String className) throws IOException {
+		MetadataReader metadataReader = this.classNameCache.get(className);
+		if (metadataReader == null) {
+			metadataReader = super.getMetadataReader(className);
+			this.classNameCache.put(className, metadataReader);
+		}
+		return metadataReader;
+	}
+
+	@Override
 	public MetadataReader getMetadataReader(Resource resource) throws IOException {
-		MetadataReader metadataReader = this.cache.get(resource);
+		MetadataReader metadataReader = this.resourceCache.get(resource);
 		if (metadataReader == null) {
 			metadataReader = createMetadataReader(resource);
-			this.cache.put(resource, metadataReader);
+			this.resourceCache.put(resource, metadataReader);
 		}
 		return metadataReader;
 	}
@@ -90,7 +102,8 @@ public class ConcurrentReferenceCachingMetadataReaderFactory extends SimpleMetad
 	 * Clear the entire MetadataReader cache, removing all cached class metadata.
 	 */
 	public void clearCache() {
-		this.cache.clear();
+		this.classNameCache.clear();
+		this.resourceCache.clear();
 	}
 
 }
