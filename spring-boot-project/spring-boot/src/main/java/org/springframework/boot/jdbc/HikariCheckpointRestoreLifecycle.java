@@ -109,6 +109,11 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 			logger.info("Suspending Hikari pool");
 			this.dataSource.getHikariPoolMXBean().suspendPool();
 		}
+		else {
+			logger.warn(this.dataSource + " is not configured to allow pool suspension. "
+					+ "This will cause problems when the application is checkpointed. "
+					+ "Please configure allow-pool-suspension to fix this!");
+		}
 		closeConnections(Duration.ofMillis(this.dataSource.getConnectionTimeout() + 250));
 	}
 
