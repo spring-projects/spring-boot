@@ -495,7 +495,7 @@ class ConditionalOnMissingBeanTests {
 	static class ConditionalOnFactoryBean {
 
 		@Bean
-		@ConditionalOnMissingBean(ExampleBean.class)
+		@ConditionalOnMissingBean
 		ExampleBean createExampleBean() {
 			return new ExampleBean("direct");
 		}

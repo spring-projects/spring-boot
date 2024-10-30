@@ -56,7 +56,7 @@ import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessi
 class JdbcSessionConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
+	@ConditionalOnMissingBean
 	@Conditional(OnJdbcSessionDatasourceInitializationCondition.class)
 	JdbcSessionDataSourceScriptDatabaseInitializer jdbcSessionDataSourceScriptDatabaseInitializer(
 			@SpringSessionDataSource ObjectProvider<DataSource> sessionDataSource,

@@ -52,7 +52,7 @@ public class ClientHttpConnectorAutoConfiguration {
 
 	@Bean
 	@Lazy
-	@ConditionalOnMissingBean(ClientHttpConnector.class)
+	@ConditionalOnMissingBean
 	ClientHttpConnector webClientHttpConnector(ClientHttpConnectorFactory<?> clientHttpConnectorFactory) {
 		return clientHttpConnectorFactory.createClientHttpConnector();
 	}

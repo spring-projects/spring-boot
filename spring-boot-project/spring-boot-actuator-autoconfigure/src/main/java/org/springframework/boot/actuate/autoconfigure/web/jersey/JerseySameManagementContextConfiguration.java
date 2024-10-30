@@ -60,7 +60,7 @@ public class JerseySameManagementContextConfiguration {
 	static class JerseyInfrastructureConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(JerseyApplicationPath.class)
+		@ConditionalOnMissingBean
 		JerseyApplicationPath jerseyApplicationPath(JerseyProperties properties, ResourceConfig config) {
 			return new DefaultJerseyApplicationPath(properties.getApplicationPath(), config);
 		}

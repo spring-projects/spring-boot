@@ -53,7 +53,7 @@ public class MongoAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(MongoClient.class)
+	@ConditionalOnMissingBean
 	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
 			MongoClientSettings settings) {
 		return new MongoClientFactory(builderCustomizers.orderedStream().toList()).createMongoClient(settings);

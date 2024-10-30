@@ -132,7 +132,7 @@ public class QuartzAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(QuartzDataSourceScriptDatabaseInitializer.class)
+		@ConditionalOnMissingBean
 		@Conditional(OnQuartzDatasourceInitializationCondition.class)
 		public QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(
 				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
