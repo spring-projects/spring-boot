@@ -32,10 +32,11 @@ task syncIntegrationTestSources(type: Sync) {
 }
 
 processResources {
+	def version = project.version
 	eachFile {
-		filter { it.replace('${spring-boot.version}', project.version) }
+		filter { it.replace('${spring-boot.version}', version) }
 	}
-	inputs.property "version", project.version
+	inputs.property "version", version
 }
 
 task integrationTest {

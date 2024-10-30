@@ -35,6 +35,7 @@ import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
 import org.gradle.api.provider.ListProperty;
@@ -66,6 +67,10 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	private final boolean movingToSnapshots;
 
+	private final UpgradeApplicator upgradeApplicator;
+
+	private final RepositoryHandler repositories;
+
 	@Inject
 	public UpgradeDependencies(BomExtension bom) {
 		this(bom, false);
@@ -75,6 +80,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		this.bom = bom;
 		getThreads().convention(2);
 		this.movingToSnapshots = movingToSnapshots;
+		this.upgradeApplicator = new UpgradeApplicator(getProject().getBuildFile().toPath(),
+				new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath());
+		this.repositories = getProject().getRepositories();
 	}
 
 	@Input
@@ -106,9 +114,6 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	private void applyUpgrades(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
 			List<Upgrade> upgrades) {
-		Path buildFile = getProject().getBuildFile().toPath();
-		Path gradleProperties = new File(getProject().getRootProject().getProjectDir(), "gradle.properties").toPath();
-		UpgradeApplicator upgradeApplicator = new UpgradeApplicator(buildFile, gradleProperties);
 		List<Issue> existingUpgradeIssues = repository.findIssues(issueLabels, milestone);
 		System.out.println("Applying upgrades...");
 		System.out.println("");
@@ -117,7 +122,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 			String title = issueTitle(upgrade);
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
 			try {
-				Path modified = upgradeApplicator.apply(upgrade);
+				Path modified = this.upgradeApplicator.apply(upgrade);
 				int issueNumber = getOrOpenUpgradeIssue(repository, issueLabels, milestone, title,
 						existingUpgradeIssue);
 				if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.CLOSED) {
@@ -236,7 +241,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 
 	private List<MavenArtifactRepository> asRepositories(List<String> repositoryNames) {
 		return repositoryNames.stream()
-			.map(getProject().getRepositories()::getByName)
+			.map(this.repositories::getByName)
 			.map(MavenArtifactRepository.class::cast)
 			.toList();
 	}
