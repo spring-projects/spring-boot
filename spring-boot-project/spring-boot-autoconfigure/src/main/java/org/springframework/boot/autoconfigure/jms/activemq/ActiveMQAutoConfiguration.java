@@ -47,7 +47,7 @@ import org.springframework.context.annotation.Import;
 public class ActiveMQAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(ActiveMQConnectionDetails.class)
+	@ConditionalOnMissingBean
 	ActiveMQConnectionDetails activemqConnectionDetails(ActiveMQProperties properties) {
 		return new PropertiesActiveMQConnectionDetails(properties);
 	}
