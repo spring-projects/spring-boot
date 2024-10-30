@@ -506,7 +506,7 @@ class ConditionalOnMissingBeanTests {
 	static class ConditionalOnIgnoredSubclass {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class, ignored = CustomExampleBean.class)
+		@ConditionalOnMissingBean(ignored = CustomExampleBean.class)
 		ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
@@ -517,7 +517,7 @@ class ConditionalOnMissingBeanTests {
 	static class ConditionalOnIgnoredSubclassByName {
 
 		@Bean
-		@ConditionalOnMissingBean(value = ExampleBean.class,
+		@ConditionalOnMissingBean(
 				ignoredType = "org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBeanTests$CustomExampleBean")
 		ExampleBean exampleBean() {
 			return new ExampleBean("test");
@@ -701,8 +701,7 @@ class ConditionalOnMissingBeanTests {
 	static class ParameterizedConditionWithValueConfig {
 
 		@Bean
-		@ConditionalOnMissingBean(value = CustomExampleBean.class,
-				parameterizedContainer = TestParameterizedContainer.class)
+		@ConditionalOnMissingBean(parameterizedContainer = TestParameterizedContainer.class)
 		CustomExampleBean conditionalCustomExampleBean() {
 			return new CustomExampleBean();
 		}

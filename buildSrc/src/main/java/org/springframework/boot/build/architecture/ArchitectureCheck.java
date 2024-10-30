@@ -24,16 +24,19 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaParameter;
+import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -83,7 +86,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList(),
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
 				noClassesShouldCallStringToUpperCaseWithoutLocale(),
-				noClassesShouldCallStringToLowerCaseWithoutLocale());
+				noClassesShouldCallStringToLowerCaseWithoutLocale(),
+				conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
 		getRules().addAll(getProhibitObjectsRequireNonNull()
 			.map((prohibit) -> prohibit ? noClassesShouldCallObjectsRequireNonNull() : Collections.emptyList()));
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
@@ -242,6 +246,36 @@ public abstract class ArchitectureCheck extends DefaultTask {
 					.should()
 					.callMethod(Objects.class, "requireNonNull", Object.class, Supplier.class)
 					.because("org.springframework.utils.Assert.notNull(Object, Supplier) should be used instead"));
+	}
+
+	private ArchRule conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areAnnotatedWith("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean")
+			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType())
+			.allowEmptyShould(true);
+	}
+
+	private ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodReturnType() {
+		return new ArchCondition<>("not specify only a type that is the same as the method's return type") {
+
+			@Override
+			public void check(JavaMethod item, ConditionEvents events) {
+				JavaAnnotation<JavaMethod> conditional = item
+					.getAnnotationOfType("org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean");
+				Map<String, Object> properties = conditional.getProperties();
+				if (!properties.containsKey("type") && !properties.containsKey("name")) {
+					conditional.get("value").ifPresent((value) -> {
+						JavaType[] types = (JavaType[]) value;
+						if (types.length == 1 && item.getReturnType().equals(types[0])) {
+							events.add(SimpleConditionEvent.violated(item, conditional.getDescription()
+									+ " should not specify only a value that is the same as the method's return type"));
+						}
+					});
+				}
+			}
+
+		};
 	}
 
 	public void setClasses(FileCollection classes) {
