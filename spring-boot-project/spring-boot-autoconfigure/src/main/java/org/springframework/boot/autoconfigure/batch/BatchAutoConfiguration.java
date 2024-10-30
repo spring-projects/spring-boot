@@ -173,7 +173,7 @@ public class BatchAutoConfiguration {
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(BatchDataSourceScriptDatabaseInitializer.class)
+		@ConditionalOnMissingBean
 		BatchDataSourceScriptDatabaseInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
 			return new BatchDataSourceScriptDatabaseInitializer(batchDataSource.getIfAvailable(() -> dataSource),
