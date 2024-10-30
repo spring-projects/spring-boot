@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
+import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -334,6 +335,13 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 	public abstract static class FormatHelpMojoSource extends DefaultTask {
 
+		private final ObjectFactory objectFactory;
+
+		@Inject
+		public FormatHelpMojoSource(ObjectFactory objectFactory) {
+			this.objectFactory = objectFactory;
+		}
+
 		private Task generator;
 
 		void setGenerator(Task generator) {
@@ -350,7 +358,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		void syncAndFormat() {
 			FileFormatter formatter = new FileFormatter();
 			for (File output : this.generator.getOutputs().getFiles()) {
-				formatter.formatFiles(getProject().fileTree(output), StandardCharsets.UTF_8)
+				formatter.formatFiles(this.objectFactory.fileTree().from(output), StandardCharsets.UTF_8)
 					.forEach((edit) -> save(output, edit));
 			}
 		}
