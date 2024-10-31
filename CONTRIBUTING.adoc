@@ -43,7 +43,7 @@ None of these is essential for a pull request, but they will all help.  They can
 added after the original pull request but before a merge.
 
 * We use the https://github.com/spring-io/spring-javaformat/[Spring JavaFormat] project to apply code formatting conventions.
-  If you use Eclipse and you follow the '`Importing into eclipse`' instructions below you should get project specific formatting automatically.
+  If you use Eclipse and you follow the https://github.com/spring-projects/spring-boot/wiki/Working-with-the-Code#importing-into-eclipse["Importing into eclipse"] instructions you should get project specific formatting automatically.
   You can also install the https://github.com/spring-io/spring-javaformat/#intellij-idea[Spring JavaFormat IntelliJ Plugin] or format the code from the Gradle build by running `./gradlew format`.
   Note that if you have format violations in `buildSrc`, you can fix them by running `./gradlew -p buildSrc format` from the project root directory.
 * The build includes Checkstyle rules for many of our code conventions. Run `./gradlew checkstyleMain checkstyleTest` if you want to check your changes are compliant.
