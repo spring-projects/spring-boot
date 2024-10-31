@@ -19,6 +19,8 @@ package org.springframework.boot.jackson;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -114,6 +116,12 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 		}
 		if (type == BigInteger.class) {
 			return (D) jsonNode.bigIntegerValue();
+		}
+		if (type == Date.class) {
+			return (D) new Date(jsonNode.longValue());
+		}
+		if (type == UUID.class) {
+			return (D) UUID.fromString(jsonNode.textValue());
 		}
 		throw new IllegalArgumentException("Unsupported value type " + type.getName());
 	}
