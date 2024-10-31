@@ -19,6 +19,8 @@ package org.springframework.boot.jackson;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -142,6 +144,27 @@ class JsonObjectDeserializerTests {
 		given(node.bigIntegerValue()).willReturn(BigInteger.TEN);
 		BigInteger value = this.testDeserializer.testNullSafeValue(node, BigInteger.class);
 		assertThat(value).isEqualTo(BigInteger.TEN);
+	}
+
+
+	@Test
+	void nullSafeValueWhenClassIsDateShouldReturnDate() {
+		JsonNode node = mock(JsonNode.class);
+		long timestamp = 1629976800000L;
+		given(node.longValue()).willReturn(timestamp);
+		Date expectedDate = new Date(timestamp);
+		Date value = this.testDeserializer.testNullSafeValue(node, Date.class);
+		assertThat(value).isEqualTo(expectedDate);
+	}
+
+	@Test
+	void nullSafeValueWhenClassIsUUIDShouldReturnUUID() {
+		JsonNode node = mock(JsonNode.class);
+		String uuidString = "123e4567-e89b-12d3-a456-426614174000";
+		UUID expectedUUID = UUID.fromString(uuidString);
+		given(node.textValue()).willReturn(uuidString);
+		UUID value = this.testDeserializer.testNullSafeValue(node, UUID.class);
+		assertThat(value).isEqualTo(expectedUUID);
 	}
 
 	@Test
