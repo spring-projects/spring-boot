@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.sbom;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +28,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.boot.actuate.sbom.SbomProperties.Sbom;
 import org.springframework.core.io.Resource;
 import org.springframework.util.MimeType;
+import org.springframework.util.function.ThrowingFunction;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link SbomEndpoint}.
@@ -68,14 +68,9 @@ public class SbomEndpointWebExtension {
 		if (sbomProperties != null && sbomProperties.getMediaType() != null) {
 			return sbomProperties.getMediaType();
 		}
-		return this.detectedMediaTypeCache.computeIfAbsent(id, (ignored) -> {
-			try {
-				return detectSbomType(resource);
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException("Failed to detect type of resource '%s'".formatted(resource), ex);
-			}
-		}).getMediaType();
+		return this.detectedMediaTypeCache
+			.computeIfAbsent(id, (ThrowingFunction<String, SbomType>) (ignored) -> detectSbomType(resource))
+			.getMediaType();
 	}
 
 	private SbomType detectSbomType(Resource resource) throws IOException {

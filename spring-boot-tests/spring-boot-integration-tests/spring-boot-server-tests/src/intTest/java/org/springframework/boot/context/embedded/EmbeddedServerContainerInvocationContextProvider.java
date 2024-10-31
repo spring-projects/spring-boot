@@ -116,13 +116,8 @@ class EmbeddedServerContainerInvocationContextProvider
 	private AbstractApplicationLauncher getAbstractApplicationLauncher(Application application,
 			Class<? extends AbstractApplicationLauncher> launcherClass) {
 		String cacheKey = application.getContainer() + ":" + application.getPackaging() + ":" + launcherClass.getName();
-		if (this.launcherCache.containsKey(cacheKey)) {
-			return this.launcherCache.get(cacheKey);
-		}
-		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, application,
-				new File(buildOutput.getRootLocation(), "app-launcher-" + UUID.randomUUID()));
-		this.launcherCache.put(cacheKey, launcher);
-		return launcher;
+		return this.launcherCache.computeIfAbsent(cacheKey, (ignored) -> ReflectionUtils.newInstance(launcherClass,
+				application, new File(buildOutput.getRootLocation(), "app-launcher-" + UUID.randomUUID())));
 	}
 
 	private Application getApplication(EmbeddedServletContainerTest annotation, String container) {
