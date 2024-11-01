@@ -1,6 +1,6 @@
 plugins {
 	id "java-library"
-	id "org.antora"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.deployed"
@@ -8,10 +8,6 @@ plugins {
 }
 
 description = "Spring Boot Actuator AutoConfigure"
-
-configurations {
-	antoraContent
-}
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-actuator"))
@@ -219,36 +215,18 @@ def documentationTest = tasks.register("documentationTest", Test) {
 	}
 }
 
-def antoraActuatorRestApiLocalAggregateContent  = tasks.register("antoraActuatorRestApiLocalAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "actuator-rest-api-local-aggregate-content"
-	from(tasks.getByName("generateAntoraYml")) {
-		into "modules"
+antoraContributions {
+	'actuator-rest-api' {
+		aggregateContent {
+			from(documentationTest.map { layout.buildDirectory.dir("generated-snippets") }) {
+				into "modules/api/partials/rest/actuator"
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
 	}
 }
-
-def antoraActuatorRestApiAggregateContent = tasks.register("antoraActuatorRestApiAggregateContent", Zip) {
-	dependsOn documentationTest
-	inputs.dir(layout.buildDirectory.dir("generated-snippets"))
-		.withPathSensitivity(PathSensitivity.RELATIVE)
-		.withPropertyName("generatedSnippets")
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "actuator-rest-api-aggregate-content"
-	from(layout.buildDirectory.dir("generated-snippets")) {
-		into "modules/api/partials/rest/actuator"
-	}
-}
-
-tasks.named("generateAntoraPlaybook") {
-	alwaysInclude = [name: "actuator-rest-api", classifier: "local-aggregate-content"]
-	dependsOn antoraActuatorRestApiLocalAggregateContent
-}
-
-tasks.named("antora") {
-	inputs.files(antoraActuatorRestApiAggregateContent)
-}
-
-artifacts {
-	antoraContent antoraActuatorRestApiAggregateContent
-}
-

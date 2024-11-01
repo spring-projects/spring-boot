@@ -1,5 +1,5 @@
 plugins {
-	id "org.antora"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
 	id "org.springframework.boot.docker-test"
@@ -9,7 +9,6 @@ description = "Spring Boot Maven Plugin"
 
 configurations {
 	dependenciesBom
-	antoraContent
 }
 
 dependencies {
@@ -148,45 +147,30 @@ tasks.named("documentPluginGoals") {
 	]
 }
 
-def antoraMavenPluginLocalAggregateContent  = tasks.register("antoraMavenPluginLocalAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "maven-plugin-local-aggregate-content"
-	from(tasks.getByName("generateAntoraYml")) {
-		into "modules"
-	}
-}
-
-def antoraMavenPluginAggregateContent = tasks.register("antoraMavenPluginAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "maven-plugin-aggregate-content"
-	from(documentPluginGoals) {
-		into "modules/maven-plugin/partials/goals"
-	}
-}
-
-def antoraMavenPluginCatalogContent = tasks.register("antoraMavenPluginCatalogContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "maven-plugin-catalog-content"
-	from(javadoc) {
-		into "api/java"
+antoraContributions {
+	'maven-plugin' {
+		aggregateContent {
+			from(documentPluginGoals) {
+				into "modules/maven-plugin/partials/goals"
+			}
+		}
+		catalogContent {
+			from(javadoc) {
+				into "api/java"
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
 	}
 }
 
 tasks.named("generateAntoraPlaybook") {
-	xrefStubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
-	excludeJavadocExtension = true
-	alwaysInclude = [name: "maven-plugin", classifier: "local-aggregate-content"]
-	dependsOn antoraMavenPluginLocalAggregateContent
-}
-
-
-tasks.named("antora") {
-	inputs.files(antoraMavenPluginLocalAggregateContent, antoraMavenPluginAggregateContent, antoraMavenPluginCatalogContent)
-}
-
-artifacts {
-	antoraContent antoraMavenPluginAggregateContent
-	antoraContent antoraMavenPluginCatalogContent
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
+	asciidocExtensions.excludeJavadocExtension = true
 }
 
 tasks.named("dockerTest").configure {
