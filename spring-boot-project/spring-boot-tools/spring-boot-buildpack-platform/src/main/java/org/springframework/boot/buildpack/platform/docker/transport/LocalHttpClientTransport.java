@@ -33,7 +33,9 @@ import org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator;
 import org.apache.hc.client5.http.io.DetachedSocketFactory;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.routing.HttpRoutePlanner;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.config.Lookup;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 
@@ -77,10 +79,18 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 			.setValidateAfterInactivity(TimeValue.NEG_ONE_MILLISECOND)
 			.build();
 
+		private static final Lookup<TlsSocketStrategy> NO_TLS_SOCKET = (name) -> null;
+
 		LocalConnectionManager(ResolvedDockerHost dockerHost) {
-			super(new DefaultHttpClientConnectionOperator(new LocalDetachedSocketFactory(dockerHost), null,
-					new LocalDnsResolver(), (name) -> null), null);
+			super(createhttpClientConnectionOperator(dockerHost), null);
 			setConnectionConfig(CONNECTION_CONFIG);
+		}
+
+		private static DefaultHttpClientConnectionOperator createhttpClientConnectionOperator(
+				ResolvedDockerHost dockerHost) {
+			LocalDetachedSocketFactory detachedSocketFactory = new LocalDetachedSocketFactory(dockerHost);
+			LocalDnsResolver dnsResolver = new LocalDnsResolver();
+			return new DefaultHttpClientConnectionOperator(detachedSocketFactory, null, dnsResolver, NO_TLS_SOCKET);
 		}
 
 	}

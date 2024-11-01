@@ -128,8 +128,8 @@ public class NamedPipeSocket extends Socket {
 					}
 					handler.failed(exc, attachment);
 				}
-			});
 
+			});
 		}
 
 		@Override
