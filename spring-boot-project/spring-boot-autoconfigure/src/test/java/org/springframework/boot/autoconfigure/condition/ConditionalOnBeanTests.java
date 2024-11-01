@@ -268,6 +268,14 @@ class ConditionalOnBeanTests {
 	}
 
 	@Test
+	void conditionalOnBeanTypeIgnoresNotDefaultCandidateFactoryBean() {
+		this.contextRunner
+			.withUserConfiguration(NotDefaultCandidateFactoryBeanConfiguration.class,
+					OnBeanClassWithFactoryBeanConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
 	void conditionalOnBeanNameMatchesNotDefaultCandidateBean() {
 		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfiguration.class, OnBeanNameConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("bar"));
@@ -333,6 +341,17 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(ExampleFactoryBean.class)
+	static class OnBeanClassWithFactoryBeanConfiguration {
+
+		@Bean
+		String bar() {
+			return "bar";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(type = "java.lang.String")
 	static class OnBeanClassNameConfiguration {
 
@@ -381,6 +400,16 @@ class ConditionalOnBeanTests {
 		@Bean(defaultCandidate = false)
 		String foo() {
 			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotDefaultCandidateFactoryBeanConfiguration {
+
+		@Bean(defaultCandidate = false)
+		ExampleFactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean();
 		}
 
 	}
