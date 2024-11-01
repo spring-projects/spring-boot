@@ -41,6 +41,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 import org.springframework.graphql.server.WebGraphQlHandler;
 import org.springframework.graphql.server.WebGraphQlInterceptor;
 import org.springframework.graphql.server.webmvc.GraphQlHttpHandler;
+import org.springframework.graphql.server.webmvc.GraphQlSseHandler;
 import org.springframework.graphql.server.webmvc.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -76,6 +77,15 @@ class GraphQlWebMvcAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlHttpHandler.class)
 			.hasSingleBean(WebGraphQlHandler.class)
 			.doesNotHaveBean(GraphQlWebSocketHandler.class));
+	}
+
+	@Test
+	void shouldConfigureSseTimeout() {
+		this.contextRunner.withPropertyValues("spring.graphql.sse.timeout=10s").run((context) -> {
+			assertThat(context).hasSingleBean(GraphQlSseHandler.class);
+			GraphQlSseHandler handler = context.getBean(GraphQlSseHandler.class);
+			assertThat(handler).hasFieldOrPropertyWithValue("timeout", Duration.ofSeconds(10));
+		});
 	}
 
 	@Test
