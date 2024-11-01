@@ -295,7 +295,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
-		if (url.getPath().endsWith(".xml")) {
+		if (url.getPath().endsWith(".xml") || url.toString().endsWith(".xml")) {
 			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
