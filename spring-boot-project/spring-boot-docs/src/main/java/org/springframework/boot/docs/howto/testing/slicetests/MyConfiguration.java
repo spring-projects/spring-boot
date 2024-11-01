@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.howto.testing.slicetests;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -37,7 +37,7 @@ public class MyConfiguration {
 	@Bean
 	@ConfigurationProperties("app.datasource.second")
 	public BasicDataSource secondDataSource() {
-		return DataSourceBuilder.create().type(BasicDataSource.class).build();
+		return DataSourceBuilder.create().type(HikariDataSource.class).build();
 	}
 
 }

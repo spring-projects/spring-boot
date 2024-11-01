@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configuretwodatasources;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,7 +31,7 @@ public class MyAdditionalDataSourceConfiguration {
 	@Bean(defaultCandidate = false)
 	@ConfigurationProperties("app.datasource")
 	public BasicDataSource secondDataSource() {
-		return DataSourceBuilder.create().type(BasicDataSource.class).build();
+		return DataSourceBuilder.create().type(HikariDataSource.class).build();
 	}
 
 }
