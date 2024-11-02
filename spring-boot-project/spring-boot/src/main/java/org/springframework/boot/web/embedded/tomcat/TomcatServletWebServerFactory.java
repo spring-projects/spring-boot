@@ -528,7 +528,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	/**
 	 * Returns a mutable set of the patterns that match jars to ignore for TLD scanning.
-	 * @return the list of jars to ignore for TLD scanning
+	 * @return the set of jars to ignore for TLD scanning
 	 */
 	public Set<String> getTldSkipPatterns() {
 		return this.tldSkipPatterns;
