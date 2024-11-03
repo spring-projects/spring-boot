@@ -2484,6 +2484,14 @@ bom {
 			releaseNotes("https://github.com/mojohaus/versions/releases/tag/{version}")
 		}
 	}
+	library("Vibur", "25.0") {
+		group("org.vibur") {
+			modules = [
+					"vibur-dbcp",
+					"vibur-object-pool"
+			]
+		}
+	}
 	library("WebJars Locator Lite", "1.0.1") {
 		group("org.webjars") {
 			modules = [

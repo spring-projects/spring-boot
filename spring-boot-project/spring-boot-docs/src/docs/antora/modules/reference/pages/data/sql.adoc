@@ -142,6 +142,7 @@ The following connection pools are supported by javadoc:org.springframework.boot
 * H2 javadoc:org.h2.jdbcx.JdbcDataSource[]
 * PostgreSQL javadoc:org.postgresql.ds.PGSimpleDataSource[]
 * C3P0
+* Vibur
 
 
 

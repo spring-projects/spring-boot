@@ -96,6 +96,7 @@ dependencies {
 		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
 		exclude group: "jakarta.mail", module: "jakarta.mail-api"
 	}
+	optional("org.vibur:vibur-dbcp")
 	optional("org.yaml:snakeyaml")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")

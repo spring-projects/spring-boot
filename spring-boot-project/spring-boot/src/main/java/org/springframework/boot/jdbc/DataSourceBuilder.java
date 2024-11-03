@@ -36,6 +36,7 @@ import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.jdbcx.JdbcDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.vibur.dbcp.ViburDBCPDataSource;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
@@ -60,6 +61,7 @@ import org.springframework.util.StringUtils;
  * <li>Apache DBCP2 ({@code org.apache.commons.dbcp2.BasicDataSource})</li>
  * <li>Oracle UCP ({@code oracle.ucp.jdbc.PoolDataSourceImpl})</li>
  * <li>C3P0 ({@code com.mchange.v2.c3p0.ComboPooledDataSource})</li>
+ * <li>Vibur {@code org.vibur.dbcp.ViburDBCPDataSource}</li>
  * </ul>
  * <p>
  * The following non-pooling {@link DataSource} implementations can be used when
@@ -412,6 +414,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 					OraclePoolDataSourceProperties::new, "oracle.jdbc.OracleConnection");
 			result = lookup(classLoader, type, result, "com.mchange.v2.c3p0.ComboPooledDataSource",
 					ComboPooledDataSourceProperties::new);
+			result = lookup(classLoader, type, result, "org.vibur.dbcp.ViburDBCPDataSource",
+					ViburDataSourceProperties::new);
 			return result;
 		}
 
@@ -690,6 +694,18 @@ public final class DataSourceBuilder<T extends DataSource> {
 			catch (PropertyVetoException ex) {
 				throw new IllegalArgumentException(ex);
 			}
+		}
+
+	}
+
+	private static class ViburDataSourceProperties extends MappedDataSourceProperties<ViburDBCPDataSource> {
+
+		ViburDataSourceProperties() {
+			add(DataSourceProperty.URL, ViburDBCPDataSource::getJdbcUrl, ViburDBCPDataSource::setJdbcUrl);
+			add(DataSourceProperty.DRIVER_CLASS_NAME, ViburDBCPDataSource::getDriverClassName,
+					ViburDBCPDataSource::setDriverClassName);
+			add(DataSourceProperty.USERNAME, ViburDBCPDataSource::getUsername, ViburDBCPDataSource::setUsername);
+			add(DataSourceProperty.PASSWORD, ViburDBCPDataSource::getPassword, ViburDBCPDataSource::setPassword);
 		}
 
 	}

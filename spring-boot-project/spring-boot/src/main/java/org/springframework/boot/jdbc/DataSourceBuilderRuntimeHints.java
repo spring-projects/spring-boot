@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ class DataSourceBuilderRuntimeHints implements RuntimeHintsRegistrar {
 		typeNames.add("org.apache.commons.dbcp2.BasicDataSource");
 		typeNames.add("oracle.jdbc.datasource.OracleDataSource");
 		typeNames.add("oracle.ucp.jdbc.PoolDataSource");
+		typeNames.add("org.vibur.dbcp.ViburDBCPDataSource");
 		typeNames.add("org.postgresql.ds.PGSimpleDataSource");
 		typeNames.add("org.springframework.jdbc.datasource.SimpleDriverDataSource");
 		typeNames.add("org.apache.tomcat.jdbc.pool.DataSource");
