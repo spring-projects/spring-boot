@@ -25,16 +25,24 @@ import org.springframework.boot.origin.Origin;
  * {@link Origin} backed by a Spring Bean.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class BeanOrigin implements Origin {
 
 	private final String beanName;
 
+	private final BeanDefinition beanDefinition;
+
 	private final String resourceDescription;
 
 	BeanOrigin(String beanName, BeanDefinition beanDefinition) {
 		this.beanName = beanName;
+		this.beanDefinition = beanDefinition;
 		this.resourceDescription = (beanDefinition != null) ? beanDefinition.getResourceDescription() : null;
+	}
+
+	BeanDefinition getBeanDefinition() {
+		return this.beanDefinition;
 	}
 
 	@Override

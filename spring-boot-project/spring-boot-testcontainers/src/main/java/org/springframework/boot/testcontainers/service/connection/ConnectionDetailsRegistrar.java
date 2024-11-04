@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -49,6 +50,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConnectionDetailsRegistrar {
 
@@ -109,7 +111,20 @@ class ConnectionDetailsRegistrar {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
 		beanDefinition.setAttribute(ServiceConnection.class.getName(), true);
 		containerMetadata.addTo(beanDefinition);
+		if (source.getOrigin() instanceof BeanOrigin beanOrigin) {
+			inheritQualifiers(beanOrigin.getBeanDefinition(), beanDefinition);
+		}
 		registry.registerBeanDefinition(beanName, beanDefinition);
+	}
+
+	private void inheritQualifiers(BeanDefinition origin, RootBeanDefinition derived) {
+		derived.setPrimary(origin.isPrimary());
+		derived.setFallback(origin.isFallback());
+		derived.setAutowireCandidate(origin.isAutowireCandidate());
+		if (origin instanceof RootBeanDefinition rbd) {
+			derived.setDefaultCandidate(rbd.isDefaultCandidate());
+			derived.setQualifiedElement(rbd.getQualifiedElement());
+		}
 	}
 
 	private String getBeanName(ContainerConnectionSource<?> source, ConnectionDetails connectionDetails) {

@@ -40,6 +40,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ConnectionDetailsRegistrar}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ConnectionDetailsRegistrarTests {
 
@@ -104,6 +105,32 @@ class ConnectionDetailsRegistrarTests {
 			.willReturn(Map.of(TestConnectionDetails.class, new TestConnectionDetails()));
 		registrar.registerBeanDefinitions(beanFactory, this.source);
 		assertThat(beanFactory.getBean(TestConnectionDetails.class)).isNotNull();
+	}
+
+	@Test
+	void containerConnectionDetailsBeanShouldInheritQualifiersFromContainerBean() {
+		RootBeanDefinition originBeanDefinition = new RootBeanDefinition();
+		originBeanDefinition.setPrimary(true);
+		originBeanDefinition.setFallback(false);
+		originBeanDefinition.setAutowireCandidate(true);
+		originBeanDefinition.setDefaultCandidate(true);
+		originBeanDefinition.setQualifiedElement(ConnectionDetailsRegistrarTests.class);
+		Origin origin = new BeanOrigin("test", originBeanDefinition);
+		ContainerConnectionSource<?> source = new ContainerConnectionSource<>("test", origin, PostgreSQLContainer.class,
+				null, this.annotation, () -> this.container);
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory, this.factories);
+		given(this.factories.getConnectionDetails(source, true))
+			.willReturn(Map.of(TestConnectionDetails.class, new TestConnectionDetails()));
+		registrar.registerBeanDefinitions(beanFactory, source);
+		String[] beanNames = beanFactory.getBeanNamesForType(TestConnectionDetails.class);
+		assertThat(beanNames).hasSize(1);
+		RootBeanDefinition beanDefinition = (RootBeanDefinition) beanFactory.getBeanDefinition(beanNames[0]);
+		assertThat(beanDefinition.isPrimary()).isEqualTo(originBeanDefinition.isPrimary());
+		assertThat(beanDefinition.isFallback()).isEqualTo(originBeanDefinition.isFallback());
+		assertThat(beanDefinition.isAutowireCandidate()).isEqualTo(originBeanDefinition.isAutowireCandidate());
+		assertThat(beanDefinition.isDefaultCandidate()).isEqualTo(originBeanDefinition.isDefaultCandidate());
+		assertThat(beanDefinition.getQualifiedElement()).isEqualTo(originBeanDefinition.getQualifiedElement());
 	}
 
 	static class TestConnectionDetails implements ConnectionDetails {
