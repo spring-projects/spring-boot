@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@
 package org.springframework.boot.buildpack.platform.docker.ssl;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -30,13 +27,16 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+
 /**
  * Parser for X.509 certificates in PEM format.
  *
  * @author Scott Frederick
  * @author Phillip Webb
  */
-final class CertificateParser {
+final class PemCertificateParser {
 
 	private static final String HEADER = "-+BEGIN\\s+.*CERTIFICATE[^-]*-+(?:\\s|\\r|\\n)+";
 
@@ -46,21 +46,23 @@ final class CertificateParser {
 
 	private static final Pattern PATTERN = Pattern.compile(HEADER + BASE64_TEXT + FOOTER, Pattern.CASE_INSENSITIVE);
 
-	private CertificateParser() {
+	private PemCertificateParser() {
 	}
 
 	/**
-	 * Load certificates from the specified file paths.
-	 * @param paths one or more paths to certificate files
-	 * @return certificates parsed from specified file paths
+	 * Parse certificates from the specified string.
+	 * @param text the text to parse
+	 * @return the parsed certificates
 	 */
-	static X509Certificate[] parse(Path... paths) {
-		CertificateFactory factory = getCertificateFactory();
-		List<X509Certificate> certificates = new ArrayList<>();
-		for (Path path : paths) {
-			readCertificates(path, factory, certificates::add);
+	static List<X509Certificate> parse(String text) {
+		if (text == null) {
+			return null;
 		}
-		return certificates.toArray(new X509Certificate[0]);
+		CertificateFactory factory = getCertificateFactory();
+		List<X509Certificate> certs = new ArrayList<>();
+		readCertificates(text, factory, certs::add);
+		Assert.state(!CollectionUtils.isEmpty(certs), "Missing certificates or unrecognized format");
+		return List.copyOf(certs);
 	}
 
 	private static CertificateFactory getCertificateFactory() {
@@ -72,9 +74,8 @@ final class CertificateParser {
 		}
 	}
 
-	private static void readCertificates(Path path, CertificateFactory factory, Consumer<X509Certificate> consumer) {
+	private static void readCertificates(String text, CertificateFactory factory, Consumer<X509Certificate> consumer) {
 		try {
-			String text = Files.readString(path);
 			Matcher matcher = PATTERN.matcher(text);
 			while (matcher.find()) {
 				String encodedText = matcher.group(1);
@@ -85,8 +86,8 @@ final class CertificateParser {
 				}
 			}
 		}
-		catch (CertificateException | IOException ex) {
-			throw new IllegalStateException("Error reading certificate from '" + path + "' : " + ex.getMessage(), ex);
+		catch (CertificateException ex) {
+			throw new IllegalStateException("Error reading certificate: " + ex.getMessage(), ex);
 		}
 	}
 
