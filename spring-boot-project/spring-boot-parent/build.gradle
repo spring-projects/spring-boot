@@ -33,6 +33,13 @@ bom {
 			]
 		}
 	}
+	library("Commons Compress", "1.21") {
+		group("org.apache.commons") {
+			modules = [
+				"commons-compress"
+			]
+		}
+	}
 	library("Commons FileUpload", "1.5") {
 		group("commons-fileupload") {
 			modules = [

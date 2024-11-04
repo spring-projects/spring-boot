@@ -59,17 +59,6 @@ configurations {
 				if (dependency.requested.group.equals("org.springframework")) {
 					dependency.useVersion("$springFramework60xVersion")
 				}
-				// We manage the version of commons-compress here rather than
-				// in spring-boot-parent to minimize conflicts with Testcontainers
-				if (dependency.requested.group.equals("org.apache.commons")
-						&& dependency.requested.name.equals("commons-compress")) {
-					dependency.useVersion("$commonsCompressVersion")
-				}
-				// Downgrade Testcontainers for compatibility with the managed
-				// version of Commons Compress.
-				if (dependency.requested.group.equals("org.testcontainers")) {
-					dependency.useVersion("1.19.3")
-				}
 			}
 		}
 	}
@@ -93,7 +82,7 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("io.spring.gradle:dependency-management-plugin")
-	implementation("org.apache.commons:commons-compress:$commonsCompressVersion")
+	implementation("org.apache.commons:commons-compress")
 	implementation("org.springframework:spring-core")
 
 	optional("org.graalvm.buildtools:native-gradle-plugin")
