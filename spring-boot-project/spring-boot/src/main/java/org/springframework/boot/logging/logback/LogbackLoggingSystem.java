@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -281,14 +281,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
-		if (url.getPath().endsWith(".xml")) {
-			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
-			configurator.setContext(loggerContext);
-			configurator.doConfigure(url);
-		}
-		else {
-			throw new IllegalArgumentException("Unsupported file extension in '" + url + "'. Only .xml is supported");
-		}
+		JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
+		configurator.setContext(loggerContext);
+		configurator.doConfigure(url);
 	}
 
 	private void stopAndReset(LoggerContext loggerContext) {
