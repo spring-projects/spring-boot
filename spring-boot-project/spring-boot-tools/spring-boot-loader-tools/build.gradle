@@ -89,3 +89,15 @@ compileJava {
 		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']
 	}
 }
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath.file { merger ->
+			merger.beforeMerged { content ->
+				if (content instanceof org.gradle.plugins.ide.eclipse.model.Classpath) {
+					content.entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder("build/generated-resources/main", "bin/main"))
+				}
+			}
+		}
+	}
+}
