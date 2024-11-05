@@ -119,11 +119,12 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		System.out.println("");
 		for (Upgrade upgrade : upgrades) {
 			System.out.println(upgrade.getLibrary().getName() + " " + upgrade.getVersion());
-			String title = issueTitle(upgrade);
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
 			try {
 				Path modified = this.upgradeApplicator.apply(upgrade);
-				int issueNumber = getOrOpenUpgradeIssue(repository, issueLabels, milestone, title,
+				String title = issueTitle(upgrade);
+				String body = issueBody(upgrade, existingUpgradeIssue);
+				int issueNumber = getOrOpenUpgradeIssue(repository, issueLabels, milestone, title, body,
 						existingUpgradeIssue);
 				if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.CLOSED) {
 					existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
@@ -151,11 +152,10 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	private int getOrOpenUpgradeIssue(GitHubRepository repository, List<String> issueLabels, Milestone milestone,
-			String title, Issue existingUpgradeIssue) {
+			String title, String body, Issue existingUpgradeIssue) {
 		if (existingUpgradeIssue != null && existingUpgradeIssue.getState() == Issue.State.OPEN) {
 			return existingUpgradeIssue.getNumber();
 		}
-		String body = (existingUpgradeIssue != null) ? "Supersedes #" + existingUpgradeIssue.getNumber() : "";
 		return repository.openIssue(title, body, issueLabels, milestone);
 	}
 
@@ -288,5 +288,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	protected abstract String issueTitle(Upgrade upgrade);
 
 	protected abstract String commitMessage(Upgrade upgrade, int issueNumber);
+
+	protected abstract String issueBody(Upgrade upgrade, Issue existingUpgrade);
 
 }

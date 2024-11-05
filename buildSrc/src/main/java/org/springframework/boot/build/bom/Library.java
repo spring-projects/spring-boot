@@ -146,8 +146,12 @@ public class Library {
 	}
 
 	public Map<String, String> getLinks() {
+		return getLinks(this.version);
+	}
+
+	public Map<String, String> getLinks(LibraryVersion version) {
 		Map<String, String> links = new TreeMap<>();
-		this.links.forEach((name, linkFactory) -> links.put(name, linkFactory.apply(this.version)));
+		this.links.forEach((name, linkFactory) -> links.put(name, linkFactory.apply(version)));
 		return Collections.unmodifiableMap(links);
 	}
 
