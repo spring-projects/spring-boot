@@ -74,7 +74,8 @@ bom {
 		}
 		links {
 			site("https://eclipse.dev/aspectj")
-			releaseNotes("https://github.com/eclipse-aspectj/aspectj/blob/master/docs/release/README-{version}.adoc")
+			releaseNotes { version -> "https://github.com/eclipse-aspectj/aspectj/blob/master/docs/release/README-%s.%s.%s.adoc"
+				.formatted(version.major(), version.minor(), version.patch()) }
 		}
 	}
 	library("AssertJ", "${assertjVersion}") {
@@ -188,12 +189,6 @@ bom {
 				"java-driver-core"
 			]
 		}
-		links {
-			site { version -> "https://docs.datastax.com/en/developer/java-driver/%s.%s/"
-				.formatted(version.major(), version.minor()) }
-			releaseNotes { version -> "https://docs.datastax.com/en/developer/java-driver/%s.%s/changelog/#%s"
-				.formatted(version.major(), version.minor(), version.toString("-")) }
-		}
 	}
 	library("Classmate", "1.7.0") {
 		group("com.fasterxml") {
@@ -226,6 +221,7 @@ bom {
 		}
 		links {
 			site("https://commons.apache.org/proper/commons-dbcp")
+			releaseNotes("https://commons.apache.org/proper/commons-dbcp/changes-report.html#a{version}")
 		}
 	}
 	library("Commons Lang3", "3.17.0") {
@@ -236,6 +232,7 @@ bom {
 		}
 		links {
 			site("https://commons.apache.org/proper/commons-lang")
+			releaseNotes("https://commons.apache.org/proper/commons-lang/changes-report.html#a{version}")
 		}
 	}
 	library("Commons Pool", "1.6") {
@@ -263,6 +260,7 @@ bom {
 		}
 		links {
 			site("https://docs.couchbase.com/java-sdk/current/hello-world/overview.html")
+			releaseNotes("https://docs.couchbase.com/java-sdk/current/project-docs/sdk-release-notes.html")
 		}
 	}
 	library("Crac", "1.5.0") {
@@ -277,6 +275,9 @@ bom {
 			plugins = [
 				"cyclonedx-maven-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/CycloneDX/cyclonedx-maven-plugin/releases/tag/cyclonedx-maven-plugin-{version}")
 		}
 	}
 	library("DB2 JDBC", "11.5.9.0") {
@@ -384,6 +385,7 @@ bom {
 		links {
 			site("https://documentation.red-gate.com/flyway")
 			javadoc("https://javadoc.io/doc/org.flywaydb/flyway-core/{version}")
+			releaseNotes("https://documentation.red-gate.com/flyway/release-notes-and-older-versions/release-notes-for-flyway-engine")
 		}
 	}
 	library("FreeMarker", "2.3.33") {
@@ -414,6 +416,9 @@ bom {
 			imports = [
 				"jaxb-bom"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/eclipse-ee4j/jaxb-ri/releases/tag/{version}-RI")
 		}
 	}
 	library("Glassfish JSTL", "3.0.1") {
@@ -484,6 +489,9 @@ bom {
 				"hamcrest-core",
 				"hamcrest-library"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/hamcrest/JavaHamcrest/releases/tag/v{version}")
 		}
 	}
 	library("Hazelcast", "5.5.0") {
@@ -629,6 +637,9 @@ bom {
 				"jackson-bom"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/FasterXML/jackson/wiki/Jackson-Release-{version}")
+		}
 	}
 	library("Jakarta Activation", "2.1.3") {
 		group("jakarta.activation") {
@@ -687,6 +698,7 @@ bom {
 		links {
 			javadoc { version -> "https://jakarta.ee/specifications/jsonp/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()) }
+			releaseNotes("https://github.com/jakartaee/jsonp-api/releases/tag/{version}-RELEASE")
 		}
 	}
 	library("Jakarta Json Bind", "3.0.1") {
@@ -736,6 +748,8 @@ bom {
 				.formatted(version.major(), version.minor()) }
 			javadoc { version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()) }
+			releaseNotes { version -> "https://github.com/jakartaee/persistence/releases/tag/%s.%s-%s-RELEASE"
+				.formatted(version.major(), version.minor(), version) }
 		}
 	}
 	library("Jakarta Servlet", "6.0.0") {
@@ -760,6 +774,9 @@ bom {
 			modules = [
 				"jakarta.servlet.jsp.jstl-api"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/jakartaee/tags/releases/tag/{version}-RELEASE")
 		}
 	}
 	library("Jakarta Transaction", "2.0.1") {
@@ -786,6 +803,7 @@ bom {
 		links {
 			javadoc { version -> "https://jakarta.ee/specifications/bean-validation/%s.%s/apidocs"
 				.formatted(version.major(), version.minor()) }
+			releaseNotes("https://github.com/jakartaee/validation/releases/tag/{version}")
 		}
 	}
 	library("Jakarta WebSocket", "2.1.1") {
@@ -813,6 +831,9 @@ bom {
 				"jakarta.xml.bind-api"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/jakartaee/jaxb-api/releases/tag/{version}")
+		}
 	}
 	library("Jakarta XML SOAP", "3.0.2") {
 		group("jakarta.xml.soap") {
@@ -820,12 +841,18 @@ bom {
 					"jakarta.xml.soap-api"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/jakartaee/saaj-api/releases/tag/{version}")
+		}
 	}
 	library("Jakarta XML WS", "4.0.2") {
 		group("jakarta.xml.ws") {
 			modules = [
 				"jakarta.xml.ws-api"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/jakartaee/jax-ws-api/releases/tag/{version}")
 		}
 	}
 	library("Janino", "3.1.12") {
@@ -857,6 +884,9 @@ bom {
 				"jaxen"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/jaxen-xpath/jaxen/releases/tag/v{version}")
+		}
 	}
 	library("Jaybird", "5.0.6.java11") {
 		prohibit {
@@ -868,6 +898,10 @@ bom {
 				"jaybird"
 			]
 		}
+		links {
+			releaseNotes { version -> "https://github.com/FirebirdSQL/jaybird/releases/tag/v%s"
+				.formatted(version.toString().replace(".java11", "")) }
+		}
 	}
 	library("JBoss Logging", "3.6.1.Final") {
 		group("org.jboss.logging") {
@@ -875,12 +909,18 @@ bom {
 				"jboss-logging"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/jboss-logging/jboss-logging/releases/tag/{version}")
+		}
 	}
 	library("JDOM2", "2.0.6.1") {
 		group("org.jdom") {
 			modules = [
 				"jdom2"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/hunterhacker/jdom/releases/tag/JDOM-{version}")
 		}
 	}
 	library("Jedis", "5.2.0") {
@@ -999,6 +1039,9 @@ bom {
 			modules = [
 				"junit"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/junit-team/junit4/blob/HEAD/doc/ReleaseNotes{version}.md")
 		}
 	}
 	library("JUnit Jupiter", "${junitJupiterVersion}") {
@@ -1192,12 +1235,18 @@ bom {
 				"maven-assembly-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-assembly-plugin/releases/tag/maven-assembly-plugin-{version}")
+		}
 	}
 	library("Maven Clean Plugin", "3.4.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-clean-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/apache/maven-clean-plugin/releases/tag/maven-clean-plugin-{version}")
 		}
 	}
 	library("Maven Compiler Plugin", "3.13.0") {
@@ -1206,12 +1255,18 @@ bom {
 				"maven-compiler-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-compiler-plugin/releases/tag/maven-compiler-plugin-{version}")
+		}
 	}
 	library("Maven Dependency Plugin", "3.8.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-dependency-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/apache/maven-dependency-plugin/releases/tag/maven-dependency-plugin-{version}")
 		}
 	}
 	library("Maven Deploy Plugin", "3.1.3") {
@@ -1220,6 +1275,9 @@ bom {
 				"maven-deploy-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-deploy-plugin/releases/tag/maven-deploy-plugin-{version}")
+		}
 	}
 	library("Maven Enforcer Plugin", "3.5.0") {
 		group("org.apache.maven.plugins") {
@@ -1227,12 +1285,18 @@ bom {
 				"maven-enforcer-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-enforcer/releases/tag/enforcer-{version}")
+		}
 	}
 	library("Maven Failsafe Plugin", "3.5.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-failsafe-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/apache/maven-surefire/releases/tag/surefire-{version}")
 		}
 	}
 	library("Maven Help Plugin", "3.5.1") {
@@ -1248,12 +1312,18 @@ bom {
 				"maven-install-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-install-plugin/releases/tag/maven-install-plugin-{version}")
+		}
 	}
 	library("Maven Invoker Plugin", "3.8.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-invoker-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/apache/maven-invoker-plugin/releases/tag/maven-invoker-plugin-{version}")
 		}
 	}
 	library("Maven Jar Plugin", "3.4.2") {
@@ -1262,12 +1332,18 @@ bom {
 				"maven-jar-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-jar-plugin/releases/tag/maven-jar-plugin-{version}")
+		}
 	}
 	library("Maven Javadoc Plugin", "3.10.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-javadoc-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/apache/maven-javadoc-plugin/releases/tag/maven-javadoc-plugin-{version}")
 		}
 	}
 	library("Maven Resources Plugin", "3.3.1") {
@@ -1276,12 +1352,18 @@ bom {
 				"maven-resources-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-resources-plugin/releases/tag/maven-resources-plugin-{version}")
+		}
 	}
 	library("Maven Shade Plugin", "3.6.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-shade-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/apache/maven-shade-plugin/releases/tag/maven-shade-plugin-{version}")
 		}
 	}
 	library("Maven Source Plugin", "3.3.1") {
@@ -1290,6 +1372,9 @@ bom {
 				"maven-source-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-source-plugin/releases/tag/maven-source-plugin-{version}")
+		}
 	}
 	library("Maven Surefire Plugin", "3.5.1") {
 		group("org.apache.maven.plugins") {
@@ -1297,12 +1382,18 @@ bom {
 				"maven-surefire-plugin"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/apache/maven-surefire/releases/tag/surefire-{version}")
+		}
 	}
 	library("Maven War Plugin", "3.4.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-war-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/apache/maven-war-plugin/releases/tag/maven-war-plugin-{version}")
 		}
 	}
 	library("Micrometer", "1.14.0-RC1") {
@@ -1394,6 +1485,11 @@ bom {
 					exclude group: "com.google.protobuf", module: "protobuf-java"
 				}
 			]
+		}
+		links {
+			releaseNotes { version -> "https://dev.mysql.com/doc/relnotes/connector-j/en/news-%s.html"
+				.formatted(version.toString().replace(".", "-"))
+			}
 		}
 	}
 	library("Native Build Tools Plugin", "${nativeBuildToolsVersion}") {
@@ -1497,6 +1593,9 @@ bom {
 				"oracle-r2dbc"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/oracle/oracle-r2dbc/releases/tag/{version}")
+		}
 	}
 	library("Pooled JMS", "3.1.7") {
 		group("org.messaginghub") {
@@ -1579,6 +1678,7 @@ bom {
 		links {
 			site("https://github.com/quartz-scheduler/quartz")
 			javadoc("https://www.javadoc.io/doc/org.quartz-scheduler/quartz/{version}")
+			releaseNotes("https://github.com/quartz-scheduler/quartz/releases/tag/v{version}")
 		}
 	}
 	library("QueryDSL", "5.1.0") {
@@ -1600,12 +1700,18 @@ bom {
 				"r2dbc-h2"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/r2dbc/r2dbc-h2/releases/tag/v{version}")
+		}
 	}
 	library("R2DBC MariaDB", "1.2.2") {
 		group("org.mariadb") {
 			modules = [
 				"r2dbc-mariadb"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/mariadb-corporation/mariadb-connector-r2dbc/releases/tag/{version}")
 		}
 	}
 	library("R2DBC MSSQL", "1.0.2.RELEASE") {
@@ -1614,12 +1720,18 @@ bom {
 				"r2dbc-mssql"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/r2dbc/r2dbc-mssql/releases/tag/v{version}")
+		}
 	}
 	library("R2DBC MySQL", "1.3.0") {
 		group("io.asyncer") {
 			modules = [
 				"r2dbc-mysql"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/asyncer-io/r2dbc-mysql/releases/tag/r2dbc-mysql-{version}")
 		}
 	}
 	library("R2DBC Pool", "1.0.2.RELEASE") {
@@ -1641,6 +1753,9 @@ bom {
 				"r2dbc-postgresql"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/pgjdbc/r2dbc-postgresql/releases/tag/v{version}")
+		}
 	}
 	library("R2DBC Proxy", "1.1.5.RELEASE") {
 		considerSnapshots()
@@ -1648,6 +1763,9 @@ bom {
 			modules = [
 				"r2dbc-proxy"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/r2dbc/r2dbc-proxy/releases/tag/v{version}")
 		}
 	}
 	library("R2DBC SPI", "1.0.0.RELEASE") {
@@ -1660,6 +1778,7 @@ bom {
 		links {
 			site("https://r2dbc.io")
 			javadoc("https://r2dbc.io/spec/{version}/api")
+			releaseNotes("https://github.com/r2dbc/r2dbc-spi/releases/tag/v{version}")
 		}
 	}
 	library("Rabbit AMQP Client", "5.22.0") {
@@ -1732,6 +1851,9 @@ bom {
 			modules = [
 				"rxjava"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/ReactiveX/RxJava/releases/tag/v{version}")
 		}
 	}
 	library("Spring Boot", "${version}") {
@@ -2227,6 +2349,9 @@ bom {
 				"thymeleaf-layout-dialect"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/ultraq/thymeleaf-layout-dialect/releases/tag/{version}")
+		}
 	}
 	library("Tomcat", "${tomcatVersion}") {
 		group("org.apache.tomcat") {
@@ -2247,6 +2372,8 @@ bom {
 		links {
 			site("https://tomcat.apache.org")
 			docs { version -> "https://tomcat.apache.org/tomcat-%s.%s-doc".formatted(version.major(), version.minor()) }
+			releaseNotes { version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html"
+				.formatted(version.major(), version.minor()) }
 		}
 	}
 	library("UnboundID LDAPSDK", "6.0.11") {
@@ -2254,6 +2381,9 @@ bom {
 			modules = [
 				"unboundid-ldapsdk"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/pingidentity/ldapsdk/releases/tag/{version}")
 		}
 	}
 	library("Undertow", "2.3.17.Final") {
@@ -2268,12 +2398,18 @@ bom {
 				"undertow-websockets-jsr"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/undertow-io/undertow/releases/tag/{version}")
+		}
 	}
 	library("Versions Maven Plugin", "2.17.1") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"versions-maven-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/mojohaus/versions/releases/tag/{version}")
 		}
 	}
 	library("WebJars Locator Lite", "1.0.0") {
@@ -2302,6 +2438,9 @@ bom {
 			plugins = [
 				"xml-maven-plugin"
 			]
+		}
+		links {
+			releaseNotes("https://github.com/mojohaus/xml-maven-plugin/releases/tag/{version}")
 		}
 	}
 	library("XmlUnit2", "2.10.0") {
