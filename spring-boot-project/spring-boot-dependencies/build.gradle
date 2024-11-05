@@ -1834,7 +1834,7 @@ bom {
 			javadoc("https://docs.spring.io/spring-boot/{version}/api/java")
 			docs("https://docs.spring.io/spring-boot/{version}")
 			releaseNotes("https://github.com/spring-projects/spring-boot/releases/tag/v{version}")
-			add("layers-xsd") { version -> "layers-xsd: https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
+			add("layers-xsd") { version -> "https://www.springframework.org/schema/boot/layers/layers-%s.%s.xsd"
 				.formatted(version.major(), version.minor()) }
 		}
 	}
