@@ -37,15 +37,24 @@ class DependencyManagementPluginActionIntegrationTests {
 
 	@TestTemplate
 	void noDependencyManagementIsAppliedByDefault() {
-		assertThat(this.gradleBuild.build("doesNotHaveDependencyManagement")
-			.task(":doesNotHaveDependencyManagement")
+		assertThat(this.gradleBuild.build("hasNotConfiguredDependencyManagement")
+			.task(":hasNotConfiguredDependencyManagement")
 			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void bomIsImportedWhenDependencyManagementPluginIsApplied() {
-		assertThat(this.gradleBuild.build("hasDependencyManagement", "-PapplyDependencyManagementPlugin")
-			.task(":hasDependencyManagement")
+		assertThat(this.gradleBuild.build("hasConfiguredDependencyManagement", "-PapplyDependencyManagementPlugin")
+			.task(":hasConfiguredDependencyManagement")
+			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
+	void bomIsNotImportedWhenDependencyManagementPluginIsAppliedAndPropertyIsSetToDisableImport() {
+		assertThat(this.gradleBuild
+			.build("hasNotConfiguredDependencyManagement", "-PapplyDependencyManagementPlugin",
+					"-Porg.springframework.boot.import-bom=false")
+			.task(":hasNotConfiguredDependencyManagement")
 			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 

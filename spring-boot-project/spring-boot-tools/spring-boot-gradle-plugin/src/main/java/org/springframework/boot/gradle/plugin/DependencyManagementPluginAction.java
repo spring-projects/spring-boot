@@ -21,6 +21,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
 
 /**
  * {@link Action} that is performed in response to the {@link DependencyManagementPlugin}
@@ -30,16 +31,30 @@ import org.gradle.api.Project;
  */
 final class DependencyManagementPluginAction implements PluginApplicationAction {
 
+	public static final String IMPORT_BOM_PROPERTY = "org.springframework.boot.import-bom";
+
 	@Override
 	public void execute(Project project) {
-		project.getExtensions()
-			.findByType(DependencyManagementExtension.class)
-			.imports((importsHandler) -> importsHandler.mavenBom(SpringBootPlugin.BOM_COORDINATES));
+		if (shouldImportBom(project)) {
+			project.getExtensions()
+				.findByType(DependencyManagementExtension.class)
+				.imports((importsHandler) -> importsHandler.mavenBom(SpringBootPlugin.BOM_COORDINATES));
+		}
 	}
 
 	@Override
 	public Class<? extends Plugin<Project>> getPluginClass() {
 		return DependencyManagementPlugin.class;
+	}
+
+	private boolean shouldImportBom(Project project) {
+		Object value = project.getExtensions()
+			.findByType(ExtraPropertiesExtension.class)
+			.getProperties()
+			.getOrDefault(IMPORT_BOM_PROPERTY, Boolean.TRUE);
+
+		return (value instanceof Boolean && (Boolean) value)
+				|| (value instanceof String && Boolean.parseBoolean((String) value));
 	}
 
 }
