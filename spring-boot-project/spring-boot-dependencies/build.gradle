@@ -1923,7 +1923,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-authorization-server/releases/tag/{version}")
 		}
 	}
-	library("Spring Batch", "5.2.0-RC1") {
+	library("Spring Batch", "5.2.0-SNAPSHOT") {
 		considerSnapshots()
 		group("org.springframework.batch") {
 			imports = [
