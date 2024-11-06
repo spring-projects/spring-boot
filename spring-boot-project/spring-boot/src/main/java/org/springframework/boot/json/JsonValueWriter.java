@@ -21,7 +21,9 @@ import java.io.UncheckedIOException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -223,6 +225,8 @@ class JsonValueWriter {
 			ActiveSeries activeSeries = this.activeSeries.peek();
 			Assert.notNull(activeSeries, "No series has been started");
 			activeSeries.incrementIndexAndAddCommaIfRequired();
+			Assert.state(activeSeries.addName(processedName),
+					() -> "The name '" + processedName + "' has already been written");
 			writeString(processedName);
 			append(":");
 			write(value);
@@ -359,8 +363,14 @@ class JsonValueWriter {
 
 		private int index;
 
+		private Set<String> names = new HashSet<>();
+
 		private ActiveSeries(Series series) {
 			this.series = series;
+		}
+
+		boolean addName(String processedName) {
+			return this.names.add(processedName);
 		}
 
 		MemberPath updatePath(MemberPath path) {
