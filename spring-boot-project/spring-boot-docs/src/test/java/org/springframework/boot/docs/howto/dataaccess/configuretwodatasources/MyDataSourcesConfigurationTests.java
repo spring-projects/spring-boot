@@ -32,12 +32,13 @@ import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MyAdditionalDataSourceConfiguration}.
+ * Tests for {@link MyCompleteAdditionalDataSourceConfiguration}.
  *
  * @author Stephane Nicoll
  */
-@SpringBootTest(properties = { "app.datasource.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1", "app.datasource.max-total=42" })
-@Import(MyAdditionalDataSourceConfiguration.class)
+@SpringBootTest(properties = { "app.datasource.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
+		"app.datasource.hikari.maximum-pool-size=42" })
+@Import(MyCompleteAdditionalDataSourceConfiguration.class)
 class MyDataSourcesConfigurationTests {
 
 	@Autowired

@@ -36,7 +36,7 @@ public class MyCompleteAdditionalDataSourceConfiguration {
 
 	@Qualifier("second")
 	@Bean(defaultCandidate = false)
-	@ConfigurationProperties("app.datasource.configuration")
+	@ConfigurationProperties("app.datasource.hikari")
 	public HikariDataSource secondDataSource(
 			@Qualifier("secondDataSourceProperties") DataSourceProperties secondDataSourceProperties) {
 		return secondDataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
