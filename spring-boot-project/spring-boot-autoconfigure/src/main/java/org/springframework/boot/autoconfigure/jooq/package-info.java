@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for JOOQ.
+ * Auto-configuration for jOOQ.
  */
 package org.springframework.boot.autoconfigure.jooq;

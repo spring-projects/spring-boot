@@ -21,12 +21,14 @@ import javax.sql.DataSource;
 import org.jooq.SQLDialect;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 
 /**
- * Configuration properties for the JOOQ database library.
+ * Configuration properties for the jOOQ database library.
  *
  * @author Andreas Ahlenstorf
  * @author Michael Simons
+ * @author Moritz Halbritter
  * @since 1.3.0
  */
 @ConfigurationProperties("spring.jooq")
@@ -37,12 +39,25 @@ public class JooqProperties {
 	 */
 	private SQLDialect sqlDialect;
 
+	/**
+	 * Location of the jOOQ config file.
+	 */
+	private Resource config;
+
 	public SQLDialect getSqlDialect() {
 		return this.sqlDialect;
 	}
 
 	public void setSqlDialect(SQLDialect sqlDialect) {
 		this.sqlDialect = sqlDialect;
+	}
+
+	public Resource getConfig() {
+		return this.config;
+	}
+
+	public void setConfig(Resource config) {
+		this.config = config;
 	}
 
 	/**

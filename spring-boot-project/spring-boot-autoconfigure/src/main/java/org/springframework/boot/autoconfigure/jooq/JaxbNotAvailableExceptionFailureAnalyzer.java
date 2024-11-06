@@ -16,29 +16,21 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
-import org.jooq.Transaction;
-
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
+import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.FailureAnalyzer;
 
 /**
- * Adapts a Spring transaction for jOOQ.
+ * {@link FailureAnalyzer} for {@link JaxbNotAvailableException}.
  *
- * @author Lukas Eder
- * @author Andreas Ahlenstorf
- * @author Phillip Webb
+ * @author Moritz Halbritter
  */
-class SpringTransaction implements Transaction {
+class JaxbNotAvailableExceptionFailureAnalyzer extends AbstractFailureAnalyzer<JaxbNotAvailableException> {
 
-	// Based on the jOOQ-spring-example from https://github.com/jOOQ/jOOQ
-
-	private final TransactionStatus transactionStatus;
-
-	SpringTransaction(TransactionStatus transactionStatus) {
-		this.transactionStatus = transactionStatus;
-	}
-
-	TransactionStatus getTxStatus() {
-		return this.transactionStatus;
+	@Override
+	protected FailureAnalysis analyze(Throwable rootFailure, JaxbNotAvailableException cause) {
+		return new FailureAnalysis("Unable to unmarshal jOOQ settings because JAXB is not available.",
+				"Add JAXB to the classpath or remove the spring.jooq.config property.", cause);
 	}
 
 }

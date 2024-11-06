@@ -4,3 +4,4 @@
 ^http://www.jdotsoft.com.*
 ^http://www.liquibase.org/xml/ns/dbchangelog/.*
 ^http://www.w3.org/2000/09/xmldsig.*
+^http://www.jooq.org/xsd/jooq-runtime-.*
