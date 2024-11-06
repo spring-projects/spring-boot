@@ -28,7 +28,7 @@ public class MyDatasourceConfiguration {
 
 	@Bean
 	@ConfigurationProperties("app.datasource.second")
-	public BasicDataSource secondDataSource() {
+	public HikariDataSource secondDataSource() {
 		return DataSourceBuilder.create().type(HikariDataSource.class).build();
 	}
 
