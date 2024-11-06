@@ -32,21 +32,16 @@ import zipkin2.reporter.HttpEndpointSuppliers;
 import zipkin2.reporter.SpanBytesEncoder;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.brave.MutableSpanBytesEncoder;
-import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Configurations for Zipkin. Those are imported by {@link ZipkinAutoConfiguration}.
@@ -57,9 +52,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({
-			HttpClientSenderConfiguration.class
-	})
+	@Import({ HttpClientSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
@@ -76,9 +69,9 @@ class ZipkinConfigurations {
 				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
 				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
 			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
-					.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
+				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
 			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
-					.getIfAvailable(HttpEndpointSuppliers::constantFactory);
+				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
 			Builder httpClientBuilder = HttpClient.newBuilder().connectTimeout(properties.getConnectTimeout());
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
 			return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
