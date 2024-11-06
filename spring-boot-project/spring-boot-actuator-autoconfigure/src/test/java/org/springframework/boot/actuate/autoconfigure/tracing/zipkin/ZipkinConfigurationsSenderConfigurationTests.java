@@ -54,9 +54,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(BytesMessageSender.class);
-		});
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(BytesMessageSender.class));
 	}
 
 	@Test
