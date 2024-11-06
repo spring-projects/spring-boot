@@ -34,8 +34,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MyCompleteAdditionalDataSourceConfiguration}.
  *
  * @author Stephane Nicoll
+ * @author Raja Kolli
  */
-@SpringBootTest
+@SpringBootTest(properties = { "app.datasource.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1",
+		"app.datasource.hikari.maximum-pool-size=42" })
 @Import(MyCompleteAdditionalDataSourceConfiguration.class)
 class MyCompleteDataSourcesConfigurationTests {
 
@@ -55,7 +57,11 @@ class MyCompleteDataSourcesConfigurationTests {
 		assertThat(this.context.getBean("dataSource")).isSameAs(this.dataSource);
 		assertThat(this.dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
 		assertThat(this.context.getBean("secondDataSource")).isSameAs(this.secondDataSource);
-		assertThat(this.secondDataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
+		assertThat(this.secondDataSource).extracting((dataSource) -> ((HikariDataSource) dataSource).getJdbcUrl())
+			.isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
+		assertThat(this.secondDataSource)
+			.extracting((dataSource) -> ((HikariDataSource) dataSource).getMaximumPoolSize())
+			.isEqualTo(42);
 	}
 
 }
