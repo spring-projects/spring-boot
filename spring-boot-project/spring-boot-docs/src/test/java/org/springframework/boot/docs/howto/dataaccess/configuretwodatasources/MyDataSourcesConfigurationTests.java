@@ -20,7 +20,6 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@SpringBootTest(properties = { "app.datasource.url=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1" })
+@SpringBootTest(properties = { "app.datasource.jdbcUrl=jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1" })
 @Import(MyAdditionalDataSourceConfiguration.class)
 class MyDataSourcesConfigurationTests {
 

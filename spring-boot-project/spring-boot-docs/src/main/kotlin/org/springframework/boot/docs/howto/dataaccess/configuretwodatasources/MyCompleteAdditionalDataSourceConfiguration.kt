@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configuretwodatasources
 
-import org.apache.commons.dbcp2.BasicDataSource
+import com.zaxxer.hikari.HikariDataSource
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
@@ -36,9 +36,9 @@ class MyCompleteAdditionalDataSourceConfiguration {
 
 	@Qualifier("second")
 	@Bean(defaultCandidate = false)
-	@ConfigurationProperties("app.datasource.configuration")
-	fun secondDataSource(secondDataSourceProperties: DataSourceProperties): BasicDataSource {
-		return secondDataSourceProperties.initializeDataSourceBuilder().type(BasicDataSource::class.java).build()
+	@ConfigurationProperties("app.datasource.hikari")
+	fun secondDataSource(secondDataSourceProperties: DataSourceProperties): HikariDataSource? {
+		return secondDataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource::class.java).build()
 	}
 
 }
