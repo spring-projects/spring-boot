@@ -56,9 +56,10 @@ class MyDataSourcesConfigurationTests {
 		assertThat(this.context.getBean("dataSource")).isSameAs(this.dataSource);
 		assertThat(this.dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
 		assertThat(this.context.getBean("secondDataSource")).isSameAs(this.secondDataSource);
-		assertThat(this.secondDataSource).extracting((dataSource) -> ((HikariDataSource) dataSource).getUrl())
+		assertThat(this.secondDataSource).extracting((dataSource) -> ((HikariDataSource) dataSource).getJdbcUrl())
 			.isEqualTo("jdbc:h2:mem:bar;DB_CLOSE_DELAY=-1");
-		assertThat(this.secondDataSource).extracting((dataSource) -> ((HikariDataSource) dataSource).getMaxTotal())
+		assertThat(this.secondDataSource)
+			.extracting((dataSource) -> ((HikariDataSource) dataSource).getMaximumPoolSize())
 			.isEqualTo(42);
 	}
 
