@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.artifact.versioning.VersionRange;
@@ -65,7 +68,7 @@ public class Library {
 
 	private final String linkRootName;
 
-	private final Map<String, Function<LibraryVersion, String>> links;
+	private final Map<String, Link> links;
 
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
@@ -86,7 +89,7 @@ public class Library {
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
 			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment,
-			String alignsWithBom, String linkRootName, Map<String, Function<LibraryVersion, String>> links) {
+			String alignsWithBom, String linkRootName, Map<String, Link> links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -98,7 +101,7 @@ public class Library {
 		this.versionAlignment = versionAlignment;
 		this.alignsWithBom = alignsWithBom;
 		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
-		this.links = Collections.unmodifiableMap(links);
+		this.links = Collections.unmodifiableMap(new TreeMap<>(links));
 	}
 
 	private static String generateLinkRootName(String name) {
@@ -145,14 +148,17 @@ public class Library {
 		return this.alignsWithBom;
 	}
 
-	public Map<String, String> getLinks() {
-		return getLinks(this.version);
+	public Map<String, Link> getLinks() {
+		return this.links;
 	}
 
-	public Map<String, String> getLinks(LibraryVersion version) {
-		Map<String, String> links = new TreeMap<>();
-		this.links.forEach((name, linkFactory) -> links.put(name, linkFactory.apply(version)));
-		return Collections.unmodifiableMap(links);
+	public String getLinkUrl(String name) {
+		Link link = getLink(name);
+		return (link != null) ? link.url(this) : null;
+	}
+
+	public Link getLink(String name) {
+		return this.links.get(name);
 	}
 
 	/**
@@ -514,6 +520,38 @@ public class Library {
 				result += " that is managed by " + this.managedBy;
 			}
 			return result;
+		}
+
+	}
+
+	public static record Link(Function<LibraryVersion, String> factory, List<String> packages) {
+
+		private static final Pattern PACKAGE_EXPAND = Pattern.compile("^(.*)\\[(.*)\\]$");
+
+		public Link {
+			packages = (packages != null) ? List.copyOf(expandPackages(packages)) : Collections.emptyList();
+		}
+
+		private static List<String> expandPackages(List<String> packages) {
+			return packages.stream().flatMap(Link::expandPackage).toList();
+		}
+
+		private static Stream<String> expandPackage(String packageName) {
+			Matcher matcher = PACKAGE_EXPAND.matcher(packageName);
+			if (!matcher.matches()) {
+				return Stream.of(packageName);
+			}
+			String root = matcher.group(1);
+			String[] suffixes = matcher.group(2).split("\\|");
+			return Stream.of(suffixes).map((suffix) -> root + suffix);
+		}
+
+		public String url(Library library) {
+			return url(library.getVersion());
+		}
+
+		public String url(LibraryVersion libraryVersion) {
+			return factory().apply(libraryVersion);
 		}
 
 	}

@@ -61,6 +61,7 @@ import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
+import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
@@ -255,7 +256,7 @@ public class BomExtension {
 
 		private String linkRootName;
 
-		private final Map<String, Function<LibraryVersion, String>> links = new HashMap<>();
+		private final Map<String, Link> links = new HashMap<>();
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
@@ -457,7 +458,7 @@ public class BomExtension {
 
 	public static class LinksHandler {
 
-		private final Map<String, Function<LibraryVersion, String>> links = new HashMap<>();
+		private final Map<String, Link> links = new HashMap<>();
 
 		public void site(String linkTemplate) {
 			site(asFactory(linkTemplate));
@@ -487,8 +488,16 @@ public class BomExtension {
 			javadoc(asFactory(linkTemplate));
 		}
 
+		public void javadoc(String linkTemplate, String... packages) {
+			javadoc(asFactory(linkTemplate), packages);
+		}
+
 		public void javadoc(Function<LibraryVersion, String> linkFactory) {
 			add("javadoc", linkFactory);
+		}
+
+		public void javadoc(Function<LibraryVersion, String> linkFactory, String... packages) {
+			add("javadoc", linkFactory, packages);
 		}
 
 		public void releaseNotes(String linkTemplate) {
@@ -504,7 +513,11 @@ public class BomExtension {
 		}
 
 		public void add(String name, Function<LibraryVersion, String> linkFactory) {
-			this.links.put(name, linkFactory);
+			add(name, linkFactory, null);
+		}
+
+		public void add(String name, Function<LibraryVersion, String> linkFactory, String[] packages) {
+			this.links.put(name, new Link(linkFactory, (packages != null) ? List.of(packages) : null));
 		}
 
 		private Function<LibraryVersion, String> asFactory(String linkTemplate) {

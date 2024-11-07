@@ -80,11 +80,12 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 
 	@Override
 	protected String issueBody(Upgrade upgrade, Issue existingUpgrade) {
-		String releaseNotes = upgrade.getLibrary().getLinks().get("releaseNotes");
+		Library library = upgrade.getLibrary();
+		String releaseNotesLink = library.getLinkUrl("releaseNotes");
 		List<String> lines = new ArrayList<>();
 		String description = description(upgrade);
-		if (releaseNotes != null) {
-			lines.add("Upgrade to [%s](%s).".formatted(description, releaseNotes));
+		if (releaseNotesLink != null) {
+			lines.add("Upgrade to [%s](%s).".formatted(description, releaseNotesLink));
 		}
 		lines.add("Upgrade to %s.".formatted(description));
 		if (existingUpgrade != null) {
