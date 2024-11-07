@@ -54,10 +54,15 @@ app:
     pool-size: 30
 ----
 
-However, there is a catch.
-Because the actual type of the connection pool is not exposed, no keys are generated in the metadata for your custom `DataSource` and no completion is available in your IDE (because the `DataSource` interface exposes no properties).
-Also, if you happen to have Hikari on the classpath, this basic setup does not work, because Hikari has no `url` property (but does have a `jdbcUrl` property).
-In that case, you must rewrite your configuration as follows:
+However, there is a catch due to the method's `DataSource` return type.
+This hides the actual type of the connection pool so no configuration property metadata is generated for your custom `DataSource` and no auto-completion is available in your IDE.
+To address this problem, use the builder's `type(Class)` method to specify the type of `DataSource` to be built and update the method's return type.
+For example, the following shows how to create a `HikariDataSource` with `DataSourceBuilder`:
+
+include-code::simple/MyDataSourceConfiguration[]
+
+Unfortunately, this basic setup does not work because Hikari has no `url` property.
+Instead, it has a `jdbc-url` property which means that you must rewrite your configuration as follows:
 
 [configprops%novalidate,yaml]
 ----
@@ -69,22 +74,15 @@ app:
     pool-size: 30
 ----
 
-You can fix that by forcing the connection pool to use and return a dedicated implementation rather than `DataSource`.
-You cannot change the implementation at runtime, but the list of options will be explicit.
-
-The following example shows how to create a `HikariDataSource` with `DataSourceBuilder`:
-
-include-code::simple/MyDataSourceConfiguration[]
-
-You can even go further by leveraging what `DataSourceProperties` does for you -- that is, by providing a default embedded database with a sensible username and password if no URL is provided.
-You can easily initialize a `DataSourceBuilder` from the state of any `DataSourceProperties` object, so you could also inject the DataSource that Spring Boot creates automatically.
-However, that would split your configuration into two namespaces: `url`, `username`, `password`, `type`, and `driver` on `spring.datasource` and the rest on your custom namespace (`app.datasource`).
-To avoid that, you can redefine a custom `DataSourceProperties` on your custom namespace, as shown in the following example:
+To address this problem, make use of `DataSourceProperties` which will handle the `url` to `jdbc-url` translation for you.
+You can initialize a `DataSourceBuilder` from the state of any `DataSourceProperties` object using its `initializeDataSourceBuilder()` method.
+You could inject the `DataSourceProperties` that Spring Boot creates automatically, however, that would split your configuration across `+spring.datasource.*+` and `+app.datasource.*+`.
+To avoid this, define a custom `DataSourceProperties` with a custom configuration properties prefix, as shown in the following example:
 
 include-code::configurable/MyDataSourceConfiguration[]
 
-This setup puts you _in sync_ with what Spring Boot does for you by default, except that a dedicated connection pool is chosen (in code) and its settings are exposed in the `app.datasource.configuration` sub namespace.
-Because `DataSourceProperties` is taking care of the `url`/`jdbcUrl` translation for you, you can configure it as follows:
+This setup is equivalent to what Spring Boot does for you by default, except that the pool's type is specified in code and its settings are exposed as `app.datasource.configuration.*` properties.
+`DataSourceProperties` takes care of the `url` to `jdbc-url` translation, so you can configure it as follows:
 
 [configprops%novalidate,yaml]
 ----
@@ -97,13 +95,16 @@ app:
       maximum-pool-size: 30
 ----
 
+Note that, as the custom configuration specifies in code that Hikari should be used, `app.datasource.type` will have no effect.
+
+As described in xref:reference:data/sql.adoc#data.sql.datasource.connection-pool[], `DataSourceBuilder` supports several different connection pools.
+To use a pool other than Hikari, add it to the classpath, use the `type(Class)` method to specify the pool class to use, and update the `@Bean` method's return type to match.
+This will also provide you with configuration property metadata for the specific connection pool that you've chosen.
+
 TIP: Spring Boot will expose Hikari-specific settings to `spring.datasource.hikari`.
 This example uses a more generic `configuration` sub namespace as the example does not support multiple datasource implementations.
 
-NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type` has no effect.
-In practice, the builder is initialized with whatever value you might set there and then overridden by the call to `.type()`.
-
-See xref:reference:data/sql.adoc#data.sql.datasource[] in the "`Spring Boot Features`" section and the {code-spring-boot-autoconfigure-src}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
+See xref:reference:data/sql.adoc#data.sql.datasource[] and the {code-spring-boot-autoconfigure-src}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
 
 
 
@@ -148,6 +149,9 @@ include-code::MyCompleteAdditionalDataSourceConfiguration[]
 
 The preceding example configures the additional data source with the same logic as Spring Boot would use in auto-configuration.
 Note that the `app.datasource.configuration.*` properties provide advanced settings based on the chosen implementation.
+
+As with xref:how-to:data-access.adoc#howto.data-access.configure-custom-datasource[configuring a single custom `DataSource`], the type of one or both of the `DataSource` beans can be customized using the `type(Class)` method on `DataSourceBuilder`.
+See xref:reference:data/sql.adoc#data.sql.datasource.connection-pool[] for details of the supported types.
 
 
 
