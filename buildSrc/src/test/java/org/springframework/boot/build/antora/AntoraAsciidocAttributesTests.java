@@ -21,13 +21,13 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
+import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -187,14 +187,20 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void urlLinksFromLibrary() {
-		Map<String, Function<LibraryVersion, String>> links = new LinkedHashMap<>();
-		links.put("site", (version) -> "https://example.com/site/" + version);
-		links.put("docs", (version) -> "https://example.com/docs/" + version);
+		Map<String, Link> links = new LinkedHashMap<>();
+		links.put("site", new Link((version) -> "https://example.com/site/" + version, null));
+		links.put("docs", new Link((version) -> "https://example.com/docs/" + version, null));
+		links.put("javadoc", new Link((version) -> "https://example.com/api/" + version,
+				List.of("org.springframework.[core|util]")));
 		Library library = mockLibrary(links);
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
 				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-spring-framework-site", "https://example.com/site/1.2.3")
-			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3");
+			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3")
+			.containsEntry("url-spring-framework-javadoc", "https://example.com/api/1.2.3");
+		assertThat(attributes.get())
+			.containsEntry("javadoc-location-org-springframework-core", "{url-spring-framework-javadoc}")
+			.containsEntry("javadoc-location-org-springframework-util", "{url-spring-framework-javadoc}");
 	}
 
 	@Test
@@ -209,7 +215,7 @@ class AntoraAsciidocAttributesTests {
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
 	}
 
-	private Library mockLibrary(Map<String, Function<LibraryVersion, String>> links) {
+	private Library mockLibrary(Map<String, Link> links) {
 		String name = "Spring Framework";
 		String calendarName = null;
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));

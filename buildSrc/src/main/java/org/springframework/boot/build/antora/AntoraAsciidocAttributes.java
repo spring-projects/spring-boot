@@ -175,8 +175,19 @@ public class AntoraAsciidocAttributes {
 	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
 		this.libraries.forEach((library) -> {
 			String prefix = "url-" + library.getLinkRootName() + "-";
-			library.getLinks().forEach((name, link) -> attributes.put(prefix + name, link));
+			library.getLinks().forEach((name, link) -> {
+				String linkName = prefix + name;
+				attributes.put(linkName, link.url(library));
+				link.packages()
+					.stream()
+					.map(this::packageAttributeName)
+					.forEach((packageAttributeName) -> attributes.put(packageAttributeName, "{" + linkName + "}"));
+			});
 		});
+	}
+
+	private String packageAttributeName(String packageName) {
+		return "javadoc-location-" + packageName.replace('.', '-');
 	}
 
 	private void addPropertyAttributes(Map<String, String> attributes) {
