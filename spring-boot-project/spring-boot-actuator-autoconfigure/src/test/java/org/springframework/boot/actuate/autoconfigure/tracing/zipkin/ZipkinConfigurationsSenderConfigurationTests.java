@@ -31,6 +31,7 @@ import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.UrlConnectionSenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -63,25 +64,25 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
 	@Test
-	void shouldSupplyBeans() {
+	void shouldSupplyDefaultHttpClientSenderBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BytesMessageSender.class);
-			assertThat(context).hasSingleBean(URLConnectionSender.class);
+			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
 			assertThat(context).doesNotHaveBean(ZipkinRestTemplateSender.class);
+			assertThat(context).doesNotHaveBean(ZipkinWebClientSenderTests.class);
+			assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 		});
 	}
 
 	@Test
-	void shouldUseHttpClientIfUrlSenderIsNotAvailable() {
-		this.contextRunner.withUserConfiguration(HttpClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection", "org.springframework.web.client",
+	void shouldUseUrlSenderIfHttpSenderIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
+			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient", "org.springframework.web.client",
 					"org.springframework.web.reactive.function.client"))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
-				assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
-				then(context.getBean(ZipkinHttpClientBuilderCustomizer.class)).should()
-					.customize(ArgumentMatchers.any());
+				assertThat(context).hasSingleBean(URLConnectionSender.class);
 			});
 	}
 
