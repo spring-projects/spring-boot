@@ -33,7 +33,7 @@ include-code::MyConfiguration[]
 For a `@WebMvcTest` for an application with the above `@Configuration` class, you might expect to have the `SecurityFilterChain` bean in the application context so that you can test if your controller endpoints are secured properly.
 However, `MyConfiguration` is not picked up by @WebMvcTest's component scanning filter because it doesn't match any of the types specified by the filter.
 You can include the configuration explicitly by annotating the test class with `@Import(MyConfiguration.class)`.
-This will load all the beans in `MyConfiguration` including the `BasicDataSource` bean which isn't required when testing the web tier.
+This will load all the beans in `MyConfiguration` including the `HikariDataSource` bean which isn't required when testing the web tier.
 Splitting the configuration class into two will enable importing just the security configuration.
 
 include-code::MySecurityConfiguration[]

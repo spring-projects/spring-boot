@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docs.howto.testing.slicetests;
 
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -28,8 +28,8 @@ public class MyDatasourceConfiguration {
 
 	@Bean
 	@ConfigurationProperties("app.datasource.second")
-	public BasicDataSource secondDataSource() {
-		return DataSourceBuilder.create().type(BasicDataSource.class).build();
+	public HikariDataSource secondDataSource() {
+		return DataSourceBuilder.create().type(HikariDataSource.class).build();
 	}
 
 }
