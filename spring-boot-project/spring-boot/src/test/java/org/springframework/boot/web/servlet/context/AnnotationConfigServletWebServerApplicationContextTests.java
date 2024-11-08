@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -154,7 +155,7 @@ class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Component
-	@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	static class SessionScopedComponent {
 
 	}
