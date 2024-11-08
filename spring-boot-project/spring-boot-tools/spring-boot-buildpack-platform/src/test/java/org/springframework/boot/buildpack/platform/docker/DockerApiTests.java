@@ -319,6 +319,16 @@ class DockerApiTests {
 				.withMessageContaining("Invalid response received");
 		}
 
+		@Test // gh-31243
+		void loadWithErrorResponseThrowsException() throws Exception {
+			Image image = Image.of(getClass().getResourceAsStream("type/image.json"));
+			ImageArchive archive = ImageArchive.from(image);
+			URI loadUri = new URI(IMAGES_URL + "/load");
+			given(http().post(eq(loadUri), eq("application/x-tar"), any())).willReturn(responseOf("load-error.json"));
+			assertThatIllegalStateException().isThrownBy(() -> this.api.load(archive, this.loadListener))
+				.withMessageContaining("Error response received");
+		}
+
 		@Test
 		void loadLoadsImage() throws Exception {
 			Image image = Image.of(getClass().getResourceAsStream("type/image.json"));
