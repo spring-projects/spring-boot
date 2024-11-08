@@ -97,9 +97,34 @@ public abstract class Launcher {
 	protected void launch(ClassLoader classLoader, String mainClassName, String[] args) throws Exception {
 		Thread.currentThread().setContextClassLoader(classLoader);
 		Class<?> mainClass = Class.forName(mainClassName, false, classLoader);
-		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
+
+		Method[] methods = mainClass.getDeclaredMethods();
+		Method mainMethod = null;
+		for(Method m : methods) {
+			if("main".equals(m.getName())) {
+				mainMethod = m;
+				break;
+			}
+		}
+
+		if(mainMethod == null)
+			throw new Exception("No main method was found");
+
 		mainMethod.setAccessible(true);
-		mainMethod.invoke(null, new Object[] { args });
+		Parameter[] params = mainMethod.getParameters();
+
+		if(params.length > 0) {
+			if(params.length > 1)
+				throw new Exception("No more than one arguments is accepted in main method");
+				
+			Parameter argParam = params[0];
+			if(!String[].class.getCanonicalName().equals(argParam.getType().getCanonicalName()))
+				throw new Exception("Argument of main method is not accepted");
+				
+			mainMethod.invoke(null, new Object[] { args });	
+		} else {
+			mainMethod.invoke(null);
+		}
 	}
 
 	/**
