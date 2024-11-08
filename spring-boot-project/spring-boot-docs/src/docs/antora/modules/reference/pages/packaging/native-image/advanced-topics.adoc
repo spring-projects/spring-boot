@@ -158,7 +158,7 @@ For further reading, please see {url-graal-docs-native-image}/metadata/Automatic
 [[packaging.native-image.advanced.custom-hints]]
 == Custom Hints
 
-If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use the `RuntimeHintsRegistrar` API.
+If you need to provide your own hints for reflection, resources, serialization, proxy usage and so on, you can use the `RuntimeHintsRegistrar` API.
 Create a class that implements the `RuntimeHintsRegistrar` interface, and then make appropriate calls to the provided `RuntimeHints` instance:
 
 include-code::MyRuntimeHints[]
@@ -180,6 +180,15 @@ The API provides methods that build a `Predicate` that can be used to test a `Ru
 If you're using AssertJ, your test would look like this:
 
 include-code::MyRuntimeHintsTests[]
+
+
+
+[[packaging.native-image.advanced.custom-hints.static]]
+=== Providing Hints Statically
+If you prefer, custom hints can be provided statically in one or more GraalVM JSON hint files.
+Such files should be placed in `src/main/resources/` within a `+META-INF/native-image/*/*/+` directory.
+The xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[hints generated during AOT processing] are written to a directory named `+META-INF/native-image/{groupId}/{artifactId}/+`.
+Place your static hint files in a directory that does not clash with this location, such as `+META-INF/native-image/{groupId}/{artifactId}-additional-hints/+`.
 
 
 
