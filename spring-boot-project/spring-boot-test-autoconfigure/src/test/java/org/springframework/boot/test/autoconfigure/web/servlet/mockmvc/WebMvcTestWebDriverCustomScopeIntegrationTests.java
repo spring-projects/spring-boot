@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +64,7 @@ class WebMvcTestWebDriverCustomScopeIntegrationTests {
 	static class Config {
 
 		@Bean
-		@Scope("singleton")
+		@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 		WebDriverFactory webDriver(MockMvc mockMvc) {
 			return new WebDriverFactory(mockMvc);
 		}
