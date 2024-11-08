@@ -2244,7 +2244,7 @@ bom {
 			javadoc(version -> "https://docs.spring.io/spring-security/site/docs/%s/api"
 				.formatted(version.forMajorMinorGeneration()), "org.springframework.security")
 			docs(version -> "https://docs.spring.io/spring-security/reference/%s"
-				.formatted(version.forAntora()), "org.springframework.security")
+				.formatted(version.forAntora()))
 			releaseNotes("https://github.com/spring-projects/spring-security/releases/tag/{version}")
 		}
 	}
