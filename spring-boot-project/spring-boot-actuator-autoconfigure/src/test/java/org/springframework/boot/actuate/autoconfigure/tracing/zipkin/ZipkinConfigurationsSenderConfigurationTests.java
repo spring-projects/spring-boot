@@ -77,7 +77,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldUseUrlSenderIfHttpSenderIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient", "org.springframework.web.client",
+			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.http.HttpClientSender", "org.springframework.web.client",
 					"org.springframework.web.reactive.function.client"))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
@@ -87,7 +87,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndUrlSenderIsNotAvailable() {
+	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndHttpClientSenderIsNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
 			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
 			.run((context) -> {
@@ -100,11 +100,11 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void shouldPreferWebClientSenderIfWebApplicationIsServletAndUrlSenderIsNotAvailable() {
+	void shouldPreferWebClientSenderIfWebApplicationIsServletAndHttpClientSenderIsNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.http.HttpClientSender"))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 			});
