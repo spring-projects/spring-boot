@@ -338,7 +338,7 @@ The following example uses HtmlUnit:
 include-code::MyHtmlUnitTests[]
 
 NOTE: By default, Spring Boot puts `WebDriver` beans in a special "`scope`" to ensure that the driver exits after each test and that a new instance is injected.
-If you do not want this behavior, you can add `@Scope("singleton")` to your `WebDriver` `@Bean` definition.
+If you do not want this behavior, you can add `@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)` to your `WebDriver` `@Bean` definition.
 
 WARNING: The `webDriver` scope created by Spring Boot will replace any user defined scope of the same name.
 If you define your own `webDriver` scope you may find it stops working when you use `@WebMvcTest`.

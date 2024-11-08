@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import graphql.GraphQL;
 import io.rsocket.RSocket;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,7 +48,7 @@ import org.springframework.util.MimeTypeUtils;
 public class RSocketGraphQlClientAutoConfiguration {
 
 	@Bean
-	@Scope("prototype")
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
 	public RSocketGraphQlClient.Builder<?> rsocketGraphQlClientBuilder(
 			RSocketRequester.Builder rsocketRequesterBuilder) {
