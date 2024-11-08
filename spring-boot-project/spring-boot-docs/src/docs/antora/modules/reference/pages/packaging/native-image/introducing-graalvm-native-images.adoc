@@ -56,12 +56,14 @@ A Spring AOT processed application will typically generate:
 
 * Java source code
 * Bytecode (for dynamic proxies etc)
-* GraalVM JSON hint files:
+* GraalVM JSON hint files in `+META-INF/native-image/{groupId}/{artifactId}/+`:
  - Resource hints (`resource-config.json`)
  - Reflection hints (`reflect-config.json`)
  - Serialization hints (`serialization-config.json`)
  - Java Proxy Hints (`proxy-config.json`)
  - JNI Hints (`jni-config.json`)
+
+If the generated hints are not sufficient, you can also xref:packaging/native-image/advanced-topics.adoc#packaging.native-image.advanced.custom-hints[provide your own].
 
 
 
