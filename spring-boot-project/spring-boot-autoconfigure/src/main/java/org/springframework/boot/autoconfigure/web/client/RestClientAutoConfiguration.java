@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.client;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -78,7 +78,7 @@ public class RestClientAutoConfiguration {
 	}
 
 	@Bean
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
 	RestClient.Builder restClientBuilder(RestClientBuilderConfigurer restClientBuilderConfigurer) {
 		RestClient.Builder builder = RestClient.builder()

@@ -20,7 +20,7 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -47,7 +47,7 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
 public class RSocketRequesterAutoConfiguration {
 
 	@Bean
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
 	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies,
 			ObjectProvider<RSocketConnectorConfigurer> connectorConfigurers) {

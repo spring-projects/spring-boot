@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -49,7 +49,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientAutoConfiguration {
 
 	@Bean
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
 	public WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider) {
 		WebClient.Builder builder = WebClient.builder();

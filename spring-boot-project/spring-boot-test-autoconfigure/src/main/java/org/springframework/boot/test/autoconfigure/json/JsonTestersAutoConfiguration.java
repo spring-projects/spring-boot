@@ -31,8 +31,8 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -74,7 +74,7 @@ public class JsonTestersAutoConfiguration {
 	}
 
 	@Bean
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ImportRuntimeHints(BasicJsonTesterRuntimeHints.class)
 	public FactoryBean<BasicJsonTester> basicJsonTesterFactoryBean() {
 		return new JsonTesterFactoryBean<BasicJsonTester, Void>(BasicJsonTester.class, null);
@@ -85,7 +85,7 @@ public class JsonTestersAutoConfiguration {
 	static class JacksonJsonTestersConfiguration {
 
 		@Bean
-		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnBean(ObjectMapper.class)
 		@ImportRuntimeHints(JacksonTesterRuntimeHints.class)
 		FactoryBean<JacksonTester<?>> jacksonTesterFactoryBean(ObjectMapper mapper) {
@@ -107,7 +107,7 @@ public class JsonTestersAutoConfiguration {
 	static class GsonJsonTestersConfiguration {
 
 		@Bean
-		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnBean(Gson.class)
 		@ImportRuntimeHints(GsonTesterRuntimeHints.class)
 		FactoryBean<GsonTester<?>> gsonTesterFactoryBean(Gson gson) {
@@ -129,7 +129,7 @@ public class JsonTestersAutoConfiguration {
 	static class JsonbJsonTesterConfiguration {
 
 		@Bean
-		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConditionalOnBean(Jsonb.class)
 		@ImportRuntimeHints(JsonbJsonTesterRuntimeHints.class)
 		FactoryBean<JsonbTester<?>> jsonbTesterFactoryBean(Jsonb jsonb) {

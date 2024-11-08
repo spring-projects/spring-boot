@@ -20,7 +20,7 @@ import graphql.GraphQL;
 import io.rsocket.RSocket;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -48,7 +48,7 @@ import org.springframework.util.MimeTypeUtils;
 public class RSocketGraphQlClientAutoConfiguration {
 
 	@Bean
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
 	public RSocketGraphQlClient.Builder<?> rsocketGraphQlClientBuilder(
 			RSocketRequester.Builder rsocketRequesterBuilder) {
