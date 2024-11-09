@@ -131,9 +131,9 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void willUseRestTemplateInNonWebApplicationIfSenderAndWebClientAreNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(HttpClient.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 			});
@@ -202,27 +202,31 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		}
 	}
 
+	// passed
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactory() {
 		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
+				.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class, RestTemplate.class))
 			.run((context) -> assertThat(context.getBean(URLConnectionSender.class))
 				.extracting("delegate.endpointSupplier")
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
 	}
 
+	// passed
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenReactive() {
 		this.reactiveContextRunner.withUserConfiguration(WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ZipkinWebClientSender.class)).extracting("endpointSupplier")
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
 	}
 
+	// passed
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenRestTemplate() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ZipkinRestTemplateSender.class)).extracting("endpointSupplier")
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
