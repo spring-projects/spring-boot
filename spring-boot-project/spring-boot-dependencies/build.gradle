@@ -530,7 +530,7 @@ bom {
 		links {
 			site("https://hibernate.org/orm")
 			javadoc(version -> "https://docs.jboss.org/hibernate/orm/%s.%s/javadocs"
-				.formatted(version.major(), version.minor()))
+				.formatted(version.major(), version.minor()), "org.hibernate.boot", "org.hibernate.resource")
 			docs(version -> "https://hibernate.org/orm/documentation/%s.%s"
 				.formatted(version.major(), version.minor()))
 			releaseNotes(version -> "https://github.com/hibernate/hibernate-orm/releases/tag/%s"
@@ -1676,7 +1676,7 @@ bom {
 		}
 		links {
 			site("https://github.com/quartz-scheduler/quartz")
-			javadoc("https://www.javadoc.io/doc/org.quartz-scheduler/quartz/{version}", "org.quartz")
+			javadoc("https://javadoc.io/doc/org.quartz-scheduler/quartz/{version}", "org.quartz")
 			releaseNotes("https://github.com/quartz-scheduler/quartz/releases/tag/v{version}")
 		}
 	}
@@ -2021,7 +2021,7 @@ bom {
 			site("https://spring.io/projects/spring-amqp")
 			github("https://github.com/spring-projects/spring-amqp")
 			javadoc(version -> "https://docs.spring.io/spring-amqp/docs/%s/api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.amqp")
+				.formatted(version.forMajorMinorGeneration()), "org.springframework.amqp", "org.springframework.rabbit")
 			docs(version -> "https://docs.spring.io/spring-amqp/reference/%s"
 				.formatted(version.forAntora()))
 			releaseNotes("https://github.com/spring-projects/spring-amqp/releases/tag/v{version}")
@@ -2086,7 +2086,7 @@ bom {
 			site("https://spring.io/projects/spring-framework")
 			github("https://github.com/spring-projects/spring-framework")
 			javadoc(version -> "https://docs.spring.io/spring-framework/docs/%s/javadoc-api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.[aop|aot|asm|beans|cache|cglib| " +
+				.formatted(version.forMajorMinorGeneration()), "org.springframework.[aop|aot|asm|beans|cache|cglib|" +
 						"context|core|dao|ejb|expression|format|http|instrument|jca|jdbc|jms|jmx|jndi|lang|mail|" +
 						"messaging|mock|objenesis|orm|oxm|r2dbc|scheduling|scripting|stereotype|test|transaction|" +
 						"ui|util|validation|web]")
