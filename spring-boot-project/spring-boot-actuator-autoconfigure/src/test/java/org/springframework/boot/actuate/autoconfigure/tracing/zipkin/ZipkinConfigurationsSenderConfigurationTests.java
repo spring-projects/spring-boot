@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +41,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,8 +81,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldUseUrlSenderIfHttpSenderIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient", "org.springframework.web.client",
-					"org.springframework.web.reactive.function.client"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class, RestTemplate.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
@@ -92,7 +93,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndHttpClientSenderIsNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
@@ -106,7 +107,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldPreferWebClientSenderIfWebApplicationIsServletAndHttpClientSenderIsNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
@@ -118,7 +119,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldPreferWebClientInNonWebApplicationAndHttpClientSenderIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
@@ -142,7 +143,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void willUseRestTemplateInServletWebApplicationIfHttpClientSenderAndWebClientNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient", "org.springframework.web.reactive.function.client"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
@@ -154,7 +155,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void willUseRestTemplateInReactiveWebApplicationIfHttpClientSenderAndWebClientAreNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient", "org.springframework.web.reactive.function.client"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
@@ -189,7 +190,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			this.reactiveContextRunner
 				.withPropertyValues("management.zipkin.tracing.endpoint=" + mockWebServer.url("/"))
 				.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader("java.net.http.HttpClient", "org.springframework.web.reactive.function.client"))
+				.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 					ZipkinRestTemplateSender sender = context.getBean(ZipkinRestTemplateSender.class);
