@@ -22,9 +22,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.net.ssl.SSLParameters;
+
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -90,9 +93,18 @@ public class JdkClientHttpRequestFactoryBuilder
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(settings::connectTimeout).to(builder::connectTimeout);
 		map.from(settings::sslBundle).as(SslBundle::createSslContext).to(builder::sslContext);
+		map.from(settings::sslBundle).as(this::asSslParameters).to(builder::sslParameters);
 		map.from(settings::redirects).as(this::asHttpClientRedirect).to(builder::followRedirects);
 		this.httpClientCustomizer.accept(builder);
 		return builder.build();
+	}
+
+	private SSLParameters asSslParameters(SslBundle sslBundle) {
+		SslOptions options = sslBundle.getOptions();
+		SSLParameters parameters = new SSLParameters();
+		parameters.setCipherSuites(options.getCiphers());
+		parameters.setProtocols(options.getEnabledProtocols());
+		return parameters;
 	}
 
 	private Redirect asHttpClientRedirect(Redirects redirects) {

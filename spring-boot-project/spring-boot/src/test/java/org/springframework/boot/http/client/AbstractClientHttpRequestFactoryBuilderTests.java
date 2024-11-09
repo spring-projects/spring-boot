@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -36,6 +37,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
@@ -124,6 +126,27 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 	}
 
 	@ParameterizedTest
+	@ValueSource(strings = { "GET", "POST" })
+	void connectWithSslBundleAndOptionsMismatch(String httpMethod) throws Exception {
+		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+		webServerFactory.setSsl(ssl("TLS_AES_128_GCM_SHA256"));
+		WebServer webServer = webServerFactory
+			.getWebServer((context) -> context.addServlet("test", TestServlet.class).addMapping("/"));
+		try {
+			webServer.start();
+			int port = webServer.getPort();
+			URI uri = new URI("https://localhost:%s".formatted(port));
+			ClientHttpRequestFactory requestFactory = this.builder.build(ClientHttpRequestFactorySettings
+				.ofSslBundle(sslBundle(SslOptions.of(Set.of("TLS_AES_256_GCM_SHA384"), null))));
+			ClientHttpRequest secureRequest = request(requestFactory, uri, httpMethod);
+			assertThatExceptionOfType(SSLHandshakeException.class).isThrownBy(() -> secureRequest.execute().getBody());
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
+	@ParameterizedTest
 	@ValueSource(strings = { "GET", "POST", "PUT", "PATCH", "DELETE" })
 	void redirectDefault(String httpMethod) throws Exception {
 		testRedirect(null, HttpMethod.valueOf(httpMethod), this::getExpectedRedirect);
@@ -172,19 +195,26 @@ abstract class AbstractClientHttpRequestFactoryBuilderTests<T extends ClientHttp
 		return factory.createRequest(uri, HttpMethod.valueOf(method));
 	}
 
-	private Ssl ssl() {
+	private Ssl ssl(String... ciphers) {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(ClientAuth.NEED);
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setTrustStore("classpath:test.jks");
+		if (ciphers.length > 0) {
+			ssl.setCiphers(ciphers);
+		}
 		return ssl;
 	}
 
 	protected final SslBundle sslBundle() {
+		return sslBundle(SslOptions.NONE);
+	}
+
+	protected final SslBundle sslBundle(SslOptions sslOptions) {
 		JksSslStoreDetails storeDetails = JksSslStoreDetails.forLocation("classpath:test.jks");
 		JksSslStoreBundle stores = new JksSslStoreBundle(storeDetails, storeDetails);
-		return SslBundle.of(stores, SslBundleKey.of("password"));
+		return SslBundle.of(stores, SslBundleKey.of("password"), sslOptions);
 	}
 
 	protected HttpStatus getExpectedRedirect(HttpMethod httpMethod) {

@@ -24,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 /**
  * Tests for {@link SimpleClientHttpRequestFactoryBuilder}.
  *
@@ -45,6 +47,12 @@ class SimpleClientHttpRequestFactoryBuilderTests
 	@Override
 	protected long readTimeout(SimpleClientHttpRequestFactory requestFactory) {
 		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+	}
+
+	@Override
+	void connectWithSslBundleAndOptionsMismatch(String httpMethod) throws Exception {
+		assertThatIllegalStateException().isThrownBy(() -> super.connectWithSslBundleAndOptionsMismatch(httpMethod))
+			.withMessage("SSL Options cannot be specified with Java connections");
 	}
 
 	@ParameterizedTest
