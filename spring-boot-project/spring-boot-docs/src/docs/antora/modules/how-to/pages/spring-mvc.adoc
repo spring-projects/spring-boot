@@ -196,7 +196,7 @@ Doing so leaves all MVC configuration in your hands.
 == Customize ViewResolvers
 
 A `ViewResolver` is a core component of Spring MVC, translating view names in `@Controller` to actual `View` implementations.
-Note that `ViewResolvers` are mainly used in UI applications, rather than REST-style services (a `View` is not used to render a `@ResponseBody`).
+Note that view resolvers are mainly used in UI applications, rather than REST-style services (a `View` is not used to render a `@ResponseBody`).
 There are many implementations of `ViewResolver` to choose from, and Spring on its own is not opinionated about which ones you should use.
 Spring Boot, on the other hand, installs one or two for you, depending on what it finds on the classpath and in the application context.
 The `DispatcherServlet` uses all the resolvers it finds in the application context, trying each one in turn until it gets a result.
