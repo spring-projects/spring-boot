@@ -97,16 +97,22 @@ class AntoraAsciidocAttributesTests {
 	void versionReferenceFromSpringDataDependencyReleaseVersion() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.5"), null);
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2");
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.5");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
+				"https://docs.spring.io/spring-data/mongodb/reference/3.2");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-javadoc",
+				"https://docs.spring.io/spring-data/mongodb/docs/3.2.x/api");
 	}
 
 	@Test
 	void versionReferenceFromSpringDataDependencySnapshotVersion() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.0-SNAPSHOT"), null);
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2-SNAPSHOT");
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.0-SNAPSHOT");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
+				"https://docs.spring.io/spring-data/mongodb/reference/3.2-SNAPSHOT");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-javadoc",
+				"https://docs.spring.io/spring-data/mongodb/docs/3.2.x/api");
 	}
 
 	@Test
