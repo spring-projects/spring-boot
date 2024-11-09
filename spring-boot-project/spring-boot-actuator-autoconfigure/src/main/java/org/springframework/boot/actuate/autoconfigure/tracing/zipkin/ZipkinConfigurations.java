@@ -52,6 +52,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Moritz Halbritter
  * @author Stefan Bratanov
+ * @author Wick Dynex
  */
 class ZipkinConfigurations {
 

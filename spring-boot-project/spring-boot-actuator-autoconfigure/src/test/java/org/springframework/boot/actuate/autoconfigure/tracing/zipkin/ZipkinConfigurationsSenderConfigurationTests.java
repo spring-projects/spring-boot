@@ -52,6 +52,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SenderConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Wick Dynex
  */
 @SuppressWarnings({ "deprecation", "removal" })
 class ZipkinConfigurationsSenderConfigurationTests {
@@ -65,7 +66,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	private final WebApplicationContextRunner servletContextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
-	// passed
 	@Test
 	void shouldSupplyDefaultHttpClientSenderBeans() {
 		this.contextRunner.run((context) -> {
@@ -77,7 +77,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		});
 	}
 
-	// passed
 	@Test
 	void shouldUseUrlSenderIfHttpSenderIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
@@ -89,7 +88,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			});
 	}
 
-	// passed
 	@Test
 	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndHttpClientSenderIsNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
@@ -103,7 +101,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			});
 	}
 
-	// passed
 	@Test
 	void shouldPreferWebClientSenderIfWebApplicationIsServletAndHttpClientSenderIsNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
@@ -115,7 +112,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			});
 	}
 
-	// passed
 	@Test
 	void shouldPreferWebClientInNonWebApplicationAndHttpClientSenderIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
@@ -127,7 +123,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			});
 	}
 
-	// passed
 	@Test
 	void willUseRestTemplateInNonWebApplicationIfSenderAndWebClientAreNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
@@ -139,7 +134,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			});
 	}
 
-	// passed
 	@Test
 	void willUseRestTemplateInServletWebApplicationIfHttpClientSenderAndWebClientNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
@@ -151,7 +145,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			});
 	}
 
-	// passed
 	@Test
 	void willUseRestTemplateInReactiveWebApplicationIfHttpClientSenderAndWebClientAreNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
@@ -163,7 +156,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			});
 	}
 
-	// passed
 	@Test
 	void shouldNotUseWebClientSenderIfNoBuilderIsAvailable() {
 		this.reactiveContextRunner.run((context) -> {
@@ -173,7 +165,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		});
 	}
 
-	// passed
 	@Test
 	void shouldBackOffOnCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
@@ -182,7 +173,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		});
 	}
 
-	// passed
 	@Test
 	void shouldApplyZipkinRestTemplateBuilderCustomizers() throws IOException {
 		try (MockWebServer mockWebServer = new MockWebServer()) {
@@ -202,17 +192,15 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		}
 	}
 
-	// passed
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactory() {
 		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class, RestTemplate.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class, RestTemplate.class))
 			.run((context) -> assertThat(context.getBean(URLConnectionSender.class))
 				.extracting("delegate.endpointSupplier")
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
 	}
 
-	// passed
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenReactive() {
 		this.reactiveContextRunner.withUserConfiguration(WebClientConfiguration.class)
@@ -222,7 +210,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
 	}
 
-	// passed
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenRestTemplate() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
