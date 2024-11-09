@@ -45,7 +45,7 @@ public interface SslOptions {
 	 * @return {@code true} if SSL options have been specified
 	 */
 	default boolean isSpecified() {
-		return (getCiphers() != null) && (getEnabledProtocols() != null);
+		return (getCiphers() != null) || (getEnabledProtocols() != null);
 	}
 
 	/**
