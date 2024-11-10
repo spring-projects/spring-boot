@@ -136,7 +136,7 @@ bom {
 			releaseNotes("https://github.com/mojohaus/build-helper-maven-plugin/releases/tag/{version}")
 		}
 	}
-	library("Byte Buddy", "1.15.7") {
+	library("Byte Buddy", "1.15.10") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
