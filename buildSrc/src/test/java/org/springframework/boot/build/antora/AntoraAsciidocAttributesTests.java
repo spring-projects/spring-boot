@@ -251,6 +251,7 @@ class AntoraAsciidocAttributesTests {
 		addMockSpringDataVersion(versions, "spring-data-mongodb", version);
 		addMockSpringDataVersion(versions, "spring-data-neo4j", version);
 		addMockSpringDataVersion(versions, "spring-data-r2dbc", version);
+		addMockSpringDataVersion(versions, "spring-data-redis", version);
 		addMockSpringDataVersion(versions, "spring-data-rest-core", version);
 		addMockSpringDataVersion(versions, "spring-data-ldap", version);
 		addMockJacksonVersion(versions, "jackson-annotations", version);
