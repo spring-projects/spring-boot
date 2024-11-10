@@ -94,7 +94,7 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 
 	private String getReleaseNotesLink(Upgrade upgrade, LibraryVersion upgradeVersion) {
 		Link releaseNotesLink = upgrade.getLibrary().getLink("releaseNotes");
-		return releaseNotesLink.url(upgradeVersion);
+		return (releaseNotesLink != null) ? releaseNotesLink.url(upgradeVersion) : null;
 	}
 
 }

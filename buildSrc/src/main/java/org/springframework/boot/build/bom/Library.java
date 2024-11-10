@@ -524,7 +524,7 @@ public class Library {
 
 	}
 
-	public static record Link(Function<LibraryVersion, String> factory, List<String> packages) {
+	public record Link(Function<LibraryVersion, String> factory, List<String> packages) {
 
 		private static final Pattern PACKAGE_EXPAND = Pattern.compile("^(.*)\\[(.*)\\]$");
 
