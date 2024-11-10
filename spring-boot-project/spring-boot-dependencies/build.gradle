@@ -1189,7 +1189,7 @@ bom {
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
 		}
 	}
-	library("Logback", "1.5.11") {
+	library("Logback", "1.5.12") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
