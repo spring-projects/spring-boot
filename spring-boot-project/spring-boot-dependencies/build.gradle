@@ -1376,7 +1376,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-source-plugin/releases/tag/maven-source-plugin-{version}")
 		}
 	}
-	library("Maven Surefire Plugin", "3.5.1") {
+	library("Maven Surefire Plugin", "3.5.2") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-surefire-plugin"
