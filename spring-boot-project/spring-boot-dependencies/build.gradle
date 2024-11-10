@@ -1259,7 +1259,7 @@ bom {
 			releaseNotes("https://github.com/apache/maven-compiler-plugin/releases/tag/maven-compiler-plugin-{version}")
 		}
 	}
-	library("Maven Dependency Plugin", "3.8.0") {
+	library("Maven Dependency Plugin", "3.8.1") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-dependency-plugin"
