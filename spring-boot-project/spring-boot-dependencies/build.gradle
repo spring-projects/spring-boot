@@ -448,7 +448,7 @@ bom {
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
 	}
-	library("Groovy", "4.0.23") {
+	library("Groovy", "4.0.24") {
 		group("org.apache.groovy") {
 			imports = [
 				"groovy-bom"
