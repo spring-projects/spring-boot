@@ -110,6 +110,15 @@ class WebServerPortFileWriterTests {
 		assertThat(collectFileNames(file.getParentFile())).contains(managementFile);
 	}
 
+	@Test
+	void getPortFileWhenPortFileNameDoesNotHaveExtension() {
+		File file = new File(this.tempDir, "portfile");
+		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
+		WebServerApplicationContext applicationContext = mock(WebServerApplicationContext.class);
+		given(applicationContext.getServerNamespace()).willReturn("management");
+		assertThat(listener.getPortFile(applicationContext).getName()).isEqualTo("portfile-management");
+	}
+
 	private WebServerInitializedEvent mockEvent(String namespace, int port) {
 		WebServer webServer = mock(WebServer.class);
 		given(webServer.getPort()).willReturn(port);
