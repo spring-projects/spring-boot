@@ -110,7 +110,8 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		}
 		String filename = this.file.getName();
 		String extension = StringUtils.getFilenameExtension(filename);
-		String filenameWithoutExtension = filename.substring(0, filename.length() - extension.length() - 1);
+		String filenameWithoutExtension = (extension != null)
+				? filename.substring(0, filename.length() - extension.length() - 1) : filename;
 		String suffix = (!isUpperCase(filename)) ? namespace.toLowerCase(Locale.ENGLISH)
 				: namespace.toUpperCase(Locale.ENGLISH);
 		return new File(this.file.getParentFile(),
