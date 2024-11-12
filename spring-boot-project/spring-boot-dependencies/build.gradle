@@ -260,6 +260,7 @@ bom {
 		}
 		links {
 			site("https://docs.couchbase.com/java-sdk/current/hello-world/overview.html")
+			javadoc("https://javadoc.io/doc/com.couchbase.client/java-client/{version}")
 			releaseNotes("https://docs.couchbase.com/java-sdk/current/project-docs/sdk-release-notes.html")
 		}
 	}
@@ -552,6 +553,10 @@ bom {
 				"HikariCP"
 			]
 		}
+		links {
+			site("https://github.com/brettwooldridge/HikariCP")
+			javadoc("https://javadoc.io/doc/com.zaxxer/HikariCP/{version}", "com.zaxxer.hikari")
+		}
 	}
 	library("HSQLDB", "2.7.4") {
 		group("org.hsqldb") {
@@ -800,6 +805,13 @@ bom {
 				"jakarta.websocket-client-api"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/jakartaee/jaxb-api/releases/tag/{version}")
+			javadoc("jakarta-websocket-server", version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/server"
+				.formatted(version.major(), version.minor()), "jakarta.websocket.server")
+			javadoc("jakarta-websocket-client", version -> "https://jakarta.ee/specifications/websocket/%s.%s/apidocs/client"
+				.formatted(version.major(), version.minor()), "jakarta.websocket")
+		}
 	}
 	library("Jakarta WS RS", "3.1.0") {
 		group("jakarta.ws.rs") {
@@ -816,6 +828,8 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/jakartaee/jaxb-api/releases/tag/{version}")
+			javadoc(version -> "https://jakarta.ee/specifications/xml-binding/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()), "jakarta.xml.bind")
 		}
 	}
 	library("Jakarta XML SOAP", "3.0.2") {
@@ -948,6 +962,7 @@ bom {
 		}
 		links {
 			site("https://eclipse.dev/jetty")
+			javadoc(version -> "https://javadoc.jetty.org/jetty-%s".formatted(version.major()))
 			releaseNotes("https://github.com/jetty/jetty.project/releases/tag/jetty-{version}")
 		}
 	}
@@ -1149,6 +1164,7 @@ bom {
 		}
 		links {
 			site("https://www.liquibase.com")
+			javadoc("https://javadoc.io/doc/org.liquibase/liquibase-core/{version}")
 			releaseNotes("https://github.com/liquibase/liquibase/releases/tag/v{version}")
 		}
 	}
@@ -1160,6 +1176,8 @@ bom {
 		}
 		links {
 			site("https://logging.apache.org/log4j")
+			javadoc("log4j-api", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-api/index.html".formatted(version.major()))
+			javadoc("log4j-core", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-core/index.html".formatted(version.major()))
 			docs(version -> "https://logging.apache.org/log4j/%s.x/manual".formatted(version.major()))
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
 		}
@@ -1173,6 +1191,7 @@ bom {
 		}
 		links {
 			site("https://logback.qos.ch")
+			javadoc("https://logback.qos.ch/apidocs")
 		}
 	}
 	library("Lombok", "1.18.34") {
@@ -1183,6 +1202,7 @@ bom {
 		}
 		links {
 			site("https://projectlombok.org")
+			javadoc("https://projectlombok.org/api/")
 		}
 	}
 	library("MariaDB", "3.3.3") {
@@ -2335,6 +2355,8 @@ bom {
 		}
 		links {
 			site("https://www.thymeleaf.org/")
+			javadoc("thymeleaf", version -> "https://www.thymeleaf.org/apidocs/thymeleaf/%s".formatted(version), "org.thymeleaf")
+			javadoc("thymeleaf-spring6", version -> "https://www.thymeleaf.org/apidocs/thymeleaf-spring6/%s".formatted(version), "org.thymeleaf.spring6")
 			releaseNotes("https://github.com/thymeleaf/thymeleaf/releases/tag/thymeleaf-{version}")
 		}
 	}
@@ -2380,9 +2402,9 @@ bom {
 		}
 		links {
 			site("https://tomcat.apache.org")
+			javadoc(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/api".formatted(version.major(), version.minor()))
 			docs(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc".formatted(version.major(), version.minor()))
-			releaseNotes(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html"
-				.formatted(version.major(), version.minor()))
+			releaseNotes(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html".formatted(version.major(), version.minor()))
 		}
 	}
 	library("UnboundID LDAPSDK", "6.0.11") {

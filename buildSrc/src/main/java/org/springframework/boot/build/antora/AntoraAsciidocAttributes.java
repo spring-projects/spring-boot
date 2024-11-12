@@ -127,6 +127,8 @@ public class AntoraAsciidocAttributes {
 		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
 		addDependencyVersion(attributes, "jackson-core", "com.fasterxml.jackson.core:jackson-core");
 		addDependencyVersion(attributes, "jackson-databind", "com.fasterxml.jackson.core:jackson-databind");
+		addDependencyVersion(attributes, "jackson-dataformat-xml",
+				"com.fasterxml.jackson.dataformat:jackson-dataformat-xml");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-commons");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-couchbase");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-cassandra");
