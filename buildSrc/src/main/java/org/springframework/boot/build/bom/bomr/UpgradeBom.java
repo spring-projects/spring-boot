@@ -28,7 +28,6 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
-import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.bomr.github.Issue;
 import org.springframework.boot.build.properties.BuildProperties;
 
@@ -77,7 +76,7 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	@Override
 	protected String issueBody(Upgrade upgrade, Issue existingUpgrade) {
 		LibraryVersion upgradeVersion = new LibraryVersion(upgrade.getVersion());
-		String releaseNotesLink = getReleaseNotesLink(upgrade, upgradeVersion);
+		String releaseNotesLink = upgrade.getLibrary().getLinkUrl("releaseNotes");
 		List<String> lines = new ArrayList<>();
 		String description = upgrade.getLibrary().getName() + " " + upgradeVersion;
 		if (releaseNotesLink != null) {
@@ -90,11 +89,6 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 			lines.add("Supersedes #" + existingUpgrade.getNumber());
 		}
 		return String.join("\\r\\n\\r\\n", lines);
-	}
-
-	private String getReleaseNotesLink(Upgrade upgrade, LibraryVersion upgradeVersion) {
-		Link releaseNotesLink = upgrade.getLibrary().getLink("releaseNotes");
-		return (releaseNotesLink != null) ? releaseNotesLink.url(upgradeVersion) : null;
 	}
 
 }

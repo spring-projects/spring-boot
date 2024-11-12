@@ -185,16 +185,16 @@ public class AntoraAsciidocAttributes {
 	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
 		Map<String, String> packageAttributes = new LinkedHashMap<>();
 		this.libraries.forEach((library) -> {
-			String prefix = "url-" + library.getLinkRootName() + "-";
-			library.getLinks().forEach((name, link) -> {
-				String linkName = prefix + name;
+			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
+				String linkRootName = (link.rootName() != null) ? link.rootName() : library.getLinkRootName();
+				String linkName = "url-" + linkRootName + "-" + name;
 				attributes.put(linkName, link.url(library));
 				link.packages()
 					.stream()
 					.map(this::packageAttributeName)
 					.forEach((packageAttributeName) -> packageAttributes.put(packageAttributeName,
 							"{" + linkName + "}"));
-			});
+			}));
 		});
 		attributes.putAll(packageAttributes);
 	}
