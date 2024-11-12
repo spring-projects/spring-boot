@@ -10,7 +10,7 @@ Spring Boot uses a very particular `PropertySource` order that is designed to al
 Later property sources can override the values defined in earlier ones.
 Sources are considered in the following order:
 
-. Default properties (specified by setting `SpringApplication.setDefaultProperties`).
+. Default properties (specified by setting javadoc:org.springframework.boot.SpringApplication#setDefaultProperties(java.util.Map)[]).
 . javadoc:{url-spring-framework-javadoc}/org.springframework.context.annotation.PropertySource[format=annotation] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
