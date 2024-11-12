@@ -10,6 +10,8 @@ If you are more than one release behind, please make sure that you also review t
 
 include::upgrading/from-1x.adoc[]
 
+include::upgrading/from-2x.adoc[]
+
 include::upgrading/to-feature.adoc[]
 
 include::upgrading/cli.adoc[]
