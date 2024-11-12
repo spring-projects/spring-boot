@@ -78,7 +78,6 @@
 * xref:ROOT:upgrading.adoc#upgrading[#upgrading]
 * xref:ROOT:upgrading.adoc#upgrading[#getting-started-upgrading-from-an-earlier-version]
 * xref:ROOT:upgrading.adoc#upgrading.cli[#upgrading.cli]
-* xref:ROOT:upgrading.adoc#upgrading.from-1x[#upgrading.from-1x]
 * xref:ROOT:upgrading.adoc#upgrading.to-feature[#upgrading.to-feature]
 * xref:api:rest/actuator/auditevents.adoc#audit-events[actuator-api#audit-events]
 * xref:api:rest/actuator/auditevents.adoc#audit-events.retrieving[actuator-api#audit-events.retrieving]
