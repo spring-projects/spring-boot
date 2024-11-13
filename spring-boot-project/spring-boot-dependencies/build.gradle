@@ -2414,7 +2414,7 @@ bom {
 			releaseNotes("https://github.com/mojohaus/versions/releases/tag/{version}")
 		}
 	}
-	library("WebJars Locator Lite", "1.0.0") {
+	library("WebJars Locator Lite", "1.0.1") {
 		group("org.webjars") {
 			modules = [
 				"webjars-locator-lite"
