@@ -11,7 +11,7 @@
     "@springio/antora-xref-extension": "1.0.0-alpha.4",
     "@springio/antora-zip-contents-collector-extension": "1.0.0-alpha.8",
     "@asciidoctor/tabs": "1.0.0-beta.6",
-    "@springio/asciidoctor-extensions": "1.0.0-alpha.11",
+    "@springio/asciidoctor-extensions": "1.0.0-alpha.14",
     "patch-package": "^8.0.0"
   },
   "config": {
