@@ -13,7 +13,7 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("ActiveMQ", "6.1.3") {
+	library("ActiveMQ", "6.1.4") {
 		group("org.apache.activemq") {
 			modules = [
 					"activemq-console" {
