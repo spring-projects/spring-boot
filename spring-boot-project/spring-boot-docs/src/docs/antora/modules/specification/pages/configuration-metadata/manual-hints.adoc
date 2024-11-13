@@ -152,7 +152,7 @@ This provider supports the following parameters:
 |===
 
 
-The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name` property that defines the `JspServlet` class name to use:
+The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name` property that defines the class name to use must be an `HttpServlet`:
 
 [source,json]
 ----
