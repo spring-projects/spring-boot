@@ -52,6 +52,16 @@ public class LiquibaseProperties {
 	private boolean clearChecksums;
 
 	/**
+	 * Liquibase PRO license Key (only needed for Liquibase Pro).
+	 */
+	protected String licenseKey;
+
+	/**
+	 * Whether to disable Liquibase Analytics capabilities.
+	 */
+	protected boolean disableAnalytics;
+
+	/**
 	 * List of runtime contexts to use.
 	 */
 	private List<String> contexts;
@@ -225,6 +235,22 @@ public class LiquibaseProperties {
 
 	public void setClearChecksums(boolean clearChecksums) {
 		this.clearChecksums = clearChecksums;
+	}
+
+	public boolean isDisableAnalytics() {
+		return disableAnalytics;
+	}
+
+	public void setDisableAnalytics(boolean disableAnalytics) {
+		this.disableAnalytics = disableAnalytics;
+	}
+
+	public String getLicenseKey() {
+		return licenseKey;
+	}
+
+	public void setLicenseKey(String licenseKey) {
+		this.licenseKey = licenseKey;
 	}
 
 	public boolean isEnabled() {
