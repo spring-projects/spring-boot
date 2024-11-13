@@ -22,12 +22,12 @@ import java.util.function.Function;
 
 import org.apache.hc.client5.http.HttpRoute;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.function.Resolver;
 import org.apache.hc.core5.http.io.SocketConfig;
-import org.apache.hc.core5.http.io.SocketConfig.Builder;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ssl.SslBundle;
@@ -54,17 +54,20 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 		TestCustomizer<HttpClientBuilder> httpClientCustomizer1 = new TestCustomizer<>();
 		TestCustomizer<HttpClientBuilder> httpClientCustomizer2 = new TestCustomizer<>();
 		TestCustomizer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer = new TestCustomizer<>();
-		TestCustomizer<Builder> socketConfigCustomizer = new TestCustomizer<>();
+		TestCustomizer<SocketConfig.Builder> socketConfigCustomizer = new TestCustomizer<>();
+		TestCustomizer<RequestConfig.Builder> defaultRequestConfigManagerCustomizer = new TestCustomizer<>();
 		ClientHttpRequestFactoryBuilder.httpComponents()
 			.withHttpClientCustomizer(httpClientCustomizer1)
 			.withHttpClientCustomizer(httpClientCustomizer2)
 			.withConnectionManagerCustomizer(connectionManagerCustomizer)
 			.withSocketConfigCustomizer(socketConfigCustomizer)
+			.withDefaultRequestConfigManagerCustomizer(defaultRequestConfigManagerCustomizer)
 			.build();
 		httpClientCustomizer1.assertCalled();
 		httpClientCustomizer2.assertCalled();
 		connectionManagerCustomizer.assertCalled();
 		socketConfigCustomizer.assertCalled();
+		defaultRequestConfigManagerCustomizer.assertCalled();
 	}
 
 	@Test

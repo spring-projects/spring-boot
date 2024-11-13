@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultRedirectStrategy;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -64,11 +65,19 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 
 	private final Consumer<SocketConfig.Builder> socketConfigCustomizer;
 
+	private final Consumer<RequestConfig.Builder> defaultRequestConfigManagerCustomizer;
+
 	private final Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory;
 
 	HttpComponentsClientHttpRequestFactoryBuilder() {
-		this(Collections.emptyList(), emptyCustomizer(), emptyCustomizer(), emptyCustomizer(),
+		this(Collections.emptyList(), emptyCustomizer(), emptyCustomizer(), emptyCustomizer(), emptyCustomizer(),
 				HttpComponentsClientHttpRequestFactoryBuilder::createTlsSocketStrategy);
+	}
+
+	private static TlsSocketStrategy createTlsSocketStrategy(SslBundle sslBundle) {
+		SslOptions options = sslBundle.getOptions();
+		return new DefaultClientTlsStrategy(sslBundle.createSslContext(), options.getEnabledProtocols(),
+				options.getCiphers(), null, new DefaultHostnameVerifier());
 	}
 
 	private HttpComponentsClientHttpRequestFactoryBuilder(
@@ -76,11 +85,13 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 			Consumer<HttpClientBuilder> httpClientCustomizer,
 			Consumer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer,
 			Consumer<SocketConfig.Builder> socketConfigCustomizer,
+			Consumer<RequestConfig.Builder> defaultRequestConfigManagerCustomizer,
 			Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory) {
 		super(customizers);
 		this.httpClientCustomizer = httpClientCustomizer;
 		this.connectionManagerCustomizer = connectionManagerCustomizer;
 		this.socketConfigCustomizer = socketConfigCustomizer;
+		this.defaultRequestConfigManagerCustomizer = defaultRequestConfigManagerCustomizer;
 		this.tlsSocketStrategyFactory = tlsSocketStrategyFactory;
 	}
 
@@ -89,7 +100,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 			Consumer<HttpComponentsClientHttpRequestFactory> customizer) {
 		return new HttpComponentsClientHttpRequestFactoryBuilder(mergedCustomizers(customizer),
 				this.httpClientCustomizer, this.connectionManagerCustomizer, this.socketConfigCustomizer,
-				this.tlsSocketStrategyFactory);
+				this.defaultRequestConfigManagerCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	@Override
@@ -97,7 +108,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 			Collection<Consumer<HttpComponentsClientHttpRequestFactory>> customizers) {
 		return new HttpComponentsClientHttpRequestFactoryBuilder(mergedCustomizers(customizers),
 				this.httpClientCustomizer, this.connectionManagerCustomizer, this.socketConfigCustomizer,
-				this.tlsSocketStrategyFactory);
+				this.defaultRequestConfigManagerCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -111,7 +122,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		Assert.notNull(httpClientCustomizer, "'httpClientCustomizer' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(),
 				this.httpClientCustomizer.andThen(httpClientCustomizer), this.connectionManagerCustomizer,
-				this.socketConfigCustomizer, this.tlsSocketStrategyFactory);
+				this.socketConfigCustomizer, this.defaultRequestConfigManagerCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -126,7 +137,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		Assert.notNull(connectionManagerCustomizer, "'connectionManagerCustomizer' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
 				this.connectionManagerCustomizer.andThen(connectionManagerCustomizer), this.socketConfigCustomizer,
-				this.tlsSocketStrategyFactory);
+				this.defaultRequestConfigManagerCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -141,7 +152,7 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		Assert.notNull(socketConfigCustomizer, "'socketConfigCustomizer' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
 				this.connectionManagerCustomizer, this.socketConfigCustomizer.andThen(socketConfigCustomizer),
-				this.tlsSocketStrategyFactory);
+				this.defaultRequestConfigManagerCustomizer, this.tlsSocketStrategyFactory);
 	}
 
 	/**
@@ -155,7 +166,25 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 			Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory) {
 		Assert.notNull(tlsSocketStrategyFactory, "'tlsSocketStrategyFactory' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
-				this.connectionManagerCustomizer, this.socketConfigCustomizer, tlsSocketStrategyFactory);
+				this.connectionManagerCustomizer, this.socketConfigCustomizer,
+				this.defaultRequestConfigManagerCustomizer, tlsSocketStrategyFactory);
+	}
+
+	/**
+	 * Return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} that applies
+	 * additional customization to the underlying
+	 * {@link org.apache.hc.client5.http.config.RequestConfig.Builder} used for default
+	 * requests.
+	 * @param defaultRequestConfigManagerCustomizer the customizer to apply
+	 * @return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} instance
+	 */
+	public HttpComponentsClientHttpRequestFactoryBuilder withDefaultRequestConfigManagerCustomizer(
+			Consumer<RequestConfig.Builder> defaultRequestConfigManagerCustomizer) {
+		Assert.notNull(defaultRequestConfigManagerCustomizer,
+				"'defaultRequestConfigManagerCustomizer' must not be null");
+		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
+				this.connectionManagerCustomizer, this.socketConfigCustomizer, defaultRequestConfigManagerCustomizer,
+				this.tlsSocketStrategyFactory);
 	}
 
 	@Override
@@ -172,7 +201,8 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		HttpClientBuilder builder = HttpClientBuilder.create()
 			.useSystemProperties()
 			.setRedirectStrategy(asRedirectStrategy(settings.redirects()))
-			.setConnectionManager(createConnectionManager(settings));
+			.setConnectionManager(createConnectionManager(settings))
+			.setDefaultRequestConfig(createDefaultRequestConfig());
 		this.httpClientCustomizer.accept(builder);
 		return builder.build();
 	}
@@ -204,10 +234,10 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 		return builder.build();
 	}
 
-	private static TlsSocketStrategy createTlsSocketStrategy(SslBundle sslBundle) {
-		SslOptions options = sslBundle.getOptions();
-		return new DefaultClientTlsStrategy(sslBundle.createSslContext(), options.getEnabledProtocols(),
-				options.getCiphers(), null, new DefaultHostnameVerifier());
+	private RequestConfig createDefaultRequestConfig() {
+		RequestConfig.Builder builder = RequestConfig.custom();
+		this.defaultRequestConfigManagerCustomizer.accept(builder);
+		return builder.build();
 	}
 
 	/**
