@@ -256,7 +256,7 @@ public class BomExtension {
 
 		private String linkRootName;
 
-		private final Map<String, Link> links = new HashMap<>();
+		private final Map<String, List<Link>> links = new HashMap<>();
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
@@ -458,7 +458,7 @@ public class BomExtension {
 
 	public static class LinksHandler {
 
-		private final Map<String, Link> links = new HashMap<>();
+		private final Map<String, List<Link>> links = new HashMap<>();
 
 		public void site(String linkTemplate) {
 			site(asFactory(linkTemplate));
@@ -500,6 +500,10 @@ public class BomExtension {
 			add("javadoc", linkFactory, packages);
 		}
 
+		public void javadoc(String rootName, Function<LibraryVersion, String> linkFactory, String... packages) {
+			add(rootName, "javadoc", linkFactory, packages);
+		}
+
 		public void releaseNotes(String linkTemplate) {
 			releaseNotes(asFactory(linkTemplate));
 		}
@@ -517,7 +521,13 @@ public class BomExtension {
 		}
 
 		public void add(String name, Function<LibraryVersion, String> linkFactory, String[] packages) {
-			this.links.put(name, new Link(linkFactory, (packages != null) ? List.of(packages) : null));
+			add(null, name, linkFactory, packages);
+		}
+
+		private void add(String rootName, String name, Function<LibraryVersion, String> linkFactory,
+				String[] packages) {
+			Link link = new Link(rootName, linkFactory, (packages != null) ? List.of(packages) : null);
+			this.links.computeIfAbsent(name, (key) -> new ArrayList<>()).add(link);
 		}
 
 		private Function<LibraryVersion, String> asFactory(String linkTemplate) {
