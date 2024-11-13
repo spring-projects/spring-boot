@@ -204,7 +204,8 @@ task aggregatedJavadoc(type: Javadoc) {
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
 			.findAll { !it.path.contains(":spring-boot-tools:") ||
 						it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
-						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") }
+						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
+						(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
 			.findAll { !it.name.startsWith('spring-boot-starter') }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
