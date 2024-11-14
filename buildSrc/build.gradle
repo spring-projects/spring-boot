@@ -128,3 +128,6 @@ eclipse.classpath.file.whenMerged {
 	jreEntry.entryAttributes['limit-modules'] = 'java.base'
 }
 
+tasks.named('compileJava') {
+	options.compilerArgs += ['-Xlint:deprecation']
+}
