@@ -28,7 +28,7 @@ TIP: To add additional logging during startup, you can override `logStartupInfo(
 [[features.spring-application.startup-failure]]
 == Startup Failure
 
-If your application fails to start, registered `FailureAnalyzers` get a chance to provide a dedicated error message and a concrete action to fix the problem.
+If your application fails to start, registered `FailureAnalyzer` beans get a chance to provide a dedicated error message and a concrete action to fix the problem.
 For instance, if you start a web application on port `8080` and that port is already in use, you should see something similar to the following message:
 
 [source]

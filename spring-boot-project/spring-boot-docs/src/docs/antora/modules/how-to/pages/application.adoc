@@ -60,7 +60,7 @@ When reading the code, remember the following rules of thumb:
 [[howto.application.customize-the-environment-or-application-context]]
 == Customize the Environment or ApplicationContext Before It Starts
 
-A `SpringApplication` has `ApplicationListeners` and `ApplicationContextInitializers` that are used to apply customizations to the context or environment.
+A `SpringApplication` has `ApplicationListener` and `ApplicationContextInitializer` implementations that are used to apply customizations to the context or environment.
 Spring Boot loads a number of such customizations for use internally from `META-INF/spring.factories`.
 There is more than one way to register additional customizations:
 
@@ -97,7 +97,7 @@ This is too late to configure certain properties such as `+logging.*+` and `+spr
 [[howto.application.context-hierarchy]]
 == Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
 
-You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext` hierarchies.
+You can use the `SpringApplicationBuilder` class to create parent/child `ApplicationContext` hierarchies.
 See xref:reference:features/spring-application.adoc#features.spring-application.fluent-builder-api[] in the "`Spring Boot Features`" section for more information.
 
 

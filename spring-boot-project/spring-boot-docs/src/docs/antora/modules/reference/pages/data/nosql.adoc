@@ -372,7 +372,7 @@ Furthermore, you can define a `RestClientOptions` bean to take further control o
 {url-spring-data-elasticsearch-site}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
 If you have Spring Data Elasticsearch and Reactor on the classpath, Spring Boot will auto-configure and register a `ReactiveElasticsearchClient`.
 
-The `ReactiveElasticsearchclient` uses a transport that depends upon the previously described `RestClient`.
+The `ReactiveElasticsearchClient` uses a transport that depends upon the previously described `RestClient`.
 Therefore, the properties described previously can be used to configure the `ReactiveElasticsearchClient`.
 Furthermore, you can define a `RestClientOptions` bean to take further control of the behavior of the transport.
 
@@ -409,10 +409,10 @@ You can customize the locations to look for repositories and documents by using 
 
 TIP: For complete details of Spring Data Elasticsearch, see the {url-spring-data-elasticsearch-docs}[reference documentation].
 
-Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchRestTemplate` or `ReactiveElasticsearchTemplate` beans.
+Spring Boot supports both classic and reactive Elasticsearch repositories, using the `ElasticsearchTemplate` or `ReactiveElasticsearchTemplate` beans.
 Most likely those beans are auto-configured by Spring Boot given the required dependencies are present.
 
-If you wish to use your own template for backing the Elasticsearch repositories, you can add your own `ElasticsearchRestTemplate` or `ElasticsearchOperations` `@Bean`, as long as it is named `"elasticsearchTemplate"`.
+If you wish to use your own template for backing the Elasticsearch repositories, you can add your own `ElasticsearchTemplate` or `ElasticsearchOperations` `@Bean`, as long as it is named `"elasticsearchTemplate"`.
 Same applies to `ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperations`, with the bean name `"reactiveElasticsearchTemplate"`.
 
 You can choose to disable the repositories support with the following property:

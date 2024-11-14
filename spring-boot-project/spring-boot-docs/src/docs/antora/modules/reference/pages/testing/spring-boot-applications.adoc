@@ -319,7 +319,7 @@ The following example shows a test class for Jackson:
 include-code::MyJsonTests[]
 
 NOTE: JSON helper classes can also be used directly in standard unit tests.
-To do so, call the `initFields` method of the helper in your `@Before` method if you do not use `@JsonTest`.
+To do so, call the `initFields` method of the helper in your `@BeforeEach` method if you do not use `@JsonTest`.
 
 If you use Spring Boot's AssertJ-based helpers to assert on a number value at a given JSON path, you might not be able to use `isEqualTo` depending on the type.
 Instead, you can use AssertJ's `satisfies` to assert that the value matches the given condition.
@@ -503,7 +503,7 @@ include-code::MyDataCouchbaseTests[]
 == Auto-configured Data Elasticsearch Tests
 
 You can use `@DataElasticsearchTest` to test Elasticsearch applications.
-By default, it configures an `ElasticsearchRestTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
+By default, it configures an `ElasticsearchTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataElasticsearchTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Elasticsearch with Spring Boot, see xref:data/nosql.adoc#data.nosql.elasticsearch[], earlier in this chapter.)
@@ -809,7 +809,7 @@ include-code::MyRestDocsConfiguration[]
 === Auto-configured Spring Web Services Client Tests
 
 You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
-By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
+By default, it configures a `MockWebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
 (For more about using Web Services with Spring Boot, see xref:io/webservices.adoc[].)
 
 

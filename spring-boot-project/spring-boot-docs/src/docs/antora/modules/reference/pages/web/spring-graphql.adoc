@@ -107,8 +107,7 @@ The GraphQL WebSocket endpoint is off by default. To enable it:
 
 Spring GraphQL provides a {url-spring-graphql-docs}/transports.html#server.interception[Web Interception] model.
 This is quite useful for retrieving information from an HTTP request header and set it in the GraphQL context or fetching information from the same context and writing it to a response header.
-With Spring Boot, you can declare a `WebInterceptor` bean to have it registered with the web transport.
-
+With Spring Boot, you can declare a `WebGraphQlInterceptor` bean to have it registered with the web transport.
 
 {url-spring-framework-docs}/web/webmvc-cors.html[Spring MVC] and {url-spring-framework-docs}/web/webflux-cors.html[Spring WebFlux] support CORS (Cross-Origin Resource Sharing) requests.
 CORS is a critical part of the web config for GraphQL applications that are accessed from browsers using different domains.
