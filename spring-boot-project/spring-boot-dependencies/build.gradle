@@ -2414,11 +2414,7 @@ bom {
 			releaseNotes("https://github.com/pingidentity/ldapsdk/releases/tag/{version}")
 		}
 	}
-	library("Undertow", "2.3.17.Final") {
-		prohibit {
-			versionRange "[2.3.18.Final]"
-			because "requires new framework patch due to regression (https://issues.redhat.com/browse/UNDERTOW-2512)"
-		}
+	library("Undertow", "2.3.18.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
