@@ -57,9 +57,9 @@ public class LiquibaseProperties {
 	protected String licenseKey;
 
 	/**
-	 * Whether to disable Liquibase Analytics capabilities.
+	 * Allows disabling Liquibase Analytics capabilities that are on by default
 	 */
-	protected boolean disableAnalytics;
+	protected boolean analyticsEnabled;
 
 	/**
 	 * List of runtime contexts to use.
@@ -237,12 +237,12 @@ public class LiquibaseProperties {
 		this.clearChecksums = clearChecksums;
 	}
 
-	public boolean isDisableAnalytics() {
-		return disableAnalytics;
+	public boolean isAnalyticsEnabled() {
+		return analyticsEnabled;
 	}
 
-	public void setDisableAnalytics(boolean disableAnalytics) {
-		this.disableAnalytics = disableAnalytics;
+	public void setAnalyticsEnabled(boolean analyticsEnabled) {
+		this.analyticsEnabled = analyticsEnabled;
 	}
 
 	public String getLicenseKey() {
