@@ -417,7 +417,11 @@ bom {
 			]
 		}
 	}
-	library("HSQLDB", "2.7.4") {
+	library("HSQLDB", "2.7.3") {
+		prohibit {
+			versionRange "[2.7.4]"
+			because "it contains a bug that breaks Spring Data (https://sourceforge.net/p/hsqldb/bugs/1725/)"
+		}
 		group("org.hsqldb") {
 			modules = [
 				"hsqldb"
