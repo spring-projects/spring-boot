@@ -247,10 +247,10 @@ class ExportedImageTar implements Closeable {
 		}
 
 		private Compression getCompression(String mediaType) {
-			if (mediaType.endsWith(".tar.gzip")) {
+			if (mediaType.endsWith(".tar.gzip") || mediaType.endsWith(".tar+gzip")) {
 				return Compression.GZIP;
 			}
-			if (mediaType.endsWith(".tar.zstd")) {
+			if (mediaType.endsWith(".tar.zstd") || mediaType.endsWith(".tar+zstd")) {
 				return Compression.ZSTD;
 			}
 			return Compression.NONE;

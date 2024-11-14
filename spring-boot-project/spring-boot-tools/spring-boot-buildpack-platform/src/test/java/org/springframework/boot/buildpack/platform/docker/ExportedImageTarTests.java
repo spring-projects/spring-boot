@@ -38,7 +38,7 @@ class ExportedImageTarTests {
 	@ParameterizedTest
 	@ValueSource(strings = { "export-docker-desktop.tar", "export-docker-desktop-containerd.tar",
 			"export-docker-desktop-containerd-manifest-list.tar", "export-docker-engine.tar", "export-podman.tar",
-			"export-docker-desktop-nested-index.tar" })
+			"export-docker-desktop-nested-index.tar", "export-docker-desktop-containerd-alt-mediatype.tar" })
 	void test(String tarFile) throws Exception {
 		ImageReference reference = ImageReference.of("test:latest");
 		try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference,
