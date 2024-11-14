@@ -106,6 +106,8 @@ public class LiquibaseAutoConfiguration {
 					dataSource.getIfUnique(), connectionDetails);
 			liquibase.setChangeLog(properties.getChangeLog());
 			liquibase.setClearCheckSums(properties.isClearChecksums());
+			liquibase.setLicenseKey(properties.getLicenseKey());
+			liquibase.setDisableAnalytics(properties.isDisableAnalytics());
 			if (!CollectionUtils.isEmpty(properties.getContexts())) {
 				liquibase.setContexts(StringUtils.collectionToCommaDelimitedString(properties.getContexts()));
 			}
