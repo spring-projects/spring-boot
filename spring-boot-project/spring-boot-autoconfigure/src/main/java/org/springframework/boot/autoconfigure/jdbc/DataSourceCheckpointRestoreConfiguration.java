@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnCheckpointR
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -44,8 +45,9 @@ class DataSourceCheckpointRestoreConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		HikariCheckpointRestoreLifecycle hikariCheckpointRestoreLifecycle(DataSource dataSource) {
-			return new HikariCheckpointRestoreLifecycle(dataSource);
+		HikariCheckpointRestoreLifecycle hikariCheckpointRestoreLifecycle(DataSource dataSource,
+				ConfigurableApplicationContext applicationContext) {
+			return new HikariCheckpointRestoreLifecycle(dataSource, applicationContext);
 		}
 
 	}

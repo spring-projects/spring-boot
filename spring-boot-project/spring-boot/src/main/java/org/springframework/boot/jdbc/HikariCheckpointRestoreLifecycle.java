@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import com.zaxxer.hikari.pool.HikariPool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.Lifecycle;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
@@ -49,6 +50,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Christoph Strobl
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  * @since 3.2.0
  */
 public class HikariCheckpointRestoreLifecycle implements Lifecycle {
@@ -71,15 +73,34 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 
 	private final HikariDataSource dataSource;
 
+	private final ConfigurableApplicationContext applicationContext;
+
 	/**
 	 * Creates a new {@code HikariCheckpointRestoreLifecycle} that will allow the given
 	 * {@code dataSource} to participate in checkpoint-restore. The {@code dataSource} is
 	 * {@link DataSourceUnwrapper#unwrap unwrapped} to a {@link HikariDataSource}. If such
 	 * unwrapping is not possible, the lifecycle will have no effect.
 	 * @param dataSource the checkpoint-restore participant
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #HikariCheckpointRestoreLifecycle(DataSource, ConfigurableApplicationContext)}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	public HikariCheckpointRestoreLifecycle(DataSource dataSource) {
+		this(dataSource, null);
+	}
+
+	/**
+	 * Creates a new {@code HikariCheckpointRestoreLifecycle} that will allow the given
+	 * {@code dataSource} to participate in checkpoint-restore. The {@code dataSource} is
+	 * {@link DataSourceUnwrapper#unwrap unwrapped} to a {@link HikariDataSource}. If such
+	 * unwrapping is not possible, the lifecycle will have no effect.
+	 * @param dataSource the checkpoint-restore participant
+	 * @param applicationContext the application context
+	 * @since 3.4.0
+	 */
+	public HikariCheckpointRestoreLifecycle(DataSource dataSource, ConfigurableApplicationContext applicationContext) {
 		this.dataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class, HikariDataSource.class);
+		this.applicationContext = applicationContext;
 		this.hasOpenConnections = (pool) -> {
 			ThreadPoolExecutor closeConnectionExecutor = (ThreadPoolExecutor) ReflectionUtils
 				.getField(CLOSE_CONNECTION_EXECUTOR, pool);
@@ -109,13 +130,21 @@ public class HikariCheckpointRestoreLifecycle implements Lifecycle {
 			logger.info("Suspending Hikari pool");
 			this.dataSource.getHikariPoolMXBean().suspendPool();
 		}
+		else {
+			if (this.applicationContext != null && !this.applicationContext.isClosed()) {
+				logger.warn(this.dataSource + " is not configured to allow pool suspension. "
+						+ "This will cause problems when the application is checkpointed. "
+						+ "Please configure allow-pool-suspension to fix this!");
+			}
+		}
 		closeConnections(Duration.ofMillis(this.dataSource.getConnectionTimeout() + 250));
 	}
 
 	private void closeConnections(Duration shutdownTimeout) {
 		logger.info("Evicting Hikari connections");
 		this.dataSource.getHikariPoolMXBean().softEvictConnections();
-		logger.debug("Waiting for Hikari connections to be closed");
+		logger.debug(LogMessage.format("Waiting %d seconds for Hikari connections to be closed",
+				shutdownTimeout.toSeconds()));
 		CompletableFuture<Void> allConnectionsClosed = CompletableFuture.runAsync(this::waitForConnectionsToClose);
 		try {
 			allConnectionsClosed.get(shutdownTimeout.toMillis(), TimeUnit.MILLISECONDS);
