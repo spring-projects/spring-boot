@@ -1005,6 +1005,7 @@ bom {
 		}
 		links {
 			site("https://www.jooq.org")
+			javadoc("https://www.jooq.org/javadoc/{version}", "org.jooq")
 			docs("https://www.jooq.org/doc/{version}/manual-single-page")
 			releaseNotes("https://github.com/jOOQ/jOOQ/releases/tag/version-{version}")
 		}
@@ -1561,6 +1562,7 @@ bom {
 		}
 		links {
 			site("https://netty.io")
+			javadoc(version -> "https://netty.io/%s.%s/api".formatted(version.major(), version.minor()), "io.netty")
 		}
 	}
 	library("OkHttp", "4.12.0") {
