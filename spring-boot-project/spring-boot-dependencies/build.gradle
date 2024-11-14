@@ -1162,7 +1162,7 @@ bom {
 			releaseNotes("https://github.com/lettuce-io/lettuce-core/releases/tag/{version}")
 		}
 	}
-	library("Liquibase", "4.29.2") {
+	library("Liquibase", "0-SNAPSHOT") {
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",

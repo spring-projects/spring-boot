@@ -15,6 +15,7 @@ subprojects {
 	apply plugin: "org.springframework.boot.conventions"
 
 	repositories {
+                mavenLocal()
 		mavenCentral()
 		spring.mavenRepositories()
 		if (version.contains('-')) {
