@@ -128,3 +128,4 @@ eclipse.classpath.file.whenMerged {
 	jreEntry.entryAttributes['limit-modules'] = 'java.base'
 }
 
+jar.dependsOn check
