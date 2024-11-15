@@ -29,6 +29,7 @@ import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.boot.task.ThreadPoolTaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -67,7 +68,8 @@ class TaskSchedulingConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder(TaskSchedulingProperties properties,
-				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers) {
+				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers,
+				ObjectProvider<TaskDecorator> taskDecorator) {
 			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
 			ThreadPoolTaskSchedulerBuilder builder = new ThreadPoolTaskSchedulerBuilder();
 			builder = builder.poolSize(properties.getPool().getSize());
@@ -75,6 +77,7 @@ class TaskSchedulingConfigurations {
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
 			builder = builder.customizers(threadPoolTaskSchedulerCustomizers);
+			builder = builder.taskDecorator(taskDecorator.getIfUnique());
 			return builder;
 		}
 
@@ -87,10 +90,14 @@ class TaskSchedulingConfigurations {
 
 		private final ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers;
 
+		private final ObjectProvider<TaskDecorator> taskDecorator;
+
 		SimpleAsyncTaskSchedulerBuilderConfiguration(TaskSchedulingProperties properties,
-				ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers) {
+				ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers,
+				ObjectProvider<TaskDecorator> taskDecorator) {
 			this.properties = properties;
 			this.taskSchedulerCustomizers = taskSchedulerCustomizers;
+			this.taskDecorator = taskDecorator;
 		}
 
 		@Bean
@@ -117,6 +124,7 @@ class TaskSchedulingConfigurations {
 			if (shutdown.isAwaitTermination()) {
 				builder = builder.taskTerminationTimeout(shutdown.getAwaitTerminationPeriod());
 			}
+			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 			return builder;
 		}
 
