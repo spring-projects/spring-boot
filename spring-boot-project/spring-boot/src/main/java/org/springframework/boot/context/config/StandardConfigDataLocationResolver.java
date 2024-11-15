@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Sijun Yang
  * @since 2.4.0
  */
 public class StandardConfigDataLocationResolver
@@ -154,6 +155,7 @@ public class StandardConfigDataLocationResolver
 	private Set<StandardConfigDataReference> getProfileSpecificReferences(ConfigDataLocationResolverContext context,
 			ConfigDataLocation[] configDataLocations, Profiles profiles) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
+		validateProfiles(profiles);
 		for (String profile : profiles) {
 			for (ConfigDataLocation configDataLocation : configDataLocations) {
 				String resourceLocation = getResourceLocation(context, configDataLocation);
@@ -161,6 +163,26 @@ public class StandardConfigDataLocationResolver
 			}
 		}
 		return references;
+	}
+
+	private void validateProfiles(Profiles profiles) {
+		for (String profile : profiles) {
+			validateProfile(profile);
+		}
+	}
+
+	private void validateProfile(String profile) {
+		Assert.hasText(profile, "Profile must contain text");
+		Assert.state(!profile.startsWith("-") && !profile.startsWith("_"),
+				() -> String.format("Invalid profile '%s': must not start with '-' or '_'", profile));
+		Assert.state(!profile.endsWith("-") && !profile.endsWith("_"),
+				() -> String.format("Invalid profile '%s': must not end with '-' or '_'", profile));
+		profile.codePoints().forEach((codePoint) -> {
+			if (codePoint == '-' || codePoint == '_' || Character.isLetterOrDigit(codePoint)) {
+				return;
+			}
+			throw new IllegalStateException(String.format("Invalid profile '%s': must contain only letters or digits or '-' or '_'", profile));
+		});
 	}
 
 	private String getResourceLocation(ConfigDataLocationResolverContext context,
