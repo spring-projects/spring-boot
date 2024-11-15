@@ -294,6 +294,75 @@ class StandardConfigDataLocationResolverTests {
 		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
 	}
 
+	@Test
+	void resolveProfileSpecificWhenProfileIsValidShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-test_123");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWithAdditionalValidProfilesShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-test");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, List.of("prod-test", "stage-test"));
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileStartsWithSymbolThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("-dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile '-dev': must not start with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileStartsWithUnderscoreThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("_dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile '_dev': must not start with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileEndsWithSymbolThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev-': must not end with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileEndsWithUnderscoreThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev_");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev_': must not end with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileContainsInvalidCharactersThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev*test");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith(
+					"Invalid profile 'dev*test': must only contain alphanumeric characters, '-', or '_'");
+	}
+
 	private String filePath(String... components) {
 		return "file [" + String.join(File.separator, components) + "]";
 	}
