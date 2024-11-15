@@ -58,7 +58,7 @@ class TestFailuresPluginIntegrationTests {
 			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 1 test task:", "", ":test",
 				"    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	@Test
@@ -72,7 +72,7 @@ class TestFailuresPluginIntegrationTests {
 			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 1 test task:", "",
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class TestFailuresPluginIntegrationTests {
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "", ":project-two:test",
 				"    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class TestFailuresPluginIntegrationTests {
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "", ":project-two:test",
 				"    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	private void createProject(File dir) {
