@@ -149,3 +149,5 @@ eclipse {
 		}
 	}
 }
+
+jar.dependsOn check
