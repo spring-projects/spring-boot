@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Sijun Yang
  * @since 2.4.0
  */
 public class StandardConfigDataLocationResolver
@@ -154,6 +155,7 @@ public class StandardConfigDataLocationResolver
 	private Set<StandardConfigDataReference> getProfileSpecificReferences(ConfigDataLocationResolverContext context,
 			ConfigDataLocation[] configDataLocations, Profiles profiles) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
+		validateProfiles(profiles);
 		for (String profile : profiles) {
 			for (ConfigDataLocation configDataLocation : configDataLocations) {
 				String resourceLocation = getResourceLocation(context, configDataLocation);
@@ -161,6 +163,21 @@ public class StandardConfigDataLocationResolver
 			}
 		}
 		return references;
+	}
+
+	private void validateProfiles(Profiles profiles) {
+		Pattern validProfilePattern = Pattern.compile("^[a-zA-Z0-9_\\-]+$");
+		Assert.notNull(profiles, "Profiles must not be null");
+		for (String profile : profiles) {
+			Assert.notNull(profile, "Profile must not be null");
+			Assert.hasText(profile, "Profile must not be empty");
+			Assert.state(!profile.startsWith("-") && !profile.startsWith("_"),
+					() -> String.format("Invalid profile '%s': must not start with '-' or '_'", profile));
+			Assert.state(!profile.endsWith("-") && !profile.endsWith("_"),
+					() -> String.format("Invalid profile '%s': must not end with '-' or '_'", profile));
+			Assert.state(validProfilePattern.matcher(profile).matches(), () -> String
+				.format("Invalid profile '%s': must only contain alphanumeric characters, '-', or '_'", profile));
+		}
 	}
 
 	private String getResourceLocation(ConfigDataLocationResolverContext context,
