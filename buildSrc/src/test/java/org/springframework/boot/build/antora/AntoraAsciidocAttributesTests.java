@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
@@ -193,11 +194,11 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void urlLinksFromLibrary() {
-		Map<String, Link> links = new LinkedHashMap<>();
-		links.put("site", new Link((version) -> "https://example.com/site/" + version, null));
-		links.put("docs", new Link((version) -> "https://example.com/docs/" + version, null));
-		links.put("javadoc", new Link((version) -> "https://example.com/api/" + version,
-				List.of("org.springframework.[core|util]")));
+		Map<String, List<Link>> links = new LinkedHashMap<>();
+		links.put("site", singleLink((version) -> "https://example.com/site/" + version));
+		links.put("docs", singleLink((version) -> "https://example.com/docs/" + version));
+		links.put("javadoc",
+				singleLink((version) -> "https://example.com/api/" + version, "org.springframework.[core|util]"));
 		Library library = mockLibrary(links);
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
 				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
@@ -207,6 +208,11 @@ class AntoraAsciidocAttributesTests {
 		assertThat(attributes.get())
 			.containsEntry("javadoc-location-org-springframework-core", "{url-spring-framework-javadoc}")
 			.containsEntry("javadoc-location-org-springframework-util", "{url-spring-framework-javadoc}");
+	}
+
+	private List<Link> singleLink(Function<LibraryVersion, String> factory, String... packages) {
+		Link link = new Link(null, factory, List.of(packages));
+		return List.of(link);
 	}
 
 	@Test
@@ -221,7 +227,7 @@ class AntoraAsciidocAttributesTests {
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
 	}
 
-	private Library mockLibrary(Map<String, Link> links) {
+	private Library mockLibrary(Map<String, List<Link>> links) {
 		String name = "Spring Framework";
 		String calendarName = null;
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
@@ -254,9 +260,10 @@ class AntoraAsciidocAttributesTests {
 		addMockSpringDataVersion(versions, "spring-data-redis", version);
 		addMockSpringDataVersion(versions, "spring-data-rest-core", version);
 		addMockSpringDataVersion(versions, "spring-data-ldap", version);
-		addMockJacksonVersion(versions, "jackson-annotations", version);
-		addMockJacksonVersion(versions, "jackson-core", version);
-		addMockJacksonVersion(versions, "jackson-databind", version);
+		addMockJacksonCoreVersion(versions, "jackson-annotations", version);
+		addMockJacksonCoreVersion(versions, "jackson-core", version);
+		addMockJacksonCoreVersion(versions, "jackson-databind", version);
+		versions.put("com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version);
 		return versions;
 	}
 
@@ -264,7 +271,7 @@ class AntoraAsciidocAttributesTests {
 		versions.put("org.springframework.data:" + artifactId, version);
 	}
 
-	private void addMockJacksonVersion(Map<String, String> versions, String artifactId, String version) {
+	private void addMockJacksonCoreVersion(Map<String, String> versions, String artifactId, String version) {
 		versions.put("com.fasterxml.jackson.core:" + artifactId, version);
 	}
 
