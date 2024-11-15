@@ -209,19 +209,6 @@ public abstract class CheckBom extends DefaultTask {
 		}
 	}
 
-//	private File resolveBom(Library library, String alignsWithBom) {
-//		String coordinates = alignsWithBom + ":" + library.getVersion().getVersion() + "@pom";
-//		Set<File> files = this.configurations.detachedConfiguration(this.dependencies.create(coordinates))
-//			.getResolvedConfiguration()
-//			.getFiles();
-//		if (files.size() != 1) {
-//			throw new IllegalStateException(
-//					"Expected a single file but '" + coordinates + "' resolved to " + files.size());
-//		}
-//		return files.iterator().next();
-//	}
-
-
 	private File resolveBom(Library library, String alignsWithBom) {
 		String coordinates = alignsWithBom + ":" + library.getVersion().getVersion() + "@pom";
 
