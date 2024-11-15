@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Sijun Yang
  */
 class StandardConfigDataLocationResolverTests {
 
@@ -254,8 +255,8 @@ class StandardConfigDataLocationResolverTests {
 	@Test
 	void resolveProfileSpecificReturnsProfileSpecificFiles() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
-		Profiles profiles = mock(Profiles.class);
-		given(profiles.iterator()).willReturn(Collections.singletonList("dev").iterator());
+		this.environment.setActiveProfiles("dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
 		List<StandardConfigDataResource> locations = this.resolver.resolveProfileSpecific(this.context, location,
 				profiles);
 		assertThat(locations).hasSize(1);
