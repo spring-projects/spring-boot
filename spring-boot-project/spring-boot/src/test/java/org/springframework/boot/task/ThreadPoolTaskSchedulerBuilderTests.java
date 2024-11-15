@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -129,6 +130,13 @@ class ThreadPoolTaskSchedulerBuilderTests {
 			.build();
 		then(customizer1).should().customize(scheduler);
 		then(customizer2).should().customize(scheduler);
+	}
+
+	@Test
+	void taskDecoratorShouldApply() {
+		TaskDecorator taskDecorator = mock(TaskDecorator.class);
+		ThreadPoolTaskScheduler scheduler = this.builder.taskDecorator(taskDecorator).build();
+		assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
 	}
 
 }

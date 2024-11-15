@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -48,23 +49,48 @@ public class ThreadPoolTaskSchedulerBuilder {
 
 	private final String threadNamePrefix;
 
+	private final TaskDecorator taskDecorator;
+
 	private final Set<ThreadPoolTaskSchedulerCustomizer> customizers;
 
+	/**
+	 * Default constructor for creating a new instance of
+	 * {@code ThreadPoolTaskSchedulerBuilder}. Initializes a builder instance with all
+	 * fields set to {@code null}, allowing for further customization through its fluent
+	 * API methods.
+	 */
 	public ThreadPoolTaskSchedulerBuilder() {
-		this.poolSize = null;
-		this.awaitTermination = null;
-		this.awaitTerminationPeriod = null;
-		this.threadNamePrefix = null;
-		this.customizers = null;
+		this(null, null, null, null, null, null);
 	}
 
+	/**
+	 * Constructs a new {@code ThreadPoolTaskSchedulerBuilder} instance with the specified
+	 * configuration.
+	 * @param poolSize the maximum allowed number of threads
+	 * @param awaitTermination whether the executor should wait for scheduled tasks to
+	 * complete on shutdown
+	 * @param awaitTerminationPeriod the maximum time the executor is supposed to block on
+	 * shutdown
+	 * @param threadNamePrefix the prefix to use for the names of newly created threads
+	 * @param taskSchedulerCustomizers the customizers to apply to the
+	 * {@link ThreadPoolTaskScheduler}
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of the default constructor
+	 */
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	public ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
 			String threadNamePrefix, Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers) {
+		this(poolSize, awaitTermination, awaitTerminationPeriod, threadNamePrefix, taskSchedulerCustomizers, null);
+	}
+
+	private ThreadPoolTaskSchedulerBuilder(Integer poolSize, Boolean awaitTermination, Duration awaitTerminationPeriod,
+			String threadNamePrefix, Set<ThreadPoolTaskSchedulerCustomizer> taskSchedulerCustomizers,
+			TaskDecorator taskDecorator) {
 		this.poolSize = poolSize;
 		this.awaitTermination = awaitTermination;
 		this.awaitTerminationPeriod = awaitTerminationPeriod;
 		this.threadNamePrefix = threadNamePrefix;
 		this.customizers = taskSchedulerCustomizers;
+		this.taskDecorator = taskDecorator;
 	}
 
 	/**
@@ -74,7 +100,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder poolSize(int poolSize) {
 		return new ThreadPoolTaskSchedulerBuilder(poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.customizers);
+				this.threadNamePrefix, this.customizers, this.taskDecorator);
 	}
 
 	/**
@@ -87,7 +113,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder awaitTermination(boolean awaitTermination) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, this.customizers);
+				this.threadNamePrefix, this.customizers, this.taskDecorator);
 	}
 
 	/**
@@ -101,7 +127,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder awaitTerminationPeriod(Duration awaitTerminationPeriod) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, awaitTerminationPeriod,
-				this.threadNamePrefix, this.customizers);
+				this.threadNamePrefix, this.customizers, this.taskDecorator);
 	}
 
 	/**
@@ -111,7 +137,18 @@ public class ThreadPoolTaskSchedulerBuilder {
 	 */
 	public ThreadPoolTaskSchedulerBuilder threadNamePrefix(String threadNamePrefix) {
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				threadNamePrefix, this.customizers);
+				threadNamePrefix, this.customizers, this.taskDecorator);
+	}
+
+	/**
+	 * Set the {@link TaskDecorator} to be applied to the {@link ThreadPoolTaskScheduler}.
+	 * @param taskDecorator the task decorator to set
+	 * @return a new builder instance
+	 * @since 3.5.0
+	 */
+	public ThreadPoolTaskSchedulerBuilder taskDecorator(TaskDecorator taskDecorator) {
+		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
+				this.threadNamePrefix, this.customizers, taskDecorator);
 	}
 
 	/**
@@ -143,7 +180,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 			Iterable<? extends ThreadPoolTaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, append(null, customizers));
+				this.threadNamePrefix, append(null, customizers), this.taskDecorator);
 	}
 
 	/**
@@ -173,7 +210,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 			Iterable<? extends ThreadPoolTaskSchedulerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new ThreadPoolTaskSchedulerBuilder(this.poolSize, this.awaitTermination, this.awaitTerminationPeriod,
-				this.threadNamePrefix, append(this.customizers, customizers));
+				this.threadNamePrefix, append(this.customizers, customizers), this.taskDecorator);
 	}
 
 	/**
@@ -199,6 +236,7 @@ public class ThreadPoolTaskSchedulerBuilder {
 		map.from(this.awaitTermination).to(taskScheduler::setWaitForTasksToCompleteOnShutdown);
 		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskScheduler::setAwaitTerminationSeconds);
 		map.from(this.threadNamePrefix).to(taskScheduler::setThreadNamePrefix);
+		map.from(this.taskDecorator).to(taskScheduler::setTaskDecorator);
 		if (!CollectionUtils.isEmpty(this.customizers)) {
 			this.customizers.forEach((customizer) -> customizer.customize(taskScheduler));
 		}
