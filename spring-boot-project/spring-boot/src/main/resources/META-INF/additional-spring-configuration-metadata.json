@@ -699,6 +699,17 @@
       ]
     },
     {
+      "name": "logging.structured.json.customizer",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class"
+          }
+        }
+      ]
+    },
+    {
       "name": "spring.config.import",
       "values": [
         {
