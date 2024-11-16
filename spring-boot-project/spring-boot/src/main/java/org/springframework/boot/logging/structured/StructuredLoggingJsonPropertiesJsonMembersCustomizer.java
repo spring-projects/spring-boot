@@ -22,7 +22,6 @@ import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link StructureLoggingJsonMembersCustomizer} to apply
@@ -50,8 +49,8 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructureL
 		if (!CollectionUtils.isEmpty(add)) {
 			add.forEach(members::add);
 		}
-		String customizer = this.properties.customizer();
-		if (StringUtils.hasLength(customizer)) {
+		Class<? extends StructureLoggingJsonMembersCustomizer<?>> customizer = this.properties.customizer();
+		if (customizer != null) {
 			createAndApplyCustomizer(members, customizer);
 		}
 	}
@@ -71,8 +70,9 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructureL
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void createAndApplyCustomizer(Members<Object> members, String customizerClassName) {
-		((StructureLoggingJsonMembersCustomizer) this.instantiator.instantiate(customizerClassName)).customize(members);
+	private void createAndApplyCustomizer(Members<Object> members,
+			Class<? extends StructureLoggingJsonMembersCustomizer<?>> customizerClass) {
+		((StructureLoggingJsonMembersCustomizer) this.instantiator.instantiateType(customizerClass)).customize(members);
 	}
 
 }

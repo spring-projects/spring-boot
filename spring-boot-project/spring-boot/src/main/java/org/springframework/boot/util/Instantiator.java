@@ -150,6 +150,17 @@ public class Instantiator<T> {
 
 	/**
 	 * Instantiate the given set of classes, injecting constructor arguments as necessary.
+	 * @param type the types to instantiate
+	 * @return a list of instantiated instances
+	 * @since 3.4.0
+	 */
+	public T instantiateType(Class<?> type) {
+		Assert.notNull(type, "Type must not be null");
+		return instantiate(TypeSupplier.forType(type));
+	}
+
+	/**
+	 * Instantiate the given set of classes, injecting constructor arguments as necessary.
 	 * @param types the types to instantiate
 	 * @return a list of instantiated instances
 	 * @since 2.4.8

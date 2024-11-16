@@ -34,7 +34,7 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, String customizer) {
+		Map<String, String> add, Class<? extends StructureLoggingJsonMembersCustomizer<?>> customizer) {
 
 	static StructuredLoggingJsonProperties get(Environment environment) {
 		return Binder.get(environment)
