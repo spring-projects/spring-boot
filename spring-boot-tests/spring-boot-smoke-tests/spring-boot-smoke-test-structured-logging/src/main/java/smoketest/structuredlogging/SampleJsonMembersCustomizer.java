@@ -18,9 +18,9 @@ package smoketest.structuredlogging;
 
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.ValueProcessor;
-import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 
-public class SampleJsonMembersCustomizer implements StructureLoggingJsonMembersCustomizer<Object> {
+public class SampleJsonMembersCustomizer implements StructuredLoggingJsonMembersCustomizer<Object> {
 
 	@Override
 	public void customize(Members<Object> members) {

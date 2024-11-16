@@ -32,7 +32,7 @@ import org.springframework.boot.json.JsonWriter.Members;
  * @see JsonWriterStructuredLogFormatter
  */
 @FunctionalInterface
-public interface StructureLoggingJsonMembersCustomizer<T> {
+public interface StructuredLoggingJsonMembersCustomizer<T> {
 
 	/**
 	 * Customize the given {@link Members} instance.

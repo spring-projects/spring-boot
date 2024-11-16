@@ -24,12 +24,12 @@ import org.springframework.boot.util.Instantiator;
 import org.springframework.util.CollectionUtils;
 
 /**
- * {@link StructureLoggingJsonMembersCustomizer} to apply
+ * {@link StructuredLoggingJsonMembersCustomizer} to apply
  * {@link StructuredLoggingJsonProperties}.
  *
  * @author Phillip Webb
  */
-class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructureLoggingJsonMembersCustomizer<Object> {
+class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructuredLoggingJsonMembersCustomizer<Object> {
 
 	private final Instantiator<?> instantiator;
 
@@ -49,7 +49,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructureL
 		if (!CollectionUtils.isEmpty(add)) {
 			add.forEach(members::add);
 		}
-		Class<? extends StructureLoggingJsonMembersCustomizer<?>> customizer = this.properties.customizer();
+		Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer = this.properties.customizer();
 		if (customizer != null) {
 			createAndApplyCustomizer(members, customizer);
 		}
@@ -71,8 +71,9 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructureL
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void createAndApplyCustomizer(Members<Object> members,
-			Class<? extends StructureLoggingJsonMembersCustomizer<?>> customizerClass) {
-		((StructureLoggingJsonMembersCustomizer) this.instantiator.instantiateType(customizerClass)).customize(members);
+			Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizerClass) {
+		((StructuredLoggingJsonMembersCustomizer) this.instantiator.instantiateType(customizerClass))
+			.customize(members);
 	}
 
 }
