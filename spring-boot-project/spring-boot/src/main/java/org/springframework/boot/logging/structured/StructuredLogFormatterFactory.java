@@ -82,8 +82,8 @@ public class StructuredLogFormatterFactory<E> {
 		this.logEventType = logEventType;
 		this.instantiator = new Instantiator<>(Object.class, (allAvailableParameters) -> {
 			allAvailableParameters.add(Environment.class, environment);
-			allAvailableParameters.add(StructureLoggingJsonMembersCustomizer.class,
-					(type) -> getStructureLoggingJsonMembersCustomizer(environment));
+			allAvailableParameters.add(StructuredLoggingJsonMembersCustomizer.class,
+					(type) -> getStructuredLoggingJsonMembersCustomizer(environment));
 			if (availableParameters != null) {
 				availableParameters.accept(allAvailableParameters);
 			}
@@ -92,26 +92,26 @@ public class StructuredLogFormatterFactory<E> {
 		commonFormatters.accept(this.commonFormatters);
 	}
 
-	StructureLoggingJsonMembersCustomizer<?> getStructureLoggingJsonMembersCustomizer(Environment environment) {
-		List<StructureLoggingJsonMembersCustomizer<?>> customizers = new ArrayList<>();
+	StructuredLoggingJsonMembersCustomizer<?> getStructuredLoggingJsonMembersCustomizer(Environment environment) {
+		List<StructuredLoggingJsonMembersCustomizer<?>> customizers = new ArrayList<>();
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		if (properties != null) {
 			customizers.add(new StructuredLoggingJsonPropertiesJsonMembersCustomizer(this.instantiator, properties));
 		}
-		customizers.addAll(loadStructureLoggingJsonMembersCustomizers());
+		customizers.addAll(loadStructuredLoggingJsonMembersCustomizers());
 		return (members) -> invokeCustomizers(customizers, members);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private List<StructureLoggingJsonMembersCustomizer<?>> loadStructureLoggingJsonMembersCustomizers() {
-		return (List) this.factoriesLoader.load(StructureLoggingJsonMembersCustomizer.class,
+	private List<StructuredLoggingJsonMembersCustomizer<?>> loadStructuredLoggingJsonMembersCustomizers() {
+		return (List) this.factoriesLoader.load(StructuredLoggingJsonMembersCustomizer.class,
 				ArgumentResolver.from(this.instantiator::getArg));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void invokeCustomizers(List<StructureLoggingJsonMembersCustomizer<?>> customizers,
+	private void invokeCustomizers(List<StructuredLoggingJsonMembersCustomizer<?>> customizers,
 			Members<Object> members) {
-		LambdaSafe.callbacks(StructureLoggingJsonMembersCustomizer.class, customizers, members)
+		LambdaSafe.callbacks(StructuredLoggingJsonMembersCustomizer.class, customizers, members)
 			.invoke((customizer) -> customizer.customize(members));
 	}
 
