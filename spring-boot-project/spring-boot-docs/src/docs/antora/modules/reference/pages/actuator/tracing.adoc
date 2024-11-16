@@ -44,6 +44,9 @@ management:
   tracing:
     sampling:
       probability: 1.0
+spring:
+  zipkin:
+    base-url: http://localhost:9411
 ----
 
 By default, Spring Boot samples only 10% of requests to prevent overwhelming the trace backend.
