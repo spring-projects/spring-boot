@@ -52,7 +52,7 @@ class StructuredLoggingJsonPropertiesTests {
 		StructuredLoggingJsonProperties.get(environment);
 	}
 
-	static class TestCustomizer implements StructureLoggingJsonMembersCustomizer<String> {
+	static class TestCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
 
 		@Override
 		public void customize(Members<String> members) {

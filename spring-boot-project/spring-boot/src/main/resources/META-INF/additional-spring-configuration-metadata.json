@@ -269,7 +269,7 @@
     {
       "name": "logging.structured.json.customizer",
       "type": "java.lang.String",
-      "description": "The fully qualified class name of a StructureLoggingJsonMembersCustomizer"
+      "description": "The fully qualified class name of a StructuredLoggingJsonMembersCustomizer"
     },
     {
       "name": "logging.structured.json.exclude",

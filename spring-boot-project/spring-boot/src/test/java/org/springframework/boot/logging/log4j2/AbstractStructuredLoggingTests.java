@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +48,7 @@ abstract class AbstractStructuredLoggingTests {
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	@Mock
-	StructureLoggingJsonMembersCustomizer<?> customizer;
+	StructuredLoggingJsonMembersCustomizer<?> customizer;
 
 	protected Map<String, Object> map(Object... values) {
 		assertThat(values.length).isEven();

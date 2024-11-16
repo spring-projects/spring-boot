@@ -107,7 +107,7 @@ class StructuredLogFormatterFactoryTests {
 	void getInjectCustomizers() {
 		this.environment.setProperty("logging.structured.json.rename.spring", "test");
 		SpringFactoriesLoader factoriesLoader = mock(SpringFactoriesLoader.class);
-		StructureLoggingJsonMembersCustomizer<?> customizer = (members) -> members
+		StructuredLoggingJsonMembersCustomizer<?> customizer = (members) -> members
 			.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
 		given(factoriesLoader.load(any(), any(ArgumentResolver.class))).willReturn(List.of(customizer));
 		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(factoriesLoader,
@@ -169,7 +169,7 @@ class StructuredLogFormatterFactoryTests {
 
 	static class CutomizedFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-		CutomizedFormatter(StructureLoggingJsonMembersCustomizer<?> customizer) {
+		CutomizedFormatter(StructuredLoggingJsonMembersCustomizer<?> customizer) {
 			super((members) -> members.add("spring", "boot"), customizer);
 		}
 

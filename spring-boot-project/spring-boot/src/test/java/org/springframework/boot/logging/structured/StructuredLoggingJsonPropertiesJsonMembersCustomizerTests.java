@@ -98,7 +98,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void customizeWhenHasCustomizerCustomizesMember() {
-		StructureLoggingJsonMembersCustomizer<?> uppercaseCustomizer = (members) -> members
+		StructuredLoggingJsonMembersCustomizer<?> uppercaseCustomizer = (members) -> members
 			.applyingNameProcessor(NameProcessor.of(String::toUpperCase));
 		given(((Instantiator) this.instantiator).instantiateType(TestCustomizer.class)).willReturn(uppercaseCustomizer);
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
@@ -109,7 +109,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private String writeSampleJson(StructureLoggingJsonMembersCustomizer customizer) {
+	private String writeSampleJson(StructuredLoggingJsonMembersCustomizer customizer) {
 		return JsonWriter.of((members) -> {
 			members.add("a", "a");
 			members.add("b", "b");
@@ -118,7 +118,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 		}).writeToString(new Object());
 	}
 
-	static class TestCustomizer implements StructureLoggingJsonMembersCustomizer<String> {
+	static class TestCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
 
 		@Override
 		public void customize(Members<String> members) {
