@@ -26,11 +26,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEventsEndpoint;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -39,8 +40,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing {@link AuditEventsEndpoint}.
@@ -49,17 +48,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	@MockBean
+	@MockitoBean
 	private AuditEventRepository repository;
 
 	@Test
-	void allAuditEvents() throws Exception {
+	void allAuditEvents() {
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any()))
 			.willReturn(List.of(new AuditEvent("alice", "logout", Collections.emptyMap())));
-		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp))
-			.andExpect(status().isOk())
-			.andDo(document("auditevents/all",
+		assertThat(this.mvc.get().uri("/actuator/auditevents").param("after", queryTimestamp)).hasStatusOk()
+			.apply(document("auditevents/all",
 					responseFields(fieldWithPath("events").description("An array of audit events."),
 							fieldWithPath("events.[].timestamp")
 								.description("The timestamp of when the event occurred."),
@@ -68,17 +66,18 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	}
 
 	@Test
-	void filteredAuditEvents() throws Exception {
+	void filteredAuditEvents() {
 		OffsetDateTime now = OffsetDateTime.now();
 		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
 		given(this.repository.find("alice", now.toInstant(), "logout"))
 			.willReturn(List.of(new AuditEvent("alice", "logout", Collections.emptyMap())));
-		this.mockMvc
-			.perform(get("/actuator/auditevents").param("principal", "alice")
-				.param("after", queryTimestamp)
-				.param("type", "logout"))
-			.andExpect(status().isOk())
-			.andDo(document("auditevents/filtered",
+		assertThat(this.mvc.get()
+			.uri("/actuator/auditevents")
+			.param("principal", "alice")
+			.param("after", queryTimestamp)
+			.param("type", "logout"))
+			.hasStatusOk()
+			.apply(document("auditevents/filtered",
 					queryParameters(
 							parameterWithName("after").description(
 									"Restricts the events to those that occurred after the given time. Optional."),

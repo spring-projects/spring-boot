@@ -62,8 +62,8 @@ org.springframework.boot.autoconfigure.hateoas.HypermediaAutoConfiguration
 org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration
 org.springframework.boot.autoconfigure.hazelcast.HazelcastJpaDependencyAutoConfiguration
 org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
+org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration
 org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
-org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration
 org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
 org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
@@ -98,6 +98,7 @@ org.springframework.boot.autoconfigure.pulsar.PulsarAutoConfiguration
 org.springframework.boot.autoconfigure.pulsar.PulsarReactiveAutoConfiguration
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+org.springframework.boot.autoconfigure.r2dbc.R2dbcProxyAutoConfiguration
 org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration
 org.springframework.boot.autoconfigure.reactor.ReactorAutoConfiguration
 org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration

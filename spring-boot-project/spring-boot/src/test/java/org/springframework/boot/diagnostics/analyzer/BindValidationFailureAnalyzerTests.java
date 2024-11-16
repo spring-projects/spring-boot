@@ -202,7 +202,7 @@ class BindValidationFailureAnalyzerTests {
 		}
 
 		@Override
-		public boolean supports(Class<?> clazz) {
+		public boolean supports(Class<?> type) {
 			return true;
 		}
 

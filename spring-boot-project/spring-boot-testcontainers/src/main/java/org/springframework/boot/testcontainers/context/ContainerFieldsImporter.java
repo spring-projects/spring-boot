@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,15 @@ package org.springframework.boot.testcontainers.context;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.testcontainers.containers.Container;
+import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -34,12 +38,17 @@ import org.springframework.util.ReflectionUtils;
  */
 class ContainerFieldsImporter {
 
-	void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?> definitionClass) {
+	Set<Startable> registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?> definitionClass) {
+		Set<Startable> importedContainers = new HashSet<>();
 		for (Field field : getContainerFields(definitionClass)) {
 			assertValid(field);
 			Container<?> container = getContainer(field);
+			if (container instanceof Startable startable) {
+				importedContainers.add(startable);
+			}
 			registerBeanDefinition(registry, field, container);
 		}
+		return importedContainers;
 	}
 
 	private List<Field> getContainerFields(Class<?> containersClass) {
@@ -65,7 +74,9 @@ class ContainerFieldsImporter {
 	}
 
 	private void registerBeanDefinition(BeanDefinitionRegistry registry, Field field, Container<?> container) {
+		ContainerImageMetadata containerMetadata = new ContainerImageMetadata(container.getDockerImageName());
 		TestcontainerFieldBeanDefinition beanDefinition = new TestcontainerFieldBeanDefinition(field, container);
+		containerMetadata.addTo(beanDefinition);
 		String beanName = generateBeanName(field);
 		registry.registerBeanDefinition(beanName, beanDefinition);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link AssertableApplicationContext}.
@@ -36,6 +37,16 @@ class AssertableApplicationContextTests {
 		AssertableApplicationContext context = AssertableApplicationContext
 			.get(() -> mock(ConfigurableApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableApplicationContext.class);
+	}
+
+	@Test
+	void getWhenHasAdditionalInterfaceShouldReturnProxy() {
+		AssertableApplicationContext context = AssertableApplicationContext.get(
+				() -> mock(ConfigurableApplicationContext.class,
+						withSettings().extraInterfaces(AdditionalContextInterface.class)),
+				AdditionalContextInterface.class);
+		assertThat(context).isInstanceOf(ConfigurableApplicationContext.class)
+			.isInstanceOf(AdditionalContextInterface.class);
 	}
 
 }

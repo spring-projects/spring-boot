@@ -48,10 +48,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.BindException;
@@ -106,6 +108,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -288,7 +291,7 @@ class ConfigurationPropertiesTests {
 		load(new Class<?>[] { BasicConfiguration.class, BasicPropertiesConsumer.class }, "name=child");
 		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
 		assertThat(parent.getBean(BasicProperties.class)).isNotNull();
-		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName()).isEqualTo("parent");
+		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName()).isEqualTo("child");
 		parent.close();
 	}
 
@@ -395,9 +398,9 @@ class ConfigurationPropertiesTests {
 
 		};
 		this.context.register(WithFactoryBeanConfiguration.class);
-		GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-		beanDefinition.setBeanClass(FactoryBeanTester.class);
-		beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(FactoryBeanTester.class)
+			.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE)
+			.getBeanDefinition();
 		this.context.registerBeanDefinition("test", beanDefinition);
 		this.context.refresh();
 		assertThat(WithFactoryBeanConfiguration.factoryBeanInitialized).as("Not Initialized").isTrue();
@@ -525,10 +528,9 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedShouldFail() {
-		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-			.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class, "properties.description="))
-			.withCauseInstanceOf(BindException.class);
+	void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotAnnotatedWithValidShouldNotFail() {
+		assertThatNoException()
+			.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class, "properties.description="));
 	}
 
 	@Test
@@ -584,13 +586,21 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadShouldSupportRebindableConfigurationProperties() {
-		// gh-9160
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testRebindableConfigurationProperties(PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testRebindableConfigurationProperties(PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testRebindableConfigurationProperties(Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
 		assertThat(first.getOne()).isEqualTo("foo");
@@ -602,12 +612,24 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties() {
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredAsBean() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesBeanConfiguration.class);
+	}
+
+	@Test
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationPropertiesRegisteredUsingRegistrar() {
+		testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+				PrototypePropertiesRegistrarConfiguration.class);
+	}
+
+	void testPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties(
+			Class<?> configurationClass) {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
 		sources.addFirst(new MapPropertySource("test-source", source));
-		this.context.register(PrototypePropertiesConfiguration.class);
+		this.context.register(configurationClass);
 		this.context.register(PropertySourcesPlaceholderConfigurer.class);
 		this.context.refresh();
 		PrototypeBean first = this.context.getBean(PrototypeBean.class);
@@ -1495,14 +1517,26 @@ class ConfigurationPropertiesTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	static class PrototypePropertiesConfiguration {
+	static class PrototypePropertiesBeanConfiguration {
 
 		@Bean
-		@Scope("prototype")
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConfigurationProperties("example")
 		PrototypeBean prototypeBean() {
 			return new PrototypeBean();
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(PrototypeBeanProperties.class)
+	static class PrototypePropertiesRegistrarConfiguration {
+
+	}
+
+	@ConfigurationProperties("example")
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	static class PrototypeBeanProperties extends PrototypeBean {
 
 	}
 
@@ -1837,7 +1871,7 @@ class ConfigurationPropertiesTests {
 	@Validated
 	static class ValidatedNestedJsr303Properties {
 
-		private Jsr303Properties properties;
+		private final Jsr303Properties properties = new Jsr303Properties();
 
 		Jsr303Properties getProperties() {
 			return this.properties;
@@ -1851,9 +1885,9 @@ class ConfigurationPropertiesTests {
 	static class ValidatedValidNestedJsr303Properties {
 
 		@Valid
-		private final List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
+		private final Jsr303Properties properties = new Jsr303Properties();
 
-		List<Jsr303Properties> getProperties() {
+		Jsr303Properties getProperties() {
 			return this.properties;
 		}
 

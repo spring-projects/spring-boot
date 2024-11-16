@@ -118,8 +118,20 @@ The following table summarizes the available properties and their default values
 
 | `builder`
 | `--builder`
-| Name of the Builder image to use.
-| `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-tiny:latest` when {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied.
+| Name of the builder image to use.
+| `paketobuildpacks/builder-jammy-java-tiny:latest`
+
+| `trustBuilder`
+| `--trustBuilder`
+| Whether to treat the builder as https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[trusted].
+| `true` if the builder is one of `paketobuildpacks/builder-jammy-java-tiny`, `paketobuildpacks/builder-noble-java-tiny`, `paketobuildpacks/builder-jammy-tiny`, `paketobuildpacks/builder-jammy-base`, `paketobuildpacks/builder-jammy-full`, `paketobuildpacks/builder-jammy-buildpackless-tiny`, `paketobuildpacks/builder-jammy-buildpackless-base`, `paketobuildpacks/builder-jammy-buildpackless-full`, `gcr.io/buildpacks/builder`, `heroku/builder`; `false` otherwise.
+
+| `imagePlatform`
+| `--imagePlatform`
+a|The platform (operating system and architecture) of any builder, run, and buildpack images that are pulled.
+Must be in the form of `OS[/architecture[/variant]]`, such as `linux/amd64`, `linux/arm64`, or `linux/arm/v5`.
+Refer to documentation of the builder being used to determine the image OS and architecture options available.
+| No default value, indicating that the platform of the host machine should be used.
 
 | `runImage`
 | `--runImage`
@@ -140,7 +152,7 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `environment`
 |
 | Environment variables that should be passed to the builder.
-| Empty or `['BP_NATIVE_IMAGE': 'true']` when {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied.
+| Empty.
 
 | `buildpacks`
 |
@@ -237,7 +249,10 @@ Application contents will also be in this location in the generated image.
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
-You can override this behaviour as shown in the xref:packaging-oci-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
+You can override this behavior as shown in the xref:packaging-oci-image.adoc#build-image.examples.builder-configuration[builder configuration] examples.
+
+NOTE: The default builder `paketobuildpacks/builder-jammy-java-tiny:latest` does not include a shell.
+Applications that require a shell to run a start script, as might be the case when the {url-gradle-docs-application-plugin}[`application` plugin] has been applied to generate a distribution zip archive, should override the `builder` configuration to use one that includes a shell, such as `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-full:latest`.
 
 
 

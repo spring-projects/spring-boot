@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,8 +161,18 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposeUp extends DockerCliCommand<Void> {
 
-		ComposeUp(LogLevel logLevel) {
-			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "up", "--no-color", "--detach", "--wait");
+		ComposeUp(LogLevel logLevel, List<String> arguments) {
+			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, getCommand(arguments));
+		}
+
+		private static String[] getCommand(List<String> arguments) {
+			List<String> result = new ArrayList<>();
+			result.add("up");
+			result.add("--no-color");
+			result.add("--detach");
+			result.add("--wait");
+			result.addAll(arguments);
+			return result.toArray(String[]::new);
 		}
 
 	}
@@ -172,8 +182,17 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposeDown extends DockerCliCommand<Void> {
 
-		ComposeDown(Duration timeout) {
-			super(Type.DOCKER_COMPOSE, Void.class, false, "down", "--timeout", Long.toString(timeout.toSeconds()));
+		ComposeDown(Duration timeout, List<String> arguments) {
+			super(Type.DOCKER_COMPOSE, Void.class, false, getCommand(timeout, arguments));
+		}
+
+		private static String[] getCommand(Duration timeout, List<String> arguments) {
+			List<String> command = new ArrayList<>();
+			command.add("down");
+			command.add("--timeout");
+			command.add(Long.toString(timeout.toSeconds()));
+			command.addAll(arguments);
+			return command.toArray(String[]::new);
 		}
 
 	}
@@ -183,8 +202,15 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposeStart extends DockerCliCommand<Void> {
 
-		ComposeStart(LogLevel logLevel) {
-			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "start");
+		ComposeStart(LogLevel logLevel, List<String> arguments) {
+			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, getCommand(arguments));
+		}
+
+		private static String[] getCommand(List<String> arguments) {
+			List<String> command = new ArrayList<>();
+			command.add("start");
+			command.addAll(arguments);
+			return command.toArray(String[]::new);
 		}
 
 	}
@@ -194,8 +220,17 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposeStop extends DockerCliCommand<Void> {
 
-		ComposeStop(Duration timeout) {
-			super(Type.DOCKER_COMPOSE, Void.class, false, "stop", "--timeout", Long.toString(timeout.toSeconds()));
+		ComposeStop(Duration timeout, List<String> arguments) {
+			super(Type.DOCKER_COMPOSE, Void.class, false, getCommand(timeout, arguments));
+		}
+
+		private static String[] getCommand(Duration timeout, List<String> arguments) {
+			List<String> command = new ArrayList<>();
+			command.add("stop");
+			command.add("--timeout");
+			command.add(Long.toString(timeout.toSeconds()));
+			command.addAll(arguments);
+			return command.toArray(String[]::new);
 		}
 
 	}

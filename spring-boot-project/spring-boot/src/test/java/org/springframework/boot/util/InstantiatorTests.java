@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.util;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,6 @@ class InstantiatorTests {
 	void instantiateWhenAdditionalConstructorPicksMostSuitable() {
 		WithAdditionalConstructor instance = createInstance(WithAdditionalConstructor.class);
 		assertThat(instance).isInstanceOf(WithAdditionalConstructor.class);
-
 	}
 
 	@Test
@@ -122,8 +122,30 @@ class InstantiatorTests {
 			.withMessageContaining("custom failure handler message");
 	}
 
+	@Test
+	void instantiateWithSingleNameCreatesInstance() {
+		WithDefaultConstructor instance = createInstantiator(WithDefaultConstructor.class)
+			.instantiate(WithDefaultConstructor.class.getName());
+		assertThat(instance).isInstanceOf(WithDefaultConstructor.class);
+	}
+
+	@Test
+	void getArgReturnsArg() {
+		Instantiator<?> instantiator = createInstantiator(WithMultipleConstructors.class);
+		assertThat(instantiator.getArg(ParamA.class)).isSameAs(this.paramA);
+		assertThat(instantiator.getArg(ParamB.class)).isSameAs(this.paramB);
+		assertThat(instantiator.getArg(ParamC.class)).isInstanceOf(ParamC.class);
+	}
+
+	@Test
+	void getArgWhenUnknownThrowsException() {
+		Instantiator<?> instantiator = createInstantiator(WithMultipleConstructors.class);
+		assertThatIllegalArgumentException().isThrownBy(() -> instantiator.getArg(InputStream.class))
+			.withMessageStartingWith("Unknown argument type");
+	}
+
 	private <T> T createInstance(Class<T> type) {
-		return createInstantiator(type).instantiate(Collections.singleton(type.getName())).get(0);
+		return createInstantiator(type).instantiate(type.getName());
 	}
 
 	private <T> Instantiator<T> createInstantiator(Class<T> type) {

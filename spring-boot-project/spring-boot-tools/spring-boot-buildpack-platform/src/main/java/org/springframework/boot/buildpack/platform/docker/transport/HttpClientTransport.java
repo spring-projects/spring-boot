@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,13 @@ import java.net.URISyntaxException;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpHead;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
@@ -128,6 +130,16 @@ abstract class HttpClientTransport implements HttpTransport {
 	@Override
 	public Response delete(URI uri) {
 		return execute(new HttpDelete(uri));
+	}
+
+	/**
+	 * Perform an HTTP HEAD operation.
+	 * @param uri the destination URI
+	 * @return the operation response
+	 */
+	@Override
+	public Response head(URI uri) {
+		return execute(new HttpHead(uri));
 	}
 
 	private Response execute(HttpUriRequestBase request, String contentType, IOConsumer<OutputStream> writer) {
@@ -255,6 +267,11 @@ abstract class HttpClientTransport implements HttpTransport {
 		@Override
 		public InputStream getContent() throws IOException {
 			return this.response.getEntity().getContent();
+		}
+
+		@Override
+		public Header getHeader(String name) {
+			return this.response.getFirstHeader(name);
 		}
 
 		@Override

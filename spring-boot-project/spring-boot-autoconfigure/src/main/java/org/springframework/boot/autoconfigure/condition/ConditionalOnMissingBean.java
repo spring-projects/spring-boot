@@ -24,6 +24,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
@@ -34,8 +36,8 @@ import org.springframework.context.annotation.Conditional;
  * the same bean.
  * <p>
  * When placed on a {@link Bean @Bean} method and none of {@link #value}, {@link #type},
- * or {@link #name} has been specified, the bean type to match defaults to the return type
- * of the {@code @Bean} method:
+ * {@link #name}, or {@link #annotation} has been specified, the bean type to match
+ * defaults to the return type of the {@code @Bean} method:
  *
  * <pre class="code">
  * &#064;Configuration
@@ -69,15 +71,25 @@ public @interface ConditionalOnMissingBean {
 
 	/**
 	 * The class types of beans that should be checked. The condition matches when no bean
-	 * of each class specified is contained in the {@link BeanFactory}.
+	 * of each class specified is contained in the {@link BeanFactory}. Beans that are not
+	 * autowire candidates or that are not default candidates are ignored.
 	 * @return the class types of beans to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<?>[] value() default {};
 
 	/**
 	 * The class type names of beans that should be checked. The condition matches when no
-	 * bean of each class specified is contained in the {@link BeanFactory}.
+	 * bean of each class specified is contained in the {@link BeanFactory}. Beans that
+	 * are not autowire candidates or that are not default candidates are ignored.
 	 * @return the class type names of beans to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	String[] type() default {};
 
@@ -99,8 +111,13 @@ public @interface ConditionalOnMissingBean {
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
 	 * when each annotation specified is missing from all beans in the
-	 * {@link BeanFactory}.
+	 * {@link BeanFactory}. Beans that are not autowire candidates or that are not default
+	 * candidates are ignored.
 	 * @return the class-level annotation types to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 

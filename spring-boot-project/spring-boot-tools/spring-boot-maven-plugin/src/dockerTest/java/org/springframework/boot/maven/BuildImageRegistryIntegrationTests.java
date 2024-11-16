@@ -71,7 +71,7 @@ class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests
 					.contains("Pushed image '" + imageName + ":latest" + "'");
 				ImageReference imageReference = ImageReference.of(imageName);
 				DockerApi.ImageApi imageApi = new DockerApi().image();
-				Image pulledImage = imageApi.pull(imageReference, UpdateListener.none());
+				Image pulledImage = imageApi.pull(imageReference, null, UpdateListener.none());
 				assertThat(pulledImage).isNotNull();
 				imageApi.remove(imageReference, false);
 			});

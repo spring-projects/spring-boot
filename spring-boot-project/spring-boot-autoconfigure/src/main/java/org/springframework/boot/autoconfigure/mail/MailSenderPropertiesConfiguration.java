@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,18 @@ package org.springframework.boot.autoconfigure.mail;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.mail.MailProperties.Ssl;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.StringUtils;
 
 /**
  * Auto-configure a {@link MailSender} based on properties configuration.
@@ -40,13 +45,13 @@ class MailSenderPropertiesConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(JavaMailSender.class)
-	JavaMailSenderImpl mailSender(MailProperties properties) {
+	JavaMailSenderImpl mailSender(MailProperties properties, ObjectProvider<SslBundles> sslBundles) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
-		applyProperties(properties, sender);
+		applyProperties(properties, sender, sslBundles.getIfAvailable());
 		return sender;
 	}
 
-	private void applyProperties(MailProperties properties, JavaMailSenderImpl sender) {
+	private void applyProperties(MailProperties properties, JavaMailSenderImpl sender, SslBundles sslBundles) {
 		sender.setHost(properties.getHost());
 		if (properties.getPort() != null) {
 			sender.setPort(properties.getPort());
@@ -57,8 +62,20 @@ class MailSenderPropertiesConfiguration {
 		if (properties.getDefaultEncoding() != null) {
 			sender.setDefaultEncoding(properties.getDefaultEncoding().name());
 		}
-		if (!properties.getProperties().isEmpty()) {
-			sender.setJavaMailProperties(asProperties(properties.getProperties()));
+		Properties javaMailProperties = asProperties(properties.getProperties());
+		String protocol = properties.getProtocol();
+		protocol = (!StringUtils.hasLength(protocol)) ? "smtp" : protocol;
+		Ssl ssl = properties.getSsl();
+		if (ssl.isEnabled()) {
+			javaMailProperties.setProperty("mail." + protocol + ".ssl.enable", "true");
+		}
+		if (ssl.getBundle() != null) {
+			SslBundle sslBundle = sslBundles.getBundle(ssl.getBundle());
+			javaMailProperties.put("mail." + protocol + ".ssl.socketFactory",
+					sslBundle.createSslContext().getSocketFactory());
+		}
+		if (!javaMailProperties.isEmpty()) {
+			sender.setJavaMailProperties(javaMailProperties);
 		}
 	}
 

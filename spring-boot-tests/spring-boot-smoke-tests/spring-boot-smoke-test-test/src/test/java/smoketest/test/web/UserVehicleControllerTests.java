@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +25,15 @@ import smoketest.test.service.VehicleIdentificationNumberNotFoundException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * {@code @WebMvcTest} based tests for {@link UserVehicleController}.
@@ -48,49 +46,48 @@ class UserVehicleControllerTests {
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@MockBean
+	@MockitoBean
 	private UserVehicleService userVehicleService;
 
 	@Test
-	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
+	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
-			.andExpect(status().isOk())
-			.andExpect(content().string("Honda Civic"));
+		assertThat(this.mvc.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)).hasStatusOk()
+			.hasBodyTextEqualTo("Honda Civic");
 	}
 
 	@Test
-	void getVehicleWhenRequestingJsonShouldReturnMakeAndModel() throws Exception {
+	void getVehicleWhenRequestingJsonShouldReturnMakeAndModel() {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andExpect(content().json("{'make':'Honda','model':'Civic'}"));
+		assertThat(this.mvc.get().uri("/sboot/vehicle").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.bodyJson()
+			.isLenientlyEqualTo("{'make':'Honda','model':'Civic'}");
 	}
 
 	@Test
-	void getVehicleWhenRequestingHtmlShouldReturnMakeAndModel() throws Exception {
+	void getVehicleWhenRequestingHtmlShouldReturnMakeAndModel() {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle.html").accept(MediaType.TEXT_HTML))
-			.andExpect(status().isOk())
-			.andExpect(content().string(containsString("<h1>Honda Civic</h1>")));
+		assertThat(this.mvc.get().uri("/sboot/vehicle.html").accept(MediaType.TEXT_HTML)).hasStatusOk()
+			.bodyText()
+			.contains("<h1>Honda Civic</h1>");
 	}
 
 	@Test
-	void getVehicleWhenUserNotFoundShouldReturnNotFound() throws Exception {
+	void getVehicleWhenUserNotFoundShouldReturnNotFound() {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willThrow(new UserNameNotFoundException("sboot"));
-		this.mvc.perform(get("/sboot/vehicle")).andExpect(status().isNotFound());
+		assertThat(this.mvc.get().uri("/sboot/vehicle")).hasStatus(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
-	void getVehicleWhenVinNotFoundShouldReturnNotFound() throws Exception {
+	void getVehicleWhenVinNotFoundShouldReturnNotFound() {
 		given(this.userVehicleService.getVehicleDetails("sboot"))
 			.willThrow(new VehicleIdentificationNumberNotFoundException(VIN));
-		this.mvc.perform(get("/sboot/vehicle")).andExpect(status().isNotFound());
+		assertThat(this.mvc.get().uri("/sboot/vehicle")).hasStatus(HttpStatus.NOT_FOUND);
 	}
 
 	@Test

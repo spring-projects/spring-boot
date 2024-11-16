@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,11 @@ public class ResolvedDockerHost extends DockerHost {
 
 	@Override
 	public String getAddress() {
-		return super.getAddress().startsWith(UNIX_SOCKET_PREFIX)
-				? super.getAddress().substring(UNIX_SOCKET_PREFIX.length()) : super.getAddress();
+		String address = super.getAddress();
+		if (address == null) {
+			address = getDefaultAddress();
+		}
+		return address.startsWith(UNIX_SOCKET_PREFIX) ? address.substring(UNIX_SOCKET_PREFIX.length()) : address;
 	}
 
 	public boolean isRemote() {
@@ -100,7 +103,11 @@ public class ResolvedDockerHost extends DockerHost {
 			DockerContext context = config.getContext();
 			return new ResolvedDockerHost(context.getDockerHost(), context.isTlsVerify(), context.getTlsPath());
 		}
-		return new ResolvedDockerHost(Platform.isWindows() ? WINDOWS_NAMED_PIPE_PATH : DOMAIN_SOCKET_PATH);
+		return new ResolvedDockerHost(getDefaultAddress());
+	}
+
+	private static String getDefaultAddress() {
+		return Platform.isWindows() ? WINDOWS_NAMED_PIPE_PATH : DOMAIN_SOCKET_PATH;
 	}
 
 	private static boolean isTrue(String value) {

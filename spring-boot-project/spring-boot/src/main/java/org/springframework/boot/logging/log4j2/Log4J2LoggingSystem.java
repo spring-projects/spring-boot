@@ -238,9 +238,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void load(LoggingInitializationContext initializationContext, String location, LogFile logFile) {
 		List<String> overrides = getOverrides(initializationContext);
-		if (initializationContext != null) {
-			applySystemProperties(initializationContext.getEnvironment(), logFile);
-		}
+		applySystemProperties(initializationContext.getEnvironment(), logFile);
 		loadConfiguration(location, logFile, overrides);
 	}
 
@@ -277,7 +275,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private Configuration load(String location, LoggerContext context) throws IOException {
-		Resource resource = new ApplicationResourceLoader().getResource(location);
+		Resource resource = ApplicationResourceLoader.get().getResource(location);
 		ConfigurationSource source = getConfigurationSource(resource);
 		return ConfigurationFactory.getInstance().getConfiguration(context, source);
 	}

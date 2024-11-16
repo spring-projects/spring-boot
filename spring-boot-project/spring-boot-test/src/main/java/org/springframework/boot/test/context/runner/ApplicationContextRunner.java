@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,24 @@ public class ApplicationContextRunner extends
 	/**
 	 * Create a new {@link ApplicationContextRunner} instance using the specified
 	 * {@code contextFactory} as the underlying source.
-	 * @param contextFactory a supplier that returns a new instance on each call
+	 * @param contextFactory a supplier that returns a new instance on each call be added
+	 * to the application context proxy
 	 */
 	public ApplicationContextRunner(Supplier<ConfigurableApplicationContext> contextFactory) {
-		super(contextFactory, ApplicationContextRunner::new);
+		super(ApplicationContextRunner::new, contextFactory);
+	}
+
+	/**
+	 * Create a new {@link ApplicationContextRunner} instance using the specified
+	 * {@code contextFactory} as the underlying source.
+	 * @param contextFactory a supplier that returns a new instance on each call
+	 * @param additionalContextInterfaces any additional application context interfaces to
+	 * be added to the application context proxy
+	 * @since 3.4.0
+	 */
+	public ApplicationContextRunner(Supplier<ConfigurableApplicationContext> contextFactory,
+			Class<?>... additionalContextInterfaces) {
+		super(ApplicationContextRunner::new, contextFactory, additionalContextInterfaces);
 	}
 
 	private ApplicationContextRunner(RunnerConfiguration<ConfigurableApplicationContext> runnerConfiguration) {

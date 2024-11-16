@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.pulsar.annotation.PulsarListener;
 import org.springframework.pulsar.core.PulsarTemplate;
 import org.springframework.pulsar.core.PulsarTopic;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 
 @Configuration(proxyBeanMethods = false)
 @Profile("smoketest.pulsar.imperative")
@@ -37,7 +38,7 @@ class ImperativeAppConfig {
 
 	@Bean
 	PulsarTopic pulsarTestTopic() {
-		return PulsarTopic.builder(TOPIC).numberOfPartitions(1).build();
+		return new PulsarTopicBuilder().name(TOPIC).numberOfPartitions(1).build();
 	}
 
 	@Bean

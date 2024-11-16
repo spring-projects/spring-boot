@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,12 @@ import java.lang.annotation.Target;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.properties.PropertyMapping;
 import org.springframework.boot.test.autoconfigure.properties.SkipPropertyMapping;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.DynamicPropertySource;
 
 /**
  * Annotation that can be applied to a test class to configure a test database to use
@@ -54,7 +56,7 @@ public @interface AutoConfigureTestDatabase {
 	 * @return the type of existing DataSource to replace
 	 */
 	@PropertyMapping(skip = SkipPropertyMapping.ON_DEFAULT_VALUE)
-	Replace replace() default Replace.ANY;
+	Replace replace() default Replace.NON_TEST;
 
 	/**
 	 * The type of connection to be established when {@link #replace() replacing} the
@@ -68,6 +70,23 @@ public @interface AutoConfigureTestDatabase {
 	 * What the test database can replace.
 	 */
 	enum Replace {
+
+		/**
+		 * Replace the DataSource bean unless it is auto-configured and connecting to a
+		 * test database. The following types of connections are considered test
+		 * databases:
+		 * <ul>
+		 * <li>Any bean definition that includes {@link ContainerImageMetadata} (including
+		 * {@code @ServiceConnection} annotated Testcontainer databases, and connections
+		 * created using Docker Compose)</li>
+		 * <li>Any connection configured using a {@code spring.datasource.url} backed by a
+		 * {@link DynamicPropertySource @DynamicPropertySource}</li>
+		 * <li>Any connection configured using a {@code spring.datasource.url} with the
+		 * Testcontainers JDBC syntax</li>
+		 * </ul>
+		 * @since 3.4.0
+		 */
+		NON_TEST,
 
 		/**
 		 * Replace the DataSource bean whether it was auto-configured or manually defined.

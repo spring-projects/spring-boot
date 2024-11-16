@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class WavefrontTracingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WavefrontSender.class)
-	@ConditionalOnEnabledTracing
+	@ConditionalOnEnabledTracing("wavefront")
 	WavefrontSpanHandler wavefrontSpanHandler(WavefrontProperties properties, WavefrontSender wavefrontSender,
 			SpanMetrics spanMetrics, ApplicationTags applicationTags) {
 		return new WavefrontSpanHandler(properties.getSender().getMaxQueueSize(), wavefrontSender, spanMetrics,
@@ -96,7 +96,7 @@ public class WavefrontTracingAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracing("wavefront")
 		WavefrontBraveSpanHandler wavefrontBraveSpanHandler(WavefrontSpanHandler wavefrontSpanHandler) {
 			return new WavefrontBraveSpanHandler(wavefrontSpanHandler);
 		}
@@ -109,7 +109,7 @@ public class WavefrontTracingAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracing("wavefront")
 		WavefrontOtelSpanExporter wavefrontOtelSpanExporter(WavefrontSpanHandler wavefrontSpanHandler) {
 			return new WavefrontOtelSpanExporter(wavefrontSpanHandler);
 		}

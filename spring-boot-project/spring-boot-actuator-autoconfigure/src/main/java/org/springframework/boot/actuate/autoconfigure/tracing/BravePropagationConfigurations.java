@@ -91,7 +91,8 @@ class BravePropagationConfigurations {
 				.forEach((customizer) -> customizer.customize(throwAwayBuilder));
 			CompositePropagationFactory propagationFactory = CompositePropagationFactory.create(
 					this.tracingProperties.getPropagation(),
-					new BraveBaggageManager(this.tracingProperties.getBaggage().getTagFields()),
+					new BraveBaggageManager(this.tracingProperties.getBaggage().getTagFields(),
+							this.tracingProperties.getBaggage().getRemoteFields()),
 					LocalBaggageFields.extractFrom(throwAwayBuilder));
 			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(propagationFactory);
 			throwAwayBuilder.configs().forEach(builder::add);

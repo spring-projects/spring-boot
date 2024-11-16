@@ -28,7 +28,6 @@ dependencies {
 	checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}")
 
 	implementation(platform("org.springframework:spring-framework-bom:${springFrameworkVersion}"))
-	implementation("dev.adamko.dokkatoo:dokkatoo-plugin:2.3.1")
 	implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
 	implementation("com.github.node-gradle:gradle-node-plugin:3.5.1")
 	implementation("com.gradle:develocity-gradle-plugin:3.17.2")
@@ -69,6 +68,14 @@ gradlePlugin {
 		annotationProcessorPlugin {
 			id = "org.springframework.boot.annotation-processor"
 			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
+		}
+		antoraAggregatedPlugin {
+			id = "org.springframework.boot.antora-contributor"
+			implementationClass = "org.springframework.boot.build.antora.AntoraContributorPlugin"
+		}
+		antoraAggregatorPlugin {
+			id = "org.springframework.boot.antora-dependencies"
+			implementationClass = "org.springframework.boot.build.antora.AntoraDependenciesPlugin"
 		}
 		architecturePlugin {
 			id = "org.springframework.boot.architecture"
@@ -142,3 +149,5 @@ eclipse {
 		}
 	}
 }
+
+jar.dependsOn check

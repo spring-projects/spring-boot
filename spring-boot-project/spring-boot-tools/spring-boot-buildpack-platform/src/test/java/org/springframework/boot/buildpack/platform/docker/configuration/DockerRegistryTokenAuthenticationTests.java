@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class DockerRegistryTokenAuthenticationTests extends AbstractJsonTests {
 		DockerRegistryTokenAuthentication auth = new DockerRegistryTokenAuthentication("tokenvalue");
 		String header = auth.getAuthHeader();
 		String expectedJson = StreamUtils.copyToString(getContent("auth-token.json"), StandardCharsets.UTF_8);
-		JSONAssert.assertEquals(expectedJson, new String(Base64.getUrlDecoder().decode(header)), false);
+		JSONAssert.assertEquals(expectedJson, new String(Base64.getUrlDecoder().decode(header)), true);
 	}
 
 }

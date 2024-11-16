@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,8 +96,7 @@ public abstract class JpaBaseConfiguration {
 	public PlatformTransactionManager transactionManager(
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		transactionManagerCustomizers
-			.ifAvailable((customizers) -> customizers.customize((TransactionManager) transactionManager));
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));
 		return transactionManager;
 	}
 
@@ -120,10 +120,18 @@ public abstract class JpaBaseConfiguration {
 	public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
 			ObjectProvider<PersistenceUnitManager> persistenceUnitManager,
 			ObjectProvider<EntityManagerFactoryBuilderCustomizer> customizers) {
-		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter,
-				this.properties.getProperties(), persistenceUnitManager.getIfAvailable());
+		EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(jpaVendorAdapter, buildJpaProperties(),
+				persistenceUnitManager.getIfAvailable());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
+	}
+
+	private Map<String, ?> buildJpaProperties() {
+		Map<String, Object> properties = new HashMap<>(this.properties.getProperties());
+		Map<String, Object> vendorProperties = getVendorProperties();
+		customizeVendorProperties(vendorProperties);
+		properties.putAll(vendorProperties);
+		return properties;
 	}
 
 	@Bean
@@ -131,11 +139,8 @@ public abstract class JpaBaseConfiguration {
 	@ConditionalOnMissingBean({ LocalContainerEntityManagerFactoryBean.class, EntityManagerFactory.class })
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder factoryBuilder,
 			PersistenceManagedTypes persistenceManagedTypes) {
-		Map<String, Object> vendorProperties = getVendorProperties();
-		customizeVendorProperties(vendorProperties);
 		return factoryBuilder.dataSource(this.dataSource)
 			.managedTypes(persistenceManagedTypes)
-			.properties(vendorProperties)
 			.mappingResources(getMappingResources())
 			.jta(isJta())
 			.build();

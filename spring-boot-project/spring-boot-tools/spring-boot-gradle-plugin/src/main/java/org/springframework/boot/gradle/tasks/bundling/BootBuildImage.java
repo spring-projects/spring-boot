@@ -91,6 +91,7 @@ public abstract class BootBuildImage extends DefaultTask {
 			}
 			return ImageReference.of(imageName, projectVersion.get()).toString();
 		}));
+		getTrustBuilder().convention((Boolean) null);
 		getCleanCache().convention(false);
 		getVerboseLogging().convention(false);
 		getPublish().convention(false);
@@ -130,6 +131,16 @@ public abstract class BootBuildImage extends DefaultTask {
 	@Optional
 	@Option(option = "builder", description = "The name of the builder image to use")
 	public abstract Property<String> getBuilder();
+
+	/**
+	 * Whether to treat the builder as trusted.
+	 * @return whether to trust the builder
+	 * @since 3.4.0
+	 */
+	@Input
+	@Optional
+	@Option(option = "trustBuilder", description = "Consider the builder trusted")
+	public abstract Property<Boolean> getTrustBuilder();
 
 	/**
 	 * Returns the run image that will be included in the built image. When {@code null},
@@ -316,6 +327,18 @@ public abstract class BootBuildImage extends DefaultTask {
 	public abstract ListProperty<String> getSecurityOptions();
 
 	/**
+	 * Returns the platform (os/architecture/variant) that will be used for all pulled
+	 * images. When {@code null}, the system will choose a platform based on the host
+	 * operating system and architecture.
+	 * @return the image platform
+	 */
+	@Input
+	@Optional
+	@Option(option = "imagePlatform",
+			description = "The platform (os/architecture/variant) that will be used for all pulled images")
+	public abstract Property<String> getImagePlatform();
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -348,13 +371,16 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private BuildRequest customize(BuildRequest request) {
 		request = customizeBuilder(request);
+		if (getTrustBuilder().isPresent()) {
+			request = request.withTrustBuilder(getTrustBuilder().get());
+		}
 		request = customizeRunImage(request);
 		request = customizeEnvironment(request);
 		request = customizeCreator(request);
 		request = request.withCleanCache(getCleanCache().get());
 		request = request.withVerboseLogging(getVerboseLogging().get());
 		request = customizePullPolicy(request);
-		request = customizePublish(request);
+		request = request.withPublish(getPublish().get());
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
 		request = customizeTags(request);
@@ -363,6 +389,9 @@ public abstract class BootBuildImage extends DefaultTask {
 		request = customizeCreatedDate(request);
 		request = customizeApplicationDirectory(request);
 		request = customizeSecurityOptions(request);
+		if (getImagePlatform().isPresent()) {
+			request = request.withImagePlatform(getImagePlatform().get());
+		}
 		return request;
 	}
 
@@ -403,11 +432,6 @@ public abstract class BootBuildImage extends DefaultTask {
 		if (pullPolicy != null) {
 			request = request.withPullPolicy(pullPolicy);
 		}
-		return request;
-	}
-
-	private BuildRequest customizePublish(BuildRequest request) {
-		request = request.withPublish(getPublish().get());
 		return request;
 	}
 

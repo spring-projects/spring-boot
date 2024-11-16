@@ -60,7 +60,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type `JdbcDatabaseContainer`
 
 | `KafkaConnectionDetails`
-| Containers of type `org.testcontainers.containers.KafkaContainer` or `RedpandaContainer`
+| Containers of type `org.testcontainers.kafka.KafkaContainer`, `org.testcontainers.kafka.ConfluentKafkaContainer` or `RedpandaContainer`
 
 | `LiquibaseConnectionDetails`
 | Containers of type `JdbcDatabaseContainer`
@@ -71,23 +71,26 @@ The following service connection factories are provided in the `spring-boot-test
 | `Neo4jConnectionDetails`
 | Containers of type `Neo4jContainer`
 
+| `OtlpLoggingConnectionDetails`
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
+
 | `OtlpMetricsConnectionDetails`
-| Containers named "otel/opentelemetry-collector-contrib"
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
 
 | `OtlpTracingConnectionDetails`
-| Containers named "otel/opentelemetry-collector-contrib"
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
 
 | `PulsarConnectionDetails`
 | Containers of type `PulsarContainer`
 
 | `R2dbcConnectionDetails`
-| Containers of type `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, `OracleContainer`, or `PostgreSQLContainer`
+| Containers of type `ClickHouseContainer`, `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, `OracleContainer`, or `PostgreSQLContainer`
 
 | `RabbitConnectionDetails`
 | Containers of type `RabbitMQContainer`
 
 | `RedisConnectionDetails`
-| Containers named "redis"
+| Containers of type `com.redis.testcontainers.RedisContainer` or `com.redis.testcontainers.RedisStackContainer`, or containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
 
 | `ZipkinConnectionDetails`
 | Containers named "openzipkin/zipkin"
@@ -107,8 +110,8 @@ This works as long as Spring Boot is able to get the instance of the `Container`
 
 If you're using a `@Bean` method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.
 Instead, the return type of the bean method is used to find out which connection detail should be used.
-This works as long as you're using typed containers, e.g. `Neo4jContainer` or `RabbitMQContainer`.
-This stops working if you're using `GenericContainer`, e.g. with Redis, as shown in the following example:
+This works as long as you're using typed containers such as `Neo4jContainer` or `RabbitMQContainer`.
+This stops working if you're using `GenericContainer`, for example with Redis as shown in the following example:
 
 include-code::MyRedisConfiguration[]
 

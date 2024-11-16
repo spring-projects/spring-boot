@@ -2,7 +2,7 @@ name: Build and Deploy Snapshot
 on:
   push:
     branches:
-      - '3.3.x'
+      - main
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
@@ -27,7 +27,7 @@ jobs:
       - name: Deploy
         uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
         with:
-          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', github.ref_name) || format('spring-boot-{0}', github.ref_name) }}
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '3.4.x') || format('spring-boot-{0}', '3.4.x') }}
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}
@@ -51,7 +51,7 @@ jobs:
     needs: build-and-deploy-snapshot
     permissions:
       actions: write
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Run Deploy Docs Workflow
         env:

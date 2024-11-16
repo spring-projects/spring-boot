@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection.otlp;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.tracing.otlp.Transport;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
@@ -26,15 +27,21 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * {@link OtlpTracingConnectionDetails} for an OTLP service.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<OtlpTracingConnectionDetails> {
 
-	private static final int OTLP_PORT = 4318;
+	private static final String[] OPENTELEMETRY_IMAGE_NAMES = { "otel/opentelemetry-collector-contrib",
+			"grafana/otel-lgtm" };
+
+	private static final int OTLP_GRPC_PORT = 4317;
+
+	private static final int OTLP_HTTP_PORT = 4318;
 
 	OpenTelemetryTracingDockerComposeConnectionDetailsFactory() {
-		super("otel/opentelemetry-collector-contrib",
-				"org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration");
+		super(OPENTELEMETRY_IMAGE_NAMES,
+				"org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration");
 	}
 
 	@Override
@@ -47,17 +54,24 @@ class OpenTelemetryTracingDockerComposeConnectionDetailsFactory
 
 		private final String host;
 
-		private final int port;
+		private final int grpcPort;
+
+		private final int httPort;
 
 		private OpenTelemetryTracingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
-			this.port = source.ports().get(OTLP_PORT);
+			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
+			this.httPort = source.ports().get(OTLP_HTTP_PORT);
 		}
 
 		@Override
-		public String getUrl() {
-			return "http://%s:%d/v1/traces".formatted(this.host, this.port);
+		public String getUrl(Transport transport) {
+			int port = switch (transport) {
+				case HTTP -> this.httPort;
+				case GRPC -> this.grpcPort;
+			};
+			return "http://%s:%d/v1/traces".formatted(this.host, port);
 		}
 
 	}

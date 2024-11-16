@@ -119,6 +119,13 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	String imageBuilder;
 
 	/**
+	 * Alias for {@link Image#trustBuilder} to support configuration through command-line
+	 * property.
+	 */
+	@Parameter(property = "spring-boot.build-image.trustBuilder", readonly = true)
+	Boolean trustBuilder;
+
+	/**
 	 * Alias for {@link Image#runImage} to support configuration through command-line
 	 * property.
 	 * @since 2.3.1
@@ -171,6 +178,14 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	 */
 	@Parameter(property = "spring-boot.build-image.applicationDirectory", readonly = true)
 	String applicationDirectory;
+
+	/**
+	 * Alias for {@link Image#imagePlatform} to support configuration through command-line
+	 * property.
+	 * @since 3.4.0
+	 */
+	@Parameter(property = "spring-boot.build-image.imagePlatform", readonly = true)
+	String imagePlatform;
 
 	/**
 	 * Docker configuration options.
@@ -268,6 +283,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		if (image.builder == null && this.imageBuilder != null) {
 			image.setBuilder(this.imageBuilder);
 		}
+		if (image.trustBuilder == null && this.trustBuilder != null) {
+			image.setTrustBuilder(this.trustBuilder);
+		}
 		if (image.runImage == null && this.runImage != null) {
 			image.setRunImage(this.runImage);
 		}
@@ -288,6 +306,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.applicationDirectory == null && this.applicationDirectory != null) {
 			image.setApplicationDirectory(this.applicationDirectory);
+		}
+		if (image.imagePlatform == null && this.imagePlatform != null) {
+			image.setImagePlatform(this.imagePlatform);
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}

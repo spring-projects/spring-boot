@@ -18,6 +18,7 @@ dependencies {
 	optional("org.testcontainers:cassandra")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:junit-jupiter")
 	optional("org.testcontainers:kafka")
 	optional("org.testcontainers:mongodb")
@@ -28,4 +29,5 @@ dependencies {
 	optional("org.testcontainers:pulsar")
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
+	optional("com.redis:testcontainers-redis")
 }

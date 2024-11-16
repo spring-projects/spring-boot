@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,11 @@ import static org.mockito.BDDMockito.given;
  * used to replace existing beans.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
+@SuppressWarnings("removal")
 @ExtendWith(SpringExtension.class)
+@Deprecated(since = "3.4.0", forRemoval = true)
 class MockBeanOnConfigurationFieldForExistingBeanIntegrationTests {
 
 	@Autowired

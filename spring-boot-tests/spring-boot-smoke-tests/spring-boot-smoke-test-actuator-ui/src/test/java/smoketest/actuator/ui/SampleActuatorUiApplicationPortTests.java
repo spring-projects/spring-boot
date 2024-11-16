@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -44,9 +45,12 @@ class SampleActuatorUiApplicationPortTests {
 	@LocalManagementPort
 	private int managementPort;
 
+	@Autowired
+	private TestRestTemplate testRestTemplate;
+
 	@Test
 	void testHome() {
-		ResponseEntity<String> entity = new TestRestTemplate().getForEntity("http://localhost:" + this.port,
+		ResponseEntity<String> entity = this.testRestTemplate.getForEntity("http://localhost:" + this.port,
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -54,14 +58,14 @@ class SampleActuatorUiApplicationPortTests {
 	@Test
 	void testMetrics() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = new TestRestTemplate()
+		ResponseEntity<Map> entity = this.testRestTemplate
 			.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testHealth() {
-		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", getPassword())
+		ResponseEntity<String> entity = this.testRestTemplate.withBasicAuth("user", getPassword())
 			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");

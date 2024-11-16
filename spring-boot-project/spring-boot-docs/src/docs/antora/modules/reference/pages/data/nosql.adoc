@@ -543,7 +543,7 @@ There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-cou
 
 You can get a `Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
-Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
+Generally, you provide the https://docs.couchbase.com/dotnet-sdk/current/howtos/managing-connections.html[connection string] and credentials for authentication. Basic authentication with username and password can be configured as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -552,6 +552,39 @@ spring:
     connection-string: "couchbase://192.168.1.123"
     username: "user"
     password: "secret"
+----
+
+https://docs.couchbase.com/server/current/manage/manage-security/configure-client-certificates.html[Client certificates] can be used for authentication instead of username and password.
+The location and password for a Java KeyStore containing client certificates can be configured as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  couchbase:
+    connection-string: "couchbase://192.168.1.123"
+    env:
+      ssl:
+        enabled: true
+    authentication:
+      jks:
+        location: "classpath:client.p12"
+        password: "secret"
+----
+
+PEM-encoded certificates and a private key can be configured as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  couchbase:
+    connection-string: "couchbase://192.168.1.123"
+    env:
+      ssl:
+        enabled: true
+    authentication:
+      pem:
+        certificates: "classpath:client.crt"
+        private-key: "classpath:client.key"
 ----
 
 It is also possible to customize some of the `ClusterEnvironment` settings.

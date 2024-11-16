@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
+import org.springframework.boot.build.bom.Library.Link;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
 import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
@@ -97,16 +98,22 @@ class AntoraAsciidocAttributesTests {
 	void versionReferenceFromSpringDataDependencyReleaseVersion() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.5"), null);
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2");
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.5");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
+				"https://docs.spring.io/spring-data/mongodb/reference/3.2");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-javadoc",
+				"https://docs.spring.io/spring-data/mongodb/docs/3.2.x/api");
 	}
 
 	@Test
 	void versionReferenceFromSpringDataDependencySnapshotVersion() {
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3", true, BuildType.OPEN_SOURCE, null,
 				mockDependencyVersions("3.2.0-SNAPSHOT"), null);
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-docs", "3.2-SNAPSHOT");
-		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb-javadoc", "3.2.x");
+		assertThat(attributes.get()).containsEntry("version-spring-data-mongodb", "3.2.0-SNAPSHOT");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-docs",
+				"https://docs.spring.io/spring-data/mongodb/reference/3.2-SNAPSHOT");
+		assertThat(attributes.get()).containsEntry("url-spring-data-mongodb-javadoc",
+				"https://docs.spring.io/spring-data/mongodb/docs/3.2.x/api");
 	}
 
 	@Test
@@ -187,14 +194,25 @@ class AntoraAsciidocAttributesTests {
 
 	@Test
 	void urlLinksFromLibrary() {
-		Map<String, Function<LibraryVersion, String>> links = new LinkedHashMap<>();
-		links.put("site", (version) -> "https://example.com/site/" + version);
-		links.put("docs", (version) -> "https://example.com/docs/" + version);
+		Map<String, List<Link>> links = new LinkedHashMap<>();
+		links.put("site", singleLink((version) -> "https://example.com/site/" + version));
+		links.put("docs", singleLink((version) -> "https://example.com/docs/" + version));
+		links.put("javadoc",
+				singleLink((version) -> "https://example.com/api/" + version, "org.springframework.[core|util]"));
 		Library library = mockLibrary(links);
 		AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes("1.2.3.1-SNAPSHOT", false,
 				BuildType.OPEN_SOURCE, List.of(library), mockDependencyVersions(), null);
 		assertThat(attributes.get()).containsEntry("url-spring-framework-site", "https://example.com/site/1.2.3")
-			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3");
+			.containsEntry("url-spring-framework-docs", "https://example.com/docs/1.2.3")
+			.containsEntry("url-spring-framework-javadoc", "https://example.com/api/1.2.3");
+		assertThat(attributes.get())
+			.containsEntry("javadoc-location-org-springframework-core", "{url-spring-framework-javadoc}")
+			.containsEntry("javadoc-location-org-springframework-util", "{url-spring-framework-javadoc}");
+	}
+
+	private List<Link> singleLink(Function<LibraryVersion, String> factory, String... packages) {
+		Link link = new Link(null, factory, List.of(packages));
+		return List.of(link);
 	}
 
 	@Test
@@ -209,7 +227,7 @@ class AntoraAsciidocAttributesTests {
 		assertThat(keys.indexOf("include-java")).isLessThan(keys.indexOf("code-spring-boot-latest"));
 	}
 
-	private Library mockLibrary(Map<String, Function<LibraryVersion, String>> links) {
+	private Library mockLibrary(Map<String, List<Link>> links) {
 		String name = "Spring Framework";
 		String calendarName = null;
 		LibraryVersion version = new LibraryVersion(DependencyVersion.parse("1.2.3"));
@@ -239,11 +257,13 @@ class AntoraAsciidocAttributesTests {
 		addMockSpringDataVersion(versions, "spring-data-mongodb", version);
 		addMockSpringDataVersion(versions, "spring-data-neo4j", version);
 		addMockSpringDataVersion(versions, "spring-data-r2dbc", version);
+		addMockSpringDataVersion(versions, "spring-data-redis", version);
 		addMockSpringDataVersion(versions, "spring-data-rest-core", version);
 		addMockSpringDataVersion(versions, "spring-data-ldap", version);
-		addMockJacksonVersion(versions, "jackson-annotations", version);
-		addMockJacksonVersion(versions, "jackson-core", version);
-		addMockJacksonVersion(versions, "jackson-databind", version);
+		addMockJacksonCoreVersion(versions, "jackson-annotations", version);
+		addMockJacksonCoreVersion(versions, "jackson-core", version);
+		addMockJacksonCoreVersion(versions, "jackson-databind", version);
+		versions.put("com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version);
 		return versions;
 	}
 
@@ -251,7 +271,7 @@ class AntoraAsciidocAttributesTests {
 		versions.put("org.springframework.data:" + artifactId, version);
 	}
 
-	private void addMockJacksonVersion(Map<String, String> versions, String artifactId, String version) {
+	private void addMockJacksonCoreVersion(Map<String, String> versions, String artifactId, String version) {
 		versions.put("com.fasterxml.jackson.core:" + artifactId, version);
 	}
 

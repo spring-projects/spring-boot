@@ -62,17 +62,18 @@ public abstract class ExtractVersionConstraints extends DefaultTask {
 
 	private final List<BomExtension> boms = new ArrayList<>();
 
+	private final DependencyHandler dependencies;
+
 	public ExtractVersionConstraints() {
-		DependencyHandler dependencies = getProject().getDependencies();
+		this.dependencies = getProject().getDependencies();
 		this.configuration = getProject().getConfigurations().create(getName());
-		dependencies.getComponents().all(this::processMetadataDetails);
+		this.dependencies.getComponents().all(this::processMetadataDetails);
 	}
 
 	public void enforcedPlatform(String projectPath) {
 		this.configuration.getDependencies()
-			.add(getProject().getDependencies()
-				.enforcedPlatform(
-						getProject().getDependencies().project(Collections.singletonMap("path", projectPath))));
+			.add(this.dependencies
+				.enforcedPlatform(this.dependencies.project(Collections.singletonMap("path", projectPath))));
 		Project project = getProject().project(projectPath);
 		project.getPlugins().withType(BomPlugin.class).all((plugin) -> {
 			this.boms.add(project.getExtensions().getByType(BomExtension.class));

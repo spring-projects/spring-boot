@@ -29,6 +29,7 @@ import org.jooq.TransactionContext;
 import org.jooq.TransactionProvider;
 import org.jooq.TransactionalRunnable;
 import org.jooq.impl.DataSourceConnectionProvider;
+import org.jooq.impl.DefaultDSLContext;
 import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.junit.jupiter.api.Test;
 
@@ -214,6 +215,12 @@ class JooqAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void autoConfiguredJooqConfigurationCanBeUsedToCreateCustomDslContext() {
+		this.contextRunner.withUserConfiguration(CustomDslContextConfiguration.class, JooqDataSourceConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(DSLContext.class).hasBean("customDslContext"));
+	}
+
 	static class AssertFetch implements TransactionalRunnable {
 
 		private final DSLContext dsl;
@@ -301,6 +308,16 @@ class JooqAutoConfigurationTests {
 		@Bean
 		PlatformTransactionManager transactionManager(DataSource dataSource) {
 			return new DataSourceTransactionManager(dataSource);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDslContextConfiguration {
+
+		@Bean
+		DSLContext customDslContext(org.jooq.Configuration configuration) {
+			return new DefaultDSLContext(configuration);
 		}
 
 	}

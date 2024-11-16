@@ -129,19 +129,36 @@ class PathMappedEndpointsTests {
 		assertThat(mapped.getEndpoint(EndpointId.of("xx"))).isNull();
 	}
 
+	@Test
+	void getAdditionalPathsShouldReturnCanonicalAdditionalPaths() {
+		PathMappedEndpoints mapped = createTestMapped(null);
+		assertThat(mapped.getAdditionalPaths(WebServerNamespace.SERVER, EndpointId.of("e2"))).containsExactly("/a2",
+				"/A2");
+		assertThat(mapped.getAdditionalPaths(WebServerNamespace.MANAGEMENT, EndpointId.of("e2"))).isEmpty();
+		assertThat(mapped.getAdditionalPaths(WebServerNamespace.SERVER, EndpointId.of("e3"))).isEmpty();
+	}
+
 	private PathMappedEndpoints createTestMapped(String basePath) {
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
 		endpoints.add(mockEndpoint(EndpointId.of("e1")));
-		endpoints.add(mockEndpoint(EndpointId.of("e2"), "p2"));
+		endpoints.add(mockEndpoint(EndpointId.of("e2"), "p2", WebServerNamespace.SERVER, List.of("/a2", "A2")));
 		endpoints.add(mockEndpoint(EndpointId.of("e3"), "p3"));
 		endpoints.add(mockEndpoint(EndpointId.of("e4")));
 		return new PathMappedEndpoints(basePath, () -> endpoints);
 	}
 
 	private TestPathMappedEndpoint mockEndpoint(EndpointId id, String rootPath) {
+		return mockEndpoint(id, rootPath, null, null);
+	}
+
+	private TestPathMappedEndpoint mockEndpoint(EndpointId id, String rootPath, WebServerNamespace webServerNamespace,
+			List<String> additionalPaths) {
 		TestPathMappedEndpoint endpoint = mock(TestPathMappedEndpoint.class);
 		given(endpoint.getEndpointId()).willReturn(id);
 		given(endpoint.getRootPath()).willReturn(rootPath);
+		if (webServerNamespace != null && additionalPaths != null) {
+			given(endpoint.getAdditionalPaths(webServerNamespace)).willReturn(additionalPaths);
+		}
 		return endpoint;
 	}
 

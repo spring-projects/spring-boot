@@ -36,7 +36,7 @@ class DockerApiIntegrationTests {
 	@Test
 	void pullImage() throws IOException {
 		this.docker.image()
-			.pull(ImageReference.of("gcr.io/paketo-buildpacks/builder:base"),
+			.pull(ImageReference.of("gcr.io/paketo-buildpacks/builder:base"), null,
 					new TotalProgressPullListener(new TotalProgressBar("Pulling: ")));
 	}
 

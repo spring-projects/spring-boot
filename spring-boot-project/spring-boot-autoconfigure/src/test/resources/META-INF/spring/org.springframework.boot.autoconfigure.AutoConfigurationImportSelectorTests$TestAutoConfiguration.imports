@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$AfterDeprecatedAutoConfiguration
+org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests$ReplacementAutoConfiguration
+

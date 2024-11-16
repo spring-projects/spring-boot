@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Brian Clozel
  * @author Michael Nitschinger
+ * @author Scott Frederick
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.couchbase")
@@ -48,6 +49,8 @@ public class CouchbaseProperties {
 	 * Cluster password.
 	 */
 	private String password;
+
+	private final Authentication authentication = new Authentication();
 
 	private final Env env = new Env();
 
@@ -75,8 +78,114 @@ public class CouchbaseProperties {
 		this.password = password;
 	}
 
+	public Authentication getAuthentication() {
+		return this.authentication;
+	}
+
 	public Env getEnv() {
 		return this.env;
+	}
+
+	public static class Authentication {
+
+		private final Pem pem = new Pem();
+
+		private final Jks jks = new Jks();
+
+		public Pem getPem() {
+			return this.pem;
+		}
+
+		public Jks getJks() {
+			return this.jks;
+		}
+
+		public static class Pem {
+
+			/**
+			 * PEM-formatted certificates for certificate-based cluster authentication.
+			 */
+			private String certificates;
+
+			/**
+			 * PEM-formatted private key for certificate-based cluster authentication.
+			 */
+			private String privateKey;
+
+			/**
+			 * Private key password for certificate-based cluster authentication.
+			 */
+			private String privateKeyPassword;
+
+			public String getCertificates() {
+				return this.certificates;
+			}
+
+			public void setCertificates(String certificates) {
+				this.certificates = certificates;
+			}
+
+			public String getPrivateKey() {
+				return this.privateKey;
+			}
+
+			public void setPrivateKey(String privateKey) {
+				this.privateKey = privateKey;
+			}
+
+			public String getPrivateKeyPassword() {
+				return this.privateKeyPassword;
+			}
+
+			public void setPrivateKeyPassword(String privateKeyPassword) {
+				this.privateKeyPassword = privateKeyPassword;
+			}
+
+		}
+
+		public static class Jks {
+
+			/**
+			 * Java KeyStore location for certificate-based cluster authentication.
+			 */
+			private String location;
+
+			/**
+			 * Java KeyStore password for certificate-based cluster authentication.
+			 */
+			private String password;
+
+			/**
+			 * Private key password for certificate-based cluster authentication.
+			 */
+			private String privateKeyPassword;
+
+			public String getLocation() {
+				return this.location;
+			}
+
+			public void setLocation(String location) {
+				this.location = location;
+			}
+
+			public String getPassword() {
+				return this.password;
+			}
+
+			public void setPassword(String password) {
+				this.password = password;
+			}
+
+			public String getPrivateKeyPassword() {
+				return this.privateKeyPassword;
+			}
+
+			public void setPrivateKeyPassword(String privateKeyPassword) {
+				this.privateKeyPassword = privateKeyPassword;
+			}
+
+		}
+
 	}
 
 	public static class Env {

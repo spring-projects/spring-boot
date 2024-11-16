@@ -35,20 +35,19 @@ import org.springframework.boot.actuate.web.exchanges.HttpExchangesEndpoint;
 import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
 import org.springframework.boot.actuate.web.exchanges.RecordableHttpResponse;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing {@link HttpExchangesEndpoint}.
@@ -57,11 +56,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	@MockBean
+	@MockitoBean
 	private HttpExchangeRepository repository;
 
 	@Test
-	void httpExchanges() throws Exception {
+	void httpExchanges() {
 		RecordableHttpRequest request = mock(RecordableHttpRequest.class);
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
@@ -79,9 +78,8 @@ class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		HttpExchange exchange = HttpExchange.start(start, request)
 			.finish(end, response, () -> principal, () -> UUID.randomUUID().toString(), EnumSet.allOf(Include.class));
 		given(this.repository.findAll()).willReturn(List.of(exchange));
-		this.mockMvc.perform(get("/actuator/httpexchanges"))
-			.andExpect(status().isOk())
-			.andDo(document("httpexchanges", responseFields(
+		assertThat(this.mvc.get().uri("/actuator/httpexchanges")).hasStatusOk()
+			.apply(document("httpexchanges", responseFields(
 					fieldWithPath("exchanges").description("An array of HTTP request-response exchanges."),
 					fieldWithPath("exchanges.[].timestamp").description("Timestamp of when the exchange occurred."),
 					fieldWithPath("exchanges.[].principal").description("Principal of the exchange, if any.")

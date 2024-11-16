@@ -12,7 +12,7 @@ This section addresses those questions.
 By default, batch applications require a `DataSource` to store job details.
 Spring Batch expects a single `DataSource` by default.
 To have it use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
-If you do so and want two data sources, remember to mark the other one `@Primary`.
+If you do so and want two data sources (for example by retaining the main auto-configured `DataSource`), set the `defaultCandidate` attribute of the `@Bean` annotation to `false`.
 To take greater control, add `@EnableBatchProcessing` to one of your `@Configuration` classes or extend `DefaultBatchConfiguration`.
 See the API documentation of javadoc:{url-spring-batch-javadoc}/org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation]
 and javadoc:{url-spring-batch-javadoc}/org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[] for more details.
@@ -24,8 +24,16 @@ For more info about Spring Batch, see the {url-spring-batch-site}[Spring Batch p
 [[howto.batch.specifying-a-transaction-manager]]
 == Specifying a Batch Transaction Manager
 
-Similar to xref:batch.adoc#howto.batch.specifying-a-data-source[], you can define a `PlatformTransactionManager` for use in the batch processing by marking it as `@BatchTransactionManager`.
-If you do so and want two transaction managers, remember to mark the other one as `@Primary`.
+Similar to xref:batch.adoc#howto.batch.specifying-a-data-source[], you can define a `PlatformTransactionManager` for use in batch processing by annotating its `@Bean` method with `@BatchTransactionManager`.
+If you do so and want two transaction managers (for example by retaining the auto-configured `PlatformTransactionManager`), set the `defaultCandidate` attribute of the `@Bean` annotation to `false`.
+
+
+
+[[howto.batch.specifying-a-task-executor]]
+== Specifying a Batch Task Executor
+
+Similar to xref:batch.adoc#howto.batch.specifying-a-data-source[], you can define a `TaskExecutor` for use in batch processing by annotating its `@Bean` method with `@BatchTaskExecutor`.
+If you do so and want two task executors (for example by retaining the auto-configured `TaskExecutor`), set the `defaultCandidate` attribute of the `@Bean` annotation to `false`.
 
 
 

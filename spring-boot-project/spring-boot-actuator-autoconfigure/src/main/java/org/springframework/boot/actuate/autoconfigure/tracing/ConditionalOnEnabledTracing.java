@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional @Conditional} that checks whether tracing is enabled. It matches if
  * the value of the {@code management.tracing.enabled} property is {@code true} or if it
- * is not configured.
+ * is not configured. If the {@link #value() tracing exporter name} is set, the
+ * {@code management.<name>.tracing.export.enabled} property can be used to control the
+ * behavior for the specific tracing exporter. In that case, the exporter specific
+ * property takes precedence over the global property.
  *
  * @author Moritz Halbritter
  * @since 3.0.0
@@ -36,7 +38,14 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@ConditionalOnProperty(prefix = "management.tracing", name = "enabled", matchIfMissing = true)
+@Conditional(OnEnabledTracingCondition.class)
 public @interface ConditionalOnEnabledTracing {
+
+	/**
+	 * Name of the tracing exporter.
+	 * @return the name of the tracing exporter
+	 * @since 3.4.0
+	 */
+	String value() default "";
 
 }

@@ -37,6 +37,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlCorsProperties;
 import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
+import org.springframework.boot.autoconfigure.graphql.GraphQlProperties.Sse;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -97,8 +98,9 @@ public class GraphQlWebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler) {
-		return new GraphQlSseHandler(webGraphQlHandler);
+	public GraphQlSseHandler graphQlSseHandler(WebGraphQlHandler webGraphQlHandler, GraphQlProperties properties) {
+		Sse sse = properties.getSse();
+		return new GraphQlSseHandler(webGraphQlHandler, sse.getTimeout());
 	}
 
 	@Bean
@@ -117,6 +119,7 @@ public class GraphQlWebMvcAutoConfiguration {
 		RouterFunctions.Builder builder = RouterFunctions.route();
 		builder.route(GraphQlRequestPredicates.graphQlHttp(path), httpHandler::handleRequest);
 		builder.route(GraphQlRequestPredicates.graphQlSse(path), sseHandler::handleRequest);
+		builder.POST(path, this::unsupportedMediaType);
 		builder.GET(path, this::onlyAllowPost);
 		if (properties.getGraphiql().isEnabled()) {
 			GraphiQlHandler graphiQLHandler = new GraphiQlHandler(path, properties.getWebsocket().getPath());
@@ -127,6 +130,14 @@ public class GraphQlWebMvcAutoConfiguration {
 			builder.GET(path + "/schema", schemaHandler::handleRequest);
 		}
 		return builder.build();
+	}
+
+	private ServerResponse unsupportedMediaType(ServerRequest request) {
+		return ServerResponse.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).headers(this::acceptJson).build();
+	}
+
+	private void acceptJson(HttpHeaders headers) {
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 	}
 
 	private ServerResponse onlyAllowPost(ServerRequest request) {

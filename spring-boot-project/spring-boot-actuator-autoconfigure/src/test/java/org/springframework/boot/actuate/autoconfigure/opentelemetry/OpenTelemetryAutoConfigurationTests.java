@@ -24,7 +24,6 @@ import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.semconv.ResourceAttributes;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -86,7 +85,24 @@ class OpenTelemetryAutoConfigurationTests {
 		this.runner.withPropertyValues("spring.application.name=my-application").run((context) -> {
 			Resource resource = context.getBean(Resource.class);
 			assertThat(resource.getAttributes().asMap())
-				.contains(entry(ResourceAttributes.SERVICE_NAME, "my-application"));
+				.contains(entry(AttributeKey.stringKey("service.name"), "my-application"));
+		});
+	}
+
+	@Test
+	void shouldApplySpringApplicationGroupToResource() {
+		this.runner.withPropertyValues("spring.application.group=my-group").run((context) -> {
+			Resource resource = context.getBean(Resource.class);
+			assertThat(resource.getAttributes().asMap())
+				.contains(entry(AttributeKey.stringKey("service.group"), "my-group"));
+		});
+	}
+
+	@Test
+	void shouldNotApplySpringApplicationGroupIfNotSet() {
+		this.runner.run((context) -> {
+			Resource resource = context.getBean(Resource.class);
+			assertThat(resource.getAttributes().asMap()).doesNotContainKey(AttributeKey.stringKey("service.group"));
 		});
 	}
 
@@ -95,7 +111,7 @@ class OpenTelemetryAutoConfigurationTests {
 		this.runner.run((context) -> {
 			Resource resource = context.getBean(Resource.class);
 			assertThat(resource.getAttributes().asMap())
-				.contains(entry(ResourceAttributes.SERVICE_NAME, "unknown_service"));
+				.contains(entry(AttributeKey.stringKey("service.name"), "unknown_service"));
 		});
 	}
 

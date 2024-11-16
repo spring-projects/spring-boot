@@ -42,7 +42,7 @@
 
 			<echo>Extracting spring-boot-loader to ${destdir}/dependency</echo>
 			<copy todir="${destdir}/dependency">
-				<javaresource name="META-INF/loader/spring-boot-loader-classic.jar"
+				<javaresource name="META-INF/loader/spring-boot-loader.jar"
 					loaderref="spring.boot.antlib.loader" />
 				<flattenmapper />
 			</copy>
@@ -58,7 +58,7 @@
 					<lib />
 					<globmapper from="*" to="BOOT-INF/lib/*" />
 				</mappedresources>
-				<zipfileset src="${destdir}/dependency/spring-boot-loader-classic.jar" />
+				<zipfileset src="${destdir}/dependency/spring-boot-loader.jar" />
 				<manifest>
 					<attribute name="Main-Class"
 						value="org.springframework.boot.loader.launch.JarLauncher" />

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -42,8 +43,17 @@ class DockerComposeOriginTests {
 	void hasToString() throws Exception {
 		DockerComposeFile composeFile = createTempComposeFile();
 		DockerComposeOrigin origin = new DockerComposeOrigin(composeFile, "service-1");
-		assertThat(origin.toString()).startsWith("Docker compose service 'service-1' defined in '")
-			.endsWith("compose.yaml'");
+		assertThat(origin.toString()).startsWith("Docker compose service 'service-1' defined in ")
+			.endsWith("compose.yaml");
+	}
+
+	@Test
+	void hasToStringWithMultipleFiles() throws IOException {
+		File file1 = createTempFile("1.yaml");
+		File file2 = createTempFile("2.yaml");
+		DockerComposeOrigin origin = new DockerComposeOrigin(DockerComposeFile.of(List.of(file1, file2)), "service-1");
+		assertThat(origin.toString())
+			.startsWith("Docker compose service 'service-1' defined in %s, %s".formatted(file1, file2));
 	}
 
 	@Test
@@ -63,9 +73,13 @@ class DockerComposeOriginTests {
 	}
 
 	private DockerComposeFile createTempComposeFile() throws IOException {
-		File file = new File(this.temp, "compose.yaml");
+		return DockerComposeFile.of(createTempFile("compose.yaml"));
+	}
+
+	private File createTempFile(String filename) throws IOException {
+		File file = new File(this.temp, filename);
 		FileCopyUtils.copy(new byte[0], file);
-		return DockerComposeFile.of(file);
+		return file.getCanonicalFile();
 	}
 
 }

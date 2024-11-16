@@ -2,6 +2,8 @@ plugins {
 	id "dev.adamko.dokkatoo-html"
 	id "java"
 	id "org.antora"
+	id "org.springframework.boot.antora-contributor"
+	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
 	id 'org.jetbrains.kotlin.jvm'
 }
@@ -14,7 +16,6 @@ configurations {
 	remoteSpringApplicationExample
 	springApplicationExample
 	testSlices
-	antoraContent
 	all {
 		resolutionStrategy.eachDependency { DependencyResolveDetails details ->
 			if (details.requested.module.group == "org.apache.kafka" && details.requested.module.name == "kafka-server-common") {
@@ -82,6 +83,7 @@ dependencies {
 	implementation("io.micrometer:micrometer-tracing")
 	implementation("io.micrometer:micrometer-registry-graphite")
 	implementation("io.micrometer:micrometer-registry-jmx")
+	implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0")
 	implementation("io.projectreactor.netty:reactor-netty-http")
 	implementation("io.undertow:undertow-core")
 	implementation("jakarta.annotation:jakarta.annotation-api")
@@ -89,10 +91,6 @@ dependencies {
 	implementation("jakarta.persistence:jakarta.persistence-api")
 	implementation("jakarta.servlet:jakarta.servlet-api")
 	implementation("jakarta.validation:jakarta.validation-api")
-	implementation("net.sourceforge.htmlunit:htmlunit") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "xml-apis", module: "xml-apis"
-	}
 	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -110,6 +108,10 @@ dependencies {
 		exclude group: "javax.persistence", module: "javax.persistence-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 		exclude group: "org.jboss.spec.javax.transaction", module: "jboss-transaction-api_1.2_spec"
+	}
+	implementation("org.htmlunit:htmlunit") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "xml-apis", module: "xml-apis"
 	}
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("org.jooq:jooq") {
@@ -179,10 +181,6 @@ dependencies {
 	springApplicationExample(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	springApplicationExample(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
-	antoraContent(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "antoraContent"))
-	antoraContent(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "antoraContent"))
-	antoraContent(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "antoraContent"))
-
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.assertj:assertj-core")
@@ -206,7 +204,8 @@ task aggregatedJavadoc(type: Javadoc) {
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
 			.findAll { !it.path.contains(":spring-boot-tools:") ||
 						it.path.contains(":spring-boot-tools:spring-boot-buildpack-platform") ||
-						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") }
+						it.path.contains(":spring-boot-tools:spring-boot-loader-tools") ||
+						(it.path.contains(":spring-boot-tools:spring-boot-loader") && !it.path.contains("spring-boot-loader-classic"))}
 			.findAll { !it.name.startsWith('spring-boot-starter') }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
@@ -308,100 +307,91 @@ def getRelativeExamplesPath(var outputs) {
 	'example$example-output/' + fileName
 }
 
-def antoraRootAggregateContent = tasks.register("antoraRootAggregateContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "root-aggregate-content"
-	from("src/main") {
-		into "modules/ROOT/examples"
+antoraDependencies {
+	'actuator-rest-api' {
+		path = ":spring-boot-project:spring-boot-actuator-autoconfigure"
+		source()
+		aggregateContent()
 	}
-	from(project.configurations.configurationProperties) {
-		eachFile {
-			it.path = rootProject
-				.projectDir
-				.toPath()
-				.relativize(it.file.toPath())
-				.toString()
-				.replace('\\', '/')
-				.replaceAll('.*/([^/]+)/build.*', 'modules/ROOT/partials/$1/spring-configuration-metadata.json')
+	'gradle-plugin' {
+		path = ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
+		source()
+		catalogContent()
+	}
+	'maven-plugin' {
+		path = ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin"
+		source()
+		catalogContent()
+		aggregateContent()
+	}
+}
+
+antoraContributions {
+	'api' {
+		catalogContent {
+			from(aggregatedJavadoc) {
+				into "java"
+			}
+			from(tasks.named("dokkatooGeneratePublicationHtml")) {
+				into "kotlin"
+			}
 		}
 	}
-	from(runRemoteSpringApplicationExample) {
-		into "modules/ROOT/examples"
-	}
-	from(documentDevtoolsPropertyDefaults) {
-		into "modules/ROOT/partials/propertydefaults"
-	}
-	from(documentStarters) {
-		into "modules/ROOT/partials/starters"
-	}
-	from(documentTestSlices) {
-		into "modules/appendix/partials/slices"
-	}
-	from(runSpringApplicationExample) {
-		into "modules/ROOT/partials/application"
-	}
-	from(runLoggingFormatExample) {
-		into "modules/ROOT/partials/logging"
-	}
-	from(documentDependencyVersionCoordinates) {
-		into "modules/appendix/partials/dependency-versions"
-	}
-	from(documentDependencyVersionProperties) {
-		into "modules/appendix/partials/dependency-versions"
-	}
-	from(documentAutoConfigurationClasses) {
-		into "modules/appendix/partials/auto-configuration-classes"
-	}
-	from(documentConfigurationProperties) {
-		into "modules/appendix/partials/configuration-properties"
-	}
-	from(tasks.getByName("generateAntoraYml")) {
-		into "modules"
-	}
-}
-
-def antoraApiCatalogContent = tasks.register("antoraApiCatalogContent", Zip) {
-	destinationDirectory = layout.buildDirectory.dir('generated/docs/antora-content')
-	archiveClassifier = "api-catalog-content"
-	from(aggregatedJavadoc) {
-		into "java"
-	}
-	from(tasks.named("dokkatooGeneratePublicationHtml")) {
-		into "kotlin"
-	}
-}
-
-def copyAntoraContentDependencies = tasks.register("copyAntoraContentDependencies", Copy) {
-	into layout.buildDirectory.dir('generated/docs/antora-dependencies-content')
-	from(configurations.antoraContent)
-	rename("spring-boot-actuator-autoconfigure", "spring-boot-docs")
-	rename("spring-boot-maven-plugin", "spring-boot-docs")
-	rename("spring-boot-gradle-plugin", "spring-boot-docs")
-}
-
-tasks.named("antora") {
-	inputs.files(antoraRootAggregateContent, antoraApiCatalogContent, copyAntoraContentDependencies)
-}
-
-gradle.projectsEvaluated {
-	def mavenPublication = publishing.publications.getByName("maven");
-	configurations.antoraContent.dependencies.forEach { dependency ->
-		dependency.dependencyProject.configurations.getByName(dependency.targetConfiguration)
-			.artifacts.forEach(mavenPublication::artifact)
+	'root' {
+		aggregateContent {
+			from("src/main") {
+				into "modules/ROOT/examples"
+			}
+			from(project.configurations.configurationProperties) {
+				eachFile {
+					it.path = rootProject
+						.projectDir
+						.toPath()
+						.relativize(it.file.toPath())
+						.toString()
+						.replace('\\', '/')
+						.replaceAll('.*/([^/]+)/build.*', 'modules/ROOT/partials/$1/spring-configuration-metadata.json')
+				}
+			}
+			from(runRemoteSpringApplicationExample) {
+				into "modules/ROOT/examples"
+			}
+			from(documentDevtoolsPropertyDefaults) {
+				into "modules/ROOT/partials/propertydefaults"
+			}
+			from(documentStarters) {
+				into "modules/ROOT/partials/starters"
+			}
+			from(documentTestSlices) {
+				into "modules/appendix/partials/slices"
+			}
+			from(runSpringApplicationExample) {
+				into "modules/ROOT/partials/application"
+			}
+			from(runLoggingFormatExample) {
+				into "modules/ROOT/partials/logging"
+			}
+			from(documentDependencyVersionCoordinates) {
+				into "modules/appendix/partials/dependency-versions"
+			}
+			from(documentDependencyVersionProperties) {
+				into "modules/appendix/partials/dependency-versions"
+			}
+			from(documentAutoConfigurationClasses) {
+				into "modules/appendix/partials/auto-configuration-classes"
+			}
+			from(documentConfigurationProperties) {
+				into "modules/appendix/partials/configuration-properties"
+			}
+			from(tasks.getByName("generateAntoraYml")) {
+				into "modules"
+			}
+		}
 	}
 }
 
 dokkatoo {
 	dokkatooPublications.configureEach {
 		includes.from("src/docs/dokkatoo/dokka-overview.md")
-	}
-}
-
-publishing {
-	publications {
-		getByName("maven") {
-			artifact antoraRootAggregateContent
-			artifact antoraApiCatalogContent
-		}
 	}
 }

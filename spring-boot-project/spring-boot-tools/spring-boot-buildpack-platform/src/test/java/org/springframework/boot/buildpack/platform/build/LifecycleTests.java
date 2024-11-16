@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.stubbing.Answer;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -48,11 +49,13 @@ import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
+import org.springframework.boot.testsupport.junit.BooleanValueSource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +63,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -87,22 +91,32 @@ class LifecycleTests {
 		this.docker = mockDockerApi();
 	}
 
-	@Test
-	void executeExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		createLifecycle().execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator.json"));
+		createLifecycle(trustBuilder).execute();
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter.json"));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
 	@Test
 	void executeWithBindingsExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withBindings(Binding.of("/host/src/path:/container/dest/path:ro"),
+		BuildRequest request = getTestRequest(true).withBindings(Binding.of("/host/src/path:/container/dest/path:ro"),
 				Binding.of("volume-name:/container/volume/path:rw"));
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-bindings.json"));
@@ -111,182 +125,300 @@ class LifecycleTests {
 
 	@Test
 	void executeExecutesPhasesWithPlatformApi03() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		createLifecycle("builder-metadata-platform-api-0.3.json").execute();
+		createLifecycle(true, "builder-metadata-platform-api-0.3.json").execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-platform-api-0.3.json"));
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeOnlyUploadsContentOnce() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeOnlyUploadsContentOnce(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		createLifecycle().execute();
+		createLifecycle(trustBuilder).execute();
 		assertThat(this.content).hasSize(1);
 	}
 
-	@Test
-	void executeWhenAlreadyRunThrowsException() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWhenAlreadyRunThrowsException(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		Lifecycle lifecycle = createLifecycle();
+		Lifecycle lifecycle = createLifecycle(trustBuilder);
 		lifecycle.execute();
 		assertThatIllegalStateException().isThrownBy(lifecycle::execute)
 			.withMessage("Lifecycle has already been executed");
 	}
 
-	@Test
-	void executeWhenBuilderReturnsErrorThrowsException() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWhenBuilderReturnsErrorThrowsException(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(9, null));
-		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> createLifecycle().execute())
-			.withMessage("Builder lifecycle 'creator' failed with status code 9");
+		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> createLifecycle(trustBuilder).execute())
+			.withMessage(
+					"Builder lifecycle '" + ((trustBuilder) ? "creator" : "analyzer") + "' failed with status code 9");
 	}
 
-	@Test
-	void executeWhenCleanCacheClearsCache() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWhenCleanCacheClearsCache(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withCleanCache(true);
+		BuildRequest request = getTestRequest(trustBuilder).withCleanCache(true);
 		createLifecycle(request).execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-clean-cache.json"));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-clean-cache.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter.json"));
+			assertThat(this.out.toString()).contains("Skipping restorer because 'cleanCache' is enabled");
+		}
 		VolumeName name = VolumeName.of("pack-cache-b35197ac41ea.build");
 		then(this.docker.volume()).should().delete(name, true);
 	}
 
 	@Test
 	void executeWhenPlatformApiNotSupportedThrowsException() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-			.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute())
+			.isThrownBy(() -> createLifecycle(true, "builder-metadata-unsupported-api.json").execute())
 			.withMessageContaining("Detected platform API versions '0.2' are not included in supported versions");
 	}
 
 	@Test
 	void executeWhenMultiplePlatformApisNotSupportedThrowsException() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-			.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute())
+			.isThrownBy(() -> createLifecycle(true, "builder-metadata-unsupported-apis.json").execute())
 			.withMessageContaining("Detected platform API versions '0.1,0.2' are not included in supported versions");
 	}
 
-	@Test
-	void executeWhenMultiplePlatformApisSupportedExecutesPhase() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWhenMultiplePlatformApisSupportedExecutesPhase(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		createLifecycle("builder-metadata-supported-apis.json").execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator.json"));
+		createLifecycle(trustBuilder, "builder-metadata-supported-apis.json").execute();
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter.json"));
+		}
 	}
 
 	@Test
 	void closeClearsVolumes() throws Exception {
-		createLifecycle().close();
+		createLifecycle(true).close();
 		then(this.docker.volume()).should().delete(VolumeName.of("pack-layers-aaaaaaaaaa"), true);
 		then(this.docker.volume()).should().delete(VolumeName.of("pack-app-aaaaaaaaaa"), true);
 	}
 
 	@Test
 	void executeWithNetworkExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withNetwork("test");
+		BuildRequest request = getTestRequest(true).withNetwork("test");
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-network.json"));
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeWithCacheVolumeNamesExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithCacheVolumeNamesExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withBuildWorkspace(Cache.volume("work-volume"))
+		BuildRequest request = getTestRequest(trustBuilder).withBuildWorkspace(Cache.volume("work-volume"))
 			.withBuildCache(Cache.volume("build-volume"))
 			.withLaunchCache(Cache.volume("launch-volume"));
 		createLifecycle(request).execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-volumes.json"));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-volumes.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-cache-volumes.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector-cache-volumes.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-cache-volumes.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder-cache-volumes.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-cache-volumes.json"));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeWithCacheBindMountsExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithCacheBindMountsExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withBuildWorkspace(Cache.bind("/tmp/work"))
+		BuildRequest request = getTestRequest(trustBuilder).withBuildWorkspace(Cache.bind("/tmp/work"))
 			.withBuildCache(Cache.bind("/tmp/build-cache"))
 			.withLaunchCache(Cache.bind("/tmp/launch-cache"));
 		createLifecycle(request).execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-bind-mounts.json"));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-bind-mounts.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-cache-bind-mounts.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector-cache-bind-mounts.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-cache-bind-mounts.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder-cache-bind-mounts.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-cache-bind-mounts.json"));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeWithCreatedDateExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithCreatedDateExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withCreatedDate("2020-07-01T12:34:56Z");
+		BuildRequest request = getTestRequest(trustBuilder).withCreatedDate("2020-07-01T12:34:56Z");
 		createLifecycle(request).execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-created-date.json"));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-created-date.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-created-date.json"));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeWithApplicationDirectoryExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithApplicationDirectoryExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withApplicationDirectory("/application");
+		BuildRequest request = getTestRequest(trustBuilder).withApplicationDirectory("/application");
 		createLifecycle(request).execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-app-dir.json"));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-app-dir.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector-app-dir.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder-app-dir.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-app-dir.json"));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeWithSecurityOptionsExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithSecurityOptionsExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest().withSecurityOptions(List.of("label=user:USER", "label=role:ROLE"));
+		BuildRequest request = getTestRequest(trustBuilder)
+			.withSecurityOptions(List.of("label=user:USER", "label=role:ROLE"));
 		createLifecycle(request).execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-security-opts.json", true));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-security-opts.json", true));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-security-opts.json", true));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-security-opts.json", true));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-security-opts.json", true));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeWithDockerHostAndRemoteAddressExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithDockerHostAndRemoteAddressExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest();
+		BuildRequest request = getTestRequest(trustBuilder);
 		createLifecycle(request, ResolvedDockerHost.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376")))
 			.execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-remote.json"));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-remote.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-inherit-remote.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-inherit-remote.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-inherit-remote.json"));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
-	@Test
-	void executeWithDockerHostAndLocalAddressExecutesPhases() throws Exception {
-		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
-		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithDockerHostAndLocalAddressExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), isNull())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), isNull(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
-		BuildRequest request = getTestRequest();
+		BuildRequest request = getTestRequest(trustBuilder);
 		createLifecycle(request, ResolvedDockerHost.from(DockerHostConfiguration.forAddress("/var/alt.sock")))
 			.execute();
-		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-local.json"));
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-local.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer-inherit-local.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer-inherit-local.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter-inherit-local.json"));
+		}
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@ParameterizedTest
+	@BooleanValueSource
+	void executeWithImagePlatformExecutesPhases(boolean trustBuilder) throws Exception {
+		given(this.docker.container().create(any(), eq(ImagePlatform.of("linux/arm64"))))
+			.willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), eq(ImagePlatform.of("linux/arm64")), any()))
+			.willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest(trustBuilder).withImagePlatform("linux/arm64");
+		createLifecycle(request).execute();
+		if (trustBuilder) {
+			assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator.json"));
+		}
+		else {
+			assertPhaseWasRun("analyzer", withExpectedConfig("lifecycle-analyzer.json"));
+			assertPhaseWasRun("detector", withExpectedConfig("lifecycle-detector.json"));
+			assertPhaseWasRun("restorer", withExpectedConfig("lifecycle-restorer.json"));
+			assertPhaseWasRun("builder", withExpectedConfig("lifecycle-builder.json"));
+			assertPhaseWasRun("exporter", withExpectedConfig("lifecycle-exporter.json"));
+		}
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
@@ -301,14 +433,16 @@ class LifecycleTests {
 		return docker;
 	}
 
-	private BuildRequest getTestRequest() {
+	private BuildRequest getTestRequest(boolean trustBuilder) {
 		TarArchive content = mock(TarArchive.class);
 		ImageReference name = ImageReference.of("my-application");
-		return BuildRequest.of(name, (owner) -> content).withRunImage(ImageReference.of("cloudfoundry/run"));
+		return BuildRequest.of(name, (owner) -> content)
+			.withRunImage(ImageReference.of("cloudfoundry/run"))
+			.withTrustBuilder(trustBuilder);
 	}
 
-	private Lifecycle createLifecycle() throws IOException {
-		return createLifecycle(getTestRequest());
+	private Lifecycle createLifecycle(boolean trustBuilder) throws IOException {
+		return createLifecycle(getTestRequest(trustBuilder));
 	}
 
 	private Lifecycle createLifecycle(BuildRequest request) throws IOException {
@@ -316,9 +450,9 @@ class LifecycleTests {
 		return createLifecycle(request, builder);
 	}
 
-	private Lifecycle createLifecycle(String builderMetadata) throws IOException {
+	private Lifecycle createLifecycle(boolean trustBuilder, String builderMetadata) throws IOException {
 		EphemeralBuilder builder = mockEphemeralBuilder(builderMetadata);
-		return createLifecycle(getTestRequest(), builder);
+		return createLifecycle(getTestRequest(trustBuilder), builder);
 	}
 
 	private Lifecycle createLifecycle(BuildRequest request, ResolvedDockerHost dockerHost) throws IOException {
@@ -349,8 +483,8 @@ class LifecycleTests {
 			ArrayNode command = getCommand(config);
 			String name = command.get(0).asText().substring(1).replaceAll("/", "-");
 			this.configs.put(name, config);
-			if (invocation.getArguments().length > 1) {
-				this.content.put(name, invocation.getArgument(1, ContainerContent.class));
+			if (invocation.getArguments().length > 2) {
+				this.content.put(name, invocation.getArgument(2, ContainerContent.class));
 			}
 			return ContainerReference.of(name);
 		};

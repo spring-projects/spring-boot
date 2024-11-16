@@ -34,6 +34,7 @@ The following items are output:
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
 * Application name: Enclosed in square brackets (logged by default only if configprop:spring.application.name[] is set)
+* Application group: Enclosed in square brackets (logged by default only if configprop:spring.application.group[] is set)
 * Thread name: Enclosed in square brackets (may be truncated for console output).
 * Correlation ID: If tracing is enabled (not shown in the sample above)
 * Logger name: This is usually the source class name (often abbreviated).
@@ -43,6 +44,10 @@ NOTE: Logback does not have a `FATAL` level.
 It is mapped to `ERROR`.
 
 TIP: If you have a configprop:spring.application.name[] property but don't want it logged you can set configprop:logging.include-application-name[] to `false`.
+
+TIP: If you have a configprop:spring.application.group[] property but don't want it logged you can set configprop:logging.include-application-group[] to `false`.
+
+TIP: For more details about correlation IDs, please xref:reference:actuator/tracing.adoc#actuator.micrometer-tracing.logging[see this documentation].
 
 
 
@@ -366,6 +371,14 @@ The properties that are transferred are described in the following table:
 | `LOG_LEVEL_PATTERN`
 | The format to use when rendering the log level (default `%5p`).
 
+| configprop:logging.structured.format.console[]
+| `CONSOLE_LOG_STRUCTURED_FORMAT`
+| The structured logging format to use for console logging.
+
+| configprop:logging.structured.format.file[]
+| `FILE_LOG_STRUCTURED_FORMAT`
+| The structured logging format to use for file logging.
+
 | `PID`
 | `PID`
 | The current process ID (discovered if possible and when not already defined as an OS environment variable).
@@ -422,6 +435,200 @@ For example, if you use `logging.pattern.level=user:%X\{user} %5p`, then the def
 Handling authenticated request
 ----
 ====
+
+
+
+[[features.logging.structured]]
+== Structured Logging
+
+Structured logging is a technique where the log output is written in a well-defined, often machine-readable format.
+Spring Boot supports structured logging and has support for the following JSON formats out of the box:
+
+* xref:#features.logging.structured.ecs[Elastic Common Schema (ECS)]
+* xref:#features.logging.structured.gelf[Graylog Extended Log Format (GELF)]
+* xref:#features.logging.structured.logstash[Logstash]
+
+To enable structured logging, set the property configprop:logging.structured.format.console[] (for console output) or configprop:logging.structured.format.file[] (for file output) to the id of the format you want to use.
+
+
+
+[[features.logging.structured.ecs]]
+=== Elastic Common Schema
+
+https://www.elastic.co/guide/en/ecs/8.11/ecs-reference.html[Elastic Common Schema] is a JSON based logging format.
+
+To enable the Elastic Common Schema log format, set the appropriate `format` property to `ecs`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    format:
+      console: ecs
+      file: ecs
+----
+
+A log line looks like this:
+
+[source,json]
+----
+{"@timestamp":"2024-01-01T10:15:00.067462556Z","log.level":"INFO","process.pid":39599,"process.thread.name":"main","service.name":"simple","log.logger":"org.example.Application","message":"No active profile set, falling back to 1 default profile: \"default\"","ecs.version":"8.11"}
+----
+
+This format also adds every key value pair contained in the MDC to the JSON object.
+You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
+
+The `service` values can be customized using `logging.structured.ecs.service` properties:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    ecs:
+      service:
+        name: MyService
+        version: 1.0
+        environment: Production
+        node-name: Primary
+----
+
+NOTE: configprop:logging.structured.ecs.service.name[] will default to configprop:spring.application.name[] if not specified.
+
+NOTE: configprop:logging.structured.ecs.service.version[] will default to configprop:spring.application.version[] if not specified.
+
+
+
+[[features.logging.structured.gelf]]
+=== Graylog Extended Log Format (GELF)
+
+https://go2docs.graylog.org/current/getting_in_log_data/gelf.html[Graylog Extended Log Format] is a JSON based logging format for the Graylog log analytics platform.
+
+To enable the Graylog Extended Log Format, set the appropriate `format` property to `gelf`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    format:
+      console: gelf
+      file: gelf
+----
+
+A log line looks like this:
+
+[source,json]
+----
+{"version":"1.1","short_message":"No active profile set, falling back to 1 default profile: \"default\"","timestamp":1725958035.857,"level":6,"_level_name":"INFO","_process_pid":47649,"_process_thread_name":"main","_log_logger":"org.example.Application"}
+----
+
+This format also adds every key value pair contained in the MDC to the JSON object.
+You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
+
+Several fields can be customized using `logging.structured.gelf` properties:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    gelf:
+      host: MyService
+      service:
+        version: 1.0
+----
+
+NOTE: configprop:logging.structured.gelf.host[] will default to configprop:spring.application.name[] if not specified.
+
+NOTE: configprop:logging.structured.gelf.service.version[] will default to configprop:spring.application.version[] if not specified.
+
+
+
+[[features.logging.structured.logstash]]
+=== Logstash JSON format
+
+The https://github.com/logfellow/logstash-logback-encoder?tab=readme-ov-file#standard-fields[Logstash JSON format] is a JSON based logging format.
+
+To enable the Logstash JSON log format, set the appropriate `format` property to `logstash`:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    format:
+      console: logstash
+      file: logstash
+----
+
+A log line looks like this:
+
+[source,json]
+----
+{"@timestamp":"2024-01-01T10:15:00.111037681+02:00","@version":"1","message":"No active profile set, falling back to 1 default profile: \"default\"","logger_name":"org.example.Application","thread_name":"main","level":"INFO","level_value":20000}
+----
+
+This format also adds every key value pair contained in the MDC to the JSON object.
+You can also use the https://www.slf4j.org/manual.html#fluent[SLF4J fluent logging API] to add key value pairs to the logged JSON object with the https://www.slf4j.org/apidocs/org/slf4j/spi/LoggingEventBuilder.html#addKeyValue(java.lang.String,java.lang.Object)[addKeyValue] method.
+
+If you add https://www.slf4j.org/api/org/slf4j/Marker.html[markers], these will show up in a `tags` string array in the JSON.
+
+
+
+[[features.logging.structured.customizing-json]]
+=== Customizing Structured Logging JSON
+
+Spring Boot attempts to pick sensible defaults for the JSON names and values output for structured logging.
+Sometimes, however, you may want to make small adjustments to the JSON for your own needs.
+For example, it's possible that you might want to change some of the names to match the expectations of your log ingestion system.
+You might also want to filter out certain members since you don't find them useful.
+
+The following properties allow you to change the way that structured logging JSON is written:
+
+|===
+| Property | Description
+
+| configprop:logging.structured.json.include[] & configprop:logging.structured.json.exclude[]
+| Filters specific paths from the JSON
+
+| configprop:logging.structured.json.rename[]
+| Renames a specific member in the JSON
+
+| configprop:logging.structured.json.add[]
+| Adds additional members to the JSON
+|===
+
+For example, the following will exclude `log.level`, rename `process.id` to `procid` and add a fixed `corpname` field:
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      exclude: log.level
+      rename:
+        process.id: procid
+      add:
+        corpname: mycorp
+----
+
+TIP: For more advanced customizations, you can write your own class that implements the javadoc:org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer[] interface and declare it using the configprop:logging.structured.json.customizer[] property.
+You can also declare implementations by listing them in a `META-INF/spring.factories` file.
+
+
+
+[[features.logging.structured.other-formats]]
+=== Supporting Other Structured Logging Formats
+
+The structured logging support in Spring Boot is extensible, allowing you to define your own custom format.
+To do this, implement the `StructuredLoggingFormatter` interface. The generic type argument has to be `ILoggingEvent` when using Logback and `LogEvent` when using Log4j2 (that means your implementation is tied to a specific logging system).
+Your implementation is then called with the log event and returns the `String` to be logged, as seen in this example:
+
+include-code::MyCustomFormat[]
+
+As you can see in the example, you can return any format, it doesn't have to be JSON.
+
+To enable your custom format, set the property configprop:logging.structured.format.console[] or configprop:logging.structured.format.file[] to the fully qualified class name of your implementation.
+
+Your implementation can use some constructor parameters, which are injected automatically.
+Please see the JavaDoc of javadoc:org.springframework.boot.logging.structured.StructuredLogFormatter[] for more details.
 
 
 
@@ -547,12 +754,13 @@ The following listing shows three sample profiles:
 If you want to refer to properties from your Spring `Environment` within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
 Doing so can be useful if you want to access values from your `application.properties` file in your Log4j2 configuration.
 
-The following example shows how to set a Log4j2 property named `applicationName` that reads `spring.application.name` from the Spring `Environment`:
+The following example shows how to set Log4j2 properties named `applicationName` and `applicationGroup` that read `spring.application.name` and `spring.application.group` from the Spring `Environment`:
 
 [source,xml]
 ----
 <Properties>
 	<Property name="applicationName">${spring:spring.application.name}</Property>
+	<Property name="applicationGroup">${spring:spring.application.group}</Property>
 </Properties>
 ----
 

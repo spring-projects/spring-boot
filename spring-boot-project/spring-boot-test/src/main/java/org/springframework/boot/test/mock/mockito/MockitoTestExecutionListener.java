@@ -27,6 +27,8 @@ import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.util.ReflectionUtils;
@@ -46,7 +48,11 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * @author Moritz Halbritter
  * @since 1.4.2
  * @see ResetMocksTestExecutionListener
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's support for
+ * {@link MockitoBean} and {@link MockitoSpyBean}.
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
 
 	private static final String MOCKS_ATTRIBUTE_NAME = MockitoTestExecutionListener.class.getName() + ".mocks";

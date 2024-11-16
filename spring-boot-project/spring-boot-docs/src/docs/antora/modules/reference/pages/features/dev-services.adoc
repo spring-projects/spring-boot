@@ -95,8 +95,11 @@ The following service connections are currently supported:
 | `ElasticsearchConnectionDetails`
 | Containers named "elasticsearch" or "bitnami/elasticsearch"
 
+| `HazelcastConnectionDetails`
+| Containers named "hazelcast/hazelcast".
+
 | `JdbcConnectionDetails`
-| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 
 | `LdapConnectionDetails`
 | Containers named "osixia/openldap"
@@ -107,23 +110,26 @@ The following service connections are currently supported:
 | `Neo4jConnectionDetails`
 | Containers named "neo4j" or "bitnami/neo4j"
 
+| `OtlpLoggingConnectionDetails`
+| Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
+
 | `OtlpMetricsConnectionDetails`
-| Containers named "otel/opentelemetry-collector-contrib"
+| Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
 | `OtlpTracingConnectionDetails`
-| Containers named "otel/opentelemetry-collector-contrib"
+| Containers named "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm"
 
 | `PulsarConnectionDetails`
 | Containers named "apachepulsar/pulsar"
 
 | `R2dbcConnectionDetails`
-| Containers named "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
+| Containers named "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", or "bitnami/postgresql"
 
 | `RabbitConnectionDetails`
 | Containers named "rabbitmq" or "bitnami/rabbitmq"
 
 | `RedisConnectionDetails`
-| Containers named "redis" or "bitnami/redis"
+| Containers named "redis", "bitnami/redis", "redis/redis-stack" or "redis/redis-stack-server"
 
 | `ZipkinConnectionDetails`
 | Containers named "openzipkin/zipkin".
@@ -358,9 +364,9 @@ TIP: You can use the Maven goal `spring-boot:test-run` or the Gradle task `bootT
 [[features.dev-services.testcontainers.at-development-time.dynamic-properties]]
 ==== Contributing Dynamic Properties at Development Time
 
-If you want to contribute dynamic properties at development time from your `Container` `@Bean` methods, you can do so by injecting a `DynamicPropertyRegistry`.
-This works in a similar way to the xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource` annotation] that you can use in your tests.
-It allows you to add properties that will become available once your container has started.
+If you want to contribute dynamic properties at development time from your `Container` `@Bean` methods, define an additional `DynamicPropertyRegistrar` bean.
+The registrar should be defined using a `@Bean` method that injects the container from which the properties will be sourced as a parameter.
+This arrangement ensures that container has been started before the properties are used.
 
 A typical configuration would look like this:
 

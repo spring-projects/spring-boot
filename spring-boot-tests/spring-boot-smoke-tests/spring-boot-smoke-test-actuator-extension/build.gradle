@@ -1,0 +1,12 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Actuator Extension smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

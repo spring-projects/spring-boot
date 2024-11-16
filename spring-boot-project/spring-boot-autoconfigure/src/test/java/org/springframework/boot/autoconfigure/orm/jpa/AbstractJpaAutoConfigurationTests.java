@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConf
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizationAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -204,6 +205,18 @@ abstract class AbstractJpaAutoConfigurationTests {
 				assertThat(map).containsEntry("a", "b");
 				assertThat(map).containsEntry("c", "d");
 				assertThat(map).containsEntry("a.b", "c");
+			});
+	}
+
+	@Test
+	void usesManuallyDefinedLocalContainerEntityManagerFactoryBeanUsingBuilder() {
+		this.contextRunner.withPropertyValues("spring.jpa.properties.a=b")
+			.withUserConfiguration(TestConfigurationWithEntityManagerFactoryBuilder.class)
+			.run((context) -> {
+				LocalContainerEntityManagerFactoryBean factoryBean = context
+					.getBean(LocalContainerEntityManagerFactoryBean.class);
+				Map<String, Object> map = factoryBean.getJpaPropertyMap();
+				assertThat(map).containsEntry("configured", "manually").containsEntry("a", "b");
 			});
 	}
 
@@ -376,6 +389,17 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 		static class ManualOpenEntityManagerInViewInterceptor extends OpenEntityManagerInViewInterceptor {
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfigurationWithEntityManagerFactoryBuilder extends TestConfiguration {
+
+		@Bean
+		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(EntityManagerFactoryBuilder builder,
+				DataSource dataSource) {
+			return builder.dataSource(dataSource).properties(Map.of("configured", "manually")).build();
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.context.annotation.Configurations;
@@ -36,32 +37,43 @@ import org.springframework.util.ClassUtils;
  */
 public class AutoConfigurations extends Configurations implements Ordered {
 
-	private static final AutoConfigurationSorter SORTER = new AutoConfigurationSorter(new SimpleMetadataReaderFactory(),
-			null);
+	private static final SimpleMetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 
-	private static final Ordered ORDER = new AutoConfigurationImportSelector();
+	private static final int ORDER = AutoConfigurationImportSelector.ORDER;
+
+	static final AutoConfigurationReplacements replacements = AutoConfigurationReplacements
+		.load(AutoConfiguration.class, null);
+
+	private final UnaryOperator<String> replacementMapper;
 
 	protected AutoConfigurations(Collection<Class<?>> classes) {
-		super(classes);
+		this(replacements::replace, classes);
 	}
 
-	@Override
-	protected Collection<Class<?>> sort(Collection<Class<?>> classes) {
-		List<String> names = classes.stream().map(Class::getName).toList();
-		List<String> sorted = SORTER.getInPriorityOrder(names);
-		return sorted.stream()
-			.map((className) -> ClassUtils.resolveClassName(className, null))
-			.collect(Collectors.toCollection(ArrayList::new));
+	AutoConfigurations(UnaryOperator<String> replacementMapper, Collection<Class<?>> classes) {
+		super(sorter(replacementMapper), classes);
+		this.replacementMapper = replacementMapper;
+	}
+
+	private static UnaryOperator<Collection<Class<?>>> sorter(UnaryOperator<String> replacementMapper) {
+		AutoConfigurationSorter sorter = new AutoConfigurationSorter(metadataReaderFactory, null, replacementMapper);
+		return (classes) -> {
+			List<String> names = classes.stream().map(Class::getName).map(replacementMapper::apply).toList();
+			List<String> sorted = sorter.getInPriorityOrder(names);
+			return sorted.stream()
+				.map((className) -> ClassUtils.resolveClassName(className, null))
+				.collect(Collectors.toCollection(ArrayList::new));
+		};
 	}
 
 	@Override
 	public int getOrder() {
-		return ORDER.getOrder();
+		return ORDER;
 	}
 
 	@Override
 	protected AutoConfigurations merge(Set<Class<?>> mergedClasses) {
-		return new AutoConfigurations(mergedClasses);
+		return new AutoConfigurations(this.replacementMapper, mergedClasses);
 	}
 
 	public static AutoConfigurations of(Class<?>... classes) {

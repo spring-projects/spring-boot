@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
@@ -101,6 +102,8 @@ public class BatchAutoConfiguration {
 
 		private final PlatformTransactionManager transactionManager;
 
+		private final TaskExecutor taskExector;
+
 		private final BatchProperties properties;
 
 		private final List<BatchConversionServiceCustomizer> batchConversionServiceCustomizers;
@@ -110,11 +113,12 @@ public class BatchAutoConfiguration {
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager,
 				@BatchTransactionManager ObjectProvider<PlatformTransactionManager> batchTransactionManager,
-				BatchProperties properties,
+				@BatchTaskExecutor ObjectProvider<TaskExecutor> batchTaskExecutor, BatchProperties properties,
 				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers,
 				ObjectProvider<ExecutionContextSerializer> executionContextSerializer) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = batchTransactionManager.getIfAvailable(() -> transactionManager);
+			this.taskExector = batchTaskExecutor.getIfAvailable();
 			this.properties = properties;
 			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 			this.executionContextSerializer = executionContextSerializer.getIfAvailable();
@@ -157,6 +161,11 @@ public class BatchAutoConfiguration {
 					: super.getExecutionContextSerializer();
 		}
 
+		@Override
+		protected TaskExecutor getTaskExecutor() {
+			return (this.taskExector != null) ? this.taskExector : super.getTaskExecutor();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -164,7 +173,7 @@ public class BatchAutoConfiguration {
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(BatchDataSourceScriptDatabaseInitializer.class)
+		@ConditionalOnMissingBean
 		BatchDataSourceScriptDatabaseInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, BatchProperties properties) {
 			return new BatchDataSourceScriptDatabaseInitializer(batchDataSource.getIfAvailable(() -> dataSource),

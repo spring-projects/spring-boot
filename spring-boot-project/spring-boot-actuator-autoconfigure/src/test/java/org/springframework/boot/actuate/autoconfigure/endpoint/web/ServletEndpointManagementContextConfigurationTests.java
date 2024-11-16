@@ -21,6 +21,8 @@ import java.util.Collections;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.Access;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
@@ -92,6 +94,11 @@ class ServletEndpointManagementContextConfigurationTests {
 		@Bean
 		JerseyApplicationPath jerseyApplicationPath() {
 			return () -> "/jersey";
+		}
+
+		@Bean
+		EndpointAccessResolver endpointAccessResolver() {
+			return (endpointId, defaultAccess) -> Access.UNRESTRICTED;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.jackson;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -71,6 +72,24 @@ public abstract class JsonObjectDeserializer<T> extends com.fasterxml.jackson.da
 	 */
 	protected abstract T deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
 			JsonNode tree) throws IOException;
+
+	/**
+	 * Helper method to extract a value from the given {@code jsonNode} or return
+	 * {@code null} when the node itself is {@code null}.
+	 * @param jsonNode the source node (may be {@code null})
+	 * @param type the data type. May be {@link String}, {@link Boolean}, {@link Long},
+	 * {@link Integer}, {@link Short}, {@link Double}, {@link Float}, {@link BigDecimal}
+	 * or {@link BigInteger}.
+	 * @param <D> the data type requested
+	 * @param <R> the result type
+	 * @param mapper a mapper to convert the value when it is not {@code null}
+	 * @return the node value or {@code null}
+	 * @since 3.4.0
+	 */
+	protected final <D, R> R nullSafeValue(JsonNode jsonNode, Class<D> type, Function<D, R> mapper) {
+		D value = nullSafeValue(jsonNode, type);
+		return (value != null) ? mapper.apply(value) : null;
+	}
 
 	/**
 	 * Helper method to extract a value from the given {@code jsonNode} or return

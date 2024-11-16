@@ -14,18 +14,22 @@ NOTE: Low cardinality tags will be added to metrics and traces, while high cardi
 Beans of type `ObservationPredicate`, `GlobalObservationConvention`, `ObservationFilter` and `ObservationHandler` will be automatically registered on the `ObservationRegistry`.
 You can additionally register any number of `ObservationRegistryCustomizer` beans to further configure the registry.
 
-Observability support relies on the https://github.com/micrometer-metrics/context-propagation[Context Propagation library] for forwarding the current observation across threads and reactive pipelines.
-By default, `ThreadLocal` values are not automatically reinstated in reactive operators.
-This behavior is controlled with the configprop:spring.reactor.context-propagation[] property, which can be set to `auto` to enable automatic propagation.
-
-For more details about observations please see the {url-micrometer-docs}/observation[Micrometer Observation documentation].
-
 TIP: Observability for JDBC can be configured using a separate project.
 The https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project] provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.
 Read more about it https://jdbc-observations.github.io/datasource-micrometer/docs/current/docs/html/[in the reference documentation].
 
 TIP: Observability for R2DBC is built into Spring Boot.
 To enable it, add the `io.r2dbc:r2dbc-proxy` dependency to your project.
+
+
+
+[[actuator.observability.context-propagation]]
+== Context Propagation
+Observability support relies on the https://github.com/micrometer-metrics/context-propagation[Context Propagation library] for forwarding the current observation across threads and reactive pipelines.
+By default, `ThreadLocal` values are not automatically reinstated in reactive operators.
+This behavior is controlled with the configprop:spring.reactor.context-propagation[] property, which can be set to `auto` to enable automatic propagation.
+
+For more details about observations please see the {url-micrometer-docs}/observation[Micrometer Observation documentation].
 
 
 

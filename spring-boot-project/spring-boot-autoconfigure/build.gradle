@@ -24,7 +24,9 @@ dependencies {
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.mockito:mockito-core")
 	dockerTestImplementation("org.springframework:spring-test")
@@ -59,6 +61,7 @@ dependencies {
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.r2dbc:r2dbc-pool")
+	optional("io.r2dbc:r2dbc-proxy")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
 	optional("io.undertow:undertow-servlet")
@@ -73,6 +76,7 @@ dependencies {
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
+	optional("org.apache.activemq:activemq-broker")
 	optional("org.apache.activemq:activemq-client")
 	optional("org.apache.activemq:artemis-jakarta-client") {
 		exclude group: "commons-logging", module: "commons-logging"

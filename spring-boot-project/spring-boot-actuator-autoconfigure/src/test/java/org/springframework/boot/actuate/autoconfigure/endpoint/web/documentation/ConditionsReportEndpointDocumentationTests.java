@@ -31,11 +31,10 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing {@link ConditionsReportEndpoint}.
@@ -45,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void conditions() throws Exception {
+	void conditions() {
 		List<FieldDescriptor> positiveMatchFields = List.of(
 				fieldWithPath("").description("Classes and methods with conditions that were matched."),
 				fieldWithPath(".*.[].condition").description("Name of the condition."),
@@ -64,9 +63,8 @@ class ConditionsReportEndpointDocumentationTests extends MockMvcEndpointDocument
 					.optional());
 		FieldDescriptor unconditionalClassesField = fieldWithPath("contexts.*.unconditionalClasses")
 			.description("Names of unconditional auto-configuration classes if any.");
-		this.mockMvc.perform(get("/actuator/conditions"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("conditions",
+		assertThat(this.mvc.get().uri("/actuator/conditions")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("conditions",
 					preprocessResponse(limit("contexts", getApplicationContext().getId(), "positiveMatches"),
 							limit("contexts", getApplicationContext().getId(), "negativeMatches")),
 					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id."))

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousCloseException;
@@ -71,6 +72,16 @@ public class NamedPipeSocket extends Socket {
 				awaiter.accept(path);
 			}
 		}
+	}
+
+	@Override
+	public void connect(SocketAddress endpoint) throws IOException {
+		// No-op
+	}
+
+	@Override
+	public void connect(SocketAddress endpoint, int timeout) throws IOException {
+		// No-op
 	}
 
 	@Override
@@ -128,8 +139,8 @@ public class NamedPipeSocket extends Socket {
 					}
 					handler.failed(exc, attachment);
 				}
-			});
 
+			});
 		}
 
 		@Override

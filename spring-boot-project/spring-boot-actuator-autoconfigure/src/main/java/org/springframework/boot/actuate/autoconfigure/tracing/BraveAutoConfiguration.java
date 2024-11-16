@@ -155,7 +155,8 @@ public class BraveAutoConfiguration {
 	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
 		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext),
-				new BraveBaggageManager(this.tracingProperties.getBaggage().getTagFields()));
+				new BraveBaggageManager(this.tracingProperties.getBaggage().getTagFields(),
+						this.tracingProperties.getBaggage().getRemoteFields()));
 	}
 
 	@Bean

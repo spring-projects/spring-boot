@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ResolvedDockerHost}.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class ResolvedDockerHostTests {
 
@@ -65,11 +66,31 @@ class ResolvedDockerHostTests {
 	}
 
 	@Test
+	@EnabledOnOs(OS.WINDOWS)
+	void resolveWhenUsingDefaultContextReturnsWindowsDefault() {
+		this.environment.put("DOCKER_CONTEXT", "default");
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get, null);
+		assertThat(dockerHost.getAddress()).isEqualTo("//./pipe/docker_engine");
+		assertThat(dockerHost.isSecure()).isFalse();
+		assertThat(dockerHost.getCertificatePath()).isNull();
+	}
+
+	@Test
 	@DisabledOnOs(OS.WINDOWS)
 	void resolveWhenDockerHostAddressIsNullReturnsLinuxDefault() throws Exception {
 		this.environment.put("DOCKER_CONFIG", pathToResource("with-default-context/config.json"));
 		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get,
 				DockerHostConfiguration.forAddress(null));
+		assertThat(dockerHost.getAddress()).isEqualTo("/var/run/docker.sock");
+		assertThat(dockerHost.isSecure()).isFalse();
+		assertThat(dockerHost.getCertificatePath()).isNull();
+	}
+
+	@Test
+	@DisabledOnOs(OS.WINDOWS)
+	void resolveWhenUsingDefaultContextReturnsLinuxDefault() {
+		this.environment.put("DOCKER_CONTEXT", "default");
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(this.environment::get, null);
 		assertThat(dockerHost.getAddress()).isEqualTo("/var/run/docker.sock");
 		assertThat(dockerHost.isSecure()).isFalse();
 		assertThat(dockerHost.getCertificatePath()).isNull();

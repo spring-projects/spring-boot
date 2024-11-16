@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.pulsar.config.PulsarAnnotationSupportBeanNames;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 import org.springframework.pulsar.core.SchemaResolver;
 import org.springframework.pulsar.core.TopicResolver;
 import org.springframework.pulsar.reactive.config.DefaultReactivePulsarListenerContainerFactory;
@@ -48,6 +49,7 @@ import org.springframework.pulsar.reactive.config.annotation.EnableReactivePulsa
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarConsumerFactory;
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarReaderFactory;
 import org.springframework.pulsar.reactive.core.DefaultReactivePulsarSenderFactory;
+import org.springframework.pulsar.reactive.core.DefaultReactivePulsarSenderFactory.Builder;
 import org.springframework.pulsar.reactive.core.ReactiveMessageConsumerBuilderCustomizer;
 import org.springframework.pulsar.reactive.core.ReactiveMessageReaderBuilderCustomizer;
 import org.springframework.pulsar.reactive.core.ReactiveMessageSenderBuilderCustomizer;
@@ -112,17 +114,19 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean(ReactivePulsarSenderFactory.class)
 	DefaultReactivePulsarSenderFactory<?> reactivePulsarSenderFactory(ReactivePulsarClient reactivePulsarClient,
 			ObjectProvider<ReactiveMessageSenderCache> reactiveMessageSenderCache, TopicResolver topicResolver,
-			ObjectProvider<ReactiveMessageSenderBuilderCustomizer<?>> customizersProvider) {
+			ObjectProvider<ReactiveMessageSenderBuilderCustomizer<?>> customizersProvider,
+			ObjectProvider<PulsarTopicBuilder> topicBuilderProvider) {
 		List<ReactiveMessageSenderBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(this.propertiesMapper::customizeMessageSenderBuilder);
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		List<ReactiveMessageSenderBuilderCustomizer<Object>> lambdaSafeCustomizers = List
 			.of((builder) -> applyMessageSenderBuilderCustomizers(customizers, builder));
-		return DefaultReactivePulsarSenderFactory.builderFor(reactivePulsarClient)
+		Builder<Object> senderFactoryBuilder = DefaultReactivePulsarSenderFactory.builderFor(reactivePulsarClient)
 			.withDefaultConfigCustomizers(lambdaSafeCustomizers)
 			.withMessageSenderCache(reactiveMessageSenderCache.getIfAvailable())
-			.withTopicResolver(topicResolver)
-			.build();
+			.withTopicResolver(topicResolver);
+		topicBuilderProvider.ifAvailable(senderFactoryBuilder::withTopicBuilder);
+		return senderFactoryBuilder.build();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -136,13 +140,17 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean(ReactivePulsarConsumerFactory.class)
 	DefaultReactivePulsarConsumerFactory<?> reactivePulsarConsumerFactory(
 			ReactivePulsarClient pulsarReactivePulsarClient,
-			ObjectProvider<ReactiveMessageConsumerBuilderCustomizer<?>> customizersProvider) {
+			ObjectProvider<ReactiveMessageConsumerBuilderCustomizer<?>> customizersProvider,
+			ObjectProvider<PulsarTopicBuilder> topicBuilderProvider) {
 		List<ReactiveMessageConsumerBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(this.propertiesMapper::customizeMessageConsumerBuilder);
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		List<ReactiveMessageConsumerBuilderCustomizer<Object>> lambdaSafeCustomizers = List
 			.of((builder) -> applyMessageConsumerBuilderCustomizers(customizers, builder));
-		return new DefaultReactivePulsarConsumerFactory<>(pulsarReactivePulsarClient, lambdaSafeCustomizers);
+		DefaultReactivePulsarConsumerFactory<?> consumerFactory = new DefaultReactivePulsarConsumerFactory<>(
+				pulsarReactivePulsarClient, lambdaSafeCustomizers);
+		topicBuilderProvider.ifAvailable(consumerFactory::setTopicBuilder);
+		return consumerFactory;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -156,24 +164,31 @@ public class PulsarReactiveAutoConfiguration {
 	@ConditionalOnMissingBean(name = "reactivePulsarListenerContainerFactory")
 	DefaultReactivePulsarListenerContainerFactory<?> reactivePulsarListenerContainerFactory(
 			ReactivePulsarConsumerFactory<Object> reactivePulsarConsumerFactory, SchemaResolver schemaResolver,
-			TopicResolver topicResolver) {
+			TopicResolver topicResolver, PulsarContainerFactoryCustomizers containerFactoryCustomizers) {
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		containerProperties.setSchemaResolver(schemaResolver);
 		containerProperties.setTopicResolver(topicResolver);
 		this.propertiesMapper.customizeContainerProperties(containerProperties);
-		return new DefaultReactivePulsarListenerContainerFactory<>(reactivePulsarConsumerFactory, containerProperties);
+		DefaultReactivePulsarListenerContainerFactory<?> containerFactory = new DefaultReactivePulsarListenerContainerFactory<>(
+				reactivePulsarConsumerFactory, containerProperties);
+		containerFactoryCustomizers.customize(containerFactory);
+		return containerFactory;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ReactivePulsarReaderFactory.class)
 	DefaultReactivePulsarReaderFactory<?> reactivePulsarReaderFactory(ReactivePulsarClient reactivePulsarClient,
-			ObjectProvider<ReactiveMessageReaderBuilderCustomizer<?>> customizersProvider) {
+			ObjectProvider<ReactiveMessageReaderBuilderCustomizer<?>> customizersProvider,
+			ObjectProvider<PulsarTopicBuilder> topicBuilderProvider) {
 		List<ReactiveMessageReaderBuilderCustomizer<?>> customizers = new ArrayList<>();
 		customizers.add(this.propertiesMapper::customizeMessageReaderBuilder);
 		customizers.addAll(customizersProvider.orderedStream().toList());
 		List<ReactiveMessageReaderBuilderCustomizer<Object>> lambdaSafeCustomizers = List
 			.of((builder) -> applyMessageReaderBuilderCustomizers(customizers, builder));
-		return new DefaultReactivePulsarReaderFactory<>(reactivePulsarClient, lambdaSafeCustomizers);
+		DefaultReactivePulsarReaderFactory<?> readerFactory = new DefaultReactivePulsarReaderFactory<>(
+				reactivePulsarClient, lambdaSafeCustomizers);
+		topicBuilderProvider.ifAvailable(readerFactory::setTopicBuilder);
+		return readerFactory;
 	}
 
 	@SuppressWarnings("unchecked")

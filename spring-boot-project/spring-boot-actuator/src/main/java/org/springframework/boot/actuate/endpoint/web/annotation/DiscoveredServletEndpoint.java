@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.web.annotation;
 import java.util.Collections;
 import java.util.function.Supplier;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredEndpoint;
@@ -40,8 +41,8 @@ class DiscoveredServletEndpoint extends AbstractDiscoveredEndpoint<Operation> im
 	private final EndpointServlet endpointServlet;
 
 	DiscoveredServletEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id, String rootPath,
-			boolean enabledByDefault) {
-		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
+			Access defaultAccess) {
+		super(discoverer, endpointBean, id, defaultAccess, Collections.emptyList());
 		String beanType = endpointBean.getClass().getName();
 		Assert.state(endpointBean instanceof Supplier,
 				() -> "ServletEndpoint bean " + beanType + " must be a supplier");

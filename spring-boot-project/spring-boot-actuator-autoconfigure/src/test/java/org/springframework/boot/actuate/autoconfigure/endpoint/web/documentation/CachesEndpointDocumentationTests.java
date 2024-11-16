@@ -30,17 +30,16 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.request.ParameterDescriptor;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link CachesEndpoint}
@@ -59,10 +58,9 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.optional());
 
 	@Test
-	void allCaches() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("caches/all",
+	void allCaches() {
+		assertThat(this.mvc.get().uri("/actuator/caches")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("caches/all",
 					responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
 							fieldWithPath("cacheManagers.*.caches")
 								.description("Caches in the application context keyed by name."))
@@ -71,25 +69,23 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	}
 
 	@Test
-	void namedCache() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches/cities"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("caches/named", queryParameters(queryParameters),
+	void namedCache() {
+		assertThat(this.mvc.get().uri("/actuator/caches/cities")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("caches/named", queryParameters(queryParameters),
 					responseFields(levelFields)));
 	}
 
 	@Test
-	void evictAllCaches() throws Exception {
-		this.mockMvc.perform(delete("/actuator/caches"))
-			.andExpect(status().isNoContent())
-			.andDo(MockMvcRestDocumentation.document("caches/evict-all"));
+	void evictAllCaches() {
+		assertThat(this.mvc.delete().uri("/actuator/caches")).hasStatus(HttpStatus.NO_CONTENT)
+			.apply(MockMvcRestDocumentation.document("caches/evict-all"));
 	}
 
 	@Test
-	void evictNamedCache() throws Exception {
-		this.mockMvc.perform(delete("/actuator/caches/countries?cacheManager=anotherCacheManager"))
-			.andExpect(status().isNoContent())
-			.andDo(MockMvcRestDocumentation.document("caches/evict-named", queryParameters(queryParameters)));
+	void evictNamedCache() {
+		assertThat(this.mvc.delete().uri("/actuator/caches/countries?cacheManager=anotherCacheManager"))
+			.hasStatus(HttpStatus.NO_CONTENT)
+			.apply(MockMvcRestDocumentation.document("caches/evict-named", queryParameters(queryParameters)));
 	}
 
 	@Configuration(proxyBeanMethods = false)

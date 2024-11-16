@@ -201,9 +201,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 				// Need a compound key
 				flatten(properties, (Map<String, Object>) value, name);
 			}
-			else if (value instanceof Collection) {
+			else if (value instanceof Collection<?> collection) {
 				// Need a compound key
-				Collection<Object> collection = (Collection<Object>) value;
 				properties.put(name, StringUtils.collectionToCommaDelimitedString(collection));
 				int count = 0;
 				for (Object item : collection) {
@@ -214,10 +213,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPost
 			else if (value instanceof String) {
 				properties.put(name, value);
 			}
-			else if (value instanceof Number) {
-				properties.put(name, value.toString());
-			}
-			else if (value instanceof Boolean) {
+			else if (value instanceof Number || value instanceof Boolean) {
 				properties.put(name, value.toString());
 			}
 			else {

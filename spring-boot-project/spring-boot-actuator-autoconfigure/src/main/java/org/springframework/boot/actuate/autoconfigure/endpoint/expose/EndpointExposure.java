@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,10 @@ public enum EndpointExposure {
 	/**
 	 * Exposed on Cloud Foundry over `/cloudfoundryapplication`.
 	 * @since 2.6.4
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of using
+	 * {@link EndpointExposure#WEB}
 	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
 	CLOUD_FOUNDRY("*");
 
 	private final String[] defaultIncludes;

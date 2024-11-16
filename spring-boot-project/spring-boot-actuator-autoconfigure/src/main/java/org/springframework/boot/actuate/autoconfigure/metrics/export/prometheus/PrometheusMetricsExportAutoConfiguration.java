@@ -75,7 +75,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnAvailableEndpoint(endpoint = PrometheusScrapeEndpoint.class)
+	@ConditionalOnAvailableEndpoint(PrometheusScrapeEndpoint.class)
 	static class PrometheusScrapeEndpointConfiguration {
 
 		@SuppressWarnings("removal")

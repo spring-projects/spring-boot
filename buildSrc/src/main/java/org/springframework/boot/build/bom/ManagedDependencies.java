@@ -99,7 +99,7 @@ class ManagedDependencies {
 
 	static String asId(String groupId, String artifactId, String version, String classifier) {
 		String id = groupId + ":" + artifactId + ":" + version;
-		if (classifier != null && classifier.length() > 0) {
+		if (classifier != null && !classifier.isEmpty()) {
 			id = id + ":" + classifier;
 		}
 		return id;

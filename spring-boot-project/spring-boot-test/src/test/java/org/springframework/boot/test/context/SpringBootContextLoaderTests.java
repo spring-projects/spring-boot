@@ -160,11 +160,11 @@ class SpringBootContextLoaderTests {
 			.stream()
 			.map(PropertySource::getName)
 			.collect(Collectors.toCollection(ArrayList::new));
-		String last = names.remove(names.size() - 1);
+		String configResource = names.remove(names.size() - 2);
 		assertThat(names).containsExactly("configurationProperties", "Inlined Test Properties", "commandLineArgs",
 				"servletConfigInitParams", "servletContextInitParams", "systemProperties", "systemEnvironment",
-				"random");
-		assertThat(last).startsWith("Config resource");
+				"random", "applicationInfo");
+		assertThat(configResource).startsWith("Config resource");
 	}
 
 	@Test

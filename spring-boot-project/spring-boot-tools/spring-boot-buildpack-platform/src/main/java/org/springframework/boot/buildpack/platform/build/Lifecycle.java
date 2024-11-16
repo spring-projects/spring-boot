@@ -29,6 +29,7 @@ import com.sun.jna.Platform;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.LogUpdateEvent;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
+import org.springframework.boot.buildpack.platform.docker.type.ApiVersion;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
@@ -161,43 +162,104 @@ class Lifecycle implements Closeable {
 		if (this.request.isCleanCache()) {
 			deleteCache(this.buildCache);
 		}
-		run(createPhase());
+		if (this.request.isTrustBuilder()) {
+			run(createPhase());
+		}
+		else {
+			run(analyzePhase());
+			run(detectPhase());
+			if (!this.request.isCleanCache()) {
+				run(restorePhase());
+			}
+			else {
+				this.log.skippingPhase("restorer", "because 'cleanCache' is enabled");
+			}
+			run(buildPhase());
+			run(exportPhase());
+		}
 		this.log.executedLifecycle(this.request);
 	}
 
 	private Phase createPhase() {
 		Phase phase = new Phase("creator", isVerboseLogging());
-		phase.withDaemonAccess();
+		phase.withApp(this.applicationDirectory,
+				Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
+		phase.withPlatform(Directory.PLATFORM);
+		phase.withRunImage(this.request.getRunImage());
+		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
+		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		phase.withLaunchCache(Directory.LAUNCH_CACHE,
+				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
 		configureDaemonAccess(phase);
-		phase.withLogLevelArg();
-		phase.withArgs("-app", this.applicationDirectory);
-		phase.withArgs("-platform", Directory.PLATFORM);
-		phase.withArgs("-run-image", this.request.getRunImage());
-		phase.withArgs("-layers", Directory.LAYERS);
-		phase.withArgs("-cache-dir", Directory.CACHE);
-		phase.withArgs("-launch-cache", Directory.LAUNCH_CACHE);
-		phase.withArgs("-daemon");
 		if (this.request.isCleanCache()) {
-			phase.withArgs("-skip-restore");
+			phase.withSkipRestore();
 		}
 		if (requiresProcessTypeDefault()) {
-			phase.withArgs("-process-type=web");
+			phase.withProcessType("web");
 		}
-		phase.withArgs(this.request.getName());
-		phase.withBinding(Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
-		phase.withBinding(Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
-		phase.withBinding(Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
-		phase.withBinding(Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
-		if (this.request.getBindings() != null) {
-			this.request.getBindings().forEach(phase::withBinding);
+		phase.withImageName(this.request.getName());
+		configureOptions(phase);
+		configureCreatedDate(phase);
+		return phase;
+
+	}
+
+	private Phase analyzePhase() {
+		Phase phase = new Phase("analyzer", isVerboseLogging());
+		configureDaemonAccess(phase);
+		phase.withLaunchCache(Directory.LAUNCH_CACHE,
+				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
+		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
+		phase.withRunImage(this.request.getRunImage());
+		phase.withImageName(this.request.getName());
+		configureOptions(phase);
+		return phase;
+	}
+
+	private Phase detectPhase() {
+		Phase phase = new Phase("detector", isVerboseLogging());
+		phase.withApp(this.applicationDirectory,
+				Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
+		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
+		phase.withPlatform(Directory.PLATFORM);
+		configureOptions(phase);
+		return phase;
+	}
+
+	private Phase restorePhase() {
+		Phase phase = new Phase("restorer", isVerboseLogging());
+		configureDaemonAccess(phase);
+		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
+		configureOptions(phase);
+		return phase;
+	}
+
+	private Phase buildPhase() {
+		Phase phase = new Phase("builder", isVerboseLogging());
+		phase.withApp(this.applicationDirectory,
+				Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
+		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
+		phase.withPlatform(Directory.PLATFORM);
+		configureOptions(phase);
+		return phase;
+	}
+
+	private Phase exportPhase() {
+		Phase phase = new Phase("exporter", isVerboseLogging());
+		configureDaemonAccess(phase);
+		phase.withApp(this.applicationDirectory,
+				Binding.from(getCacheBindingSource(this.application), this.applicationDirectory));
+		phase.withBuildCache(Directory.CACHE, Binding.from(getCacheBindingSource(this.buildCache), Directory.CACHE));
+		phase.withLaunchCache(Directory.LAUNCH_CACHE,
+				Binding.from(getCacheBindingSource(this.launchCache), Directory.LAUNCH_CACHE));
+		phase.withLayers(Directory.LAYERS, Binding.from(getCacheBindingSource(this.layers), Directory.LAYERS));
+		if (requiresProcessTypeDefault()) {
+			phase.withProcessType("web");
 		}
-		phase.withEnv(PLATFORM_API_VERSION_KEY, this.platformVersion.toString());
-		if (this.request.getNetwork() != null) {
-			phase.withNetworkMode(this.request.getNetwork());
-		}
-		if (this.request.getCreatedDate() != null) {
-			phase.withEnv(SOURCE_DATE_EPOCH_KEY, Long.toString(this.request.getCreatedDate().getEpochSecond()));
-		}
+		phase.withImageName(this.request.getName());
+		configureOptions(phase);
+		configureCreatedDate(phase);
 		return phase;
 	}
 
@@ -238,6 +300,7 @@ class Lifecycle implements Closeable {
 	}
 
 	private void configureDaemonAccess(Phase phase) {
+		phase.withDaemonAccess();
 		if (this.dockerHost != null) {
 			if (this.dockerHost.isRemote()) {
 				phase.withEnv("DOCKER_HOST", this.dockerHost.getAddress());
@@ -258,6 +321,22 @@ class Lifecycle implements Closeable {
 		}
 	}
 
+	private void configureCreatedDate(Phase phase) {
+		if (this.request.getCreatedDate() != null) {
+			phase.withEnv(SOURCE_DATE_EPOCH_KEY, Long.toString(this.request.getCreatedDate().getEpochSecond()));
+		}
+	}
+
+	private void configureOptions(Phase phase) {
+		if (this.request.getBindings() != null) {
+			this.request.getBindings().forEach(phase::withBinding);
+		}
+		if (this.request.getNetwork() != null) {
+			phase.withNetworkMode(this.request.getNetwork());
+		}
+		phase.withEnv(PLATFORM_API_VERSION_KEY, this.platformVersion.toString());
+	}
+
 	private boolean isVerboseLogging() {
 		return this.request.isVerboseLogging() && this.lifecycleVersion.isEqualOrGreaterThan(LOGGING_MINIMUM_VERSION);
 	}
@@ -269,7 +348,7 @@ class Lifecycle implements Closeable {
 	private void run(Phase phase) throws IOException {
 		Consumer<LogUpdateEvent> logConsumer = this.log.runningPhase(this.request, phase.getName());
 		ContainerConfig containerConfig = ContainerConfig.of(this.builder.getName(), phase::apply);
-		ContainerReference reference = createContainer(containerConfig);
+		ContainerReference reference = createContainer(containerConfig, phase.requiresApp());
 		try {
 			this.docker.container().start(reference);
 			this.docker.container().logs(reference, logConsumer::accept);
@@ -283,9 +362,9 @@ class Lifecycle implements Closeable {
 		}
 	}
 
-	private ContainerReference createContainer(ContainerConfig config) throws IOException {
-		if (this.applicationVolumePopulated) {
-			return this.docker.container().create(config);
+	private ContainerReference createContainer(ContainerConfig config, boolean requiresAppUpload) throws IOException {
+		if (!requiresAppUpload || this.applicationVolumePopulated) {
+			return this.docker.container().create(config, this.request.getImagePlatform());
 		}
 		try {
 			if (this.application.getBind() != null) {
@@ -293,7 +372,8 @@ class Lifecycle implements Closeable {
 			}
 			TarArchive applicationContent = this.request.getApplicationContent(this.builder.getBuildOwner());
 			return this.docker.container()
-				.create(config, ContainerContent.of(applicationContent, this.applicationDirectory));
+				.create(config, this.request.getImagePlatform(),
+						ContainerContent.of(applicationContent, this.applicationDirectory));
 		}
 		finally {
 			this.applicationVolumePopulated = true;
@@ -339,8 +419,7 @@ class Lifecycle implements Closeable {
 		 * <p>
 		 * Maps to the {@code <layers...>} concept in the
 		 * <a href="https://github.com/buildpacks/spec/blob/master/buildpack.md">buildpack
-		 * specification</a> and the {@code -layers} argument from the reference lifecycle
-		 * implementation.
+		 * specification</a> and the {@code -layers} argument to lifecycle phases.
 		 */
 		static final String LAYERS = "/layers";
 
@@ -367,8 +446,7 @@ class Lifecycle implements Closeable {
 		 * <p>
 		 * Maps to the {@code <platform>/env} and {@code <platform>/#} concepts in the
 		 * <a href="https://github.com/buildpacks/spec/blob/master/buildpack.md">buildpack
-		 * specification</a> and the {@code -platform} argument from the reference
-		 * lifecycle implementation.
+		 * specification</a> and the {@code -platform} argument to lifecycle phases.
 		 */
 		static final String PLATFORM = "/platform";
 
@@ -377,8 +455,7 @@ class Lifecycle implements Closeable {
 		 * image {@link BuildRequest#getName() name} being built, and is persistent across
 		 * invocations even if the application content has changed.
 		 * <p>
-		 * Maps to the {@code -path} argument from the reference lifecycle implementation
-		 * cache and restore phases
+		 * Maps to the {@code -path} argument to lifecycle phases.
 		 */
 		static final String CACHE = "/cache";
 
@@ -387,8 +464,7 @@ class Lifecycle implements Closeable {
 		 * based on the image {@link BuildRequest#getName() name} being built, and is
 		 * persistent across invocations even if the application content has changed.
 		 * <p>
-		 * Maps to the {@code -launch-cache} argument from the reference lifecycle
-		 * implementation export phase
+		 * Maps to the {@code -launch-cache} argument to lifecycle phases.
 		 */
 		static final String LAUNCH_CACHE = "/launch-cache";
 

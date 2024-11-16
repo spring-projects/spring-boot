@@ -35,15 +35,18 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortT
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -117,6 +120,38 @@ public final class EndpointRequest {
 	}
 
 	/**
+	 * Returns a matcher that includes additional paths under a {@link WebServerNamespace}
+	 * for the specified {@link Endpoint actuator endpoints}. For example:
+	 * <pre class="code">
+	 * EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, "health")
+	 * </pre>
+	 * @param webServerNamespace the web server namespace
+	 * @param endpoints the endpoints to include
+	 * @return the configured {@link RequestMatcher}
+	 * @since 3.4.0
+	 */
+	public static AdditionalPathsEndpointRequestMatcher toAdditionalPaths(WebServerNamespace webServerNamespace,
+			Class<?>... endpoints) {
+		return new AdditionalPathsEndpointRequestMatcher(webServerNamespace, endpoints);
+	}
+
+	/**
+	 * Returns a matcher that includes additional paths under a {@link WebServerNamespace}
+	 * for the specified {@link Endpoint actuator endpoints}. For example:
+	 * <pre class="code">
+	 * EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, HealthEndpoint.class)
+	 * </pre>
+	 * @param webServerNamespace the web server namespace
+	 * @param endpoints the endpoints to include
+	 * @return the configured {@link RequestMatcher}
+	 * @since 3.4.0
+	 */
+	public static AdditionalPathsEndpointRequestMatcher toAdditionalPaths(WebServerNamespace webServerNamespace,
+			String... endpoints) {
+		return new AdditionalPathsEndpointRequestMatcher(webServerNamespace, endpoints);
+	}
+
+	/**
 	 * Base class for supported request matchers.
 	 */
 	private abstract static class AbstractRequestMatcher
@@ -124,7 +159,7 @@ public final class EndpointRequest {
 
 		private volatile RequestMatcher delegate;
 
-		private ManagementPortType managementPortType;
+		private volatile ManagementPortType managementPortType;
 
 		AbstractRequestMatcher() {
 			super(WebApplicationContext.class);
@@ -132,11 +167,25 @@ public final class EndpointRequest {
 
 		@Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
-			if (this.managementPortType == null) {
-				this.managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+			ManagementPortType managementPortType = this.managementPortType;
+			if (managementPortType == null) {
+				managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+				this.managementPortType = managementPortType;
 			}
-			return this.managementPortType == ManagementPortType.DIFFERENT
-					&& !WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
+			return ignoreApplicationContext(applicationContext, managementPortType);
+		}
+
+		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext,
+				ManagementPortType managementPortType) {
+			return managementPortType == ManagementPortType.DIFFERENT
+					&& !hasWebServerNamespace(applicationContext, WebServerNamespace.MANAGEMENT);
+		}
+
+		protected final boolean hasWebServerNamespace(ApplicationContext applicationContext,
+				WebServerNamespace webServerNamespace) {
+			return WebServerApplicationContext.hasServerNamespace(applicationContext, webServerNamespace.getValue())
+					|| (webServerNamespace.equals(WebServerNamespace.SERVER)
+							&& !(applicationContext instanceof WebServerApplicationContext));
 		}
 
 		@Override
@@ -161,6 +210,13 @@ public final class EndpointRequest {
 		protected abstract RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory);
 
+		protected final List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
+				RequestMatcherProvider matcherProvider, Set<String> paths) {
+			return paths.stream()
+				.map((path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
+				.collect(Collectors.toCollection(ArrayList::new));
+		}
+
 		protected List<RequestMatcher> getLinksMatchers(RequestMatcherFactory requestMatcherFactory,
 				RequestMatcherProvider matcherProvider, String basePath) {
 			List<RequestMatcher> linksMatchers = new ArrayList<>();
@@ -176,6 +232,32 @@ public final class EndpointRequest {
 			catch (NoSuchBeanDefinitionException ex) {
 				return AntPathRequestMatcher::new;
 			}
+		}
+
+		protected final String toString(List<Object> endpoints, String emptyValue) {
+			return (!endpoints.isEmpty()) ? endpoints.stream()
+				.map(this::getEndpointId)
+				.map(Object::toString)
+				.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
+		}
+
+		protected final EndpointId getEndpointId(Object source) {
+			if (source instanceof EndpointId endpointId) {
+				return endpointId;
+			}
+			if (source instanceof String string) {
+				return EndpointId.of(string);
+			}
+			if (source instanceof Class<?> sourceClass) {
+				return getEndpointId(sourceClass);
+			}
+			throw new IllegalStateException("Unsupported source " + source);
+		}
+
+		private EndpointId getEndpointId(Class<?> source) {
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source).get(Endpoint.class);
+			Assert.state(annotation.isPresent(), () -> "Class " + source + " is not annotated with @Endpoint");
+			return EndpointId.of(annotation.getString("id"));
 		}
 
 	}
@@ -228,63 +310,30 @@ public final class EndpointRequest {
 		@Override
 		protected RequestMatcher createDelegate(WebApplicationContext context,
 				RequestMatcherFactory requestMatcherFactory) {
-			PathMappedEndpoints pathMappedEndpoints = context.getBean(PathMappedEndpoints.class);
+			PathMappedEndpoints endpoints = context.getBean(PathMappedEndpoints.class);
 			RequestMatcherProvider matcherProvider = getRequestMatcherProvider(context);
 			Set<String> paths = new LinkedHashSet<>();
 			if (this.includes.isEmpty()) {
-				paths.addAll(pathMappedEndpoints.getAllPaths());
+				paths.addAll(endpoints.getAllPaths());
 			}
-			streamPaths(this.includes, pathMappedEndpoints).forEach(paths::add);
-			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
+			streamPaths(this.includes, endpoints).forEach(paths::add);
+			streamPaths(this.excludes, endpoints).forEach(paths::remove);
 			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths);
-			String basePath = pathMappedEndpoints.getBasePath();
+			String basePath = endpoints.getBasePath();
 			if (this.includeLinks && StringUtils.hasText(basePath)) {
 				delegateMatchers.addAll(getLinksMatchers(requestMatcherFactory, matcherProvider, basePath));
 			}
 			return new OrRequestMatcher(delegateMatchers);
 		}
 
-		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints pathMappedEndpoints) {
-			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
-		}
-
-		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
-				RequestMatcherProvider matcherProvider, Set<String> paths) {
-			return paths.stream()
-				.map((path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
-				.collect(Collectors.toCollection(ArrayList::new));
+		private Stream<String> streamPaths(List<Object> source, PathMappedEndpoints endpoints) {
+			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(endpoints::getPath);
 		}
 
 		@Override
 		public String toString() {
 			return String.format("EndpointRequestMatcher includes=%s, excludes=%s, includeLinks=%s",
 					toString(this.includes, "[*]"), toString(this.excludes, "[]"), this.includeLinks);
-		}
-
-		private String toString(List<Object> endpoints, String emptyValue) {
-			return (!endpoints.isEmpty()) ? endpoints.stream()
-				.map(this::getEndpointId)
-				.map(Object::toString)
-				.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
-		}
-
-		private EndpointId getEndpointId(Object source) {
-			if (source instanceof EndpointId endpointId) {
-				return endpointId;
-			}
-			if (source instanceof String string) {
-				return EndpointId.of(string);
-			}
-			if (source instanceof Class) {
-				return getEndpointId((Class<?>) source);
-			}
-			throw new IllegalStateException("Unsupported source " + source);
-		}
-
-		private EndpointId getEndpointId(Class<?> source) {
-			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source).get(Endpoint.class);
-			Assert.state(annotation.isPresent(), () -> "Class " + source + " is not annotated with @Endpoint");
-			return EndpointId.of(annotation.getString("id"));
 		}
 
 	}
@@ -304,6 +353,70 @@ public final class EndpointRequest {
 						getLinksMatchers(requestMatcherFactory, getRequestMatcherProvider(context), basePath));
 			}
 			return EMPTY_MATCHER;
+		}
+
+		@Override
+		public String toString() {
+			return String.format("LinksRequestMatcher");
+		}
+
+	}
+
+	/**
+	 * The request matcher used to match against additional paths for {@link Endpoint
+	 * actuator endpoints}.
+	 */
+	public static class AdditionalPathsEndpointRequestMatcher extends AbstractRequestMatcher {
+
+		private final WebServerNamespace webServerNamespace;
+
+		private final List<Object> endpoints;
+
+		AdditionalPathsEndpointRequestMatcher(WebServerNamespace webServerNamespace, String... endpoints) {
+			this(webServerNamespace, Arrays.asList((Object[]) endpoints));
+		}
+
+		AdditionalPathsEndpointRequestMatcher(WebServerNamespace webServerNamespace, Class<?>... endpoints) {
+			this(webServerNamespace, Arrays.asList((Object[]) endpoints));
+		}
+
+		private AdditionalPathsEndpointRequestMatcher(WebServerNamespace webServerNamespace, List<Object> endpoints) {
+			Assert.notNull(webServerNamespace, "'webServerNamespace' must not be null");
+			Assert.notNull(endpoints, "'endpoints' must not be null");
+			Assert.notEmpty(endpoints, "'endpoints' must not be empty");
+			this.webServerNamespace = webServerNamespace;
+			this.endpoints = endpoints;
+		}
+
+		@Override
+		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext,
+				ManagementPortType managementPortType) {
+			return !hasWebServerNamespace(applicationContext, this.webServerNamespace);
+		}
+
+		@Override
+		protected RequestMatcher createDelegate(WebApplicationContext context,
+				RequestMatcherFactory requestMatcherFactory) {
+			PathMappedEndpoints endpoints = context.getBean(PathMappedEndpoints.class);
+			RequestMatcherProvider matcherProvider = getRequestMatcherProvider(context);
+			Set<String> paths = this.endpoints.stream()
+				.filter(Objects::nonNull)
+				.map(this::getEndpointId)
+				.flatMap((endpointId) -> streamAdditionalPaths(endpoints, endpointId))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+			List<RequestMatcher> delegateMatchers = getDelegateMatchers(requestMatcherFactory, matcherProvider, paths);
+			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrRequestMatcher(delegateMatchers)
+					: EMPTY_MATCHER;
+		}
+
+		private Stream<String> streamAdditionalPaths(PathMappedEndpoints pathMappedEndpoints, EndpointId endpointId) {
+			return pathMappedEndpoints.getAdditionalPaths(this.webServerNamespace, endpointId).stream();
+		}
+
+		@Override
+		public String toString() {
+			return String.format("AdditionalPathsEndpointRequestMatcher endpoints=%s, webServerNamespace=%s",
+					toString(this.endpoints, ""), this.webServerNamespace);
 		}
 
 	}

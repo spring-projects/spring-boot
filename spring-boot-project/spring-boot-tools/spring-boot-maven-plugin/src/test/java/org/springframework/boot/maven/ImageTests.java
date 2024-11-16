@@ -32,6 +32,7 @@ import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Cache;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -69,15 +70,18 @@ class ImageTests {
 	void getBuildRequestWhenNoCustomizationsUsesDefaults() {
 		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName()).hasToString("docker.io/library/my-app:0.0.1-SNAPSHOT");
-		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-jammy-base");
+		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-jammy-java-tiny");
+		assertThat(request.isTrustBuilder()).isTrue();
 		assertThat(request.getRunImage()).isNull();
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
 		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
+		assertThat(request.isPublish()).isFalse();
 		assertThat(request.getBuildpacks()).isEmpty();
 		assertThat(request.getBindings()).isEmpty();
 		assertThat(request.getNetwork()).isNull();
+		assertThat(request.getImagePlatform()).isNull();
 	}
 
 	@Test
@@ -86,6 +90,26 @@ class ImageTests {
 		image.builder = "springboot/builder:2.2.x";
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getBuilder()).hasToString("docker.io/springboot/builder:2.2.x");
+		assertThat(request.isTrustBuilder()).isFalse();
+	}
+
+	@Test
+	void getBuildRequestWhenHasBuilderAndTrustBuilderUsesBuilderAndTrustBuilder() {
+		Image image = new Image();
+		image.builder = "springboot/builder:2.2.x";
+		image.trustBuilder = true;
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBuilder()).hasToString("docker.io/springboot/builder:2.2.x");
+		assertThat(request.isTrustBuilder()).isTrue();
+	}
+
+	@Test
+	void getBuildRequestWhenHasDefaultBuilderAndTrustBuilderUsesTrustBuilder() {
+		Image image = new Image();
+		image.trustBuilder = false;
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder-jammy-java-tiny");
+		assertThat(request.isTrustBuilder()).isFalse();
 	}
 
 	@Test
@@ -256,6 +280,14 @@ class ImageTests {
 		image.securityOptions = Collections.emptyList();
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getSecurityOptions()).isEmpty();
+	}
+
+	@Test
+	void getBuildRequestWhenHasImagePlatformUsesImagePlatform() {
+		Image image = new Image();
+		image.imagePlatform = "linux/arm64";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64"));
 	}
 
 	private Artifact createArtifact() {

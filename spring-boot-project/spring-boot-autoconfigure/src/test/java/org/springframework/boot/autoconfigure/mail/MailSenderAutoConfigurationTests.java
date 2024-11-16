@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.mail;
 import java.util.Properties;
 
 import javax.naming.Context;
+import javax.net.ssl.SSLSocketFactory;
 
 import jakarta.mail.Session;
 import org.junit.jupiter.api.AfterEach;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,8 +51,9 @@ import static org.mockito.Mockito.never;
  */
 class MailSenderAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(MailSenderAutoConfiguration.class, MailSenderValidatorAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(MailSenderAutoConfiguration.class,
+				MailSenderValidatorAutoConfiguration.class, SslAutoConfiguration.class));
 
 	private ClassLoader threadContextClassLoader;
 
@@ -237,6 +240,61 @@ class MailSenderAutoConfigurationTests {
 				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
 				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
 				then(mailSender).should(never()).testConnection();
+			});
+	}
+
+	@Test
+	void smtpSslEnabled() {
+		this.contextRunner.withPropertyValues("spring.mail.host:localhost", "spring.mail.ssl.enabled:true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties()).containsEntry("mail.smtp.ssl.enable", "true");
+			});
+	}
+
+	@Test
+	void smtpSslBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties()).doesNotContainKey("mail.smtp.ssl.enable");
+				Object property = mailSender.getJavaMailProperties().get("mail.smtp.ssl.socketFactory");
+				assertThat(property).isInstanceOf(SSLSocketFactory.class);
+			});
+	}
+
+	@Test
+	void smtpsSslEnabled() {
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.protocol:smtps",
+					"spring.mail.ssl.enabled:true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties()).containsEntry("mail.smtps.ssl.enable", "true");
+			});
+	}
+
+	@Test
+	void smtpsSslBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.protocol:smtps",
+					"spring.mail.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties()).doesNotContainKey("mail.smtps.ssl.enable");
+				Object property = mailSender.getJavaMailProperties().get("mail.smtps.ssl.socketFactory");
+				assertThat(property).isInstanceOf(SSLSocketFactory.class);
 			});
 	}
 

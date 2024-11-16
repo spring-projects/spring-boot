@@ -59,10 +59,10 @@ public abstract class CheckLinks extends DefaultTask {
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
 		restTemplate.setErrorHandler(new IgnoringErrorHandler());
 		for (Library library : this.bom.getLibraries()) {
-			library.getLinks().forEach((name, link) -> {
+			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
 				URI uri;
 				try {
-					uri = new URI(link);
+					uri = new URI(link.url(library));
 					ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.HEAD, null, String.class);
 					System.out.printf("[%3d] %s - %s (%s)%n", response.getStatusCode().value(), library.getName(), name,
 							uri);
@@ -70,7 +70,7 @@ public abstract class CheckLinks extends DefaultTask {
 				catch (URISyntaxException ex) {
 					throw new RuntimeException(ex);
 				}
-			});
+			}));
 		}
 	}
 

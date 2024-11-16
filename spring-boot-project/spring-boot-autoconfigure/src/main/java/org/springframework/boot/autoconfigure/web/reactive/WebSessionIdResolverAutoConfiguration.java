@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,7 @@ public class WebSessionIdResolverAutoConfiguration {
 		map.from(cookie::getHttpOnly).to(builder::httpOnly);
 		map.from(cookie::getSecure).to(builder::secure);
 		map.from(cookie::getMaxAge).to(builder::maxAge);
+		map.from(cookie::getPartitioned).to(builder::partitioned);
 		map.from(getSameSite(cookie)).to(builder::sameSite);
 	}
 

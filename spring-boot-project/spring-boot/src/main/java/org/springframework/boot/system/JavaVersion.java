@@ -83,9 +83,9 @@ public enum JavaVersion {
 
 	private final boolean available;
 
-	JavaVersion(String name, Class<?> clazz, String methodName) {
+	JavaVersion(String name, Class<?> versionSpecificClass, String versionSpecificMethod) {
 		this.name = name;
-		this.available = ClassUtils.hasMethod(clazz, methodName);
+		this.available = ClassUtils.hasMethod(versionSpecificClass, versionSpecificMethod);
 	}
 
 	@Override

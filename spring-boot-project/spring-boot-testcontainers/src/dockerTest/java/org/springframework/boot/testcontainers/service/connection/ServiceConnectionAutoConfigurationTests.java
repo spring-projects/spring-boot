@@ -18,6 +18,7 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.Set;
 
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -32,7 +33,6 @@ import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.container.RedisContainer;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -134,7 +134,7 @@ class ServiceConnectionAutoConfigurationTests {
 	static class ContainerConfiguration {
 
 		@Bean
-		@ServiceConnection("redis")
+		@ServiceConnection
 		RedisContainer redisContainer() {
 			return TestImage.container(RedisContainer.class);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.pulsar.core.PulsarTopic;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 import org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener;
 import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 
@@ -40,7 +41,7 @@ class ReactiveAppConfig {
 
 	@Bean
 	PulsarTopic pulsarTestTopic() {
-		return PulsarTopic.builder(TOPIC).numberOfPartitions(1).build();
+		return new PulsarTopicBuilder().name(TOPIC).numberOfPartitions(1).build();
 	}
 
 	@Bean

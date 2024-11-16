@@ -90,16 +90,6 @@ public record PemSslStoreDetails(String type, String alias, String password, Str
 	}
 
 	/**
-	 * Return the certificate content.
-	 * @return the certificate content
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of {@link #certificates()}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public String certificate() {
-		return certificates();
-	}
-
-	/**
 	 * Return a new {@link PemSslStoreDetails} instance with a new alias.
 	 * @param alias the new alias
 	 * @return a new {@link PemSslStoreDetails} instance

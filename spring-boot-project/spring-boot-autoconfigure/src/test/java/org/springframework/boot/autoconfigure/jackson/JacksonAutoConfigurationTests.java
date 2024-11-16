@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import com.fasterxml.jackson.databind.cfg.EnumFeature;
 import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -318,7 +319,8 @@ class JacksonAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ModuleConfig.class).run((context) -> {
 			ObjectMapper objectMapper = context.getBean(Jackson2ObjectMapperBuilder.class).build();
 			assertThat(context.getBean(CustomModule.class).getOwners()).contains(objectMapper);
-			assertThat(objectMapper.canSerialize(Baz.class)).isTrue();
+			assertThat(((DefaultSerializerProvider) objectMapper.getSerializerProviderInstance())
+				.hasSerializerFor(Baz.class, null)).isTrue();
 		});
 	}
 

@@ -172,18 +172,6 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void createWithDetailsWhenHasKeyStoreDetailsAndTrustStoreDetailsAndAlias() {
-		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
-			.withPrivateKey("classpath:test-key.pem");
-		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
-			.withPrivateKey("classpath:test-key.pem");
-		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, "test-alias");
-		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias"));
-		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("test-alias"));
-	}
-
-	@Test
 	void createWithDetailsWhenHasStoreType() {
 		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails("PKCS12", "classpath:test-cert.pem",
 				"classpath:test-key.pem");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package org.springframework.boot.autoconfigure.gson;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.LongSerializationPolicy;
+import com.google.gson.Strictness;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties to configure {@link Gson}.
@@ -75,9 +77,10 @@ public class GsonProperties {
 	private Boolean prettyPrinting;
 
 	/**
-	 * Whether to be lenient about parsing JSON that doesn't conform to RFC 4627.
+	 * Sets how strictly the RFC 8259 specification will be enforced when reading and
+	 * writing JSON.
 	 */
-	private Boolean lenient;
+	private Strictness strictness;
 
 	/**
 	 * Whether to disable the escaping of HTML characters such as '<', '>', etc.
@@ -153,12 +156,22 @@ public class GsonProperties {
 		this.prettyPrinting = prettyPrinting;
 	}
 
+	public Strictness getStrictness() {
+		return this.strictness;
+	}
+
+	public void setStrictness(Strictness strictness) {
+		this.strictness = strictness;
+	}
+
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(replacement = "spring.gson.strictness", since = "3.4.0")
 	public Boolean getLenient() {
-		return this.lenient;
+		return (this.strictness != null) && (this.strictness == Strictness.LENIENT);
 	}
 
 	public void setLenient(Boolean lenient) {
-		this.lenient = lenient;
+		setStrictness((lenient != null && lenient) ? Strictness.LENIENT : Strictness.STRICT);
 	}
 
 	public Boolean getDisableHtmlEscaping() {

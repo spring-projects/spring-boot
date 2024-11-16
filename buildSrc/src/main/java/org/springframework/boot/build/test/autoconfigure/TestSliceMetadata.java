@@ -36,11 +36,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.inject.Inject;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.InputFiles;
@@ -65,13 +68,17 @@ import org.springframework.util.StringUtils;
  */
 public abstract class TestSliceMetadata extends DefaultTask {
 
+	private final ObjectFactory objectFactory;
+
 	private FileCollection classpath;
 
 	private FileCollection importsFiles;
 
 	private FileCollection classesDirs;
 
-	public TestSliceMetadata() {
+	@Inject
+	public TestSliceMetadata(ObjectFactory objectFactory) {
+		this.objectFactory = objectFactory;
 		Configuration testSliceMetadata = getProject().getConfigurations().maybeCreate("testSliceMetadata");
 		getProject().afterEvaluate((evaluated) -> evaluated.getArtifacts()
 			.add(testSliceMetadata.getName(), getOutputFile(), (artifact) -> artifact.builtBy(this)));
@@ -79,8 +86,9 @@ public abstract class TestSliceMetadata extends DefaultTask {
 
 	public void setSourceSet(SourceSet sourceSet) {
 		this.classpath = sourceSet.getRuntimeClasspath();
-		this.importsFiles = getProject().fileTree(new File(sourceSet.getOutput().getResourcesDir(), "META-INF/spring"),
-				(tree) -> tree.filter((file) -> file.getName().endsWith(".imports")));
+		this.importsFiles = this.objectFactory.fileTree()
+			.from(new File(sourceSet.getOutput().getResourcesDir(), "META-INF/spring"));
+		this.importsFiles.filter((file) -> file.getName().endsWith(".imports"));
 		getSpringFactories().set(new File(sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
 		this.classesDirs = sourceSet.getOutput().getClassesDirs();
 	}

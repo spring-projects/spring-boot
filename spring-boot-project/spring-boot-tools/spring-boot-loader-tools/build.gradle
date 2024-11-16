@@ -20,17 +20,6 @@ configurations {
 		extendsFrom dependencyManagement
 		transitive = false
 	}
-	all {
-		resolutionStrategy {
-			eachDependency { dependency ->
-				// Downgrade Spring Framework as Gradle cannot cope with 6.1.0-M1's
-				// multi-version jar files with bytecode in META-INF/versions/21
-				if (dependency.requested.group.equals("org.springframework")) {
-					dependency.useVersion("$springFramework60xVersion")
-				}
-			}
-		}
-	}
 }
 
 dependencies {
@@ -98,5 +87,17 @@ sourceSets {
 compileJava {
 	if ((!project.hasProperty("toolchainVersion")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
 		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']
+	}
+}
+
+plugins.withType(EclipsePlugin) {
+	eclipse {
+		classpath.file { merger ->
+			merger.beforeMerged { content ->
+				if (content instanceof org.gradle.plugins.ide.eclipse.model.Classpath) {
+					content.entries.add(new org.gradle.plugins.ide.eclipse.model.SourceFolder("build/generated-resources/main", "bin/main"))
+				}
+			}
+		}
 	}
 }

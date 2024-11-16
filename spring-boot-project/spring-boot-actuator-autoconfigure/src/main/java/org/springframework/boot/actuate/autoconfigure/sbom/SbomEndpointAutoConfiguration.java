@@ -36,7 +36,7 @@ import org.springframework.core.io.ResourceLoader;
  * @since 3.3.0
  */
 @AutoConfiguration
-@ConditionalOnAvailableEndpoint(endpoint = SbomEndpoint.class)
+@ConditionalOnAvailableEndpoint(SbomEndpoint.class)
 @EnableConfigurationProperties(SbomProperties.class)
 public class SbomEndpointAutoConfiguration {
 
@@ -55,7 +55,7 @@ public class SbomEndpointAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(SbomEndpoint.class)
-	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+	@ConditionalOnAvailableEndpoint(exposure = EndpointExposure.WEB)
 	SbomEndpointWebExtension sbomEndpointWebExtension(SbomEndpoint sbomEndpoint) {
 		return new SbomEndpointWebExtension(sbomEndpoint, this.properties);
 	}

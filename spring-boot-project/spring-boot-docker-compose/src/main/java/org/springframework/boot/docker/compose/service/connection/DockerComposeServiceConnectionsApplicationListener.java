@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -77,10 +78,13 @@ class DockerComposeServiceConnectionsApplicationListener
 	@SuppressWarnings("unchecked")
 	private <T> void register(BeanDefinitionRegistry registry, RunningService runningService,
 			Class<?> connectionDetailsType, ConnectionDetails connectionDetails) {
+		ContainerImageMetadata containerMetadata = new ContainerImageMetadata(runningService.image().toString());
 		String beanName = getBeanName(runningService, connectionDetailsType);
 		Class<T> beanType = (Class<T>) connectionDetails.getClass();
 		Supplier<T> beanSupplier = () -> (T) connectionDetails;
-		registry.registerBeanDefinition(beanName, new RootBeanDefinition(beanType, beanSupplier));
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+		containerMetadata.addTo(beanDefinition);
+		registry.registerBeanDefinition(beanName, beanDefinition);
 	}
 
 	private String getBeanName(RunningService runningService, Class<?> connectionDetailsType) {

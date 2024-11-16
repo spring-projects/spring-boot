@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
@@ -60,7 +61,7 @@ public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServl
 	 */
 	public ServletEndpointDiscoverer(ApplicationContext applicationContext, List<PathMapper> endpointPathMappers,
 			Collection<EndpointFilter<ExposableServletEndpoint>> filters) {
-		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters);
+		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters, Collections.emptyList());
 		this.endpointPathMappers = endpointPathMappers;
 	}
 
@@ -70,10 +71,10 @@ public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServl
 	}
 
 	@Override
-	protected ExposableServletEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+	protected ExposableServletEndpoint createEndpoint(Object endpointBean, EndpointId id, Access defaultAccess,
 			Collection<Operation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
-		return new DiscoveredServletEndpoint(this, endpointBean, id, rootPath, enabledByDefault);
+		return new DiscoveredServletEndpoint(this, endpointBean, id, rootPath, defaultAccess);
 	}
 
 	@Override
@@ -85,6 +86,11 @@ public class ServletEndpointDiscoverer extends EndpointDiscoverer<ExposableServl
 	@Override
 	protected OperationKey createOperationKey(Operation operation) {
 		throw new IllegalStateException("ServletEndpoints must not declare operations");
+	}
+
+	@Override
+	protected boolean isInvocable(ExposableServletEndpoint endpoint) {
+		return true;
 	}
 
 	static class ServletEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {

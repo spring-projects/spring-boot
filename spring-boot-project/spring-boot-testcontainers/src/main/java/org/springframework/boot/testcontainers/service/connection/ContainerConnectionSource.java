@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,8 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private final Class<C> containerType;
 
+	private final String containerImageName;
+
 	private final String connectionName;
 
 	private final Set<Class<?>> connectionDetailsTypes;
@@ -63,6 +65,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
+		this.containerImageName = containerImageName;
 		this.connectionName = getOrDeduceConnectionName(annotation.getString("name"), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.getClassArray("type"));
 		this.containerSupplier = containerSupplier;
@@ -73,6 +76,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
+		this.containerImageName = containerImageName;
 		this.connectionName = getOrDeduceConnectionName(annotation.name(), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.type());
 		this.containerSupplier = containerSupplier;
@@ -90,7 +94,15 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return null;
 	}
 
-	boolean accepts(String requiredConnectionName, Class<?> requiredContainerType,
+	/**
+	 * Return if this source accepts the given connection.
+	 * @param requiredConnectionName the required connection name or {@code null}
+	 * @param requiredContainerType the required container type
+	 * @param requiredConnectionDetailsType the required connection details type
+	 * @return if the connection is accepted by this source
+	 * @since 3.4.0
+	 */
+	public boolean accepts(String requiredConnectionName, Class<?> requiredContainerType,
 			Class<?> requiredConnectionDetailsType) {
 		if (StringUtils.hasText(requiredConnectionName)
 				&& !requiredConnectionName.equalsIgnoreCase(this.connectionName)) {
@@ -126,6 +138,10 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 	@Override
 	public Origin getOrigin() {
 		return this.origin;
+	}
+
+	String getContainerImageName() {
+		return this.containerImageName;
 	}
 
 	String getConnectionName() {

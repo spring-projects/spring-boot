@@ -5,6 +5,11 @@ plugins {
 	id "org.springframework.boot"
 }
 
+java {
+	sourceCompatibility = '17'
+	targetCompatibility = '17'
+}
+
 repositories {
 	maven { url "file:${rootDir}/../docker-test-maven-repository"}
 	mavenCentral()

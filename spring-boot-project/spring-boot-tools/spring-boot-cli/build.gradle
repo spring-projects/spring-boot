@@ -34,7 +34,7 @@ dependencies {
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 	intTestImplementation("org.springframework:spring-core")
 
-	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-classic"))
+	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
 	testImplementation(project(":spring-boot-project:spring-boot"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

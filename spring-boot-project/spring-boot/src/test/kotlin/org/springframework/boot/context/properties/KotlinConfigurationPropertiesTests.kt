@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,13 @@ import org.springframework.context.annotation.Import
 import org.springframework.test.context.support.TestPropertySourceUtils
 
 import org.assertj.core.api.Assertions.assertThat
+import org.springframework.boot.context.properties.bind.Name
 
 /**
  * Tests for {@link ConfigurationProperties @ConfigurationProperties}-annotated beans.
  *
  * @author Madhura Bhave
+ * @author Lasse Wulff
  */
 class KotlinConfigurationPropertiesTests {
 
@@ -57,6 +59,14 @@ class KotlinConfigurationPropertiesTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "lateinit.inner.value=alpha")
 		this.context.refresh()
 		assertThat(this.context.getBean(LateInitProperties::class.java).inner.value).isEqualTo("alpha")
+	}
+
+	@Test
+	fun `renamed property can be bound`() {
+		this.context.register(EnableRenamedProperties::class.java)
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "renamed.var=beta")
+		this.context.refresh()
+		assertThat(this.context.getBean(RenamedProperties::class.java).bar).isEqualTo("beta")
 	}
 
 	@Test
@@ -116,5 +126,14 @@ class KotlinConfigurationPropertiesTests {
 	data class MutableDataClassProperties(
 		var prop: String = ""
 	)
+
+	@EnableConfigurationProperties(RenamedProperties::class)
+	class EnableRenamedProperties
+
+	@ConfigurationProperties(prefix = "renamed")
+	class RenamedProperties{
+		@Name("var")
+		var bar: String = ""
+	}
 
 }

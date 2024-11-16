@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.ws.WebServiceMessageFactory;
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.spy;
  *
  * @author Stephane Nicoll
  * @author Dmytro Nosan
+ * @author Phillip Webb
  */
 @ExtendWith(MockitoExtension.class)
 class WebServiceTemplateBuilderTests {
@@ -77,7 +79,7 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplate webServiceTemplate = this.builder.build();
 		assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
 		WebServiceMessageSender messageSender = webServiceTemplate.getMessageSenders()[0];
-		assertHttpComponentsRequestFactory(messageSender);
+		assertRequestFactoryInstanceOf(messageSender, HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -85,6 +87,16 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplate webServiceTemplate = this.builder.detectHttpMessageSender(false).build();
 		assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
 		assertThat(webServiceTemplate.getMessageSenders()[0]).isInstanceOf(HttpUrlConnectionMessageSender.class);
+	}
+
+	@Test
+	void httpMessageSenderFactoryUsesFactory() {
+		WebServiceTemplate webServiceTemplate = this.builder
+			.httpMessageSenderFactory(() -> new ClientHttpRequestMessageSender(new JdkClientHttpRequestFactory()))
+			.build();
+		assertThat(webServiceTemplate.getMessageSenders()).hasSize(1);
+		WebServiceMessageSender messageSender = webServiceTemplate.getMessageSenders()[0];
+		assertRequestFactoryInstanceOf(messageSender, JdkClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -334,11 +346,11 @@ class WebServiceTemplateBuilderTests {
 		assertThat(webServiceTemplate.getDestinationProvider()).isEqualTo(destinationProvider);
 	}
 
-	private void assertHttpComponentsRequestFactory(WebServiceMessageSender messageSender) {
+	private void assertRequestFactoryInstanceOf(WebServiceMessageSender messageSender, Class<?> type) {
 		assertThat(messageSender).isInstanceOf(ClientHttpRequestMessageSender.class);
 		ClientHttpRequestMessageSender sender = (ClientHttpRequestMessageSender) messageSender;
 		ClientHttpRequestFactory requestFactory = sender.getRequestFactory();
-		assertThat(requestFactory).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+		assertThat(requestFactory).isInstanceOf(type);
 	}
 
 }

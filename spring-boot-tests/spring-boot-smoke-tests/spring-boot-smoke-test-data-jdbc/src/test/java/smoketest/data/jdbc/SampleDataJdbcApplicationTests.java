@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,14 @@
 
 package smoketest.data.jdbc;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link SampleDataJdbcApplication}.
@@ -36,23 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @SpringBootTest
+@AutoConfigureMockMvc
 class SampleDataJdbcApplicationTests {
 
 	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mvc;
-
-	@BeforeEach
-	void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-	}
+	private MockMvcTester mvc;
 
 	@Test
-	void testCustomers() throws Exception {
-		this.mvc.perform(get("/").param("name", "merEDith"))
-			.andExpect(status().isOk())
-			.andExpect(content().string(containsString("Meredith")));
+	void testCustomers() {
+		assertThat(this.mvc.get().uri("/").param("name", "merEDith")).hasStatusOk().bodyText().contains("Meredith");
 	}
 
 }

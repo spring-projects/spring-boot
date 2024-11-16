@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class RedisSessionProperties {
 
 	/**
 	 * Sessions flush mode. Determines when session changes are written to the session
-	 * store.
+	 * store. Not supported with a reactive session repository.
 	 */
 	private FlushMode flushMode = FlushMode.ON_SAVE;
 
@@ -47,14 +47,15 @@ public class RedisSessionProperties {
 	private SaveMode saveMode = SaveMode.ON_SET_ATTRIBUTE;
 
 	/**
-	 * The configure action to apply when no user defined ConfigureRedisAction bean is
-	 * present.
+	 * The configure action to apply when no user-defined ConfigureRedisAction or
+	 * ConfigureReactiveRedisAction bean is present.
 	 */
 	private ConfigureAction configureAction = ConfigureAction.NOTIFY_KEYSPACE_EVENTS;
 
 	/**
 	 * Cron expression for expired session cleanup job. Only supported when
-	 * repository-type is set to indexed.
+	 * repository-type is set to indexed. Not supported with a reactive session
+	 * repository.
 	 */
 	private String cleanupCron;
 
@@ -135,12 +136,13 @@ public class RedisSessionProperties {
 	public enum RepositoryType {
 
 		/**
-		 * Auto-configure a RedisSessionRepository.
+		 * Auto-configure a RedisSessionRepository or ReactiveRedisSessionRepository.
 		 */
 		DEFAULT,
 
 		/**
-		 * Auto-configure a RedisIndexedSessionRepository.
+		 * Auto-configure a RedisIndexedSessionRepository or
+		 * ReactiveRedisIndexedSessionRepository.
 		 */
 		INDEXED
 

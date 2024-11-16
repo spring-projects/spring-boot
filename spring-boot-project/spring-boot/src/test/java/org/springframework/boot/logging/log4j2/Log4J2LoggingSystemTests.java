@@ -24,7 +24,6 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
@@ -43,7 +42,6 @@ import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.util.PropertiesUtil;
-import org.apache.logging.log4j.util.PropertySource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +62,6 @@ import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -110,7 +107,6 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
 		this.logger = LogManager.getLogger(getClass());
-		cleanUpPropertySources();
 	}
 
 	@AfterEach
@@ -119,17 +115,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		loggerContext.stop();
 		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
-		cleanUpPropertySources();
 		PluginRegistry.getInstance().clear();
-	}
-
-	@SuppressWarnings("unchecked")
-	private void cleanUpPropertySources() { // https://issues.apache.org/jira/browse/LOG4J2-3618
-		PropertiesUtil properties = PropertiesUtil.getProperties();
-		Object environment = ReflectionTestUtils.getField(properties, "environment");
-		Set<PropertySource> sources = (Set<PropertySource>) ReflectionTestUtils.getField(environment, "sources");
-		sources.removeIf((candidate) -> candidate instanceof SpringEnvironmentPropertySource
-				|| candidate instanceof SpringBootPropertySource);
 	}
 
 	@Test
@@ -600,13 +586,14 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void applicationNameLoggingToConsoleWhenDisabled(CapturedOutput output) {
-		this.environment.setProperty("spring.application.name", "application-name");
+		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
 		this.loggingSystem.setStandardConfigLocations(false);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_NAME}")
+			.doesNotContain("${sys:APPLICATION_NAME}")
 			.doesNotContain("myapp");
 	}
 
@@ -638,7 +625,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void applicationNameLoggingToFileWhenDisabled() {
-		this.environment.setProperty("spring.application.name", "application-name");
+		this.environment.setProperty("spring.application.name", "myapp");
 		this.environment.setProperty("logging.include-application-name", "false");
 		new LoggingSystemProperties(this.environment).apply();
 		File file = new File(tmpDir(), "log4j2-test.log");
@@ -648,7 +635,81 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.initialize(this.initializationContext, null, logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).doesNotContain("${sys:LOGGED_APPLICATION_NAME}")
+			.doesNotContain("${sys:APPLICATION_NAME}")
 			.doesNotContain("myapp");
+	}
+
+	@Test
+	void applicationGroupLoggingToConsoleWhenHasApplicationGroup(CapturedOutput output) {
+		this.environment.setProperty("spring.application.group", "mygroup");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains("[mygroup] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToConsoleWhenHasApplicationGroupWithParenthesis(CapturedOutput output) {
+		this.environment.setProperty("spring.application.group", "mygroup (dev)");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains("[mygroup (dev)] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToConsoleWhenDisabled(CapturedOutput output) {
+		this.environment.setProperty("spring.application.group", "mygroup");
+		this.environment.setProperty("logging.include-application-group", "false");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("${sys:APPLICATION_GROUP}")
+			.doesNotContain("mygroup");
+	}
+
+	@Test
+	void applicationGroupLoggingToFileWhenHasApplicationGroup() {
+		this.environment.setProperty("spring.application.group", "mygroup");
+		new LoggingSystemProperties(this.environment).apply();
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("[mygroup] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToFileWhenHasApplicationGroupWithParenthesis() {
+		this.environment.setProperty("spring.application.group", "mygroup (dev)");
+		new LoggingSystemProperties(this.environment).apply();
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).contains("[mygroup (dev)] ");
+	}
+
+	@Test
+	void applicationGroupLoggingToFileWhenDisabled() {
+		this.environment.setProperty("spring.application.group", "mygroup");
+		this.environment.setProperty("logging.include-application-group", "false");
+		new LoggingSystemProperties(this.environment).apply();
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world")).doesNotContain("${sys:APPLICATION_GROUP}")
+			.doesNotContain("mygroup");
 	}
 
 	@Test

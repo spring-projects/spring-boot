@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,13 @@
 
 package org.springframework.boot.actuate.scheduling;
 
-import java.lang.reflect.Method;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
@@ -43,16 +40,20 @@ import org.springframework.scheduling.config.IntervalTask;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.scheduling.config.ScheduledTaskHolder;
 import org.springframework.scheduling.config.Task;
+import org.springframework.scheduling.config.TaskExecutionOutcome;
+import org.springframework.scheduling.config.TaskExecutionOutcome.Status;
 import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
-import org.springframework.scheduling.support.ScheduledMethodRunnable;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * {@link Endpoint @Endpoint} to expose information about an application's scheduled
  * tasks.
  *
  * @author Andy Wilkinson
+ * @author Brian Clozel
  * @since 2.0.0
  */
 @Endpoint(id = "scheduledtasks")
@@ -67,12 +68,16 @@ public class ScheduledTasksEndpoint {
 
 	@ReadOperation
 	public ScheduledTasksDescriptor scheduledTasks() {
-		Map<TaskType, List<TaskDescriptor>> descriptionsByType = this.scheduledTaskHolders.stream()
-			.flatMap((holder) -> holder.getScheduledTasks().stream())
-			.map(ScheduledTask::getTask)
-			.map(TaskDescriptor::of)
-			.filter(Objects::nonNull)
-			.collect(Collectors.groupingBy(TaskDescriptor::getType));
+		MultiValueMap<TaskType, TaskDescriptor> descriptionsByType = new LinkedMultiValueMap<>();
+		for (ScheduledTaskHolder holder : this.scheduledTaskHolders) {
+			for (ScheduledTask scheduledTask : holder.getScheduledTasks()) {
+				TaskType taskType = TaskType.forTask(scheduledTask);
+				if (taskType != null) {
+					TaskDescriptor descriptor = taskType.createDescriptor(scheduledTask);
+					descriptionsByType.add(descriptor.getType(), descriptor);
+				}
+			}
+		}
 		return new ScheduledTasksDescriptor(descriptionsByType);
 	}
 
@@ -119,45 +124,16 @@ public class ScheduledTasksEndpoint {
 	 */
 	public abstract static class TaskDescriptor {
 
-		private static final Map<Class<? extends Task>, Function<Task, TaskDescriptor>> DESCRIBERS = new LinkedHashMap<>();
-
-		static {
-			DESCRIBERS.put(FixedRateTask.class, (task) -> new FixedRateTaskDescriptor((FixedRateTask) task));
-			DESCRIBERS.put(FixedDelayTask.class, (task) -> new FixedDelayTaskDescriptor((FixedDelayTask) task));
-			DESCRIBERS.put(CronTask.class, (task) -> new CronTaskDescriptor((CronTask) task));
-			DESCRIBERS.put(TriggerTask.class, (task) -> describeTriggerTask((TriggerTask) task));
-		}
-
 		private final TaskType type;
+
+		private final ScheduledTask scheduledTask;
 
 		private final RunnableDescriptor runnable;
 
-		private static TaskDescriptor of(Task task) {
-			return DESCRIBERS.entrySet()
-				.stream()
-				.filter((entry) -> entry.getKey().isInstance(task))
-				.map((entry) -> entry.getValue().apply(task))
-				.findFirst()
-				.orElse(null);
-		}
-
-		private static TaskDescriptor describeTriggerTask(TriggerTask triggerTask) {
-			Trigger trigger = triggerTask.getTrigger();
-			if (trigger instanceof CronTrigger cronTrigger) {
-				return new CronTaskDescriptor(triggerTask, cronTrigger);
-			}
-			if (trigger instanceof PeriodicTrigger periodicTrigger) {
-				if (periodicTrigger.isFixedRate()) {
-					return new FixedRateTaskDescriptor(triggerTask, periodicTrigger);
-				}
-				return new FixedDelayTaskDescriptor(triggerTask, periodicTrigger);
-			}
-			return new CustomTriggerTaskDescriptor(triggerTask);
-		}
-
-		protected TaskDescriptor(TaskType type, Runnable runnable) {
+		protected TaskDescriptor(ScheduledTask scheduledTask, TaskType type) {
+			this.scheduledTask = scheduledTask;
 			this.type = type;
-			this.runnable = new RunnableDescriptor(runnable);
+			this.runnable = new RunnableDescriptor(scheduledTask.getTask().getRunnable());
 		}
 
 		private TaskType getType() {
@@ -166,6 +142,130 @@ public class ScheduledTasksEndpoint {
 
 		public final RunnableDescriptor getRunnable() {
 			return this.runnable;
+		}
+
+		public final NextExecution getNextExecution() {
+			Instant nextExecution = this.scheduledTask.nextExecution();
+			if (nextExecution != null) {
+				return new NextExecution(nextExecution);
+			}
+			return null;
+		}
+
+		public final LastExecution getLastExecution() {
+			TaskExecutionOutcome lastExecutionOutcome = this.scheduledTask.getTask().getLastExecutionOutcome();
+			if (lastExecutionOutcome.status() != Status.NONE) {
+				return new LastExecution(lastExecutionOutcome);
+			}
+			return null;
+		}
+
+	}
+
+	public static final class NextExecution {
+
+		private final Instant time;
+
+		public NextExecution(Instant time) {
+			this.time = time;
+		}
+
+		public Instant getTime() {
+			return this.time;
+		}
+
+	}
+
+	public static final class LastExecution {
+
+		private final TaskExecutionOutcome lastExecutionOutcome;
+
+		private LastExecution(TaskExecutionOutcome lastExecutionOutcome) {
+			this.lastExecutionOutcome = lastExecutionOutcome;
+		}
+
+		public Status getStatus() {
+			return this.lastExecutionOutcome.status();
+		}
+
+		public Instant getTime() {
+			return this.lastExecutionOutcome.executionTime();
+		}
+
+		public ExceptionInfo getException() {
+			Throwable throwable = this.lastExecutionOutcome.throwable();
+			if (throwable != null) {
+				return new ExceptionInfo(throwable);
+			}
+			return null;
+		}
+
+	}
+
+	public static final class ExceptionInfo {
+
+		private final Throwable throwable;
+
+		private ExceptionInfo(Throwable throwable) {
+			this.throwable = throwable;
+		}
+
+		public String getType() {
+			return this.throwable.getClass().getName();
+		}
+
+		public String getMessage() {
+			return this.throwable.getMessage();
+		}
+
+	}
+
+	private enum TaskType {
+
+		CRON(CronTask.class,
+				(scheduledTask) -> new CronTaskDescriptor(scheduledTask, (CronTask) scheduledTask.getTask())),
+		FIXED_DELAY(FixedDelayTask.class,
+				(scheduledTask) -> new FixedDelayTaskDescriptor(scheduledTask,
+						(FixedDelayTask) scheduledTask.getTask())),
+		FIXED_RATE(FixedRateTask.class,
+				(scheduledTask) -> new FixedRateTaskDescriptor(scheduledTask, (FixedRateTask) scheduledTask.getTask())),
+		CUSTOM_TRIGGER(TriggerTask.class, TaskType::describeTriggerTask);
+
+		final Class<?> taskClass;
+
+		final Function<ScheduledTask, TaskDescriptor> describer;
+
+		TaskType(Class<?> taskClass, Function<ScheduledTask, TaskDescriptor> describer) {
+			this.taskClass = taskClass;
+			this.describer = describer;
+		}
+
+		static TaskType forTask(ScheduledTask scheduledTask) {
+			for (TaskType taskType : TaskType.values()) {
+				if (taskType.taskClass.isInstance(scheduledTask.getTask())) {
+					return taskType;
+				}
+			}
+			return null;
+		}
+
+		TaskDescriptor createDescriptor(ScheduledTask scheduledTask) {
+			return this.describer.apply(scheduledTask);
+		}
+
+		private static TaskDescriptor describeTriggerTask(ScheduledTask scheduledTask) {
+			TriggerTask triggerTask = (TriggerTask) scheduledTask.getTask();
+			Trigger trigger = triggerTask.getTrigger();
+			if (trigger instanceof CronTrigger cronTrigger) {
+				return new CronTaskDescriptor(scheduledTask, triggerTask, cronTrigger);
+			}
+			if (trigger instanceof PeriodicTrigger periodicTrigger) {
+				if (periodicTrigger.isFixedRate()) {
+					return new FixedRateTaskDescriptor(scheduledTask, triggerTask, periodicTrigger);
+				}
+				return new FixedDelayTaskDescriptor(scheduledTask, triggerTask, periodicTrigger);
+			}
+			return new CustomTriggerTaskDescriptor(scheduledTask);
 		}
 
 	}
@@ -179,14 +279,15 @@ public class ScheduledTasksEndpoint {
 
 		private final long interval;
 
-		protected IntervalTaskDescriptor(TaskType type, IntervalTask task) {
-			super(type, task.getRunnable());
-			this.initialDelay = task.getInitialDelayDuration().toMillis();
-			this.interval = task.getIntervalDuration().toMillis();
+		protected IntervalTaskDescriptor(ScheduledTask scheduledTask, TaskType type, IntervalTask intervalTask) {
+			super(scheduledTask, type);
+			this.initialDelay = intervalTask.getInitialDelayDuration().toMillis();
+			this.interval = intervalTask.getIntervalDuration().toMillis();
 		}
 
-		protected IntervalTaskDescriptor(TaskType type, TriggerTask task, PeriodicTrigger trigger) {
-			super(type, task.getRunnable());
+		protected IntervalTaskDescriptor(ScheduledTask scheduledTask, TaskType type, TriggerTask task,
+				PeriodicTrigger trigger) {
+			super(scheduledTask, type);
 			Duration initialDelayDuration = trigger.getInitialDelayDuration();
 			this.initialDelay = (initialDelayDuration != null) ? initialDelayDuration.toMillis() : 0;
 			this.interval = trigger.getPeriodDuration().toMillis();
@@ -208,12 +309,12 @@ public class ScheduledTasksEndpoint {
 	 */
 	public static final class FixedDelayTaskDescriptor extends IntervalTaskDescriptor {
 
-		private FixedDelayTaskDescriptor(FixedDelayTask task) {
-			super(TaskType.FIXED_DELAY, task);
+		private FixedDelayTaskDescriptor(ScheduledTask scheduledTask, FixedDelayTask task) {
+			super(scheduledTask, TaskType.FIXED_DELAY, task);
 		}
 
-		private FixedDelayTaskDescriptor(TriggerTask task, PeriodicTrigger trigger) {
-			super(TaskType.FIXED_DELAY, task, trigger);
+		private FixedDelayTaskDescriptor(ScheduledTask scheduledTask, TriggerTask task, PeriodicTrigger trigger) {
+			super(scheduledTask, TaskType.FIXED_DELAY, task, trigger);
 		}
 
 	}
@@ -224,12 +325,12 @@ public class ScheduledTasksEndpoint {
 	 */
 	public static final class FixedRateTaskDescriptor extends IntervalTaskDescriptor {
 
-		private FixedRateTaskDescriptor(FixedRateTask task) {
-			super(TaskType.FIXED_RATE, task);
+		private FixedRateTaskDescriptor(ScheduledTask scheduledTask, FixedRateTask task) {
+			super(scheduledTask, TaskType.FIXED_RATE, task);
 		}
 
-		private FixedRateTaskDescriptor(TriggerTask task, PeriodicTrigger trigger) {
-			super(TaskType.FIXED_RATE, task, trigger);
+		private FixedRateTaskDescriptor(ScheduledTask scheduledTask, TriggerTask task, PeriodicTrigger trigger) {
+			super(scheduledTask, TaskType.FIXED_RATE, task, trigger);
 		}
 
 	}
@@ -242,13 +343,13 @@ public class ScheduledTasksEndpoint {
 
 		private final String expression;
 
-		private CronTaskDescriptor(CronTask task) {
-			super(TaskType.CRON, task.getRunnable());
-			this.expression = task.getExpression();
+		private CronTaskDescriptor(ScheduledTask scheduledTask, CronTask cronTask) {
+			super(scheduledTask, TaskType.CRON);
+			this.expression = cronTask.getExpression();
 		}
 
-		private CronTaskDescriptor(TriggerTask task, CronTrigger trigger) {
-			super(TaskType.CRON, task.getRunnable());
+		private CronTaskDescriptor(ScheduledTask scheduledTask, TriggerTask triggerTask, CronTrigger trigger) {
+			super(scheduledTask, TaskType.CRON);
 			this.expression = trigger.getExpression();
 		}
 
@@ -265,9 +366,10 @@ public class ScheduledTasksEndpoint {
 
 		private final String trigger;
 
-		private CustomTriggerTaskDescriptor(TriggerTask task) {
-			super(TaskType.CUSTOM_TRIGGER, task.getRunnable());
-			this.trigger = task.getTrigger().toString();
+		private CustomTriggerTaskDescriptor(ScheduledTask scheduledTask) {
+			super(scheduledTask, TaskType.CUSTOM_TRIGGER);
+			TriggerTask triggerTask = (TriggerTask) scheduledTask.getTask();
+			this.trigger = triggerTask.getTrigger().toString();
 		}
 
 		public String getTrigger() {
@@ -284,24 +386,12 @@ public class ScheduledTasksEndpoint {
 		private final String target;
 
 		private RunnableDescriptor(Runnable runnable) {
-			if (runnable instanceof ScheduledMethodRunnable scheduledMethodRunnable) {
-				Method method = scheduledMethodRunnable.getMethod();
-				this.target = method.getDeclaringClass().getName() + "." + method.getName();
-			}
-			else {
-				this.target = runnable.getClass().getName();
-			}
+			this.target = runnable.toString();
 		}
 
 		public String getTarget() {
 			return this.target;
 		}
-
-	}
-
-	private enum TaskType {
-
-		CRON, CUSTOM_TRIGGER, FIXED_DELAY, FIXED_RATE
 
 	}
 

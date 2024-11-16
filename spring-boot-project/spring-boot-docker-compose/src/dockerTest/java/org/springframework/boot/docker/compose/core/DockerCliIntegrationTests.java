@@ -24,10 +24,13 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.docker.compose.core.DockerCli.DockerComposeOptions;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeConfig;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposeDown;
 import org.springframework.boot.docker.compose.core.DockerCliCommand.ComposePs;
@@ -60,15 +63,17 @@ class DockerCliIntegrationTests {
 
 	@Test
 	void runBasicCommand() {
-		DockerCli cli = new DockerCli(null, null, Collections.emptySet());
+		DockerCli cli = new DockerCli(null, null);
 		List<DockerCliContextResponse> context = cli.run(new DockerCliCommand.Context());
 		assertThat(context).isNotEmpty();
 	}
 
 	@Test
 	void runLifecycle() throws IOException {
-		File composeFile = createComposeFile();
-		DockerCli cli = new DockerCli(null, DockerComposeFile.of(composeFile), Collections.emptySet());
+		File composeFile = createComposeFile("redis-compose.yaml");
+		String projectName = UUID.randomUUID().toString();
+		DockerCli cli = new DockerCli(null, new DockerComposeOptions(DockerComposeFile.of(composeFile),
+				Collections.emptySet(), List.of("--project-name=" + projectName)));
 		try {
 			// Verify that no services are running (this is a fresh compose project)
 			List<DockerCliComposePsResponse> ps = cli.run(new ComposePs());
@@ -76,8 +81,9 @@ class DockerCliIntegrationTests {
 			// List the config and verify that redis is there
 			DockerCliComposeConfigResponse config = cli.run(new ComposeConfig());
 			assertThat(config.services()).containsOnlyKeys("redis");
+			assertThat(config.name()).isEqualTo(projectName);
 			// Run up
-			cli.run(new ComposeUp(LogLevel.INFO));
+			cli.run(new ComposeUp(LogLevel.INFO, Collections.emptyList()));
 			// Run ps and use id to run inspect on the id
 			ps = cli.run(new ComposePs());
 			assertThat(ps).hasSize(1);
@@ -86,14 +92,14 @@ class DockerCliIntegrationTests {
 			assertThat(inspect).isNotEmpty();
 			assertThat(inspect.get(0).id()).startsWith(id);
 			// Run stop, then run ps and verify the services are stopped
-			cli.run(new ComposeStop(Duration.ofSeconds(10)));
+			cli.run(new ComposeStop(Duration.ofSeconds(10), Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).isEmpty();
 			// Run start, verify service is there, then run down and verify they are gone
-			cli.run(new ComposeStart(LogLevel.INFO));
+			cli.run(new ComposeStart(LogLevel.INFO, Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).hasSize(1);
-			cli.run(new ComposeDown(Duration.ofSeconds(10)));
+			cli.run(new ComposeDown(Duration.ofSeconds(10), Collections.emptyList()));
 			ps = cli.run(new ComposePs());
 			assertThat(ps).isEmpty();
 		}
@@ -103,22 +109,52 @@ class DockerCliIntegrationTests {
 		}
 	}
 
+	@Test
+	void shouldWorkWithMultipleComposeFiles() throws IOException {
+		List<File> composeFiles = createComposeFiles();
+		DockerCli cli = new DockerCli(null,
+				new DockerComposeOptions(DockerComposeFile.of(composeFiles), Set.of("dev"), Collections.emptyList()));
+		try {
+			// List the config and verify that both redis are there
+			DockerCliComposeConfigResponse config = cli.run(new ComposeConfig());
+			assertThat(config.services()).containsOnlyKeys("redis1", "redis2");
+			// Run up
+			cli.run(new ComposeUp(LogLevel.INFO, Collections.emptyList()));
+			// Run ps and use id to run inspect on the id
+			List<DockerCliComposePsResponse> ps = cli.run(new ComposePs());
+			assertThat(ps).hasSize(2);
+		}
+		finally {
+			// Clean up in any case
+			quietComposeDown(cli);
+		}
+	}
+
 	private static void quietComposeDown(DockerCli cli) {
 		try {
-			cli.run(new ComposeDown(Duration.ZERO));
+			cli.run(new ComposeDown(Duration.ZERO, Collections.emptyList()));
 		}
 		catch (RuntimeException ex) {
 			// Ignore
 		}
 	}
 
-	private static File createComposeFile() throws IOException {
-		File composeFile = new ClassPathResource("redis-compose.yaml", DockerCliIntegrationTests.class).getFile();
-		File tempComposeFile = Path.of(tempDir.toString(), composeFile.getName()).toFile();
-		String composeFileContent = FileCopyUtils.copyToString(new FileReader(composeFile));
-		composeFileContent = composeFileContent.replace("{imageName}", TestImage.REDIS.toString());
-		FileCopyUtils.copy(composeFileContent, new FileWriter(tempComposeFile));
-		return tempComposeFile;
+	private static File createComposeFile(String resource) throws IOException {
+		File source = new ClassPathResource(resource, DockerCliIntegrationTests.class).getFile();
+		File target = Path.of(tempDir.toString(), source.getName()).toFile();
+		String content = FileCopyUtils.copyToString(new FileReader(source));
+		content = content.replace("{imageName}", TestImage.REDIS.toString());
+		try (FileWriter writer = new FileWriter(target)) {
+			FileCopyUtils.copy(content, writer);
+		}
+		return target;
+	}
+
+	private static List<File> createComposeFiles() throws IOException {
+		File file1 = createComposeFile("1.yaml");
+		File file2 = createComposeFile("2.yaml");
+		File file3 = createComposeFile("3.yaml");
+		return List.of(file1, file2, file3);
 	}
 
 }

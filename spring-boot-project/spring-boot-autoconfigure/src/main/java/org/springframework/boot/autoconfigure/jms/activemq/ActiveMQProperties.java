@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "spring.activemq")
 public class ActiveMQProperties {
 
+	private static final String DEFAULT_EMBEDDED_BROKER_URL = "vm://localhost?broker.persistent=false";
+
 	private static final String DEFAULT_NETWORK_BROKER_URL = "tcp://localhost:61616";
 
 	/**
@@ -53,6 +55,8 @@ public class ActiveMQProperties {
 	 * Login password of the broker.
 	 */
 	private String password;
+
+	private final Embedded embedded = new Embedded();
 
 	/**
 	 * Time to wait before considering a close complete.
@@ -99,6 +103,10 @@ public class ActiveMQProperties {
 		this.password = password;
 	}
 
+	public Embedded getEmbedded() {
+		return this.embedded;
+	}
+
 	public Duration getCloseTimeout() {
 		return this.closeTimeout;
 	}
@@ -135,7 +143,30 @@ public class ActiveMQProperties {
 		if (this.brokerUrl != null) {
 			return this.brokerUrl;
 		}
+		if (this.embedded.isEnabled()) {
+			return DEFAULT_EMBEDDED_BROKER_URL;
+		}
 		return DEFAULT_NETWORK_BROKER_URL;
+	}
+
+	/**
+	 * Configuration for an embedded ActiveMQ broker.
+	 */
+	public static class Embedded {
+
+		/**
+		 * Whether to enable embedded mode if the ActiveMQ Broker is available.
+		 */
+		private boolean enabled = true;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
 	}
 
 	public static class Packages {
@@ -146,8 +177,7 @@ public class ActiveMQProperties {
 		private Boolean trustAll;
 
 		/**
-		 * Comma-separated list of specific packages to trust (when not trusting all
-		 * packages).
+		 * List of specific packages to trust (when not trusting all packages).
 		 */
 		private List<String> trusted = new ArrayList<>();
 

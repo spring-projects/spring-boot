@@ -4,6 +4,10 @@ inputs:
   milestone:
     description: 'Name of the GitHub milestone for which a release will be created'
     required: true
+  pre-release:
+    description: 'Whether the release is a pre-release (a milestone or release candidate)'
+    required: false
+    default: 'false'
   token:
     description: 'Token to use for authentication with GitHub'
     required: true
@@ -23,4 +27,4 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
-      run: gh release create ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md
+      run: gh release create ${{ format('v{0}', inputs.milestone) }} --notes-file changelog.md ${{ inputs.pre-release == 'true' && '--prerelease' || '' }}

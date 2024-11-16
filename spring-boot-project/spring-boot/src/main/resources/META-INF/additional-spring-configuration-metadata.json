@@ -104,6 +104,13 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
+      "name": "logging.include-application-group",
+      "type": "java.lang.Boolean",
+      "description": "Whether to include the application group in the logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": true
+    },
+    {
       "name": "logging.include-application-name",
       "type": "java.lang.Boolean",
       "description": "Whether to include the application name in the logs.",
@@ -168,16 +175,14 @@
     {
       "name": "logging.pattern.console",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to the console.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for output to the console. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.correlation",
       "type": "java.lang.String",
-      "description": "Appender pattern for log correlation.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for log correlation. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.dateformat",
@@ -189,9 +194,8 @@
     {
       "name": "logging.pattern.file",
       "type": "java.lang.String",
-      "description": "Appender pattern for output to a file.",
-      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": "Varies according to the logging system"
+      "description": "Appender pattern for output to a file. Its default value varies according to the logging system.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
       "name": "logging.pattern.level",
@@ -218,6 +222,71 @@
       "defaultValue": true
     },
     {
+      "name": "logging.structured.ecs.service.environment",
+      "type": "java.lang.String",
+      "description": "Structured ECS service environment."
+    },
+    {
+      "name": "logging.structured.ecs.service.name",
+      "type": "java.lang.String",
+      "description": "Structured ECS service name (defaults to 'spring.application.name')."
+    },
+    {
+      "name": "logging.structured.ecs.service.node-name",
+      "type": "java.lang.String",
+      "description": "Structured ECS service node name."
+    },
+    {
+      "name": "logging.structured.ecs.service.version",
+      "type": "java.lang.String",
+      "description": "Structured ECS service version (defaults to 'spring.application.version')."
+    },
+    {
+      "name": "logging.structured.format.console",
+      "type": "java.lang.String",
+      "description": "Structured logging format for output to the console. Must be either a format id or a fully qualified class name."
+    },
+    {
+      "name": "logging.structured.format.file",
+      "type": "java.lang.String",
+      "description": "Structured logging format for output to a file. Must be either a format id or a fully qualified class name."
+    },
+    {
+      "name": "logging.structured.gelf.host",
+      "type": "java.lang.String",
+      "description": "Structured GELF host (defaults to 'spring.application.name')."
+    },
+    {
+      "name": "logging.structured.gelf.service.version",
+      "type": "java.lang.String",
+      "description": "Structured GELF service version (defaults to 'spring.application.version')."
+    },
+    {
+      "name": "logging.structured.json.add",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Additional members that should be added to structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.customizer",
+      "type": "java.lang.String",
+      "description": "The fully qualified class name of a StructuredLoggingJsonMembersCustomizer"
+    },
+    {
+      "name": "logging.structured.json.exclude",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be excluded from structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.include",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Member paths that should be included in structured logging JSON"
+    },
+    {
+      "name": "logging.structured.json.rename",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "description": "Mapping between member paths and an alternative name that should be used in structured logging JSON"
+    },
+    {
       "name": "logging.threshold.console",
       "type": "java.lang.String",
       "description": "Log level threshold for console output.",
@@ -228,6 +297,11 @@
       "type": "java.lang.String",
       "description": "Log level threshold for file output.",
       "defaultValue": "TRACE"
+    },
+    {
+      "name": "spring.application.group",
+      "type": "java.lang.String",
+      "description": "Application group."
     },
     {
       "name": "spring.application.index",
@@ -243,6 +317,11 @@
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.ContextIdApplicationContextInitializer",
       "description": "Application name."
+    },
+    {
+      "name": "spring.application.version",
+      "type": "java.lang.String",
+      "description": "Application version (defaults to 'Implementation-Version' from the manifest)."
     },
     {
       "name": "spring.banner.charset",
@@ -380,8 +459,7 @@
       "name": "spring.main.banner-mode",
       "type": "org.springframework.boot.Banner$Mode",
       "sourceType": "org.springframework.boot.SpringApplication",
-      "description": "Mode used to display the banner when the application runs.",
-      "defaultValue": "console"
+      "description": "Mode used to display the banner when the application runs. Defaults to 'off' if structured logging is enabled or to 'console' otherwise"
     },
     {
       "name": "spring.main.cloud-platform",
@@ -573,6 +651,50 @@
       "providers": [
         {
           "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "logging.structured.format.console",
+      "values": [
+        {
+          "value": "ecs"
+        },
+        {
+          "value": "gelf"
+        },
+        {
+          "value": "logstash"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class"
+          }
+        }
+      ]
+    },
+    {
+      "name": "logging.structured.format.file",
+      "values": [
+        {
+          "value": "ecs"
+        },
+        {
+          "value": "gelf"
+        },
+        {
+          "value": "logstash"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class"
+          }
         }
       ]
     },

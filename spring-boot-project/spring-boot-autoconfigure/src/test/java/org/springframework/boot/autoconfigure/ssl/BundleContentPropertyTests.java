@@ -78,7 +78,7 @@ class BundleContentPropertyTests {
 	@Test
 	void toWatchPathWhenNotPathThrowsException() {
 		BundleContentProperty property = new BundleContentProperty("name", PEM_TEXT);
-		assertThatIllegalStateException().isThrownBy(() -> property.toWatchPath(new ApplicationResourceLoader()))
+		assertThatIllegalStateException().isThrownBy(() -> property.toWatchPath(ApplicationResourceLoader.get()))
 			.withMessage("Unable to convert value of property 'name' to a path");
 	}
 
@@ -87,7 +87,7 @@ class BundleContentPropertyTests {
 		URL resource = getClass().getResource("keystore.jks");
 		Path file = Path.of(resource.toURI()).toAbsolutePath();
 		BundleContentProperty property = new BundleContentProperty("name", file.toString());
-		assertThat(property.toWatchPath(new ApplicationResourceLoader())).isEqualTo(file);
+		assertThat(property.toWatchPath(ApplicationResourceLoader.get())).isEqualTo(file);
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class BundleContentPropertyTests {
 		URL resource = getClass().getResource("keystore.jks");
 		Path file = Path.of(resource.toURI()).toAbsolutePath();
 		BundleContentProperty property = new BundleContentProperty("name", file.toString());
-		ResourceLoader resourceLoader = spy(new ApplicationResourceLoader());
+		ResourceLoader resourceLoader = spy(ApplicationResourceLoader.get());
 		assertThat(property.toWatchPath(resourceLoader)).isEqualTo(file);
 		then(resourceLoader).should(atLeastOnce()).getResource(file.toString());
 	}
@@ -104,7 +104,7 @@ class BundleContentPropertyTests {
 	void shouldThrowBundleContentNotWatchableExceptionIfContentIsNotWatchable() {
 		BundleContentProperty property = new BundleContentProperty("name", "https://example.com/");
 		assertThatExceptionOfType(BundleContentNotWatchableException.class)
-			.isThrownBy(() -> property.toWatchPath(new ApplicationResourceLoader()))
+			.isThrownBy(() -> property.toWatchPath(ApplicationResourceLoader.get()))
 			.withMessageContaining("Only 'file:' resources are watchable");
 	}
 

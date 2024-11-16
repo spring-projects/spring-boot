@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Scott Frederick
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Jonatan Ivanov
  * @since 3.1.0
  */
 public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
@@ -70,6 +73,13 @@ public class DefaultSslBundleRegistry implements SslBundleRegistry, SslBundles {
 	@Override
 	public void addBundleUpdateHandler(String name, Consumer<SslBundle> updateHandler) throws NoSuchSslBundleException {
 		getRegistered(name).addUpdateHandler(updateHandler);
+	}
+
+	@Override
+	public List<String> getBundleNames() {
+		List<String> names = new ArrayList<>(this.registeredBundles.keySet());
+		Collections.sort(names);
+		return Collections.unmodifiableList(names);
 	}
 
 	private RegisteredSslBundle getRegistered(String name) throws NoSuchSslBundleException {

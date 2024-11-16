@@ -26,11 +26,11 @@
   },
   "HostConfig": {
     "Binds": [
-      "/var/run/docker.sock:/var/run/docker.sock",
-      "pack-layers-aaaaaaaaaa:/layers",
       "pack-app-aaaaaaaaaa:/application",
+      "pack-layers-aaaaaaaaaa:/layers",
       "pack-cache-b35197ac41ea.build:/cache",
-      "pack-cache-b35197ac41ea.launch:/launch-cache"
+      "pack-cache-b35197ac41ea.launch:/launch-cache",
+      "/var/run/docker.sock:/var/run/docker.sock"
     ],
     "SecurityOpt" : [
       "label=disable"

@@ -27,6 +27,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.http.client.ReactorClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
 class ClientHttpRequestFactoriesTests {
 
 	@Test
@@ -68,8 +70,13 @@ class ClientHttpRequestFactoriesTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.2.0")
-	@SuppressWarnings("removal")
+	void getOfReactorFactoryReturnsReactorFactory() {
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(ReactorClientHttpRequestFactory.class,
+				ClientHttpRequestFactorySettings.DEFAULTS);
+		assertThat(requestFactory).isInstanceOf(ReactorClientHttpRequestFactory.class);
+	}
+
+	@Test
 	void getOfOkHttpFactoryReturnsOkHttpFactory() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(
 				org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class,

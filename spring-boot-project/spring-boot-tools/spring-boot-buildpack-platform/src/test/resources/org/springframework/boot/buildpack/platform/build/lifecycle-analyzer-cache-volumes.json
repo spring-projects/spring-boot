@@ -1,0 +1,31 @@
+{
+  "User": "root",
+  "Image": "pack.local/ephemeral-builder",
+  "Cmd": [
+    "/cnb/lifecycle/analyzer",
+    "-daemon",
+    "-launch-cache",
+    "/launch-cache",
+    "-layers",
+    "/layers",
+    "-run-image",
+    "docker.io/cloudfoundry/run:latest",
+    "docker.io/library/my-application:latest"
+  ],
+  "Env": [
+    "CNB_PLATFORM_API=0.8"
+  ],
+  "Labels": {
+    "author": "spring-boot"
+  },
+  "HostConfig": {
+    "Binds": [
+      "/var/run/docker.sock:/var/run/docker.sock",
+      "launch-volume:/launch-cache",
+      "work-volume-layers:/layers"
+    ],
+    "SecurityOpt" : [
+      "label=disable"
+    ]
+  }
+}

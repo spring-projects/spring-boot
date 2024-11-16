@@ -20,6 +20,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	dockerTestImplementation("com.couchbase.client:java-client")
+	dockerTestImplementation("com.hazelcast:hazelcast")
 	dockerTestImplementation("io.micrometer:micrometer-registry-otlp")
 	dockerTestImplementation("io.rest-assured:rest-assured") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -63,8 +64,10 @@ dependencies {
 	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.testcontainers:activemq")
 	optional("org.testcontainers:cassandra")
+	optional("org.testcontainers:clickhouse")
 	optional("org.testcontainers:couchbase")
 	optional("org.testcontainers:elasticsearch")
+	optional("org.testcontainers:grafana")
 	optional("org.testcontainers:jdbc")
 	optional("org.testcontainers:kafka")
 	optional("org.testcontainers:mariadb")
@@ -79,6 +82,8 @@ dependencies {
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
+	optional("com.redis:testcontainers-redis")
+	optional("com.hazelcast:hazelcast")
 
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

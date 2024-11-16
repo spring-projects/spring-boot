@@ -186,11 +186,11 @@ class ServletWebServerFactoryCustomizerTests {
 	@Test
 	void whenShutdownPropertyIsSetThenShutdownIsCustomized() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.shutdown", "graceful");
+		map.put("server.shutdown", "immediate");
 		bindProperties(map);
 		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
-		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.GRACEFUL)));
+		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.IMMEDIATE)));
 	}
 
 	private void bindProperties(Map<String, String> map) {

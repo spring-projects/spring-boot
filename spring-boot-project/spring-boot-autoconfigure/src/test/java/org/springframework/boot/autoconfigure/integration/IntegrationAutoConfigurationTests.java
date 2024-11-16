@@ -32,6 +32,8 @@ import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
@@ -54,9 +56,11 @@ import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -84,6 +88,7 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.messaging.support.GenericMessage;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -98,6 +103,7 @@ import static org.mockito.Mockito.mock;
  * @author Artem Bilan
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Yong-Hyun Kim
  */
 class IntegrationAutoConfigurationTests {
 
@@ -519,6 +525,19 @@ class IntegrationAutoConfigurationTests {
 					.extracting("observationRegistry")
 					.isEqualTo(ObservationRegistry.NOOP);
 			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void integrationVirtualThreadsEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(TaskScheduler.class)
+				.getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
+				.isInstanceOf(SimpleAsyncTaskScheduler.class)
+				.satisfies((taskScheduler) -> SimpleAsyncTaskExecutorAssert
+					.assertThat((SimpleAsyncTaskExecutor) taskScheduler)
+					.usesVirtualThreads()));
 	}
 
 	@Configuration(proxyBeanMethods = false)

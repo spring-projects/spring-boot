@@ -23,16 +23,20 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.OperationFilter;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -81,11 +85,14 @@ public class WebEndpointAutoConfiguration {
 	@ConditionalOnMissingBean(WebEndpointsSupplier.class)
 	public WebEndpointDiscoverer webEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			EndpointMediaTypes endpointMediaTypes, ObjectProvider<PathMapper> endpointPathMappers,
+			ObjectProvider<AdditionalPathsMapper> additionalPathsMappers,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
-			ObjectProvider<EndpointFilter<ExposableWebEndpoint>> filters) {
+			ObjectProvider<EndpointFilter<ExposableWebEndpoint>> endpointFilters,
+			ObjectProvider<OperationFilter<WebOperation>> operationFilters) {
 		return new WebEndpointDiscoverer(this.applicationContext, parameterValueMapper, endpointMediaTypes,
-				endpointPathMappers.orderedStream().toList(), invokerAdvisors.orderedStream().toList(),
-				filters.orderedStream().toList());
+				endpointPathMappers.orderedStream().toList(), additionalPathsMappers.orderedStream().toList(),
+				invokerAdvisors.orderedStream().toList(), endpointFilters.orderedStream().toList(),
+				operationFilters.orderedStream().toList());
 	}
 
 	@Bean
@@ -119,6 +126,11 @@ public class WebEndpointAutoConfiguration {
 		return new IncludeExcludeEndpointFilter<>(
 				org.springframework.boot.actuate.endpoint.web.annotation.ExposableControllerEndpoint.class,
 				exposure.getInclude(), exposure.getExclude());
+	}
+
+	@Bean
+	OperationFilter<WebOperation> webAccessPropertiesOperationFilter(EndpointAccessResolver endpointAccessResolver) {
+		return OperationFilter.byAccess(endpointAccessResolver);
 	}
 
 	@Configuration(proxyBeanMethods = false)

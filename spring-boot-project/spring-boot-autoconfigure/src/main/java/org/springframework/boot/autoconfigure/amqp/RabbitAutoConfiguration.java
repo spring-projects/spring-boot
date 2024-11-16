@@ -89,7 +89,7 @@ public class RabbitAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean(RabbitConnectionDetails.class)
+		@ConditionalOnMissingBean
 		RabbitConnectionDetails rabbitConnectionDetails() {
 			return new PropertiesRabbitConnectionDetails(this.properties);
 		}

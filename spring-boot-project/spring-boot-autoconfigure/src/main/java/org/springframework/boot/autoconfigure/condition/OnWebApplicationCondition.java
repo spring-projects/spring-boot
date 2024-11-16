@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,17 +67,18 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 			return null;
 		}
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnWebApplication.class);
+		ClassNameFilter missingClassFilter = ClassNameFilter.MISSING;
 		if (ConditionalOnWebApplication.Type.SERVLET.name().equals(type)) {
-			if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
+			if (missingClassFilter.matches(SERVLET_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
 				return ConditionOutcome.noMatch(message.didNotFind("servlet web application classes").atAll());
 			}
 		}
 		if (ConditionalOnWebApplication.Type.REACTIVE.name().equals(type)) {
-			if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
+			if (missingClassFilter.matches(REACTIVE_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
 				return ConditionOutcome.noMatch(message.didNotFind("reactive web application classes").atAll());
 			}
 		}
-		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS, getBeanClassLoader())
+		if (missingClassFilter.matches(SERVLET_WEB_APPLICATION_CLASS, getBeanClassLoader())
 				&& !ClassUtils.isPresent(REACTIVE_WEB_APPLICATION_CLASS, getBeanClassLoader())) {
 			return ConditionOutcome.noMatch(message.didNotFind("reactive or servlet web application classes").atAll());
 		}
@@ -123,7 +124,7 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 
 	private ConditionOutcome isServletWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
-		if (!ClassNameFilter.isPresent(SERVLET_WEB_APPLICATION_CLASS, context.getClassLoader())) {
+		if (ClassNameFilter.MISSING.matches(SERVLET_WEB_APPLICATION_CLASS, context.getClassLoader())) {
 			return ConditionOutcome.noMatch(message.didNotFind("servlet web application classes").atAll());
 		}
 		if (context.getBeanFactory() != null) {
@@ -143,7 +144,7 @@ class OnWebApplicationCondition extends FilteringSpringBootCondition {
 
 	private ConditionOutcome isReactiveWebApplication(ConditionContext context) {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("");
-		if (!ClassNameFilter.isPresent(REACTIVE_WEB_APPLICATION_CLASS, context.getClassLoader())) {
+		if (ClassNameFilter.MISSING.matches(REACTIVE_WEB_APPLICATION_CLASS, context.getClassLoader())) {
 			return ConditionOutcome.noMatch(message.didNotFind("reactive web application classes").atAll());
 		}
 		if (context.getEnvironment() instanceof ConfigurableReactiveWebEnvironment) {

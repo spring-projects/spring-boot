@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link InfoEndpoint}.
@@ -48,10 +47,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void info() throws Exception {
-		this.mockMvc.perform(get("/actuator/info"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("info",
+	void info() {
+		assertThat(this.mvc.get().uri("/actuator/info")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("info",
 					responseFields(beneathPath("git"),
 							fieldWithPath("branch").description("Name of the Git branch, if any."),
 							fieldWithPath("commit").description("Details of the Git commit, if any."),

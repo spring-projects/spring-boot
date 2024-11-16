@@ -27,7 +27,7 @@ class MyService(restTemplateBuilder: RestTemplateBuilder, sslBundles: SslBundles
     private val restTemplate: RestTemplate
 
     init {
-        restTemplate = restTemplateBuilder.setSslBundle(sslBundles.getBundle("mybundle")).build()
+        restTemplate = restTemplateBuilder.sslBundle(sslBundles.getBundle("mybundle")).build()
     }
 
     fun someRestCall(name: String): Details {

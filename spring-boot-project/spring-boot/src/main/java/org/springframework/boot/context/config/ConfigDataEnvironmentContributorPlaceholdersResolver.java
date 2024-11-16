@@ -56,7 +56,8 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 		this.failOnResolveFromInactiveContributor = failOnResolveFromInactiveContributor;
 		this.conversionService = conversionService;
 		this.helper = new PropertyPlaceholderHelper(SystemPropertyUtils.PLACEHOLDER_PREFIX,
-				SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR, true);
+				SystemPropertyUtils.PLACEHOLDER_SUFFIX, SystemPropertyUtils.VALUE_SEPARATOR,
+				SystemPropertyUtils.ESCAPE_CHARACTER, true);
 	}
 
 	@Override

@@ -38,15 +38,15 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.TlsSocketStrategy;
 import org.apache.hc.core5.http.io.SocketConfig;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.http.ssl.TLS;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
 
-import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -146,7 +146,7 @@ public class TestRestTemplate {
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder.requestFactory(
+				builder = builder.requestFactoryBuilder(
 						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
 		}
@@ -992,7 +992,7 @@ public class TestRestTemplate {
 		ENABLE_REDIRECTS,
 
 		/**
-		 * Use a {@link SSLConnectionSocketFactory} that trusts self-signed certificates.
+		 * Use a {@link TlsSocketStrategy} that trusts self-signed certificates.
 		 */
 		SSL
 
@@ -1007,6 +1007,26 @@ public class TestRestTemplate {
 
 		private final boolean enableRedirects;
 
+		/**
+		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
+		 * @param httpClientOptions the {@link HttpClient} options
+		 * @param settings the settings to apply
+		 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+		 * {@link #CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[], ClientHttpRequestFactorySettings)}
+		 */
+		@Deprecated(since = "3.4.0", forRemoval = true)
+		@SuppressWarnings("removal")
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+				org.springframework.boot.web.client.ClientHttpRequestFactorySettings settings) {
+			this(httpClientOptions, new ClientHttpRequestFactorySettings(null, settings.connectTimeout(),
+					settings.readTimeout(), settings.sslBundle()));
+		}
+
+		/**
+		 * Create a new {@link CustomHttpComponentsClientHttpRequestFactory} instance.
+		 * @param httpClientOptions the {@link HttpClient} options
+		 * @param settings the settings to apply
+		 */
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				ClientHttpRequestFactorySettings settings) {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
@@ -1038,7 +1058,7 @@ public class TestRestTemplate {
 				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 			PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
 			if (ssl) {
-				builder.setSSLSocketFactory(createSocketFactory());
+				builder.setTlsSocketStrategy(createTlsSocketStrategy());
 			}
 			if (readTimeout != null) {
 				SocketConfig socketConfig = SocketConfig.custom()
@@ -1049,14 +1069,12 @@ public class TestRestTemplate {
 			return builder.build();
 		}
 
-		private SSLConnectionSocketFactory createSocketFactory()
-				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+		private TlsSocketStrategy createTlsSocketStrategy()
+				throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
 				.build();
-			return SSLConnectionSocketFactoryBuilder.create()
-				.setSslContext(sslContext)
-				.setTlsVersions(TLS.V_1_3, TLS.V_1_2)
-				.build();
+			return new DefaultClientTlsStrategy(sslContext, new String[] { TLS.V_1_3.getId(), TLS.V_1_2.getId() }, null,
+					null, null);
 		}
 
 		@Override

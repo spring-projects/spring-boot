@@ -27,20 +27,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskHolder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.replacePattern;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link ScheduledTasksEndpoint}.
@@ -50,18 +51,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void scheduledTasks() throws Exception {
-		this.mockMvc.perform(get("/actuator/scheduledtasks"))
-			.andExpect(status().isOk())
-			.andDo(document("scheduled-tasks",
+	void scheduledTasks() {
+		assertThat(this.mvc.get().uri("/actuator/scheduledtasks")).hasStatusOk()
+			.apply(document("scheduled-tasks",
 					preprocessResponse(replacePattern(
 							Pattern.compile("org.*\\.ScheduledTasksEndpointDocumentationTests\\$TestConfiguration"),
 							"com.example.Processor")),
 					responseFields(fieldWithPath("cron").description("Cron tasks, if any."),
 							targetFieldWithPrefix("cron.[]."),
+							nextExecutionWithPrefix("cron.[].").description("Time of the next scheduled execution."),
 							fieldWithPath("cron.[].expression").description("Cron expression."),
 							fieldWithPath("fixedDelay").description("Fixed delay tasks, if any."),
 							targetFieldWithPrefix("fixedDelay.[]."), initialDelayWithPrefix("fixedDelay.[]."),
+							nextExecutionWithPrefix("fixedDelay.[]."),
 							fieldWithPath("fixedDelay.[].interval")
 								.description("Interval, in milliseconds, between the end of the last"
 										+ " execution and the start of the next."),
@@ -69,10 +71,15 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 							targetFieldWithPrefix("fixedRate.[]."),
 							fieldWithPath("fixedRate.[].interval")
 								.description("Interval, in milliseconds, between the start of each execution."),
-							initialDelayWithPrefix("fixedRate.[]."),
+							initialDelayWithPrefix("fixedRate.[]."), nextExecutionWithPrefix("fixedRate.[]."),
 							fieldWithPath("custom").description("Tasks with custom triggers, if any."),
 							targetFieldWithPrefix("custom.[]."),
-							fieldWithPath("custom.[].trigger").description("Trigger for the task."))));
+							fieldWithPath("custom.[].trigger").description("Trigger for the task."))
+						.andWithPrefix("*.[].",
+								fieldWithPath("lastExecution").description("Last execution of this task, if any.")
+									.optional()
+									.type(JsonFieldType.OBJECT))
+						.andWithPrefix("*.[].lastExecution.", lastExecution())));
 	}
 
 	private FieldDescriptor targetFieldWithPrefix(String prefix) {
@@ -81,6 +88,26 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 
 	private FieldDescriptor initialDelayWithPrefix(String prefix) {
 		return fieldWithPath(prefix + "initialDelay").description("Delay, in milliseconds, before first execution.");
+	}
+
+	private FieldDescriptor nextExecutionWithPrefix(String prefix) {
+		return fieldWithPath(prefix + "nextExecution.time")
+			.description("Time of the next scheduled execution, if known.")
+			.type(JsonFieldType.STRING)
+			.optional();
+	}
+
+	private FieldDescriptor[] lastExecution() {
+		return new FieldDescriptor[] {
+				fieldWithPath("status").description("Status of the last execution (STARTED, SUCCESS, ERROR).")
+					.type(JsonFieldType.STRING),
+				fieldWithPath("time").description("Time of the last execution.").type(JsonFieldType.STRING),
+				fieldWithPath("exception.type").description("Exception type thrown by the task, if any.")
+					.type(JsonFieldType.STRING)
+					.optional(),
+				fieldWithPath("exception.message").description("Message of the exception thrown by the task, if any.")
+					.type(JsonFieldType.STRING)
+					.optional() };
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -98,7 +125,7 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 
 		}
 
-		@Scheduled(fixedDelay = 5000, initialDelay = 5000)
+		@Scheduled(fixedDelay = 5000, initialDelay = 0)
 		void purge() {
 
 		}
@@ -110,7 +137,10 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 
 		@Bean
 		SchedulingConfigurer schedulingConfigurer() {
-			return (registrar) -> registrar.addTriggerTask(new CustomTriggeredRunnable(), new CustomTrigger());
+			return (registrar) -> {
+				registrar.setTaskScheduler(new TestTaskScheduler());
+				registrar.addTriggerTask(new CustomTriggeredRunnable(), new CustomTrigger());
+			};
 		}
 
 		static class CustomTrigger implements Trigger {
@@ -126,7 +156,18 @@ class ScheduledTasksEndpointDocumentationTests extends MockMvcEndpointDocumentat
 
 			@Override
 			public void run() {
+				throw new IllegalStateException("Failed while running custom task");
+			}
 
+		}
+
+		static class TestTaskScheduler extends SimpleAsyncTaskScheduler {
+
+			TestTaskScheduler() {
+				setThreadNamePrefix("test-");
+				// do not log task errors
+				setErrorHandler((throwable) -> {
+				});
 			}
 
 		}

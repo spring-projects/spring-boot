@@ -78,7 +78,7 @@ class ImageArchiveTests extends AbstractJsonTests {
 	}
 
 	private void assertExpectedConfig(TarArchiveEntry entry, byte[] content) throws Exception {
-		assertThat(entry.getName()).isEqualTo("682f8d24b9d9c313d1190a0e955dcb5e65ec9beea40420999839c6f0cbb38382.json");
+		assertThat(entry.getName()).isEqualTo("416c76dc7f691f91e80516ff039e056f32f996b59af4b1cb8114e6ae8171a374.json");
 		String actualJson = new String(content, StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("image-archive-config.json"), StandardCharsets.UTF_8);
 		JSONAssert.assertEquals(expectedJson, actualJson, false);

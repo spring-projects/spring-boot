@@ -22,6 +22,7 @@ dependencies {
 	api("org.springframework:spring-context")
 
 	optional("ch.qos.logback:logback-classic")
+	optional("com.clickhouse:clickhouse-jdbc")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.h2database:h2")
 	optional("com.google.code.gson:gson")
@@ -29,7 +30,6 @@ dependencies {
 	optional("com.oracle.database.jdbc:ucp11")
 	optional("com.oracle.database.jdbc:ojdbc11")
 	optional("com.samskivert:jmustache")
-	optional("com.squareup.okhttp3:okhttp")
 	optional("com.zaxxer:HikariCP")
 	optional("io.netty:netty-tcnative-boringssl-static")
 	optional("io.projectreactor:reactor-tools")
@@ -73,11 +73,15 @@ dependencies {
 	optional("org.liquibase:liquibase-core") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
+	optional("org.messaginghub:pooled-jms") {
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+	}
 	optional("org.postgresql:postgresql")
 	optional("org.slf4j:jul-to-slf4j")
 	optional("org.slf4j:slf4j-api")
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-orm")
+	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-oxm")
 	optional("org.springframework:spring-r2dbc")
 	optional("org.springframework:spring-test")

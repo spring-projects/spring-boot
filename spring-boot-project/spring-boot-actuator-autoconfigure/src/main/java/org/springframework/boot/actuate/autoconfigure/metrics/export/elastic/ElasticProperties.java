@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,12 @@ public class ElasticProperties extends StepRegistryProperties {
 	 */
 	private String apiKeyCredentials;
 
+	/**
+	 * Whether to enable _source in the default index template when auto-creating the
+	 * index.
+	 */
+	private boolean enableSource = false;
+
 	public String getHost() {
 		return this.host;
 	}
@@ -157,6 +163,14 @@ public class ElasticProperties extends StepRegistryProperties {
 
 	public void setApiKeyCredentials(String apiKeyCredentials) {
 		this.apiKeyCredentials = apiKeyCredentials;
+	}
+
+	public boolean isEnableSource() {
+		return this.enableSource;
+	}
+
+	public void setEnableSource(boolean enableSource) {
+		this.enableSource = enableSource;
 	}
 
 }

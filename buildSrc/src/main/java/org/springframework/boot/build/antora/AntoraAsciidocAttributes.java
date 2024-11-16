@@ -83,13 +83,14 @@ public class AntoraAsciidocAttributes {
 
 	public Map<String, String> get() {
 		Map<String, String> attributes = new LinkedHashMap<>();
+		Map<String, String> internal = new LinkedHashMap<>();
 		addBuildTypeAttribute(attributes);
 		addGitHubAttributes(attributes);
-		addVersionAttributes(attributes);
+		addVersionAttributes(attributes, internal);
 		addArtifactAttributes(attributes);
 		addUrlJava(attributes);
 		addUrlLibraryLinkAttributes(attributes);
-		addPropertyAttributes(attributes);
+		addPropertyAttributes(attributes, internal);
 		return attributes;
 	}
 
@@ -115,7 +116,7 @@ public class AntoraAsciidocAttributes {
 		return versionRoot.substring(0, lastDot) + ".x";
 	}
 
-	private void addVersionAttributes(Map<String, String> attributes) {
+	private void addVersionAttributes(Map<String, String> attributes, Map<String, String> internal) {
 		this.libraries.forEach((library) -> {
 			String name = "version-" + library.getLinkRootName();
 			String value = library.getVersion().toString();
@@ -126,29 +127,36 @@ public class AntoraAsciidocAttributes {
 		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
 		addDependencyVersion(attributes, "jackson-core", "com.fasterxml.jackson.core:jackson-core");
 		addDependencyVersion(attributes, "jackson-databind", "com.fasterxml.jackson.core:jackson-databind");
-		addSpringDataDependencyVersion(attributes, "spring-data-commons");
-		addSpringDataDependencyVersion(attributes, "spring-data-couchbase");
-		addSpringDataDependencyVersion(attributes, "spring-data-cassandra");
-		addSpringDataDependencyVersion(attributes, "spring-data-elasticsearch");
-		addSpringDataDependencyVersion(attributes, "spring-data-jdbc");
-		addSpringDataDependencyVersion(attributes, "spring-data-jpa");
-		addSpringDataDependencyVersion(attributes, "spring-data-mongodb");
-		addSpringDataDependencyVersion(attributes, "spring-data-neo4j");
-		addSpringDataDependencyVersion(attributes, "spring-data-r2dbc");
-		addSpringDataDependencyVersion(attributes, "spring-data-rest", "spring-data-rest-core");
-		addSpringDataDependencyVersion(attributes, "spring-data-ldap");
+		addDependencyVersion(attributes, "jackson-dataformat-xml",
+				"com.fasterxml.jackson.dataformat:jackson-dataformat-xml");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-commons");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-couchbase");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-cassandra");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-elasticsearch");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-jdbc");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-jpa");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-mongodb");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-neo4j");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-r2dbc");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-redis");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-rest", "spring-data-rest-core");
+		addSpringDataDependencyVersion(attributes, internal, "spring-data-ldap");
 	}
 
-	private void addSpringDataDependencyVersion(Map<String, String> attributes, String artifactId) {
-		addSpringDataDependencyVersion(attributes, artifactId, artifactId);
+	private void addSpringDataDependencyVersion(Map<String, String> attributes, Map<String, String> internal,
+			String artifactId) {
+		addSpringDataDependencyVersion(attributes, internal, artifactId, artifactId);
 	}
 
-	private void addSpringDataDependencyVersion(Map<String, String> attributes, String name, String artifactId) {
-		String version = getVersion("org.springframework.data:" + artifactId);
+	private void addSpringDataDependencyVersion(Map<String, String> attributes, Map<String, String> internal,
+			String name, String artifactId) {
+		String groupAndArtifactId = "org.springframework.data:" + artifactId;
+		addDependencyVersion(attributes, name, groupAndArtifactId);
+		String version = getVersion(groupAndArtifactId);
 		String majorMinor = Arrays.stream(version.split("\\.")).limit(2).collect(Collectors.joining("."));
 		String antoraVersion = version.endsWith(DASH_SNAPSHOT) ? majorMinor + DASH_SNAPSHOT : majorMinor;
-		attributes.put("version-" + name + "-docs", antoraVersion);
-		attributes.put("version-" + name + "-javadoc", majorMinor + ".x");
+		internal.put("antoraversion-" + name, antoraVersion);
+		internal.put("dotxversion-" + name, majorMinor + ".x");
 	}
 
 	private void addDependencyVersion(Map<String, String> attributes, String name, String groupAndArtifactId) {
@@ -170,22 +178,40 @@ public class AntoraAsciidocAttributes {
 
 	private void addUrlJava(Map<String, String> attributes) {
 		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api/");
+		attributes.put("javadoc-location-java-util", "{url-javase-javadoc}");
+		attributes.put("javadoc-location-java-lang", "{url-javase-javadoc}");
+		attributes.put("javadoc-location-javax-management", "{url-javase-javadoc}");
+		attributes.put("javadoc-location-javax-xml", "{url-javase-javadoc}");
 	}
 
 	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
+		Map<String, String> packageAttributes = new LinkedHashMap<>();
 		this.libraries.forEach((library) -> {
-			String prefix = "url-" + library.getLinkRootName() + "-";
-			library.getLinks().forEach((name, link) -> attributes.put(prefix + name, link));
+			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
+				String linkRootName = (link.rootName() != null) ? link.rootName() : library.getLinkRootName();
+				String linkName = "url-" + linkRootName + "-" + name;
+				attributes.put(linkName, link.url(library));
+				link.packages()
+					.stream()
+					.map(this::packageAttributeName)
+					.forEach((packageAttributeName) -> packageAttributes.put(packageAttributeName,
+							"{" + linkName + "}"));
+			}));
 		});
+		attributes.putAll(packageAttributes);
 	}
 
-	private void addPropertyAttributes(Map<String, String> attributes) {
+	private String packageAttributeName(String packageName) {
+		return "javadoc-location-" + packageName.replace('.', '-');
+	}
+
+	private void addPropertyAttributes(Map<String, String> attributes, Map<String, String> internal) {
 		Properties properties = new Properties() {
 
 			@Override
 			public synchronized Object put(Object key, Object value) {
 				// Put directly because order is important for us
-				return attributes.put(key.toString(), value.toString());
+				return attributes.put(key.toString(), resolve(value.toString(), internal));
 			}
 
 		};
@@ -195,6 +221,13 @@ public class AntoraAsciidocAttributes {
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
+	}
+
+	private String resolve(String value, Map<String, String> internal) {
+		for (Map.Entry<String, String> entry : internal.entrySet()) {
+			value = value.replace("{" + entry.getKey() + "}", entry.getValue());
+		}
+		return value;
 	}
 
 }

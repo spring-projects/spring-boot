@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,19 @@
 
 package org.springframework.boot.context.properties;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
+import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.context.annotation.AnnotationConfigUtils;
+import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
+import org.springframework.context.annotation.ScopeMetadata;
+import org.springframework.context.annotation.ScopeMetadataResolver;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -36,8 +42,11 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 final class ConfigurationPropertiesBeanRegistrar {
+
+	private static final ScopeMetadataResolver scopeMetadataResolver = new AnnotationScopeMetadataResolver();
 
 	private final BeanDefinitionRegistry registry;
 
@@ -68,33 +77,36 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private boolean containsBeanDefinition(String name) {
-		return containsBeanDefinition(this.beanFactory, name);
-	}
-
-	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
-		if (beanFactory instanceof ListableBeanFactory listableBeanFactory
-				&& listableBeanFactory.containsBeanDefinition(name)) {
-			return true;
-		}
-		if (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {
-			return containsBeanDefinition(hierarchicalBeanFactory.getParentBeanFactory(), name);
-		}
-		return false;
+		return (this.beanFactory instanceof ListableBeanFactory listableBeanFactory
+				&& listableBeanFactory.containsBeanDefinition(name));
 	}
 
 	private void registerBeanDefinition(String beanName, Class<?> type,
 			MergedAnnotation<ConfigurationProperties> annotation) {
 		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
 				+ " annotation found on  '" + type.getName() + "'.");
-		this.registry.registerBeanDefinition(beanName, createBeanDefinition(beanName, type));
+		BeanDefinitionReaderUtils.registerBeanDefinition(createBeanDefinition(beanName, type), this.registry);
 	}
 
-	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
+	private BeanDefinitionHolder createBeanDefinition(String beanName, Class<?> type) {
+		AnnotatedGenericBeanDefinition definition = new AnnotatedGenericBeanDefinition(type);
+		AnnotationConfigUtils.processCommonDefinitionAnnotations(definition);
 		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
-		RootBeanDefinition definition = new RootBeanDefinition(type);
 		BindMethodAttribute.set(definition, bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
 			definition.setInstanceSupplier(() -> ConstructorBound.from(this.beanFactory, beanName, type));
+		}
+		ScopeMetadata metadata = scopeMetadataResolver.resolveScopeMetadata(definition);
+		definition.setScope(metadata.getScopeName());
+		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(definition, beanName);
+		return applyScopedProxyMode(metadata, definitionHolder, this.registry);
+	}
+
+	static BeanDefinitionHolder applyScopedProxyMode(ScopeMetadata metadata, BeanDefinitionHolder definition,
+			BeanDefinitionRegistry registry) {
+		ScopedProxyMode mode = metadata.getScopedProxyMode();
+		if (mode != ScopedProxyMode.NO) {
+			return ScopedProxyUtils.createScopedProxy(definition, registry, mode == ScopedProxyMode.TARGET_CLASS);
 		}
 		return definition;
 	}

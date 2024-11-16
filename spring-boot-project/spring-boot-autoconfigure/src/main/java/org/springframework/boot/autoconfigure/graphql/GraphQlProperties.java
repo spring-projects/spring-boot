@@ -43,6 +43,8 @@ public class GraphQlProperties {
 
 	private final Rsocket rsocket = new Rsocket();
 
+	private final Sse sse = new Sse();
+
 	public Graphiql getGraphiql() {
 		return this.graphiql;
 	}
@@ -65,6 +67,10 @@ public class GraphQlProperties {
 
 	public Rsocket getRsocket() {
 		return this.rsocket;
+	}
+
+	public Sse getSse() {
+		return this.sse;
 	}
 
 	public static class Schema {
@@ -220,7 +226,7 @@ public class GraphQlProperties {
 		/**
 		 * Maximum idle period before a server keep-alive ping is sent to client.
 		 */
-		private Duration keepAlive = null;
+		private Duration keepAlive;
 
 		public String getPath() {
 			return this.path;
@@ -261,6 +267,23 @@ public class GraphQlProperties {
 
 		public void setMapping(String mapping) {
 			this.mapping = mapping;
+		}
+
+	}
+
+	public static class Sse {
+
+		/**
+		 * Time required for concurrent handling to complete.
+		 */
+		private Duration timeout;
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
 		}
 
 	}

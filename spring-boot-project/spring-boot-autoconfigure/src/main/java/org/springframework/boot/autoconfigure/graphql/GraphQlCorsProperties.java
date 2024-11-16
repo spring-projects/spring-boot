@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,34 +38,34 @@ import org.springframework.web.cors.CorsConfiguration;
 public class GraphQlCorsProperties {
 
 	/**
-	 * Comma-separated list of origins to allow with '*' allowing all origins. When
-	 * allow-credentials is enabled, '*' cannot be used, and setting origin patterns
-	 * should be considered instead. When neither allowed origins nor allowed origin
-	 * patterns are set, cross-origin requests are effectively disabled.
+	 * List of origins to allow with '*' allowing all origins. When allow-credentials is
+	 * enabled, '*' cannot be used, and setting origin patterns should be considered
+	 * instead. When neither allowed origins nor allowed origin patterns are set,
+	 * cross-origin requests are effectively disabled.
 	 */
 	private List<String> allowedOrigins = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of origin patterns to allow. Unlike allowed origins which only
-	 * support '*', origin patterns are more flexible, e.g. 'https://*.example.com', and
-	 * can be used with allow-credentials. When neither allowed origins nor allowed origin
-	 * patterns are set, cross-origin requests are effectively disabled.
+	 * List of origin patterns to allow. Unlike allowed origins which only support '*',
+	 * origin patterns are more flexible, e.g. 'https://*.example.com', and can be used
+	 * with allow-credentials. When neither allowed origins nor allowed origin patterns
+	 * are set, cross-origin requests are effectively disabled.
 	 */
 	private List<String> allowedOriginPatterns = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of HTTP methods to allow. '*' allows all methods. When not
-	 * set, defaults to GET.
+	 * List of HTTP methods to allow. '*' allows all methods. When not set, defaults to
+	 * GET.
 	 */
 	private List<String> allowedMethods = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of HTTP headers to allow in a request. '*' allows all headers.
+	 * List of HTTP headers to allow in a request. '*' allows all headers.
 	 */
 	private List<String> allowedHeaders = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of headers to include in a response.
+	 * List of headers to include in a response.
 	 */
 	private List<String> exposedHeaders = new ArrayList<>();
 
