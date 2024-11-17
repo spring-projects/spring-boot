@@ -236,25 +236,14 @@ class JsonValueWriter {
 			String string = value.toString();
 			for (int i = 0; i < string.length(); i++) {
 				char ch = string.charAt(i);
-				switch (ch) {
-					case '"' -> this.out.append("\\\"");
-					case '\\' -> this.out.append("\\\\");
-					case '/' -> this.out.append("\\/");
-					case '\b' -> this.out.append("\\b");
-					case '\f' -> this.out.append("\\f");
-					case '\n' -> this.out.append("\\n");
-					case '\r' -> this.out.append("\\r");
-					case '\t' -> this.out.append("\\t");
-					default -> {
-						if (Character.isISOControl(ch)) {
-							this.out.append("\\u");
-							this.out.append(String.format("%04X", (int) ch));
-						}
-						else {
-							this.out.append(ch);
-						}
-					}
+				if (isSpecialCharacter(ch)) {
+					this.out.append(getEscapedCharacter(ch));
+				} else if (Character.isISOControl(ch)) {
+					this.out.append("\\u").append(String.format("%04X", (int) ch));
+				} else {
+					this.out.append(ch);
 				}
+
 			}
 			this.out.append('"');
 		}
@@ -262,6 +251,26 @@ class JsonValueWriter {
 			throw new UncheckedIOException(ex);
 		}
 	}
+
+	private boolean isSpecialCharacter(char ch) {
+		return "\"\\/\b\f\n\r\t".indexOf(ch) >= 0;
+	}
+
+	private String getEscapedCharacter(char ch) {
+		return switch (ch) {
+			case '"' -> "\\\"";
+			case '\\' -> "\\\\";
+			case '/' -> "\\/";
+			case '\b' -> "\\b";
+			case '\f' -> "\\f";
+			case '\n' -> "\\n";
+			case '\r' -> "\\r";
+			case '\t' -> "\\t";
+			default -> throw new IllegalArgumentException("Unhandled special character: " + ch);
+		};
+	}
+
+
 
 	private void append(String value) {
 		try {
