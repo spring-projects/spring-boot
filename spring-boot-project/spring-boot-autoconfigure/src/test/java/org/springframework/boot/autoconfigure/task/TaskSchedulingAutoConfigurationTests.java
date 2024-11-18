@@ -142,21 +142,6 @@ class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	void simpleAsyncTaskSchedulerBuilderShouldApplyCustomizers() {
-		SimpleAsyncTaskSchedulerCustomizer customizer = (scheduler) -> {
-		};
-		this.contextRunner.withBean(SimpleAsyncTaskSchedulerCustomizer.class, () -> customizer)
-			.withUserConfiguration(SchedulingConfiguration.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
-				SimpleAsyncTaskSchedulerBuilder builder = context.getBean(SimpleAsyncTaskSchedulerBuilder.class);
-				assertThat(builder).extracting("customizers")
-					.asInstanceOf(InstanceOfAssertFactories.collection(SimpleAsyncTaskSchedulerCustomizer.class))
-					.containsExactly(customizer);
-			});
-	}
-
-	@Test
 	void simpleAsyncTaskSchedulerBuilderShouldApplyTaskDecorator() {
 		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, TaskDecoratorConfig.class)
 			.run((context) -> {
@@ -177,6 +162,21 @@ class TaskSchedulingAutoConfigurationTests {
 				TaskDecorator taskDecorator = context.getBean(TaskDecorator.class);
 				ThreadPoolTaskSchedulerBuilder builder = context.getBean(ThreadPoolTaskSchedulerBuilder.class);
 				assertThat(builder).extracting("taskDecorator").isSameAs(taskDecorator);
+			});
+	}
+
+	@Test
+	void simpleAsyncTaskSchedulerBuilderShouldApplyCustomizers() {
+		SimpleAsyncTaskSchedulerCustomizer customizer = (scheduler) -> {
+		};
+		this.contextRunner.withBean(SimpleAsyncTaskSchedulerCustomizer.class, () -> customizer)
+			.withUserConfiguration(SchedulingConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SimpleAsyncTaskSchedulerBuilder.class);
+				SimpleAsyncTaskSchedulerBuilder builder = context.getBean(SimpleAsyncTaskSchedulerBuilder.class);
+				assertThat(builder).extracting("customizers")
+					.asInstanceOf(InstanceOfAssertFactories.collection(SimpleAsyncTaskSchedulerCustomizer.class))
+					.containsExactly(customizer);
 			});
 	}
 

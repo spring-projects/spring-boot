@@ -63,6 +63,19 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	}
 
 	@Test
+	void taskTerminationTimeoutShouldApply() {
+		SimpleAsyncTaskScheduler scheduler = this.builder.taskTerminationTimeout(Duration.ofSeconds(1)).build();
+		assertThat(scheduler).extracting("taskTerminationTimeout").isEqualTo(1000L);
+	}
+
+	@Test
+	void taskDecoratorShouldApply() {
+		TaskDecorator taskDecorator = mock(TaskDecorator.class);
+		SimpleAsyncTaskScheduler scheduler = this.builder.taskDecorator(taskDecorator).build();
+		assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
+	}
+
+	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((SimpleAsyncTaskSchedulerCustomizer[]) null))
@@ -127,19 +140,6 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 			.build();
 		then(customizer1).should().customize(scheduler);
 		then(customizer2).should().customize(scheduler);
-	}
-
-	@Test
-	void taskTerminationTimeoutShouldApply() {
-		SimpleAsyncTaskScheduler scheduler = this.builder.taskTerminationTimeout(Duration.ofSeconds(1)).build();
-		assertThat(scheduler).extracting("taskTerminationTimeout").isEqualTo(1000L);
-	}
-
-	@Test
-	void taskDecoratorShouldApply() {
-		TaskDecorator taskDecorator = mock(TaskDecorator.class);
-		SimpleAsyncTaskScheduler scheduler = this.builder.taskDecorator(taskDecorator).build();
-		assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
 	}
 
 }

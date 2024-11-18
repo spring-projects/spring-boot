@@ -68,16 +68,16 @@ class TaskSchedulingConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder(TaskSchedulingProperties properties,
-				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers,
-				ObjectProvider<TaskDecorator> taskDecorator) {
+				ObjectProvider<TaskDecorator> taskDecorator,
+				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers) {
 			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
 			ThreadPoolTaskSchedulerBuilder builder = new ThreadPoolTaskSchedulerBuilder();
 			builder = builder.poolSize(properties.getPool().getSize());
 			builder = builder.awaitTermination(shutdown.isAwaitTermination());
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-			builder = builder.customizers(threadPoolTaskSchedulerCustomizers);
 			builder = builder.taskDecorator(taskDecorator.getIfUnique());
+			builder = builder.customizers(threadPoolTaskSchedulerCustomizers);
 			return builder;
 		}
 
@@ -88,16 +88,16 @@ class TaskSchedulingConfigurations {
 
 		private final TaskSchedulingProperties properties;
 
-		private final ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers;
-
 		private final ObjectProvider<TaskDecorator> taskDecorator;
 
+		private final ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers;
+
 		SimpleAsyncTaskSchedulerBuilderConfiguration(TaskSchedulingProperties properties,
-				ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers,
-				ObjectProvider<TaskDecorator> taskDecorator) {
+				ObjectProvider<TaskDecorator> taskDecorator,
+				ObjectProvider<SimpleAsyncTaskSchedulerCustomizer> taskSchedulerCustomizers) {
 			this.properties = properties;
-			this.taskSchedulerCustomizers = taskSchedulerCustomizers;
 			this.taskDecorator = taskDecorator;
+			this.taskSchedulerCustomizers = taskSchedulerCustomizers;
 		}
 
 		@Bean
@@ -117,6 +117,7 @@ class TaskSchedulingConfigurations {
 		private SimpleAsyncTaskSchedulerBuilder builder() {
 			SimpleAsyncTaskSchedulerBuilder builder = new SimpleAsyncTaskSchedulerBuilder();
 			builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
+			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 			builder = builder.customizers(this.taskSchedulerCustomizers.orderedStream()::iterator);
 			TaskSchedulingProperties.Simple simple = this.properties.getSimple();
 			builder = builder.concurrencyLimit(simple.getConcurrencyLimit());
@@ -124,7 +125,6 @@ class TaskSchedulingConfigurations {
 			if (shutdown.isAwaitTermination()) {
 				builder = builder.taskTerminationTimeout(shutdown.getAwaitTerminationPeriod());
 			}
-			builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
 			return builder;
 		}
 

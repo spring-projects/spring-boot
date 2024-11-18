@@ -54,11 +54,6 @@ public class SimpleAsyncTaskSchedulerBuilder {
 
 	private final Set<SimpleAsyncTaskSchedulerCustomizer> customizers;
 
-	/**
-	 * Constructs a new {@code SimpleAsyncTaskSchedulerBuilder} with default settings.
-	 * Initializes a builder instance with all fields set to {@code null}, allowing for
-	 * further customization through its fluent API methods.
-	 */
 	public SimpleAsyncTaskSchedulerBuilder() {
 		this(null, null, null, null, null, null);
 	}
@@ -113,6 +108,17 @@ public class SimpleAsyncTaskSchedulerBuilder {
 	public SimpleAsyncTaskSchedulerBuilder taskTerminationTimeout(Duration taskTerminationTimeout) {
 		return new SimpleAsyncTaskSchedulerBuilder(this.threadNamePrefix, this.concurrencyLimit, this.virtualThreads,
 				taskTerminationTimeout, this.taskDecorator, this.customizers);
+	}
+
+	/**
+	 * Set the task decorator to be used by the {@link SimpleAsyncTaskScheduler}.
+	 * @param taskDecorator the task decorator to set
+	 * @return a new builder instance
+	 * @since 3.5.0
+	 */
+	public SimpleAsyncTaskSchedulerBuilder taskDecorator(TaskDecorator taskDecorator) {
+		return new SimpleAsyncTaskSchedulerBuilder(this.threadNamePrefix, this.concurrencyLimit, this.virtualThreads,
+				this.taskTerminationTimeout, taskDecorator, this.customizers);
 	}
 
 	/**
@@ -171,17 +177,6 @@ public class SimpleAsyncTaskSchedulerBuilder {
 		Assert.notNull(customizers, "Customizers must not be null");
 		return new SimpleAsyncTaskSchedulerBuilder(this.threadNamePrefix, this.concurrencyLimit, this.virtualThreads,
 				this.taskTerminationTimeout, this.taskDecorator, append(this.customizers, customizers));
-	}
-
-	/**
-	 * Set the task decorator to be used by the {@link SimpleAsyncTaskScheduler}.
-	 * @param taskDecorator the task decorator to set
-	 * @return a new builder instance
-	 * @since 3.5.0
-	 */
-	public SimpleAsyncTaskSchedulerBuilder taskDecorator(TaskDecorator taskDecorator) {
-		return new SimpleAsyncTaskSchedulerBuilder(this.threadNamePrefix, this.concurrencyLimit, this.virtualThreads,
-				this.taskTerminationTimeout, taskDecorator, this.customizers);
 	}
 
 	/**
