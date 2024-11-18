@@ -118,6 +118,8 @@ Such customizer beans can be ordered (Boot's own customizer has an order of 0), 
 Any beans of type javadoc:com.fasterxml.jackson.databind.Module[] are automatically registered with the auto-configured javadoc:org.springframework.http.converter.json.Jackson2ObjectMapperBuilder[] and are applied to any javadoc:com.fasterxml.jackson.databind.ObjectMapper[] instances that it creates.
 This provides a global mechanism for contributing custom modules when you add new features to your application.
 
+NOTE: If you wish to register additional modules programmatically using a javadoc:org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer[], make sure to use the `modulesToInstall` method that takes a consumer as the other variants are not additive.
+
 If you want to replace the default javadoc:com.fasterxml.jackson.databind.ObjectMapper[] completely, either define a javadoc:org.springframework.context.annotation.Bean[format=annotation] of that type or, if you prefer the builder-based approach, define a javadoc:org.springframework.http.converter.json.Jackson2ObjectMapperBuilder[] javadoc:org.springframework.context.annotation.Bean[format=annotation].
 When defining an javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean, marking it as javadoc:org.springframework.context.annotation.Primary[format=annotation] is recommended as the auto-configuration's javadoc:com.fasterxml.jackson.databind.ObjectMapper[] that it will replace is javadoc:org.springframework.context.annotation.Primary[format=annotation].
 Note that, in either case, doing so disables all auto-configuration of the javadoc:com.fasterxml.jackson.databind.ObjectMapper[].

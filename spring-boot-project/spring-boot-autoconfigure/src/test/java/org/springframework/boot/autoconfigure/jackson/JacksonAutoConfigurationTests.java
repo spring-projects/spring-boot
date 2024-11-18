@@ -73,7 +73,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -327,12 +326,13 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
-	void customModulesRegisteredByBuilderCustomizerWithHighestPrecedenceShouldBeRetained() {
+	void customModulesRegisteredByBuilderCustomizerShouldBeRetained() {
 		this.contextRunner.withUserConfiguration(ModuleConfig.class, CustomModuleBuilderCustomizerConfig.class)
 			.run((context) -> {
 				ObjectMapper objectMapper = context.getBean(Jackson2ObjectMapperBuilder.class).build();
 				assertThat(context.getBean(CustomModule.class).getOwners()).contains(objectMapper);
-				assertThat(objectMapper.getRegisteredModuleIds()).contains("customizer-module");
+				assertThat(objectMapper.getRegisteredModuleIds()).contains("module-A", "module-B",
+						CustomModule.class.getName());
 			});
 	}
 
@@ -608,9 +608,15 @@ class JacksonAutoConfigurationTests {
 	static class CustomModuleBuilderCustomizerConfig {
 
 		@Bean
-		@Order(Ordered.HIGHEST_PRECEDENCE)
-		Jackson2ObjectMapperBuilderCustomizer customModuleCustomizer() {
-			return (builder) -> builder.modulesToInstall(new SimpleModule("customizer-module"));
+		@Order(-1)
+		Jackson2ObjectMapperBuilderCustomizer highPrecedenceCustomizer() {
+			return (builder) -> builder.modulesToInstall((modules) -> modules.add(new SimpleModule("module-A")));
+		}
+
+		@Bean
+		@Order(1)
+		Jackson2ObjectMapperBuilderCustomizer lowPrecedenceCustomizer() {
+			return (builder) -> builder.modulesToInstall((modules) -> modules.add(new SimpleModule("module-B")));
 		}
 
 	}
