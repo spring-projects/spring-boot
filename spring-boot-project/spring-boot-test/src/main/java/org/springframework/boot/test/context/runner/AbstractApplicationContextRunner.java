@@ -19,6 +19,7 @@ package org.springframework.boot.test.context.runner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.annotation.Configurations;
@@ -38,12 +40,14 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Utility design to run an {@link ApplicationContext} and provide AssertJ style
@@ -439,13 +443,25 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		this.runnerConfiguration.environmentProperties.applyTo(context);
 		this.runnerConfiguration.beanRegistrations.forEach((registration) -> registration.apply(context));
 		this.runnerConfiguration.initializers.forEach((initializer) -> initializer.initialize(context));
-		Class<?>[] classes = Configurations.getClasses(this.runnerConfiguration.configurations);
-		if (classes.length > 0) {
-			((AnnotationConfigRegistry) context).register(classes);
+		if (!CollectionUtils.isEmpty(this.runnerConfiguration.configurations)) {
+			BiConsumer<Class<?>, String> registrar = getRegistrar(context);
+			for (Configurations configurations : Configurations.collate(this.runnerConfiguration.configurations)) {
+				for (Class<?> beanClass : Configurations.getClasses(configurations)) {
+					String beanName = configurations.getBeanName(beanClass);
+					registrar.accept(beanClass, beanName);
+				}
+			}
 		}
 		if (refresh) {
 			context.refresh();
 		}
+	}
+
+	private BiConsumer<Class<?>, String> getRegistrar(C context) {
+		if (context instanceof BeanDefinitionRegistry registry) {
+			return new AnnotatedBeanDefinitionReader(registry, context.getEnvironment())::registerBean;
+		}
+		return (beanClass, beanName) -> ((AnnotationConfigRegistry) context).register(beanClass);
 	}
 
 	private void accept(ContextConsumer<? super A> consumer, A context) {

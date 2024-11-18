@@ -54,6 +54,12 @@ class AutoConfigurationsTests {
 				AutoConfigureA.class);
 	}
 
+	@Test
+	void getBeanNameShouldUseClassName() {
+		Configurations configurations = AutoConfigurations.of(AutoConfigureA.class, AutoConfigureB.class);
+		assertThat(configurations.getBeanName(AutoConfigureA.class)).isEqualTo(AutoConfigureA.class.getName());
+	}
+
 	private String replaceB(String className) {
 		return (!AutoConfigureB.class.getName().equals(className)) ? className : AutoConfigureB2.class.getName();
 	}
