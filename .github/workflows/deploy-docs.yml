@@ -62,3 +62,10 @@ jobs:
         context-path: /
         cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
         cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
+    - name: Send Notification
+      if: failure()
+      uses: ./.github/actions/send-notification
+      with:
+        run-name: ${{ format('{0} | Build and Deploy Docs', github.ref_name) }}
+        status: ${{ job.status }}
+        webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
