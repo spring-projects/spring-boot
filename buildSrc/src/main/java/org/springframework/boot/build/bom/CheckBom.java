@@ -211,17 +211,15 @@ public abstract class CheckBom extends DefaultTask {
 
 	private File resolveBom(Library library, String alignsWithBom) {
 		String coordinates = alignsWithBom + ":" + library.getVersion().getVersion() + "@pom";
-
 		Set<ResolvedArtifact> artifacts = this.configurations
-				.detachedConfiguration(this.dependencies.create(coordinates))
-				.getResolvedConfiguration()
-				.getResolvedArtifacts();
-
+			.detachedConfiguration(this.dependencies.create(coordinates))
+			.getResolvedConfiguration()
+			.getResolvedArtifacts();
 		if (artifacts.size() != 1) {
-			throw new IllegalStateException(
-					"Expected a single file but '" + coordinates + "' resolved to " + artifacts.size());
+			throw new IllegalStateException("Expected a single file but '%s' resolved to %d artifacts"
+				.formatted(coordinates, artifacts.size()));
 		}
-
 		return artifacts.iterator().next().getFile();
 	}
+
 }
