@@ -871,7 +871,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(SameSite.class)
+	@EnumSource
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookies(SameSite sameSite) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().getCookie().setSameSite(sameSite);
@@ -886,7 +886,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(SameSite.class)
+	@EnumSource
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookiesWhenUsingCustomName(SameSite sameSite)
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();

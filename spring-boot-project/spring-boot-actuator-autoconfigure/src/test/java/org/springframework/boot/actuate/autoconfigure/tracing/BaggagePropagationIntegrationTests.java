@@ -61,7 +61,7 @@ class BaggagePropagationIntegrationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(AutoConfig.class)
+	@EnumSource
 	void shouldSetEntriesToMdcFromSpanWithBaggage(AutoConfig autoConfig) {
 		autoConfig.get().run((context) -> {
 			Tracer tracer = tracer(context);
@@ -87,7 +87,7 @@ class BaggagePropagationIntegrationTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(AutoConfig.class)
+	@EnumSource
 	void shouldRemoveEntriesFromMdcForNullSpan(AutoConfig autoConfig) {
 		autoConfig.get().run((context) -> {
 			Tracer tracer = tracer(context);
