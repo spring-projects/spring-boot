@@ -94,7 +94,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
 				noClassesShouldLoadResourcesUsingResourceUtils(), noClassesShouldCallStringToUpperCaseWithoutLocale(),
 				noClassesShouldCallStringToLowerCaseWithoutLocale(),
-				conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
+				conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType(),
+				enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
 		getRules().addAll(getProhibitObjectsRequireNonNull()
 			.map((prohibit) -> prohibit ? noClassesShouldCallObjectsRequireNonNull() : Collections.emptyList()));
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
@@ -291,6 +292,35 @@ public abstract class ArchitectureCheck extends DefaultTask {
 						if (types.length == 1 && item.getReturnType().equals(types[0])) {
 							events.add(SimpleConditionEvent.violated(item, conditional.getDescription()
 									+ " should not specify only a value that is the same as the method's return type"));
+						}
+					});
+				}
+			}
+
+		};
+	}
+
+	private ArchRule enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areAnnotatedWith("org.junit.jupiter.params.provider.EnumSource")
+			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType())
+			.allowEmptyShould(true);
+	}
+
+	private ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType() {
+		return new ArchCondition<>("not specify only a type that is the same as the method's parameter type") {
+
+			@Override
+			public void check(JavaMethod item, ConditionEvents events) {
+				JavaAnnotation<JavaMethod> conditional = item
+					.getAnnotationOfType("org.junit.jupiter.params.provider.EnumSource");
+				Map<String, Object> properties = conditional.getProperties();
+				if (properties.size() == 1 && item.getParameterTypes().size() == 1) {
+					conditional.get("value").ifPresent((value) -> {
+						if (value.equals(item.getParameterTypes().get(0))) {
+							events.add(SimpleConditionEvent.violated(item, conditional.getDescription()
+									+ " should not specify only a value that is the same as the method's parameter type"));
 						}
 					});
 				}
