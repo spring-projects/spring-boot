@@ -20,7 +20,7 @@ The following table describes these properties:
 | Default arguments for the main method (space separated).
 
 | `loader.main`
-| Name of main class to launch (for example, `com.app.Application`).
+| Name of main class to launch (for example, `+com.app.Application+`).
 
 | `loader.config.name`
 | Name of properties file (for example, `launcher`).

@@ -400,7 +400,7 @@ The application's single required argument is the remote URL to which it connect
 
 For example, if you are using Eclipse or Spring Tools and you have a project named `my-app` that you have deployed to Cloud Foundry, you would do the following:
 
-* Select `Run Configurations...` from the `Run` menu.
+* Select `Run Configurations...` from the `+Run+` menu.
 * Create a new `Java Application` "`launch configuration`".
 * Browse for the `my-app` project.
 * Use `org.springframework.boot.devtools.RemoteSpringApplication` as the main class.

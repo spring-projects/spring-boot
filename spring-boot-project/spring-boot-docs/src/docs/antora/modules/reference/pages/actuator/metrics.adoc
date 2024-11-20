@@ -1261,7 +1261,7 @@ You can also add any number of `tag=KEY:VALUE` query parameters to the end of th
 [TIP]
 ====
 The reported measurements are the _sum_ of the statistics of all meters that match the meter name and any tags that have been applied.
-In the preceding example, the returned `Value` statistic is the sum of the maximum memory footprints of the "`Code Cache`", "`Compressed Class Space`", and "`Metaspace`" areas of the heap.
+In the preceding example, the returned `+Value+` statistic is the sum of the maximum memory footprints of the "`Code Cache`", "`Compressed Class Space`", and "`Metaspace`" areas of the heap.
 If you wanted to see only the maximum size for the "`Metaspace`", you could add an additional `tag=id:Metaspace` -- that is, `/actuator/metrics/jvm.memory.max?tag=area:nonheap&tag=id:Metaspace`.
 ====
 

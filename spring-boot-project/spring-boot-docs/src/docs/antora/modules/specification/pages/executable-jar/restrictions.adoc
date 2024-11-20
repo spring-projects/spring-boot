@@ -17,5 +17,5 @@ The content of the nested jar file itself can still be compressed, as can any ot
 * System classLoader:
 Launched applications should use `Thread.getContextClassLoader()` when loading classes (most libraries and frameworks do so by default).
 Trying to load nested jar classes with `ClassLoader.getSystemClassLoader()` fails.
-`java.util.Logging` always uses the system classloader.
+`+java.util.Logging+` always uses the system classloader.
 For this reason, you should consider a different logging implementation.

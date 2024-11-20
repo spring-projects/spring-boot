@@ -17,7 +17,7 @@ You can extend from that so that your implementation gets a chance to handle the
 If, for whatever reason, you cannot handle the exception, return `null` to give another implementation a chance to handle the exception.
 
 `FailureAnalyzer` implementations must be registered in `META-INF/spring.factories`.
-The following example registers `ProjectConstraintViolationFailureAnalyzer`:
+The following example registers `+ProjectConstraintViolationFailureAnalyzer+`:
 
 [source,properties]
 ----
