@@ -166,8 +166,8 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 			Function<SslBundle, TlsSocketStrategy> tlsSocketStrategyFactory) {
 		Assert.notNull(tlsSocketStrategyFactory, "'tlsSocketStrategyFactory' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
-				this.connectionManagerCustomizer, this.socketConfigCustomizer,
-				this.defaultRequestConfigCustomizer, tlsSocketStrategyFactory);
+				this.connectionManagerCustomizer, this.socketConfigCustomizer, this.defaultRequestConfigCustomizer,
+				tlsSocketStrategyFactory);
 	}
 
 	/**
