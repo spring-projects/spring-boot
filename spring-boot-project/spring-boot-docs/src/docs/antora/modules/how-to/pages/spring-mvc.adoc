@@ -205,7 +205,7 @@ If you add your own, you have to be aware of the order and in which position you
 `WebMvcAutoConfiguration` adds the following `ViewResolvers` to your context:
 
 * An `InternalResourceViewResolver` named '`defaultViewResolver`'.
-  This one locates physical resources that can be rendered by using the `DefaultServlet` (including static resources and JSP pages, if you use those).
+  This one locates physical resources that can be rendered by using the `+DefaultServlet+` (including static resources and JSP pages, if you use those).
   It applies a prefix and a suffix to the view name and then looks for a physical resource with that path in the servlet context (the defaults are both empty but are accessible for external configuration through `spring.mvc.view.prefix` and `spring.mvc.view.suffix`).
   You can override it by providing a bean of the same type.
 * A `BeanNameViewResolver` named '`beanNameViewResolver`'.

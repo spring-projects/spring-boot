@@ -75,7 +75,7 @@ This means that, in addition to being deployable to a servlet container, you can
 To convert an existing non-web Spring application to a Spring Boot application, replace the code that creates your `ApplicationContext` and replace it with calls to `SpringApplication` or `SpringApplicationBuilder`.
 Spring MVC web applications are generally amenable to first creating a deployable war application and then migrating it later to an executable war or jar.
 
-To create a deployable war by extending `SpringBootServletInitializer` (for example, in a class called `Application`) and adding the Spring Boot `@SpringBootApplication` annotation, use code similar to that shown in the following example:
+To create a deployable war by extending `SpringBootServletInitializer` (for example, in a class called `+Application+`) and adding the Spring Boot `@SpringBootApplication` annotation, use code similar to that shown in the following example:
 
 include-code::MyApplication[tag=!main]
 
@@ -87,14 +87,14 @@ Static resources can be moved to `/public` (or `/static` or `/resources` or `/ME
 The same applies to `messages.properties` (which Spring Boot automatically detects in the root of the classpath).
 
 Vanilla usage of Spring `DispatcherServlet` and Spring Security should require no further changes.
-If you have other features in your application (for instance, using other servlets or filters), you may need to add some configuration to your `Application` context, by replacing those elements from the `web.xml`, as follows:
+If you have other features in your application (for instance, using other servlets or filters), you may need to add some configuration to your `+Application+` context, by replacing those elements from the `web.xml`, as follows:
 
 * A `@Bean` of type `Servlet` or `ServletRegistrationBean` installs that bean in the container as if it were a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
 * A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (as a `<filter/>` and `<filter-mapping/>`).
 * An `ApplicationContext` in an XML file can be added through an `@ImportResource` in your `Application`.
   Alternatively, cases where annotation configuration is heavily used already can be recreated in a few lines as `@Bean` definitions.
 
-Once the war file is working, you can make it executable by adding a `main` method to your `Application`, as shown in the following example:
+Once the war file is working, you can make it executable by adding a `main` method to your `+Application+`, as shown in the following example:
 
 include-code::MyApplication[tag=main]
 

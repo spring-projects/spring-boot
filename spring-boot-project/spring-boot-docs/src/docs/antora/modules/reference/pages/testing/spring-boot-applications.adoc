@@ -10,7 +10,7 @@ The annotation works by xref:testing/spring-boot-applications.adoc#testing.sprin
 In addition to `@SpringBootTest` a number of other annotations are also provided for xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[testing more specific slices] of an application.
 
 TIP: If you are using JUnit 4, do not forget to also add `@RunWith(SpringRunner.class)` to your test, otherwise the annotations will be ignored.
-If you are using JUnit 5, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `@...Test` annotations are already annotated with it.
+If you are using JUnit 5, there is no need to add the equivalent `@ExtendWith(SpringExtension.class)` as `@SpringBootTest` and the other `+@...Test+` annotations are already annotated with it.
 
 By default, `@SpringBootTest` will not start a server.
 You can use the `webEnvironment` attribute of `@SpringBootTest` to further refine how your tests run:
@@ -233,7 +233,7 @@ Regardless of your classpath, tracing components which are reporting data are no
 
 If you need those components as part of an integration test, annotate the test with `@AutoConfigureObservability`.
 
-If you have created your own reporting components (e.g. a custom `SpanExporter` or `SpanHandler`) and you don't want them to be active in tests, you can use the `@ConditionalOnEnabledTracing` annotation to disable them.
+If you have created your own reporting components (e.g. a custom `SpanExporter` or `+brave.handler.SpanHandler+`) and you don't want them to be active in tests, you can use the `@ConditionalOnEnabledTracing` annotation to disable them.
 
 If you annotate xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[a sliced test] with `@AutoConfigureObservability`, it auto-configures a no-op `Tracer`.
 Data exporting in sliced tests is not supported with the `@AutoConfigureObservability` annotation.
@@ -261,16 +261,16 @@ It often helps to load only the parts of the configuration that are required to 
 For example, you might want to test that Spring MVC controllers are mapping URLs correctly, and you do not want to involve database calls in those tests, or you might want to test JPA entities, and you are not interested in the web layer when those tests run.
 
 The `spring-boot-test-autoconfigure` module includes a number of annotations that can be used to automatically configure such "`slices`".
-Each of them works in a similar way, providing a `@...Test` annotation that loads the `ApplicationContext` and one or more `@AutoConfigure...` annotations that can be used to customize auto-configuration settings.
+Each of them works in a similar way, providing a `+@...Test+` annotation that loads the `ApplicationContext` and one or more `+@AutoConfigure...+` annotations that can be used to customize auto-configuration settings.
 
 NOTE: Each slice restricts component scan to appropriate components and loads a very restricted set of auto-configuration classes.
-If you need to exclude one of them, most `@...Test` annotations provide an `excludeAutoConfiguration` attribute.
+If you need to exclude one of them, most `+@...Test+` annotations provide an `excludeAutoConfiguration` attribute.
 Alternatively, you can use `@ImportAutoConfiguration#exclude`.
 
-NOTE: Including multiple "`slices`" by using several `@...Test` annotations in one test is not supported.
-If you need multiple "`slices`", pick one of the `@...Test` annotations and include the `@AutoConfigure...` annotations of the other "`slices`" by hand.
+NOTE: Including multiple "`slices`" by using several `+@...Test+` annotations in one test is not supported.
+If you need multiple "`slices`", pick one of the `+@...Test+` annotations and include the `+@AutoConfigure...+` annotations of the other "`slices`" by hand.
 
-TIP: It is also possible to use the `@AutoConfigure...` annotations with the standard `@SpringBootTest` annotation.
+TIP: It is also possible to use the `+@AutoConfigure...+` annotations with the standard `@SpringBootTest` annotation.
 You can use this combination if you are not interested in "`slicing`" your application but you want some of the auto-configured test beans.
 
 
@@ -281,9 +281,9 @@ You can use this combination if you are not interested in "`slicing`" your appli
 To test that object JSON serialization and deserialization is working as expected, you can use the `@JsonTest` annotation.
 `@JsonTest` auto-configures the available supported JSON mapper, which can be one of the following libraries:
 
-* Jackson `ObjectMapper`, any `@JsonComponent` beans and any Jackson ``Module``s
-* `Gson`
-* `Jsonb`
+* Jackson `ObjectMapper`, any `@JsonComponent` beans and any Jackson `com.fasterxml.jackson.databind.Module`
+* `+Gson+`
+* `+Jsonb+`
 
 TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be xref:appendix:test-auto-configuration/index.adoc[found in the appendix].
 
@@ -825,8 +825,8 @@ include-code::MyWebServiceServerTests[]
 [[testing.spring-boot-applications.additional-autoconfiguration-and-slicing]]
 == Additional Auto-configuration and Slicing
 
-Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
-Additional auto-configurations can be added on a test-by-test basis by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
+Each slice provides one or more `+@AutoConfigure...+` annotations that namely defines the auto-configurations that should be included as part of a slice.
+Additional auto-configurations can be added on a test-by-test basis by creating a custom `+@AutoConfigure...+` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
 include-code::MyJdbcTests[]
 
@@ -840,11 +840,11 @@ Alternatively, additional auto-configurations can be added for any use of a slic
 com.example.IntegrationAutoConfiguration
 ----
 
-In this example, the `com.example.IntegrationAutoConfiguration` is enabled on every test annotated with `@JdbcTest`.
+In this example, the `+com.example.IntegrationAutoConfiguration+` is enabled on every test annotated with `@JdbcTest`.
 
 TIP: You can use comments with `#` in this file.
 
-TIP: A slice or `@AutoConfigure...` annotation can be customized this way as long as it is meta-annotated with `@ImportAutoConfiguration`.
+TIP: A slice or `+@AutoConfigure...+` annotation can be customized this way as long as it is meta-annotated with `@ImportAutoConfiguration`.
 
 
 

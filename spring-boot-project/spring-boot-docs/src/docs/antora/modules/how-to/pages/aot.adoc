@@ -43,7 +43,7 @@ For Maven, this works by setting the `profiles` configuration of the `spring-boo
 </profile>
 ----
 
-For Gradle, you need to configure the `ProcessAot` task:
+For Gradle, you need to configure the `+ProcessAot+` task:
 
 [source,gradle]
 ----

@@ -137,7 +137,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 * HikariCP
 * Tomcat pooling `DataSource`
 * Commons DBCP2
-* Oracle UCP & `OracleDataSource`
+* Oracle UCP & `+OracleDataSource+`
 * Spring Framework's `SimpleDriverDataSource`
 * H2 `JdbcDataSource`
 * PostgreSQL `PGSimpleDataSource`
@@ -234,7 +234,7 @@ See the xref:how-to:data-access.adoc#howto.data-access.separate-entity-definitio
 
 {url-spring-data-jpa-site}[Spring Data JPA] repositories are interfaces that you can define to access data.
 JPA queries are created automatically from your method names.
-For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
+For example, a `+CityRepository+` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
 
 For more complex queries, you can annotate your method with Spring Data's javadoc:{url-spring-data-jpa-javadoc}/org.springframework.data.jpa.repository.Query[] annotation.
 
@@ -539,7 +539,7 @@ include-code::MyBean[]
 
 https://spring.io/projects/spring-data-r2dbc[Spring Data R2DBC] repositories are interfaces that you can define to access data.
 Queries are created automatically from your method names.
-For example, a `CityRepository` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
+For example, a `+CityRepository+` interface might declare a `findAllByState(String state)` method to find all the cities in a given state.
 
 For more complex queries, you can annotate your method with Spring Data's javadoc:{url-spring-data-r2dbc-javadoc}/org.springframework.data.r2dbc.repository.Query[format=annotation] annotation.
 

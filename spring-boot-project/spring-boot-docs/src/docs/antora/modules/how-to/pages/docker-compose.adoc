@@ -9,7 +9,7 @@ This section includes topics relating to the Docker Compose support in Spring Bo
 == Customizing the JDBC URL
 
 When using `JdbcConnectionDetails` with Docker Compose, the parameters of the JDBC URL
-can be customized by applying the `org.springframework.boot.jdbc.parameters` label to the
+can be customized by applying the `+org.springframework.boot.jdbc.parameters+` label to the
 service. For example:
 
 [source,yaml]

@@ -370,7 +370,7 @@ You can also define a class annotated with `@ControllerAdvice` to customize the 
 
 include-code::MyControllerAdvice[]
 
-In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the `ErrorAttributes` representation.
+In the preceding example, if `MyException` is thrown by a controller defined in the same package as `+SomeController+`, a JSON representation of the `MyErrorBody` POJO is used instead of the `ErrorAttributes` representation.
 
 In some cases, errors handled at the controller level are not recorded by web observations or the xref:actuator/metrics.adoc#actuator.metrics.supported.spring-mvc[metrics infrastructure].
 Applications can ensure that such exceptions are recorded with the observations by {url-spring-framework-docs}/integration/observability.html#observability.http-server.servlet[setting the handled exception on the observation context].
@@ -610,14 +610,14 @@ TIP: See the javadoc:org.springframework.boot.autoconfigure.web.ServerProperties
 [[web.servlet.embedded-container.customizing.samesite]]
 ==== SameSite Cookies
 
-The `SameSite` cookie attribute can be used by web browsers to control if and how cookies are submitted in cross-site requests.
+The `+SameSite+` cookie attribute can be used by web browsers to control if and how cookies are submitted in cross-site requests.
 The attribute is particularly relevant for modern web browsers which have started to change the default value that is used when the attribute is missing.
 
-If you want to change the `SameSite` attribute of your session cookie, you can use the configprop:server.servlet.session.cookie.same-site[] property.
+If you want to change the `+SameSite+` attribute of your session cookie, you can use the configprop:server.servlet.session.cookie.same-site[] property.
 This property is supported by auto-configured Tomcat, Jetty and Undertow servers.
 It is also used to configure Spring Session servlet based `SessionRepository` beans.
 
-For example, if you want your session cookie to have a `SameSite` attribute of `None`, you can add the following to your `application.properties` or `application.yaml` file:
+For example, if you want your session cookie to have a `+SameSite+` attribute of `+None+`, you can add the following to your `application.properties` or `application.yaml` file:
 
 [configprops,yaml]
 ----
@@ -628,11 +628,11 @@ server:
         same-site: "none"
 ----
 
-If you want to change the `SameSite` attribute on other cookies added to your `HttpServletResponse`, you can use a `CookieSameSiteSupplier`.
-The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `SameSite` value, or `null`.
+If you want to change the `+SameSite+` attribute on other cookies added to your `HttpServletResponse`, you can use a `CookieSameSiteSupplier`.
+The `CookieSameSiteSupplier` is passed a `Cookie` and may return a `+SameSite+` value, or `null`.
 
 There are a number of convenience factory and filter methods that you can use to quickly match specific cookies.
-For example, adding the following bean will automatically apply a `SameSite` of `Lax` for all cookies with a name that matches the regular expression `myapp.*`.
+For example, adding the following bean will automatically apply a `+SameSite+` of `+Lax+` for all cookies with a name that matches the regular expression `myapp.*`.
 
 include-code::MySameSiteConfiguration[]
 
