@@ -581,11 +581,11 @@ You can configure the roles by using the configprop:management.endpoint.health.r
 NOTE: If you have secured your application and wish to use `always`, your security configuration must permit access to the health endpoint for both authenticated and unauthenticated users.
 
 Health information is collected from the content of a javadoc:org.springframework.boot.actuate.health.HealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] instances defined in your `ApplicationContext`).
-Spring Boot includes a number of auto-configured `HealthContributors`, and you can also write your own.
+Spring Boot includes a number of auto-configured `HealthContributor` beans, and you can also write your own.
 
 A `HealthContributor` can be either a `HealthIndicator` or a `CompositeHealthContributor`.
 A `HealthIndicator` provides actual health information, including a `Status`.
-A `CompositeHealthContributor` provides a composite of other `HealthContributors`.
+A `CompositeHealthContributor` provides a composite of other `HealthContributor` instances.
 Taken together, contributors form a tree structure to represent the overall system health.
 
 By default, the final system health is derived by a `StatusAggregator`, which sorts the statuses from each `HealthIndicator` based on an ordered list of statuses.
@@ -599,7 +599,7 @@ TIP: You can use the `HealthContributorRegistry` to register and unregister heal
 [[actuator.endpoints.health.auto-configured-health-indicators]]
 === Auto-configured HealthIndicators
 
-When appropriate, Spring Boot auto-configures the `HealthIndicators` listed in the following table.
+When appropriate, Spring Boot auto-configures the `HealthIndicator` beans listed in the following table.
 You can also enable or disable selected indicators by configuring `management.health.key.enabled`,
 with the `key` listed in the following table:
 
@@ -674,9 +674,7 @@ TIP: The `ssl` `HealthIndicator` has a "warning threshold" property named config
 If an SSL certificate will be invalid within the time span defined by this threshold, the `HealthIndicator` will warn you but it will still return HTTP 200 to not disrupt the application.
 You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate.
 
-
-
-Additional `HealthIndicators` are available but are not enabled by default:
+Additional `HealthIndicators` beans are available but are not enabled by default:
 
 [cols="3,4,6"]
 |===
@@ -773,7 +771,7 @@ The following table shows the default status mappings for the built-in statuses:
 
 For reactive applications, such as those that use Spring WebFlux, `ReactiveHealthContributor` provides a non-blocking contract for getting application health.
 Similar to a traditional `HealthContributor`, health information is collected from the content of a javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributorRegistry[] (by default, all javadoc:org.springframework.boot.actuate.health.HealthContributor[] and javadoc:org.springframework.boot.actuate.health.ReactiveHealthContributor[] instances defined in your `ApplicationContext`).
-Regular `HealthContributors` that do not check against a reactive API are executed on the elastic scheduler.
+Regular `HealthContributor` instances that do not check against a reactive API are executed on the elastic scheduler.
 
 TIP: In a reactive application, you should use the `ReactiveHealthContributorRegistry` to register and unregister health indicators at runtime.
 If you need to register a regular `HealthContributor`, you should wrap it with `ReactiveHealthContributor#adapt`.
@@ -790,7 +788,7 @@ TIP: To handle the error automatically, consider extending from `AbstractReactiv
 [[actuator.endpoints.health.auto-configured-reactive-health-indicators]]
 === Auto-configured ReactiveHealthIndicators
 
-When appropriate, Spring Boot auto-configures the following `ReactiveHealthIndicators`:
+When appropriate, Spring Boot auto-configures the following `ReactiveHealthIndicator` beans:
 
 [cols="2,4,6"]
 |===

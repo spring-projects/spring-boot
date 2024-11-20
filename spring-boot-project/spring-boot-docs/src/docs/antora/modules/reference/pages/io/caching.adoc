@@ -101,7 +101,7 @@ NOTE: When a cache library offers both a native implementation and JSR-107 suppo
 TIP: Spring Boot has xref:io/hazelcast.adoc[general support for Hazelcast].
 If a single `HazelcastInstance` is available, it is automatically reused for the `CacheManager` as well, unless the configprop:spring.cache.jcache.config[] property is specified.
 
-There are two ways to customize the underlying `javax.cache.cacheManager`:
+There are two ways to customize the underlying `javax.cache.CacheManager`:
 
 * Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
 If a custom `javax.cache.configuration.Configuration` bean is defined, it is used to customize them.

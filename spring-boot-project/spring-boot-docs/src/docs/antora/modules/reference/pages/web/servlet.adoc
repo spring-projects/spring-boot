@@ -483,7 +483,7 @@ To avoid this limitation, the `packages` method should not be used, and endpoint
 
 For more advanced customizations, you can also register an arbitrary number of beans that implement `ResourceConfigCustomizer`.
 
-All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` and others), as shown in the following example:
+All the registered endpoints should be a `@Component` with HTTP resource annotations (`@GET` and others), as shown in the following example:
 
 include-code::MyEndpoint[]
 

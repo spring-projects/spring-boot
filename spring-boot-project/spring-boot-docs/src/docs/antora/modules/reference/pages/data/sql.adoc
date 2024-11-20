@@ -125,7 +125,7 @@ If HikariCP is available, we always choose it.
 . Otherwise, if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
 . If none of HikariCP, Tomcat, and DBCP2 are available and if Oracle UCP is available, we use it.
 
-NOTE: If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` starters, you automatically get a dependency to `HikariCP`.
+NOTE: If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` starters, you automatically get a dependency to HikariCP.
 
 You can bypass that algorithm completely and specify the connection pool to use by setting the configprop:spring.datasource.type[] property.
 This is especially important if you run your application in a Tomcat container, as `tomcat-jdbc` is provided by default.

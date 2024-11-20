@@ -84,7 +84,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type `PulsarContainer`
 
 | `R2dbcConnectionDetails`
-| Containers of type `ClickHouseContainer`, `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, `OracleContainer`, or `PostgreSQLContainer`
+| Containers of type `ClickHouseContainer`, `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, javadoc:{url-testcontainers-oracle-free-javadoc}/org.testcontainers.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.oracle.OracleContainer[OracleContainer (XE)] or `PostgreSQLContainer`
 
 | `RabbitConnectionDetails`
 | Containers of type `RabbitMQContainer`

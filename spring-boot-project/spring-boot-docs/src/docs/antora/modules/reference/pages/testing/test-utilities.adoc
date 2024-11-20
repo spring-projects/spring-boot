@@ -30,9 +30,9 @@ include-code::MyEnvironmentTests[]
 
 
 [[testing.utilities.output-capture]]
-== OutputCapture
+== OutputCaptureExtension
 
-`OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and `System.err` output.
+`OutputCaptureExtension` is a JUnit `Extension` that you can use to capture javadoc:java.lang.System#out[] and javadoc:java.lang.System#err[] output.
 To use it, add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutput` as an argument to your test class constructor or test method as follows:
 
 include-code::MyOutputCaptureTests[]

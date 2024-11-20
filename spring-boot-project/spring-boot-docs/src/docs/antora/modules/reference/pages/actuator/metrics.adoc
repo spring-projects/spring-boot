@@ -888,8 +888,8 @@ To customize the tags when using `WebClient`, provide a `@Bean` that implements 
 [[actuator.metrics.supported.tomcat]]
 === Tomcat Metrics
 
-Auto-configuration enables the instrumentation of Tomcat only when an `MBeanRegistry` is enabled.
-By default, the `MBeanRegistry` is disabled, but you can enable it by setting configprop:server.tomcat.mbeanregistry.enabled[] to `true`.
+Auto-configuration enables the instrumentation of Tomcat only when an MBean `org.apache.tomcat.util.modeler.Registry` is enabled.
+By default, the MBean registry is disabled, but you can enable it by setting configprop:server.tomcat.mbeanregistry.enabled[] to `true`.
 
 Tomcat metrics are published under the `tomcat.` meter name.
 

@@ -85,8 +85,8 @@ For example, the following is a very common code pattern for a typical Spring Bo
 
 include-code::typical/MyApplication[]
 
-In the example above, the `main` method doesn't do anything other than delegate to `SpringApplication.run`.
-It is, however, possible to have a more complex `main` method that applies customizations before calling `SpringApplication.run`.
+In the example above, the `main` method doesn't do anything other than delegate to javadoc:org.springframework.boot.SpringApplication#run(java.lang.Class,java.lang.String...)[].
+It is, however, possible to have a more complex `main` method that applies customizations before calling javadoc:org.springframework.boot.SpringApplication#run(java.lang.Class,java.lang.String...)[].
 
 For example, here is an application that changes the banner mode and sets additional profiles:
 
@@ -95,7 +95,7 @@ include-code::custom/MyApplication[]
 Since customizations in the `main` method can affect the resulting `ApplicationContext`, it's possible that you might also want to use the `main` method to create the `ApplicationContext` used in your tests.
 By default, `@SpringBootTest` will not call your `main` method, and instead the class itself is used directly to create the `ApplicationContext`
 
-If you want to change this behavior, you can change the `useMainMethod` attribute of `@SpringBootTest` to `UseMainMethod.ALWAYS` or `UseMainMethod.WHEN_AVAILABLE`.
+If you want to change this behavior, you can change the `useMainMethod` attribute of `@SpringBootTest` to javadoc:org.springframework.boot.test.context.SpringBootTest$UseMainMethod#ALWAYS[] or javadoc:org.springframework.boot.test.context.SpringBootTest$UseMainMethod#WHEN_AVAILABLE[].
 When set to `ALWAYS`, the test will fail if no `main` method can be found.
 When set to `WHEN_AVAILABLE` the `main` method will be used if it is available, otherwise the standard loading mechanism will be used.
 
@@ -297,7 +297,7 @@ The following example shows a test class for Jackson:
 include-code::MyJsonTests[]
 
 NOTE: JSON helper classes can also be used directly in standard unit tests.
-To do so, call the `initFields` method of the helper in your `@Before` method if you do not use `@JsonTest`.
+To do so, call the `initFields` method of the helper in your `@BeforeEach` method if you do not use `@JsonTest`.
 
 If you use Spring Boot's AssertJ-based helpers to assert on a number value at a given JSON path, you might not be able to use `isEqualTo` depending on the type.
 Instead, you can use AssertJ's `satisfies` to assert that the value matches the given condition.
@@ -482,7 +482,7 @@ include-code::MyDataCouchbaseTests[]
 == Auto-configured Data Elasticsearch Tests
 
 You can use `@DataElasticsearchTest` to test Elasticsearch applications.
-By default, it configures an `ElasticsearchRestTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
+By default, it configures an `ElasticsearchTemplate`, scans for `@Document` classes, and configures Spring Data Elasticsearch repositories.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataElasticsearchTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Elasticsearch with Spring Boot, see xref:data/nosql.adoc#data.nosql.elasticsearch[], earlier in this chapter.)
@@ -794,7 +794,7 @@ include-code::MyRestDocsConfiguration[]
 === Auto-configured Spring Web Services Client Tests
 
 You can use `@WebServiceClientTest` to test applications that call web services using the Spring Web Services project.
-By default, it configures a mock `WebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
+By default, it configures a `MockWebServiceServer` bean and automatically customizes your `WebServiceTemplateBuilder`.
 (For more about using Web Services with Spring Boot, see xref:io/webservices.adoc[].)
 
 

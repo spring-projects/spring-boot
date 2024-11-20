@@ -441,7 +441,7 @@ server:
       filename: "/var/log/jetty-access.log"
 ----
 
-By default, logs are redirected to `System.err`.
+By default, logs are redirected to javadoc:java.lang.System#err[].
 For more details, see the Jetty documentation.
 
 

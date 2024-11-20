@@ -25,7 +25,7 @@ Various settings can also be configured on the repackager before it is run.
 When repackaging an archive, you can include references to dependency files by using the `org.springframework.boot.loader.tools.Libraries` interface.
 We do not provide any concrete implementations of `Libraries` here as they are usually build-system-specific.
 
-If your archive already includes libraries, you can use `Libraries.NONE`.
+If your archive already includes libraries, you can use javadoc:org.springframework.boot.loader.tools.Libraries#NONE[].
 
 
 

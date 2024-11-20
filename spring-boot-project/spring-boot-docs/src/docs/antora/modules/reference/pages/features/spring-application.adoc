@@ -2,7 +2,7 @@
 = SpringApplication
 
 The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
-In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
+In many situations, you can delegate to the static javadoc:org.springframework.boot.SpringApplication#run(java.lang.Class,java.lang.String...)[] method, as shown in the following example:
 
 include-code::MyApplication[]
 
@@ -28,7 +28,7 @@ TIP: To add additional logging during startup, you can override `logStartupInfo(
 [[features.spring-application.startup-failure]]
 == Startup Failure
 
-If your application fails to start, registered `FailureAnalyzers` get a chance to provide a dedicated error message and a concrete action to fix the problem.
+If your application fails to start, registered `FailureAnalyzer` beans get a chance to provide a dedicated error message and a concrete action to fix the problem.
 For instance, if you start a web application on port `8080` and that port is already in use, you should see something similar to the following message:
 
 [source]
@@ -127,7 +127,7 @@ Inside your `banner.txt` file, you can use any key available in the `Environment
 TIP: The `SpringApplication.setBanner(...)` method can be used if you want to generate a banner programmatically.
 Use the `org.springframework.boot.Banner` interface and implement your own `printBanner()` method.
 
-You can also use the configprop:spring.main.banner-mode[] property to determine if the banner has to be printed on `System.out` (`console`), sent to the configured logger (`log`), or not produced at all (`off`).
+You can also use the configprop:spring.main.banner-mode[] property to determine if the banner has to be printed on javadoc:java.lang.System#out[] (`console`), sent to the configured logger (`log`), or not produced at all (`off`).
 
 The printed banner is registered as a singleton bean under the following name: `springBootBanner`.
 
@@ -260,9 +260,9 @@ Application events are sent in the following order, as your application runs:
 . An `ApplicationContextInitializedEvent` is sent when the `ApplicationContext` is prepared and ApplicationContextInitializers have been called but before any bean definitions are loaded.
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean definitions have been loaded.
 . An `ApplicationStartedEvent` is sent after the context has been refreshed but before any application and command-line runners have been called.
-. An `AvailabilityChangeEvent` is sent right after with `LivenessState.CORRECT` to indicate that the application is considered as live.
+. An `AvailabilityChangeEvent` is sent right after with javadoc:org.springframework.boot.availability.LivenessState#CORRECT[] to indicate that the application is considered as live.
 . An `ApplicationReadyEvent` is sent after any xref:features/spring-application.adoc#features.spring-application.command-line-runner[application and command-line runners] have been called.
-. An `AvailabilityChangeEvent` is sent right after with `ReadinessState.ACCEPTING_TRAFFIC` to indicate that the application is ready to service requests.
+. An `AvailabilityChangeEvent` is sent right after with javadoc:org.springframework.boot.availability.ReadinessState#ACCEPTING_TRAFFIC[] to indicate that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
 The above list only includes ``SpringApplicationEvent``s that are tied to a `SpringApplication`.
