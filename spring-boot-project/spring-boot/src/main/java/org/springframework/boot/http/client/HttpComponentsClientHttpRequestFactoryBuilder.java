@@ -175,15 +175,14 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 	 * additional customization to the underlying
 	 * {@link org.apache.hc.client5.http.config.RequestConfig.Builder} used for default
 	 * requests.
-	 * @param defaultRequestConfigManagerCustomizer the customizer to apply
+	 * @param defaultRequestConfigCustomizer the customizer to apply
 	 * @return a new {@link HttpComponentsClientHttpRequestFactoryBuilder} instance
 	 */
 	public HttpComponentsClientHttpRequestFactoryBuilder withDefaultRequestConfigCustomizer(
-			Consumer<RequestConfig.Builder> defaultRequestConfigManagerCustomizer) {
-		Assert.notNull(defaultRequestConfigManagerCustomizer,
-				"'defaultRequestConfigManagerCustomizer' must not be null");
+			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer) {
+		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
-				this.connectionManagerCustomizer, this.socketConfigCustomizer, defaultRequestConfigManagerCustomizer,
+				this.connectionManagerCustomizer, this.socketConfigCustomizer, defaultRequestConfigCustomizer,
 				this.tlsSocketStrategyFactory);
 	}
 
