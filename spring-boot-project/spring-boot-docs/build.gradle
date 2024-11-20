@@ -328,6 +328,7 @@ antoraDependencies {
 
 antoraContributions {
 	'api' {
+		publish()
 		catalogContent {
 			from(aggregatedJavadoc) {
 				into "java"
@@ -338,6 +339,7 @@ antoraContributions {
 		}
 	}
 	'root' {
+		publish()
 		aggregateContent {
 			from("src/main") {
 				into "modules/ROOT/examples"

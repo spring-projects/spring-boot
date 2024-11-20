@@ -48,6 +48,8 @@ public class AntoraContributorPlugin implements Plugin<Project> {
 
 		private final Project project;
 
+		private boolean publish;
+
 		@Inject
 		public Contribution(String name, Project project) {
 			this.name = name;
@@ -58,6 +60,10 @@ public class AntoraContributorPlugin implements Plugin<Project> {
 			return this.name;
 		}
 
+		public void publish() {
+			this.publish = true;
+		}
+
 		public void source() {
 			new SourceContribution(this.project, this.name).produce();
 		}
@@ -65,13 +71,13 @@ public class AntoraContributorPlugin implements Plugin<Project> {
 		public void catalogContent(Action<CopySpec> action) {
 			CopySpec copySpec = this.project.copySpec();
 			action.execute(copySpec);
-			new CatalogContentContribution(this.project, this.name).produceFrom(copySpec);
+			new CatalogContentContribution(this.project, this.name).produceFrom(copySpec, this.publish);
 		}
 
 		public void aggregateContent(Action<CopySpec> action) {
 			CopySpec copySpec = this.project.copySpec();
 			action.execute(copySpec);
-			new AggregateContentContribution(this.project, this.name).produceFrom(copySpec);
+			new AggregateContentContribution(this.project, this.name).produceFrom(copySpec, this.publish);
 		}
 
 		public void localAggregateContent(Action<CopySpec> action) {

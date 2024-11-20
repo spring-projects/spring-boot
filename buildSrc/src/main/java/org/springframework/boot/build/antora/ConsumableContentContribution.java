@@ -42,7 +42,14 @@ class ConsumableContentContribution extends ContentContribution {
 
 	@Override
 	void produceFrom(CopySpec copySpec) {
+		this.produceFrom(copySpec, false);
+	}
+
+	void produceFrom(CopySpec copySpec, boolean publish) {
 		TaskProvider<? extends Task> producer = super.configureProduction(copySpec);
+		if (publish) {
+			publish(producer);
+		}
 		Configuration configuration = createConfiguration(getName(),
 				"Configuration for %s Antora %s content artifacts.");
 		configuration.setCanBeConsumed(true);
@@ -63,11 +70,15 @@ class ConsumableContentContribution extends ContentContribution {
 				CopyAntoraContent.class, (task) -> configureCopyContent(task, path, configuration, outputDirectory));
 		configureAntora(addInputFrom(copyAntoraContent, configuration.getName()));
 		configurePlaybookGeneration(this::addToZipContentsCollectorDependencies);
+		publish(copyAntoraContent);
+	}
+
+	void publish(TaskProvider<? extends Task> producer) {
 		getProject().getExtensions()
 			.getByType(PublishingExtension.class)
 			.getPublications()
 			.withType(MavenPublication.class)
-			.configureEach((mavenPublication) -> addPublishedMavenArtifact(mavenPublication, copyAntoraContent));
+			.configureEach((mavenPublication) -> addPublishedMavenArtifact(mavenPublication, producer));
 	}
 
 	private void configureCopyContent(CopyAntoraContent task, String path, Configuration configuration,
@@ -82,10 +93,10 @@ class ConsumableContentContribution extends ContentContribution {
 		task.getAntoraExtensions().getZipContentsCollector().getDependencies().add(getName());
 	}
 
-	private void addPublishedMavenArtifact(MavenPublication mavenPublication, TaskProvider<?> copyAntoraContent) {
+	private void addPublishedMavenArtifact(MavenPublication mavenPublication, TaskProvider<?> producer) {
 		if ("maven".equals(mavenPublication.getName())) {
 			String classifier = "%s-%s-content".formatted(getName(), getType());
-			mavenPublication.artifact(copyAntoraContent, (mavenArtifact) -> mavenArtifact.setClassifier(classifier));
+			mavenPublication.artifact(producer, (mavenArtifact) -> mavenArtifact.setClassifier(classifier));
 		}
 	}
 
