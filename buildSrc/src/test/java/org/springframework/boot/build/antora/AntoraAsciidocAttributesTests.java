@@ -260,15 +260,39 @@ class AntoraAsciidocAttributesTests {
 		addMockSpringDataVersion(versions, "spring-data-redis", version);
 		addMockSpringDataVersion(versions, "spring-data-rest-core", version);
 		addMockSpringDataVersion(versions, "spring-data-ldap", version);
+		addMockTestcontainersVersion(versions, "activemq", version);
+		addMockTestcontainersVersion(versions, "cassandra", version);
+		addMockTestcontainersVersion(versions, "couchbase", version);
+		addMockTestcontainersVersion(versions, "elasticsearch", version);
+		addMockTestcontainersVersion(versions, "jdbc", version);
+		addMockTestcontainersVersion(versions, "kafka", version);
+		addMockTestcontainersVersion(versions, "mariadb", version);
+		addMockTestcontainersVersion(versions, "mongodb", version);
+		addMockTestcontainersVersion(versions, "mssqlserver", version);
+		addMockTestcontainersVersion(versions, "mysql", version);
+		addMockTestcontainersVersion(versions, "neo4j", version);
+		addMockTestcontainersVersion(versions, "oracle-xe", version);
+		addMockTestcontainersVersion(versions, "oracle-free", version);
+		addMockTestcontainersVersion(versions, "postgresql", version);
+		addMockTestcontainersVersion(versions, "pulsar", version);
+		addMockTestcontainersVersion(versions, "rabbitmq", version);
+		addMockTestcontainersVersion(versions, "redpanda", version);
+		addMockTestcontainersVersion(versions, "r2dbc", version);
 		addMockJacksonCoreVersion(versions, "jackson-annotations", version);
 		addMockJacksonCoreVersion(versions, "jackson-core", version);
 		addMockJacksonCoreVersion(versions, "jackson-databind", version);
+		versions.put("org.apache.pulsar:pulsar-client-api", version);
+		versions.put("org.apache.pulsar:pulsar-client-reactive-api", version);
 		versions.put("com.fasterxml.jackson.dataformat:jackson-dataformat-xml", version);
 		return versions;
 	}
 
 	private void addMockSpringDataVersion(Map<String, String> versions, String artifactId, String version) {
 		versions.put("org.springframework.data:" + artifactId, version);
+	}
+
+	private void addMockTestcontainersVersion(Map<String, String> versions, String artifactId, String version) {
+		versions.put("org.testcontainers:" + artifactId, version);
 	}
 
 	private void addMockJacksonCoreVersion(Map<String, String> versions, String artifactId, String version) {

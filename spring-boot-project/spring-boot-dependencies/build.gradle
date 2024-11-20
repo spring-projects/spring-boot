@@ -260,7 +260,7 @@ bom {
 		}
 		links {
 			site("https://docs.couchbase.com/java-sdk/current/hello-world/overview.html")
-			javadoc("https://javadoc.io/doc/com.couchbase.client/java-client/{version}")
+			javadoc("https://javadoc.io/doc/com.couchbase.client/java-client/{version}", "com.couchbase.client")
 			releaseNotes("https://docs.couchbase.com/java-sdk/current/project-docs/sdk-release-notes.html")
 		}
 	}
@@ -353,6 +353,9 @@ bom {
 		}
 		links {
 			releaseNotes("https://www.elastic.co/guide/en/elasticsearch/reference/current/release-notes-{version}.html")
+			javadoc("elasticsearch-rest-client", version -> "https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-client/%s".formatted(version), "org.elasticsearch.client")
+			javadoc("elasticsearch-java", version -> "https://artifacts.elastic.co/javadoc/co/elastic/clients/elasticsearch-java/%s".formatted(version), "co.elastic.clients.elasticsearch", "co.elastic.clients.transport")
+			javadoc("elasticsearch-rest-client-sniffer", version -> "https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-client-sniffer/%s".formatted(version), "org.elasticsearch.client.sniff")
 		}
 	}
 	library("Flyway", "10.10.0") {
@@ -479,6 +482,7 @@ bom {
 		}
 		links {
 			site("https://www.h2database.com")
+			javadoc("https://www.h2database.com/javadoc", "org.h2")
 			releaseNotes("https://github.com/h2database/h2database/releases/tag/version-{version}")
 		}
 	}
@@ -503,7 +507,7 @@ bom {
 		}
 		links {
 			site("https://hazelcast.com")
-			javadoc("https://javadoc.io/doc/com.hazelcast/hazelcast/{version}", "com.hazelcast")
+			javadoc("https://docs.hazelcast.org/docs/{version}/javadoc/", "com.hazelcast")
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
@@ -625,6 +629,7 @@ bom {
 		}
 		links {
 			site("https://infinispan.org/")
+			javadoc(version -> "https://docs.jboss.org/infinispan/%s.%s/apidocs".formatted(version.major(), version.minor()), "org.infinispan")
 			releaseNotes("https://github.com/infinispan/infinispan/releases/tag/{version}")
 		}
 	}
@@ -636,6 +641,7 @@ bom {
 		}
 		links {
 			site("https://github.com/influxdata/influxdb-java")
+			javadoc("https://javadoc.io/doc/org.influxdb/influxdb-java/{version}", "org.influxdb")
 			releaseNotes("https://github.com/influxdata/influxdb-java/releases/tag/influxdb-java-{version}")
 		}
 	}
@@ -823,6 +829,11 @@ bom {
 				"jakarta.ws.rs-api"
 			]
 		}
+		links {
+			releaseNotes("https://github.com/jakartaee/rest/releases/tag/{version}")
+			javadoc(version -> "https://jakarta.ee/specifications/restful-ws/%s.%s/apidocs"
+				.formatted(version.major(), version.minor()), "jakarta.ws.rs")
+		}
 	}
 	library("Jakarta XML Bind", "4.0.2") {
 		group("jakarta.xml.bind") {
@@ -870,6 +881,9 @@ bom {
 			modules = [
 				"cache-api"
 			]
+		}
+		links {
+			javadoc("https://javadoc.io/doc/javax.cache/cache-api/{version}", "javax.cache")
 		}
 	}
 	library("Javax Money", "1.1") {
@@ -1104,6 +1118,7 @@ bom {
 		}
 		links {
 			site("https://kafka.apache.org")
+			javadoc(version -> "https://kafka.apache.org/%s%s/javadoc".formatted(version.major(), version.minor()), "org.apache.kafka")
 			releaseNotes("https://downloads.apache.org/kafka/{version}/RELEASE_NOTES.html")
 		}
 	}
@@ -1152,6 +1167,7 @@ bom {
 		}
 		links {
 			site("https://github.com/lettuce-io/lettuce-core")
+			javadoc("https://javadoc.io/doc/io.lettuce/lettuce-core/{version}", "io.lettuce.core")
 			docs("https://lettuce.io/core/{version}/reference/index.html")
 			releaseNotes("https://github.com/lettuce-io/lettuce-core/releases/tag/{version}")
 		}
@@ -1168,7 +1184,7 @@ bom {
 		}
 		links {
 			site("https://www.liquibase.com")
-			javadoc("https://javadoc.io/doc/org.liquibase/liquibase-core/{version}")
+			javadoc("https://javadoc.io/doc/org.liquibase/liquibase-core/{version}", "liquibase.integration", "liquibase.report")
 			releaseNotes("https://github.com/liquibase/liquibase/releases/tag/v{version}")
 		}
 	}
@@ -1409,7 +1425,11 @@ bom {
 		}
 		links {
 			site("https://micrometer.io")
-			javadoc("https://javadoc.io/doc/io.micrometer/micrometer-core/{version}", "io.micrometer.core")
+			javadoc("micrometer-core", version -> "https://javadoc.io/doc/io.micrometer/micrometer-core/%s".formatted(version), "io.micrometer.core")
+			javadoc("micrometer-observation", version -> "https://javadoc.io/doc/io.micrometer/micrometer-observation/%s".formatted(version), "io.micrometer.observation")
+			javadoc("micrometer-registry-graphite", version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-graphite/%s".formatted(version), "io.micrometer.graphite")
+			javadoc("micrometer-registry-jmx", version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-jmx/%s".formatted(version), "io.micrometer.jmx")
+			javadoc("micrometer-new-relic", version -> "https://javadoc.io/doc/io.micrometer/micrometer-registry-new-relic/%s".formatted(version), "io.micrometer.newrelic")
 			docs(version -> "https://docs.micrometer.io/micrometer/reference/%s.%s"
 				.formatted(version.major(), version.minor()))
 			releaseNotes("https://github.com/micrometer-metrics/micrometer/releases/tag/v{version}")
@@ -1454,6 +1474,9 @@ bom {
 		}
 		links {
 			site("https://github.com/mongodb/mongo-java-driver")
+			// Mongo has split packages so we can't use them
+			javadoc("mongodb-driver-core", version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-core".formatted(version.major(), version.minor()))
+			javadoc("mongodb-driver-sync", version -> "https://mongodb.github.io/mongo-java-driver/%s.%s/apidocs/mongodb-driver-sync".formatted(version.major(), version.minor()))
 			releaseNotes("https://github.com/mongodb/mongo-java-driver/releases/tag/r{version}")
 		}
 	}
@@ -1526,6 +1549,7 @@ bom {
 		}
 		links {
 			site("https://github.com/neo4j/neo4j-java-driver")
+			javadoc("https://javadoc.io/doc/org.neo4j.driver/neo4j-java-driver/{version}", "org.neo4j.driver")
 			releaseNotes("https://github.com/neo4j/neo4j-java-driver/releases/tag/{version}")
 		}
 	}
@@ -1558,7 +1582,12 @@ bom {
 		}
 		links {
 			site("https://github.com/open-telemetry/opentelemetry-java")
-			javadoc("https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/{version}")
+			javadoc("opentelemetry-api", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-api/%s".formatted(version), "io.opentelemetry.api")
+			javadoc("opentelemetry-context", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-context/%s".formatted(version), "io.opentelemetry.context")
+			javadoc("opentelemetry-sdk-common", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/%s".formatted(version), "io.opentelemetry.sdk.common")
+			javadoc("opentelemetry-sdk-logs", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-logs/%s".formatted(version), "io.opentelemetry.sdk.logs")
+			javadoc("opentelemetry-sdk-metrics", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-metrics/%s".formatted(version), "io.opentelemetry.sdk.metrics")
+			javadoc("opentelemetry-sdk-trace", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-trace/%s".formatted(version), "io.opentelemetry.sdk.trace")
 			releaseNotes("https://github.com/open-telemetry/opentelemetry-java/releases/tag/v{version}")
 		}
 	}
@@ -1643,6 +1672,9 @@ bom {
 				"pooled-jms"
 			]
 		}
+		links {
+			javadoc("https://javadoc.io/doc/org.messaginghub/pooled-jms/{version}", "org.messaginghub.pooled.jms")
+		}
 	}
 	library("Postgresql", "42.7.4") {
 		group("org.postgresql") {
@@ -1652,6 +1684,7 @@ bom {
 		}
 		links {
 			site("https://github.com/pgjdbc/pgjdbc")
+			javadoc("https://jdbc.postgresql.org/documentation/publicapi", "org.postgresql")
 			releaseNotes("https://github.com/pgjdbc/pgjdbc/releases/tag/REL{version}")
 		}
 	}
@@ -1663,6 +1696,7 @@ bom {
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
+			javadoc("prometheus-metrics-tracer-common", (version) -> "https://javadoc.io/doc/io.prometheus/prometheus-metrics-tracer-common/%s".formatted(version), "io.prometheus.metrics.tracer.common")
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/v{version}")
 		}
 	}
@@ -1674,6 +1708,7 @@ bom {
 		}
 		links {
 			site("https://github.com/prometheus/client_java")
+			javadoc("prometheus-simpleclient-tracer-common", (version) -> "https://javadoc.io/doc/io.prometheus/simpleclient_tracer_common/%s".formatted(version), "io.prometheus.client.exemplars.tracer.common")
 			releaseNotes("https://github.com/prometheus/client_java/releases/tag/parent-{version}")
 		}
 	}
@@ -1870,6 +1905,9 @@ bom {
 				"rest-assured-bom"
 			]
 		}
+		links {
+			javadoc("https://javadoc.io/doc/io.rest-assured/rest-assured/{version}", "io.restassured")
+		}
 	}
 	library("RSocket", "1.1.3") {
 		prohibit {
@@ -1883,6 +1921,7 @@ bom {
 		}
 		links {
 			site("https://github.com/rsocket/rsocket-java")
+			javadoc("https://javadoc.io/doc/io.rsocket/rsocket-core/{version}", "io.rsocket")
 			releaseNotes("https://github.com/rsocket/rsocket-java/releases/tag/{version}")
 		}
 	}
@@ -2002,6 +2041,7 @@ bom {
 		}
 		links {
 			site("https://www.selenium.dev")
+			javadoc("https://www.selenium.dev/selenium/docs/api/java", "org.openqa.selenium")
 			releaseNotes("https://github.com/SeleniumHQ/selenium/releases/tag/selenium-{version}")
 		}
 	}
@@ -2269,6 +2309,7 @@ bom {
 		}
 		links {
 			site("https://github.com/spring-projects/spring-retry")
+			javadoc("https://javadoc.io/doc/org.springframework.retry/spring-retry/{version}", "org.springframework.retry")
 			releaseNotes("https://github.com/spring-projects/spring-retry/releases/tag/v{version}")
 		}
 	}
@@ -2321,7 +2362,7 @@ bom {
 			site("https://spring.io/projects/spring-ws")
 			github("https://github.com/spring-projects/spring-ws")
 			javadoc(version -> "https://docs.spring.io/spring-ws/docs/%s/api"
-				.formatted(version.forMajorMinorGeneration()), "org.springframework.ws")
+				.formatted(version.forMajorMinorGeneration()), "org.springframework.ws", "org.springframework.xml")
 			docs(version -> "https://docs.spring.io/spring-ws/docs/%s/reference/html"
 				.formatted(version.forMajorMinorGeneration()))
 			releaseNotes("https://github.com/spring-projects/spring-ws/releases/tag/v{version}")
@@ -2406,7 +2447,7 @@ bom {
 		}
 		links {
 			site("https://tomcat.apache.org")
-			javadoc(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/api".formatted(version.major(), version.minor()))
+			javadoc(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/api".formatted(version.major(), version.minor()), "org.apache.catalina")
 			docs(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc".formatted(version.major(), version.minor()))
 			releaseNotes(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html".formatted(version.major(), version.minor()))
 		}
