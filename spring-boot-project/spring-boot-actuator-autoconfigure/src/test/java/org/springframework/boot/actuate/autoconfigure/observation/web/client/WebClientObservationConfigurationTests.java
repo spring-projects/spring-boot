@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
-import io.micrometer.observation.tck.TestObservationRegistryAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
@@ -84,14 +83,13 @@ class WebClientObservationConfigurationTests {
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			WebClient webClient = mockWebClient(builder);
-			TestObservationRegistryAssert.assertThat(registry).doesNotHaveAnyObservation();
+			assertThat(registry).doesNotHaveAnyObservation();
 			webClient.get()
 				.uri("https://example.org/projects/{project}", "spring-boot")
 				.retrieve()
 				.toBodilessEntity()
 				.block(Duration.ofSeconds(30));
-			TestObservationRegistryAssert.assertThat(registry)
-				.hasObservationWithNameEqualTo("http.client.requests")
+			assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
 				.that()
 				.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
@@ -101,8 +99,7 @@ class WebClientObservationConfigurationTests {
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
 			TestObservationRegistry registry = getInitializedRegistry(context);
-			TestObservationRegistryAssert.assertThat(registry)
-				.hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+			assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(1);
 			// MeterFilter.maximumAllowableTags() works with prefix matching.
@@ -116,8 +113,7 @@ class WebClientObservationConfigurationTests {
 	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
 			TestObservationRegistry registry = getInitializedRegistry(context);
-			TestObservationRegistryAssert.assertThat(registry)
-				.hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+			assertThat(registry).hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
 			assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(3);
 			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
@@ -140,14 +136,13 @@ class WebClientObservationConfigurationTests {
 
 	private void validateWebClient(WebClient.Builder builder, TestObservationRegistry registry) {
 		WebClient webClient = mockWebClient(builder);
-		TestObservationRegistryAssert.assertThat(registry).doesNotHaveAnyObservation();
+		assertThat(registry).doesNotHaveAnyObservation();
 		webClient.get()
 			.uri("https://example.org/projects/{project}", "spring-boot")
 			.retrieve()
 			.toBodilessEntity()
 			.block(Duration.ofSeconds(30));
-		TestObservationRegistryAssert.assertThat(registry)
-			.hasObservationWithNameEqualTo("http.client.requests")
+		assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
 			.that()
 			.hasLowCardinalityKeyValue("uri", "/projects/{project}");
 	}
