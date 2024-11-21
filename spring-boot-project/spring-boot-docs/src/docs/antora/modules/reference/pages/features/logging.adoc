@@ -618,7 +618,7 @@ You can also declare implementations by listing them in a `META-INF/spring.facto
 === Supporting Other Structured Logging Formats
 
 The structured logging support in Spring Boot is extensible, allowing you to define your own custom format.
-To do this, implement the `StructuredLoggingFormatter` interface. The generic type argument has to be `ILoggingEvent` when using Logback and `LogEvent` when using Log4j2 (that means your implementation is tied to a specific logging system).
+To do this, implement the `StructuredLogFormatter` interface. The generic type argument has to be `ILoggingEvent` when using Logback and `LogEvent` when using Log4j2 (that means your implementation is tied to a specific logging system).
 Your implementation is then called with the log event and returns the `String` to be logged, as seen in this example:
 
 include-code::MyCustomFormat[]

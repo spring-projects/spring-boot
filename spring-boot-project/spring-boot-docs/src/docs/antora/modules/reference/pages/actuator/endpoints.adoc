@@ -158,7 +158,7 @@ This property takes precedence over the default access or an individual endpoint
 Set it to `none` to make all endpoints inaccessible.
 Set it to `read-only` to only allow read access to endpoints.
 
-For `@Endpoint`, `@JmxEndpoint`, and `@WebEndpoint`, read access equates to the endpoint methods annotated with `@ReadEndpoint`.
+For `@Endpoint`, `@JmxEndpoint`, and `@WebEndpoint`, read access equates to the endpoint methods annotated with `@ReadOperation`.
 For `@ControllerEndpoint` and `@RestControllerEndpoint`, read access equates to request mappings that can handle `GET` and `HEAD` requests.
 For `@ServletEndpoint`, read access equates to `GET` and `HEAD` requests.
 
@@ -674,7 +674,7 @@ TIP: The `ssl` `HealthIndicator` has a "warning threshold" property named config
 If an SSL certificate will be invalid within the time span defined by this threshold, the `HealthIndicator` will warn you but it will still return HTTP 200 to not disrupt the application.
 You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate.
 
-Additional `HealthIndicators` beans are available but are not enabled by default:
+Additional `HealthIndicator` beans are available but are not enabled by default:
 
 [cols="3,4,6"]
 |===
