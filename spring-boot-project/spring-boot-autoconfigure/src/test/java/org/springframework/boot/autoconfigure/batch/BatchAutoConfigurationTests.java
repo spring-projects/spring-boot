@@ -517,6 +517,13 @@ class BatchAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void defaultJobRepositoryIsNotCreatedWhenUserDefinedJobRepositoryBean() {
+		this.contextRunner
+			.withUserConfiguration(TestConfigurationWithJobRepository.class, EmbeddedDataSourceConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(TestJobRepository.class));
+	}
+
 	private JobLauncherApplicationRunner createInstance(String... registeredJobNames) {
 		JobLauncherApplicationRunner runner = new JobLauncherApplicationRunner(mock(JobLauncher.class),
 				mock(JobExplorer.class), mock(JobRepository.class));
@@ -593,6 +600,16 @@ class BatchAutoConfigurationTests {
 
 	@TestAutoConfigurationPackage(City.class)
 	static class TestConfiguration {
+
+	}
+
+	@TestAutoConfigurationPackage(City.class)
+	static class TestConfigurationWithJobRepository {
+
+		@Bean
+		TestJobRepository jobRepository() {
+			return mock(TestJobRepository.class);
+		}
 
 	}
 
@@ -877,6 +894,10 @@ class BatchAutoConfigurationTests {
 		ExecutionContextSerializer executionContextSerializer() {
 			return new Jackson2ExecutionContextStringSerializer();
 		}
+
+	}
+
+	interface TestJobRepository extends JobRepository {
 
 	}
 
