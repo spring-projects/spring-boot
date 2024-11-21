@@ -94,7 +94,7 @@ By default, metadata about the running application as well as service connection
 This architecture decision is due to Cloud Foundry's polyglot (any language and platform can be supported as a buildpack) nature.
 Process-scoped environment variables are language agnostic.
 
-Environment variables do not always make for the easiest API, so Spring Boot automatically extracts them and flattens the data into properties that can be accessed through Spring's `Environment` abstraction, as shown in the following example:
+Environment variables do not always make for the easiest API, so Spring Boot automatically extracts them and flattens the data into properties that can be accessed through Spring's javadoc:org.springframework.core.env.Environment[] abstraction, as shown in the following example:
 
 include-code::MyBean[]
 
@@ -161,7 +161,7 @@ The following example shows the `Procfile` for our starter REST application:
 web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
 ----
 
-Spring Boot makes `-D` arguments available as properties accessible from a Spring `Environment` instance.
+Spring Boot makes `-D` arguments available as properties accessible from a Spring javadoc:org.springframework.core.env.Environment[] instance.
 The `server.port` configuration property is fed to the embedded Tomcat, Jetty, or Undertow instance, which then uses the port when it starts up.
 The `$PORT` environment variable is assigned to us by the Heroku PaaS.
 

@@ -11,7 +11,7 @@ This section answers common questions about these plugins.
 
 Both the Maven plugin and the Gradle plugin allow generating build information containing the coordinates, name, and version of the project.
 The plugins can also be configured to add additional properties through configuration.
-When such a file is present, Spring Boot auto-configures a `BuildProperties` bean.
+When such a file is present, Spring Boot auto-configures a javadoc:org.springframework.boot.info.BuildProperties[] bean.
 
 To generate build information with Maven, add an execution for the `build-info` goal, as shown in the following example:
 
@@ -83,7 +83,7 @@ Both the Maven and Gradle plugins allow the properties that are included in `git
 
 TIP: The commit time in `git.properties` is expected to match the following format: `yyyy-MM-dd'T'HH:mm:ssZ`.
 This is the default format for both plugins listed above.
-Using this format lets the time be parsed into a `Date` and its format, when serialized to JSON, to be controlled by Jackson's date serialization configuration settings.
+Using this format lets the time be parsed into a javadoc:java.util.Date[] and its format, when serialized to JSON, to be controlled by Jackson's date serialization configuration settings.
 
 
 
@@ -309,7 +309,7 @@ To make it executable, you can either use the `spring-boot-antlib` module or you
 . Add the `provided` (embedded container) dependencies in a nested `BOOT-INF/lib` directory for a jar or `WEB-INF/lib-provided` for a war.
   Remember *not* to compress the entries in the archive.
 . Add the `spring-boot-loader` classes at the root of the archive (so that the `Main-Class` is available).
-. Use the appropriate launcher (such as `JarLauncher` for a jar file) as a `Main-Class` attribute in the manifest and specify the other properties it needs as manifest entries -- principally, by setting a `Start-Class` property.
+. Use the appropriate launcher (such as javadoc:org.springframework.boot.loader.launch.JarLauncher[] for a jar file) as a `Main-Class` attribute in the manifest and specify the other properties it needs as manifest entries -- principally, by setting a `Start-Class` property.
 
 The following example shows how to build an executable archive with Ant:
 
