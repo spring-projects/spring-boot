@@ -262,8 +262,10 @@ class AntoraAsciidocAttributesTests {
 		addMockSpringDataVersion(versions, "spring-data-ldap", version);
 		addMockTestcontainersVersion(versions, "activemq", version);
 		addMockTestcontainersVersion(versions, "cassandra", version);
+		addMockTestcontainersVersion(versions, "clickhouse", version);
 		addMockTestcontainersVersion(versions, "couchbase", version);
 		addMockTestcontainersVersion(versions, "elasticsearch", version);
+		addMockTestcontainersVersion(versions, "grafana", version);
 		addMockTestcontainersVersion(versions, "jdbc", version);
 		addMockTestcontainersVersion(versions, "kafka", version);
 		addMockTestcontainersVersion(versions, "mariadb", version);
