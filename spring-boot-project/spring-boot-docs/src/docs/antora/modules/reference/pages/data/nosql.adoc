@@ -734,26 +734,3 @@ If you want to load the initialization script from a different resource, you can
 By default, a standard schema is used to validate `LDIF` files.
 You can turn off validation altogether by setting the configprop:spring.ldap.embedded.validation.enabled[] property.
 If you have custom attributes, you can use configprop:spring.ldap.embedded.validation.schema[] to define your custom attribute types or object classes.
-
-
-
-[[data.nosql.influxdb]]
-== InfluxDB
-
-WARNING: Auto-configuration for InfluxDB is deprecated and scheduled for removal in Spring Boot 3.4 in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
-
-https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
-
-
-
-[[data.nosql.influxdb.connecting]]
-=== Connecting to InfluxDB
-
-Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set using configprop:spring.influx.url[deprecated].
-
-If the connection to InfluxDB requires a user and password, you can set the configprop:spring.influx.user[deprecated] and configprop:spring.influx.password[deprecated] properties accordingly.
-
-InfluxDB relies on OkHttp.
-If you need to tune the http client `InfluxDB` uses behind the scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.
-
-If you need more control over the configuration, consider registering an `InfluxDbCustomizer` bean.
