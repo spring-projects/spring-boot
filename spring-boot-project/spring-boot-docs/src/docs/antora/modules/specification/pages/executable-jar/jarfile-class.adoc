@@ -1,9 +1,9 @@
 [[appendix.executable-jar.jarfile-class]]
 = Spring Boot's "`NestedJarFile`" Class
 
-The core class used to support loading nested jars is `org.springframework.boot.loader.jar.NestedJarFile`.
+The core class used to support loading nested jars is javadoc:org.springframework.boot.loader.jar.NestedJarFile[].
 It lets you load jar content from nested child jar data.
-When first loaded, the location of each `JarEntry` is mapped to a physical file offset of the outer jar, as shown in the following example:
+When first loaded, the location of each javadoc:java.util.jar.JarEntry[] is mapped to a physical file offset of the outer jar, as shown in the following example:
 
 [source]
 ----
@@ -30,7 +30,7 @@ We do not need to unpack the archive, and we do not need to read all entry data 
 == Compatibility With the Standard Java "`JarFile`"
 
 Spring Boot Loader strives to remain compatible with existing code and libraries.
-`org.springframework.boot.loader.jar.NestedJarFile` extends from `java.util.jar.JarFile` and should work as a drop-in replacement.
+javadoc:org.springframework.boot.loader.jar.NestedJarFile[] extends from javadoc:java.util.jar.JarFile[] and should work as a drop-in replacement.
 
-Nested JAR URLs of the form `jar:nested:/path/myjar.jar/!BOOT-INF/lib/mylib.jar!/B.class` are supported and open a connection compatible with `java.net.JarURLConnection`.
-These can be used with Java's `URLClassLoader`.
+Nested JAR URLs of the form `jar:nested:/path/myjar.jar/!BOOT-INF/lib/mylib.jar!/B.class` are supported and open a connection compatible with javadoc:java.net.JarURLConnection[].
+These can be used with Java's javadoc:java.net.URLClassLoader[].
