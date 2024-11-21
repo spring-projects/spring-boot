@@ -40,7 +40,7 @@ For Gradle, you need to ensure that your build includes the `org.graalvm.buildto
 If your application starts with the `spring.aot.enabled` property set to `true`, then you have higher confidence that it will work when converted to a native image.
 
 You can also consider running integration tests against the running application.
-For example, you could use the Spring `WebClient` to call your application REST endpoints.
+For example, you could use the Spring javadoc:org.springframework.web.reactive.function.client.WebClient[] to call your application REST endpoints.
 Or you might consider using a project like Selenium to check your application's HTML responses.
 
 
@@ -57,15 +57,15 @@ For example, you might choose to run native tests once a day.
 
 Spring Framework includes ahead-of-time support for running tests.
 All the usual Spring testing features work with native image tests.
-For example, you can continue to use the `@SpringBootTest` annotation.
+For example, you can continue to use the javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotation.
 You can also use Spring Boot xref:reference:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[test slices] to test only specific parts of your application.
 
 Spring Framework's native testing support works in the following way:
 
-* Tests are analyzed in order to discover any `ApplicationContext` instances that will be required.
+* Tests are analyzed in order to discover any javadoc:org.springframework.context.ApplicationContext[] instances that will be required.
 * Ahead-of-time processing is applied to each of these application contexts and assets are generated.
 * A native image is created, with the generated assets being processed by GraalVM.
-* The native image also includes the JUnit `TestEngine` configured with a list of the discovered tests.
+* The native image also includes the JUnit javadoc:org.junit.platform.engine.TestEngine[] configured with a list of the discovered tests.
 * The native image is started, triggering the engine which will run each test and report results.
 
 

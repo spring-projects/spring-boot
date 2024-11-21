@@ -1,7 +1,7 @@
 [[appendix.executable-jar.property-launcher]]
 = PropertiesLauncher Features
 
-`PropertiesLauncher` has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).
+javadoc:org.springframework.boot.loader.launch.PropertiesLauncher[] has a few special features that can be enabled with external properties (System properties, environment variables, manifest entries, or `loader.properties`).
 The following table describes these properties:
 
 |===
@@ -68,7 +68,7 @@ When specified as environment variables or manifest entries, the following names
 TIP: Build plugins automatically move the `Main-Class` attribute to `Start-Class` when the uber jar is built.
 If you use that, specify the name of the class to launch by using the `Main-Class` attribute and leaving out `Start-Class`.
 
-The following rules apply to working with `PropertiesLauncher`:
+The following rules apply to working with javadoc:org.springframework.boot.loader.launch.PropertiesLauncher[]:
 
 * `loader.properties` is searched for in `loader.home`, then in the root of the classpath, and then in `classpath:/BOOT-INF/classes`.
   The first location where a file with that name exists is used.
@@ -76,7 +76,7 @@ The following rules apply to working with `PropertiesLauncher`:
 * `loader.path` can contain directories (which are scanned recursively for jar and zip files), archive paths, a directory within an archive that is scanned for jar files (for example, `dependencies.jar!/lib`), or wildcard patterns (for the default JVM behavior).
   Archive paths can be relative to `loader.home` or anywhere in the file system with a `jar:file:` prefix.
 * `loader.path` (if empty) defaults to `BOOT-INF/lib` (meaning a local directory or a nested one if running from an archive).
-  Because of this, `PropertiesLauncher` behaves the same as `JarLauncher` when no additional configuration is provided.
-* `loader.path` can not be used to configure the location of `loader.properties` (the classpath used to search for the latter is the JVM classpath when `PropertiesLauncher` is launched).
+  Because of this, javadoc:org.springframework.boot.loader.launch.PropertiesLauncher[] behaves the same as javadoc:org.springframework.boot.loader.launch.JarLauncher[] when no additional configuration is provided.
+* `loader.path` can not be used to configure the location of `loader.properties` (the classpath used to search for the latter is the JVM classpath when javadoc:org.springframework.boot.loader.launch.PropertiesLauncher[] is launched).
 * Placeholder replacement is done from System and environment variables plus the properties file itself on all values before use.
 * The search order for properties (where it makes sense to look in more than one place) is environment variables, system properties, `loader.properties`, the exploded archive manifest, and the archive manifest.
