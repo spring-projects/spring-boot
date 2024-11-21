@@ -33,9 +33,9 @@ SuccessExitStatus=143
 WantedBy=multi-user.target
 ----
 
-IMPORTANT: Remember to change the `+Description+`, `+User+`, `+Group+`, `+ExecStart+` and `+WorkingDirectory+` fields for your application.
+IMPORTANT: Remember to change the `Description`, `User`, `Group`, `ExecStart` and `WorkingDirectory` fields for your application.
 
-NOTE: The `+ExecStart+` field does not declare the script action command, which means that the `run` command is used by default.
+NOTE: The `ExecStart` field does not declare the script action command, which means that the `run` command is used by default.
 
 The user that runs the application, the PID file, and the console log file are managed by `systemd` itself and therefore must be configured by using appropriate fields in the '`service`' script.
 Consult the https://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit configuration man page] for more details.
@@ -206,7 +206,7 @@ The following property substitutions are supported with the default script:
 | `auto`
 
 | `initInfoProvides`
-| The `+Provides+` section of "`INIT INFO`"
+| The `Provides` section of "`INIT INFO`"
 | `${task.baseName}`
 | `${project.artifactId}`
 
@@ -236,7 +236,7 @@ The following property substitutions are supported with the default script:
 | `${project.name}`
 
 | `initInfoDescription`
-| `+Description+` section of "`INIT INFO`".
+| `Description` section of "`INIT INFO`".
 | `${project.description}` (falling back to `${task.baseName}`)
 | `${project.description}` (falling back to `${project.name}`)
 

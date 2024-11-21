@@ -13,7 +13,7 @@ For Maven, this means that you should build with `-Pnative` to activate the `nat
 $ mvn -Pnative package
 ----
 
-For Gradle, you need to ensure that your build includes the `+org.springframework.boot.aot+` plugin.
+For Gradle, you need to ensure that your build includes the `org.springframework.boot.aot` plugin.
 
 When the JAR has been built, run it with `spring.aot.enabled` system property set to `true`. For example:
 

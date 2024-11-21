@@ -7,7 +7,7 @@ There are two main ways to build a Spring Boot native image application:
 * Using GraalVM Native Build Tools to generate a native executable.
 
 TIP: The easiest way to start a new native Spring Boot project is to go to https://start.spring.io[start.spring.io], add the `GraalVM Native Support` dependency and generate the project.
-The included `+HELP.md+` file will provide getting started hints.
+The included `HELP.md` file will provide getting started hints.
 
 
 

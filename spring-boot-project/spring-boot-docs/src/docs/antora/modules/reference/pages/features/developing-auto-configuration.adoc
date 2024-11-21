@@ -98,7 +98,7 @@ When placed on a javadoc:org.springframework.context.annotation.Bean[format=anno
 
 include-code::MyAutoConfiguration[]
 
-In the preceding example, the `someService` bean is going to be created if no bean of type `+SomeService+` is already contained in the javadoc:org.springframework.context.ApplicationContext[].
+In the preceding example, the `someService` bean is going to be created if no bean of type `SomeService` is already contained in the javadoc:org.springframework.context.ApplicationContext[].
 
 TIP: You need to be very careful about the order in which bean definitions are added, as these conditions are evaluated based on what has been processed so far.
 For this reason, we recommend using only javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnBean[format=annotation] and javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean[format=annotation] annotations on auto-configuration classes (since these are guaranteed to load after any user-defined bean definitions have been added).

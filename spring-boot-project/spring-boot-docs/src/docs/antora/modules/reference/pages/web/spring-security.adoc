@@ -16,7 +16,7 @@ Using generated security password: 78fa095d-3f4c-48b1-ad50-e24c31d5cf35
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 ----
 
-NOTE: If you fine-tune your logging configuration, ensure that the `+org.springframework.boot.autoconfigure.security+` category is set to log `WARN`-level messages.
+NOTE: If you fine-tune your logging configuration, ensure that the `org.springframework.boot.autoconfigure.security` category is set to log `WARN`-level messages.
 Otherwise, the default password is not printed.
 
 You can change the username and password by providing a `spring.security.user.name` and `spring.security.user.password`.
@@ -24,7 +24,7 @@ You can change the username and password by providing a `spring.security.user.na
 The basic features you get by default in a web application are:
 
 * A javadoc:org.springframework.security.core.userdetails.UserDetailsService[] (or javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] in case of a WebFlux application) bean with in-memory store and a single user with a generated password (see javadoc:org.springframework.boot.autoconfigure.security.SecurityProperties$User[] for the properties of the user).
-* Form-based login or HTTP Basic security (depending on the `+Accept+` header in the request) for the entire application (including actuator endpoints if actuator is on the classpath).
+* Form-based login or HTTP Basic security (depending on the `Accept` header in the request) for the entire application (including actuator endpoints if actuator is on the classpath).
 * A javadoc:org.springframework.security.authentication.DefaultAuthenticationEventPublisher[] for publishing authentication events.
 
 You can provide a different javadoc:org.springframework.security.authentication.AuthenticationEventPublisher[] by adding a bean for it.
@@ -35,7 +35,7 @@ You can provide a different javadoc:org.springframework.security.authentication.
 == MVC Security
 
 The default security configuration is implemented in javadoc:org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration[] and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration[] imports `+SpringBootWebSecurityConfiguration+` for web security and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[] configures authentication, which is also relevant in non-web applications.
+javadoc:org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration[] imports `SpringBootWebSecurityConfiguration` for web security and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[] configures authentication, which is also relevant in non-web applications.
 
 To completely switch off the default web application security configuration, including Actuator security, or to combine multiple Spring Security components such as OAuth2 Client and Resource Server, add a bean of type javadoc:org.springframework.security.web.SecurityFilterChain[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration).
 To also switch off the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.UserDetailsService[], javadoc:org.springframework.security.authentication.AuthenticationProvider[], or javadoc:org.springframework.security.authentication.AuthenticationManager[].
@@ -60,7 +60,7 @@ javadoc:org.springframework.boot.autoconfigure.security.servlet.PathRequest[] ca
 
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
 The default security configuration is implemented in javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[].
-javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] imports `+WebFluxSecurityConfiguration+` for web security and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[] configures authentication, which is also relevant in non-web applications.
+javadoc:org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration[] imports `WebFluxSecurityConfiguration` for web security and javadoc:org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration[] configures authentication, which is also relevant in non-web applications.
 
 To completely switch off the default web application security configuration, including Actuator security, add a bean of type javadoc:org.springframework.security.web.server.WebFilterChainProxy[] (doing so does not disable the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration).
 To also switch off the javadoc:org.springframework.security.core.userdetails.UserDetailsService[] configuration, add a bean of type javadoc:org.springframework.security.core.userdetails.ReactiveUserDetailsService[] or javadoc:org.springframework.security.authentication.ReactiveAuthenticationManager[].

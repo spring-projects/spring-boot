@@ -23,7 +23,7 @@ include::partial$rest/actuator/logfile/entire/http-response.adoc[]
 
 NOTE: Retrieving part of the log file is not supported when using Jersey.
 
-To retrieve part of the log file, make a `GET` request to `/actuator/logfile` by using the `+Range+` header, as shown in the following curl-based example:
+To retrieve part of the log file, make a `GET` request to `/actuator/logfile` by using the `Range` header, as shown in the following curl-based example:
 
 include::partial$rest/actuator/logfile/range/curl-request.adoc[]
 

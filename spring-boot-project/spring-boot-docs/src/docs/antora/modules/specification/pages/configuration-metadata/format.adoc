@@ -246,12 +246,12 @@ The JSON object contained in the `hints` array can contain the attributes shown 
 
 | `values`
 | ValueHint[]
-| A list of valid values as defined by the `+ValueHint+` object (described in the next table).
+| A list of valid values as defined by the `ValueHint` object (described in the next table).
   Each entry defines the value and may have a description.
 
 | `providers`
 | ValueProvider[]
-| A list of providers as defined by the `+ValueProvider+` object (described later in this document).
+| A list of providers as defined by the `ValueProvider` object (described later in this document).
   Each entry defines the name of the provider and its parameters, if any.
 |===
 

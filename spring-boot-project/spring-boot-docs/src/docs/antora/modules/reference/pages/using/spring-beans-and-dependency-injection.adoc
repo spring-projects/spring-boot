@@ -7,7 +7,7 @@ We generally recommend using constructor injection to wire up dependencies and j
 If you structure your code as suggested above (locating your application class in a top package), you can add javadoc:org.springframework.context.annotation.ComponentScan[format=annotation] without any arguments or use the javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotation which implicitly includes it.
 All of your application components (`@Component`, javadoc:org.springframework.stereotype.Service[format=annotation], javadoc:org.springframework.stereotype.Repository[format=annotation], javadoc:org.springframework.stereotype.Controller[format=annotation], and others) are automatically registered as Spring Beans.
 
-The following example shows a javadoc:org.springframework.stereotype.Service[format=annotation] Bean that uses constructor injection to obtain a required `+RiskAssessor+` bean:
+The following example shows a javadoc:org.springframework.stereotype.Service[format=annotation] Bean that uses constructor injection to obtain a required `RiskAssessor` bean:
 
 include-code::singleconstructor/MyAccountService[]
 

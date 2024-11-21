@@ -190,7 +190,7 @@ include-code::CustomObservation[]
 
 This will create an observation named "some-operation" with the tag "some-tag=some-value".
 
-TIP: If you want to create a span without creating a metric, you need to use the {url-micrometer-tracing-docs}/api[lower-level `+Tracer+` API] from Micrometer.
+TIP: If you want to create a span without creating a metric, you need to use the {url-micrometer-tracing-docs}/api[lower-level `Tracer` API] from Micrometer.
 
 
 
