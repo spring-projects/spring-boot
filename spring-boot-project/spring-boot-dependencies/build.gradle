@@ -61,6 +61,7 @@ bom {
 		}
 		links {
 			site("https://activemq.apache.org/components/artemis")
+			javadoc("https://javadoc.io/doc/org.apache.activemq/artemis-jms-server/{version}", "org.apache.activemq.artemis.jms.server")
 			releaseNotes("https://activemq.apache.org/components/artemis/download/release-notes-{version}")
 		}
 	}
@@ -176,6 +177,7 @@ bom {
 		}
 		links {
 			site("https://github.com/ben-manes/caffeine")
+			javadoc("https://javadoc.io/doc/com.github.ben-manes.caffeine/caffeine/{version}", "com.github.benmanes.caffeine")
 			docs("https://github.com/ben-manes/caffeine/wiki")
 			releaseNotes("https://github.com/ben-manes/caffeine/releases/tag/v{version}")
 		}
@@ -449,7 +451,7 @@ bom {
 		}
 		links {
 			site("https://www.graphql-java.com/")
-			javadoc("https://javadoc.io/doc/com.graphql-java/graphql-java/{version}", "graphql")
+			javadoc("https://javadoc.io/doc/com.graphql-java/graphql-java/{version}", "graphql.schema", "graphql.execution")
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
 	}
@@ -974,6 +976,7 @@ bom {
 		}
 		links {
 			site("https://github.com/eclipse-ee4j/jersey")
+			javadoc("https://javadoc.io/doc/org.glassfish.jersey.core/jersey-server/{version}", "org.glassfish.jersey.server")
 			releaseNotes("https://github.com/eclipse-ee4j/jersey/releases/tag/{version}")
 		}
 	}
@@ -997,7 +1000,7 @@ bom {
 		}
 		links {
 			site("https://eclipse.dev/jetty")
-			javadoc(version -> "https://javadoc.jetty.org/jetty-%s".formatted(version.major()))
+			javadoc(version -> "https://javadoc.jetty.org/jetty-%s".formatted(version.major()), "org.eclipse.jetty")
 			releaseNotes("https://github.com/jetty/jetty.project/releases/tag/jetty-{version}")
 		}
 	}
@@ -1222,8 +1225,8 @@ bom {
 		}
 		links {
 			site("https://logging.apache.org/log4j")
-			javadoc("log4j-api", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-api/index.html".formatted(version.major()))
-			javadoc("log4j-core", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-core/index.html".formatted(version.major()))
+			javadoc("log4j-api", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-api".formatted(version.major()))
+			javadoc("log4j-core", version -> "https://logging.apache.org/log4j/%s.x/javadoc/log4j-core".formatted(version.major()), "org.apache.logging.log4j.core")
 			docs(version -> "https://logging.apache.org/log4j/%s.x/manual".formatted(version.major()))
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
 		}
@@ -1237,7 +1240,7 @@ bom {
 		}
 		links {
 			site("https://logback.qos.ch")
-			javadoc("https://logback.qos.ch/apidocs")
+			javadoc("https://logback.qos.ch/apidocs", "ch.qos.logback")
 		}
 	}
 	library("Lombok", "1.18.36") {
@@ -1596,7 +1599,7 @@ bom {
 			site("https://github.com/open-telemetry/opentelemetry-java")
 			javadoc("opentelemetry-api", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-api/%s".formatted(version), "io.opentelemetry.api")
 			javadoc("opentelemetry-context", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-context/%s".formatted(version), "io.opentelemetry.context")
-			javadoc("opentelemetry-sdk-common", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/%s".formatted(version), "io.opentelemetry.sdk.common")
+			javadoc("opentelemetry-sdk-common", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-common/%s".formatted(version), "io.opentelemetry.sdk.common", "io.opentelemetry.sdk.resources")
 			javadoc("opentelemetry-sdk-logs", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-logs/%s".formatted(version), "io.opentelemetry.sdk.logs")
 			javadoc("opentelemetry-sdk-metrics", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-metrics/%s".formatted(version), "io.opentelemetry.sdk.metrics")
 			javadoc("opentelemetry-sdk-trace", version -> "https://javadoc.io/doc/io.opentelemetry/opentelemetry-sdk-trace/%s".formatted(version), "io.opentelemetry.sdk.trace")
@@ -2442,7 +2445,7 @@ bom {
 		}
 		links {
 			site("https://tomcat.apache.org")
-			javadoc(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/api".formatted(version.major(), version.minor()), "org.apache.catalina")
+			javadoc(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/api".formatted(version.major(), version.minor()), "org.apache.catalina", "org.apache.tomcat")
 			docs(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc".formatted(version.major(), version.minor()))
 			releaseNotes(version -> "https://tomcat.apache.org/tomcat-%s.%s-doc/changelog.html".formatted(version.major(), version.minor()))
 		}

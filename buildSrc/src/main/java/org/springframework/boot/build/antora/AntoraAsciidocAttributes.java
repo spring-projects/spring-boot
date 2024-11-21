@@ -207,11 +207,15 @@ public class AntoraAsciidocAttributes {
 		attributes.put("javadoc-location-java-lang", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-java-net", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-java-io", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-nio", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-security", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-sql", "{url-javase-javadoc}/java.sql");
 		attributes.put("javadoc-location-java-time", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-java-util", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-javax-management", "{url-javase-javadoc}/java.management");
 		attributes.put("javadoc-location-javax-net", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-javax-sql", "{url-javase-javadoc}/java.sql");
+		attributes.put("javadoc-location-javax-security", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-javax-xml", "{url-javase-javadoc}/java.xml");
 	}
 
