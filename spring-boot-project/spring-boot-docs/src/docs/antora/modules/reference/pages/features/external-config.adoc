@@ -330,7 +330,7 @@ By default you can import Java Properties, YAML and xref:features/external-confi
 Third-party jars can offer support for additional technologies (there is no requirement for files to be local).
 For example, you can imagine config data being from external stores such as Consul, Apache ZooKeeper or Netflix Archaius.
 
-If you want to support your own locations, see the javadoc:org.springframework.boot.context.config.ConfigDataLocationResolver[] and javadoc:org.springframework.boot.context.config.ConfigDataLoader[] classes in the `+org.springframework.boot.context.config+` package.
+If you want to support your own locations, see the javadoc:org.springframework.boot.context.config.ConfigDataLocationResolver[] and javadoc:org.springframework.boot.context.config.ConfigDataLoader[] classes in the `org.springframework.boot.context.config` package.
 ====
 
 
@@ -727,7 +727,7 @@ A setter may be omitted in the following cases:
   In the latter case, a setter is mandatory.
   We recommend to always add a setter for such types.
   If you initialize a collection, make sure it is not immutable (as in the preceding example).
-* If nested POJO properties are initialized (like the `+Security+` field in the preceding example), a setter is not required.
+* If nested POJO properties are initialized (like the `Security` field in the preceding example), a setter is not required.
   If you want the binder to create the instance on the fly by using its default constructor, you need a setter.
 
 Some people use Project Lombok to add getters and setters automatically.
@@ -752,13 +752,13 @@ To opt out of constructor binding for a class with a single parameterized constr
 Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use javadoc:org.springframework.boot.context.properties.bind.ConstructorBinding[format=annotation].
 
-Nested members of a constructor bound class (such as `+Security+` in the example above) will also be bound through their constructor.
+Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
 
 Default values can be specified using javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] on constructor parameters and record components.
 The conversion service will be applied to coerce the annotation's javadoc:java.lang.String[] value to the target type of a missing property.
 
-Referring to the previous example, if no properties are bound to `+Security+`, the `MyProperties` instance will contain a `null` value for `security`.
-To make it contain a non-null instance of `+Security+` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `+Security+` to be declared as nullable as they do not have default values), use an empty javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] annotation:
+Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
+To make it contain a non-null instance of `Security` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `Security` to be declared as nullable as they do not have default values), use an empty javadoc:org.springframework.boot.context.properties.bind.DefaultValue[format=annotation] annotation:
 
 include-code::nonnull/MyProperties[tag=*]
 
@@ -801,7 +801,7 @@ include-code::MyApplication[]
 When the javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] bean is registered using configuration property scanning or through javadoc:org.springframework.boot.context.properties.EnableConfigurationProperties[format=annotation], the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
-Assuming that it is in the `com.example.app` package, the bean name of the `+SomeProperties+` example above is `some.properties-com.example.app.SomeProperties`.
+Assuming that it is in the `com.example.app` package, the bean name of the `SomeProperties` example above is `some.properties-com.example.app.SomeProperties`.
 ====
 
 We recommend that javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] only deal with the environment and, in particular, does not inject other beans from the context.
@@ -846,7 +846,7 @@ To configure a bean from the javadoc:org.springframework.core.env.Environment[] 
 
 include-code::ThirdPartyConfiguration[]
 
-Any JavaBean property defined with the `another` prefix is mapped onto that `+AnotherComponent+` bean in manner similar to the preceding `+SomeProperties+` example.
+Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `SomeProperties` example.
 
 
 

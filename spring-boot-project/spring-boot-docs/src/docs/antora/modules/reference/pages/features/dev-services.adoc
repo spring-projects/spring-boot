@@ -166,7 +166,7 @@ services:
 === Skipping Specific Containers
 
 If you have a container image defined in your `compose.yml` that you don’t want connected to your application you can use a label to ignore it.
-Any container with labeled with `+org.springframework.boot.ignore+` will be ignored by Spring Boot.
+Any container with labeled with `org.springframework.boot.ignore` will be ignored by Spring Boot.
 
 For example:
 
@@ -330,7 +330,7 @@ This will allow you to access all declared test dependencies and give you a natu
 To create a test launchable version of your application you should create an "`Application`" class in the `src/test` directory.
 For example, if your main application is in `src/main/java/com/example/MyApplication.java`, you should create `src/test/java/com/example/TestMyApplication.java`
 
-The `+TestMyApplication+` class can use the `SpringApplication.from(...)` method to launch the real application:
+The `TestMyApplication` class can use the `SpringApplication.from(...)` method to launch the real application:
 
 include-code::launch/TestMyApplication[]
 
@@ -355,7 +355,7 @@ Once you have defined your test configuration, you can use the `with(...)` metho
 
 include-code::test/TestMyApplication[]
 
-You can now launch `+TestMyApplication+` as you would any regular Java `main` method application to start your application and the containers that it needs to run.
+You can now launch `TestMyApplication` as you would any regular Java `main` method application to start your application and the containers that it needs to run.
 
 TIP: You can use the Maven goal `spring-boot:test-run` or the Gradle task `bootTestRun` to do this from the command line.
 

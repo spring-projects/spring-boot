@@ -219,7 +219,7 @@ logging:
 ----
 
 It is also possible to set logging levels using environment variables.
-For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `+org.springframework.web+` to `DEBUG`.
+For example, `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB=DEBUG` will set `org.springframework.web` to `DEBUG`.
 
 NOTE: The above approach will only work for package level logging.
 Since relaxed binding xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.maps-from-environment-variables[always converts environment variables to lowercase], it is not possible to configure logging for an individual class in this way.
@@ -259,7 +259,7 @@ Spring Boot includes the following pre-defined logging groups that can be used o
 | Name | Loggers
 
 | web
-| `+org.springframework.core.codec+`, `+org.springframework.http+`, `+org.springframework.web+`, `+org.springframework.boot.actuate.endpoint.web+`, `+org.springframework.boot.web.servlet.ServletContextInitializerBeans+`
+| `org.springframework.core.codec`, `org.springframework.http`, `org.springframework.web`, `org.springframework.boot.actuate.endpoint.web`, `org.springframework.boot.web.servlet.ServletContextInitializerBeans`
 
 | sql
 | `org.springframework.jdbc.core`, `org.hibernate.SQL`, javadoc:org.jooq.tools.LoggerListener[]

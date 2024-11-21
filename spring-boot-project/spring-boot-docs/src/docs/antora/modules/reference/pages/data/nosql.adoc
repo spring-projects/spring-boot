@@ -218,7 +218,7 @@ Spring Data includes repository support for MongoDB.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed automatically, based on method names.
 
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `+City+` is now a MongoDB data class rather than a JPA javadoc:jakarta.persistence.Entity[format=annotation], it works in the same way, as shown in the following example:
+You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA javadoc:jakarta.persistence.Entity[format=annotation], it works in the same way, as shown in the following example:
 
 include-code::CityRepository[]
 
@@ -273,7 +273,7 @@ Spring Data includes repository support for Neo4j.
 For complete details of Spring Data Neo4j, see the {url-spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
-You could take the JPA example from earlier and define `+City+` as Spring Data Neo4j javadoc:org.springframework.data.neo4j.core.schema.Node[format=annotation] rather than JPA javadoc:jakarta.persistence.Entity[format=annotation] and the repository abstraction works in the same way, as shown in the following example:
+You could take the JPA example from earlier and define `City` as Spring Data Neo4j javadoc:org.springframework.data.neo4j.core.schema.Node[format=annotation] rather than JPA javadoc:jakarta.persistence.Entity[format=annotation] and the repository abstraction works in the same way, as shown in the following example:
 
 include-code::CityRepository[]
 
@@ -401,7 +401,7 @@ Spring Data includes repository support for Elasticsearch.
 As with the JPA repositories discussed earlier, the basic principle is that queries are constructed for you automatically based on method names.
 
 In fact, both Spring Data JPA and Spring Data Elasticsearch share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `+City+` is now an Elasticsearch javadoc:org.springframework.data.elasticsearch.annotations.Document[format=annotation] class rather than a JPA javadoc:jakarta.persistence.Entity[format=annotation], it works in the same way.
+You could take the JPA example from earlier and, assuming that `City` is now an Elasticsearch javadoc:org.springframework.data.elasticsearch.annotations.Document[format=annotation] class rather than a JPA javadoc:jakarta.persistence.Entity[format=annotation], it works in the same way.
 
 Repositories and documents are found through scanning.
 By default, the xref:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages] are scanned.
@@ -440,7 +440,7 @@ There is a `spring-boot-starter-data-cassandra` starter for collecting the depen
 [[data.nosql.cassandra.connecting]]
 === Connecting to Cassandra
 
-You can inject an auto-configured javadoc:org.springframework.data.cassandra.core.CassandraTemplate[] or a Cassandra `+CqlSession+` instance as you would with any other Spring Bean.
+You can inject an auto-configured javadoc:org.springframework.data.cassandra.core.CassandraTemplate[] or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
 The `spring.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
@@ -467,7 +467,7 @@ spring:
 TIP: Those two examples are identical as the port default to `9042`.
 If you need to configure the port, use `spring.cassandra.port`.
 
-The auto-configured `+CqlSession+` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
+The auto-configured `CqlSession` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
 
 [configprops,yaml]
 ----
@@ -480,7 +480,7 @@ spring:
       enabled: true
 ----
 
-Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `+CqlSession+` as shown in this example:
+Custom SSL trust material can be configured in an xref:features/ssl.adoc[SSL bundle] and applied to the `CqlSession` as shown in this example:
 
 [configprops,yaml]
 ----
@@ -502,10 +502,10 @@ Spring Boot does not look for such a file by default but can load one using `spr
 If a property is both present in `+spring.cassandra.*+` and the configuration file, the value in `+spring.cassandra.*+` takes precedence.
 
 For more advanced driver customizations, you can register an arbitrary number of beans that implement javadoc:org.springframework.boot.autoconfigure.cassandra.DriverConfigLoaderBuilderCustomizer[].
-The `+CqlSession+` can be customized with a bean of type javadoc:org.springframework.boot.autoconfigure.cassandra.CqlSessionBuilderCustomizer[].
+The `CqlSession` can be customized with a bean of type javadoc:org.springframework.boot.autoconfigure.cassandra.CqlSessionBuilderCustomizer[].
 ====
 
-NOTE: If you use `+CqlSessionBuilder+` to create multiple `+CqlSession+` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
+NOTE: If you use `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
 
 The following code listing shows how to inject a Cassandra bean:
 

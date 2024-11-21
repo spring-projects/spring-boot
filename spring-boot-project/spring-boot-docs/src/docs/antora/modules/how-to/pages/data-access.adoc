@@ -28,7 +28,7 @@ app:
     pool-size: 30
 ----
 
-Assuming that `+SomeDataSource+` has regular JavaBean properties for the URL, the username, and the pool size, these settings are bound automatically before the javadoc:javax.sql.DataSource[] is made available to other components.
+Assuming that `SomeDataSource` has regular JavaBean properties for the URL, the username, and the pool size, these settings are bound automatically before the javadoc:javax.sql.DataSource[] is made available to other components.
 
 Spring Boot also provides a utility builder class, called javadoc:org.springframework.boot.jdbc.DataSourceBuilder[], that can be used to create one of the standard data sources (if it is on the classpath).
 The builder can detect which one to use based on what is available on the classpath.
@@ -244,7 +244,7 @@ Alternatively, if javadoc:org.hibernate.boot.model.naming.ImplicitNamingStrategy
 By default, Spring Boot configures the physical naming strategy with javadoc:org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy[].
 Using this strategy, all dots are replaced by underscores and camel casing is replaced by underscores as well.
 Additionally, by default, all table names are generated in lower case.
-For example, a `+TelephoneNumber+` entity is mapped to the `telephone_number` table.
+For example, a `TelephoneNumber` entity is mapped to the `telephone_number` table.
 If your schema requires mixed-case identifiers, define a custom javadoc:org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy[] bean, as shown in the following example:
 
 include-code::spring/MyHibernateConfiguration[]
@@ -317,8 +317,8 @@ Building upon xref:how-to:data-access.adoc#howto.data-access.configure-two-datas
 include-code::MyAdditionalEntityManagerFactoryConfiguration[]
 
 The example above creates an javadoc:jakarta.persistence.EntityManagerFactory[] using the javadoc:javax.sql.DataSource[] bean qualified with `@Qualifier("second")`.
-It scans entities located in the same package as `+Order+`.
-It is possible to map additional JPA properties using the `+app.jpa+` namespace.
+It scans entities located in the same package as `Order`.
+It is possible to map additional JPA properties using the `app.jpa` namespace.
 The use of `@Bean(defaultCandidate=false)` allows the `secondJpaProperties` and `secondEntityManagerFactory` beans to be defined without interfering with auto-configured beans of the same type.
 
 NOTE: The {url-spring-framework-docs}/core/beans/dependencies/factory-autowire.html#beans-factory-autowire-candidate[Spring Framework reference documentation] describes this feature in more details.

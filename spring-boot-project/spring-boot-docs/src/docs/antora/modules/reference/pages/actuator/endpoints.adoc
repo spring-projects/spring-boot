@@ -108,7 +108,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 
 | `logfile`
 | Returns the contents of the logfile (if the `logging.file.name` or the `logging.file.path` property has been set).
-  Supports the use of the HTTP `+Range+` header to retrieve part of the log file's content.
+  Supports the use of the HTTP `Range` header to retrieve part of the log file's content.
 
 | `prometheus`
 | Exposes metrics in a format that can be scraped by a Prometheus server.
@@ -412,7 +412,7 @@ Operations on an endpoint receive input through their parameters.
 When exposed over the web, the values for these parameters are taken from the URL's query parameters and from the JSON request body.
 When exposed over JMX, the parameters are mapped to the parameters of the MBean's operations.
 Parameters are required by default.
-They can be made optional by annotating them with either `+@javax.annotation.Nullable+` or javadoc:org.springframework.lang.Nullable[format=annotation].
+They can be made optional by annotating them with either `@javax.annotation.Nullable` or javadoc:org.springframework.lang.Nullable[format=annotation].
 
 You can map each root property in the JSON request body to a parameter of the endpoint.
 Consider the following JSON request body:
@@ -546,7 +546,7 @@ NOTE: Range requests are not supported when using Jersey.
 ==== Web Endpoint Security
 
 An operation on a web endpoint or a web-specific endpoint extension can receive the current javadoc:java.security.Principal[] or javadoc:org.springframework.boot.actuate.endpoint.SecurityContext[] as a method parameter.
-The former is typically used in conjunction with either `+@javax.annotation.Nullable+` or javadoc:org.springframework.lang.Nullable[format=annotation] to provide different behavior for authenticated and unauthenticated users.
+The former is typically used in conjunction with either `@javax.annotation.Nullable` or javadoc:org.springframework.lang.Nullable[format=annotation] to provide different behavior for authenticated and unauthenticated users.
 The latter is typically used to perform authorization checks by using its `isUserInRole(String)` method.
 
 
@@ -1008,7 +1008,7 @@ Some external systems might not be shared by application instances, in which cas
 Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
 Unfortunately, an external system that is shared by all application instances is common, and you have to make a judgement call: Include it in the readiness probe and expect that the application is taken out of service when the external service is down or leave it out and deal with failures higher up the stack, perhaps by using a circuit breaker in the caller.
 
-NOTE: If all instances of an application are unready, a Kubernetes Service with `type=ClusterIP` or `+NodePort+` does not accept any incoming connections.
+NOTE: If all instances of an application are unready, a Kubernetes Service with `type=ClusterIP` or `NodePort` does not accept any incoming connections.
 There is no HTTP error response (503 and so on), since there is no connection.
 A service with `type=LoadBalancer` might or might not accept connections, depending on the provider.
 A service that has an explicit https://kubernetes.io/docs/concepts/services-networking/ingress/[ingress] also responds in a way that depends on the implementation -- the ingress service itself has to decide how to handle the "`connection refused`" from downstream.

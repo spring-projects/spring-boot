@@ -11,7 +11,7 @@ Nested configuration properties which are not inner classes, however, *must* be 
 
 include-code::MyProperties[]
 
-where `+Nested+` is:
+where `Nested` is:
 
 include-code::Nested[]
 
