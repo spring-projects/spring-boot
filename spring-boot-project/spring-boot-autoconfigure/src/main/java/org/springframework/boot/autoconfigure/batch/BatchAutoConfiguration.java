@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.batch.core.configuration.BatchConfigurationException;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.explore.JobExplorer;
@@ -128,13 +127,6 @@ public class BatchAutoConfiguration {
 		@Override
 		protected DataSource getDataSource() {
 			return this.dataSource;
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@Override
-		public JobRepository jobRepository() throws BatchConfigurationException {
-			return super.jobRepository();
 		}
 
 		@Override
