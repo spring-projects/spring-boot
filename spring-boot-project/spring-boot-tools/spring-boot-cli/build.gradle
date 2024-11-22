@@ -1,3 +1,6 @@
+import org.springframework.boot.build.properties.BuildProperties
+import org.springframework.boot.build.properties.BuildType
+
 plugins {
 	id "java"
 	id "eclipse"
@@ -104,17 +107,27 @@ task tar(type: Tar) {
 	configureArchive it
 }
 
-task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
-	dependsOn tar
-	outputDir = layout.buildDirectory.dir("homebrew")
-	template = file("src/main/homebrew/spring-boot.rb")
-	archive = tar.archiveFile
-}
+if (BuildProperties.get(project).buildType() == BuildType.OPEN_SOURCE) {
+	task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
+		dependsOn tar
+		outputDir = layout.buildDirectory.dir("homebrew")
+		template = file("src/main/homebrew/spring-boot.rb")
+		archive = tar.archiveFile
+	}
 
-def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
-	type "rb"
-	classifier "homebrew"
-	builtBy "homebrewFormula"
+	def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
+		type "rb"
+		classifier "homebrew"
+		builtBy "homebrewFormula"
+	}
+
+	publishing {
+		publications {
+			getByName("maven") {
+				artifact homebrewFormulaArtifact
+			}
+		}
+	}
 }
 
 publishing {
@@ -123,7 +136,6 @@ publishing {
 			artifact fullJar
 			artifact tar
 			artifact zip
-			artifact homebrewFormulaArtifact
 		}
 	}
 }
