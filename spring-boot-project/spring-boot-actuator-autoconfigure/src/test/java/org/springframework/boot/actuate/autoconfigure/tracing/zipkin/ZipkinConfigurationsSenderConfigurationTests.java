@@ -198,6 +198,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenReactive() {
 		this.reactiveContextRunner.withUserConfiguration(WebClientConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class))
@@ -207,6 +208,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("resource")
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenRestTemplate() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))

@@ -475,7 +475,6 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCreatedDate(MavenBuild mavenBuild) {
-		String testBuildId = randomString();
 		mavenBuild.project("dockerTest", "build-image-created-date")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")

@@ -403,7 +403,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "resource" })
 	private A createAssertableContext(boolean refresh) {
 		ResolvableType resolvableType = ResolvableType.forClass(AbstractApplicationContextRunner.class, getClass());
 		Class<A> assertType = (Class<A>) resolvableType.resolveGeneric(1);

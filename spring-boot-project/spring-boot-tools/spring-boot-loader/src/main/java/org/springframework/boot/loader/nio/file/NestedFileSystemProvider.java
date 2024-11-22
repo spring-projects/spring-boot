@@ -84,6 +84,7 @@ public class NestedFileSystemProvider extends FileSystemProvider {
 	}
 
 	@Override
+	@SuppressWarnings("resource")
 	public Path getPath(URI uri) {
 		NestedLocation location = NestedLocation.fromUri(uri);
 		synchronized (this.fileSystems) {

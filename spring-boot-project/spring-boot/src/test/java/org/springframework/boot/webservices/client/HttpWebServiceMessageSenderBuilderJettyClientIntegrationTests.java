@@ -35,9 +35,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * available and, therefore, Jetty's client is used instead.
  *
  * @author Stephane Nicoll
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @ClassPathExclusions("httpclient5-*.jar")
 @SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 class HttpWebServiceMessageSenderBuilderJettyClientIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();

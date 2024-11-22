@@ -36,9 +36,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * predominant HTTP client.
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar" })
 @SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 class HttpWebServiceMessageSenderBuilderReactorClientIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();

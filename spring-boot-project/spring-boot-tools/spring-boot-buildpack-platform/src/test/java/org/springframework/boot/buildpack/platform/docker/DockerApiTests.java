@@ -600,7 +600,7 @@ class DockerApiTests {
 		}
 
 		@Test
-		void createWithPlatformAndInsufficientApiVersionThrowsException() throws Exception {
+		void createWithPlatformAndInsufficientApiVersionThrowsException() {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
