@@ -31,7 +31,7 @@ jobs:
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}
-          repository: ${{ vars.COMMERCIAL && 'spring-commercial-snapshot-local' || 'libs-snapshot-local' }}
+          repository: ${{ vars.COMMERCIAL && 'spring-enterprise-maven-dev-local' || 'libs-snapshot-local' }}
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           uri: ${{ vars.COMMERCIAL_DEPLOY_REPO_URL || 'https://repo.spring.io' }}
