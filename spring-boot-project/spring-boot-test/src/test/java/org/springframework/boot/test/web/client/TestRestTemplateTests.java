@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -66,6 +67,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Kristine Jetzke
+ * @author Yanming Zhou
  */
 class TestRestTemplateTests {
 
@@ -129,6 +131,7 @@ class TestRestTemplateTests {
 		assertBasicAuthorizationCredentials(restTemplate, "user", "password");
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	void options() {
 		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
@@ -136,6 +139,21 @@ class TestRestTemplateTests {
 			.getRestTemplate()
 			.getRequestFactory();
 		RequestConfig config = factory.createRequestConfig();
+		assertThat(config.isRedirectsEnabled()).isTrue();
+	}
+
+	@Test
+	void redirects() {
+		TestRestTemplate template = new TestRestTemplate().withRedirects(Redirects.DONT_FOLLOW);
+		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
+			.getRestTemplate()
+			.getRequestFactory();
+		RequestConfig config = factory.createRequestConfig();
+		assertThat(config.isRedirectsEnabled()).isFalse();
+
+		template = new TestRestTemplate().withRedirects(Redirects.FOLLOW);
+		factory = (CustomHttpComponentsClientHttpRequestFactory) template.getRestTemplate().getRequestFactory();
+		config = factory.createRequestConfig();
 		assertThat(config.isRedirectsEnabled()).isTrue();
 	}
 
