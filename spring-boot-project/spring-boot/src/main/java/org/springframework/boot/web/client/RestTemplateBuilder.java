@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -64,6 +65,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Kevin Strijbos
  * @author Ilya Lukyanovich
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 1.4.0
  */
 public class RestTemplateBuilder {
@@ -499,6 +501,19 @@ public class RestTemplateBuilder {
 				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors,
 				this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
 				this.defaultHeaders, this.customizers, this.requestCustomizers);
+	}
+
+	/**
+	 * Sets the redirect strategy on the underlying {@link ClientHttpRequestFactory}.
+	 * @param redirects the redirect strategy
+	 * @return a new builder instance.
+	 * @since 3.4.1
+	 */
+	public RestTemplateBuilder redirects(Redirects redirects) {
+		return new RestTemplateBuilder(this.requestFactorySettings.withRedirects(redirects), this.detectRequestFactory,
+				this.rootUri, this.messageConverters, this.interceptors, this.requestFactoryBuilder,
+				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
+				this.customizers, this.requestCustomizers);
 	}
 
 	/**
