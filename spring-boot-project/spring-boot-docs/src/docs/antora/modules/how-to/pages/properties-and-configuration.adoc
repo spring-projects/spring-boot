@@ -209,7 +209,7 @@ spring.datasource.url=jdbc:mysql://localhost/test
 server.port=9000
 ----
 
-See xref:reference:features/external-config.adoc#features.external-config.yaml[] in the "`Spring Boot Features'" section for more information about YAML.
+See xref:reference:features/external-config.adoc#features.external-config.yaml[] in the "`Spring Boot Features`" section for more information about YAML.
 
 
 
