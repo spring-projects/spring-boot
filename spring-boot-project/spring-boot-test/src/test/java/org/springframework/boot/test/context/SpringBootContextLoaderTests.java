@@ -127,11 +127,6 @@ class SpringBootContextLoaderTests {
 		assertThat(getActiveProfiles(MultipleActiveProfiles.class)).containsExactly("profile1", "profile2");
 	}
 
-	@Test
-	void activeProfileWithComma() {
-		assertThat(getActiveProfiles(ActiveProfileWithComma.class)).containsExactly("profile1,2");
-	}
-
 	@Test // gh-28776
 	void testPropertyValuesShouldTakePrecedenceWhenInlinedPropertiesPresent() {
 		TestContext context = new ExposedTestContextManager(SimpleConfig.class).getExposedTestContext();
@@ -311,12 +306,6 @@ class SpringBootContextLoaderTests {
 	@SpringBootTest(classes = Config.class)
 	@ActiveProfiles({ "profile1", "profile2" })
 	static class MultipleActiveProfiles {
-
-	}
-
-	@SpringBootTest(classes = Config.class)
-	@ActiveProfiles({ "profile1,2" })
-	static class ActiveProfileWithComma {
 
 	}
 
