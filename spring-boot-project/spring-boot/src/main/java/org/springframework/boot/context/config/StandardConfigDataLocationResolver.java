@@ -166,18 +166,24 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private void validateProfiles(Profiles profiles) {
-		Pattern validProfilePattern = Pattern.compile("^[a-zA-Z0-9_\\-]+$");
-		Assert.notNull(profiles, "Profiles must not be null");
 		for (String profile : profiles) {
-			Assert.notNull(profile, "Profile must not be null");
-			Assert.hasText(profile, "Profile must not be empty");
-			Assert.state(!profile.startsWith("-") && !profile.startsWith("_"),
-					() -> String.format("Invalid profile '%s': must not start with '-' or '_'", profile));
-			Assert.state(!profile.endsWith("-") && !profile.endsWith("_"),
-					() -> String.format("Invalid profile '%s': must not end with '-' or '_'", profile));
-			Assert.state(validProfilePattern.matcher(profile).matches(), () -> String
-				.format("Invalid profile '%s': must only contain alphanumeric characters, '-', or '_'", profile));
+			validateProfile(profile);
 		}
+	}
+
+	private void validateProfile(String profile) {
+		Assert.notNull(profile, "Profile must not be null");
+		Assert.hasText(profile, "Profile must not be empty");
+		Assert.state(!profile.startsWith("-") && !profile.startsWith("_"),
+				() -> String.format("Invalid profile '%s': must not start with '-' or '_'", profile));
+		Assert.state(!profile.endsWith("-") && !profile.endsWith("_"),
+				() -> String.format("Invalid profile '%s': must not end with '-' or '_'", profile));
+		profile.codePoints().forEach((codePoint) -> {
+			if (codePoint == '-' || codePoint == '_' || Character.isLetterOrDigit(codePoint)) {
+				return;
+			}
+			throw new IllegalStateException(String.format("Invalid profile '%s': must contain only letters or digits or '-' or '_'", profile));
+		});
 	}
 
 	private String getResourceLocation(ConfigDataLocationResolverContext context,
