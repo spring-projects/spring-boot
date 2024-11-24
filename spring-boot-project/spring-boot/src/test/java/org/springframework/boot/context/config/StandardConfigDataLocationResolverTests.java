@@ -304,6 +304,15 @@ class StandardConfigDataLocationResolverTests {
 	}
 
 	@Test
+	void resolveProfileSpecificWithNonAsciiCharactersShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-테스트_123");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatNoException()
+				.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
 	void resolveProfileSpecificWithAdditionalValidProfilesShouldNotThrowException() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
 		this.environment.setActiveProfiles("dev-test");
