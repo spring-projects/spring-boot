@@ -360,7 +360,7 @@ class StandardConfigDataLocationResolverTests {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
 			.withMessageStartingWith(
-					"Invalid profile 'dev*test': must only contain alphanumeric characters, '-', or '_'");
+					"Invalid profile 'dev*test': must contain only letters or digits or '-' or '_'");
 	}
 
 	private String filePath(String... components) {
