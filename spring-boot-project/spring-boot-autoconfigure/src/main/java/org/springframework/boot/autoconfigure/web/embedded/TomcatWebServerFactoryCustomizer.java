@@ -119,6 +119,8 @@ public class TomcatWebServerFactoryCustomizer
 			.asInt(DataSize::toBytes)
 			.when((maxHttpFormPostSize) -> maxHttpFormPostSize != 0)
 			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
+		map.from(properties::getMaxParameterCount)
+			.to((maxParameterCount) -> customizeMaxParameterCount(factory, maxParameterCount));
 		map.from(properties::getAccesslog)
 			.when(ServerProperties.Tomcat.Accesslog::isEnabled)
 			.to((enabled) -> customizeAccessLog(factory));
@@ -290,6 +292,10 @@ public class TomcatWebServerFactoryCustomizer
 
 	private void customizeMaxHttpFormPostSize(ConfigurableTomcatWebServerFactory factory, int maxHttpFormPostSize) {
 		factory.addConnectorCustomizers((connector) -> connector.setMaxPostSize(maxHttpFormPostSize));
+	}
+
+	private void customizeMaxParameterCount(ConfigurableTomcatWebServerFactory factory, int maxParameterCount) {
+		factory.addConnectorCustomizers((connector) -> connector.setMaxParameterCount(maxParameterCount));
 	}
 
 	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
