@@ -165,6 +165,8 @@ In most scenarios, message listener containers should be configured against the 
 This way each listener container has its own connection and this gives full responsibility to it in terms of local recovery.
 The auto-configuration uses javadoc:org.springframework.boot.jms.ConnectionFactoryUnwrapper[] to unwrap the native connection factory from the auto-configured one.
 
+NOTE: The auto-configuration only unwraps `CachedConnectionFactory`.
+
 By default, the default factory is transactional.
 If you run in an infrastructure where a javadoc:org.springframework.transaction.jta.JtaTransactionManager[] is present, it is associated to the listener container by default.
 If not, the `sessionTransacted` flag is enabled.

@@ -31,7 +31,7 @@ public class MyJmsConfiguration {
 	public DefaultJmsListenerContainerFactory myFactory(DefaultJmsListenerContainerFactoryConfigurer configurer,
 			ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrap(connectionFactory));
+		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory));
 		factory.setMessageConverter(new MyMessageConverter());
 		return factory;
 	}
