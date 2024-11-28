@@ -73,9 +73,9 @@ public final class SimpleAsyncTaskExecutorAssert
 	}
 
 	/**
-	 * Creates a new assertion class with the given {@link SimpleAsyncTaskExecutor}.
+	 * Creates a new assertion instance with the given {@link SimpleAsyncTaskExecutor}.
 	 * @param actual the {@link SimpleAsyncTaskExecutor}
-	 * @return the assertion class
+	 * @return the assertion instance
 	 */
 	public static SimpleAsyncTaskExecutorAssert assertThat(SimpleAsyncTaskExecutor actual) {
 		return new SimpleAsyncTaskExecutorAssert(actual);

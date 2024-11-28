@@ -307,7 +307,7 @@ Information returned by the `/env`, `/configprops` and `/quartz` endpoints can b
 
 Values can only be viewed in an unsanitized form when:
 
-- The `show-values` property has been set to something other than `NEVER`
+- The `show-values` property has been set to something other than `never`
 - No custom xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[`SanitizingFunction`] beans apply
 
 The `show-values` property can be configured for sanitizable endpoints to one of the following values:
