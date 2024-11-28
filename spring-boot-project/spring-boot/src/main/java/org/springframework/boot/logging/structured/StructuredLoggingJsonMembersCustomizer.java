@@ -25,6 +25,15 @@ import org.springframework.boot.json.JsonWriter.Members;
  * <p>
  * An implementation may be provided using the {@code logging.structured.json.customizer}
  * property.
+ * <p>
+ * {@code StructuredLoggingJsonMembersCustomizer} implementations may optionally take the
+ * following constructor parameters:
+ * <ul>
+ * <li>{@link org.springframework.core.env.Environment} - The Spring
+ * {@code Environment}.</li>
+ * <li>{@link ch.qos.logback.classic.pattern.ThrowableProxyConverter} - The Logback
+ * {@code ThrowableProxyConverter} (available only if Logback is using).</li>
+ * </ul>
  *
  * @param <T> the type being written
  * @author Phillip Webb
