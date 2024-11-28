@@ -562,7 +562,7 @@ bom {
 		}
 		links {
 			site("https://github.com/brettwooldridge/HikariCP")
-			javadoc("https://javadoc.io/doc/com.zaxxer/HikariCP/{version}", "com.zaxxer.hikari")
+			javadoc("https://javadoc.io/doc/com.zaxxer/HikariCP/{version}/com.zaxxer.hikari", "com.zaxxer.hikari")
 		}
 	}
 	library("HSQLDB", "2.7.3") {
