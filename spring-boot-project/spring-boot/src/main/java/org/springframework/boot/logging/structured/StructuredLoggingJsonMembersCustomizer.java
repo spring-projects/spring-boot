@@ -16,23 +16,27 @@
 
 package org.springframework.boot.logging.structured;
 
+import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
+
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.core.env.Environment;
 
 /**
- * Customer that can be injected into a {@link StructuredLogFormatter} implementations to
+ * Customizer that can be injected into {@link StructuredLogFormatter} implementations to
  * customize {@link JsonWriter} {@link Members}.
  * <p>
  * An implementation may be provided using the {@code logging.structured.json.customizer}
  * property.
  * <p>
- * {@code StructuredLoggingJsonMembersCustomizer} implementations may optionally take the
- * following constructor parameters:
+ * Implementing classes can declare the following parameter types in the constructor:
  * <ul>
- * <li>{@link org.springframework.core.env.Environment} - The Spring
- * {@code Environment}.</li>
- * <li>{@link ch.qos.logback.classic.pattern.ThrowableProxyConverter} - The Logback
- * {@code ThrowableProxyConverter} (available only if Logback is using).</li>
+ * <li>{@link Environment}</li>
+ * </ul>
+ * When using Logback, implementing classes can also use the following parameter types in
+ * the constructor:
+ * <ul>
+ * <li>{@link ThrowableProxyConverter}</li>
  * </ul>
  *
  * @param <T> the type being written
