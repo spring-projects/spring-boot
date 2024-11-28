@@ -55,19 +55,19 @@ class OpenTelemetryLoggingDockerComposeConnectionDetailsFactory
 
 		private final int grpcPort;
 
-		private final int httPort;
+		private final int httpPort;
 
 		private OpenTelemetryLoggingDockerComposeConnectionDetails(RunningService source) {
 			super(source);
 			this.host = source.host();
 			this.grpcPort = source.ports().get(OTLP_GRPC_PORT);
-			this.httPort = source.ports().get(OTLP_HTTP_PORT);
+			this.httpPort = source.ports().get(OTLP_HTTP_PORT);
 		}
 
 		@Override
 		public String getUrl(Transport transport) {
 			int port = switch (transport) {
-				case HTTP -> this.httPort;
+				case HTTP -> this.httpPort;
 				case GRPC -> this.grpcPort;
 			};
 			return "http://%s:%d/v1/logs".formatted(this.host, port);
