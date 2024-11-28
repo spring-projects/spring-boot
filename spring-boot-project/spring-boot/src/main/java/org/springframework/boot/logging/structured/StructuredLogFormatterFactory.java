@@ -27,7 +27,6 @@ import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.boot.util.Instantiator.FailureHandler;
-import org.springframework.boot.util.LambdaSafe;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -108,11 +107,12 @@ public class StructuredLogFormatterFactory<E> {
 				ArgumentResolver.from(this.instantiator::getArg));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void invokeCustomizers(List<StructuredLoggingJsonMembersCustomizer<?>> customizers,
 			Members<Object> members) {
-		LambdaSafe.callbacks(StructuredLoggingJsonMembersCustomizer.class, customizers, members)
-			.invoke((customizer) -> customizer.customize(members));
+		for (StructuredLoggingJsonMembersCustomizer<?> customizer : customizers) {
+			((StructuredLoggingJsonMembersCustomizer) customizer).customize(members);
+		}
 	}
 
 	/**
