@@ -763,7 +763,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/persistence/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/persistence/%s.%s/apidocs/jakarta.persistence"
 				.formatted(version.major(), version.minor()), "jakarta.persistence")
 			releaseNotes(version -> "https://github.com/jakartaee/persistence/releases/tag/%s.%s-%s-RELEASE"
 				.formatted(version.major(), version.minor(), version))
@@ -782,7 +782,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/servlet/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/servlet/%s.%s/apidocs/jakarta.servlet"
 				.formatted(version.major(), version.minor()), "jakarta.servlet")
 		}
 	}
