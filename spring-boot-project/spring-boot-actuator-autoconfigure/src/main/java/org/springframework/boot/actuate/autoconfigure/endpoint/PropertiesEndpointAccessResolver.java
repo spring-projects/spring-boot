@@ -80,10 +80,10 @@ public class PropertiesEndpointAccessResolver implements EndpointAccessResolver 
 	@Override
 	public Access accessFor(EndpointId endpointId, Access defaultAccess) {
 		return this.accessCache.computeIfAbsent(endpointId,
-				(key) -> resolveAccess(endpointId, defaultAccess).cap(this.maxPermittedAccess));
+				(key) -> resolveAccess(endpointId.toLowerCaseString(), defaultAccess).cap(this.maxPermittedAccess));
 	}
 
-	private Access resolveAccess(EndpointId endpointId, Access defaultAccess) {
+	private Access resolveAccess(String endpointId, Access defaultAccess) {
 		String accessKey = "management.endpoint.%s.access".formatted(endpointId);
 		String enabledKey = "management.endpoint.%s.enabled".formatted(endpointId);
 		Access access = this.properties.getProperty(accessKey, Access.class);
