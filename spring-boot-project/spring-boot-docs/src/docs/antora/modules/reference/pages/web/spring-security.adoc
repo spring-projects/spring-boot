@@ -3,7 +3,7 @@
 
 If {url-spring-security-site}[Spring Security] is on the classpath, then web applications are secured by default.
 Spring Boot relies on Spring Security’s content-negotiation strategy to determine whether to use `httpBasic` or `formLogin`.
-To add method-level security to a web application, you can also add javadoc:org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity[format=annotation] with your desired settings.
+To add method-level security to a web application, you can also add javadoc:org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity[format=annotation] with your desired settings.
 Additional information can be found in the {url-spring-security-docs}/servlet/authorization/method-security.html[Spring Security Reference Guide].
 
 The default javadoc:org.springframework.security.core.userdetails.UserDetailsService[] has a single user.
