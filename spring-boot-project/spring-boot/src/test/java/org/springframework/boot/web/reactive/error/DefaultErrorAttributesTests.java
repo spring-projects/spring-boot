@@ -55,6 +55,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Scott Frederick
  * @author Moritz Halbritter
  * @author Yanming Zhou
+ * @author Yongjun Hong
  */
 class DefaultErrorAttributesTests {
 
@@ -324,6 +325,30 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).doesNotContainKey("message");
 		assertThat(attributes).doesNotContainKey("errors");
+	}
+
+	@Test
+	void extractParameterValidationResultErrors() throws Exception {
+		Object target = "test";
+		Method method = String.class.getMethod("substring", int.class);
+		MethodParameter parameter = new MethodParameter(method, 0);
+		ParameterValidationResult parameterValidationResult = new ParameterValidationResult(parameter, -1,
+				List.of(new ObjectError("beginIndex", "beginIndex is negative")), null, null, null,
+				(error, sourceType) -> {
+					throw new IllegalArgumentException("No source object of the given type");
+				});
+		MethodValidationResult methodValidationResult = MethodValidationResult.create(target, method,
+				List.of(parameterValidationResult));
+		HandlerMethodValidationException ex = new HandlerMethodValidationException(methodValidationResult);
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
+				ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
+
+		assertThat(attributes.get("message")).asString()
+				.isEqualTo("Validation failed for method='public java.lang.String java.lang.String.substring(int)'. Error count: 1");
+		assertThat(attributes).containsEntry("errors",
+				methodValidationResult.getAllErrors().stream().filter(ObjectError.class::isInstance).toList());
 	}
 
 	@Test
