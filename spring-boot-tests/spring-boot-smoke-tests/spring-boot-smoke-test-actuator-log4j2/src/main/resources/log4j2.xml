@@ -10,9 +10,9 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.hibernate.validator.internal.util.Version" level="warn" />
-        <Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn" />
-        <Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn" />
+        <Logger name="org.hibernate.validator.internal.util.Version" level="warn"/>
+        <Logger name="org.apache.coyote.http11.Http11NioProtocol" level="warn"/>
+        <Logger name="org.apache.tomcat.util.net.NioSelectorPool" level="warn"/>
 
         <Root level="info">
             <AppenderRef ref="Console"/>
