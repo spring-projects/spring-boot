@@ -45,6 +45,13 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 	}
 
 	@Test
+	void getProgressDetailsReturnsProgressDetailsForLongNumbers() {
+		ProgressUpdateEvent event = createEvent("status", new ProgressDetail(4000000000L, 8000000000L), "progress");
+		assertThat(event.getProgressDetail().getCurrent()).isEqualTo(4000000000L);
+		assertThat(event.getProgressDetail().getTotal()).isEqualTo(8000000000L);
+	}
+
+	@Test
 	void getProgressReturnsProgress() {
 		ProgressUpdateEvent event = createEvent();
 		assertThat(event.getProgress()).isEqualTo("progress");
@@ -52,24 +59,24 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 
 	@Test
 	void progressDetailIsEmptyWhenCurrentIsNullReturnsTrue() {
-		ProgressDetail detail = new ProgressDetail(null, 2);
+		ProgressDetail detail = new ProgressDetail(null, 2L);
 		assertThat(ProgressDetail.isEmpty(detail)).isTrue();
 	}
 
 	@Test
 	void progressDetailIsEmptyWhenTotalIsNullReturnsTrue() {
-		ProgressDetail detail = new ProgressDetail(1, null);
+		ProgressDetail detail = new ProgressDetail(1L, null);
 		assertThat(ProgressDetail.isEmpty(detail)).isTrue();
 	}
 
 	@Test
 	void progressDetailIsEmptyWhenTotalAndCurrentAreNotNullReturnsFalse() {
-		ProgressDetail detail = new ProgressDetail(1, 2);
+		ProgressDetail detail = new ProgressDetail(1L, 2L);
 		assertThat(ProgressDetail.isEmpty(detail)).isFalse();
 	}
 
 	protected E createEvent() {
-		return createEvent("status", new ProgressDetail(1, 2), "progress");
+		return createEvent("status", new ProgressDetail(1L, 2L), "progress");
 	}
 
 	protected abstract E createEvent(String status, ProgressDetail progressDetail, String progress);
