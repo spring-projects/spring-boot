@@ -67,12 +67,12 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 	 */
 	public static class ProgressDetail {
 
-		private final Integer current;
+		private final Long current;
 
-		private final Integer total;
+		private final Long total;
 
 		@JsonCreator
-		public ProgressDetail(Integer current, Integer total) {
+		public ProgressDetail(Long current, Long total) {
 			this.current = current;
 			this.total = total;
 		}
@@ -81,7 +81,7 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 		 * Return the current progress value.
 		 * @return the current progress
 		 */
-		public int getCurrent() {
+		public long getCurrent() {
 			return this.current;
 		}
 
@@ -89,7 +89,7 @@ public abstract class ProgressUpdateEvent extends UpdateEvent {
 		 * Return the total progress possible value.
 		 * @return the total progress possible
 		 */
-		public int getTotal() {
+		public long getTotal() {
 			return this.total;
 		}
 
