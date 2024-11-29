@@ -27,7 +27,9 @@ import org.springframework.core.env.Environment;
  * customize {@link JsonWriter} {@link Members}.
  * <p>
  * An implementation may be provided using the {@code logging.structured.json.customizer}
- * property.
+ * property. Alternatively, implementations can be registered in
+ * {@code META-INF/spring.factories} under the key
+ * {@code org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer}.
  * <p>
  * Implementing classes can declare the following parameter types in the constructor:
  * <ul>
