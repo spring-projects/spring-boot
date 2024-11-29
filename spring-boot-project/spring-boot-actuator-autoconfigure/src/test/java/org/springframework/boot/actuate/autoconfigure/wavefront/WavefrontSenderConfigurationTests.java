@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,16 +45,8 @@ class WavefrontSenderConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(WavefrontSenderConfiguration.class));
 
-	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
-		.withPropertyValues("management.tracing.enabled=false");
-
 	private final ApplicationContextRunner metricsDisabledContextRunner = this.contextRunner.withPropertyValues(
 			"management.defaults.metrics.export.enabled=false", "management.simple.metrics.export.enabled=true");
-
-	// Both metrics and tracing are disabled
-	private final ApplicationContextRunner observabilityDisabledContextRunner = this.contextRunner.withPropertyValues(
-			"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false",
-			"management.simple.metrics.export.enabled=true");
 
 	@Test
 	void shouldNotFailIfWavefrontIsMissing() {
@@ -98,14 +90,32 @@ class WavefrontSenderConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyWavefrontSenderIfObservabilityIsDisabled() {
-		this.observabilityDisabledContextRunner.withPropertyValues("management.wavefront.api-token=abcde")
+	void shouldNotSupplyWavefrontSenderIfMetricsAndGlobalTracingIsDisabled() {
+		this.metricsDisabledContextRunner
+			.withPropertyValues("management.tracing.enabled=false", "management.wavefront.api-token=abcde")
 			.run((context) -> assertThat(context).doesNotHaveBean(WavefrontSender.class));
 	}
 
 	@Test
-	void shouldSupplyWavefrontSenderIfOnlyTracingIsDisabled() {
-		this.tracingDisabledContextRunner.withPropertyValues("management.wavefront.api-token=abcde")
+	void shouldNotSupplyWavefrontSenderIfMetricsAndWavefrontTracingIsDisabled() {
+		this.metricsDisabledContextRunner
+			.withPropertyValues("management.wavefront.tracing.export.enabled=false",
+					"management.wavefront.api-token=abcde")
+			.run((context) -> assertThat(context).doesNotHaveBean(WavefrontSender.class));
+	}
+
+	@Test
+	void shouldSupplyWavefrontSenderIfOnlyGlobalTracingIsDisabled() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.enabled=false", "management.wavefront.api-token=abcde")
+			.run((context) -> assertThat(context).hasSingleBean(WavefrontSender.class));
+	}
+
+	@Test
+	void shouldSupplyWavefrontSenderIfOnlyWavefrontTracingIsDisabled() {
+		this.contextRunner
+			.withPropertyValues("management.wavefront.tracing.export.enabled=false",
+					"management.wavefront.api-token=abcde")
 			.run((context) -> assertThat(context).hasSingleBean(WavefrontSender.class));
 	}
 

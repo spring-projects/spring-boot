@@ -225,6 +225,7 @@ javadoc:org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfigurati
   The prefix is externalized to `spring.freemarker.prefix`, and the suffix is externalized to `spring.freemarker.suffix`.
   The default values of the prefix and suffix are empty and '`.ftlh`', respectively.
   You can override javadoc:org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver[] by providing a bean of the same name.
+  FreeMarker variables can be customized by defining a bean of type javadoc:org.springframework.boot.autoconfigure.freemarker.FreeMarkerVariablesCustomizer[].
 * If you use Groovy templates (actually, if `groovy-templates` is on your classpath), you also have a javadoc:org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver[] named '`groovyMarkupViewResolver`'.
   It looks for resources in a loader path by surrounding the view name with a prefix and suffix (externalized to `spring.groovy.template.prefix` and `spring.groovy.template.suffix`).
   The prefix and suffix have default values of '`classpath:/templates/`' and '`.tpl`', respectively.

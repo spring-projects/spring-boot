@@ -52,6 +52,26 @@ The order in which those beans are subsequently created is unaffected and is det
 
 
 
+[[features.developing-auto-configuration.locating-auto-configuration-candidates.deprecating]]
+=== Deprecating and Replacing Auto-configuration Classes
+
+You may need to occasionally deprecate auto-configuration classes and offer an alternative.
+For example, you may want to change the package name where your auto-configuration class resides.
+
+Since auto-configuration classes may be referenced in `before`/`after` ordering and `excludes`, you'll need to add an additional file that tells Spring Boot how to deal with replacements.
+To define replacements, create a `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.replacements` file indicating the link between the old class and the new one.
+
+For example:
+
+[source]
+----
+com.mycorp.libx.autoconfigure.LibXAutoConfiguration=com.mycorp.libx.autoconfigure.core.LibXAutoConfiguration
+----
+
+NOTE: The `AutoConfiguration.imports` file should also be updated to _only_ reference the replacement class.
+
+
+
 [[features.developing-auto-configuration.condition-annotations]]
 == Condition Annotations
 

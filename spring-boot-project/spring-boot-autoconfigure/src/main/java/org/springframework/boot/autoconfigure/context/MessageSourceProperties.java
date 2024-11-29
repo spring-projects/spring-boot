@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,36 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for Message Source.
  *
  * @author Stephane Nicoll
  * @author Kedar Joshi
+ * @author Misagh Moayyed
  * @since 2.0.0
  */
+@ConfigurationProperties(prefix = "spring.messages")
 public class MessageSourceProperties {
 
 	/**
-	 * Comma-separated list of basenames (essentially a fully-qualified classpath
-	 * location), each following the ResourceBundle convention with relaxed support for
-	 * slash based locations. If it doesn't contain a package qualifier (such as
-	 * "org.mypackage"), it will be resolved from the classpath root.
+	 * List of basenames (essentially a fully-qualified classpath location), each
+	 * following the ResourceBundle convention with relaxed support for slash based
+	 * locations. If it doesn't contain a package qualifier (such as "org.mypackage"), it
+	 * will be resolved from the classpath root.
 	 */
-	private String basename = "messages";
+	private List<String> basename = new ArrayList<>(List.of("messages"));
+
+	/**
+	 * List of locale-independent property file resources containing common messages.
+	 */
+	private List<Resource> commonMessages;
 
 	/**
 	 * Message bundles encoding.
@@ -71,11 +82,11 @@ public class MessageSourceProperties {
 	 */
 	private boolean useCodeAsDefaultMessage = false;
 
-	public String getBasename() {
+	public List<String> getBasename() {
 		return this.basename;
 	}
 
-	public void setBasename(String basename) {
+	public void setBasename(List<String> basename) {
 		this.basename = basename;
 	}
 
@@ -117,6 +128,14 @@ public class MessageSourceProperties {
 
 	public void setUseCodeAsDefaultMessage(boolean useCodeAsDefaultMessage) {
 		this.useCodeAsDefaultMessage = useCodeAsDefaultMessage;
+	}
+
+	public List<Resource> getCommonMessages() {
+		return this.commonMessages;
+	}
+
+	public void setCommonMessages(List<Resource> commonMessages) {
+		this.commonMessages = commonMessages;
 	}
 
 }

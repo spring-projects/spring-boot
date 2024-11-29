@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,7 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.RequestToViewNameTranslator;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -136,6 +137,7 @@ import org.springframework.web.servlet.support.AbstractFlashMapManager;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
+import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
 import org.springframework.web.util.UrlPathHelper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -401,6 +403,26 @@ class WebMvcAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context.getBean("customFlashMapManager")).isInstanceOf(CustomFlashMapManager.class);
 				assertThat(context.getBean("flashMapManager")).isInstanceOf(SessionFlashMapManager.class);
+			});
+	}
+
+	@Test
+	void customViewNameTranslatorWithMatchingNameReplacesDefaultViewNameTranslator() {
+		this.contextRunner.withBean("viewNameTranslator", CustomViewNameTranslator.class, CustomViewNameTranslator::new)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RequestToViewNameTranslator.class);
+				assertThat(context.getBean("viewNameTranslator")).isInstanceOf(CustomViewNameTranslator.class);
+			});
+	}
+
+	@Test
+	void customViewNameTranslatorWithDifferentNameDoesNotReplaceDefaultViewNameTranslator() {
+		this.contextRunner
+			.withBean("customViewNameTranslator", CustomViewNameTranslator.class, CustomViewNameTranslator::new)
+			.run((context) -> {
+				assertThat(context.getBean("customViewNameTranslator")).isInstanceOf(CustomViewNameTranslator.class);
+				assertThat(context.getBean("viewNameTranslator"))
+					.isInstanceOf(DefaultRequestToViewNameTranslator.class);
 			});
 	}
 
@@ -1454,6 +1476,15 @@ class WebMvcAutoConfigurationTests {
 		protected void updateFlashMaps(List<FlashMap> flashMaps, HttpServletRequest request,
 				HttpServletResponse response) {
 
+		}
+
+	}
+
+	static class CustomViewNameTranslator implements RequestToViewNameTranslator {
+
+		@Override
+		public String getViewName(HttpServletRequest requestAttributes) {
+			return null;
 		}
 
 	}

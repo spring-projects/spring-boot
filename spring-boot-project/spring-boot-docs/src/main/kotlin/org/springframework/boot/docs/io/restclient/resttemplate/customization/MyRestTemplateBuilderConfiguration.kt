@@ -27,8 +27,8 @@ class MyRestTemplateBuilderConfiguration {
 
 	@Bean
 	fun restTemplateBuilder(configurer: RestTemplateBuilderConfigurer): RestTemplateBuilder {
-		return configurer.configure(RestTemplateBuilder()).setConnectTimeout(Duration.ofSeconds(5))
-			.setReadTimeout(Duration.ofSeconds(2))
+		return configurer.configure(RestTemplateBuilder()).connectTimeout(Duration.ofSeconds(5))
+			.readTimeout(Duration.ofSeconds(2))
 	}
 
 }

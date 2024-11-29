@@ -49,7 +49,6 @@ import org.springframework.boot.image.junit.GradleBuildInjectionExtension;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
 import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
-import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -86,6 +85,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -117,6 +117,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withCommand("--server.port=9090");
 			container.withExposedPorts(9090);
@@ -134,6 +135,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -160,6 +162,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName, "assemble", "bootDistZip");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -196,6 +199,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName, "assemble", "bootDistZip");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -233,6 +237,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -265,6 +270,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImageWithRetry(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -275,13 +281,9 @@ class PaketoBuilderTests {
 							"paketo-buildpacks/apache-tomcat", "paketo-buildpacks/dist-zip",
 							"paketo-buildpacks/spring-boot");
 				metadata.processOfType("web")
-					.satisfiesExactly((command) -> assertThat(command).endsWith("sh"),
-							(arg) -> assertThat(arg).endsWith("catalina.sh"),
-							(arg) -> assertThat(arg).isEqualTo("run"));
+					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
 				metadata.processOfType("tomcat")
-					.satisfiesExactly((command) -> assertThat(command).endsWith("sh"),
-							(arg) -> assertThat(arg).endsWith("catalina.sh"),
-							(arg) -> assertThat(arg).isEqualTo("run"));
+					.containsSubsequence("java", "org.apache.catalina.startup.Bootstrap", "start");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "apache-tomcat");
@@ -315,6 +317,7 @@ class PaketoBuilderTests {
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
 		BuildResult result = buildImage(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
 			container.withExposedPorts(8080);
 			container.waitingFor(Wait.forHttp("/test")).start();
@@ -401,9 +404,11 @@ class PaketoBuilderTests {
 	}
 
 	private BuildResult buildImage(String imageName, String... arguments) {
-		String[] buildImageArgs = { "bootBuildImage", "--imageName=" + imageName, "--pullPolicy=IF_NOT_PRESENT" };
-		String[] args = StringUtils.concatenateStringArrays(arguments, buildImageArgs);
-		return this.gradleBuild.build(args);
+		List<String> args = new ArrayList<>(List.of(arguments));
+		args.add("bootBuildImage");
+		args.add("--imageName=" + imageName);
+		args.add("--pullPolicy=IF_NOT_PRESENT");
+		return this.gradleBuild.build(args.toArray(new String[0]));
 	}
 
 	private void writeMainClass() throws IOException {

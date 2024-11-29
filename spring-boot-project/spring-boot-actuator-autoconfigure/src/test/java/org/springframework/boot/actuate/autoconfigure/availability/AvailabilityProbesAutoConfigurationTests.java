@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.availability.ReadinessStateHealthIndicat
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration;
 import org.springframework.boot.availability.ApplicationAvailability;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,32 +41,23 @@ class AvailabilityProbesAutoConfigurationTests {
 
 	@Test
 	void probesWhenNotKubernetesAddsNoBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-			.doesNotHaveBean(LivenessStateHealthIndicator.class)
-			.doesNotHaveBean(ReadinessStateHealthIndicator.class)
-			.doesNotHaveBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
+		this.contextRunner.run(this::doesNotHaveProbeBeans);
 	}
 
 	@Test
 	void probesWhenKubernetesAddsBeans() {
-		this.contextRunner.withPropertyValues("spring.main.cloud-platform=kubernetes")
-			.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-				.hasSingleBean(LivenessStateHealthIndicator.class)
-				.hasBean("livenessStateHealthIndicator")
-				.hasSingleBean(ReadinessStateHealthIndicator.class)
-				.hasBean("readinessStateHealthIndicator")
-				.hasSingleBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
+		this.contextRunner.withPropertyValues("spring.main.cloud-platform=kubernetes").run(this::hasProbesBeans);
+	}
+
+	@Test
+	void probesWhenCloudFoundryAddsBeans() {
+		this.contextRunner.withPropertyValues("spring.main.cloud-platform=cloud_foundry").run(this::hasProbesBeans);
 	}
 
 	@Test
 	void probesWhenPropertyEnabledAddsBeans() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.probes.enabled=true")
-			.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-				.hasSingleBean(LivenessStateHealthIndicator.class)
-				.hasBean("livenessStateHealthIndicator")
-				.hasSingleBean(ReadinessStateHealthIndicator.class)
-				.hasBean("readinessStateHealthIndicator")
-				.hasSingleBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
+			.run(this::hasProbesBeans);
 	}
 
 	@Test
@@ -73,10 +65,23 @@ class AvailabilityProbesAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.main.cloud-platform=kubernetes",
 					"management.endpoint.health.probes.enabled=false")
-			.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-				.doesNotHaveBean(LivenessStateHealthIndicator.class)
-				.doesNotHaveBean(ReadinessStateHealthIndicator.class)
-				.doesNotHaveBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class));
+			.run(this::doesNotHaveProbeBeans);
+	}
+
+	private void hasProbesBeans(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(ApplicationAvailability.class)
+			.hasSingleBean(LivenessStateHealthIndicator.class)
+			.hasBean("livenessStateHealthIndicator")
+			.hasSingleBean(ReadinessStateHealthIndicator.class)
+			.hasBean("readinessStateHealthIndicator")
+			.hasSingleBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class);
+	}
+
+	private void doesNotHaveProbeBeans(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(ApplicationAvailability.class)
+			.doesNotHaveBean(LivenessStateHealthIndicator.class)
+			.doesNotHaveBean(ReadinessStateHealthIndicator.class)
+			.doesNotHaveBean(AvailabilityProbesHealthEndpointGroupsPostProcessor.class);
 	}
 
 }

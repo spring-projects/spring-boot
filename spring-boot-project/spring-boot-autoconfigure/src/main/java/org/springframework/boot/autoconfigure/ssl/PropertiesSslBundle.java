@@ -99,7 +99,7 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(PemSslBundleProperties properties) {
-		return get(properties, new ApplicationResourceLoader());
+		return get(properties, ApplicationResourceLoader.get());
 	}
 
 	/**
@@ -143,7 +143,7 @@ public final class PropertiesSslBundle implements SslBundle {
 	 * @return an {@link SslBundle} instance
 	 */
 	public static SslBundle get(JksSslBundleProperties properties) {
-		return get(properties, new ApplicationResourceLoader());
+		return get(properties, ApplicationResourceLoader.get());
 	}
 
 	/**

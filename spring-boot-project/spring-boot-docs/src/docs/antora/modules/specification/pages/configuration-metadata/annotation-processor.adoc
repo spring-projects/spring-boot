@@ -95,7 +95,7 @@ If you use javadoc:org.springframework.boot.context.properties.ConfigurationProp
 
 The annotation processor applies a number of heuristics to extract the default value from the source model.
 Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
-Also, the annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
+Also, the annotation processor cannot auto-detect default values for ``Collections``s.
 
 For cases where the default value could not be detected, xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[manual metadata] should be provided.
 Consider the following example:
@@ -132,7 +132,7 @@ Consider the updated example:
 include-code::MyServerProperties[]
 
 The preceding example produces metadata information for `my.server.name`, `my.server.host.ip`, and `my.server.host.port` properties.
-You can use the javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation] annotation on a field to indicate that a regular (non-inner) class should be treated as if it were nested.
+You can use the javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation] annotation on a field or a getter method to indicate that a regular (non-inner) class should be treated as if it were nested.
 
 TIP: This has no effect on collections and maps, as those types are automatically identified, and a single metadata property is generated for each of them.
 

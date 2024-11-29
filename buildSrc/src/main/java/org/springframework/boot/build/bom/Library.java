@@ -105,7 +105,7 @@ public class Library {
 	}
 
 	private static String generateLinkRootName(String name) {
-		return name.replace("-", "").replace(" ", "-").toLowerCase();
+		return name.replace("-", "").replace(" ", "-").toLowerCase(Locale.ROOT);
 	}
 
 	public String getName() {

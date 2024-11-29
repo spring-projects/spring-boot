@@ -30,6 +30,7 @@ import org.apache.pulsar.client.api.SubscriptionInitialPosition;
 import org.apache.pulsar.client.api.SubscriptionMode;
 import org.apache.pulsar.client.api.SubscriptionType;
 import org.apache.pulsar.common.schema.SchemaType;
+import org.assertj.core.extractor.Extractors;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Failover.B
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.pulsar.core.PulsarTopicBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -52,6 +54,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Soby Chacko
  * @author Phillip Webb
  * @author Swamy Mavuri
+ * @author Vedran Pavic
  */
 class PulsarPropertiesTests {
 
@@ -84,6 +87,16 @@ class PulsarPropertiesTests {
 			PulsarProperties.Client properties = bindProperties(map).getClient();
 			assertThat(properties.getAuthentication().getPluginClassName()).isEqualTo("com.example.MyAuth");
 			assertThat(properties.getAuthentication().getParam()).containsEntry("token", "1234");
+		}
+
+		@Test
+		void bindThread() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.pulsar.client.threads.io", "3");
+			map.put("spring.pulsar.client.threads.listener", "10");
+			PulsarProperties.Client properties = bindProperties(map).getClient();
+			assertThat(properties.getThreads().getIo()).isEqualTo(3);
+			assertThat(properties.getThreads().getListener()).isEqualTo(10);
 		}
 
 		@Test
@@ -152,7 +165,7 @@ class PulsarPropertiesTests {
 	}
 
 	@Nested
-	class DefaultsProperties {
+	class DefaultsTypeMappingProperties {
 
 		@Test
 		void bindWhenNoTypeMappings() {
@@ -238,6 +251,32 @@ class PulsarPropertiesTests {
 		}
 
 		record TestMessage(String value) {
+		}
+
+	}
+
+	@Nested
+	class DefaultsTenantNamespaceProperties {
+
+		@Test
+		void bindWhenValuesNotSpecified() {
+			PulsarTopicBuilder defaultTopicBuilder = new PulsarTopicBuilder();
+			assertThat(new PulsarProperties().getDefaults().getTopic()).satisfies((defaults) -> {
+				assertThat(defaults.getTenant())
+					.isEqualTo(Extractors.byName("defaultTenant").apply(defaultTopicBuilder));
+				assertThat(defaults.getNamespace())
+					.isEqualTo(Extractors.byName("defaultNamespace").apply(defaultTopicBuilder));
+			});
+		}
+
+		@Test
+		void bindWhenValuesSpecified() {
+			Map<String, String> map = new HashMap<>();
+			map.put("spring.pulsar.defaults.topic.tenant", "my-tenant");
+			map.put("spring.pulsar.defaults.topic.namespace", "my-namespace");
+			PulsarProperties.Defaults.Topic properties = bindProperties(map).getDefaults().getTopic();
+			assertThat(properties.getTenant()).isEqualTo("my-tenant");
+			assertThat(properties.getNamespace()).isEqualTo("my-namespace");
 		}
 
 	}
@@ -354,9 +393,11 @@ class PulsarPropertiesTests {
 		void bind() {
 			Map<String, String> map = new HashMap<>();
 			map.put("spring.pulsar.listener.schema-type", "avro");
+			map.put("spring.pulsar.listener.concurrency", "10");
 			map.put("spring.pulsar.listener.observation-enabled", "true");
 			PulsarProperties.Listener properties = bindProperties(map).getListener();
 			assertThat(properties.getSchemaType()).isEqualTo(SchemaType.AVRO);
+			assertThat(properties.getConcurrency()).isEqualTo(10);
 			assertThat(properties.isObservationEnabled()).isTrue();
 		}
 

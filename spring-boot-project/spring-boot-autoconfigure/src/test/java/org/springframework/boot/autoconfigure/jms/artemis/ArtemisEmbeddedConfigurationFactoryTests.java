@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,10 +75,8 @@ class ArtemisEmbeddedConfigurationFactoryTests {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
 		Map<String, AddressSettings> addressSettings = configuration.getAddressSettings();
-		assertThat((Object) addressSettings.get("#").getDeadLetterAddress())
-			.isEqualTo(SimpleString.toSimpleString("DLQ"));
-		assertThat((Object) addressSettings.get("#").getExpiryAddress())
-			.isEqualTo(SimpleString.toSimpleString("ExpiryQueue"));
+		assertThat((Object) addressSettings.get("#").getDeadLetterAddress()).isEqualTo(SimpleString.of("DLQ"));
+		assertThat((Object) addressSettings.get("#").getExpiryAddress()).isEqualTo(SimpleString.of("ExpiryQueue"));
 	}
 
 	@Test

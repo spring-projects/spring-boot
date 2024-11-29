@@ -16,6 +16,10 @@
 
 package org.springframework.boot.testcontainers.context;
 
+import java.util.Set;
+
+import org.testcontainers.lifecycle.Startable;
+
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -43,7 +47,7 @@ class ImportTestcontainersRegistrar implements ImportBeanDefinitionRegistrar {
 	ImportTestcontainersRegistrar(Environment environment) {
 		this.containerFieldsImporter = new ContainerFieldsImporter();
 		this.dynamicPropertySourceMethodsImporter = (!ClassUtils.isPresent(DYNAMIC_PROPERTY_SOURCE_CLASS, null)) ? null
-				: new DynamicPropertySourceMethodsImporter(environment);
+				: new DynamicPropertySourceMethodsImporter();
 	}
 
 	@Override
@@ -60,9 +64,11 @@ class ImportTestcontainersRegistrar implements ImportBeanDefinitionRegistrar {
 
 	private void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?>[] definitionClasses) {
 		for (Class<?> definitionClass : definitionClasses) {
-			this.containerFieldsImporter.registerBeanDefinitions(registry, definitionClass);
+			Set<Startable> importedContainers = this.containerFieldsImporter.registerBeanDefinitions(registry,
+					definitionClass);
 			if (this.dynamicPropertySourceMethodsImporter != null) {
-				this.dynamicPropertySourceMethodsImporter.registerDynamicPropertySources(registry, definitionClass);
+				this.dynamicPropertySourceMethodsImporter.registerDynamicPropertySources(registry, definitionClass,
+						importedContainers);
 			}
 		}
 	}

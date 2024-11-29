@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,6 +103,13 @@ class DefaultSslBundleRegistryTests {
 		this.registry.registerBundle("test2", this.bundle2);
 		assertThat(this.registry.getBundle("test1")).isSameAs(this.bundle1);
 		assertThat(this.registry.getBundle("test2")).isSameAs(this.bundle2);
+	}
+
+	@Test
+	void getBundleNamesReturnsNames() {
+		this.registry.registerBundle("test1", this.bundle1);
+		this.registry.registerBundle("test2", this.bundle2);
+		assertThat(this.registry.getBundleNames()).containsExactly("test1", "test2");
 	}
 
 	@Test

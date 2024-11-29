@@ -49,6 +49,7 @@ class LoggingSystemPropertiesTests {
 		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
 			System.getProperties().remove(property.getEnvironmentVariableName());
 		}
+		System.getProperties().remove("LOGGED_APPLICATION_NAME");
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
@@ -140,7 +141,7 @@ class LoggingSystemPropertiesTests {
 	@Test
 	void loggedApplicationNameWhenHasApplicationName() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")).apply(null);
-		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isEqualTo("[test] ");
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isEqualTo("test");
 	}
 
 	@Test
@@ -157,6 +158,31 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
+	void legacyLoggedApplicationNameWhenHasApplicationName() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")).apply(null);
+		assertThat(System.getProperty("LOGGED_APPLICATION_NAME")).isEqualTo("[test] ");
+	}
+
+	@Test
+	void applicationGroupWhenHasApplicationGroup() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.group", "test")).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isEqualTo("test");
+	}
+
+	@Test
+	void applicationGroupWhenHasNoApplicationGroup() {
+		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isNull();
+	}
+
+	@Test
+	void applicationGroupWhenApplicationGroupLoggingDisabled() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.group", "test")
+			.withProperty("logging.include-application-group", "false")).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_GROUP)).isNull();
+	}
+
+	@Test
 	void shouldSupportFalseConsoleThreshold() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.threshold.console", "false"))
 			.apply(null);
@@ -169,6 +195,22 @@ class LoggingSystemPropertiesTests {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.threshold.file", "false")).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperty.FILE_THRESHOLD.getEnvironmentVariableName()))
 			.isEqualTo("OFF");
+	}
+
+	@Test
+	void shouldSetFileStructuredLogging() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.structured.format.file", "ecs"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.FILE_STRUCTURED_FORMAT.getEnvironmentVariableName()))
+			.isEqualTo("ecs");
+	}
+
+	@Test
+	void shouldSetConsoleStructuredLogging() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.structured.format.console", "ecs"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CONSOLE_STRUCTURED_FORMAT.getEnvironmentVariableName()))
+			.isEqualTo("ecs");
 	}
 
 	private Environment environment(String key, Object value) {

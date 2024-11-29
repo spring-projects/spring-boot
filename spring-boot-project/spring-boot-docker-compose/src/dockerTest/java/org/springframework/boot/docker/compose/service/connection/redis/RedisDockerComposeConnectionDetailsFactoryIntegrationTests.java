@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Eddú Meléndez
  */
 class RedisDockerComposeConnectionDetailsFactoryIntegrationTests {
 
@@ -40,6 +41,16 @@ class RedisDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "redis-bitnami-compose.yaml", image = TestImage.BITNAMI_REDIS)
 	void runWithBitnamiImageCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "redis-compose.yaml", image = TestImage.REDIS_STACK)
+	void runWithRedisStackCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "redis-compose.yaml", image = TestImage.REDIS_STACK_SERVER)
+	void runWithRedisStackServerCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
 	}
 

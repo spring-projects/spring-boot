@@ -32,10 +32,9 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link LiquibaseEndpoint}.
@@ -45,12 +44,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void liquibase() throws Exception {
+	void liquibase() {
 		FieldDescriptor changeSetsField = fieldWithPath("contexts.*.liquibaseBeans.*.changeSets")
 			.description("Change sets made by the Liquibase beans, keyed by bean name.");
-		this.mockMvc.perform(get("/actuator/liquibase"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("liquibase",
+		assertThat(this.mvc.get().uri("/actuator/liquibase")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("liquibase",
 					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
 							changeSetsField)
 						.andWithPrefix("contexts.*.liquibaseBeans.*.changeSets[].", getChangeSetFieldDescriptors())

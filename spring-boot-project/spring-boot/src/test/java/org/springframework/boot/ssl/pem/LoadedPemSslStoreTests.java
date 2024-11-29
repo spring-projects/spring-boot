@@ -40,7 +40,7 @@ class LoadedPemSslStoreTests {
 	void certificatesAreLoadedLazily() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
-		LoadedPemSslStore store = new LoadedPemSslStore(details, new ApplicationResourceLoader());
+		LoadedPemSslStore store = new LoadedPemSslStore(details, ApplicationResourceLoader.get());
 		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(store::certificates);
 	}
 
@@ -48,7 +48,7 @@ class LoadedPemSslStoreTests {
 	void privateKeyIsLoadedLazily() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:missing-test-key.pem");
-		LoadedPemSslStore store = new LoadedPemSslStore(details, new ApplicationResourceLoader());
+		LoadedPemSslStore store = new LoadedPemSslStore(details, ApplicationResourceLoader.get());
 		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(store::privateKey);
 	}
 
@@ -56,7 +56,7 @@ class LoadedPemSslStoreTests {
 	void withAliasIsLazy() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
-		PemSslStore store = new LoadedPemSslStore(details, new ApplicationResourceLoader()).withAlias("alias");
+		PemSslStore store = new LoadedPemSslStore(details, ApplicationResourceLoader.get()).withAlias("alias");
 		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(store::certificates);
 	}
 
@@ -64,7 +64,7 @@ class LoadedPemSslStoreTests {
 	void withPasswordIsLazy() {
 		PemSslStoreDetails details = PemSslStoreDetails.forCertificate("classpath:missing-test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");
-		PemSslStore store = new LoadedPemSslStore(details, new ApplicationResourceLoader()).withPassword("password");
+		PemSslStore store = new LoadedPemSslStore(details, ApplicationResourceLoader.get()).withPassword("password");
 		assertThatExceptionOfType(UncheckedIOException.class).isThrownBy(store::certificates);
 	}
 

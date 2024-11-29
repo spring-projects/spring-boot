@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Sidmar Theodoro
  */
 class PostgresEnvironmentTests {
 
@@ -76,6 +77,12 @@ class PostgresEnvironmentTests {
 	void getPasswordWhenHasPostgresqlPassword() {
 		PostgresEnvironment environment = new PostgresEnvironment(Map.of("POSTGRESQL_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	void getPasswordWhenHasTrustHostAuthMethod() {
+		PostgresEnvironment environment = new PostgresEnvironment(Map.of("POSTGRES_HOST_AUTH_METHOD", "trust"));
+		assertThat(environment.getPassword()).isNull();
 	}
 
 	@Test

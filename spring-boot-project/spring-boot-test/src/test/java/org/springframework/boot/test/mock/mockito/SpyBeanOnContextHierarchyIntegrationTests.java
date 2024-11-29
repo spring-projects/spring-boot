@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBeanOnContextHierarchyIntegrationTests.ChildConfig;
-import org.springframework.boot.test.mock.mockito.SpyBeanOnContextHierarchyIntegrationTests.ParentConfig;
-import org.springframework.boot.test.mock.mockito.example.ExampleService;
-import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
-import org.springframework.boot.test.mock.mockito.example.SimpleExampleService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Configuration;
@@ -39,10 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link ContextHierarchy @ContextHierarchy}.
  *
  * @author Phillip Webb
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 @ExtendWith(SpringExtension.class)
-@ContextHierarchy({ @ContextConfiguration(classes = ParentConfig.class),
-		@ContextConfiguration(classes = ChildConfig.class) })
+@ContextHierarchy({ @ContextConfiguration(classes = SpyBeanOnContextHierarchyIntegrationTests.ParentConfig.class),
+		@ContextConfiguration(classes = SpyBeanOnContextHierarchyIntegrationTests.ChildConfig.class) })
 class SpyBeanOnContextHierarchyIntegrationTests {
 
 	@Autowired
@@ -52,22 +50,30 @@ class SpyBeanOnContextHierarchyIntegrationTests {
 	void testSpying() {
 		ApplicationContext context = this.childConfig.getContext();
 		ApplicationContext parentContext = context.getParent();
-		assertThat(parentContext.getBeanNamesForType(ExampleService.class)).hasSize(1);
-		assertThat(parentContext.getBeanNamesForType(ExampleServiceCaller.class)).isEmpty();
-		assertThat(context.getBeanNamesForType(ExampleService.class)).isEmpty();
-		assertThat(context.getBeanNamesForType(ExampleServiceCaller.class)).hasSize(1);
-		assertThat(context.getBean(ExampleService.class)).isNotNull();
-		assertThat(context.getBean(ExampleServiceCaller.class)).isNotNull();
+		assertThat(parentContext
+			.getBeanNamesForType(org.springframework.boot.test.mock.mockito.example.ExampleService.class)).hasSize(1);
+		assertThat(parentContext
+			.getBeanNamesForType(org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller.class))
+			.isEmpty();
+		assertThat(context.getBeanNamesForType(org.springframework.boot.test.mock.mockito.example.ExampleService.class))
+			.isEmpty();
+		assertThat(context
+			.getBeanNamesForType(org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller.class))
+			.hasSize(1);
+		assertThat(context.getBean(org.springframework.boot.test.mock.mockito.example.ExampleService.class))
+			.isNotNull();
+		assertThat(context.getBean(org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller.class))
+			.isNotNull();
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SpyBean(SimpleExampleService.class)
+	@SpyBean(org.springframework.boot.test.mock.mockito.example.SimpleExampleService.class)
 	static class ParentConfig {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SpyBean(ExampleServiceCaller.class)
+	@SpyBean(org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller.class)
 	static class ChildConfig implements ApplicationContextAware {
 
 		private ApplicationContext context;

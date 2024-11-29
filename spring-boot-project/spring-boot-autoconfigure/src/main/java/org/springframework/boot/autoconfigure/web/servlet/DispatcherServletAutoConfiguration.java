@@ -89,16 +89,9 @@ public class DispatcherServletAutoConfiguration {
 			DispatcherServlet dispatcherServlet = new DispatcherServlet();
 			dispatcherServlet.setDispatchOptionsRequest(webMvcProperties.isDispatchOptionsRequest());
 			dispatcherServlet.setDispatchTraceRequest(webMvcProperties.isDispatchTraceRequest());
-			configureThrowExceptionIfNoHandlerFound(webMvcProperties, dispatcherServlet);
 			dispatcherServlet.setPublishEvents(webMvcProperties.isPublishRequestHandledEvents());
 			dispatcherServlet.setEnableLoggingRequestDetails(webMvcProperties.isLogRequestDetails());
 			return dispatcherServlet;
-		}
-
-		@SuppressWarnings({ "deprecation", "removal" })
-		private void configureThrowExceptionIfNoHandlerFound(WebMvcProperties webMvcProperties,
-				DispatcherServlet dispatcherServlet) {
-			dispatcherServlet.setThrowExceptionIfNoHandlerFound(webMvcProperties.isThrowExceptionIfNoHandlerFound());
 		}
 
 		@Bean

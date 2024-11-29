@@ -16,25 +16,23 @@
 
 package org.springframework.boot.docs.testing.springbootapplications.autoconfiguredspringrestdocs.withmockmvc
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.assertj.MockMvcTester
 
 @WebMvcTest(UserController::class)
 @AutoConfigureRestDocs
-class MyUserDocumentationTests(@Autowired val mvc: MockMvc) {
+class MyUserDocumentationTests(@Autowired val mvc: MockMvcTester) {
 
 	@Test
 	fun listUsers() {
-		mvc.perform(MockMvcRequestBuilders.get("/users").accept(MediaType.TEXT_PLAIN))
-			.andExpect(MockMvcResultMatchers.status().isOk)
-			.andDo(MockMvcRestDocumentation.document("list-users"))
+		assertThat(mvc.get().uri("/users").accept(MediaType.TEXT_PLAIN))
+				.hasStatusOk().apply(MockMvcRestDocumentation.document("list-users"))
 	}
 
 }

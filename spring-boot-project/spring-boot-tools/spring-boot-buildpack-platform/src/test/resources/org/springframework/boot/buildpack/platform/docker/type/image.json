@@ -72,9 +72,10 @@
 			"io.buildpacks.stack.id": "org.cloudfoundry.stacks.cflinuxfs3"
 		}
 	},
-	"Architecture": "amd64",
 	"Os": "linux",
-	"Size": 1559461360,
+  "Architecture": "amd64",
+  "Variant": "v1",
+  "Size": 1559461360,
 	"VirtualSize": 1559461360,
 	"GraphDriver": {
 		"Data": {

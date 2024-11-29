@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Vedran Pavic
  */
 class PulsarReactivePropertiesMapperTests {
 
@@ -119,11 +120,15 @@ class PulsarReactivePropertiesMapperTests {
 	void customizeContainerProperties() {
 		PulsarProperties properties = new PulsarProperties();
 		properties.getConsumer().getSubscription().setType(SubscriptionType.Shared);
+		properties.getConsumer().getSubscription().setName("my-subscription");
 		properties.getListener().setSchemaType(SchemaType.AVRO);
+		properties.getListener().setConcurrency(10);
 		ReactivePulsarContainerProperties<Object> containerProperties = new ReactivePulsarContainerProperties<>();
 		new PulsarReactivePropertiesMapper(properties).customizeContainerProperties(containerProperties);
 		assertThat(containerProperties.getSubscriptionType()).isEqualTo(SubscriptionType.Shared);
+		assertThat(containerProperties.getSubscriptionName()).isEqualTo("my-subscription");
 		assertThat(containerProperties.getSchemaType()).isEqualTo(SchemaType.AVRO);
+		assertThat(containerProperties.getConcurrency()).isEqualTo(10);
 	}
 
 	@Test

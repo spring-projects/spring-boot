@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.jmx;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 
 /**
@@ -44,6 +45,7 @@ public class TestExposableJmxEndpoint implements ExposableJmxEndpoint {
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public boolean isEnableByDefault() {
 		return true;
 	}
@@ -51,6 +53,11 @@ public class TestExposableJmxEndpoint implements ExposableJmxEndpoint {
 	@Override
 	public Collection<JmxOperation> getOperations() {
 		return this.operations;
+	}
+
+	@Override
+	public Access getDefaultAccess() {
+		return Access.UNRESTRICTED;
 	}
 
 }

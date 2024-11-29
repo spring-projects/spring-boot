@@ -12,20 +12,27 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
 	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.hazelcast:hazelcast")
+	dockerTestImplementation("com.redis:testcontainers-redis")
 	dockerTestImplementation("org.assertj:assertj-core")
 	dockerTestImplementation("org.awaitility:awaitility")
 	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
 	dockerTestImplementation("org.testcontainers:testcontainers")
 
+	dockerTestRuntimeOnly("com.clickhouse:clickhouse-jdbc")
+	dockerTestRuntimeOnly("com.clickhouse:clickhouse-r2dbc")
 	dockerTestRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	dockerTestRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 	dockerTestRuntimeOnly("io.r2dbc:r2dbc-mssql")
+	dockerTestRuntimeOnly("org.postgresql:postgresql")
+	dockerTestRuntimeOnly("org.postgresql:r2dbc-postgresql")
 
 	implementation("com.fasterxml.jackson.core:jackson-databind")
 	implementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 
 	optional(project(":spring-boot-project:spring-boot-autoconfigure"))
 	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	optional("com.hazelcast:hazelcast")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("org.mongodb:mongodb-driver-core")
 	optional("org.neo4j.driver:neo4j-java-driver")

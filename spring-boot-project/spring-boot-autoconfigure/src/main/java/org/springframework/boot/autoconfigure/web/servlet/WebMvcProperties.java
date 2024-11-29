@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -61,14 +60,6 @@ public class WebMvcProperties {
 	 * Whether to publish a ServletRequestHandledEvent at the end of each request.
 	 */
 	private boolean publishRequestHandledEvents = true;
-
-	/**
-	 * Whether a "NoHandlerFoundException" should be thrown if no Handler was found to
-	 * process a request.
-	 * @deprecated since 3.2.0 for removal in 3.4.0
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	private boolean throwExceptionIfNoHandlerFound = true;
 
 	/**
 	 * Whether logging of (potentially sensitive) request details at DEBUG and TRACE level
@@ -122,19 +113,6 @@ public class WebMvcProperties {
 
 	public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
 		this.publishRequestHandledEvents = publishRequestHandledEvents;
-	}
-
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(
-			reason = "DispatcherServlet property is deprecated for removal and should no longer need to be configured",
-			since = "3.2.0")
-	public boolean isThrowExceptionIfNoHandlerFound() {
-		return this.throwExceptionIfNoHandlerFound;
-	}
-
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
-		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
 	public boolean isLogRequestDetails() {
@@ -259,7 +237,7 @@ public class WebMvcProperties {
 		}
 
 		public String getServletMapping() {
-			if (this.path.equals("") || this.path.equals("/")) {
+			if (this.path.isEmpty() || this.path.equals("/")) {
 				return "/";
 			}
 			if (this.path.endsWith("/")) {

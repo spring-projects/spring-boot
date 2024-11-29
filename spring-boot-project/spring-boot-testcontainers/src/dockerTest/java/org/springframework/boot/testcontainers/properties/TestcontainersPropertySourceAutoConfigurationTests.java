@@ -19,7 +19,9 @@ package org.springframework.boot.testcontainers.properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.redis.testcontainers.RedisContainer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -27,12 +29,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.container.RedisContainer;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.springframework.test.context.DynamicPropertyRegistry;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,8 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TestcontainersPropertySourceAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 @DisabledIfDockerUnavailable
+@ExtendWith(OutputCaptureExtension.class)
 class TestcontainersPropertySourceAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -51,17 +57,64 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 
 	@Test
 	@SuppressWarnings("removal")
-	void containerBeanMethodContributesProperties() {
-		List<ApplicationEvent> events = new ArrayList<>();
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	void registeringADynamicPropertyFailsByDefault() {
 		this.contextRunner.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(
+						org.springframework.boot.testcontainers.properties.TestcontainersPropertySource.DynamicPropertyRegistryInjectionException.class)
+				.hasMessageStartingWith(
+						"Support for injecting a DynamicPropertyRegistry into @Bean methods is deprecated"));
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	void registeringADynamicPropertyCanLogAWarningAndContributeProperty(CapturedOutput output) {
+		List<ApplicationEvent> events = new ArrayList<>();
+		this.contextRunner.withPropertyValues("spring.testcontainers.dynamic-property-registry-injection=warn")
+			.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
 			.withInitializer((context) -> context.addApplicationListener(events::add))
 			.run((context) -> {
 				TestBean testBean = context.getBean(TestBean.class);
 				RedisContainer redisContainer = context.getBean(RedisContainer.class);
 				assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
-				assertThat(events.stream().filter(BeforeTestcontainersPropertySuppliedEvent.class::isInstance))
+				assertThat(events.stream()
+					.filter(org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent.class::isInstance))
 					.hasSize(1);
+				assertThat(output)
+					.contains("Support for injecting a DynamicPropertyRegistry into @Bean methods is deprecated");
 			});
+	}
+
+	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	void registeringADynamicPropertyCanBePermittedAndContributeProperty(CapturedOutput output) {
+		List<ApplicationEvent> events = new ArrayList<>();
+		this.contextRunner.withPropertyValues("spring.testcontainers.dynamic-property-registry-injection=allow")
+			.withUserConfiguration(ContainerAndPropertiesConfiguration.class)
+			.withInitializer((context) -> context.addApplicationListener(events::add))
+			.run((context) -> {
+				TestBean testBean = context.getBean(TestBean.class);
+				RedisContainer redisContainer = context.getBean(RedisContainer.class);
+				assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
+				assertThat(events.stream()
+					.filter(org.springframework.boot.testcontainers.lifecycle.BeforeTestcontainerUsedEvent.class::isInstance))
+					.hasSize(1);
+				assertThat(output)
+					.doesNotContain("Support for injecting a DynamicPropertyRegistry into @Bean methods is deprecated");
+			});
+	}
+
+	@Test
+	void dynamicPropertyRegistrarBeanContributesProperties(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(ContainerAndPropertyRegistrarConfiguration.class).run((context) -> {
+			TestBean testBean = context.getBean(TestBean.class);
+			RedisContainer redisContainer = context.getBean(RedisContainer.class);
+			assertThat(testBean.getUsingPort()).isEqualTo(redisContainer.getFirstMappedPort());
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -74,6 +127,23 @@ class TestcontainersPropertySourceAutoConfigurationTests {
 			RedisContainer container = TestImage.container(RedisContainer.class);
 			properties.add("container.port", container::getFirstMappedPort);
 			return container;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ContainerProperties.class)
+	@Import(TestBean.class)
+	static class ContainerAndPropertyRegistrarConfiguration {
+
+		@Bean
+		RedisContainer redisContainer() {
+			return TestImage.container(RedisContainer.class);
+		}
+
+		@Bean
+		DynamicPropertyRegistrar redisProperties(RedisContainer container) {
+			return (registry) -> registry.add("container.port", container::getFirstMappedPort);
 		}
 
 	}

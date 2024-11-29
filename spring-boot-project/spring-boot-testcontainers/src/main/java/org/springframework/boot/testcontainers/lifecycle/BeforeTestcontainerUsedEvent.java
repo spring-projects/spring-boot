@@ -19,13 +19,18 @@ package org.springframework.boot.testcontainers.lifecycle;
 import org.testcontainers.containers.Container;
 
 import org.springframework.context.ApplicationEvent;
+import org.springframework.test.context.DynamicPropertyRegistrar;
 
 /**
  * Event published just before a Testcontainers {@link Container} is used.
  *
  * @author Andy Wilkinson
  * @since 3.2.6
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of property registration using a
+ * {@link DynamicPropertyRegistrar} bean that injects the {@link Container} from which the
+ * properties will be sourced.
  */
+@Deprecated(since = "3.4.0", forRemoval = true)
 public class BeforeTestcontainerUsedEvent extends ApplicationEvent {
 
 	public BeforeTestcontainerUsedEvent(Object source) {

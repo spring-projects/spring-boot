@@ -109,14 +109,6 @@ class RunIntegrationTests {
 	}
 
 	@TestTemplate
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	void whenDirectoriesAreConfiguredTheyAreAvailableToTheApplication(MavenBuild mavenBuild) {
-		mavenBuild.project("run-directories")
-			.goals("spring-boot:run")
-			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
-	}
-
-	@TestTemplate
 	void whenAdditionalClasspathDirectoryIsConfiguredItsResourcesAreAvailableToTheApplication(MavenBuild mavenBuild) {
 		mavenBuild.project("run-additional-classpath-directory")
 			.goals("spring-boot:run")

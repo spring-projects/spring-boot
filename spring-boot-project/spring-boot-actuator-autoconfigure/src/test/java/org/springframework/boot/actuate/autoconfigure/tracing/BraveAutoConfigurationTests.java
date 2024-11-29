@@ -35,6 +35,9 @@ import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.propagation.TraceContext;
 import brave.sampler.Sampler;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.Observation.Scope;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveSpanCustomizer;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
@@ -47,6 +50,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfigurationTests.SpanHandlerConfiguration.AdditionalSpanHandler;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.IncompatibleConfigurationException;
@@ -362,6 +366,29 @@ class BraveAutoConfigurationTests {
 				.asInstanceOf(InstanceOfAssertFactories.list(String.class))
 				.containsExactly("t1");
 		});
+	}
+
+	@Test
+	void keysAreSetInBaggage() {
+		this.contextRunner
+			.withConfiguration(
+					AutoConfigurations.of(ObservationAutoConfiguration.class, MicrometerTracingAutoConfiguration.class))
+			.withPropertyValues("management.tracing.baggage.remote-fields=f1,f2")
+			.run((context) -> {
+				BraveTracer braveTracer = context.getBean(BraveTracer.class);
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation observation = Observation.start("o1", observationRegistry)
+					.lowCardinalityKeyValue("f1", "v1")
+					.highCardinalityKeyValue("f2", "v2");
+				Map<String, String> baggage = braveTracer.getAllBaggage();
+				assertThat(baggage).isEmpty();
+				try (Scope ignore = observation.openScope()) {
+					baggage = braveTracer.getAllBaggage();
+					assertThat(baggage).containsAllEntriesOf(Map.of("f1", "v1", "f2", "v2"));
+				}
+				baggage = braveTracer.getAllBaggage();
+				assertThat(baggage).isEmpty();
+			});
 	}
 
 	private void injectToMap(Map<String, String> map, String key, String value) {

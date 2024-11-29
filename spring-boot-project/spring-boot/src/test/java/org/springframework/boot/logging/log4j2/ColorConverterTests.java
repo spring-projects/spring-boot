@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,10 +51,6 @@ class ColorConverterTests {
 	@BeforeEach
 	void setUp() {
 		this.event = new TestLogEvent();
-	}
-
-	private ColorConverter newConverter(String styling) {
-		return ColorConverter.newInstance(null, new String[] { this.in, styling });
 	}
 
 	@Test
@@ -214,6 +210,10 @@ class ColorConverterTests {
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
 		assertThat(output).hasToString("\033[32min\033[0;39m");
+	}
+
+	private ColorConverter newConverter(String styling) {
+		return ColorConverter.newInstance(null, new String[] { this.in, styling });
 	}
 
 	static class TestLogEvent extends AbstractLogEvent {

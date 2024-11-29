@@ -193,7 +193,7 @@ class JksSslStoreBundleTests {
 	}
 
 	private String encodeFileContent(String location) throws IOException {
-		Resource resource = new ApplicationResourceLoader().getResource(location);
+		Resource resource = ApplicationResourceLoader.get().getResource(location);
 		byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
 		return "base64:" + Base64.getEncoder().encodeToString(bytes);
 	}

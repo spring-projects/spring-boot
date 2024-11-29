@@ -22,6 +22,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link AssertableApplicationContext}.
@@ -37,6 +38,17 @@ class AssertableApplicationContextTests {
 		AssertableApplicationContext context = AssertableApplicationContext
 			.get(() -> mock(ConfigurableApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableApplicationContext.class);
+	}
+
+	@Test
+	void getWhenHasAdditionalInterfaceShouldReturnProxy() {
+		try (AssertableApplicationContext context = AssertableApplicationContext.get(
+				() -> mock(ConfigurableApplicationContext.class,
+						withSettings().extraInterfaces(AdditionalContextInterface.class)),
+				AdditionalContextInterface.class)) {
+			assertThat(context).isInstanceOf(ConfigurableApplicationContext.class)
+				.isInstanceOf(AdditionalContextInterface.class);
+		}
 	}
 
 }

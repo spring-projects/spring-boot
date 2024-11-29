@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,5 +16,9 @@
 
 /**
  * Mockito integration for Spring Boot tests.
+ * <p>
+ * Deprecated since 3.4.0 for removal in 3.6.0 in favor of Spring Framework's
+ * {@link org.springframework.test.context.bean.override.mockito.MockitoBean} and
+ * {@link org.springframework.test.context.bean.override.mockito.MockitoSpyBean}
  */
 package org.springframework.boot.test.mock.mockito;

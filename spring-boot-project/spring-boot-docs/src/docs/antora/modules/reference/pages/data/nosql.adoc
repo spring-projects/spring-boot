@@ -543,7 +543,7 @@ There are `spring-boot-starter-data-couchbase` and `spring-boot-starter-data-cou
 
 You can get a javadoc:com.couchbase.client.java.Cluster[] by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
-Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
+Generally, you provide the https://docs.couchbase.com/dotnet-sdk/current/howtos/managing-connections.html[connection string] and credentials for authentication. Basic authentication with username and password can be configured as shown in the following example:
 
 [configprops,yaml]
 ----
@@ -552,6 +552,39 @@ spring:
     connection-string: "couchbase://192.168.1.123"
     username: "user"
     password: "secret"
+----
+
+https://docs.couchbase.com/server/current/manage/manage-security/configure-client-certificates.html[Client certificates] can be used for authentication instead of username and password.
+The location and password for a Java KeyStore containing client certificates can be configured as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  couchbase:
+    connection-string: "couchbase://192.168.1.123"
+    env:
+      ssl:
+        enabled: true
+    authentication:
+      jks:
+        location: "classpath:client.p12"
+        password: "secret"
+----
+
+PEM-encoded certificates and a private key can be configured as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  couchbase:
+    connection-string: "couchbase://192.168.1.123"
+    env:
+      ssl:
+        enabled: true
+    authentication:
+      pem:
+        certificates: "classpath:client.crt"
+        private-key: "classpath:client.key"
 ----
 
 It is also possible to customize some of the javadoc:com.couchbase.client.java.env.ClusterEnvironment[] settings.
@@ -701,26 +734,3 @@ If you want to load the initialization script from a different resource, you can
 By default, a standard schema is used to validate `LDIF` files.
 You can turn off validation altogether by setting the configprop:spring.ldap.embedded.validation.enabled[] property.
 If you have custom attributes, you can use configprop:spring.ldap.embedded.validation.schema[] to define your custom attribute types or object classes.
-
-
-
-[[data.nosql.influxdb]]
-== InfluxDB
-
-WARNING: Auto-configuration for InfluxDB is deprecated and scheduled for removal in Spring Boot 3.4 in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
-
-https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
-
-
-
-[[data.nosql.influxdb.connecting]]
-=== Connecting to InfluxDB
-
-Spring Boot auto-configures an javadoc:org.influxdb.InfluxDB[] instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set using configprop:spring.influx.url[deprecated].
-
-If the connection to InfluxDB requires a user and password, you can set the configprop:spring.influx.user[deprecated] and configprop:spring.influx.password[deprecated] properties accordingly.
-
-InfluxDB relies on OkHttp.
-If you need to tune the http client javadoc:org.influxdb.InfluxDB[] uses behind the scenes, you can register an javadoc:org.springframework.boot.autoconfigure.influx.InfluxDbOkHttpClientBuilderProvider[] bean.
-
-If you need more control over the configuration, consider registering an javadoc:org.springframework.boot.autoconfigure.influx.InfluxDbCustomizer[] bean.

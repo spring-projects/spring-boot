@@ -644,7 +644,8 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("server.reactive.session.cookie.name:JSESSIONID",
 				"server.reactive.session.cookie.domain:.example.com", "server.reactive.session.cookie.path:/example",
 				"server.reactive.session.cookie.max-age:60", "server.reactive.session.cookie.http-only:false",
-				"server.reactive.session.cookie.secure:false", "server.reactive.session.cookie.same-site:strict")
+				"server.reactive.session.cookie.secure:false", "server.reactive.session.cookie.same-site:strict",
+				"server.reactive.session.cookie.partitioned:true")
 			.run(assertExchangeWithSession((exchange) -> {
 				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
 				assertThat(cookies).isNotEmpty();
@@ -654,6 +655,7 @@ class WebFluxAutoConfigurationTests {
 				assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
 				assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
 				assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+				assertThat(cookies).allMatch(ResponseCookie::isPartitioned);
 			}));
 	}
 

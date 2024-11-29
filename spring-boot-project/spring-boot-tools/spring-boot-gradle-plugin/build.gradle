@@ -18,53 +18,6 @@ configurations {
 		// Downgrade SLF4J is required for tests to run in Eclipse
 		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
 	}
-	modernGradleRuntimeClasspath {
-		extendsFrom runtimeClasspath
-		canBeConsumed = false
-		canBeResolved = true
-	}
-	modernGradleRuntimeElements {
-		extendsFrom configurations.implementation, configurations.runtimeOnly
-		canBeConsumed = true
-		canBeResolved = false
-		attributes {
-			attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category, Category.LIBRARY))
-			attribute(Bundling.BUNDLING_ATTRIBUTE, project.objects.named(Bundling, Bundling.EXTERNAL))
-			attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
-			attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements, LibraryElements.JAR))
-			attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage, Usage.JAVA_RUNTIME))
-			attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, project.objects.named(GradlePluginApiVersion, "8.7"))
-		}
-		outgoing.artifacts.addAll(configurations.runtimeElements.outgoing.artifacts)
-	}
-	runtimeElements {
-		attributes {
-			attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, project.objects.named(GradlePluginApiVersion, "7.5"))
-		}
-	}
-	all { configuration ->
-		if (configuration.name == 'modernGradleRuntimeClasspath') {
-			return
-		}
-		resolutionStrategy {
-			eachDependency { dependency ->
-				// Downgrade Jackson as Gradle cannot cope with 2.15.0's multi-version
-				// jar files with bytecode in META-INF/versions/19
-				if (dependency.requested.group.startsWith("com.fasterxml.jackson")) {
-					dependency.useVersion("2.14.2")
-				}
-				// Downgrade Spring Framework as Gradle cannot cope with 6.1.0-M1's
-				// multi-version jar files with bytecode in META-INF/versions/21
-				if (dependency.requested.group.equals("org.springframework")) {
-					dependency.useVersion("$springFramework60xVersion")
-				}
-			}
-		}
-	}
-}
-
-components.java.addVariantsFromConfiguration(configurations.modernGradleRuntimeElements) {
-	mapToMavenScope("runtime")
 }
 
 dependencies {
@@ -184,25 +137,6 @@ antoraContributions {
 tasks.named("generateAntoraPlaybook") {
 	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*"]
 	asciidocExtensions.excludeJavadocExtension = true
-}
-
-toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
-}
-
-publishing {
-	publications.matching { it.name == 'pluginMaven' }.configureEach {
-		versionMapping {
-			allVariants {
-				fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)
-			}
-		}
-		versionMapping {
-			variant(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE, project.objects.named(GradlePluginApiVersion, "8.7")) {
-				fromResolutionOf("modernGradleRuntimeClasspath")
-			}
-		}
-	}
 }
 
 plugins.withType(EclipsePlugin) {

@@ -31,12 +31,6 @@ import org.springframework.web.util.UriTemplateHandler;
  */
 public class RootUriBuilderFactory extends RootUriTemplateHandler implements UriBuilderFactory {
 
-	@SuppressWarnings("removal")
-	RootUriBuilderFactory(String rootUri) {
-		super(rootUri);
-	}
-
-	@SuppressWarnings("removal")
 	RootUriBuilderFactory(String rootUri, UriTemplateHandler delegate) {
 		super(rootUri, delegate);
 	}

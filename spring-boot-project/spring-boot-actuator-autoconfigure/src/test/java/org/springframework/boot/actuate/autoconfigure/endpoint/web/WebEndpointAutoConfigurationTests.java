@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExc
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
@@ -140,17 +141,32 @@ class WebEndpointAutoConfigurationTests {
 	@Endpoint(id = "testone")
 	static class TestOneEndpoint {
 
+		@ReadOperation
+		String read() {
+			return "read";
+		}
+
 	}
 
 	@Component
 	@Endpoint(id = "testanotherone")
 	static class TestAnotherOneEndpoint {
 
+		@ReadOperation
+		String read() {
+			return "read";
+		}
+
 	}
 
 	@Component
 	@Endpoint(id = "testtwo")
 	static class TestTwoEndpoint {
+
+		@ReadOperation
+		String read() {
+			return "read";
+		}
 
 	}
 

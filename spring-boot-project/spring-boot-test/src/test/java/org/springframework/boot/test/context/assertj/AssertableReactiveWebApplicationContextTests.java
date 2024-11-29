@@ -22,6 +22,7 @@ import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebAppl
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link AssertableReactiveWebApplicationContext}.
@@ -37,6 +38,17 @@ class AssertableReactiveWebApplicationContextTests {
 		AssertableReactiveWebApplicationContext context = AssertableReactiveWebApplicationContext
 			.get(() -> mock(ConfigurableReactiveWebApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableReactiveWebApplicationContext.class);
+	}
+
+	@Test
+	void getWhenHasAdditionalInterfaceShouldReturnProxy() {
+		try (AssertableReactiveWebApplicationContext context = AssertableReactiveWebApplicationContext.get(
+				() -> mock(ConfigurableReactiveWebApplicationContext.class,
+						withSettings().extraInterfaces(AdditionalContextInterface.class)),
+				AdditionalContextInterface.class)) {
+			assertThat(context).isInstanceOf(ConfigurableReactiveWebApplicationContext.class)
+				.isInstanceOf(AdditionalContextInterface.class);
+		}
 	}
 
 }

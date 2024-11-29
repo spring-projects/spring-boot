@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebMvcTest @WebMvcTest} with a disabled filter registration.
@@ -37,11 +36,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebMvcTestServletFilterRegistrationDisabledIntegrationTests {
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
-	void shouldNotApplyFilter() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(header().string("x-test", (String) null));
+	void shouldNotApplyFilter() {
+		assertThat(this.mvc.get().uri("/one")).doesNotContainHeader("x-test");
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)

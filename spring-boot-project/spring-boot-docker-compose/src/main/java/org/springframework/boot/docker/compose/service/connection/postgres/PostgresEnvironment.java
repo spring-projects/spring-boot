@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Sidmar Theodoro
  */
 class PostgresEnvironment {
 
@@ -44,9 +45,17 @@ class PostgresEnvironment {
 	}
 
 	private String extractPassword(Map<String, String> env) {
+		if (isUsingTrustHostAuthMethod(env)) {
+			return null;
+		}
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
 		Assert.state(StringUtils.hasLength(password), "PostgreSQL password must be provided");
 		return password;
+	}
+
+	private boolean isUsingTrustHostAuthMethod(Map<String, String> env) {
+		String hostAuthMethod = env.get("POSTGRES_HOST_AUTH_METHOD");
+		return "trust".equals(hostAuthMethod);
 	}
 
 	String getUsername() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.springframework.boot.docker.compose.lifecycle;
 
 import java.time.Duration;
+import java.util.Collections;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
@@ -34,20 +36,25 @@ import static org.mockito.Mockito.mock;
  */
 class StopCommandTests {
 
-	private DockerCompose dockerCompose = mock(DockerCompose.class);
+	private DockerCompose dockerCompose;
 
-	private Duration duration = Duration.ofSeconds(10);
+	private final Duration duration = Duration.ofSeconds(10);
+
+	@BeforeEach
+	void setUp() {
+		this.dockerCompose = mock(DockerCompose.class);
+	}
 
 	@Test
 	void applyToWhenDown() {
-		StopCommand.DOWN.applyTo(this.dockerCompose, this.duration);
-		then(this.dockerCompose).should().down(this.duration);
+		StopCommand.DOWN.applyTo(this.dockerCompose, this.duration, Collections.emptyList());
+		then(this.dockerCompose).should().down(this.duration, Collections.emptyList());
 	}
 
 	@Test
 	void applyToWhenStart() {
-		StopCommand.STOP.applyTo(this.dockerCompose, this.duration);
-		then(this.dockerCompose).should().stop(this.duration);
+		StopCommand.STOP.applyTo(this.dockerCompose, this.duration, Collections.emptyList());
+		then(this.dockerCompose).should().stop(this.duration, Collections.emptyList());
 	}
 
 }

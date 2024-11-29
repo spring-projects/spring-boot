@@ -88,8 +88,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		if (name.startsWith("org.junit") || name.startsWith("org.hamcrest")
-				|| name.startsWith("io.netty.internal.tcnative")) {
+		if (name.startsWith("org.junit.") || name.startsWith("org.hamcrest.")
+				|| name.startsWith("io.netty.internal.tcnative.")) {
 			return Class.forName(name, false, this.junitLoader);
 		}
 		String packageName = ClassUtils.getPackageName(name);

@@ -47,9 +47,6 @@ class WavefrontTracingAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(WavefrontAutoConfiguration.class, WavefrontTracingAutoConfiguration.class));
 
-	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
-		.withPropertyValues("management.tracing.enabled=false");
-
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
@@ -85,12 +82,25 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.tracingDisabledContextRunner.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
-			assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
-			assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
-			assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
-		});
+	void shouldNotSupplyBeansIfGlobalTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+			.withUserConfiguration(WavefrontSenderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
+			});
+	}
+
+	@Test
+	void shouldNotSupplyBeansIfWavefrontTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.wavefront.tracing.export.enabled=false")
+			.withUserConfiguration(WavefrontSenderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
+			});
 	}
 
 	@Test

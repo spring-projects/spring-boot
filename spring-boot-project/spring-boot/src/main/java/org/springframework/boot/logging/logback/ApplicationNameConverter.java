@@ -29,22 +29,22 @@ import org.springframework.boot.logging.LoggingSystemProperty;
  * is logged as an empty string rather than {@code null}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 3.2.4
+ * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+ * {@link EnclosedInSquareBracketsConverter}
  */
+@Deprecated(since = "3.4.0", forRemoval = true)
 public class ApplicationNameConverter extends ClassicConverter {
+
+	private static final String ENVIRONMENT_VARIABLE_NAME = LoggingSystemProperty.APPLICATION_NAME
+		.getEnvironmentVariableName();
 
 	@Override
 	public String convert(ILoggingEvent event) {
-		String applicationName = event.getLoggerContextVO()
-			.getPropertyMap()
-			.get(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName());
-		if (applicationName == null) {
-			applicationName = System.getProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName());
-			if (applicationName == null) {
-				applicationName = "";
-			}
-		}
-		return applicationName;
+		String applicationName = event.getLoggerContextVO().getPropertyMap().get(ENVIRONMENT_VARIABLE_NAME);
+		applicationName = (applicationName != null) ? applicationName : System.getProperty(ENVIRONMENT_VARIABLE_NAME);
+		return (applicationName != null) ? applicationName : "";
 	}
 
 }

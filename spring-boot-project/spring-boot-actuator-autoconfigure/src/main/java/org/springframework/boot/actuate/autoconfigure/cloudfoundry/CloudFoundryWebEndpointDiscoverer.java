@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -24,11 +25,13 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryWebEndpointDiscoverer.CloudFoundryWebEndpointDiscovererRuntimeHints;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
+import org.springframework.boot.actuate.endpoint.OperationFilter;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -53,14 +56,37 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	 * @param endpointMediaTypes the endpoint media types
 	 * @param endpointPathMappers the endpoint path mappers
 	 * @param invokerAdvisors invoker advisors to apply
-	 * @param filters filters to apply
+	 * @param endpointFilters endpoint filters to apply
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #CloudFoundryWebEndpointDiscoverer(ApplicationContext, ParameterValueMapper, EndpointMediaTypes, List, Collection, Collection, Collection)}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	public CloudFoundryWebEndpointDiscoverer(ApplicationContext applicationContext,
+			ParameterValueMapper parameterValueMapper, EndpointMediaTypes endpointMediaTypes,
+			List<PathMapper> endpointPathMappers, Collection<OperationInvokerAdvisor> invokerAdvisors,
+			Collection<EndpointFilter<ExposableWebEndpoint>> endpointFilters) {
+		this(applicationContext, parameterValueMapper, endpointMediaTypes, endpointPathMappers, invokerAdvisors,
+				endpointFilters, Collections.emptyList());
+	}
+
+	/**
+	 * Create a new {@link WebEndpointDiscoverer} instance.
+	 * @param applicationContext the source application context
+	 * @param parameterValueMapper the parameter value mapper
+	 * @param endpointMediaTypes the endpoint media types
+	 * @param endpointPathMappers the endpoint path mappers
+	 * @param invokerAdvisors invoker advisors to apply
+	 * @param endpointFilters endpoint filters to apply
+	 * @param operationFilters operation filters to apply
+	 * @since 3.4.0
 	 */
 	public CloudFoundryWebEndpointDiscoverer(ApplicationContext applicationContext,
 			ParameterValueMapper parameterValueMapper, EndpointMediaTypes endpointMediaTypes,
 			List<PathMapper> endpointPathMappers, Collection<OperationInvokerAdvisor> invokerAdvisors,
-			Collection<EndpointFilter<ExposableWebEndpoint>> filters) {
-		super(applicationContext, parameterValueMapper, endpointMediaTypes, endpointPathMappers, invokerAdvisors,
-				filters);
+			Collection<EndpointFilter<ExposableWebEndpoint>> endpointFilters,
+			Collection<OperationFilter<WebOperation>> operationFilters) {
+		super(applicationContext, parameterValueMapper, endpointMediaTypes, endpointPathMappers, null, invokerAdvisors,
+				endpointFilters, operationFilters);
 	}
 
 	@Override

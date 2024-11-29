@@ -14,10 +14,12 @@ The basename of the resource bundle as well as several other attributes can be c
 ----
 spring:
   messages:
-    basename: "messages,config.i18n.messages"
+    basename: "messages, config.i18n.messages"
+    common-messages: "classpath:my-common-messages.properties"
     fallback-to-system-locale: false
 ----
 
-TIP: `spring.messages.basename` supports comma-separated list of locations, either a package qualifier or a resource resolved from the classpath root.
+TIP: The configprop:spring.messages.basename[] property supports a list of locations, either a package qualifier or a resource resolved from the classpath root.
+The configprop:spring.messages.common-messages[] property supports a list of property file resources.
 
 See javadoc:org.springframework.boot.autoconfigure.context.MessageSourceProperties[] for more supported options.

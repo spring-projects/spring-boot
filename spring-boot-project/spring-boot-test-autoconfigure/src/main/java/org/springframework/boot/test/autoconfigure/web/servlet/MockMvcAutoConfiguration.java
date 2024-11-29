@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,20 +27,15 @@ import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration;
 import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.test.web.servlet.DispatcherServletCustomizer;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -57,44 +52,13 @@ import org.springframework.web.servlet.DispatcherServlet;
 @AutoConfiguration(after = { WebMvcAutoConfiguration.class, WebTestClientAutoConfiguration.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
+@Import({ MockMvcConfiguration.class, MockMvcTesterConfiguration.class })
 public class MockMvcAutoConfiguration {
 
-	private final WebApplicationContext context;
-
-	private final WebMvcProperties webMvcProperties;
-
-	MockMvcAutoConfiguration(WebApplicationContext context, WebMvcProperties webMvcProperties) {
-		this.context = context;
-		this.webMvcProperties = webMvcProperties;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public DispatcherServletPath dispatcherServletPath() {
-		return () -> this.webMvcProperties.getServlet().getPath();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(MockMvcBuilder.class)
-	public DefaultMockMvcBuilder mockMvcBuilder(List<MockMvcBuilderCustomizer> customizers) {
-		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.context);
-		builder.addDispatcherServletCustomizer(new MockMvcDispatcherServletCustomizer(this.webMvcProperties));
-		for (MockMvcBuilderCustomizer customizer : customizers) {
-			customizer.customize(builder);
-		}
-		return builder;
-	}
-
-	@Bean
-	@ConfigurationProperties(prefix = "spring.test.mockmvc")
-	public SpringBootMockMvcBuilderCustomizer springBootMockMvcBuilderCustomizer() {
-		return new SpringBootMockMvcBuilderCustomizer(this.context);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public MockMvc mockMvc(MockMvcBuilder builder) {
-		return builder.build();
+	public DispatcherServletPath dispatcherServletPath(WebMvcProperties webMvcProperties) {
+		return () -> webMvcProperties.getServlet().getPath();
 	}
 
 	@Bean
@@ -115,29 +79,6 @@ public class MockMvcAutoConfiguration {
 				customizer.customize(builder);
 			}
 			return builder.build();
-		}
-
-	}
-
-	private static class MockMvcDispatcherServletCustomizer implements DispatcherServletCustomizer {
-
-		private final WebMvcProperties webMvcProperties;
-
-		MockMvcDispatcherServletCustomizer(WebMvcProperties webMvcProperties) {
-			this.webMvcProperties = webMvcProperties;
-		}
-
-		@Override
-		public void customize(DispatcherServlet dispatcherServlet) {
-			dispatcherServlet.setDispatchOptionsRequest(this.webMvcProperties.isDispatchOptionsRequest());
-			dispatcherServlet.setDispatchTraceRequest(this.webMvcProperties.isDispatchTraceRequest());
-			configureThrowExceptionIfNoHandlerFound(dispatcherServlet);
-		}
-
-		@SuppressWarnings({ "deprecation", "removal" })
-		private void configureThrowExceptionIfNoHandlerFound(DispatcherServlet dispatcherServlet) {
-			dispatcherServlet
-				.setThrowExceptionIfNoHandlerFound(this.webMvcProperties.isThrowExceptionIfNoHandlerFound());
 		}
 
 	}

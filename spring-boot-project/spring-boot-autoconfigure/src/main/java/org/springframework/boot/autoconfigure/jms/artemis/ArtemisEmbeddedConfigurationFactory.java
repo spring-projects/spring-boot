@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,16 +69,15 @@ class ArtemisEmbeddedConfigurationFactory {
 		configuration.setClusterPassword(this.properties.getClusterPassword());
 		configuration.addAddressConfiguration(createAddressConfiguration("DLQ"));
 		configuration.addAddressConfiguration(createAddressConfiguration("ExpiryQueue"));
-		configuration.addAddressSetting("#",
-				new AddressSettings().setDeadLetterAddress(SimpleString.toSimpleString("DLQ"))
-					.setExpiryAddress(SimpleString.toSimpleString("ExpiryQueue")));
+		configuration.addAddressSetting("#", new AddressSettings().setDeadLetterAddress(SimpleString.of("DLQ"))
+			.setExpiryAddress(SimpleString.of("ExpiryQueue")));
 		return configuration;
 	}
 
 	private CoreAddressConfiguration createAddressConfiguration(String name) {
 		return new CoreAddressConfiguration().setName(name)
 			.addRoutingType(RoutingType.ANYCAST)
-			.addQueueConfiguration(new QueueConfiguration(name).setRoutingType(RoutingType.ANYCAST).setAddress(name));
+			.addQueueConfiguration(QueueConfiguration.of(name).setRoutingType(RoutingType.ANYCAST).setAddress(name));
 	}
 
 	private String getDataDir() {

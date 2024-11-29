@@ -78,6 +78,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.SyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -362,6 +366,22 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	void testBatchTaskExecutor() {
+		this.contextRunner
+			.withUserConfiguration(TestConfiguration.class, BatchTaskExecutorConfiguration.class,
+					EmbeddedDataSourceConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringBootBatchConfiguration.class).hasBean("batchTaskExecutor");
+				TaskExecutor batchTaskExecutor = context.getBean("batchTaskExecutor", TaskExecutor.class);
+				assertThat(batchTaskExecutor).isInstanceOf(AsyncTaskExecutor.class);
+				assertThat(context.getBean(SpringBootBatchConfiguration.class).getTaskExecutor())
+					.isEqualTo(batchTaskExecutor);
+				assertThat(context.getBean(JobLauncher.class)).hasFieldOrPropertyWithValue("taskExecutor",
+						batchTaskExecutor);
+			});
+	}
+
+	@Test
 	void jobRepositoryBeansDependOnBatchDataSourceInitializer() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.run((context) -> {
@@ -516,13 +536,12 @@ class BatchAutoConfigurationTests {
 	static class BatchDataSourceConfiguration {
 
 		@Bean
-		@Primary
 		DataSource normalDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
 		}
 
 		@BatchDataSource
-		@Bean
+		@Bean(defaultCandidate = false)
 		DataSource batchDataSource() {
 			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:batchdatasource").username("sa").build();
 		}
@@ -544,9 +563,25 @@ class BatchAutoConfigurationTests {
 		}
 
 		@BatchTransactionManager
-		@Bean
+		@Bean(defaultCandidate = false)
 		PlatformTransactionManager batchTransactionManager() {
 			return mock(PlatformTransactionManager.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BatchTaskExecutorConfiguration {
+
+		@Bean
+		TaskExecutor taskExecutor() {
+			return new SyncTaskExecutor();
+		}
+
+		@BatchTaskExecutor
+		@Bean(defaultCandidate = false)
+		TaskExecutor batchTaskExecutor() {
+			return new SimpleAsyncTaskExecutor();
 		}
 
 	}

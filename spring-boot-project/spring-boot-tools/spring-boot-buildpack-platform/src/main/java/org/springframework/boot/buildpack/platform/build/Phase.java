@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
+import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.util.StringUtils;
 
 /**
@@ -37,8 +38,6 @@ class Phase {
 
 	private final String name;
 
-	private final boolean verboseLogging;
-
 	private boolean daemonAccess = false;
 
 	private final List<String> args = new ArrayList<>();
@@ -51,6 +50,8 @@ class Phase {
 
 	private String networkMode;
 
+	private boolean requiresApp = false;
+
 	/**
 	 * Create a new {@link Phase} instance.
 	 * @param name the name of the phase
@@ -58,22 +59,65 @@ class Phase {
 	 */
 	Phase(String name, boolean verboseLogging) {
 		this.name = name;
-		this.verboseLogging = verboseLogging;
+		withLogLevelArg(verboseLogging);
+	}
+
+	void withApp(String path, Binding binding) {
+		withArgs("-app", path);
+		withBinding(binding);
+		this.requiresApp = true;
+	}
+
+	void withBuildCache(String path, Binding binding) {
+		withArgs("-cache-dir", path);
+		withBinding(binding);
 	}
 
 	/**
 	 * Update this phase with Docker daemon access.
 	 */
 	void withDaemonAccess() {
+		this.withArgs("-daemon");
 		this.daemonAccess = true;
+	}
+
+	void withImageName(ImageReference imageName) {
+		withArgs(imageName);
+	}
+
+	void withLaunchCache(String path, Binding binding) {
+		withArgs("-launch-cache", path);
+		withBinding(binding);
+	}
+
+	void withLayers(String path, Binding binding) {
+		withArgs("-layers", path);
+		withBinding(binding);
+	}
+
+	void withPlatform(String path) {
+		withArgs("-platform", path);
+	}
+
+	void withProcessType(String type) {
+		withArgs("-process-type", type);
+	}
+
+	void withRunImage(ImageReference runImage) {
+		withArgs("-run-image", runImage);
+	}
+
+	void withSkipRestore() {
+		withArgs("-skip-restore");
 	}
 
 	/**
 	 * Update this phase with a debug log level arguments if verbose logging has been
 	 * requested.
+	 * @param verboseLogging if verbose logging is requested
 	 */
-	void withLogLevelArg() {
-		if (this.verboseLogging) {
+	private void withLogLevelArg(boolean verboseLogging) {
+		if (verboseLogging) {
 			this.args.add("-log-level");
 			this.args.add("debug");
 		}
@@ -126,6 +170,10 @@ class Phase {
 	 */
 	String getName() {
 		return this.name;
+	}
+
+	boolean requiresApp() {
+		return this.requiresApp;
 	}
 
 	@Override

@@ -75,7 +75,7 @@ class BootBuildImageRegistryIntegrationTests {
 			.contains("Pushing image '" + imageName + ":latest" + "'")
 			.contains("Pushed image '" + imageName + ":latest" + "'");
 		ImageReference imageReference = ImageReference.of(imageName);
-		Image pulledImage = new DockerApi().image().pull(imageReference, UpdateListener.none());
+		Image pulledImage = new DockerApi().image().pull(imageReference, null, UpdateListener.none());
 		assertThat(pulledImage).isNotNull();
 		new DockerApi().image().remove(imageReference, false);
 	}

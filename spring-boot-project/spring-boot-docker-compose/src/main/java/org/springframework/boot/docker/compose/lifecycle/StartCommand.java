@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.docker.compose.lifecycle;
 
-import java.util.function.BiConsumer;
+import java.util.List;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.logging.LogLevel;
@@ -41,14 +41,21 @@ public enum StartCommand {
 	 */
 	START(DockerCompose::start);
 
-	private final BiConsumer<DockerCompose, LogLevel> action;
+	private final Command command;
 
-	StartCommand(BiConsumer<DockerCompose, LogLevel> action) {
-		this.action = action;
+	StartCommand(Command command) {
+		this.command = command;
 	}
 
-	void applyTo(DockerCompose dockerCompose, LogLevel logLevel) {
-		this.action.accept(dockerCompose, logLevel);
+	void applyTo(DockerCompose dockerCompose, LogLevel logLevel, List<String> arguments) {
+		this.command.applyTo(dockerCompose, logLevel, arguments);
+	}
+
+	@FunctionalInterface
+	private interface Command {
+
+		void applyTo(DockerCompose dockerCompose, LogLevel logLevel, List<String> arguments);
+
 	}
 
 }

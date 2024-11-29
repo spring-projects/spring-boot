@@ -116,7 +116,7 @@ class JavaVersionTests {
 	}
 
 	@Test
-	@EnabledOnJre(JRE.OTHER)
+	@EnabledOnJre(JRE.JAVA_23)
 	void currentJavaVersionTwentyThree() {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TWENTY_THREE);
 	}

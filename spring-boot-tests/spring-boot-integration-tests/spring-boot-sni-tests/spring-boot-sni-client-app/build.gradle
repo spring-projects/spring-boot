@@ -3,6 +3,11 @@ plugins {
 	id "org.springframework.boot"
 }
 
+java {
+	sourceCompatibility = '17'
+	targetCompatibility = '17'
+}
+
 repositories {
 	maven { url "file:${rootDir}/../int-test-maven-repository"}
 	mavenCentral()

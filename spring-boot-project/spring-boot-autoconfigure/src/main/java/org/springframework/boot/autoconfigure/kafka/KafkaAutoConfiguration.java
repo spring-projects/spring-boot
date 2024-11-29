@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Jaas;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Retry.Topic.Backoff;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundles;
@@ -186,7 +186,7 @@ public class KafkaAutoConfiguration {
 			.useSingleTopicForSameIntervals()
 			.suffixTopicsWithIndexValues()
 			.doNotAutoCreateRetryTopics();
-		setBackOffPolicy(builder, retryTopic);
+		setBackOffPolicy(builder, retryTopic.getBackoff());
 		return builder.create(kafkaTemplate);
 	}
 
@@ -214,15 +214,15 @@ public class KafkaAutoConfiguration {
 		}
 	}
 
-	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Topic retryTopic) {
-		long delay = (retryTopic.getDelay() != null) ? retryTopic.getDelay().toMillis() : 0;
+	private static void setBackOffPolicy(RetryTopicConfigurationBuilder builder, Backoff retryTopicBackoff) {
+		long delay = (retryTopicBackoff.getDelay() != null) ? retryTopicBackoff.getDelay().toMillis() : 0;
 		if (delay > 0) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			BackOffPolicyBuilder backOffPolicy = BackOffPolicyBuilder.newBuilder();
 			map.from(delay).to(backOffPolicy::delay);
-			map.from(retryTopic.getMaxDelay()).as(Duration::toMillis).to(backOffPolicy::maxDelay);
-			map.from(retryTopic.getMultiplier()).to(backOffPolicy::multiplier);
-			map.from(retryTopic.isRandomBackOff()).to(backOffPolicy::random);
+			map.from(retryTopicBackoff.getMaxDelay()).as(Duration::toMillis).to(backOffPolicy::maxDelay);
+			map.from(retryTopicBackoff.getMultiplier()).to(backOffPolicy::multiplier);
+			map.from(retryTopicBackoff.isRandom()).to(backOffPolicy::random);
 			builder.customBackoff((SleepingBackOffPolicy<?>) backOffPolicy.build());
 		}
 		else {

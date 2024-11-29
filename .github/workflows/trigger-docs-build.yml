@@ -1,8 +1,16 @@
 name: Trigger Docs Build
 on:
   push:
-    branches: '3.3.x'
+    branches: main
     paths: [ 'antora/*' ]
+  workflow_dispatch:
+    inputs:
+      build-refname:
+        description: 'Git refname to build (e.g., 1.0.x)'
+        required: false
+      build-version:
+        description: 'Version being build (e.g. 1.0.3-SNAPSHOT)'
+        required: false  
 permissions:
   actions: write
 jobs:

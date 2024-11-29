@@ -16,6 +16,10 @@
 
 package org.springframework.boot.info;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+
 /**
  * Information about the process of the application.
  *
@@ -50,6 +54,24 @@ public class ProcessInfo {
 		return runtime.availableProcessors();
 	}
 
+	/**
+	 * Memory information for the process. These values can provide details about the
+	 * current memory usage and limits selected by the user or JVM ergonomics (init, max,
+	 * committed, used for heap and non-heap). If limits not set explicitly, it might not
+	 * be trivial to know what these values are runtime; especially in (containerized)
+	 * environments where resource usage can be isolated (for example using control
+	 * groups) or not necessarily trivial to discover. Other than that, these values can
+	 * indicate if the JVM can resize the heap (stop-the-world).
+	 * @return heap and non-heap memory information
+	 * @since 3.4.0
+	 * @see MemoryMXBean#getHeapMemoryUsage()
+	 * @see MemoryMXBean#getNonHeapMemoryUsage()
+	 * @see MemoryUsage
+	 */
+	public MemoryInfo getMemory() {
+		return new MemoryInfo();
+	}
+
 	public long getPid() {
 		return this.pid;
 	}
@@ -60,6 +82,60 @@ public class ProcessInfo {
 
 	public String getOwner() {
 		return this.owner;
+	}
+
+	/**
+	 * Memory information.
+	 *
+	 * @since 3.4.0
+	 */
+	public static class MemoryInfo {
+
+		private static final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+
+		private final MemoryUsageInfo heap;
+
+		private final MemoryUsageInfo nonHeap;
+
+		MemoryInfo() {
+			this.heap = new MemoryUsageInfo(memoryMXBean.getHeapMemoryUsage());
+			this.nonHeap = new MemoryUsageInfo(memoryMXBean.getNonHeapMemoryUsage());
+		}
+
+		public MemoryUsageInfo getHeap() {
+			return this.heap;
+		}
+
+		public MemoryUsageInfo getNonHeap() {
+			return this.nonHeap;
+		}
+
+		public static class MemoryUsageInfo {
+
+			private final MemoryUsage memoryUsage;
+
+			MemoryUsageInfo(MemoryUsage memoryUsage) {
+				this.memoryUsage = memoryUsage;
+			}
+
+			public long getInit() {
+				return this.memoryUsage.getInit();
+			}
+
+			public long getUsed() {
+				return this.memoryUsage.getUsed();
+			}
+
+			public long getCommitted() {
+				return this.memoryUsage.getCommitted();
+			}
+
+			public long getMax() {
+				return this.memoryUsage.getMax();
+			}
+
+		}
+
 	}
 
 }

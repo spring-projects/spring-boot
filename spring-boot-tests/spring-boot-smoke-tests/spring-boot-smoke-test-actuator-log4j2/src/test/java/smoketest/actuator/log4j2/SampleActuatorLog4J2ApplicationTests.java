@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link SampleActuatorLog4J2Application}.
@@ -49,7 +46,7 @@ class SampleActuatorLog4J2ApplicationTests {
 	private static final Logger logger = LogManager.getLogger(SampleActuatorLog4J2ApplicationTests.class);
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
 	void testLogger(CapturedOutput output) {
@@ -58,12 +55,11 @@ class SampleActuatorLog4J2ApplicationTests {
 	}
 
 	@Test
-	void validateLoggersEndpoint() throws Exception {
-		this.mvc
-			.perform(get("/actuator/loggers/org.apache.coyote.http11.Http11NioProtocol").header("Authorization",
-					getBasicAuth()))
-			.andExpect(status().isOk())
-			.andExpect(content().string("{\"configuredLevel\":\"WARN\",\"effectiveLevel\":\"WARN\"}"));
+	void validateLoggersEndpoint() {
+		assertThat(this.mvc.get()
+			.uri("/actuator/loggers/org.apache.coyote.http11.Http11NioProtocol")
+			.header("Authorization", getBasicAuth())).hasStatusOk()
+			.hasBodyTextEqualTo("{\"configuredLevel\":\"WARN\",\"effectiveLevel\":\"WARN\"}");
 	}
 
 	private String getBasicAuth() {

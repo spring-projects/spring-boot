@@ -16,9 +16,15 @@
 
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
+import java.sql.Driver;
+
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testsupport.container.TestImage;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +43,15 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
+	@DockerComposeTest(composeFile = "postgres-with-trust-host-auth-method-compose.yaml", image = TestImage.POSTGRESQL)
+	void runCreatesConnectionDetailsThatCanAccessDatabaseWhenHostAuthMethodIsTrust(
+			JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
+		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
+		assertThat(connectionDetails.getPassword()).isNull();
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
+		checkDatabaseAccess(connectionDetails);
+	}
+
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
 	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
@@ -46,6 +61,18 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
+	}
+
+	@SuppressWarnings("unchecked")
+	private void checkDatabaseAccess(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
+		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+		dataSource.setUrl(connectionDetails.getJdbcUrl());
+		dataSource.setUsername(connectionDetails.getUsername());
+		dataSource.setPassword(connectionDetails.getPassword());
+		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
+				getClass().getClassLoader()));
+		JdbcTemplate template = new JdbcTemplate(dataSource);
+		assertThat(template.queryForObject(DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class)).isEqualTo(1);
 	}
 
 }

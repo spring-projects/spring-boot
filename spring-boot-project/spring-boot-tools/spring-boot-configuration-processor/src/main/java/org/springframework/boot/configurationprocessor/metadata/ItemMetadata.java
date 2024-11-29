@@ -18,6 +18,8 @@ package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.Locale;
 
+import org.springframework.boot.configurationprocessor.support.ConventionUtils;
+
 /**
  * A group or property meta-data item from some {@link ConfigurationMetadata}.
  *
@@ -68,7 +70,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 			if (!fullName.isEmpty()) {
 				fullName.append('.');
 			}
-			fullName.append(ConfigurationMetadata.toDashedCase(name));
+			fullName.append(ConventionUtils.toDashedCase(name));
 		}
 		return fullName.toString();
 	}
@@ -218,7 +220,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 	}
 
 	public static String newItemMetadataPrefix(String prefix, String suffix) {
-		return prefix.toLowerCase(Locale.ENGLISH) + ConfigurationMetadata.toDashedCase(suffix);
+		return prefix.toLowerCase(Locale.ENGLISH) + ConventionUtils.toDashedCase(suffix);
 	}
 
 	/**

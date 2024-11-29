@@ -34,6 +34,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
@@ -64,8 +65,8 @@ import org.springframework.util.unit.DataSize;
 public class KafkaProperties {
 
 	/**
-	 * Comma-delimited list of host:port pairs to use for establishing the initial
-	 * connections to the Kafka cluster. Applies to all components unless overridden.
+	 * List of host:port pairs to use for establishing the initial connections to the
+	 * Kafka cluster. Applies to all components unless overridden.
 	 */
 	private List<String> bootstrapServers = new ArrayList<>(Collections.singletonList("localhost:9092"));
 
@@ -181,21 +182,6 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaConsumerFactory} bean.
-	 * @return the consumer properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildConsumerProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildConsumerProperties() {
-		return buildConsumerProperties(null);
-	}
-
-	/**
-	 * Create an initial map of consumer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaConsumerFactory} bean.
 	 * @param sslBundles bundles providing SSL trust material
 	 * @return the consumer properties initialized with the customizations defined on this
 	 * instance
@@ -204,21 +190,6 @@ public class KafkaProperties {
 		Map<String, Object> properties = buildCommonProperties(sslBundles);
 		properties.putAll(this.consumer.buildProperties(sslBundles));
 		return properties;
-	}
-
-	/**
-	 * Create an initial map of producer properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaProducerFactory} bean.
-	 * @return the producer properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildProducerProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildProducerProperties() {
-		return buildProducerProperties(null);
 	}
 
 	/**
@@ -241,21 +212,6 @@ public class KafkaProperties {
 	 * <p>
 	 * This allows you to add additional properties, if necessary, and override the
 	 * default {@code kafkaAdmin} bean.
-	 * @return the admin properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildAdminProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildAdminProperties() {
-		return buildAdminProperties(null);
-	}
-
-	/**
-	 * Create an initial map of admin properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary, and override the
-	 * default {@code kafkaAdmin} bean.
 	 * @param sslBundles bundles providing SSL trust material
 	 * @return the admin properties initialized with the customizations defined on this
 	 * instance
@@ -264,20 +220,6 @@ public class KafkaProperties {
 		Map<String, Object> properties = buildCommonProperties(sslBundles);
 		properties.putAll(this.admin.buildProperties(sslBundles));
 		return properties;
-	}
-
-	/**
-	 * Create an initial map of streams properties from the state of this instance.
-	 * <p>
-	 * This allows you to add additional properties, if necessary.
-	 * @return the streams properties initialized with the customizations defined on this
-	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildStreamsProperties(SslBundles)}}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public Map<String, Object> buildStreamsProperties() {
-		return buildStreamsProperties(null);
 	}
 
 	/**
@@ -313,8 +255,8 @@ public class KafkaProperties {
 		private String autoOffsetReset;
 
 		/**
-		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connections to the Kafka cluster. Overrides the global property, for consumers.
+		 * List of host:port pairs to use for establishing the initial connections to the
+		 * Kafka cluster. Overrides the global property, for consumers.
 		 */
 		private List<String> bootstrapServers;
 
@@ -541,8 +483,8 @@ public class KafkaProperties {
 		private DataSize batchSize;
 
 		/**
-		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connections to the Kafka cluster. Overrides the global property, for producers.
+		 * List of host:port pairs to use for establishing the initial connections to the
+		 * Kafka cluster. Overrides the global property, for producers.
 		 */
 		private List<String> bootstrapServers;
 
@@ -831,8 +773,8 @@ public class KafkaProperties {
 		private boolean autoStartup = true;
 
 		/**
-		 * Comma-delimited list of host:port pairs to use for establishing the initial
-		 * connections to the Kafka cluster. Overrides the global property, for streams.
+		 * List of host:port pairs to use for establishing the initial connections to the
+		 * Kafka cluster. Overrides the global property, for streams.
 		 */
 		private List<String> bootstrapServers;
 
@@ -1606,28 +1548,6 @@ public class KafkaProperties {
 			 */
 			private int attempts = 3;
 
-			/**
-			 * Canonical backoff period. Used as an initial value in the exponential case,
-			 * and as a minimum value in the uniform case.
-			 */
-			private Duration delay = Duration.ofSeconds(1);
-
-			/**
-			 * Multiplier to use for generating the next backoff delay.
-			 */
-			private double multiplier = 0.0;
-
-			/**
-			 * Maximum wait between retries. If less than the delay then the default of 30
-			 * seconds is applied.
-			 */
-			private Duration maxDelay = Duration.ZERO;
-
-			/**
-			 * Whether to have the backoff delays.
-			 */
-			private boolean randomBackOff = false;
-
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1644,36 +1564,113 @@ public class KafkaProperties {
 				this.attempts = attempts;
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.delay", since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public Duration getDelay() {
-				return this.delay;
+				return getBackoff().getDelay();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setDelay(Duration delay) {
-				this.delay = delay;
+				getBackoff().setDelay(delay);
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.multiplier",
+					since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public double getMultiplier() {
-				return this.multiplier;
+				return getBackoff().getMultiplier();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setMultiplier(double multiplier) {
-				this.multiplier = multiplier;
+				getBackoff().setMultiplier(multiplier);
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.maxDelay", since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public Duration getMaxDelay() {
-				return this.maxDelay;
+				return getBackoff().getMaxDelay();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setMaxDelay(Duration maxDelay) {
-				this.maxDelay = maxDelay;
+				getBackoff().setMaxDelay(maxDelay);
 			}
 
+			@DeprecatedConfigurationProperty(replacement = "spring.kafka.retry.topic.backoff.random", since = "3.4.0")
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public boolean isRandomBackOff() {
-				return this.randomBackOff;
+				return getBackoff().isRandom();
 			}
 
+			@Deprecated(since = "3.4.0", forRemoval = true)
 			public void setRandomBackOff(boolean randomBackOff) {
-				this.randomBackOff = randomBackOff;
+				getBackoff().setRandom(randomBackOff);
+			}
+
+			private final Backoff backoff = new Backoff();
+
+			public Backoff getBackoff() {
+				return this.backoff;
+			}
+
+			public static class Backoff {
+
+				/**
+				 * Canonical backoff period. Used as an initial value in the exponential
+				 * case, and as a minimum value in the uniform case.
+				 */
+				private Duration delay = Duration.ofSeconds(1);
+
+				/**
+				 * Multiplier to use for generating the next backoff delay.
+				 */
+				private double multiplier = 0.0;
+
+				/**
+				 * Maximum wait between retries. If less than the delay then the default
+				 * of 30 seconds is applied.
+				 */
+				private Duration maxDelay = Duration.ZERO;
+
+				/**
+				 * Whether to have the backoff delays.
+				 */
+				private boolean random = false;
+
+				public Duration getDelay() {
+					return this.delay;
+				}
+
+				public void setDelay(Duration delay) {
+					this.delay = delay;
+				}
+
+				public double getMultiplier() {
+					return this.multiplier;
+				}
+
+				public void setMultiplier(double multiplier) {
+					this.multiplier = multiplier;
+				}
+
+				public Duration getMaxDelay() {
+					return this.maxDelay;
+				}
+
+				public void setMaxDelay(Duration maxDelay) {
+					this.maxDelay = maxDelay;
+				}
+
+				public boolean isRandom() {
+					return this.random;
+				}
+
+				public void setRandom(boolean random) {
+					this.random = random;
+				}
+
 			}
 
 		}

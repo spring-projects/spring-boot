@@ -143,8 +143,10 @@ public class AntoraAsciidocAttributes {
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-ldap");
 		addTestcontainersDependencyVersion(attributes, internal, "activemq");
 		addTestcontainersDependencyVersion(attributes, internal, "cassandra");
+		addTestcontainersDependencyVersion(attributes, internal, "clickhouse");
 		addTestcontainersDependencyVersion(attributes, internal, "couchbase");
 		addTestcontainersDependencyVersion(attributes, internal, "elasticsearch");
+		addTestcontainersDependencyVersion(attributes, internal, "grafana");
 		addTestcontainersDependencyVersion(attributes, internal, "jdbc");
 		addTestcontainersDependencyVersion(attributes, internal, "kafka");
 		addTestcontainersDependencyVersion(attributes, internal, "mariadb");

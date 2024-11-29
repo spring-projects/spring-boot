@@ -54,50 +54,20 @@ class TaskSchedulingConfigurations {
 		}
 
 		@Bean
-		@SuppressWarnings({ "deprecation", "removal" })
 		@ConditionalOnThreading(Threading.PLATFORM)
-		ThreadPoolTaskScheduler taskScheduler(org.springframework.boot.task.TaskSchedulerBuilder taskSchedulerBuilder,
-				ObjectProvider<ThreadPoolTaskSchedulerBuilder> threadPoolTaskSchedulerBuilderProvider) {
-			ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder = threadPoolTaskSchedulerBuilderProvider
-				.getIfUnique();
-			if (threadPoolTaskSchedulerBuilder != null) {
-				return threadPoolTaskSchedulerBuilder.build();
-			}
-			return taskSchedulerBuilder.build();
+		ThreadPoolTaskScheduler taskScheduler(ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder) {
+			return threadPoolTaskSchedulerBuilder.build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings({ "deprecation", "removal" })
-	static class TaskSchedulerBuilderConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		org.springframework.boot.task.TaskSchedulerBuilder taskSchedulerBuilder(TaskSchedulingProperties properties,
-				ObjectProvider<org.springframework.boot.task.TaskSchedulerCustomizer> taskSchedulerCustomizers) {
-			org.springframework.boot.task.TaskSchedulerBuilder builder = new org.springframework.boot.task.TaskSchedulerBuilder();
-			builder = builder.poolSize(properties.getPool().getSize());
-			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
-			builder = builder.awaitTermination(shutdown.isAwaitTermination());
-			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
-			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-			builder = builder.customizers(taskSchedulerCustomizers);
-			return builder;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings({ "deprecation", "removal" })
 	static class ThreadPoolTaskSchedulerBuilderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean({ org.springframework.boot.task.TaskSchedulerBuilder.class,
-				ThreadPoolTaskSchedulerBuilder.class })
+		@ConditionalOnMissingBean
 		ThreadPoolTaskSchedulerBuilder threadPoolTaskSchedulerBuilder(TaskSchedulingProperties properties,
-				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers,
-				ObjectProvider<org.springframework.boot.task.TaskSchedulerCustomizer> taskSchedulerCustomizers) {
+				ObjectProvider<ThreadPoolTaskSchedulerCustomizer> threadPoolTaskSchedulerCustomizers) {
 			TaskSchedulingProperties.Shutdown shutdown = properties.getShutdown();
 			ThreadPoolTaskSchedulerBuilder builder = new ThreadPoolTaskSchedulerBuilder();
 			builder = builder.poolSize(properties.getPool().getSize());
@@ -105,14 +75,7 @@ class TaskSchedulingConfigurations {
 			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
 			builder = builder.customizers(threadPoolTaskSchedulerCustomizers);
-			// Apply the deprecated TaskSchedulerCustomizers, too
-			builder = builder.additionalCustomizers(taskSchedulerCustomizers.orderedStream().map(this::adapt).toList());
 			return builder;
-		}
-
-		private ThreadPoolTaskSchedulerCustomizer adapt(
-				org.springframework.boot.task.TaskSchedulerCustomizer customizer) {
-			return customizer::customize;
 		}
 
 	}
@@ -141,9 +104,7 @@ class TaskSchedulingConfigurations {
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskSchedulerBuilder simpleAsyncTaskSchedulerBuilderVirtualThreads() {
-			SimpleAsyncTaskSchedulerBuilder builder = builder();
-			builder = builder.virtualThreads(true);
-			return builder;
+			return builder().virtualThreads(true);
 		}
 
 		private SimpleAsyncTaskSchedulerBuilder builder() {

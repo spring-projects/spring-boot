@@ -165,6 +165,9 @@ Spring Boot includes auto-configuration support for the following templating eng
 * https://www.thymeleaf.org[Thymeleaf]
 * https://mustache.github.io/[Mustache]
 
+NOTE: Not all FreeMarker features are supported with WebFlux.
+For more details, check the description of each property.
+
 When you use one of these templating engines with the default configuration, your templates are picked up automatically from `src/main/resources/templates`.
 
 

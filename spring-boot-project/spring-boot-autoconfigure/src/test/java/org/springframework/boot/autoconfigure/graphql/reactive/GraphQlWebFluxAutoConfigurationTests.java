@@ -119,7 +119,23 @@ class GraphQlWebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void httpGetQueryShouldBeSupported() {
+	void unsupportedContentTypeShouldBeRejected() {
+		testWithWebClient((client) -> {
+			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
+			client.post()
+				.uri("/graphql")
+				.contentType(MediaType.TEXT_PLAIN)
+				.bodyValue("{  \"query\": \"" + query + "\"}")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+				.expectHeader()
+				.valueEquals("Accept", "application/json");
+		});
+	}
+
+	@Test
+	void httpGetQueryShouldBeRejected() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
 			client.get()

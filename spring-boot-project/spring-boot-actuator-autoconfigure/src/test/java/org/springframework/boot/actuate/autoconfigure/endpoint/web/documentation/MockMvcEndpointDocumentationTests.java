@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Abstract base class for tests that generate endpoint documentation using Spring REST
- * Docs and {@link MockMvc}.
+ * Docs and {@link MockMvcTester}.
  *
  * @author Andy Wilkinson
  */
@@ -38,16 +37,17 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest
 public abstract class MockMvcEndpointDocumentationTests extends AbstractEndpointDocumentationTests {
 
-	protected MockMvc mockMvc;
+	protected MockMvcTester mvc;
 
 	@Autowired
 	private WebApplicationContext applicationContext;
 
 	@BeforeEach
 	void setup(RestDocumentationContextProvider restDocumentation) {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.applicationContext)
-			.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris())
-			.build();
+		this.mvc = MockMvcTester.from(this.applicationContext,
+				(builder) -> builder
+					.apply(MockMvcRestDocumentation.documentationConfiguration(restDocumentation).uris())
+					.build());
 	}
 
 	protected WebApplicationContext getApplicationContext() {

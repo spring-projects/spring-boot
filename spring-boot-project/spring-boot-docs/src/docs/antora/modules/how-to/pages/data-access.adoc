@@ -111,43 +111,44 @@ See xref:reference:data/sql.adoc#data.sql.datasource[] and the {code-spring-boot
 [[howto.data-access.configure-two-datasources]]
 == Configure Two DataSources
 
-If you need to configure multiple data sources, you can apply the same tricks that were described in the previous section.
-You must, however, mark one of the javadoc:javax.sql.DataSource[] instances as javadoc:org.springframework.context.annotation.Primary[format=annotation], because various auto-configurations down the road expect to be able to get one by type.
+To define an additional javadoc:javax.sql.DataSource[], an approach that's similar to the previous section can be used.
+A key difference is that the javadoc:javax.sql.DataSource[] javadoc:org.springframework.context.annotation.Bean[format=annotation] must be declared with `defaultCandidate=false`.
+This prevents the auto-configured javadoc:javax.sql.DataSource[] from backing off.
 
-If you create your own javadoc:javax.sql.DataSource[], the auto-configuration backs off.
-In the following example, we provide the _exact_ same feature set as the auto-configuration provides on the primary data source:
+NOTE: The {url-spring-framework-docs}/core/beans/dependencies/factory-autowire.html#beans-factory-autowire-candidate[Spring Framework reference documentation] describes this feature in more details.
 
-include-code::MyDataSourcesConfiguration[]
+To allow the additional javadoc:javax.sql.DataSource[] to be injected where it's needed, also annotate it with javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation] as shown in the following example:
 
-TIP: `firstDataSourceProperties` has to be flagged as javadoc:org.springframework.context.annotation.Primary[format=annotation] so that the database initializer feature uses your copy (if you use the initializer).
+include-code::MyAdditionalDataSourceConfiguration[]
 
-Both data sources are also bound for advanced customizations.
-For instance, you could configure them as follows:
+To consume the additional javadoc:javax.sql.DataSource[], annotate the injection point with the same javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation].
+
+The auto-configured and additional data sources can be configured as follows:
 
 [configprops%novalidate,yaml]
 ----
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost/first"
+    username: "dbuser"
+    password: "dbpass"
+    configuration:
+      maximum-pool-size: 30
 app:
   datasource:
-    first:
-      url: "jdbc:mysql://localhost/first"
-      username: "dbuser"
-      password: "dbpass"
-      configuration:
-        maximum-pool-size: 30
-
-    second:
-      url: "jdbc:mysql://localhost/second"
-      username: "dbuser"
-      password: "dbpass"
-      max-total: 30
+    url: "jdbc:mysql://localhost/second"
+    username: "dbuser"
+    password: "dbpass"
+    max-total: 30
 ----
 
-You can apply the same concept to the secondary javadoc:javax.sql.DataSource[] as well, as shown in the following example:
+More advanced, implementation-specific, configuration of the auto-configured javadoc:javax.sql.DataSource[] is available through the `spring.datasource.configuration.*` properties.
+You can apply the same concept to the additional javadoc:javax.sql.DataSource[] as well, as shown in the following example:
 
-include-code::MyCompleteDataSourcesConfiguration[]
+include-code::MyCompleteAdditionalDataSourceConfiguration[]
 
-The preceding example configures two data sources on custom configuration property namespaces with the same logic as Spring Boot would use in auto-configuration.
-Note that each `configuration` sub namespace provides advanced settings based on the chosen implementation.
+The preceding example configures the additional data source with the same logic as Spring Boot would use in auto-configuration.
+Note that the `app.datasource.configuration.*` properties provide advanced settings based on the chosen implementation.
 
 As with xref:how-to:data-access.adoc#howto.data-access.configure-custom-datasource[configuring a single custom javadoc:javax.sql.DataSource[]], the type of one or both of the javadoc:javax.sql.DataSource[] beans can be customized using the `type(Class)` method on javadoc:org.springframework.boot.jdbc.DataSourceBuilder[].
 See xref:reference:data/sql.adoc#data.sql.datasource.connection-pool[] for details of the supported types.
@@ -299,26 +300,30 @@ You can disable or tune this behavior by registering a javadoc:org.springframewo
 To take full control of the configuration of the javadoc:jakarta.persistence.EntityManagerFactory[], you need to add a javadoc:org.springframework.context.annotation.Bean[format=annotation] named '`entityManagerFactory`'.
 Spring Boot auto-configuration switches off its entity manager in the presence of a bean of that type.
 
+NOTE: When you create a bean for javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] yourself, any customization that was applied during the creation of the auto-configured javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] is lost.
+Make sure to use the auto-configured javadoc:org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder[] to retain JPA and vendor properties.
+This is particularly important if you were relying on `spring.jpa.*` properties for configuring things like the naming strategy or the DDL mode.
+
 
 
 [[howto.data-access.use-multiple-entity-managers]]
 == Using Multiple EntityManagerFactories
 
-If you need to use JPA against multiple data sources, you likely need one javadoc:jakarta.persistence.EntityManagerFactory[] per data source.
+If you need to use JPA against multiple datasources, you likely need one javadoc:jakarta.persistence.EntityManagerFactory[] per datasource.
 The javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] from Spring ORM allows you to configure an javadoc:jakarta.persistence.EntityManagerFactory[] for your needs.
-You can also reuse javadoc:org.springframework.boot.autoconfigure.orm.jpa.JpaProperties[] to bind settings for each javadoc:jakarta.persistence.EntityManagerFactory[], as shown in the following example:
+You can also reuse javadoc:org.springframework.boot.autoconfigure.orm.jpa.JpaProperties[] to bind settings for a second javadoc:jakarta.persistence.EntityManagerFactory[].
+Building upon xref:how-to:data-access.adoc#howto.data-access.configure-two-datasources[the example for configuring a second javadoc:javax.sql.DataSource[]], a second javadoc:jakarta.persistence.EntityManagerFactory[] can be defined as shown in the following example:
 
-include-code::MyEntityManagerFactoryConfiguration[]
+include-code::MyAdditionalEntityManagerFactoryConfiguration[]
 
-The example above creates an javadoc:jakarta.persistence.EntityManagerFactory[] using a javadoc:javax.sql.DataSource[] bean named `firstDataSource`.
+The example above creates an javadoc:jakarta.persistence.EntityManagerFactory[] using the javadoc:javax.sql.DataSource[] bean qualified with `@Qualifier("second")`.
 It scans entities located in the same package as `Order`.
-It is possible to map additional JPA properties using the `app.first.jpa` namespace.
+It is possible to map additional JPA properties using the `app.jpa` namespace.
+The use of `@Bean(defaultCandidate=false)` allows the `secondJpaProperties` and `secondEntityManagerFactory` beans to be defined without interfering with auto-configured beans of the same type.
 
-NOTE: When you create a bean for javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] yourself, any customization that was applied during the creation of the auto-configured javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] is lost.
-For example, in the case of Hibernate, any properties under the `spring.jpa.hibernate` prefix will not be automatically applied to your javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[].
-If you were relying on these properties for configuring things like the naming strategy or the DDL mode, you will need to explicitly configure that when creating the javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] bean.
+NOTE: The {url-spring-framework-docs}/core/beans/dependencies/factory-autowire.html#beans-factory-autowire-candidate[Spring Framework reference documentation] describes this feature in more details.
 
-You should provide a similar configuration for any additional data sources for which you need JPA access.
+You should provide a similar configuration for any more additional data sources for which you need JPA access.
 To complete the picture, you need to configure a javadoc:org.springframework.orm.jpa.JpaTransactionManager[] for each javadoc:jakarta.persistence.EntityManagerFactory[] as well.
 Alternatively, you might be able to use a JTA transaction manager that spans both.
 

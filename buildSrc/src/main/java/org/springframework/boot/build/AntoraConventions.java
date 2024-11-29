@@ -102,7 +102,8 @@ public class AntoraConventions {
 
 	private void configureCopyAntoraPackageJsonTask(Project project, Copy copyAntoraPackageJsonTask) {
 		copyAntoraPackageJsonTask
-			.from(project.getRootProject().file("antora"), (spec) -> spec.include("package.json", "package-lock.json"))
+			.from(project.getRootProject().file("antora"),
+					(spec) -> spec.include("package.json", "package-lock.json", "patches/**"))
 			.into(getNodeProjectDir(project));
 	}
 

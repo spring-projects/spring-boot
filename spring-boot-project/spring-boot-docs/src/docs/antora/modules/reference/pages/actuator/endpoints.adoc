@@ -5,8 +5,8 @@ Actuator endpoints let you monitor and interact with your application.
 Spring Boot includes a number of built-in endpoints and lets you add your own.
 For example, the `health` endpoint provides basic application health information.
 
-You can xref:actuator/endpoints.adoc#actuator.endpoints.enabling[enable or disable] each individual endpoint and xref:actuator/endpoints.adoc#actuator.endpoints.exposing[expose them (make them remotely accessible) over HTTP or JMX].
-An endpoint is considered to be available when it is both enabled and exposed.
+You can xref:actuator/endpoints.adoc#actuator.endpoints.controlling-access[control access] to each individual endpoint and xref:actuator/endpoints.adoc#actuator.endpoints.exposing[expose them (make them remotely accessible) over HTTP or JMX].
+An endpoint is considered to be available when access to it is permitted and it is exposed.
 The built-in endpoints are auto-configured only when they are available.
 Most applications choose exposure over HTTP, where the ID of the endpoint and a prefix of `/actuator` is mapped to a URL.
 For example, by default, the `health` endpoint is mapped to `/actuator/health`.
@@ -117,36 +117,50 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 
 
 
-[[actuator.endpoints.enabling]]
-== Enabling Endpoints
+[[actuator.endpoints.controlling-access]]
+== Controlling Access to Endpoints
 
-By default, all endpoints except for `shutdown` are enabled.
-To configure the enablement of an endpoint, use its `management.endpoint.<id>.enabled` property.
-The following example enables the `shutdown` endpoint:
+By default, access to all endpoints except for `shutdown` is unrestricted.
+To configure the permitted access to an endpoint, use its `management.endpoint.<id>.access` property.
+The following example allows unrestricted access to the `shutdown` endpoint:
 
 [configprops,yaml]
 ----
 management:
   endpoint:
     shutdown:
-      enabled: true
+      access: unrestricted
 ----
 
-If you prefer endpoint enablement to be opt-in rather than opt-out, set the configprop:management.endpoints.enabled-by-default[] property to `false` and use individual endpoint `enabled` properties to opt back in.
-The following example enables the `info` endpoint and disables all other endpoints:
+If you prefer access to be opt-in rather than opt-out, set the configprop:management.endpoints.access.default[] property to `disabled` and use individual endpoint `access` properties to opt back in.
+The following example allows read-only access to the `loggers` endpoint and disables all other endpoints:
 
 [configprops,yaml]
 ----
 management:
   endpoints:
-    enabled-by-default: false
+    access:
+      default: disabled
   endpoint:
-    info:
-      enabled: true
+    loggers:
+      access: read-only
 ----
 
-NOTE: Disabled endpoints are removed entirely from the application context.
+NOTE: Inaccessible endpoints are removed entirely from the application context.
 If you want to change only the technologies over which an endpoint is exposed, use the xref:actuator/endpoints.adoc#actuator.endpoints.exposing[`include` and `exclude` properties] instead.
+
+
+[[actuator.endpoints.controlling-access.limiting]]
+=== Limiting Access
+
+Application-wide endpoint access can be limited using the configprop:management.endpoints.access.max-permitted[] property.
+This property takes precedence over the default access or an individual endpoint's access level.
+Set it to `none` to make all endpoints inaccessible.
+Set it to `read-only` to only allow read access to endpoints.
+
+For javadoc:org.springframework.boot.actuate.endpoint.annotation.Endpoint[format=annotation], javadoc:org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint[format=annotation], and javadoc:org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint[format=annotation], read access equates to the endpoint methods annotated with javadoc:org.springframework.boot.actuate.endpoint.annotation.ReadOperation[format=annotation].
+For javadoc:org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint[format=annotation] and javadoc:org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint[format=annotation], read access equates to request mappings that can handle `GET` and `HEAD` requests.
+For javadoc:org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint[format=annotation], read access equates to `GET` and `HEAD` requests.
 
 
 
@@ -293,7 +307,7 @@ Information returned by the `/env`, `/configprops` and `/quartz` endpoints can b
 
 Values can only be viewed in an unsanitized form when:
 
-- The `show-values` property has been set to something other than `NEVER`
+- The `show-values` property has been set to something other than `never`
 - No custom xref:how-to:actuator.adoc#howto.actuator.customizing-sanitization[`SanitizingFunction`] beans apply
 
 The `show-values` property can be configured for sanitizable endpoints to one of the following values:
@@ -418,7 +432,8 @@ include-code::../MyEndpoint[tag=write]
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
 In particular, declaring a single parameter with a javadoc:liquibase.report.CustomData[] type that defines a `name` and `counter` properties is not supported.
 
-NOTE: To let the input be mapped to the operation method's parameters, Java code that implements an endpoint should be compiled with `-parameters`, and Kotlin code that implements an endpoint should be compiled with `-java-parameters`.
+NOTE: To let the input be mapped to the operation method's parameters, Java code that implements an endpoint should be compiled with `-parameters`.
+For Kotlin code, please review {url-spring-framework-docs}/languages/kotlin/classes-interfaces.html[the recommendation] of the Spring Framework reference.
 This will happen automatically if you use Spring Boot's Gradle plugin or if you use Maven and `spring-boot-starter-parent`.
 
 
@@ -616,10 +631,6 @@ with the `key` listed in the following table:
 | javadoc:org.springframework.boot.actuate.hazelcast.HazelcastHealthIndicator[]
 | Checks that a Hazelcast server is up.
 
-| `influxdb`
-| javadoc:org.springframework.boot.actuate.influx.InfluxDbHealthIndicator[]
-| Checks that an InfluxDB server is up.
-
 | `jms`
 | javadoc:org.springframework.boot.actuate.jms.JmsHealthIndicator[]
 | Checks that a JMS broker is up.
@@ -651,11 +662,19 @@ with the `key` listed in the following table:
 | `redis`
 | javadoc:org.springframework.boot.actuate.data.redis.RedisHealthIndicator[]
 | Checks that a Redis server is up.
+
+| `ssl`
+| javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]
+| Checks that SSL certificates are ok.
 |===
 
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
 
-Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] beans are available, but are not enabled by default:
+TIP: The `ssl` javadoc:org.springframework.boot.actuate.health.HealthIndicator[] has a "warning threshold" property named configprop:management.health.ssl.certificate-validity-warning-threshold[].
+If an SSL certificate will be invalid within the time span defined by this threshold, the javadoc:org.springframework.boot.actuate.health.HealthIndicator[] will warn you but it will still return HTTP 200 to not disrupt the application.
+You can use this threshold to give yourself enough lead time to rotate the soon to be expired certificate.
+
+Additional javadoc:org.springframework.boot.actuate.health.HealthIndicator[] beans are available but are not enabled by default:
 
 [cols="3,4,6"]
 |===
@@ -1113,12 +1132,17 @@ When appropriate, Spring auto-configures the following javadoc:org.springframewo
 | Exposes process information.
 | None.
 
+| `ssl`
+| javadoc:org.springframework.boot.actuate.info.SslInfoContributor[]
+| Exposes SSL certificate information.
+| An xref:features/ssl.adoc#features.ssl.bundles[SSL Bundle] configured.
+
 |===
 
 Whether an individual contributor is enabled is controlled by its `management.info.<id>.enabled` property.
 Different contributors have different defaults for this property, depending on their prerequisites and the nature of the information that they expose.
 
-With no prerequisites to indicate that they should be enabled, the `env`, `java`, `os`, and `process` contributors are disabled by default.
+With no prerequisites to indicate that they should be enabled, the `env`, `java`, `os`, and `process` contributors are disabled by default. The `ssl` contributor has a prerequisite of having an xref:features/ssl.adoc#features.ssl.bundles[SSL Bundle] configured but it is disabled by default.
 Each can be enabled by setting its `management.info.<id>.enabled` property to `true`.
 
 The `build` and `git` info contributors are enabled by default.
@@ -1225,6 +1249,13 @@ The `info` endpoint publishes information about your Operating System, see javad
 === Process Information
 
 The `info` endpoint publishes information about your process, see javadoc:org.springframework.boot.info.ProcessInfo[] for more details.
+
+
+
+[[actuator.endpoints.info.ssl-information]]
+=== SSL Information
+
+The `info` endpoint publishes information about your SSL certificates (that are configured through xref:features/ssl.adoc#features.ssl.bundles[SSL Bundles]), see javadoc:org.springframework.boot.info.SslInfo[] for more details. This endpoint reuses the "warning threshold" property of javadoc:org.springframework.boot.actuate.ssl.SslHealthIndicator[]: if an SSL certificate will be invalid within the time span defined by this threshold, it will trigger a warning. See the `management.health.ssl.certificate-validity-warning-threshold` property.
 
 
 

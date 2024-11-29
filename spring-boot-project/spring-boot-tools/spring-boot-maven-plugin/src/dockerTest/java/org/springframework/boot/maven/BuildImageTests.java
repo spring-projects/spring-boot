@@ -31,13 +31,14 @@ import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
+import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
+import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,8 +52,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(MavenBuildExtension.class)
 @DisabledIfDockerUnavailable
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The builder image has no ARM support")
 class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
@@ -68,6 +67,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 				assertThat(original).doesNotExist();
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
+					.contains("Running detector")
+					.contains("Running builder")
 					.contains("---> Test Info buildpack building")
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
@@ -88,6 +89,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 				assertThat(original).doesNotExist();
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image-cmd-line:0.0.1.BUILD-SNAPSHOT")
+					.contains("Running detector")
+					.contains("Running builder")
 					.contains("---> Test Info buildpack building")
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
@@ -268,12 +271,14 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
 			.systemProperty("spring-boot.build-image.builder", "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1")
+			.systemProperty("spring-boot.build-image.trustBuilder", "true")
 			.systemProperty("spring-boot.build-image.runImage", "paketobuildpacks/run-jammy-tiny")
 			.systemProperty("spring-boot.build-image.createdDate", "2020-07-01T12:34:56Z")
 			.systemProperty("spring-boot.build-image.applicationDirectory", "/application")
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("example.com/test/cmd-property-name:v1")
+					.contains("Running creator")
 					.contains("---> Test Info buildpack building")
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
@@ -296,6 +301,22 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
 				removeImage("docker.io/library/build-image-v2-builder", "0.0.1.BUILD-SNAPSHOT");
+			});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithTrustBuilder(MavenBuild mavenBuild) {
+		mavenBuild.project("dockerTest", "build-image-trust-builder")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-v2-trust-builder:0.0.1.BUILD-SNAPSHOT")
+					.contains("Running creator")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("docker.io/library/build-image-v2-trust-builder", "0.0.1.BUILD-SNAPSHOT");
 			});
 	}
 
@@ -454,11 +475,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCreatedDate(MavenBuild mavenBuild) {
-		String testBuildId = randomString();
 		mavenBuild.project("dockerTest", "build-image-created-date")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-			.systemProperty("test-build-id", testBuildId)
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image-created-date:0.0.1.BUILD-SNAPSHOT")
@@ -472,11 +491,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCurrentCreatedDate(MavenBuild mavenBuild) {
-		String testBuildId = randomString();
 		mavenBuild.project("dockerTest", "build-image-current-created-date")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-			.systemProperty("test-build-id", testBuildId)
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image-current-created-date:0.0.1.BUILD-SNAPSHOT")
@@ -495,11 +512,9 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithApplicationDirectory(MavenBuild mavenBuild) {
-		String testBuildId = randomString();
 		mavenBuild.project("dockerTest", "build-image-app-dir")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-			.systemProperty("test-build-id", testBuildId)
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image-app-dir:0.0.1.BUILD-SNAPSHOT")
@@ -510,17 +525,58 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithEmptySecurityOptions(MavenBuild mavenBuild) {
-		String testBuildId = randomString();
 		mavenBuild.project("dockerTest", "build-image-security-opts")
 			.goals("package")
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-			.systemProperty("test-build-id", testBuildId)
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("docker.io/library/build-image-security-opts:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 				removeImage("build-image-security-opts", "0.0.1.BUILD-SNAPSHOT");
 			});
+	}
+
+	@TestTemplate
+	@EnabledOnOs(value = { OS.LINUX, OS.MAC }, architectures = "aarch64",
+			disabledReason = "Lifecycle will only run on ARM architecture")
+	void whenBuildImageIsInvokedOnLinuxArmWithImagePlatformLinuxArm(MavenBuild mavenBuild) throws IOException {
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
+		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		removeImages(builderImage, runImage, buildpackImage);
+		mavenBuild.project("dockerTest", "build-image-platform-linux-arm").goals("package").execute((project) -> {
+			File jar = new File(project, "target/build-image-platform-linux-arm-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar).isFile();
+			assertThat(buildLog(project)).contains("Building image")
+				.contains("docker.io/library/build-image-platform-linux-arm:0.0.1.BUILD-SNAPSHOT")
+				.contains("Pulling builder image '" + builderImage + "' for platform 'linux/arm64'")
+				.contains("Pulling run image '" + runImage + "' for platform 'linux/arm64'")
+				.contains("Pulling buildpack image '" + buildpackImage + "' for platform 'linux/arm64'")
+				.contains("---> Test Info buildpack building")
+				.contains("---> Test Info buildpack done")
+				.contains("Successfully built image");
+			removeImage("docker.io/library/build-image-platform-linux-arm", "0.0.1.BUILD-SNAPSHOT");
+		});
+		removeImages(builderImage, runImage, buildpackImage);
+	}
+
+	@TestTemplate
+	@EnabledOnOs(value = { OS.LINUX, OS.MAC }, architectures = "amd64",
+			disabledReason = "The expected failure condition will not fail on ARM architectures")
+	void failsWhenBuildImageIsInvokedOnLinuxAmdWithImagePlatformLinuxArm(MavenBuild mavenBuild) throws IOException {
+		String builderImage = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1";
+		String runImage = "docker.io/paketobuildpacks/run-jammy-tiny:latest";
+		String buildpackImage = "ghcr.io/spring-io/spring-boot-test-info:0.0.1";
+		removeImages(buildpackImage, runImage, buildpackImage);
+		mavenBuild.project("dockerTest", "build-image-platform-linux-arm")
+			.goals("package")
+			.executeAndFail((project) -> assertThat(buildLog(project)).contains("Building image")
+				.contains("docker.io/library/build-image-platform-linux-arm:0.0.1.BUILD-SNAPSHOT")
+				.contains("Pulling builder image '" + builderImage + "' for platform 'linux/arm64'")
+				.contains("Pulling run image '" + runImage + "' for platform 'linux/arm64'")
+				.contains("Pulling buildpack image '" + buildpackImage + "' for platform 'linux/arm64'")
+				.contains("exec format error"));
+		removeImages(builderImage, runImage, buildpackImage);
 	}
 
 	@TestTemplate
@@ -577,6 +633,18 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
+		}
+	}
+
+	private void removeImages(String... names) throws IOException {
+		ImageApi imageApi = new DockerApi().image();
+		for (String name : names) {
+			try {
+				imageApi.remove(ImageReference.of(name), false);
+			}
+			catch (DockerEngineException ex) {
+				// ignore image remove failures
+			}
 		}
 	}
 

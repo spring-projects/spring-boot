@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,48 +16,41 @@
 
 package smoketest.data.jpa;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import smoketest.data.jpa.service.CityRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link SampleDataJpaApplication} that use {@link SpyBean @SpyBean}.
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 @SpringBootTest
+@AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 class SpyBeanSampleDataJpaApplicationTests {
 
 	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@SpyBean
 	private CityRepository repository;
 
-	@BeforeEach
-	void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-	}
-
 	@Test
-	void testHome() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Bath"));
+	void testHome() {
+		assertThat(this.mvc.get().uri("/")).hasStatusOk().hasBodyTextEqualTo("Bath");
 		then(this.repository).should().findByNameAndCountryAllIgnoringCase("Bath", "UK");
 	}
 

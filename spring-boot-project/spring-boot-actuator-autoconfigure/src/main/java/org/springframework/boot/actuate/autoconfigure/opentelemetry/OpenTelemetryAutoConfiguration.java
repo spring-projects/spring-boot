@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
@@ -55,6 +56,8 @@ public class OpenTelemetryAutoConfiguration {
 
 	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_NAME = AttributeKey.stringKey("service.name");
 
+	private static final AttributeKey<String> ATTRIBUTE_KEY_SERVICE_GROUP = AttributeKey.stringKey("service.group");
+
 	@Bean
 	@ConditionalOnMissingBean(OpenTelemetry.class)
 	OpenTelemetrySdk openTelemetry(ObjectProvider<SdkTracerProvider> tracerProvider,
@@ -72,9 +75,13 @@ public class OpenTelemetryAutoConfiguration {
 	@ConditionalOnMissingBean
 	Resource openTelemetryResource(Environment environment, OpenTelemetryProperties properties) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
-		return Resource.getDefault()
-			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_NAME, applicationName)))
-			.merge(toResource(properties));
+		String applicationGroup = environment.getProperty("spring.application.group");
+		Resource resource = Resource.getDefault()
+			.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_NAME, applicationName)));
+		if (StringUtils.hasLength(applicationGroup)) {
+			resource = resource.merge(Resource.create(Attributes.of(ATTRIBUTE_KEY_SERVICE_GROUP, applicationGroup)));
+		}
+		return resource.merge(toResource(properties));
 	}
 
 	private static Resource toResource(OpenTelemetryProperties properties) {

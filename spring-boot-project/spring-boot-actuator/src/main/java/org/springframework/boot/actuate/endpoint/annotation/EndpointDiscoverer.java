@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,13 @@ import java.util.stream.Collectors;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.EndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
+import org.springframework.boot.actuate.endpoint.OperationFilter;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
@@ -72,7 +74,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private final ApplicationContext applicationContext;
 
-	private final Collection<EndpointFilter<E>> filters;
+	private final Collection<EndpointFilter<E>> endpointFilters;
+
+	private final Collection<OperationFilter<O>> operationFilters;
 
 	private final DiscoveredOperationsFactory<O> operationsFactory;
 
@@ -85,22 +89,47 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param applicationContext the source application context
 	 * @param parameterValueMapper the parameter value mapper
 	 * @param invokerAdvisors invoker advisors to apply
-	 * @param filters filters to apply
+	 * @param endpointFilters endpoint filters to apply
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #EndpointDiscoverer(ApplicationContext, ParameterValueMapper, Collection, Collection, Collection)}
+	 */
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	public EndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
+			Collection<OperationInvokerAdvisor> invokerAdvisors, Collection<EndpointFilter<E>> endpointFilters) {
+		this(applicationContext, parameterValueMapper, invokerAdvisors, endpointFilters, Collections.emptyList());
+	}
+
+	/**
+	 * Create a new {@link EndpointDiscoverer} instance.
+	 * @param applicationContext the source application context
+	 * @param parameterValueMapper the parameter value mapper
+	 * @param invokerAdvisors invoker advisors to apply
+	 * @param endpointFilters endpoint filters to apply
+	 * @param operationFilters operation filters to apply
+	 * @since 3.4.0
 	 */
 	public EndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
-			Collection<OperationInvokerAdvisor> invokerAdvisors, Collection<EndpointFilter<E>> filters) {
+			Collection<OperationInvokerAdvisor> invokerAdvisors, Collection<EndpointFilter<E>> endpointFilters,
+			Collection<OperationFilter<O>> operationFilters) {
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		Assert.notNull(parameterValueMapper, "ParameterValueMapper must not be null");
 		Assert.notNull(invokerAdvisors, "InvokerAdvisors must not be null");
-		Assert.notNull(filters, "Filters must not be null");
+		Assert.notNull(endpointFilters, "EndpointFilters must not be null");
+		Assert.notNull(operationFilters, "OperationFilters must not be null");
 		this.applicationContext = applicationContext;
-		this.filters = Collections.unmodifiableCollection(filters);
+		this.endpointFilters = Collections.unmodifiableCollection(endpointFilters);
+		this.operationFilters = Collections.unmodifiableCollection(operationFilters);
 		this.operationsFactory = getOperationsFactory(parameterValueMapper, invokerAdvisors);
 	}
 
 	private DiscoveredOperationsFactory<O> getOperationsFactory(ParameterValueMapper parameterValueMapper,
 			Collection<OperationInvokerAdvisor> invokerAdvisors) {
 		return new DiscoveredOperationsFactory<>(parameterValueMapper, invokerAdvisors) {
+
+			@Override
+			Collection<O> createOperations(EndpointId id, Object target) {
+				return super.createOperations(id, target);
+			}
 
 			@Override
 			protected O createOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod,
@@ -179,16 +208,31 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		Set<E> endpoints = new LinkedHashSet<>();
 		for (EndpointBean endpointBean : endpointBeans) {
 			if (isEndpointExposed(endpointBean)) {
-				endpoints.add(convertToEndpoint(endpointBean));
+				E endpoint = convertToEndpoint(endpointBean);
+				if (isInvocable(endpoint)) {
+					endpoints.add(endpoint);
+				}
 			}
 		}
 		return Collections.unmodifiableSet(endpoints);
 	}
 
+	/**
+	 * Returns whether the endpoint is invocable and should be included in the discovered
+	 * endpoints. The default implementation returns {@code true} if the endpoint has any
+	 * operations, otherwise {@code false}.
+	 * @param endpoint the endpoint to assess
+	 * @return {@code true} if the endpoint is invocable, otherwise {@code false}.
+	 * @since 3.4.0
+	 */
+	protected boolean isInvocable(E endpoint) {
+		return !endpoint.getOperations().isEmpty();
+	}
+
 	private E convertToEndpoint(EndpointBean endpointBean) {
 		MultiValueMap<OperationKey, O> indexed = new LinkedMultiValueMap<>();
 		EndpointId id = endpointBean.getId();
-		addOperations(indexed, id, endpointBean.getBean(), false);
+		addOperations(indexed, id, endpointBean.getDefaultAccess(), endpointBean.getBean(), false);
 		if (endpointBean.getExtensions().size() > 1) {
 			String extensionBeans = endpointBean.getExtensions()
 				.stream()
@@ -198,24 +242,26 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 					+ endpointBean.getBeanName() + " (" + extensionBeans + ")");
 		}
 		for (ExtensionBean extensionBean : endpointBean.getExtensions()) {
-			addOperations(indexed, id, extensionBean.getBean(), true);
+			addOperations(indexed, id, endpointBean.getDefaultAccess(), extensionBean.getBean(), true);
 		}
 		assertNoDuplicateOperations(endpointBean, indexed);
 		List<O> operations = indexed.values().stream().map(this::getLast).filter(Objects::nonNull).toList();
-		return createEndpoint(endpointBean.getBean(), id, endpointBean.isEnabledByDefault(), operations);
+		return createEndpoint(endpointBean.getBean(), id, endpointBean.getDefaultAccess(), operations);
 	}
 
-	private void addOperations(MultiValueMap<OperationKey, O> indexed, EndpointId id, Object target,
-			boolean replaceLast) {
+	private void addOperations(MultiValueMap<OperationKey, O> indexed, EndpointId id, Access defaultAccess,
+			Object target, boolean replaceLast) {
 		Set<OperationKey> replacedLast = new HashSet<>();
 		Collection<O> operations = this.operationsFactory.createOperations(id, target);
 		for (O operation : operations) {
-			OperationKey key = createOperationKey(operation);
-			O last = getLast(indexed.get(key));
-			if (replaceLast && replacedLast.add(key) && last != null) {
-				indexed.get(key).remove(last);
+			if (!isOperationFiltered(operation, id, defaultAccess)) {
+				OperationKey key = createOperationKey(operation);
+				O last = getLast(indexed.get(key));
+				if (replaceLast && replacedLast.add(key) && last != null) {
+					indexed.get(key).remove(last);
+				}
+				indexed.add(key, operation);
 			}
-			indexed.add(key, operation);
 		}
 	}
 
@@ -270,7 +316,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private boolean isEndpointFiltered(EndpointBean endpointBean) {
-		for (EndpointFilter<E> filter : this.filters) {
+		for (EndpointFilter<E> filter : this.endpointFilters) {
 			if (!isFilterMatch(filter, endpointBean)) {
 				return true;
 			}
@@ -307,14 +353,27 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			.get();
 	}
 
-	private E getFilterEndpoint(EndpointBean endpointBean) {
-		E endpoint = this.filterEndpoints.get(endpointBean);
-		if (endpoint == null) {
-			endpoint = createEndpoint(endpointBean.getBean(), endpointBean.getId(), endpointBean.isEnabledByDefault(),
-					Collections.emptySet());
-			this.filterEndpoints.put(endpointBean, endpoint);
+	private boolean isOperationFiltered(Operation operation, EndpointId endpointId, Access defaultAccess) {
+		for (OperationFilter<O> filter : this.operationFilters) {
+			if (!isFilterMatch(filter, operation, endpointId, defaultAccess)) {
+				return true;
+			}
 		}
-		return endpoint;
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean isFilterMatch(OperationFilter<O> filter, Operation operation, EndpointId endpointId,
+			Access defaultAccess) {
+		return LambdaSafe.callback(OperationFilter.class, filter, operation)
+			.withLogger(EndpointDiscoverer.class)
+			.invokeAnd((f) -> f.match(operation, endpointId, defaultAccess))
+			.get();
+	}
+
+	private E getFilterEndpoint(EndpointBean endpointBean) {
+		return this.filterEndpoints.computeIfAbsent(endpointBean, (key) -> createEndpoint(endpointBean.getBean(),
+				endpointBean.getId(), endpointBean.getDefaultAccess(), Collections.emptySet()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -329,8 +388,23 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	 * @param enabledByDefault if the endpoint is enabled by default
 	 * @param operations the endpoint operations
 	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
+	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
+	 * {@link #createEndpoint(Object, EndpointId, Access, Collection)}
 	 */
-	protected abstract E createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	protected E createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault, Collection<O> operations) {
+		return createEndpoint(endpointBean, id, (enabledByDefault) ? Access.UNRESTRICTED : Access.NONE, operations);
+	}
+
+	/**
+	 * Factory method called to create the {@link ExposableEndpoint endpoint}.
+	 * @param endpointBean the source endpoint bean
+	 * @param id the ID of the endpoint
+	 * @param defaultAccess access to the endpoint that is permitted by default
+	 * @param operations the endpoint operations
+	 * @return a created endpoint (a {@link DiscoveredEndpoint} is recommended)
+	 */
+	protected abstract E createEndpoint(Object endpointBean, EndpointId id, Access defaultAccess,
 			Collection<O> operations);
 
 	/**
@@ -408,7 +482,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private final EndpointId id;
 
-		private final boolean enabledByDefault;
+		private final Access defaultAccess;
 
 		private final Class<?> filter;
 
@@ -424,7 +498,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			this.beanType = beanType;
 			this.beanSupplier = beanSupplier;
 			this.id = EndpointId.of(environment, id);
-			this.enabledByDefault = annotation.getBoolean("enableByDefault");
+			boolean enabledByDefault = annotation.getBoolean("enableByDefault");
+			this.defaultAccess = enabledByDefault ? annotation.getEnum("defaultAccess", Access.class) : Access.NONE;
 			this.filter = getFilter(beanType);
 		}
 
@@ -459,8 +534,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			return this.id;
 		}
 
-		boolean isEnabledByDefault() {
-			return this.enabledByDefault;
+		Access getDefaultAccess() {
+			return this.defaultAccess;
 		}
 
 		Class<?> getFilter() {

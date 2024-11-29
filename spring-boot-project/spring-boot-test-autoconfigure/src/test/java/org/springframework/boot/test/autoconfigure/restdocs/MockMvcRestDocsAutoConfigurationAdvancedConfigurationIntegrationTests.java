@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.restdocs.templates.TemplateFormats;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +39,6 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
  * Integration tests for advanced configuration of
@@ -54,7 +53,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Autowired
 	private RestDocumentationResultHandler documentationHandler;
@@ -68,10 +67,9 @@ class MockMvcRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests {
 	}
 
 	@Test
-	void snippetGeneration() throws Exception {
-		this.mvc.perform(get("/"))
-			.andDo(this.documentationHandler
-				.document(links(linkWithRel("self").description("Canonical location of this resource"))));
+	void snippetGeneration() {
+		assertThat(this.mvc.get().uri("/")).apply(this.documentationHandler
+			.document(links(linkWithRel("self").description("Canonical location of this resource"))));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "snippet-generation");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.md"))).contains("'http://localhost:8080/'");

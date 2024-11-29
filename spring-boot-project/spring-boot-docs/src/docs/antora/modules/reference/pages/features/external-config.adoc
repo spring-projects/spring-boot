@@ -713,6 +713,8 @@ The preceding POJO defines the following properties:
 * `my.service.security.password`.
 * `my.service.security.roles`, with a collection of javadoc:java.lang.String[] that defaults to `USER`.
 
+TIP: To use a reserved keyword in the name of a property, such as `my.service.import`, use the javadoc:org.springframework.boot.context.properties.bind.Name[format=annotation] annotation on the property's field.
+
 NOTE: The properties that map to javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] classes available in Spring Boot, which are configured through properties files, YAML files, environment variables, and other mechanisms, are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
 [NOTE]
@@ -1199,7 +1201,7 @@ include-code::MyProperties[]
 
 TIP: You can also trigger validation by annotating the javadoc:org.springframework.context.annotation.Bean[format=annotation] method that creates the configuration properties with javadoc:org.springframework.validation.annotation.Validated[format=annotation].
 
-To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with javadoc:jakarta.validation.Valid[format=annotation].
+To cascade validation to nested properties the associated field must be annotated with javadoc:jakarta.validation.Valid[format=annotation].
 The following example builds on the preceding `MyProperties` example:
 
 include-code::nested/MyProperties[]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@ public class Image {
 
 	String builder;
 
+	Boolean trustBuilder;
+
 	String runImage;
 
 	Map<String, String> env;
@@ -81,6 +83,8 @@ public class Image {
 
 	List<String> securityOptions;
 
+	String imagePlatform;
+
 	/**
 	 * The name of the created image.
 	 * @return the image name
@@ -103,6 +107,18 @@ public class Image {
 
 	void setBuilder(String builder) {
 		this.builder = builder;
+	}
+
+	/**
+	 * If the builder should be treated as trusted.
+	 * @return {@code true} if the builder should be treated as trusted
+	 */
+	public Boolean getTrustBuilder() {
+		return this.trustBuilder;
+	}
+
+	void setTrustBuilder(Boolean trustBuilder) {
+		this.trustBuilder = trustBuilder;
 	}
 
 	/**
@@ -205,6 +221,20 @@ public class Image {
 		this.applicationDirectory = applicationDirectory;
 	}
 
+	/**
+	 * Returns the platform (os/architecture/variant) that will be used for all pulled
+	 * images. When {@code null}, the system will choose a platform based on the host
+	 * operating system and architecture.
+	 * @return the image platform
+	 */
+	public String getImagePlatform() {
+		return this.imagePlatform;
+	}
+
+	public void setImagePlatform(String imagePlatform) {
+		this.imagePlatform = imagePlatform;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -220,6 +250,9 @@ public class Image {
 	private BuildRequest customize(BuildRequest request) {
 		if (StringUtils.hasText(this.builder)) {
 			request = request.withBuilder(ImageReference.of(this.builder));
+		}
+		if (this.trustBuilder != null) {
+			request = request.withTrustBuilder(this.trustBuilder);
 		}
 		if (StringUtils.hasText(this.runImage)) {
 			request = request.withRunImage(ImageReference.of(this.runImage));
@@ -264,6 +297,9 @@ public class Image {
 		}
 		if (this.securityOptions != null) {
 			request = request.withSecurityOptions(this.securityOptions);
+		}
+		if (this.imagePlatform != null) {
+			request = request.withImagePlatform(this.imagePlatform);
 		}
 		return request;
 	}

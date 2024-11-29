@@ -36,6 +36,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -116,12 +117,11 @@ public class WebFluxEndpointManagementContextConfiguration {
 	public AdditionalHealthEndpointPathsWebFluxHandlerMapping managementHealthEndpointWebFluxHandlerMapping(
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		ExposableWebEndpoint health = webEndpoints.stream()
+		ExposableWebEndpoint healthEndpoint = webEndpoints.stream()
 			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
 			.findFirst()
-			.orElseThrow(
-					() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
-		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
+			.orElse(null);
+		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), healthEndpoint,
 				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}
 
@@ -131,10 +131,12 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@Deprecated(since = "3.3.5", forRemoval = true)
 	public org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping controllerEndpointHandlerMapping(
 			org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier controllerEndpointsSupplier,
-			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties) {
+			CorsEndpointProperties corsProperties, WebEndpointProperties webEndpointProperties,
+			EndpointAccessResolver endpointAccessResolver) {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		return new org.springframework.boot.actuate.endpoint.web.reactive.ControllerEndpointHandlerMapping(
-				endpointMapping, controllerEndpointsSupplier.getEndpoints(), corsProperties.toCorsConfiguration());
+				endpointMapping, controllerEndpointsSupplier.getEndpoints(), corsProperties.toCorsConfiguration(),
+				endpointAccessResolver);
 	}
 
 	@Bean

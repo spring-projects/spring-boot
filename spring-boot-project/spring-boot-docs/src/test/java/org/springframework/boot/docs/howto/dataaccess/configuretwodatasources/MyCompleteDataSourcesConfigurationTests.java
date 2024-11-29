@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,37 +21,41 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MyCompleteDataSourcesConfiguration}.
+ * Tests for {@link MyCompleteAdditionalDataSourceConfiguration}.
  *
  * @author Stephane Nicoll
  */
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@Import(MyCompleteDataSourcesConfiguration.class)
+@Import(MyCompleteAdditionalDataSourceConfiguration.class)
 class MyCompleteDataSourcesConfigurationTests {
 
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	private DataSource dataSource;
+
+	@Autowired
+	@Qualifier("second")
+	private DataSource secondDataSource;
+
 	@Test
 	void validateConfiguration() throws SQLException {
 		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(2);
-		DataSource dataSource = this.context.getBean(DataSource.class);
-		assertThat(this.context.getBean("firstDataSource")).isSameAs(dataSource);
-		assertThat(dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
-		DataSource secondDataSource = this.context.getBean("secondDataSource", DataSource.class);
-		assertThat(secondDataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
+		assertThat(this.context.getBean("dataSource")).isSameAs(this.dataSource);
+		assertThat(this.dataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
+		assertThat(this.context.getBean("secondDataSource")).isSameAs(this.secondDataSource);
+		assertThat(this.secondDataSource.getConnection().getMetaData().getURL()).startsWith("jdbc:h2:mem:");
 	}
 
 }

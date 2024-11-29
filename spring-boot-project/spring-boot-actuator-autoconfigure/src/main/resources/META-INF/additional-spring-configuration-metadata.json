@@ -31,14 +31,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.endpoint.configprops.show-values",
-      "defaultValue": "never"
-    },
-    {
-      "name": "management.endpoint.env.show-values",
-      "defaultValue": "never"
-    },
-    {
       "name": "management.endpoint.health.probes.add-additional-paths",
       "type": "java.lang.Boolean",
       "description": "Whether to make the liveness and readiness health groups available on the main server port.",
@@ -49,10 +41,6 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable liveness and readiness probes.",
       "defaultValue": false
-    },
-    {
-      "name": "management.endpoint.health.show-details",
-      "defaultValue": "never"
     },
     {
       "name": "management.endpoint.health.status.order",
@@ -70,13 +58,23 @@
       "defaultValue": true
     },
     {
-      "name": "management.endpoint.quartz.show-values",
-      "defaultValue": "never"
+      "name": "management.endpoints.access.default",
+      "type": "org.springframework.boot.actuate.endpoint.Access",
+      "description": "Default access level for all endpoints."
+    },
+    {
+      "name": "management.endpoints.access.max-permitted",
+      "description": "The maximum level of endpoint access that is permitted. Caps an endpoint's individual access level (management.endpoint.<id>.access) and the default access (management.endpoints.access.default).'",
+      "defaultValue": "unrestricted"
     },
     {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
-      "description": "Whether to enable or disable all endpoints by default."
+      "description": "Whether to enable or disable all endpoints by default.",
+      "deprecation": {
+        "replacement": "management.endpoints.access.default",
+        "since": "3.4.0"
+      }
     },
     {
       "name": "management.endpoints.jackson.isolated-object-mapper",
@@ -106,26 +104,6 @@
       "defaultValue": [
         "health"
       ]
-    },
-    {
-      "name": "management.ganglia.metrics.export.addressing-mode",
-      "defaultValue": "multicast"
-    },
-    {
-      "name": "management.ganglia.metrics.export.duration-units",
-      "defaultValue": "milliseconds"
-    },
-    {
-      "name": "management.graphite.metrics.export.duration-units",
-      "defaultValue": "milliseconds"
-    },
-    {
-      "name": "management.graphite.metrics.export.protocol",
-      "defaultValue": "pickled"
-    },
-    {
-      "name": "management.graphite.metrics.export.rate-units",
-      "defaultValue": "seconds"
     },
     {
       "name": "management.health.cassandra.enabled",
@@ -264,6 +242,12 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.ssl.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable SSL certificate health check.",
+      "defaultValue": true
+    },
+    {
       "name": "management.httpexchanges.recording.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable HTTP request-response exchange recording.",
@@ -276,10 +260,6 @@
         "response-headers",
         "errors"
       ]
-    },
-    {
-      "name": "management.influx.metrics.export.consistency",
-      "defaultValue": "one"
     },
     {
       "name": "management.info.build.enabled",
@@ -306,10 +286,6 @@
       "defaultValue": true
     },
     {
-      "name": "management.info.git.mode",
-      "defaultValue": "simple"
-    },
-    {
       "name": "management.info.java.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Java info.",
@@ -326,6 +302,18 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable process info.",
       "defaultValue": false
+    },
+    {
+      "name": "management.info.ssl.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable SSL certificate info.",
+      "defaultValue": false
+    },
+    {
+      "name": "management.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export logs.",
+      "defaultValue": true
     },
     {
       "name": "management.metrics.binders.files.enabled",
@@ -2080,34 +2068,20 @@
       }
     },
     {
-      "name": "management.newrelic.metrics.export.client-provider-type",
-      "defaultValue": "insights-api"
-    },
-    {
       "name": "management.observations.annotations.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether auto-configuration of Micrometer annotations is enabled.",
       "defaultValue": false
     },
     {
-      "name": "management.otlp.metrics.export.aggregation-temporality",
-      "defaultValue": "cumulative"
+      "name": "management.otlp.logging.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of logging is enabled to export OTLP logs."
     },
     {
-      "name": "management.otlp.metrics.export.base-time-unit",
-      "defaultValue": "milliseconds"
-    },
-    {
-      "name": "management.otlp.tracing.compression",
-      "defaultValue": "none"
-    },
-    {
-      "name": "management.prometheus.metrics.export.histogram-flavor",
-      "defaultValue": "prometheus"
-    },
-    {
-      "name": "management.prometheus.metrics.export.pushgateway.shutdown-operation",
-      "defaultValue": "none"
+      "name": "management.otlp.tracing.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of tracing is enabled to export OTLP traces."
     },
     {
       "name": "management.server.add-application-context-header",
@@ -2210,22 +2184,6 @@
       "description": "Type of the trust store."
     },
     {
-      "name": "management.signalfx.metrics.export.published-histogram-type",
-      "defaultValue": "default"
-    },
-    {
-      "name": "management.simple.metrics.export.mode",
-      "defaultValue": "cumulative"
-    },
-    {
-      "name": "management.statsd.metrics.export.flavor",
-      "defaultValue": "datadog"
-    },
-    {
-      "name": "management.statsd.metrics.export.protocol",
-      "defaultValue": "udp"
-    },
-    {
       "name": "management.trace.http.enabled",
       "deprecation": {
         "replacement": "management.httpexchanges.recording.enabled",
@@ -2267,10 +2225,20 @@
       ]
     },
     {
+      "name": "management.wavefront.tracing.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of tracing is enabled to export Wavefront traces."
+    },
+    {
       "name": "management.zipkin.tracing.encoding",
       "defaultValue": [
         "JSON"
       ]
+    },
+    {
+      "name": "management.zipkin.tracing.export.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether auto-configuration of tracing is enabled to export Zipkin traces."
     },
     {
       "name": "micrometer.observations.annotations.enabled",

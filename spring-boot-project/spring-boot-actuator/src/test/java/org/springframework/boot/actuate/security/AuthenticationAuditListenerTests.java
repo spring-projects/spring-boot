@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.security.authentication.event.AbstractAuthenticationE
 import org.springframework.security.authentication.event.AuthenticationFailureExpiredEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
+import org.springframework.security.authentication.event.LogoutSuccessEvent;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
@@ -58,6 +59,13 @@ class AuthenticationAuditListenerTests {
 		AuditApplicationEvent event = handleAuthenticationEvent(
 				new AuthenticationSuccessEvent(new UsernamePasswordAuthenticationToken("user", "password")));
 		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.AUTHENTICATION_SUCCESS);
+	}
+
+	@Test
+	void testLogoutSuccess() {
+		AuditApplicationEvent event = handleAuthenticationEvent(
+				new LogoutSuccessEvent(new UsernamePasswordAuthenticationToken("user", "password")));
+		assertThat(event.getAuditEvent().getType()).isEqualTo(AuthenticationAuditListener.LOGOUT_SUCCESS);
 	}
 
 	@Test

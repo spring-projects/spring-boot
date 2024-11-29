@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
  * <p>
  * <strong>Note:</strong> This configuration and
  * {@link OAuth2AuthorizationServerJwtAutoConfiguration} work together to ensure that the
- * {@link org.springframework.security.config.annotation.ObjectPostProcessor} is defined
+ * {@link org.springframework.security.config.ObjectPostProcessor} is defined
  * <strong>BEFORE</strong> {@link UserDetailsServiceAutoConfiguration} so that a
  * {@link org.springframework.security.core.userdetails.UserDetailsService} can be created
  * if necessary.

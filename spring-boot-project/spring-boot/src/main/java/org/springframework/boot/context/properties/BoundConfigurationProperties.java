@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,18 +72,16 @@ public class BoundConfigurationProperties {
 	 * @return a {@link BoundConfigurationProperties} or {@code null}
 	 */
 	public static BoundConfigurationProperties get(ApplicationContext context) {
-		if (!context.containsBeanDefinition(BEAN_NAME)) {
-			return null;
-		}
-		return context.getBean(BEAN_NAME, BoundConfigurationProperties.class);
+		return (!context.containsBeanDefinition(BEAN_NAME)) ? null
+				: context.getBean(BEAN_NAME, BoundConfigurationProperties.class);
 	}
 
 	static void register(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			BeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(BoundConfigurationProperties.class)
+			BeanDefinition definition = BeanDefinitionBuilder.rootBeanDefinition(BoundConfigurationProperties.class)
+				.setRole(BeanDefinition.ROLE_INFRASTRUCTURE)
 				.getBeanDefinition();
-			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 	}

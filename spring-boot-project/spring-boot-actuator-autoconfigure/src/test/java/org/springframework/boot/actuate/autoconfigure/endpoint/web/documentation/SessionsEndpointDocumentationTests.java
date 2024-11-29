@@ -26,16 +26,18 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.session.SessionsEndpoint;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.MapSession;
 import org.springframework.session.Session;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -43,9 +45,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link ShutdownEndpoint}.
@@ -73,37 +72,35 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 				.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
 			fieldWithPath("expired").description("Whether the session has expired."));
 
-	@MockBean
+	@MockitoBean
 	private FindByIndexNameSessionRepository<Session> sessionRepository;
 
 	@Test
-	void sessionsForUsername() throws Exception {
+	void sessionsForUsername() {
 		Map<String, Session> sessions = new HashMap<>();
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
 		sessions.put(sessionThree.getId(), sessionThree);
 		given(this.sessionRepository.findByPrincipalName("alice")).willReturn(sessions);
-		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice"))
-			.andExpect(status().isOk())
-			.andDo(document("sessions/username",
+		assertThat(this.mvc.get().uri("/actuator/sessions").param("username", "alice")).hasStatusOk()
+			.apply(document("sessions/username",
 					responseFields(fieldWithPath("sessions").description("Sessions for the given username."))
 						.andWithPrefix("sessions.[].", sessionFields),
 					queryParameters(parameterWithName("username").description("Name of the user."))));
 	}
 
 	@Test
-	void sessionWithId() throws Exception {
+	void sessionWithId() {
 		given(this.sessionRepository.findById(sessionTwo.getId())).willReturn(sessionTwo);
-		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId()))
-			.andExpect(status().isOk())
-			.andDo(document("sessions/id", responseFields(sessionFields)));
+		assertThat(this.mvc.get().uri("/actuator/sessions/{id}", sessionTwo.getId())).hasStatusOk()
+			.apply(document("sessions/id", responseFields(sessionFields)));
 	}
 
 	@Test
-	void deleteASession() throws Exception {
-		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId()))
-			.andExpect(status().isNoContent())
-			.andDo(document("sessions/delete"));
+	void deleteASession() {
+		assertThat(this.mvc.delete().uri("/actuator/sessions/{id}", sessionTwo.getId()))
+			.hasStatus(HttpStatus.NO_CONTENT)
+			.apply(document("sessions/delete"));
 		then(this.sessionRepository).should().deleteById(sessionTwo.getId());
 	}
 

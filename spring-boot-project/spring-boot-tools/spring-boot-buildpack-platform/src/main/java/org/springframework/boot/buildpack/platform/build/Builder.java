@@ -28,7 +28,9 @@ import org.springframework.boot.buildpack.platform.docker.UpdateListener;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -97,9 +99,11 @@ public class Builder {
 	public void build(BuildRequest request) throws DockerEngineException, IOException {
 		Assert.notNull(request, "Request must not be null");
 		this.log.start(request);
+		validateBindings(request.getBindings());
 		String domain = request.getBuilder().getDomain();
 		PullPolicy pullPolicy = request.getPullPolicy();
-		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy);
+		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy,
+				request.getImagePlatform());
 		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
 		request = withRunImageIfNeeded(request, builderMetadata);
@@ -120,6 +124,14 @@ public class Builder {
 		}
 		finally {
 			this.docker.image().remove(ephemeralBuilder.getName(), true);
+		}
+	}
+
+	private void validateBindings(List<Binding> bindings) {
+		for (Binding binding : bindings) {
+			if (binding.usesSensitiveContainerPath()) {
+				this.log.sensitiveTargetBindingDetected(binding);
+			}
 		}
 	}
 
@@ -208,10 +220,13 @@ public class Builder {
 
 		private final PullPolicy pullPolicy;
 
-		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy) {
+		private ImagePlatform defaultPlatform;
+
+		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy, ImagePlatform platform) {
 			this.domain = domain;
 			this.authHeader = authHeader;
 			this.pullPolicy = pullPolicy;
+			this.defaultPlatform = platform;
 		}
 
 		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
@@ -236,9 +251,12 @@ public class Builder {
 
 		private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
 			TotalProgressPullListener listener = new TotalProgressPullListener(
-					Builder.this.log.pullingImage(reference, imageType));
-			Image image = Builder.this.docker.image().pull(reference, listener, this.authHeader);
+					Builder.this.log.pullingImage(reference, this.defaultPlatform, imageType));
+			Image image = Builder.this.docker.image().pull(reference, this.defaultPlatform, listener, this.authHeader);
 			Builder.this.log.pulledImage(image, imageType);
+			if (this.defaultPlatform == null) {
+				this.defaultPlatform = ImagePlatform.from(image);
+			}
 			return image;
 		}
 

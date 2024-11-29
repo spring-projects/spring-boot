@@ -1,0 +1,11 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootBuildImage {
+	builder = "ghcr.io/spring-io/spring-boot-cnb-test-builder:0.0.1"
+	runImage = "paketobuildpacks/run-jammy-tiny"
+	buildpacks = ["ghcr.io/spring-io/spring-boot-test-info:0.0.1"]
+	imagePlatform = "linux/arm64"
+}

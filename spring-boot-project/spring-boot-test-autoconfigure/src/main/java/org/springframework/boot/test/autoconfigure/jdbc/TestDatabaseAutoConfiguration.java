@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.jdbc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -28,6 +30,8 @@ import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -37,8 +41,17 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.container.ContainerImageMetadata;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.bind.BoundPropertiesTrackingBindHandler;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.origin.PropertySourceOrigin;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
@@ -47,6 +60,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.util.Assert;
@@ -63,24 +78,49 @@ import org.springframework.util.ObjectUtils;
 public class TestDatabaseAutoConfiguration {
 
 	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "NON_TEST",
+			matchIfMissing = true)
+	static EmbeddedDataSourceBeanFactoryPostProcessor nonTestEmbeddedDataSourceBeanFactoryPostProcessor(
+			Environment environment) {
+		return new EmbeddedDataSourceBeanFactoryPostProcessor(environment, Replace.NON_TEST);
+	}
+
+	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY")
+	static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor(
+			Environment environment) {
+		return new EmbeddedDataSourceBeanFactoryPostProcessor(environment, Replace.ANY);
+	}
+
+	@Bean
 	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(Environment environment) {
 		return new EmbeddedDataSourceFactory(environment).getEmbeddedDatabase();
 	}
 
-	@Bean
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY",
-			matchIfMissing = true)
-	static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor() {
-		return new EmbeddedDataSourceBeanFactoryPostProcessor();
-	}
-
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	static class EmbeddedDataSourceBeanFactoryPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
+		private static final ConfigurationPropertyName DATASOURCE_URL_PROPERTY = ConfigurationPropertyName
+			.of("spring.datasource.url");
+
+		private static final Bindable<String> BINDABLE_STRING = Bindable.of(String.class);
+
+		private static final String DYNAMIC_VALUES_PROPERTY_SOURCE_CLASS = "org.springframework.test.context.support.DynamicValuesPropertySource";
+
 		private static final Log logger = LogFactory.getLog(EmbeddedDataSourceBeanFactoryPostProcessor.class);
+
+		private final Environment environment;
+
+		private final Replace replace;
+
+		EmbeddedDataSourceBeanFactoryPostProcessor(Environment environment, Replace replace) {
+			this.environment = environment;
+			this.replace = replace;
+		}
 
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
@@ -98,7 +138,7 @@ public class TestDatabaseAutoConfiguration {
 
 		private void process(BeanDefinitionRegistry registry, ConfigurableListableBeanFactory beanFactory) {
 			BeanDefinitionHolder holder = getDataSourceBeanDefinition(beanFactory);
-			if (holder != null) {
+			if (holder != null && isReplaceable(beanFactory, holder)) {
 				String beanName = holder.getBeanName();
 				boolean primary = holder.getBeanDefinition().isPrimary();
 				logger.info("Replacing '" + beanName + "' DataSource bean with " + (primary ? "primary " : "")
@@ -133,6 +173,70 @@ public class TestDatabaseAutoConfiguration {
 			}
 			logger.warn("No primary DataSource found, embedded version will not be used");
 			return null;
+		}
+
+		private boolean isReplaceable(ConfigurableListableBeanFactory beanFactory, BeanDefinitionHolder holder) {
+			if (this.replace == Replace.NON_TEST) {
+				return !isAutoConfigured(holder) || !isConnectingToTestDatabase(beanFactory);
+			}
+			return true;
+		}
+
+		private boolean isAutoConfigured(BeanDefinitionHolder holder) {
+			if (holder.getBeanDefinition() instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+				MethodMetadata factoryMethodMetadata = annotatedBeanDefinition.getFactoryMethodMetadata();
+				return (factoryMethodMetadata != null) && (factoryMethodMetadata.getDeclaringClassName()
+					.startsWith("org.springframework.boot.autoconfigure."));
+			}
+			return false;
+		}
+
+		private boolean isConnectingToTestDatabase(ConfigurableListableBeanFactory beanFactory) {
+			return isUsingTestServiceConnection(beanFactory) || isUsingTestDatasourceUrl();
+		}
+
+		private boolean isUsingTestServiceConnection(ConfigurableListableBeanFactory beanFactory) {
+			for (String beanName : beanFactory.getBeanNamesForType(JdbcConnectionDetails.class)) {
+				try {
+					BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
+					if (ContainerImageMetadata.isPresent(beanDefinition)) {
+						return true;
+					}
+				}
+				catch (NoSuchBeanDefinitionException ex) {
+					// Ignore
+				}
+			}
+			return false;
+		}
+
+		private boolean isUsingTestDatasourceUrl() {
+			List<ConfigurationProperty> bound = new ArrayList<>();
+			Binder.get(this.environment, new BoundPropertiesTrackingBindHandler(bound::add))
+				.bind(DATASOURCE_URL_PROPERTY, BINDABLE_STRING);
+			return !bound.isEmpty() && isUsingTestDatasourceUrl(bound.get(0));
+		}
+
+		private boolean isUsingTestDatasourceUrl(ConfigurationProperty configurationProperty) {
+			return isBoundToDynamicValuesPropertySource(configurationProperty)
+					|| isTestcontainersUrl(configurationProperty);
+		}
+
+		private boolean isBoundToDynamicValuesPropertySource(ConfigurationProperty configurationProperty) {
+			if (configurationProperty.getOrigin() instanceof PropertySourceOrigin origin) {
+				return isDynamicValuesPropertySource(origin.getPropertySource());
+			}
+			return false;
+		}
+
+		private boolean isDynamicValuesPropertySource(PropertySource<?> propertySource) {
+			return propertySource != null
+					&& DYNAMIC_VALUES_PROPERTY_SOURCE_CLASS.equals(propertySource.getClass().getName());
+		}
+
+		private boolean isTestcontainersUrl(ConfigurationProperty configurationProperty) {
+			Object value = configurationProperty.getValue();
+			return (value != null) && value.toString().startsWith("jdbc:tc:");
 		}
 
 	}

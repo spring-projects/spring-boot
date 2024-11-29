@@ -93,6 +93,9 @@ logging:
 NOTE: In the example above, configprop:logging.include-application-name[] is set to `false` to avoid the application name being duplicated in the log messages (configprop:logging.pattern.correlation[] already contains it).
 It's also worth mentioning that configprop:logging.pattern.correlation[] contains a trailing space so that it is separated from the logger name that comes right after it by default.
 
+TIP: Correlation IDs rely on context propagation.
+Please read xref:reference:actuator/observability.adoc#actuator.observability.context-propagation[this documentation for more details].
+
 
 
 [[actuator.micrometer-tracing.propagating-traces]]

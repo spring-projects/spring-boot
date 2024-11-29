@@ -60,58 +60,19 @@ class TaskExecutorConfigurations {
 		@Bean(name = { TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 				AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
 		@ConditionalOnThreading(Threading.PLATFORM)
-		@SuppressWarnings({ "deprecation", "removal" })
-		ThreadPoolTaskExecutor applicationTaskExecutor(
-				org.springframework.boot.task.TaskExecutorBuilder taskExecutorBuilder,
-				ObjectProvider<ThreadPoolTaskExecutorBuilder> threadPoolTaskExecutorBuilderProvider) {
-			ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder = threadPoolTaskExecutorBuilderProvider
-				.getIfUnique();
-			if (threadPoolTaskExecutorBuilder != null) {
-				return threadPoolTaskExecutorBuilder.build();
-			}
-			return taskExecutorBuilder.build();
+		ThreadPoolTaskExecutor applicationTaskExecutor(ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder) {
+			return threadPoolTaskExecutorBuilder.build();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("removal")
-	static class TaskExecutorBuilderConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		@Deprecated(since = "3.2.0", forRemoval = true)
-		org.springframework.boot.task.TaskExecutorBuilder taskExecutorBuilder(TaskExecutionProperties properties,
-				ObjectProvider<org.springframework.boot.task.TaskExecutorCustomizer> taskExecutorCustomizers,
-				ObjectProvider<TaskDecorator> taskDecorator) {
-			TaskExecutionProperties.Pool pool = properties.getPool();
-			org.springframework.boot.task.TaskExecutorBuilder builder = new org.springframework.boot.task.TaskExecutorBuilder();
-			builder = builder.queueCapacity(pool.getQueueCapacity());
-			builder = builder.corePoolSize(pool.getCoreSize());
-			builder = builder.maxPoolSize(pool.getMaxSize());
-			builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
-			builder = builder.keepAlive(pool.getKeepAlive());
-			TaskExecutionProperties.Shutdown shutdown = properties.getShutdown();
-			builder = builder.awaitTermination(shutdown.isAwaitTermination());
-			builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
-			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-			builder = builder.customizers(taskExecutorCustomizers.orderedStream()::iterator);
-			builder = builder.taskDecorator(taskDecorator.getIfUnique());
-			return builder;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings({ "deprecation", "removal" })
 	static class ThreadPoolTaskExecutorBuilderConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean({ org.springframework.boot.task.TaskExecutorBuilder.class,
-				ThreadPoolTaskExecutorBuilder.class })
+		@ConditionalOnMissingBean
 		ThreadPoolTaskExecutorBuilder threadPoolTaskExecutorBuilder(TaskExecutionProperties properties,
 				ObjectProvider<ThreadPoolTaskExecutorCustomizer> threadPoolTaskExecutorCustomizers,
-				ObjectProvider<org.springframework.boot.task.TaskExecutorCustomizer> taskExecutorCustomizers,
 				ObjectProvider<TaskDecorator> taskDecorator) {
 			TaskExecutionProperties.Pool pool = properties.getPool();
 			ThreadPoolTaskExecutorBuilder builder = new ThreadPoolTaskExecutorBuilder();
@@ -127,14 +88,7 @@ class TaskExecutorConfigurations {
 			builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
 			builder = builder.customizers(threadPoolTaskExecutorCustomizers.orderedStream()::iterator);
 			builder = builder.taskDecorator(taskDecorator.getIfUnique());
-			// Apply the deprecated TaskExecutorCustomizers, too
-			builder = builder.additionalCustomizers(taskExecutorCustomizers.orderedStream().map(this::adapt).toList());
 			return builder;
-		}
-
-		private ThreadPoolTaskExecutorCustomizer adapt(
-				org.springframework.boot.task.TaskExecutorCustomizer customizer) {
-			return customizer::customize;
 		}
 
 	}
@@ -167,9 +121,7 @@ class TaskExecutorConfigurations {
 		@ConditionalOnMissingBean
 		@ConditionalOnThreading(Threading.VIRTUAL)
 		SimpleAsyncTaskExecutorBuilder simpleAsyncTaskExecutorBuilderVirtualThreads() {
-			SimpleAsyncTaskExecutorBuilder builder = builder();
-			builder = builder.virtualThreads(true);
-			return builder;
+			return builder().virtualThreads(true);
 		}
 
 		private SimpleAsyncTaskExecutorBuilder builder() {

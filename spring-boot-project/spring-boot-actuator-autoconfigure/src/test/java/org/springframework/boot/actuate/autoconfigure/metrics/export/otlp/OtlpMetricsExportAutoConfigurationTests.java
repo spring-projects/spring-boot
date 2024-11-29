@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.registry.otlp.OtlpConfig;
 import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration.PropertiesOtlpMetricsConnectionDetails;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.assertj.ScheduledExecutorServiceAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -74,6 +79,32 @@ class OtlpMetricsExportAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasSingleBean(OtlpMeterRegistry.class)
 				.hasSingleBean(OtlpConfig.class)
 				.hasBean("customConfig"));
+	}
+
+	@Test
+	void allowsPlatformThreadsToBeUsed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+			OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+			assertThat(registry).extracting("scheduledExecutorService")
+				.satisfies((executor) -> ScheduledExecutorServiceAssert.assertThat((ScheduledExecutorService) executor)
+					.usesPlatformThreads());
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void allowsVirtualThreadsToBeUsed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withPropertyValues("spring.threads.virtual.enabled=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(OtlpMeterRegistry.class);
+				OtlpMeterRegistry registry = context.getBean(OtlpMeterRegistry.class);
+				assertThat(registry).extracting("scheduledExecutorService")
+					.satisfies(
+							(executor) -> ScheduledExecutorServiceAssert.assertThat((ScheduledExecutorService) executor)
+								.usesVirtualThreads());
+			});
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.util.LambdaSafe;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 /**
@@ -32,36 +31,12 @@ import org.springframework.transaction.TransactionManager;
  * @author Andy Wilkinson
  * @since 1.5.0
  */
-public class TransactionManagerCustomizers {
+public final class TransactionManagerCustomizers {
 
 	private final List<? extends TransactionManagerCustomizer<?>> customizers;
 
-	/**
-	 * Creates a new {@code TransactionManagerCustomizers} instance containing the given
-	 * {@code customizers}.
-	 * @param customizers the customizers
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of {@link #of(Collection)}
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public TransactionManagerCustomizers(Collection<? extends PlatformTransactionManagerCustomizer<?>> customizers) {
-		this((customizers != null) ? new ArrayList<>(customizers)
-				: Collections.<TransactionManagerCustomizer<?>>emptyList());
-	}
-
 	private TransactionManagerCustomizers(List<? extends TransactionManagerCustomizer<?>> customizers) {
 		this.customizers = customizers;
-	}
-
-	/**
-	 * Customize the given {@code platformTransactionManager}.
-	 * @param platformTransactionManager the platform transaction manager to customize
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #customize(TransactionManager)}
-	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
-	public void customize(PlatformTransactionManager platformTransactionManager) {
-		customize((TransactionManager) platformTransactionManager);
 	}
 
 	/**
@@ -84,8 +59,8 @@ public class TransactionManagerCustomizers {
 	 * @since 3.2.0
 	 */
 	public static TransactionManagerCustomizers of(Collection<? extends TransactionManagerCustomizer<?>> customizers) {
-		return new TransactionManagerCustomizers((customizers != null) ? new ArrayList<>(customizers)
-				: Collections.<TransactionManagerCustomizer<?>>emptyList());
+		return new TransactionManagerCustomizers(
+				(customizers != null) ? new ArrayList<>(customizers) : Collections.emptyList());
 	}
 
 }

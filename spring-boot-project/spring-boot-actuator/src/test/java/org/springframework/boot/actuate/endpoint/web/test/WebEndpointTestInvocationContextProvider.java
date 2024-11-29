@@ -243,7 +243,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 			EndpointMediaTypes endpointMediaTypes = EndpointMediaTypes.DEFAULT;
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
 					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
-					Collections.emptyList());
+					Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
 					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
 					new EndpointLinksResolver(discoverer.getEndpoints()), true);
@@ -288,8 +288,8 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		WebFluxEndpointHandlerMapping webEndpointReactiveHandlerMapping() {
 			EndpointMediaTypes endpointMediaTypes = EndpointMediaTypes.DEFAULT;
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
-					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
-					Collections.emptyList());
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, Collections.emptyList(),
+					Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 			return new WebFluxEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
 					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()),
 					true);
@@ -317,8 +317,8 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		WebMvcEndpointHandlerMapping webEndpointServletHandlerMapping() {
 			EndpointMediaTypes endpointMediaTypes = EndpointMediaTypes.DEFAULT;
 			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
-					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
-					Collections.emptyList());
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, Collections.emptyList(),
+					Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping("/actuator"), discoverer.getEndpoints(),
 					endpointMediaTypes, new CorsConfiguration(), new EndpointLinksResolver(discoverer.getEndpoints()),
 					true);

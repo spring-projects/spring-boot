@@ -18,7 +18,7 @@ package org.springframework.boot.testcontainers.service.connection.cassandra;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.cassandra.CassandraContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -44,7 +44,7 @@ class CassandraContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final CassandraContainer<?> cassandra = TestImage.container(CassandraContainer.class);
+	static final CassandraContainer cassandra = TestImage.container(CassandraContainer.class);
 
 	@Autowired(required = false)
 	private CassandraConnectionDetails connectionDetails;

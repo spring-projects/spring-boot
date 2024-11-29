@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 
 /**
@@ -51,22 +54,32 @@ public @interface ConditionalOnSingleCandidate {
 	/**
 	 * The class type of bean that should be checked. The condition matches if a bean of
 	 * the class specified is contained in the {@link BeanFactory} and a primary candidate
-	 * exists in case of multiple instances.
+	 * exists in case of multiple instances. Beans that are not autowire candidates or
+	 * that are not default candidates are ignored.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
 	 * {@link #type()}, but it may be used instead of {@link #type()}.
 	 * @return the class type of the bean to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	Class<?> value() default Object.class;
 
 	/**
 	 * The class type name of bean that should be checked. The condition matches if a bean
 	 * of the class specified is contained in the {@link BeanFactory} and a primary
-	 * candidate exists in case of multiple instances.
+	 * candidate exists in case of multiple instances. Beans that are not autowire
+	 * candidates or that are not default candidates are ignored.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
 	 * {@link #value()}, but it may be used instead of {@link #value()}.
 	 * @return the class type name of the bean to check
+	 * @see Bean#autowireCandidate()
+	 * @see BeanDefinition#isAutowireCandidate
+	 * @see Bean#defaultCandidate()
+	 * @see AbstractBeanDefinition#isDefaultCandidate
 	 */
 	String type() default "";
 

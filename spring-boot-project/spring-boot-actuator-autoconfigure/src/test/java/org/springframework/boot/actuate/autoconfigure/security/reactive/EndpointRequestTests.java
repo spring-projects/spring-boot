@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.security.reactive;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.assertj.core.api.AssertDelegateTarget;
@@ -30,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -235,6 +237,13 @@ class EndpointRequestTests {
 	}
 
 	@Test
+	void toStringWhenToAdditionalPaths() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, "test");
+		assertThat(matcher)
+			.hasToString("AdditionalPathsEndpointServerWebExchangeMatcher endpoints=[test], webServerNamespace=server");
+	}
+
+	@Test
 	void toAnyEndpointWhenEndpointPathMappedToRootIsExcludedShouldNotMatchRoot() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("root");
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("/", () -> List
@@ -252,12 +261,74 @@ class EndpointRequestTests {
 		assertMatcher.matches("/");
 	}
 
+	@Test
+	void toAdditionalPathsWithEndpointClassShouldMatchAdditionalPath() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER,
+				FooEndpoint.class);
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("",
+				() -> List.of(mockEndpoint(EndpointId.of("foo"), "test", WebServerNamespace.SERVER, "/additional"))));
+		assertMatcher.matches("/additional");
+	}
+
+	@Test
+	void toAdditionalPathsWithEndpointIdShouldMatchAdditionalPath() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, "foo");
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("",
+				() -> List.of(mockEndpoint(EndpointId.of("foo"), "test", WebServerNamespace.SERVER, "/additional"))));
+		assertMatcher.matches("/additional");
+	}
+
+	@Test
+	void toAdditionalPathsWithEndpointClassShouldNotMatchOtherPaths() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER,
+				FooEndpoint.class);
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("",
+				() -> List.of(mockEndpoint(EndpointId.of("foo"), "test", WebServerNamespace.SERVER, "/additional"))));
+		assertMatcher.doesNotMatch("/foo");
+		assertMatcher.doesNotMatch("/bar");
+	}
+
+	@Test
+	void toAdditionalPathsWithEndpointClassShouldNotMatchOtherNamespace() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER,
+				FooEndpoint.class);
+		RequestMatcherAssert assertMatcher = assertMatcher(matcher, new PathMappedEndpoints("",
+				() -> List.of(mockEndpoint(EndpointId.of("foo"), "test", WebServerNamespace.SERVER, "/additional"))),
+				WebServerNamespace.MANAGEMENT);
+		assertMatcher.doesNotMatch("/additional");
+	}
+
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {
 		return assertMatcher(matcher, mockPathMappedEndpoints("/actuator"));
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher, String basePath) {
 		return assertMatcher(matcher, mockPathMappedEndpoints(basePath));
+	}
+
+	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
+			PathMappedEndpoints pathMappedEndpoints) {
+		return assertMatcher(matcher, pathMappedEndpoints, null);
+	}
+
+	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
+			PathMappedEndpoints pathMappedEndpoints, WebServerNamespace namespace) {
+		StaticApplicationContext context = new StaticApplicationContext();
+		if (namespace != null && !WebServerNamespace.SERVER.equals(namespace)) {
+			StaticApplicationContext parentContext = new StaticApplicationContext();
+			parentContext.setId("app");
+			context.setParent(parentContext);
+			context.setId(parentContext.getId() + ":" + namespace);
+		}
+		context.registerBean(WebEndpointProperties.class);
+		if (pathMappedEndpoints != null) {
+			context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
+			WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
+			if (!properties.getBasePath().equals(pathMappedEndpoints.getBasePath())) {
+				properties.setBasePath(pathMappedEndpoints.getBasePath());
+			}
+		}
+		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
 	private PathMappedEndpoints mockPathMappedEndpoints(String basePath) {
@@ -268,24 +339,16 @@ class EndpointRequestTests {
 	}
 
 	private TestEndpoint mockEndpoint(EndpointId id, String rootPath) {
+		return mockEndpoint(id, rootPath, WebServerNamespace.SERVER);
+	}
+
+	private TestEndpoint mockEndpoint(EndpointId id, String rootPath, WebServerNamespace webServerNamespace,
+			String... additionalPaths) {
 		TestEndpoint endpoint = mock(TestEndpoint.class);
 		given(endpoint.getEndpointId()).willReturn(id);
 		given(endpoint.getRootPath()).willReturn(rootPath);
+		given(endpoint.getAdditionalPaths(webServerNamespace)).willReturn(Arrays.asList(additionalPaths));
 		return endpoint;
-	}
-
-	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher,
-			PathMappedEndpoints pathMappedEndpoints) {
-		StaticApplicationContext context = new StaticApplicationContext();
-		context.registerBean(WebEndpointProperties.class);
-		if (pathMappedEndpoints != null) {
-			context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
-			WebEndpointProperties properties = context.getBean(WebEndpointProperties.class);
-			if (!properties.getBasePath().equals(pathMappedEndpoints.getBasePath())) {
-				properties.setBasePath(pathMappedEndpoints.getBasePath());
-			}
-		}
-		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
 	static class RequestMatcherAssert implements AssertDelegateTarget {

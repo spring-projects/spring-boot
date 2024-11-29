@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
@@ -36,9 +35,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link WebAppConfiguration @WebAppConfiguration} integration.
@@ -57,16 +53,16 @@ class SpringBootContextLoaderMockMvcTests {
 	@Autowired
 	private ServletContext servletContext;
 
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@BeforeEach
 	void setUp() {
-		this.mvc = MockMvcBuilders.webAppContextSetup(this.context).build();
+		this.mvc = MockMvcTester.from(this.context);
 	}
 
 	@Test
-	void testMockHttpEndpoint() throws Exception {
-		this.mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello World"));
+	void testMockHttpEndpoint() {
+		assertThat(this.mvc.get().uri("/")).hasStatusOk().hasBodyTextEqualTo("Hello World");
 	}
 
 	@Test

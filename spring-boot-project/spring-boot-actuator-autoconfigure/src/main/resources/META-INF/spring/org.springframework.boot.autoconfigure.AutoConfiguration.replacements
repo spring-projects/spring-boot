@@ -1,0 +1,2 @@
+org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration=org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpAutoConfiguration=org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration

@@ -32,7 +32,6 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
 
-import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 
 /**
@@ -59,7 +58,6 @@ class NativeImagePluginAction implements PluginApplicationAction {
 			configureMainNativeBinaryClasspath(project, sourceSets, graalVmExtension);
 			configureTestNativeBinaryClasspath(sourceSets, graalVmExtension);
 			copyReachabilityMetadataToBootJar(project);
-			configureBootBuildImageToProduceANativeImage(project);
 			configureJarManifestNativeAttribute(project);
 		});
 	}
@@ -100,15 +98,6 @@ class NativeImagePluginAction implements PluginApplicationAction {
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class)
 			.configure((bootJar) -> bootJar.from(project.getTasks().named("collectReachabilityMetadata")));
-	}
-
-	private void configureBootBuildImageToProduceANativeImage(Project project) {
-		project.getTasks()
-			.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
-			.configure((bootBuildImage) -> {
-				bootBuildImage.getBuilder().convention("paketobuildpacks/builder-jammy-tiny:latest");
-				bootBuildImage.getEnvironment().put("BP_NATIVE_IMAGE", "true");
-			});
 	}
 
 	private void configureJarManifestNativeAttribute(Project project) {

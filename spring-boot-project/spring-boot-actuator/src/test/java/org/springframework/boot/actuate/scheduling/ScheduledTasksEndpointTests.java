@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,10 @@ import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CronTa
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CustomTriggerTaskDescriptor;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedDelayTaskDescriptor;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedRateTaskDescriptor;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.LastExecution;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksDescriptor;
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.TaskDescriptor;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +44,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskHolder;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.config.TaskExecutionOutcome.Status;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 
@@ -52,6 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Brian Clozel
  */
 class ScheduledTasksEndpointTests {
 
@@ -68,6 +72,8 @@ class ScheduledTasksEndpointTests {
 			CronTaskDescriptor description = (CronTaskDescriptor) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/3 1/1 * ?");
 			assertThat(description.getRunnable().getTarget()).isEqualTo(CronScheduledMethod.class.getName() + ".cron");
+			assertThat(description.getNextExecution().getTime()).isInTheFuture();
+			assertThat(description.getLastExecution()).isNull();
 		});
 	}
 
@@ -80,7 +86,8 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getCron()).hasSize(1);
 			CronTaskDescriptor description = (CronTaskDescriptor) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/6 1/1 * ?");
-			assertThat(description.getRunnable().getTarget()).isEqualTo(CronTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(CronTriggerRunnable.class.getName());
+			assertThat(description.getLastExecution()).isNull();
 		});
 	}
 
@@ -92,10 +99,11 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedDelay()).hasSize(1);
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
-			assertThat(description.getInitialDelay()).isEqualTo(2);
-			assertThat(description.getInterval()).isOne();
+			assertThat(description.getInitialDelay()).isEqualTo(2000);
+			assertThat(description.getInterval()).isEqualTo(1000);
 			assertThat(description.getRunnable().getTarget())
 				.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
+			assertThat(description.getLastExecution()).isNull();
 		});
 	}
 
@@ -109,7 +117,8 @@ class ScheduledTasksEndpointTests {
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2000);
 			assertThat(description.getInterval()).isEqualTo(1000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedDelayTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedDelayTriggerRunnable.class.getName());
+			assertThat(description.getLastExecution()).isNull();
 		});
 	}
 
@@ -123,7 +132,8 @@ class ScheduledTasksEndpointTests {
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(0);
 			assertThat(description.getInterval()).isEqualTo(1000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedDelayTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedDelayTriggerRunnable.class.getName());
+			assertThatTaskMayHaveBeenExecuted(description);
 		});
 	}
 
@@ -135,10 +145,11 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedRate()).hasSize(1);
 			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
-			assertThat(description.getInitialDelay()).isEqualTo(4);
-			assertThat(description.getInterval()).isEqualTo(3);
+			assertThat(description.getInitialDelay()).isEqualTo(4000);
+			assertThat(description.getInterval()).isEqualTo(3000);
 			assertThat(description.getRunnable().getTarget())
 				.isEqualTo(FixedRateScheduledMethod.class.getName() + ".fixedRate");
+			assertThat(description.getLastExecution()).isNull();
 		});
 	}
 
@@ -152,7 +163,8 @@ class ScheduledTasksEndpointTests {
 			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(3000);
 			assertThat(description.getInterval()).isEqualTo(2000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedRateTriggerRunnable.class.getName());
+			assertThat(description.getLastExecution()).isNull();
 		});
 	}
 
@@ -166,7 +178,8 @@ class ScheduledTasksEndpointTests {
 			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(0);
 			assertThat(description.getInterval()).isEqualTo(2000);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(FixedRateTriggerRunnable.class.getName());
+			assertThatTaskMayHaveBeenExecuted(description);
 		});
 	}
 
@@ -178,8 +191,9 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).hasSize(1);
 			CustomTriggerTaskDescriptor description = (CustomTriggerTaskDescriptor) tasks.getCustom().get(0);
-			assertThat(description.getRunnable().getTarget()).isEqualTo(CustomTriggerRunnable.class.getName());
+			assertThat(description.getRunnable().getTarget()).contains(CustomTriggerRunnable.class.getName());
 			assertThat(description.getTrigger()).isEqualTo(CustomTriggerTask.trigger.toString());
+			assertThatTaskMayHaveBeenExecuted(description);
 		});
 	}
 
@@ -194,6 +208,16 @@ class ScheduledTasksEndpointTests {
 				.onType(bindingType)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 				.accepts(runtimeHints);
+		}
+	}
+
+	private void assertThatTaskMayHaveBeenExecuted(TaskDescriptor descriptor) {
+		LastExecution lastExecution = descriptor.getLastExecution();
+		if (lastExecution != null) {
+			if (lastExecution.getStatus() == Status.SUCCESS) {
+				assertThat(lastExecution.getTime()).isInThePast();
+				assertThat(lastExecution.getException()).isNull();
+			}
 		}
 	}
 
@@ -215,7 +239,7 @@ class ScheduledTasksEndpointTests {
 
 	static class FixedDelayScheduledMethod {
 
-		@Scheduled(fixedDelay = 1, initialDelay = 2)
+		@Scheduled(fixedDelay = 1000, initialDelay = 2000)
 		void fixedDelay() {
 
 		}
@@ -224,7 +248,7 @@ class ScheduledTasksEndpointTests {
 
 	static class FixedRateScheduledMethod {
 
-		@Scheduled(fixedRate = 3, initialDelay = 4)
+		@Scheduled(fixedRate = 3000, initialDelay = 4000)
 		void fixedRate() {
 
 		}

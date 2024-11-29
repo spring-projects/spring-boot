@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package org.springframework.boot.actuate.endpoint.web;
 import org.springframework.util.StringUtils;
 
 /**
- * Enumeration of server namespaces.
+ * A web server namespace used for disambiguation when multiple web servers are running in
+ * the same application (for example a management context running on a different port).
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -43,15 +44,12 @@ public final class WebServerNamespace {
 		this.value = value;
 	}
 
+	/**
+	 * Return the value of the namespace.
+	 * @return the value
+	 */
 	public String getValue() {
 		return this.value;
-	}
-
-	public static WebServerNamespace from(String value) {
-		if (StringUtils.hasText(value)) {
-			return new WebServerNamespace(value);
-		}
-		return SERVER;
 	}
 
 	@Override
@@ -69,6 +67,24 @@ public final class WebServerNamespace {
 	@Override
 	public int hashCode() {
 		return this.value.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return this.value;
+	}
+
+	/**
+	 * Factory method to create a new {@link WebServerNamespace} from a value. If the
+	 * value is empty or {@code null} then {@link #SERVER} is returned.
+	 * @param value the namespace value or {@code null}
+	 * @return the web server namespace
+	 */
+	public static WebServerNamespace from(String value) {
+		if (StringUtils.hasText(value)) {
+			return new WebServerNamespace(value);
+		}
+		return SERVER;
 	}
 
 }

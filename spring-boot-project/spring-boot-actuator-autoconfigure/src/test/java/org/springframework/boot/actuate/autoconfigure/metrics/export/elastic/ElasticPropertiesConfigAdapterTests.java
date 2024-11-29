@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,13 @@ class ElasticPropertiesConfigAdapterTests
 		ElasticProperties properties = new ElasticProperties();
 		properties.setApiKeyCredentials("secret");
 		assertThat(new ElasticPropertiesConfigAdapter(properties).apiKeyCredentials()).isEqualTo("secret");
+	}
+
+	@Test
+	void whenPropertiesEnableSourceIsSetAdapterEnableSourceReturnsIt() {
+		ElasticProperties properties = new ElasticProperties();
+		properties.setEnableSource(true);
+		assertThat(new ElasticPropertiesConfigAdapter(properties).enableSource()).isTrue();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package org.springframework.boot.docker.compose.core;
 import org.springframework.boot.origin.Origin;
 
 /**
- * An origin which points to a service defined in docker compose.
+ * An origin which points to a service defined in Docker Compose.
  *
- * @param composeFile docker compose file
- * @param serviceName name of the docker compose service
+ * @param composeFile the Docker Compose file
+ * @param serviceName name of the Docker Compose service
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @since 3.1.0
@@ -31,7 +31,7 @@ public record DockerComposeOrigin(DockerComposeFile composeFile, String serviceN
 
 	@Override
 	public String toString() {
-		return "Docker compose service '%s' defined in '%s'".formatted(this.serviceName,
+		return "Docker compose service '%s' defined in %s".formatted(this.serviceName,
 				(this.composeFile != null) ? this.composeFile : "default compose file");
 	}
 
