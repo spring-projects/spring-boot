@@ -19,7 +19,6 @@ package org.springframework.boot.testsupport.assertj;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.api.AbstractAssert;
@@ -28,7 +27,7 @@ import org.assertj.core.api.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * AssertJ {@link Assert} for {@link ScheduledThreadPoolExecutor}.
+ * AssertJ {@link Assert} for {@link ScheduledExecutorService}.
  *
  * @author Mike Turbe
  * @author Moritz Halbritter
@@ -82,9 +81,9 @@ public final class ScheduledExecutorServiceAssert
 	}
 
 	/**
-	 * Creates a new assertion class with the given {@link ScheduledExecutorService}.
+	 * Creates a new assertion instance with the given {@link ScheduledExecutorService}.
 	 * @param actual the {@link ScheduledExecutorService}
-	 * @return the assertion class
+	 * @return the assertion instance
 	 */
 	public static ScheduledExecutorServiceAssert assertThat(ScheduledExecutorService actual) {
 		return new ScheduledExecutorServiceAssert(actual);

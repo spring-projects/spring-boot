@@ -50,7 +50,7 @@ public class OtlpLoggingProperties {
 	private Duration connectTimeout = Duration.ofSeconds(10);
 
 	/**
-	 * Transport used to send the spans.
+	 * Transport used to send the logs.
 	 */
 	private Transport transport = Transport.HTTP;
 
