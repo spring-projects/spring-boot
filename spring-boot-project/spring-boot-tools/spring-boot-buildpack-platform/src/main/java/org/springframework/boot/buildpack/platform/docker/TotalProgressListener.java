@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.docker.ProgressUpdateEvent.Pr
  * @param <E> the type of {@link ImageProgressUpdateEvent}
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Wolfgang Kronberg
  * @since 2.4.0
  */
 public abstract class TotalProgressListener<E extends ImageProgressUpdateEvent> implements UpdateListener<E> {

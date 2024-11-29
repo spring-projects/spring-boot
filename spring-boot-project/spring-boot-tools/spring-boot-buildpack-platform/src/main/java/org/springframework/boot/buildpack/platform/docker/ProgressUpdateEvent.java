@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  * An {@link UpdateEvent} that includes progress information.
  *
  * @author Phillip Webb
+ * @author Wolfgang Kronberg
  * @since 2.3.0
  */
 public abstract class ProgressUpdateEvent extends UpdateEvent {
