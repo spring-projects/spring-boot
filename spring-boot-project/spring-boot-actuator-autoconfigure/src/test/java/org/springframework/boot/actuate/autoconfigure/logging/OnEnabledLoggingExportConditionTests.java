@@ -90,7 +90,7 @@ class OnEnabledLoggingExportConditionTests {
 	void exporterPropertyShouldOverrideGlobalPropertyIfTrue() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
-				Map.of("management.logging.enabled", "false", "management.otlp.logging.export.enabled", "true")),
+				Map.of("management.logging.export.enabled", "false", "management.otlp.logging.export.enabled", "true")),
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
@@ -101,7 +101,7 @@ class OnEnabledLoggingExportConditionTests {
 	void exporterPropertyShouldOverrideGlobalPropertyIfFalse() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
-				Map.of("management.logging.enabled", "true", "management.otlp.logging.export.enabled", "false")),
+				Map.of("management.logging.export.enabled", "true", "management.otlp.logging.export.enabled", "false")),
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
