@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
@@ -56,11 +56,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author HaiTao Zhang
+ * @author Lasse Wulff
  */
 @ExtendWith(OutputCaptureExtension.class)
 class UserDetailsServiceAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withUserConfiguration(TestSecurityConfiguration.class)
 		.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
@@ -192,7 +193,7 @@ class UserDetailsServiceAutoConfigurationTests {
 			.run(((context) -> assertThat(context).hasSingleBean(InMemoryUserDetailsManager.class)));
 	}
 
-	private Function<ApplicationContextRunner, ApplicationContextRunner> noOtherFormsOfAuthenticationOnTheClasspath() {
+	private Function<WebApplicationContextRunner, WebApplicationContextRunner> noOtherFormsOfAuthenticationOnTheClasspath() {
 		return (contextRunner) -> contextRunner
 			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class,
 					RelyingPartyRegistrationRepository.class));
