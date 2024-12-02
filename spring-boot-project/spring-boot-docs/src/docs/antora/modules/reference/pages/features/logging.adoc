@@ -292,7 +292,7 @@ logging:
 
 The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring javadoc:org.springframework.core.env.Environment[] property: configprop:logging.config[].
 
-You can force Spring Boot to use a particular logging system by using the javadoc:org.springframework.boot.logging.LoggingSystem[] system property.
+You can force Spring Boot to use a particular logging system by using the `org.springframework.boot.logging.LoggingSystem` system property.
 The value should be the fully qualified class name of a javadoc:org.springframework.boot.logging.LoggingSystem[] implementation.
 You can also disable Spring Boot's logging configuration entirely by using a value of `none`.
 
