@@ -90,9 +90,8 @@ public abstract class Configurations {
 	protected Configurations(UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
 			Function<Class<?>, String> beanNameGenerator) {
 		Assert.notNull(classes, "Classes must not be null");
-		sorter = (sorter != null) ? sorter : UnaryOperator.identity();
-		Collection<Class<?>> sorted = sorter.apply(classes);
 		this.sorter = (sorter != null) ? sorter : UnaryOperator.identity();
+		Collection<Class<?>> sorted = this.sorter.apply(classes);
 		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(sorted));
 		this.beanNameGenerator = beanNameGenerator;
 	}
