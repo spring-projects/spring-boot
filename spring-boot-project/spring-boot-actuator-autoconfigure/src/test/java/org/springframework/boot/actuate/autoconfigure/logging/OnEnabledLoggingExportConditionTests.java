@@ -38,6 +38,10 @@ import static org.mockito.Mockito.mock;
  */
 class OnEnabledLoggingExportConditionTests {
 
+	private static final String GLOBAL_PROPERTY_NAME = "management.logging.export.enabled";
+
+	private static final String OTLP_PROPERTY_NAME = "management.otlp.logging.export.enabled";
+
 	@Test
 	void shouldMatchIfNoPropertyIsSet() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
@@ -49,8 +53,8 @@ class OnEnabledLoggingExportConditionTests {
 	@Test
 	void shouldNotMatchIfGlobalPropertyIsFalse() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(
-				mockConditionContext(Map.of("management.logging.export.enabled", "false")), mockMetadata(""));
+		ConditionOutcome outcome = condition
+			.getMatchOutcome(mockConditionContext(Map.of(GLOBAL_PROPERTY_NAME, "false")), mockMetadata(""));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.enabled is false");
@@ -59,8 +63,8 @@ class OnEnabledLoggingExportConditionTests {
 	@Test
 	void shouldMatchIfGlobalPropertyIsTrue() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(
-				mockConditionContext(Map.of("management.logging.export.enabled", "true")), mockMetadata(""));
+		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(Map.of(GLOBAL_PROPERTY_NAME, "true")),
+				mockMetadata(""));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledLoggingExport management.logging.export.enabled is true");
@@ -69,8 +73,8 @@ class OnEnabledLoggingExportConditionTests {
 	@Test
 	void shouldNotMatchIfExporterPropertyIsFalse() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(
-				mockConditionContext(Map.of("management.otlp.logging.export.enabled", "false")), mockMetadata("otlp"));
+		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(Map.of(OTLP_PROPERTY_NAME, "false")),
+				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is false");
@@ -79,8 +83,8 @@ class OnEnabledLoggingExportConditionTests {
 	@Test
 	void shouldMatchIfExporterPropertyIsTrue() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(
-				mockConditionContext(Map.of("management.otlp.logging.export.enabled", "true")), mockMetadata("otlp"));
+		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(Map.of(OTLP_PROPERTY_NAME, "true")),
+				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
 			.isEqualTo("@ConditionalOnEnabledLoggingExport management.otlp.logging.export.enabled is true");
@@ -89,8 +93,8 @@ class OnEnabledLoggingExportConditionTests {
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfTrue() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
-				Map.of("management.logging.enabled", "false", "management.otlp.logging.export.enabled", "true")),
+		ConditionOutcome outcome = condition.getMatchOutcome(
+				mockConditionContext(Map.of(GLOBAL_PROPERTY_NAME, "false", OTLP_PROPERTY_NAME, "true")),
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage())
@@ -100,8 +104,8 @@ class OnEnabledLoggingExportConditionTests {
 	@Test
 	void exporterPropertyShouldOverrideGlobalPropertyIfFalse() {
 		OnEnabledLoggingExportCondition condition = new OnEnabledLoggingExportCondition();
-		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(
-				Map.of("management.logging.enabled", "true", "management.otlp.logging.export.enabled", "false")),
+		ConditionOutcome outcome = condition.getMatchOutcome(
+				mockConditionContext(Map.of(GLOBAL_PROPERTY_NAME, "true", OTLP_PROPERTY_NAME, "false")),
 				mockMetadata("otlp"));
 		assertThat(outcome.isMatch()).isFalse();
 		assertThat(outcome.getMessage())
