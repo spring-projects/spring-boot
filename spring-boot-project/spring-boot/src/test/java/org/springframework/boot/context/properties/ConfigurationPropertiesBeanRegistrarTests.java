@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.scope.ScopedProxyFactoryBean;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -146,13 +147,13 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	}
 
 	@ConfigurationProperties(prefix = "beancp")
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	static class ScopedBeanConfigurationProperties {
 
 	}
 
 	@ConfigurationProperties(prefix = "beancp")
-	@Scope(scopeName = BeanDefinition.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	static class ProxyScopedBeanConfigurationProperties {
 
 	}

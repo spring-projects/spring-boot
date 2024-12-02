@@ -55,7 +55,7 @@ class JsonMixinModuleTests {
 	}
 
 	@Test
-	void jsonWithModuleEmptyMixInWithEmptyTypesShouldFailed() {
+	void jsonWithModuleEmptyMixInWithEmptyTypesShouldFail() {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> load(EmptyMixIn.class))
 			.withMessageContaining("Error creating bean with name 'jsonMixinModule'")
 			.withStackTraceContaining("@JsonMixin annotation on class "

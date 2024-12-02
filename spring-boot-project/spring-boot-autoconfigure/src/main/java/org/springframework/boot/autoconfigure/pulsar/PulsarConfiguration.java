@@ -27,6 +27,7 @@ import org.apache.pulsar.common.naming.TopicDomain;
 import org.apache.pulsar.common.schema.SchemaType;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties.Defaults.SchemaInfo;
@@ -180,7 +181,7 @@ class PulsarConfiguration {
 	}
 
 	@Bean
-	@Scope("prototype")
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "spring.pulsar.defaults.topic.enabled", havingValue = "true", matchIfMissing = true)
 	PulsarTopicBuilder pulsarTopicBuilder() {

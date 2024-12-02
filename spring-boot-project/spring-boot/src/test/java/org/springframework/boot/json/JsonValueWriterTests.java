@@ -29,6 +29,7 @@ import org.springframework.boot.json.JsonValueWriter.Series;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link JsonValueWriter} .
@@ -191,6 +192,16 @@ class JsonValueWriterTests {
 		});
 		assertThat(actual).isEqualTo("""
 				{"a":"A","b":"B"}""");
+	}
+
+	@Test
+	void writePairsWhenDuplicateThrowsException() {
+		assertThatIllegalStateException().isThrownBy(() -> doWrite((valueWriter) -> {
+			valueWriter.start(Series.OBJECT);
+			valueWriter.writePairs(Map.of("a", "A")::forEach);
+			valueWriter.writePairs(Map.of("a", "B")::forEach);
+			valueWriter.end(Series.OBJECT);
+		})).withMessage("The name 'a' has already been written");
 	}
 
 	@Test

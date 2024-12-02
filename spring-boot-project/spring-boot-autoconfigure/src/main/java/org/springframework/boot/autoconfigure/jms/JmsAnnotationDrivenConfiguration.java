@@ -90,7 +90,7 @@ class JmsAnnotationDrivenConfiguration {
 	DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
 			DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrap(connectionFactory));
+		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory));
 		return factory;
 	}
 

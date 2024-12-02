@@ -58,9 +58,17 @@ public class AntoraConventions {
 
 	private static final String DEPENDENCIES_PATH = ":spring-boot-project:spring-boot-dependencies";
 
-	private static final String ANTORA_SOURCE_DIR = "src/docs/antora";
-
 	private static final List<String> NAV_FILES = List.of("nav.adoc", "local-nav.adoc");
+
+	/**
+	 * Default Antora source directory.
+	 */
+	public static final String ANTORA_SOURCE_DIR = "src/docs/antora";
+
+	/**
+	 * Name of the {@link GenerateAntoraPlaybook} task.
+	 */
+	public static final String GENERATE_ANTORA_PLAYBOOK_TASK_NAME = "generateAntoraPlaybook";
 
 	void apply(Project project) {
 		project.getPlugins().withType(AntoraPlugin.class, (antoraPlugin) -> apply(project, antoraPlugin));
@@ -70,7 +78,7 @@ public class AntoraConventions {
 		ExtractVersionConstraints dependencyVersionsTask = addDependencyVersionsTask(project);
 		project.getPlugins().apply(GenerateAntoraYmlPlugin.class);
 		TaskContainer tasks = project.getTasks();
-		GenerateAntoraPlaybook generateAntoraPlaybookTask = tasks.create("generateAntoraPlaybook",
+		GenerateAntoraPlaybook generateAntoraPlaybookTask = tasks.create(GENERATE_ANTORA_PLAYBOOK_TASK_NAME,
 				GenerateAntoraPlaybook.class);
 		configureGenerateAntoraPlaybookTask(project, generateAntoraPlaybookTask);
 		Copy copyAntoraPackageJsonTask = tasks.create("copyAntoraPackageJson", Copy.class);

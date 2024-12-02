@@ -871,7 +871,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(SameSite.class)
+	@EnumSource
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookies(SameSite sameSite) throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.getSession().getCookie().setSameSite(sameSite);
@@ -886,7 +886,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@ParameterizedTest
-	@EnumSource(SameSite.class)
+	@EnumSource
 	void sessionCookieSameSiteAttributeCanBeConfiguredAndOnlyAffectsSessionCookiesWhenUsingCustomName(SameSite sameSite)
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
@@ -1288,16 +1288,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 		factory.setHttp2(http2);
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
-		org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
-				new HttpClientTransportOverHTTP2(new HTTP2Client()));
-		client.start();
-		try {
+		try (org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
+				new HttpClientTransportOverHTTP2(new HTTP2Client()))) {
+			client.start();
 			ContentResponse response = client.GET("http://localhost:" + this.webServer.getPort() + "/hello");
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 			assertThat(response.getContentAsString()).isEqualTo("Hello World");
-		}
-		finally {
-			client.stop();
 		}
 	}
 

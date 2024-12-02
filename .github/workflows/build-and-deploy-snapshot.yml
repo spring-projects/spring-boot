@@ -25,13 +25,13 @@ jobs:
           gradle-cache-read-only: false
           publish: true
       - name: Deploy
-        uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
+        uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
         with:
           build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '3.4.x') || format('spring-boot-{0}', '3.4.x') }}
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}
-          repository: ${{ vars.COMMERCIAL && 'spring-commercial-snapshot-local' || 'libs-snapshot-local' }}
+          repository: ${{ vars.COMMERCIAL && 'spring-enterprise-maven-dev-local' || 'libs-snapshot-local' }}
           signing-key: ${{ secrets.GPG_PRIVATE_KEY }}
           signing-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           uri: ${{ vars.COMMERCIAL_DEPLOY_REPO_URL || 'https://repo.spring.io' }}

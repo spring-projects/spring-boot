@@ -34,6 +34,7 @@ import org.springframework.boot.info.SslInfo.CertificateInfo;
 import org.springframework.boot.info.SslInfo.CertificateValidityInfo.Status;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
@@ -209,6 +210,15 @@ class SslInfoTests {
 			assertThat(cert.getValidity().getStatus()).isSameAs(Status.WILL_EXPIRE_SOON);
 			assertThat(cert.getValidity().getMessage()).startsWith("Certificate will expire within threshold");
 		});
+	}
+
+	@Test
+	void nullKeyStore() {
+		DefaultSslBundleRegistry sslBundleRegistry = new DefaultSslBundleRegistry();
+		sslBundleRegistry.registerBundle("test", SslBundle.of(SslStoreBundle.NONE, SslBundleKey.NONE));
+		SslInfo sslInfo = new SslInfo(sslBundleRegistry, Duration.ofDays(7));
+		assertThat(sslInfo.getBundles()).hasSize(1);
+		assertThat(sslInfo.getBundles().get(0).getCertificateChains()).isEmpty();
 	}
 
 	private SslInfo createSslInfo(String... locations) {

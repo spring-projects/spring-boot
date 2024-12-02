@@ -32,6 +32,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.tasks.TaskAction;
 
@@ -46,6 +47,7 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
  * Checks the validity of a bom.
  *
  * @author Andy Wilkinson
+ * @author Wick Dynex
  */
 public abstract class CheckBom extends DefaultTask {
 
@@ -209,14 +211,15 @@ public abstract class CheckBom extends DefaultTask {
 
 	private File resolveBom(Library library, String alignsWithBom) {
 		String coordinates = alignsWithBom + ":" + library.getVersion().getVersion() + "@pom";
-		Set<File> files = this.configurations.detachedConfiguration(this.dependencies.create(coordinates))
+		Set<ResolvedArtifact> artifacts = this.configurations
+			.detachedConfiguration(this.dependencies.create(coordinates))
 			.getResolvedConfiguration()
-			.getFiles();
-		if (files.size() != 1) {
-			throw new IllegalStateException(
-					"Expected a single file but '" + coordinates + "' resolved to " + files.size());
+			.getResolvedArtifacts();
+		if (artifacts.size() != 1) {
+			throw new IllegalStateException("Expected a single file but '%s' resolved to %d artifacts"
+				.formatted(coordinates, artifacts.size()));
 		}
-		return files.iterator().next();
+		return artifacts.iterator().next().getFile();
 	}
 
 }

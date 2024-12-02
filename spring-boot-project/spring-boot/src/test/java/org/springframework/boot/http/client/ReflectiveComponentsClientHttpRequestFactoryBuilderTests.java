@@ -69,6 +69,12 @@ class ReflectiveComponentsClientHttpRequestFactoryBuilderTests
 			.withMessage("Unable to set redirect follow using reflection");
 	}
 
+	@Override
+	void connectWithSslBundleAndOptionsMismatch(String httpMethod) throws Exception {
+		assertThatIllegalStateException().isThrownBy(() -> super.connectWithSslBundleAndOptionsMismatch(httpMethod))
+			.withMessage("Unable to set SSL bundler using reflection");
+	}
+
 	@Test
 	void buildWithClassCreatesFactory() {
 		assertThat(ofTestRequestFactory().build()).isInstanceOf(TestClientHttpRequestFactory.class);

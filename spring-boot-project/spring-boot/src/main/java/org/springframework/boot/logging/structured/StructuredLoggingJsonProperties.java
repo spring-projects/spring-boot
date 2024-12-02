@@ -28,13 +28,13 @@ import org.springframework.core.env.Environment;
  * @param include the paths that should be included. An empty set includes all names
  * @param exclude the paths that should be excluded. An empty set excludes nothing
  * @param rename a map of path to replacement names
- * @param add a map of additional elements {@link StructureLoggingJsonMembersCustomizer}
+ * @param add a map of additional elements {@link StructuredLoggingJsonMembersCustomizer}
  * @param customizer the fully qualified name of a
- * {@link StructureLoggingJsonMembersCustomizer}
+ * {@link StructuredLoggingJsonMembersCustomizer}
  * @author Phillip Webb
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, String customizer) {
+		Map<String, String> add, Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer) {
 
 	static StructuredLoggingJsonProperties get(Environment environment) {
 		return Binder.get(environment)

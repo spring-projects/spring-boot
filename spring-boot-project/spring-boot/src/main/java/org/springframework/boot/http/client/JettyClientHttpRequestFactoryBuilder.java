@@ -33,6 +33,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -156,10 +157,19 @@ public final class JettyClientHttpRequestFactoryBuilder
 	}
 
 	private SslContextFactory.Client createSslContextFactory(SslBundle sslBundle) {
+		SslOptions options = sslBundle.getOptions();
 		SSLContext sslContext = sslBundle.createSslContext();
-		SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-		sslContextFactory.setSslContext(sslContext);
-		return sslContextFactory;
+		SslContextFactory.Client factory = new SslContextFactory.Client();
+		factory.setSslContext(sslContext);
+		if (options.getCiphers() != null) {
+			factory.setIncludeCipherSuites(options.getCiphers());
+			factory.setExcludeCipherSuites();
+		}
+		if (options.getEnabledProtocols() != null) {
+			factory.setIncludeProtocols(options.getEnabledProtocols());
+			factory.setExcludeProtocols();
+		}
+		return factory;
 	}
 
 	private boolean followRedirects(Redirects redirects) {

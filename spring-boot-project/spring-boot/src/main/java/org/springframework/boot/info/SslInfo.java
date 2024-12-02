@@ -76,6 +76,9 @@ public class SslInfo {
 		}
 
 		private List<CertificateChainInfo> extractCertificateChains(KeyStore keyStore) {
+			if (keyStore == null) {
+				return Collections.emptyList();
+			}
 			try {
 				return Collections.list(keyStore.aliases())
 					.stream()

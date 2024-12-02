@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,16 +40,24 @@ class StructuredLoggingJsonPropertiesTests {
 		environment.setProperty("logging.structured.json.exclude", "c,d");
 		environment.setProperty("logging.structured.json.rename.e", "f");
 		environment.setProperty("logging.structured.json.add.g", "h");
-		environment.setProperty("logging.structured.json.customizer", "i");
+		environment.setProperty("logging.structured.json.customizer", TestCustomizer.class.getName());
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		assertThat(properties).isEqualTo(new StructuredLoggingJsonProperties(Set.of("a", "b"), Set.of("c", "d"),
-				Map.of("e", "f"), Map.of("g", "h"), "i"));
+				Map.of("e", "f"), Map.of("g", "h"), TestCustomizer.class));
 	}
 
 	@Test
 	void getWhenNoBoundPropertiesReturnsNull() {
 		MockEnvironment environment = new MockEnvironment();
 		StructuredLoggingJsonProperties.get(environment);
+	}
+
+	static class TestCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
+
+		@Override
+		public void customize(Members<String> members) {
+		}
+
 	}
 
 }

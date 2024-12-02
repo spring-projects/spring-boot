@@ -14,7 +14,7 @@ For example, the test in the snippet below will run with an authenticated user t
 
 include-code::MySecurityTests[]
 
-Spring Security provides comprehensive integration with Spring MVC Test, and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
+Spring Security provides comprehensive integration with Spring MVC Test, and this can also be used when testing controllers using the javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] slice and javadoc:org.springframework.test.web.servlet.MockMvc[].
 
 For additional details on Spring Security's testing support, see Spring Security's {url-spring-security-docs}/servlet/test/index.html[reference documentation].
 
@@ -22,18 +22,18 @@ For additional details on Spring Security's testing support, see Spring Security
 
 
 [[howto.testing.slice-tests]]
-== Structure `@Configuration` Classes for Inclusion in Slice Tests
+== Structure javadoc:org.springframework.context.annotation.Configuration[format=annotation] Classes for Inclusion in Slice Tests
 
 Slice tests work by restricting Spring Framework's component scanning to a limited set of components based on their type.
-For any beans that are not created through component scanning, for example, beans that are created using the `@Bean` annotation, slice tests will not be able to include/exclude them from the application context.
+For any beans that are not created through component scanning, for example, beans that are created using the javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation, slice tests will not be able to include/exclude them from the application context.
 Consider this example:
 
 include-code::MyConfiguration[]
 
-For a `@WebMvcTest` for an application with the above `@Configuration` class, you might expect to have the `SecurityFilterChain` bean in the application context so that you can test if your controller endpoints are secured properly.
+For a javadoc:org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest[format=annotation] for an application with the above javadoc:org.springframework.context.annotation.Configuration[format=annotation] class, you might expect to have the javadoc:org.springframework.security.web.SecurityFilterChain[] bean in the application context so that you can test if your controller endpoints are secured properly.
 However, `MyConfiguration` is not picked up by @WebMvcTest's component scanning filter because it doesn't match any of the types specified by the filter.
 You can include the configuration explicitly by annotating the test class with `@Import(MyConfiguration.class)`.
-This will load all the beans in `MyConfiguration` including the `BasicDataSource` bean which isn't required when testing the web tier.
+This will load all the beans in `MyConfiguration` including the javadoc:com.zaxxer.hikari.HikariDataSource[] bean which isn't required when testing the web tier.
 Splitting the configuration class into two will enable importing just the security configuration.
 
 include-code::MySecurityConfiguration[]

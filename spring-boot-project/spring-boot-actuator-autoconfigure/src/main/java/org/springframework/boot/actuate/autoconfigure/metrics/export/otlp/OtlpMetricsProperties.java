@@ -32,7 +32,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  *
  * @author Eddú Meléndez
  * @author Jonatan Ivanov
- * @since 3.0.0
+ * @since 3.4.0
  */
 @ConfigurationProperties(prefix = "management.otlp.metrics.export")
 public class OtlpMetricsProperties extends StepRegistryProperties {

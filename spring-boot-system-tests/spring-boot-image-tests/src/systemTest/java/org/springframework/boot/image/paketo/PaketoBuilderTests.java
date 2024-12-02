@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -267,7 +268,7 @@ class PaketoBuilderTests {
 		writeServletInitializerClass();
 		String imageName = "paketo-integration/" + this.gradleBuild.getProjectDir().getName();
 		ImageReference imageReference = ImageReference.of(ImageName.of(imageName));
-		BuildResult result = buildImage(imageName);
+		BuildResult result = buildImageWithRetry(imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Running creator");
 		try (GenericContainer<?> container = new GenericContainer<>(imageName)) {
@@ -375,6 +376,30 @@ class PaketoBuilderTests {
 		}
 		finally {
 			removeImage(imageReference);
+		}
+	}
+
+	private BuildResult buildImageWithRetry(String imageName, String... arguments) {
+		long start = System.nanoTime();
+		while (true) {
+			try {
+				return buildImage(imageName, arguments);
+			}
+			catch (Exception ex) {
+				if (Duration.ofNanos(System.nanoTime() - start).toMinutes() > 6) {
+					throw ex;
+				}
+				sleep(500);
+			}
+		}
+	}
+
+	private void sleep(long time) {
+		try {
+			Thread.sleep(time);
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 

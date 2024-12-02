@@ -17,6 +17,9 @@
 package org.springframework.boot.test.context.runner;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -27,6 +30,8 @@ import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
+import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -137,6 +142,38 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Test
 	void runWithConfigurationsShouldRegisterConfigurations() {
 		get().withUserConfiguration(FooConfig.class).run((context) -> assertThat(context).hasBean("foo"));
+	}
+
+	@Test
+	void runWithUserConfigurationsRegistersDefaultBeanName() {
+		get().withUserConfiguration(FooConfig.class)
+			.run((context) -> assertThat(context).hasBean("abstractApplicationContextRunnerTests.FooConfig"));
+	}
+
+	@Test
+	void runWithUserConfigurationsWhenHasSameShortClassNamedRegistersWithoutBeanName() {
+		get()
+			.withUserConfiguration(org.springframework.boot.test.context.example.duplicate.first.EmptyConfig.class,
+					org.springframework.boot.test.context.example.duplicate.second.EmptyConfig.class)
+			.run((context) -> assertThat(context.getStartupFailure())
+				.isInstanceOf(BeanDefinitionOverrideException.class));
+	}
+
+	@Test
+	void runFullyQualifiedNameConfigurationsRegistersFullyQualifiedBeanName() {
+		get().withConfiguration(FullyQualifiedNameConfigurations.of(FooConfig.class))
+			.run((context) -> assertThat(context).hasBean(FooConfig.class.getName()));
+	}
+
+	@Test
+	void runWithFullyQualifiedNameConfigurationsWhenHasSameShortClassNamedRegistersWithFullyQualifiedBeanName() {
+		get()
+			.withConfiguration(FullyQualifiedNameConfigurations.of(
+					org.springframework.boot.test.context.example.duplicate.first.EmptyConfig.class,
+					org.springframework.boot.test.context.example.duplicate.second.EmptyConfig.class))
+			.run((context) -> assertThat(context)
+				.hasSingleBean(org.springframework.boot.test.context.example.duplicate.first.EmptyConfig.class)
+				.hasSingleBean(org.springframework.boot.test.context.example.duplicate.second.EmptyConfig.class));
 	}
 
 	@Test
@@ -381,6 +418,23 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Profile("test")
 	@Configuration(proxyBeanMethods = false)
 	static class ProfileConfig {
+
+	}
+
+	static class FullyQualifiedNameConfigurations extends Configurations {
+
+		protected FullyQualifiedNameConfigurations(Collection<Class<?>> classes) {
+			super(null, classes, Class::getName);
+		}
+
+		@Override
+		protected Configurations merge(Set<Class<?>> mergedClasses) {
+			return new FullyQualifiedNameConfigurations(mergedClasses);
+		}
+
+		static FullyQualifiedNameConfigurations of(Class<?>... classes) {
+			return new FullyQualifiedNameConfigurations(List.of(classes));
+		}
 
 	}
 

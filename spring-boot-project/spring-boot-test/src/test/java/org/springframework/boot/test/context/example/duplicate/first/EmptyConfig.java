@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package smoketest.structuredlogging;
+package org.springframework.boot.test.context.example.duplicate.first;
 
-import org.springframework.boot.json.JsonWriter.Members;
-import org.springframework.boot.json.JsonWriter.ValueProcessor;
-import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
+import org.springframework.context.annotation.Configuration;
 
-public class SampleJsonMembersCustomizer implements StructureLoggingJsonMembersCustomizer<Object> {
-
-	@Override
-	public void customize(Members<Object> members) {
-		members.applyingValueProcessor(
-				ValueProcessor.of(String.class, "!!%s!!"::formatted).whenHasUnescapedPath("process.thread.name"));
-	}
+/**
+ * Example configuration to showcase handing of duplicate class names.
+ *
+ * @author Stephane Nicoll
+ */
+@Configuration
+public class EmptyConfig {
 
 }

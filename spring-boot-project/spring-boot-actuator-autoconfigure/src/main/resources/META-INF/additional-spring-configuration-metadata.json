@@ -59,7 +59,7 @@
     },
     {
       "name": "management.endpoints.access.default",
-      "type": "java.lang.Boolean",
+      "type": "org.springframework.boot.actuate.endpoint.Access",
       "description": "Default access level for all endpoints."
     },
     {

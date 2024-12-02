@@ -36,6 +36,7 @@ import java.util.function.Predicate;
 
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -496,18 +497,25 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		}
 		for (String beanName : beanNames) {
 			if (beanFactory instanceof ConfigurableListableBeanFactory clbf) {
-				try {
-					result.put(beanName, clbf.getBeanDefinition(beanName));
-				}
-				catch (NoSuchBeanDefinitionException ex) {
-					result.put(beanName, null);
-				}
+				result.put(beanName, getBeanDefinition(beanName, clbf));
 			}
 			else {
 				result.put(beanName, null);
 			}
 		}
 		return result;
+	}
+
+	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {
+		try {
+			return beanFactory.getBeanDefinition(beanName);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			if (BeanFactoryUtils.isFactoryDereference(beanName)) {
+				return getBeanDefinition(BeanFactoryUtils.transformedBeanName(beanName), beanFactory);
+			}
+		}
+		return null;
 	}
 
 	/**

@@ -28,8 +28,8 @@ import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
-import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 
@@ -43,7 +43,7 @@ import org.springframework.util.ObjectUtils;
 class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
 	ElasticCommonSchemaStructuredLogFormatter(Environment environment,
-			StructureLoggingJsonMembersCustomizer<?> customizer) {
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		super((members) -> jsonMembers(environment, members), customizer);
 	}
 

@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.mock.mockito;
+package org.springframework.boot.buildpack.platform.docker.ssl;
 
-import org.assertj.core.api.Condition;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.plugins.MockResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link SpringBootMockResolver}.
+ * Tests for {@link PemPrivateKeyParser}.
  *
- * @author Andy Wilkinson
- * @deprecated since 3.4.0 for removal in 3.6.0
+ * @author Phillip Webb
  */
-@SuppressWarnings("removal")
-@Deprecated(since = "3.4.0", forRemoval = true)
-class SpringBootMockResolverIntegrationTests {
+class PemPrivateKeyParserTests {
+
+	private static final String SOURCE = "PemPrivateKeyParser.java";
 
 	@Test
-	void customMockResolverIsRegisteredWithMockito() {
-		assertThat(Plugins.getMockResolvers()).haveAtLeastOne(new Condition<MockResolver>(
-				SpringBootMockResolver.class::isInstance, "Spring Boot mock resolver instance"));
+	void codeShouldMatchSpringBootSslPackage() throws IOException {
+		String buildpackVersion = SslSource.loadBuildpackVersion(SOURCE);
+		String springBootVersion = SslSource.loadSpringBootVersion(SOURCE);
+		assertThat(buildpackVersion).isEqualTo(springBootVersion);
 	}
 
 }

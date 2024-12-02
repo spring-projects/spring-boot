@@ -38,7 +38,7 @@ import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 import org.slf4j.helpers.BasicMarkerFactory;
 
-import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,7 +59,7 @@ abstract class AbstractStructuredLoggingTests {
 	private BasicMarkerFactory markerFactory;
 
 	@Mock
-	StructureLoggingJsonMembersCustomizer<?> customizer;
+	StructuredLoggingJsonMembersCustomizer<?> customizer;
 
 	@BeforeEach
 	void setUp() {

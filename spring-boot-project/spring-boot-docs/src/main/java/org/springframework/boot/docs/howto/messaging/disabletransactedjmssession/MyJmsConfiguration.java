@@ -31,7 +31,7 @@ public class MyJmsConfiguration {
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory,
 			DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory listenerFactory = new DefaultJmsListenerContainerFactory();
-		configurer.configure(listenerFactory, ConnectionFactoryUnwrapper.unwrap(connectionFactory));
+		configurer.configure(listenerFactory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory));
 		listenerFactory.setTransactionManager(null);
 		listenerFactory.setSessionTransacted(false);
 		return listenerFactory;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,35 +16,17 @@
 
 package org.springframework.boot.test.autoconfigure.json.app;
 
+import java.util.Date;
+import java.util.UUID;
+
 /**
  * Example object to read/write as JSON through {@link ExampleJsonComponent}.
  *
  * @author Phillip Webb
+ * @param value the value
+ * @param date a date
+ * @param uuid a uuid
  */
-public class ExampleCustomObject {
-
-	private final String value;
-
-	public ExampleCustomObject(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj != null && obj.getClass() == getClass()) {
-			return this.value.equals(((ExampleCustomObject) obj).value);
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return this.value.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return this.value;
-	}
+public record ExampleCustomObject(String value, Date date, UUID uuid) {
 
 }

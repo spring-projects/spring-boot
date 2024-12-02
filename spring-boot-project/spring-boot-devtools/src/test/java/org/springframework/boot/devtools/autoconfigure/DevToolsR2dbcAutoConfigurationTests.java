@@ -71,28 +71,32 @@ class DevToolsR2dbcAutoConfigurationTests {
 
 		@Test
 		void nonEmbeddedConnectionFactoryIsNotShutdown() throws Exception {
-			ConfigurableApplicationContext context = getContext(() -> createContext("r2dbc:h2:file:///testdb"));
-			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
-			context.close();
-			assertThat(shutdowns).doesNotContain(connectionFactory);
+			try (ConfigurableApplicationContext context = getContext(() -> createContext("r2dbc:h2:file:///testdb"))) {
+				ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+				context.close();
+				assertThat(shutdowns).doesNotContain(connectionFactory);
+			}
 		}
 
 		@Test
 		void singleManuallyConfiguredConnectionFactoryIsNotClosed() throws Exception {
-			ConfigurableApplicationContext context = getContext(
-					() -> createContext(SingleConnectionFactoryConfiguration.class));
-			ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
-			context.close();
-			assertThat(shutdowns).doesNotContain(connectionFactory);
+			try (ConfigurableApplicationContext context = getContext(
+					() -> createContext(SingleConnectionFactoryConfiguration.class))) {
+				ConnectionFactory connectionFactory = context.getBean(ConnectionFactory.class);
+				context.close();
+				assertThat(shutdowns).doesNotContain(connectionFactory);
+			}
 		}
 
 		@Test
 		void multipleConnectionFactoriesAreIgnored() throws Exception {
-			ConfigurableApplicationContext context = getContext(
-					() -> createContext(MultipleConnectionFactoriesConfiguration.class));
-			Collection<ConnectionFactory> connectionFactory = context.getBeansOfType(ConnectionFactory.class).values();
-			context.close();
-			assertThat(shutdowns).doesNotContainAnyElementsOf(connectionFactory);
+			try (ConfigurableApplicationContext context = getContext(
+					() -> createContext(MultipleConnectionFactoriesConfiguration.class))) {
+				Collection<ConnectionFactory> connectionFactory = context.getBeansOfType(ConnectionFactory.class)
+					.values();
+				context.close();
+				assertThat(shutdowns).doesNotContainAnyElementsOf(connectionFactory);
+			}
 		}
 
 		@Test

@@ -88,6 +88,7 @@ public enum TestImage {
 	 * {@link org.testcontainers.containers.CassandraContainer}.
 	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #CASSANDRA}
 	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	CASSANDRA_DEPRECATED("cassandra", "3.11.10", () -> org.testcontainers.containers.CassandraContainer.class,
 			(container) -> ((org.testcontainers.containers.CassandraContainer<?>) container)
@@ -139,6 +140,7 @@ public enum TestImage {
 	 * deprecated {@link org.testcontainers.containers.KafkaContainer}.
 	 * @deprecated since 3.4.0 for removal in 3.6.0 in favor of {@link #CONFLUENT_KAFKA}
 	 */
+	@SuppressWarnings("deprecation")
 	@Deprecated(since = "3.4.0", forRemoval = true)
 	CONFLUENT_KAFKA_DEPRECATED("confluentinc/cp-kafka", "7.4.0",
 			() -> org.testcontainers.containers.KafkaContainer.class),

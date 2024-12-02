@@ -126,18 +126,18 @@ See the sections on xref:how-to:webserver.adoc#howto.webserver.configure-ssl[emb
 [[features.ssl.bundles]]
 == Using SSL Bundles
 
-Spring Boot auto-configures a bean of type `SslBundles` that provides access to each of the named bundles configured using the `spring.ssl.bundle` properties.
+Spring Boot auto-configures a bean of type javadoc:org.springframework.boot.ssl.SslBundles[] that provides access to each of the named bundles configured using the `spring.ssl.bundle` properties.
 
-An `SslBundle` can be retrieved from the auto-configured `SslBundles` bean and used to create objects that are used to configure SSL connectivity in client libraries.
-The `SslBundle` provides a layered approach of obtaining these SSL objects:
+An javadoc:org.springframework.boot.ssl.SslBundle[] can be retrieved from the auto-configured javadoc:org.springframework.boot.ssl.SslBundles[] bean and used to create objects that are used to configure SSL connectivity in client libraries.
+The javadoc:org.springframework.boot.ssl.SslBundle[] provides a layered approach of obtaining these SSL objects:
 
-- `getStores()` provides access to the key store and trust store `java.security.KeyStore` instances as well as any required key store password.
-- `getManagers()` provides access to the `java.net.ssl.KeyManagerFactory` and `java.net.ssl.TrustManagerFactory` instances as well as the `java.net.ssl.KeyManager` and `java.net.ssl.TrustManager` arrays that they create.
-- `createSslContext()` provides a convenient way to obtain a new `java.net.ssl.SSLContext` instance.
+- `getStores()` provides access to the key store and trust store javadoc:java.security.KeyStore[] instances as well as any required key store password.
+- `getManagers()` provides access to the javadoc:javax.net.ssl.KeyManagerFactory[] and javadoc:javax.net.ssl.TrustManagerFactory[] instances as well as the javadoc:javax.net.ssl.KeyManager[] and javadoc:javax.net.ssl.TrustManager[] arrays that they create.
+- `createSslContext()` provides a convenient way to obtain a new javadoc:javax.net.ssl.SSLContext[] instance.
 
-In addition, the `SslBundle` provides details about the key being used, the protocol to use and any option that should be applied to the SSL engine.
+In addition, the javadoc:org.springframework.boot.ssl.SslBundle[] provides details about the key being used, the protocol to use and any option that should be applied to the SSL engine.
 
-The following example shows retrieving an `SslBundle` and using it to create an `SSLContext`:
+The following example shows retrieving an javadoc:org.springframework.boot.ssl.SslBundle[] and using it to create an javadoc:javax.net.ssl.SSLContext[]:
 
 include-code::MyComponent[]
 

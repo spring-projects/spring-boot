@@ -187,9 +187,9 @@ public class JmsProperties {
 		private Duration receiveTimeout = Duration.ofSeconds(1);
 
 		/**
-		 * Specify the maximum number of messages to process in one task. By default,
-		 * unlimited unless a SchedulingTaskExecutor is configured on the listener (10
-		 * messages), as it indicates a preference for short-lived tasks.
+		 * Maximum number of messages to process in one task. By default, unlimited unless
+		 * a SchedulingTaskExecutor is configured on the listener (10 messages), as it
+		 * indicates a preference for short-lived tasks.
 		 */
 		private Integer maxMessagesPerTask;
 

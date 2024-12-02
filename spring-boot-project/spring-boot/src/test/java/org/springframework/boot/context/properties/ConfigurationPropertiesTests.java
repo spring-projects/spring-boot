@@ -49,6 +49,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -1519,7 +1520,7 @@ class ConfigurationPropertiesTests {
 	static class PrototypePropertiesBeanConfiguration {
 
 		@Bean
-		@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+		@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 		@ConfigurationProperties("example")
 		PrototypeBean prototypeBean() {
 			return new PrototypeBean();
@@ -1534,7 +1535,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@ConfigurationProperties("example")
-	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	static class PrototypeBeanProperties extends PrototypeBean {
 
 	}

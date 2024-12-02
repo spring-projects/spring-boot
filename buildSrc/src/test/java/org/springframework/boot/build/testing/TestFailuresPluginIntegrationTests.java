@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class TestFailuresPluginIntegrationTests {
 			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 1 test task:", "", ":test",
 				"    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	@Test
@@ -72,7 +72,7 @@ class TestFailuresPluginIntegrationTests {
 			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 1 test task:", "",
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class TestFailuresPluginIntegrationTests {
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "", ":project-two:test",
 				"    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class TestFailuresPluginIntegrationTests {
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "", ":project-two:test",
 				"    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
-				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
+				"    example.MoreTests > bad()", "    example.MoreTests > fail()");
 	}
 
 	private void createProject(File dir) {

@@ -12,8 +12,8 @@ If you need to, you may use this library directly.
 [[build-tool-plugins.other-build-systems.repackaging-archives]]
 == Repackaging Archives
 
-To repackage an existing archive so that it becomes a self-contained executable archive, use `org.springframework.boot.loader.tools.Repackager`.
-The `Repackager` class takes a single constructor argument that refers to an existing jar or war archive.
+To repackage an existing archive so that it becomes a self-contained executable archive, use javadoc:org.springframework.boot.loader.tools.Repackager[].
+The javadoc:org.springframework.boot.loader.tools.Repackager[] class takes a single constructor argument that refers to an existing jar or war archive.
 Use one of the two available `repackage()` methods to either replace the original file or write to a new destination.
 Various settings can also be configured on the repackager before it is run.
 
@@ -22,10 +22,10 @@ Various settings can also be configured on the repackager before it is run.
 [[build-tool-plugins.other-build-systems.nested-libraries]]
 == Nested Libraries
 
-When repackaging an archive, you can include references to dependency files by using the `org.springframework.boot.loader.tools.Libraries` interface.
-We do not provide any concrete implementations of `Libraries` here as they are usually build-system-specific.
+When repackaging an archive, you can include references to dependency files by using the javadoc:org.springframework.boot.loader.tools.Libraries[] interface.
+We do not provide any concrete implementations of javadoc:org.springframework.boot.loader.tools.Libraries[] here as they are usually build-system-specific.
 
-If your archive already includes libraries, you can use `Libraries.NONE`.
+If your archive already includes libraries, you can use javadoc:org.springframework.boot.loader.tools.Libraries#NONE[].
 
 
 

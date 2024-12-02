@@ -2,7 +2,7 @@ plugins {
 	id "java"
 }
 
-description = "Spring Boot structure logging Log4j2 smoke test"
+description = "Spring Boot structured logging Log4j2 smoke test"
 
 configurations.all {
 	exclude module: "spring-boot-starter-logging"

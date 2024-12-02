@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.NameProcessor;
 import org.springframework.boot.util.Instantiator;
 
@@ -95,26 +96,34 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void customizeWhenHasCustomizerCustomizesMember() {
-		StructureLoggingJsonMembersCustomizer<?> uppercaseCustomizer = (members) -> members
+		StructuredLoggingJsonMembersCustomizer<?> uppercaseCustomizer = (members) -> members
 			.applyingNameProcessor(NameProcessor.of(String::toUpperCase));
-		given(((Instantiator) this.instantiator).instantiate("test")).willReturn(uppercaseCustomizer);
+		given(((Instantiator) this.instantiator).instantiateType(TestCustomizer.class)).willReturn(uppercaseCustomizer);
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), "test");
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), TestCustomizer.class);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("\"A\":\"a\"");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private String writeSampleJson(StructureLoggingJsonMembersCustomizer customizer) {
+	private String writeSampleJson(StructuredLoggingJsonMembersCustomizer customizer) {
 		return JsonWriter.of((members) -> {
 			members.add("a", "a");
 			members.add("b", "b");
 			members.add("c", "c");
 			customizer.customize(members);
 		}).writeToString(new Object());
+	}
+
+	static class TestCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
+
+		@Override
+		public void customize(Members<String> members) {
+		}
+
 	}
 
 }

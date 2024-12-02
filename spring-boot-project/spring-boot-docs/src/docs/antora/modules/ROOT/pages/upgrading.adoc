@@ -12,7 +12,15 @@ If you are more than one release behind, please make sure that you also review t
 [[upgrading.from-1x]]
 == Upgrading From 1.x
 
-If you are upgrading from the `1.x` release of Spring Boot, check the {url-github-wiki}/Spring-Boot-2.0-Migration-Guide[migration guide] on the project wiki that provides detailed upgrade instructions.
+If you are upgrading from the `1.x` release of Spring Boot, check the {url-github-wiki}/Spring-Boot-2.0-Migration-Guide[migration guide] on the project wiki that provides detailed upgrade instructions to upgrade to Spring Boot 2.x.
+Check also the {url-github-wiki}[release notes] for a list of "`new and noteworthy`" features for each release.
+
+
+
+[[upgrading.from-2x]]
+== Upgrading From 2.x
+
+If you are upgrading from the `2.x` release of Spring Boot, check the {url-github-wiki}/Spring-Boot-3.0-Migration-Guide[migration guide] on the project wiki that provides detailed upgrade instructions.
 Check also the {url-github-wiki}[release notes] for a list of "`new and noteworthy`" features for each release.
 
 
@@ -33,7 +41,7 @@ To enable that feature, add the following dependency to your project:
 </dependency>
 ----
 
-WARNING: Properties that are added late to the environment, such as when using `@PropertySource`, will not be taken into account.
+WARNING: Properties that are added late to the environment, such as when using javadoc:org.springframework.context.annotation.PropertySource[format=annotation], will not be taken into account.
 
 NOTE: Once you finish the migration, please make sure to remove this module from your project's dependencies.
 

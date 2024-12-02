@@ -160,7 +160,7 @@ class ConditionalOnMissingBeanTests {
 	@Test
 	void testOnMissingBeanConditionWithFactoryBean() {
 		this.contextRunner
-			.withUserConfiguration(FactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
+			.withUserConfiguration(FactoryBeanConfiguration.class, ConditionalOnMissingBeanProducedByFactoryBean.class,
 					PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ExampleBean.class)).hasToString("fromFactory"));
 	}
@@ -169,7 +169,7 @@ class ConditionalOnMissingBeanTests {
 	void testOnMissingBeanConditionWithComponentScannedFactoryBean() {
 		this.contextRunner
 			.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodConfiguration.class,
-					ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ScanBean.class)).hasToString("fromFactory"));
 	}
 
@@ -177,7 +177,7 @@ class ConditionalOnMissingBeanTests {
 	void testOnMissingBeanConditionWithComponentScannedFactoryBeanWithBeanMethodArguments() {
 		this.contextRunner
 			.withUserConfiguration(ComponentScannedFactoryBeanBeanMethodWithArgumentsConfiguration.class,
-					ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ScanBean.class)).hasToString("fromFactory"));
 	}
 
@@ -185,7 +185,7 @@ class ConditionalOnMissingBeanTests {
 	void testOnMissingBeanConditionWithFactoryBeanWithBeanMethodArguments() {
 		this.contextRunner
 			.withUserConfiguration(FactoryBeanWithBeanMethodArgumentsConfiguration.class,
-					ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.withPropertyValues("theValue=foo")
 			.run((context) -> assertThat(context.getBean(ExampleBean.class)).hasToString("fromFactory"));
 	}
@@ -193,8 +193,8 @@ class ConditionalOnMissingBeanTests {
 	@Test
 	void testOnMissingBeanConditionWithConcreteFactoryBean() {
 		this.contextRunner
-			.withUserConfiguration(ConcreteFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
-					PropertyPlaceholderAutoConfiguration.class)
+			.withUserConfiguration(ConcreteFactoryBeanConfiguration.class,
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ExampleBean.class)).hasToString("fromFactory"));
 	}
 
@@ -202,16 +202,16 @@ class ConditionalOnMissingBeanTests {
 	void testOnMissingBeanConditionWithUnhelpfulFactoryBean() {
 		// We could not tell that the FactoryBean would ultimately create an ExampleBean
 		this.contextRunner
-			.withUserConfiguration(UnhelpfulFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
-					PropertyPlaceholderAutoConfiguration.class)
+			.withUserConfiguration(UnhelpfulFactoryBeanConfiguration.class,
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context).getBeans(ExampleBean.class).hasSize(2));
 	}
 
 	@Test
 	void testOnMissingBeanConditionWithRegisteredFactoryBean() {
 		this.contextRunner
-			.withUserConfiguration(RegisteredFactoryBeanConfiguration.class, ConditionalOnFactoryBean.class,
-					PropertyPlaceholderAutoConfiguration.class)
+			.withUserConfiguration(RegisteredFactoryBeanConfiguration.class,
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ExampleBean.class)).hasToString("fromFactory"));
 	}
 
@@ -219,7 +219,7 @@ class ConditionalOnMissingBeanTests {
 	void testOnMissingBeanConditionWithNonspecificFactoryBeanWithClassAttribute() {
 		this.contextRunner
 			.withUserConfiguration(NonspecificFactoryBeanClassAttributeConfiguration.class,
-					ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ExampleBean.class)).hasToString("fromFactory"));
 	}
 
@@ -227,15 +227,15 @@ class ConditionalOnMissingBeanTests {
 	void testOnMissingBeanConditionWithNonspecificFactoryBeanWithStringAttribute() {
 		this.contextRunner
 			.withUserConfiguration(NonspecificFactoryBeanStringAttributeConfiguration.class,
-					ConditionalOnFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ExampleBean.class)).hasToString("fromFactory"));
 	}
 
 	@Test
 	void testOnMissingBeanConditionWithFactoryBeanInXml() {
 		this.contextRunner
-			.withUserConfiguration(FactoryBeanXmlConfiguration.class, ConditionalOnFactoryBean.class,
-					PropertyPlaceholderAutoConfiguration.class)
+			.withUserConfiguration(FactoryBeanXmlConfiguration.class,
+					ConditionalOnMissingBeanProducedByFactoryBean.class, PropertyPlaceholderAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ExampleBean.class)).hasToString("fromFactory"));
 	}
 
@@ -378,6 +378,15 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Test
+	void typeBasedMatchingIgnoresFactoryBeanThatIsNotDefaultCandidate() {
+		this.contextRunner
+			.withUserConfiguration(NotDefaultCandidateFactoryBeanConfiguration.class,
+					ConditionalOnMissingFactoryBean.class)
+			.run((context) -> assertThat(context).hasBean("&exampleFactoryBean")
+				.hasBean("&additionalExampleFactoryBean"));
+	}
+
+	@Test
 	void nameBasedMatchingConsidersBeanThatIsNotDefaultCandidate() {
 		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfig.class, OnBeanNameConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
@@ -447,7 +456,17 @@ class ConditionalOnMissingBeanTests {
 	static class FactoryBeanConfiguration {
 
 		@Bean
-		FactoryBean<ExampleBean> exampleBeanFactoryBean() {
+		ExampleFactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean("foo");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotDefaultCandidateFactoryBeanConfiguration {
+
+		@Bean(defaultCandidate = false)
+		ExampleFactoryBean exampleFactoryBean() {
 			return new ExampleFactoryBean("foo");
 		}
 
@@ -548,12 +567,23 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ConditionalOnFactoryBean {
+	static class ConditionalOnMissingBeanProducedByFactoryBean {
 
 		@Bean
 		@ConditionalOnMissingBean
 		ExampleBean createExampleBean() {
 			return new ExampleBean("direct");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConditionalOnMissingFactoryBean {
+
+		@Bean
+		@ConditionalOnMissingBean
+		ExampleFactoryBean additionalExampleFactoryBean() {
+			return new ExampleFactoryBean("factory");
 		}
 
 	}

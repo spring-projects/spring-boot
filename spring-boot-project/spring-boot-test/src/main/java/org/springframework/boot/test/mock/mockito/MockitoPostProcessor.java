@@ -336,6 +336,7 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 		SpyDefinition definition = this.spies.get(beanName);
 		if (definition != null) {
 			bean = definition.createSpy(beanName, bean);
+			this.mockitoBeans.add(bean);
 		}
 		return bean;
 	}
