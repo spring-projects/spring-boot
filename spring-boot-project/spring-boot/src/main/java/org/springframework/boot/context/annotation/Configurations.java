@@ -92,7 +92,7 @@ public abstract class Configurations {
 		Assert.notNull(classes, "Classes must not be null");
 		sorter = (sorter != null) ? sorter : UnaryOperator.identity();
 		Collection<Class<?>> sorted = sorter.apply(classes);
-		this.sorter = (sorter != null) ? sorter : UnaryOperator.identity();
+		this.sorter = sorter;
 		this.classes = Collections.unmodifiableSet(new LinkedHashSet<>(sorted));
 		this.beanNameGenerator = beanNameGenerator;
 	}
