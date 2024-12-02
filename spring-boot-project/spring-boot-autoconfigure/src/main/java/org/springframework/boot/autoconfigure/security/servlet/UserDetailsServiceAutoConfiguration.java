@@ -31,6 +31,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +55,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Rob Winch
  * @author Madhura Bhave
+ * @author Lasse Wulff
  * @since 2.0.0
  */
 @AutoConfiguration
@@ -61,6 +64,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean(value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
 		AuthenticationManagerResolver.class }, type = "org.springframework.security.oauth2.jwt.JwtDecoder")
+@ConditionalOnWebApplication(type = Type.SERVLET)
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
