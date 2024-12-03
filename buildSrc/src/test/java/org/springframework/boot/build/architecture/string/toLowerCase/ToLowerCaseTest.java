@@ -16,11 +16,15 @@
 
 package org.springframework.boot.build.architecture.string.toLowerCase;
 
-class ToLowerCase {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-	void exampleMethod() {
+class ToLowerCaseTest {
+
+	@Test
+	public void exampleMethod() {
 		String test = "Object must not be null";
-		System.out.println(test.toLowerCase());
+		Assertions.assertEquals("object must not be null", test.toLowerCase());
 	}
 
 }

@@ -16,11 +16,15 @@
 
 package org.springframework.boot.build.architecture.string.toUpperCase;
 
-class ToUpperCase {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
+class ToUpperCaseTest {
+
+	@Test
 	void exampleMethod() {
 		String test = "Object must not be null";
-		System.out.println(test.toUpperCase());
+		Assertions.assertEquals("OBJECT MUST NOT BE NULL", test.toUpperCase());
 	}
 
 }

@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.architecture.string.toUpperCaseWithLocale;
+package org.springframework.boot.build.architecture.string.toLowerCaseWithLocale;
 
 import java.util.Locale;
 
-class ToUpperCaseWithLocale {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-	void exampleMethod() {
+class ToLowerCaseWithLocaleTest {
+
+	@Test
+	public void exampleMethod() {
 		String test = "Object must not be null";
-		System.out.println(test.toUpperCase(Locale.ROOT));
+		Assertions.assertEquals("object must not be null", test.toLowerCase(Locale.ENGLISH));
 	}
 
 }
