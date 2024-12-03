@@ -132,15 +132,15 @@ management:
       access: unrestricted
 ----
 
-If you prefer access to be opt-in rather than opt-out, set the configprop:management.endpoints.access.default[] property to `disabled` and use individual endpoint `access` properties to opt back in.
-The following example allows read-only access to the `loggers` endpoint and disables all other endpoints:
+If you prefer access to be opt-in rather than opt-out, set the configprop:management.endpoints.access.default[] property to `none` and use individual endpoint `access` properties to opt back in.
+The following example allows read-only access to the `loggers` endpoint and denies access to all other endpoints:
 
 [configprops,yaml]
 ----
 management:
   endpoints:
     access:
-      default: disabled
+      default: none
   endpoint:
     loggers:
       access: read-only
@@ -148,6 +148,7 @@ management:
 
 NOTE: Inaccessible endpoints are removed entirely from the application context.
 If you want to change only the technologies over which an endpoint is exposed, use the xref:actuator/endpoints.adoc#actuator.endpoints.exposing[`include` and `exclude` properties] instead.
+
 
 
 [[actuator.endpoints.controlling-access.limiting]]
