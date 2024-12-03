@@ -18,6 +18,7 @@ package org.springframework.boot.io;
 
 import java.util.List;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ContextResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.FileSystemResource;
@@ -26,6 +27,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -120,8 +122,25 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * @since 3.4.0
 	 */
 	public static ResourceLoader get(ResourceLoader resourceLoader) {
+		return get(resourceLoader, false);
+	}
+
+	/**
+	 * Return a {@link ResourceLoader} delegating to the given resource loader and
+	 * supporting additional {@link ProtocolResolver ProtocolResolvers} registered in
+	 * {@code spring.factories}. The factories file will be resolved using the default
+	 * class loader at the time this call is made.
+	 * @param resourceLoader the delegate resource loader
+	 * @param preferFileResolution if file based resolution is preferred over
+	 * {@code ServletContextResource} or {@link ClassPathResource} when no resource prefix
+	 * is provided.
+	 * @return a {@link ResourceLoader} instance
+	 * @since 3.4.1
+	 */
+	public static ResourceLoader get(ResourceLoader resourceLoader, boolean preferFileResolution) {
 		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
-		return get(resourceLoader, SpringFactoriesLoader.forDefaultResourceLocation(resourceLoader.getClassLoader()));
+		return get(resourceLoader, SpringFactoriesLoader.forDefaultResourceLocation(resourceLoader.getClassLoader()),
+				preferFileResolution);
 	}
 
 	/**
@@ -135,9 +154,15 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * @since 3.4.0
 	 */
 	public static ResourceLoader get(ResourceLoader resourceLoader, SpringFactoriesLoader springFactoriesLoader) {
+		return get(resourceLoader, springFactoriesLoader, false);
+	}
+
+	private static ResourceLoader get(ResourceLoader resourceLoader, SpringFactoriesLoader springFactoriesLoader,
+			boolean preferFileResolution) {
 		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		Assert.notNull(springFactoriesLoader, "'springFactoriesLoader' must not be null");
-		return new ProtocolResolvingResourceLoader(resourceLoader, springFactoriesLoader.load(ProtocolResolver.class));
+		return new ProtocolResolvingResourceLoader(resourceLoader, springFactoriesLoader.load(ProtocolResolver.class),
+				preferFileResolution);
 	}
 
 	/**
@@ -185,13 +210,30 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 */
 	private static class ProtocolResolvingResourceLoader implements ResourceLoader {
 
+		private static final String SERVLET_CONTEXT_RESOURCE_CLASS_NAME = "org.springframework.web.context.support.ServletContextResource";
+
 		private final ResourceLoader resourceLoader;
 
 		private final List<ProtocolResolver> protocolResolvers;
 
-		ProtocolResolvingResourceLoader(ResourceLoader resourceLoader, List<ProtocolResolver> protocolResolvers) {
+		private final boolean preferFileResolution;
+
+		private Class<?> servletContextResourceClass;
+
+		ProtocolResolvingResourceLoader(ResourceLoader resourceLoader, List<ProtocolResolver> protocolResolvers,
+				boolean preferFileResolution) {
 			this.resourceLoader = resourceLoader;
 			this.protocolResolvers = protocolResolvers;
+			this.preferFileResolution = preferFileResolution;
+			this.servletContextResourceClass = resolveServletContextResourceClass(
+					resourceLoader.getClass().getClassLoader());
+		}
+
+		private static Class<?> resolveServletContextResourceClass(ClassLoader classLoader) {
+			if (!ClassUtils.isPresent(SERVLET_CONTEXT_RESOURCE_CLASS_NAME, classLoader)) {
+				return null;
+			}
+			return ClassUtils.resolveClassName(SERVLET_CONTEXT_RESOURCE_CLASS_NAME, classLoader);
 		}
 
 		@Override
@@ -204,7 +246,20 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 					}
 				}
 			}
-			return this.resourceLoader.getResource(location);
+			Resource resource = this.resourceLoader.getResource(location);
+			if (this.preferFileResolution
+					&& (isClassPathResourceByPath(location, resource) || isServletResource(resource))) {
+				resource = new ApplicationResource(location);
+			}
+			return resource;
+		}
+
+		private boolean isClassPathResourceByPath(String location, Resource resource) {
+			return (resource instanceof ClassPathResource) && !location.startsWith(CLASSPATH_URL_PREFIX);
+		}
+
+		private boolean isServletResource(Resource resource) {
+			return this.servletContextResourceClass != null && this.servletContextResourceClass.isInstance(resource);
 		}
 
 		@Override

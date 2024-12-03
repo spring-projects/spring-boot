@@ -119,6 +119,24 @@ class SslAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void sslBundleWithoutClassPathPrefix() {
+		List<String> propertyValues = new ArrayList<>();
+		String location = "src/test/resources/org/springframework/boot/autoconfigure/ssl/";
+		propertyValues.add("spring.ssl.bundle.pem.test.key.alias=alias1");
+		propertyValues.add("spring.ssl.bundle.pem.test.key.password=secret1");
+		propertyValues.add("spring.ssl.bundle.pem.test.keystore.certificate=" + location + "rsa-cert.pem");
+		propertyValues.add("spring.ssl.bundle.pem.test.keystore.keystore.private-key=" + location + "rsa-key.pem");
+		propertyValues.add("spring.ssl.bundle.pem.test.truststore.certificate=" + location + "rsa-cert.pem");
+		this.contextRunner.withPropertyValues(propertyValues.toArray(String[]::new)).run((context) -> {
+			assertThat(context).hasSingleBean(SslBundles.class);
+			SslBundles bundles = context.getBean(SslBundles.class);
+			SslBundle bundle = bundles.getBundle("test");
+			assertThat(bundle.getStores().getKeyStore().getCertificate("alias1")).isNotNull();
+			assertThat(bundle.getStores().getTrustStore().getCertificate("ssl")).isNotNull();
+		});
+	}
+
 	@Configuration
 	@EnableConfigurationProperties(CustomSslProperties.class)
 	public static class CustomSslBundleConfiguration {

@@ -24,13 +24,19 @@ import java.util.Base64;
 import java.util.Enumeration;
 import java.util.function.UnaryOperator;
 
+import jakarta.servlet.ServletContext;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.ServletContextResource;
+import org.springframework.web.context.support.ServletContextResourceLoader;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -150,6 +156,48 @@ class ApplicationResourceLoaderTests {
 		ResourceLoader loader = ApplicationResourceLoader.get();
 		assertThatIllegalArgumentException().isThrownBy(() -> loader.getResource(null))
 			.withMessage("Location must not be null");
+	}
+
+	@Test
+	void getResourceWithPreferFileResolutionWhenFullPathWithClassPathResource() throws Exception {
+		File file = new File("src/main/resources/a-file");
+		ResourceLoader loader = ApplicationResourceLoader.get(new DefaultResourceLoader(), true);
+		Resource resource = loader.getResource(file.getAbsolutePath());
+		assertThat(resource).isInstanceOf(FileSystemResource.class);
+		assertThat(resource.getFile().getAbsoluteFile()).isEqualTo(file.getAbsoluteFile());
+		ResourceLoader regularLoader = ApplicationResourceLoader.get(new DefaultResourceLoader(), false);
+		assertThat(regularLoader.getResource(file.getAbsolutePath())).isInstanceOf(ClassPathResource.class);
+	}
+
+	@Test
+	void getResourceWithPreferFileResolutionWhenRelativePathWithClassPathResource() throws Exception {
+		ResourceLoader loader = ApplicationResourceLoader.get(new DefaultResourceLoader(), true);
+		Resource resource = loader.getResource("src/main/resources/a-file");
+		assertThat(resource).isInstanceOf(FileSystemResource.class);
+		assertThat(resource.getFile().getAbsoluteFile())
+			.isEqualTo(new File("src/main/resources/a-file").getAbsoluteFile());
+		ResourceLoader regularLoader = ApplicationResourceLoader.get(new DefaultResourceLoader(), false);
+		assertThat(regularLoader.getResource("src/main/resources/a-file")).isInstanceOf(ClassPathResource.class);
+	}
+
+	@Test
+	void getResourceWithPreferFileResolutionWhenExplicitClassPathPrefix() {
+		ResourceLoader loader = ApplicationResourceLoader.get(new DefaultResourceLoader(), true);
+		Resource resource = loader.getResource("classpath:a-file");
+		assertThat(resource).isInstanceOf(ClassPathResource.class);
+	}
+
+	@Test
+	void getResourceWithPreferFileResolutionWhenPathWithServletContextResource() throws Exception {
+		ServletContext servletContext = new MockServletContext();
+		ServletContextResourceLoader servletContextResourceLoader = new ServletContextResourceLoader(servletContext);
+		ResourceLoader loader = ApplicationResourceLoader.get(servletContextResourceLoader, true);
+		Resource resource = loader.getResource("src/main/resources/a-file");
+		assertThat(resource).isInstanceOf(FileSystemResource.class);
+		assertThat(resource.getFile().getAbsoluteFile())
+			.isEqualTo(new File("src/main/resources/a-file").getAbsoluteFile());
+		ResourceLoader regularLoader = ApplicationResourceLoader.get(servletContextResourceLoader, false);
+		assertThat(regularLoader.getResource("src/main/resources/a-file")).isInstanceOf(ServletContextResource.class);
 	}
 
 	@Test
