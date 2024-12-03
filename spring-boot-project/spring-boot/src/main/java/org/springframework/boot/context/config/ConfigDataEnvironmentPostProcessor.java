@@ -50,13 +50,6 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	 */
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
-	/**
-	 * Property used to determine what action to take when a
-	 * {@code ConfigDataLocationNotFoundException} is thrown.
-	 * @see ConfigDataNotFoundAction
-	 */
-	public static final String ON_LOCATION_NOT_FOUND_PROPERTY = ConfigDataEnvironment.ON_NOT_FOUND_PROPERTY;
-
 	private final DeferredLogFactory logFactory;
 
 	private final Log logger;
