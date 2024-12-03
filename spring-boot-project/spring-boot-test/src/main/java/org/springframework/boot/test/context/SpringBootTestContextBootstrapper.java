@@ -244,7 +244,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		}
 		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class).findFromClass(testClass);
 		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
-				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
+				+ "@ContextConfiguration or @SpringBootTest(classes=...) to include the class annotated with @SpringBootConfiguration for your test");
 		this.aotTestAttributes.setAttribute(propertyName, found.getName());
 		return found;
 	}
