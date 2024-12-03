@@ -9,20 +9,31 @@ The jar includes a Java annotation processor which is invoked as your project is
 [[appendix.configuration-metadata.annotation-processor.configuring]]
 == Configuring the Annotation Processor
 
-To use the processor, include a dependency on `spring-boot-configuration-processor`.
-
-With Maven the dependency should be declared as optional, as shown in the following example:
+When building with Maven, configure the compiler plugin (3.12.0 or later) to add `spring-boot-configuration-processor` to the annotation processor paths:
 
 [source,xml]
 ----
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-configuration-processor</artifactId>
-	<optional>true</optional>
-</dependency>
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.springframework.boot</groupId>
+							<artifactId>spring-boot-configuration-processor</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
 ----
 
-With Gradle, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
+With Gradle, a dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
 
 [source,gradle]
 ----
@@ -64,8 +75,8 @@ You could also let the AspectJ plugin run all the processing and disable annotat
 [NOTE]
 ====
 If you are using Lombok in your project, you need to make sure that its annotation processor runs before `spring-boot-configuration-processor`.
-To do so with Maven, you can list the annotation processors in the right order using the `annotationProcessors` attribute of the Maven compiler plugin.
-If you are not using this attribute, and annotation processors are picked up by the dependencies available on the classpath, make sure that the `lombok` dependency is defined before the  `spring-boot-configuration-processor` dependency.
+To do so with Maven, list the annotation processors in the required order using the `annotationProcessors` attribute of the Maven compiler plugin.
+With Gradle, declare the dependencies in the `annotationProcessor` configuration in the required order.
 ====
 
 
