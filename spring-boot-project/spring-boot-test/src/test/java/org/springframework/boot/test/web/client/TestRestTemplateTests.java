@@ -270,13 +270,13 @@ class TestRestTemplateTests {
 	@Test
 	void exchangeWithRequestEntityAndClassHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), String.class));
+			.exchange(new RequestEntity<>(HttpMethod.GET, relativeUri), String.class));
 	}
 
 	@Test
 	void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
+			.exchange(new RequestEntity<>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
 			}));
 	}
 

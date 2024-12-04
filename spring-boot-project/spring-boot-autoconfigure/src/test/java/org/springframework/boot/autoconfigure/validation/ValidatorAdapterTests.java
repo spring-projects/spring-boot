@@ -56,7 +56,7 @@ class ValidatorAdapterTests {
 		this.contextRunner.withUserConfiguration(LocalValidatorFactoryBeanConfig.class).run((context) -> {
 			ValidatorAdapter wrapper = context.getBean(ValidatorAdapter.class);
 			assertThat(wrapper.supports(SampleData.class)).isTrue();
-			MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "test");
+			MapBindingResult errors = new MapBindingResult(new HashMap<>(), "test");
 			wrapper.validate(new SampleData(40), errors);
 			assertThat(errors.getErrorCount()).isOne();
 		});

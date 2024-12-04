@@ -34,8 +34,8 @@ import org.assertj.core.api.InstanceOfAssertFactory;
 import org.assertj.core.api.MapAssert;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -153,7 +153,7 @@ class PulsarConfigurationTests {
 						.getField(clientFactory, "customizer");
 					customizeAction.accept(pulsarClientBuilderCustomizer, target);
 					InOrder ordered = inOrder(target);
-					ordered.verify(target).serviceUrlProvider(Mockito.any(AutoClusterFailover.class));
+					ordered.verify(target).serviceUrlProvider(ArgumentMatchers.any(AutoClusterFailover.class));
 					assertThat(pulsarProperties.getClient().getFailover().getDelay()).isEqualTo(Duration.ofSeconds(15));
 					assertThat(pulsarProperties.getClient().getFailover().getSwitchBackDelay())
 						.isEqualTo(Duration.ofSeconds(30));

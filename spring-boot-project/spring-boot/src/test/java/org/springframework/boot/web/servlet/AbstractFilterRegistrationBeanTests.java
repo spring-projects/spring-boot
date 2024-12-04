@@ -139,8 +139,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void setServletRegistrationBeanReplacesValue() throws Exception {
 		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean(mockServletRegistration("a"));
-		bean.setServletRegistrationBeans(
-				new LinkedHashSet<ServletRegistrationBean<?>>(Collections.singletonList(mockServletRegistration("b"))));
+		bean.setServletRegistrationBeans(new LinkedHashSet<>(Collections.singletonList(mockServletRegistration("b"))));
 		bean.onStartup(this.servletContext);
 		then(this.registration).should().addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), false, "b");
 	}
