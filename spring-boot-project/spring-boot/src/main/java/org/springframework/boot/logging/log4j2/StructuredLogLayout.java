@@ -43,6 +43,7 @@ import org.springframework.util.Assert;
  *
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @see StructuredLogFormatter
  */
 @Plugin(name = "StructuredLogLayout", category = Node.CATEGORY, elementType = Layout.ELEMENT_TYPE)
@@ -58,12 +59,26 @@ final class StructuredLogLayout extends AbstractStringLayout {
 
 	@Override
 	public String toSerializable(LogEvent event) {
-		return this.formatter.format(event);
+		try {
+			return this.formatter.format(event);
+		}
+		catch (RuntimeException ex) {
+			// exception can not be logged due to "Chicken-and-egg" problem
+			ex.printStackTrace(System.err);
+			throw ex;
+		}
 	}
 
 	@Override
 	public byte[] toByteArray(LogEvent event) {
-		return this.formatter.formatAsBytes(event, (getCharset() != null) ? getCharset() : StandardCharsets.UTF_8);
+		try {
+			return this.formatter.formatAsBytes(event, (getCharset() != null) ? getCharset() : StandardCharsets.UTF_8);
+		}
+		catch (RuntimeException ex) {
+			// exception can not be logged due to "Chicken-and-egg" problem
+			ex.printStackTrace(System.err);
+			throw ex;
+		}
 	}
 
 	@PluginBuilderFactory

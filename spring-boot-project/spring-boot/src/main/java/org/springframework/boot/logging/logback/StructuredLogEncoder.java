@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  *
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 3.4.0
  * @see StructuredLogFormatter
  */
@@ -124,7 +125,14 @@ public class StructuredLogEncoder extends EncoderBase<ILoggingEvent> {
 
 	@Override
 	public byte[] encode(ILoggingEvent event) {
-		return this.formatter.formatAsBytes(event, (this.charset != null) ? this.charset : StandardCharsets.UTF_8);
+		try {
+			return this.formatter.formatAsBytes(event, (this.charset != null) ? this.charset : StandardCharsets.UTF_8);
+		}
+		catch (RuntimeException ex) {
+			// exception can not be logged due to "Chicken-and-egg" problem
+			ex.printStackTrace(System.err);
+			throw ex;
+		}
 	}
 
 	@Override
