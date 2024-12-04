@@ -37,6 +37,7 @@ import static org.mockito.BDDMockito.given;
  * Tests for {@link StructuredLoggingJsonPropertiesJsonMembersCustomizer}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
@@ -102,10 +103,23 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 			.applyingNameProcessor(NameProcessor.of(String::toUpperCase));
 		given(((Instantiator) this.instantiator).instantiateType(TestCustomizer.class)).willReturn(uppercaseCustomizer);
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), TestCustomizer.class);
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), Set.of(TestCustomizer.class));
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("\"A\":\"a\"");
+	}
+
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	void multipleCustomizers() {
+		given(((Instantiator) this.instantiator).instantiateType(FooCustomizer.class)).willReturn(new FooCustomizer());
+		given(((Instantiator) this.instantiator).instantiateType(BarCustomizer.class)).willReturn(new BarCustomizer());
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(),
+				Set.of(FooCustomizer.class, BarCustomizer.class));
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties);
+		assertThat(writeSampleJson(customizer)).contains("\"foo\":\"foo\"").contains("\"bar\":\"bar\"");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -122,6 +136,24 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 
 		@Override
 		public void customize(Members<String> members) {
+		}
+
+	}
+
+	static class FooCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
+
+		@Override
+		public void customize(Members<String> members) {
+			members.add("foo", "foo");
+		}
+
+	}
+
+	static class BarCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
+
+		@Override
+		public void customize(Members<String> members) {
+			members.add("bar", "bar");
 		}
 
 	}

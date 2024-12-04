@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.structured;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.boot.json.JsonWriter.MemberPath;
 import org.springframework.boot.json.JsonWriter.Members;
@@ -28,6 +29,7 @@ import org.springframework.util.CollectionUtils;
  * {@link StructuredLoggingJsonProperties}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructuredLoggingJsonMembersCustomizer<Object> {
 
@@ -49,9 +51,9 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 		if (!CollectionUtils.isEmpty(add)) {
 			add.forEach(members::add);
 		}
-		Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer = this.properties.customizer();
+		Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer = this.properties.customizer();
 		if (customizer != null) {
-			createAndApplyCustomizer(members, customizer);
+			customizer.forEach((c) -> createAndApplyCustomizer(members, c));
 		}
 	}
 
