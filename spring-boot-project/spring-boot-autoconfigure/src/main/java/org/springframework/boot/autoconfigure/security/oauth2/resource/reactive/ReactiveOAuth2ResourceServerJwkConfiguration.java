@@ -115,11 +115,18 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
 			validators.add(defaultValidator);
 			if (!CollectionUtils.isEmpty(audiences)) {
-				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
-						(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
+				validators.add(audValidator(audiences));
 			}
 			validators.addAll(this.additionalValidators);
 			return new DelegatingOAuth2TokenValidator<>(validators);
+		}
+
+		private JwtClaimValidator<List<String>> audValidator(List<String> audiences) {
+			return new JwtClaimValidator<>(JwtClaimNames.AUD, (aud) -> nullSafeDisjoint(aud, audiences));
+		}
+
+		private boolean nullSafeDisjoint(List<String> c1, List<String> c2) {
+			return c1 != null && !Collections.disjoint(c1, c2);
 		}
 
 		@Bean

@@ -162,7 +162,7 @@ class GroovyTemplateAutoConfigurationTests {
 		MarkupTemplateEngine engine = config.getTemplateEngine();
 		Writer writer = new StringWriter();
 		engine.createTemplate(new ClassPathResource("templates/message.tpl").getFile())
-			.make(new HashMap<String, Object>(Collections.singletonMap("greeting", "Hello World")))
+			.make(new HashMap<>(Collections.singletonMap("greeting", "Hello World")))
 			.writeTo(writer);
 		assertThat(writer.toString()).contains("Hello World");
 	}

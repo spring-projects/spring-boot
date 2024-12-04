@@ -421,7 +421,7 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 			RootBeanDefinition definition = new RootBeanDefinition(postProcessor);
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			ConstructorArgumentValues constructorArguments = definition.getConstructorArgumentValues();
-			constructorArguments.addIndexedArgumentValue(0, new LinkedHashSet<MockDefinition>());
+			constructorArguments.addIndexedArgumentValue(0, new LinkedHashSet<>());
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 			return definition;
 		}

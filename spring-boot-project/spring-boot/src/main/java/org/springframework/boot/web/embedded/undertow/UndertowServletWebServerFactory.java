@@ -369,7 +369,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		ServletContextInitializer[] mergedInitializers = mergeInitializers(initializers);
 		Initializer initializer = new Initializer(mergedInitializers);
 		deployment.addServletContainerInitializer(new ServletContainerInitializerInfo(Initializer.class,
-				new ImmediateInstanceFactory<ServletContainerInitializer>(initializer), NO_CLASSES));
+				new ImmediateInstanceFactory<>(initializer), NO_CLASSES));
 	}
 
 	private ClassLoader getServletClassLoader() {

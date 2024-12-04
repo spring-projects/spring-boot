@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
-import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.cfg.MappingSettings;
+import org.hibernate.cfg.PersistenceSettings;
+import org.hibernate.cfg.SchemaToolingSettings;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
@@ -86,10 +88,10 @@ public class HibernateProperties {
 		getNaming().applyNamingStrategies(result);
 		String ddlAuto = determineDdlAuto(existing, settings::getDdlAuto);
 		if (StringUtils.hasText(ddlAuto) && !"none".equals(ddlAuto)) {
-			result.put(AvailableSettings.HBM2DDL_AUTO, ddlAuto);
+			result.put(SchemaToolingSettings.HBM2DDL_AUTO, ddlAuto);
 		}
 		else {
-			result.remove(AvailableSettings.HBM2DDL_AUTO);
+			result.remove(SchemaToolingSettings.HBM2DDL_AUTO);
 		}
 		Collection<HibernatePropertiesCustomizer> customizers = settings.getHibernatePropertiesCustomizers();
 		if (!ObjectUtils.isEmpty(customizers)) {
@@ -99,20 +101,20 @@ public class HibernateProperties {
 	}
 
 	private void applyScanner(Map<String, Object> result) {
-		if (!result.containsKey(AvailableSettings.SCANNER) && ClassUtils.isPresent(DISABLED_SCANNER_CLASS, null)) {
-			result.put(AvailableSettings.SCANNER, DISABLED_SCANNER_CLASS);
+		if (!result.containsKey(PersistenceSettings.SCANNER) && ClassUtils.isPresent(DISABLED_SCANNER_CLASS, null)) {
+			result.put(PersistenceSettings.SCANNER, DISABLED_SCANNER_CLASS);
 		}
 	}
 
 	private String determineDdlAuto(Map<String, String> existing, Supplier<String> defaultDdlAuto) {
-		String ddlAuto = existing.get(AvailableSettings.HBM2DDL_AUTO);
+		String ddlAuto = existing.get(SchemaToolingSettings.HBM2DDL_AUTO);
 		if (ddlAuto != null) {
 			return ddlAuto;
 		}
 		if (this.ddlAuto != null) {
 			return this.ddlAuto;
 		}
-		if (existing.get(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION) != null) {
+		if (existing.get(SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION) != null) {
 			return null;
 		}
 		return defaultDdlAuto.get();
@@ -147,9 +149,9 @@ public class HibernateProperties {
 		}
 
 		private void applyNamingStrategies(Map<String, Object> properties) {
-			applyNamingStrategy(properties, AvailableSettings.IMPLICIT_NAMING_STRATEGY, this.implicitStrategy,
+			applyNamingStrategy(properties, MappingSettings.IMPLICIT_NAMING_STRATEGY, this.implicitStrategy,
 					SpringImplicitNamingStrategy.class::getName);
-			applyNamingStrategy(properties, AvailableSettings.PHYSICAL_NAMING_STRATEGY, this.physicalStrategy,
+			applyNamingStrategy(properties, MappingSettings.PHYSICAL_NAMING_STRATEGY, this.physicalStrategy,
 					CamelCaseToUnderscoresNamingStrategy.class::getName);
 		}
 

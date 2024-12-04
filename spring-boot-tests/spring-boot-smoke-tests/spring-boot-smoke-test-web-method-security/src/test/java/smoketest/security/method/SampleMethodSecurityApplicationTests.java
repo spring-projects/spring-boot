@@ -56,7 +56,7 @@ class SampleMethodSecurityApplicationTests {
 	void testHome() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
-		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<Void>(headers),
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, new HttpEntity<>(headers),
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -87,7 +87,7 @@ class SampleMethodSecurityApplicationTests {
 		String cookie = entity.getHeaders().getFirst("Set-Cookie");
 		headers.set("Cookie", cookie);
 		ResponseEntity<String> page = this.restTemplate.exchange(entity.getHeaders().getLocation(), HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+				new HttpEntity<>(headers), String.class);
 		assertThat(page.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 		assertThat(page.getBody()).contains("Access denied");
 	}
@@ -97,7 +97,7 @@ class SampleMethodSecurityApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		ResponseEntity<String> entity = this.restTemplate.exchange("/actuator/beans", HttpMethod.GET,
-				new HttpEntity<Void>(headers), String.class);
+				new HttpEntity<>(headers), String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
