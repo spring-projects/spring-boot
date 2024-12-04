@@ -1930,7 +1930,7 @@ bom {
 			releaseNotes("https://github.com/rsocket/rsocket-java/releases/tag/{version}")
 		}
 	}
-	library("RxJava3", "3.1.9") {
+	library("RxJava3", "3.1.10") {
 		group("io.reactivex.rxjava3") {
 			modules = [
 				"rxjava"
