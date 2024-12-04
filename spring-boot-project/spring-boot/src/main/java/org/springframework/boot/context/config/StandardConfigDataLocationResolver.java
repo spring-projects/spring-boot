@@ -172,8 +172,7 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private void validateProfile(String profile) {
-		Assert.notNull(profile, "Profile must not be null");
-		Assert.hasText(profile, "Profile must not be empty");
+		Assert.hasText(profile, "Profile must contain text");
 		Assert.state(!profile.startsWith("-") && !profile.startsWith("_"),
 				() -> String.format("Invalid profile '%s': must not start with '-' or '_'", profile));
 		Assert.state(!profile.endsWith("-") && !profile.endsWith("_"),
