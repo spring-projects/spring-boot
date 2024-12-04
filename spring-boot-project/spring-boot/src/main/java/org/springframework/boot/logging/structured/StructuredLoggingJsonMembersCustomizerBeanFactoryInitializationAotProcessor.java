@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.structured;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
@@ -32,6 +33,7 @@ import org.springframework.core.env.Environment;
  * {@link StructuredLoggingJsonPropertiesJsonMembersCustomizer}.
  *
  * @author Dmytro Nosan
+ * @author Yanming Zhou
  */
 class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcessor
 		implements BeanFactoryInitializationAotProcessor {
@@ -49,19 +51,19 @@ class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcesso
 
 	private static final class AotContribution implements BeanFactoryInitializationAotContribution {
 
-		private final Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer;
+		private final Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer;
 
-		private AotContribution(Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer) {
+		private AotContribution(Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 			this.customizer = customizer;
 		}
 
 		@Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
-			generationContext.getRuntimeHints()
+			this.customizer.forEach((it) -> generationContext.getRuntimeHints()
 				.reflection()
-				.registerType(this.customizer, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+				.registerType(it, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 		}
 
 	}

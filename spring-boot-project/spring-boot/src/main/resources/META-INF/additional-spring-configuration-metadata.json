@@ -268,8 +268,8 @@
     },
     {
       "name": "logging.structured.json.customizer",
-      "type": "java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>",
-      "description": "The fully qualified class name of a StructuredLoggingJsonMembersCustomizer"
+      "type": "java.util.Set<java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>>",
+      "description": "The fully qualified class names of a StructuredLoggingJsonMembersCustomizer"
     },
     {
       "name": "logging.structured.json.exclude",
