@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "spring.testcontainers.beans.startup=parallel")
 @DisabledIfDockerUnavailable
-@ExtendWith(OutputCaptureExtension.class)
+@ExtendWith({ OutputCaptureExtension.class, ResetStartablesExtension.class })
 @ImportTestcontainers(Containers.class)
 class TestcontainersParallelStartupWithImportTestcontainersIntegrationTests {
 
