@@ -948,22 +948,6 @@ public class TestRestTemplate {
 		return template;
 	}
 
-	/**
-	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
-	 * except that it will use the given {@code redirects} strategies. The request factory
-	 * used is a new instance of the underlying {@link RestTemplate}'s request factory
-	 * type (when possible).
-	 * @param redirects the redirects
-	 * @return the new template
-	 * @since 3.4.1
-	 */
-	public TestRestTemplate withRedirects(Redirects redirects) {
-		TestRestTemplate template = new TestRestTemplate(this.builder.redirects(redirects), null, null,
-				this.httpClientOptions);
-		template.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
-		return template;
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private RequestEntity<?> createRequestEntityWithRootAppliedUri(RequestEntity<?> requestEntity) {
 		return new RequestEntity(requestEntity.getBody(), requestEntity.getHeaders(), requestEntity.getMethod(),
@@ -1006,10 +990,7 @@ public class TestRestTemplate {
 
 		/**
 		 * Enable redirects.
-		 * @deprecated since 3.4.1 for removal in 3.6.0 in favor of
-		 * {@link #withRedirects(Redirects)}
 		 */
-		@Deprecated(since = "3.4.1", forRemoval = true)
 		ENABLE_REDIRECTS,
 
 		/**
