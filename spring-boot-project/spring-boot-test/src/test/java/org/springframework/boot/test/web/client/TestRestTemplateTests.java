@@ -20,12 +20,16 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
 import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -38,6 +42,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -66,6 +71,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Kristine Jetzke
+ * @author Yanming Zhou
  */
 class TestRestTemplateTests {
 
@@ -131,12 +137,53 @@ class TestRestTemplateTests {
 
 	@Test
 	void options() {
-		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
+		RequestConfig config = getRequestConfig(
+				new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS, HttpClientOption.ENABLE_COOKIES));
+		assertThat(config.isRedirectsEnabled()).isTrue();
+		assertThat(config.getCookieSpec()).isEqualTo("strict");
+	}
+
+	@Test
+	void jdkBuilderCanBeSpecifiedWithSpecificRedirects() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk());
+		TestRestTemplate templateWithRedirects = new TestRestTemplate(builder.redirects(Redirects.FOLLOW));
+		assertThat(getJdkHttpClient(templateWithRedirects).followRedirects()).isEqualTo(Redirect.NORMAL);
+		TestRestTemplate templateWithoutRedirects = new TestRestTemplate(builder.redirects(Redirects.DONT_FOLLOW));
+		assertThat(getJdkHttpClient(templateWithoutRedirects).followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	@Test
+	void httpComponentsAreBuildConsideringSettingsInRestTemplateBuilder() {
+		RestTemplateBuilder builder = new RestTemplateBuilder()
+			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
+		assertThat(getRequestConfig((RestTemplateBuilder) null).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig(null, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig(builder).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig(builder, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW)).isRedirectsEnabled()).isFalse();
+		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS)
+			.isRedirectsEnabled()).isTrue();
+	}
+
+	private RequestConfig getRequestConfig(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {
+		builder = (builder != null) ? builder : new RestTemplateBuilder();
+		TestRestTemplate template = new TestRestTemplate(builder, null, null, httpClientOptions);
+		return getRequestConfig(template);
+	}
+
+	private RequestConfig getRequestConfig(TestRestTemplate template) {
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 			.getRestTemplate()
 			.getRequestFactory();
-		RequestConfig config = factory.createRequestConfig();
-		assertThat(config.isRedirectsEnabled()).isTrue();
+		return factory.createRequestConfig();
+	}
+
+	private HttpClient getJdkHttpClient(TestRestTemplate templateWithRedirects) {
+		JdkClientHttpRequestFactory requestFactory = (JdkClientHttpRequestFactory) templateWithRedirects
+			.getRestTemplate()
+			.getRequestFactory();
+		return (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
 	}
 
 	@Test

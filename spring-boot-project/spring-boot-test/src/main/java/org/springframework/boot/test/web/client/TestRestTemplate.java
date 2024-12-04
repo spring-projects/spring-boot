@@ -47,6 +47,7 @@ import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.hc.core5.ssl.TrustStrategy;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -92,6 +93,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Andy Wilkinson
  * @author Kristine Jetzke
  * @author Dmytro Nosan
+ * @author Yanming Zhou
  * @since 1.4.0
  */
 public class TestRestTemplate {
@@ -1032,7 +1034,8 @@ public class TestRestTemplate {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
 			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
-			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
+			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS)
+					|| settings.redirects() != Redirects.DONT_FOLLOW;
 			boolean ssl = options.contains(HttpClientOption.SSL);
 			if (settings.readTimeout() != null || ssl) {
 				setHttpClient(createHttpClient(settings.readTimeout(), ssl));

@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -73,6 +74,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Kevin Strijbos
  * @author Ilya Lukyanovich
  * @author Brian Clozel
+ * @author Yanming Zhou
  */
 @ExtendWith(MockitoExtension.class)
 class RestTemplateBuilderTests {
@@ -484,6 +486,13 @@ class RestTemplateBuilderTests {
 		RestTemplate template = this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
 			.build();
 		assertThat(template.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void configureRedirects() {
+		assertThat(this.builder.redirects(Redirects.DONT_FOLLOW)).extracting("requestFactorySettings")
+			.extracting("redirects")
+			.isSameAs(Redirects.DONT_FOLLOW);
 	}
 
 	private ClientHttpRequest createRequest(RestTemplate template) {
