@@ -33,9 +33,10 @@ import org.springframework.core.env.Environment;
  * @param customizer the fully qualified name of a
  * {@link StructuredLoggingJsonMembersCustomizer}
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer) {
+		Map<String, String> add, Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 
 	static StructuredLoggingJsonProperties get(Environment environment) {
 		return Binder.get(environment)
