@@ -1089,7 +1089,8 @@ bom {
 		}
 		links {
 			site("https://junit.org/junit5")
-			javadoc("https://junit.org/junit5/docs/{version}/api", "org.junit.jupiter.api", "org.junit.platform")
+			javadoc("junit-platform-engine", version -> "https://junit.org/junit5/docs/%s/api/org.junit.platform.engine".formatted(version), "org.junit.platform")
+			javadoc("junit-jupiter-api", version -> "https://junit.org/junit5/docs/%s/api/org.junit.jupiter.api".formatted(version), "org.junit.jupiter.api")
 			docs("https://junit.org/junit5/docs/{version}/user-guide")
 			releaseNotes("https://junit.org/junit5/docs/{version}/release-notes")
 		}
