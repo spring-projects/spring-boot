@@ -55,19 +55,25 @@ class HttpComponentsClientHttpRequestFactoryBuilderTests
 		TestCustomizer<HttpClientBuilder> httpClientCustomizer2 = new TestCustomizer<>();
 		TestCustomizer<PoolingHttpClientConnectionManagerBuilder> connectionManagerCustomizer = new TestCustomizer<>();
 		TestCustomizer<SocketConfig.Builder> socketConfigCustomizer = new TestCustomizer<>();
+		TestCustomizer<SocketConfig.Builder> socketConfigCustomizer1 = new TestCustomizer<>();
 		TestCustomizer<RequestConfig.Builder> defaultRequestConfigCustomizer = new TestCustomizer<>();
+		TestCustomizer<RequestConfig.Builder> defaultRequestConfigCustomizer1 = new TestCustomizer<>();
 		ClientHttpRequestFactoryBuilder.httpComponents()
 			.withHttpClientCustomizer(httpClientCustomizer1)
 			.withHttpClientCustomizer(httpClientCustomizer2)
 			.withConnectionManagerCustomizer(connectionManagerCustomizer)
 			.withSocketConfigCustomizer(socketConfigCustomizer)
+			.withSocketConfigCustomizer(socketConfigCustomizer1)
 			.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer)
+			.withDefaultRequestConfigCustomizer(defaultRequestConfigCustomizer1)
 			.build();
 		httpClientCustomizer1.assertCalled();
 		httpClientCustomizer2.assertCalled();
 		connectionManagerCustomizer.assertCalled();
 		socketConfigCustomizer.assertCalled();
+		socketConfigCustomizer1.assertCalled();
 		defaultRequestConfigCustomizer.assertCalled();
+		defaultRequestConfigCustomizer1.assertCalled();
 	}
 
 	@Test
