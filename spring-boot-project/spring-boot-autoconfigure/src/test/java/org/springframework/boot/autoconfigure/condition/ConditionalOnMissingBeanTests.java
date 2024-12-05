@@ -45,6 +45,9 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -121,6 +124,16 @@ class ConditionalOnMissingBeanTests {
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean("bar");
 				assertThat(context.getBean("foo")).isEqualTo("foo");
+			});
+	}
+
+	@Test
+	void testAnnotationOnMissingBeanConditionWithScopedProxy() {
+		this.contextRunner.withInitializer(this::registerScope)
+			.withUserConfiguration(ScopedExampleBeanConfiguration.class, OnAnnotationConfiguration.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean("bar");
+				assertThat(context.getBean(ScopedExampleBean.class)).hasToString("test");
 			});
 	}
 
@@ -407,6 +420,10 @@ class ConditionalOnMissingBeanTests {
 		};
 	}
 
+	private void registerScope(ConfigurableApplicationContext applicationContext) {
+		applicationContext.getBeanFactory().registerScope("test", new TestScope());
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class OnBeanInAncestorsConfiguration {
 
@@ -666,6 +683,17 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@TestAnnotation
+	static class ScopedFooConfiguration {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class NotAutowireCandidateConfig {
 
 		@Bean(autowireCandidate = false)
@@ -714,6 +742,12 @@ class ConditionalOnMissingBeanTests {
 		ExampleBean exampleBean() {
 			return new ExampleBean("test");
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(ScopedExampleBean.class)
+	static class ScopedExampleBeanConfiguration {
 
 	}
 
@@ -893,6 +927,15 @@ class ConditionalOnMissingBeanTests {
 
 	}
 
+	@Scope(scopeName = "test", proxyMode = ScopedProxyMode.TARGET_CLASS)
+	static class ScopedExampleBean extends ExampleBean {
+
+		ScopedExampleBean() {
+			super("test");
+		}
+
+	}
+
 	static class CustomExampleBean extends ExampleBean {
 
 		CustomExampleBean() {
@@ -928,6 +971,10 @@ class ConditionalOnMissingBeanTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface TestAnnotation {
+
+	}
+
+	static class TestScope extends SimpleThreadScope {
 
 	}
 
