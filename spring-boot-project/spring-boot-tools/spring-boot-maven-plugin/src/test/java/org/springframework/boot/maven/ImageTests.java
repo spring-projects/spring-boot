@@ -49,6 +49,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Scott Frederick
  * @author Jeroen Meijer
  * @author Rafael Ceccone
+ * @author Moritz Halbritter
  */
 class ImageTests {
 
@@ -288,6 +289,14 @@ class ImageTests {
 		image.imagePlatform = "linux/arm64";
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64"));
+	}
+
+	@Test
+	void getBuildRequestWhenImagePlatformIsEmptyDoesntSetImagePlatform() {
+		Image image = new Image();
+		image.imagePlatform = "";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getImagePlatform()).isNull();
 	}
 
 	private Artifact createArtifact() {

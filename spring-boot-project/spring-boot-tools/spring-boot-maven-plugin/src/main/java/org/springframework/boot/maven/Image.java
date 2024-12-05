@@ -295,7 +295,7 @@ public class Image {
 		if (StringUtils.hasText(this.applicationDirectory)) {
 			request = request.withApplicationDirectory(this.applicationDirectory);
 		}
-		if (!CollectionUtils.isEmpty(this.securityOptions)) {
+		if (this.securityOptions != null) {
 			request = request.withSecurityOptions(this.securityOptions);
 		}
 		if (StringUtils.hasText(this.imagePlatform)) {
