@@ -40,8 +40,14 @@ public final class JarModeLauncher {
 				ClassUtils.getDefaultClassLoader());
 		for (JarMode candidate : candidates) {
 			if (candidate.accepts(mode)) {
-				candidate.run(mode, args);
-				return;
+				try {
+					candidate.run(mode, args);
+					return;
+				} catch (RuntimeException e) {
+					if (!Boolean.getBoolean(DISABLE_SYSTEM_EXIT)) {
+						System.exit(1);
+					}
+				}
 			}
 		}
 		System.err.println("Unsupported jarmode '" + mode + "'");
