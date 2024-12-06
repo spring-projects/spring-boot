@@ -29,6 +29,7 @@ import org.apache.hc.client5.http.config.RequestConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings.Redirects;
 import org.springframework.boot.test.web.client.TestRestTemplate.CustomHttpComponentsClientHttpRequestFactory;
 import org.springframework.boot.test.web.client.TestRestTemplate.HttpClientOption;
@@ -157,13 +158,32 @@ class TestRestTemplateTests {
 	void httpComponentsAreBuildConsideringSettingsInRestTemplateBuilder() {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
-		assertThat(getRequestConfig((RestTemplateBuilder) null).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig((RestTemplateBuilder) null).isRedirectsEnabled()).isFalse();
 		assertThat(getRequestConfig(null, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
-		assertThat(getRequestConfig(builder).isRedirectsEnabled()).isTrue();
+		assertThat(getRequestConfig(builder).isRedirectsEnabled()).isFalse();
 		assertThat(getRequestConfig(builder, HttpClientOption.ENABLE_REDIRECTS).isRedirectsEnabled()).isTrue();
 		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW)).isRedirectsEnabled()).isFalse();
 		assertThat(getRequestConfig(builder.redirects(Redirects.DONT_FOLLOW), HttpClientOption.ENABLE_REDIRECTS)
 			.isRedirectsEnabled()).isTrue();
+	}
+
+	@Test
+	void withSettingsUpdatesRedirectsForHttpComponents() {
+		TestRestTemplate template = new TestRestTemplate();
+		assertThat(getRequestConfig(template).isRedirectsEnabled()).isFalse();
+		assertThat(getRequestConfig(template
+			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW)))
+			.isRedirectsEnabled()).isTrue();
+	}
+
+	@Test
+	void withSettingsUpdatesRedirectsForJdk() {
+		TestRestTemplate template = new TestRestTemplate(
+				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
+		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
+		assertThat(getJdkHttpClient(template.withRequestFactorySettings(
+				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW)))
+			.followRedirects()).isEqualTo(Redirect.NEVER);
 	}
 
 	private RequestConfig getRequestConfig(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {

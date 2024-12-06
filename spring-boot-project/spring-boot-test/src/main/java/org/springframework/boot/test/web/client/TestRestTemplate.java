@@ -22,8 +22,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +58,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.NoOpResponseErrorHandler;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
@@ -99,8 +98,6 @@ import org.springframework.web.util.UriTemplateHandler;
 public class TestRestTemplate {
 
 	private final RestTemplateBuilder builder;
-
-	private final HttpClientOption[] httpClientOptions;
 
 	private final RestTemplate restTemplate;
 
@@ -142,12 +139,26 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate(RestTemplateBuilder builder, String username, String password,
 			HttpClientOption... httpClientOptions) {
-		Assert.notNull(builder, "Builder must not be null");
+		this(createInitialBuilder(builder, username, password, httpClientOptions), null);
+	}
+
+	private TestRestTemplate(RestTemplateBuilder builder, UriTemplateHandler uriTemplateHandler) {
 		this.builder = builder;
-		this.httpClientOptions = httpClientOptions;
+		this.restTemplate = builder.build();
+		if (uriTemplateHandler != null) {
+			this.restTemplate.setUriTemplateHandler(uriTemplateHandler);
+		}
+		this.restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
+	}
+
+	private static RestTemplateBuilder createInitialBuilder(RestTemplateBuilder builder, String username,
+			String password, HttpClientOption... httpClientOptions) {
+		Assert.notNull(builder, "Builder must not be null");
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
+				builder = builder.redirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
+						? Redirects.FOLLOW : Redirects.DONT_FOLLOW);
 				builder = builder.requestFactoryBuilder(
 						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
@@ -155,8 +166,7 @@ public class TestRestTemplate {
 		if (username != null || password != null) {
 			builder = builder.basicAuthentication(username, password);
 		}
-		this.restTemplate = builder.build();
-		this.restTemplate.setErrorHandler(new NoOpResponseErrorHandler());
+		return builder;
 	}
 
 	/**
@@ -943,9 +953,25 @@ public class TestRestTemplate {
 	 * @since 1.4.1
 	 */
 	public TestRestTemplate withBasicAuth(String username, String password) {
-		TestRestTemplate template = new TestRestTemplate(this.builder, username, password, this.httpClientOptions);
-		template.setUriTemplateHandler(getRestTemplate().getUriTemplateHandler());
-		return template;
+		if (username == null && password == null) {
+			return this;
+		}
+		return new TestRestTemplate(this.builder.basicAuthentication(username, password),
+				this.restTemplate.getUriTemplateHandler());
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will apply the given {@link ClientHttpRequestFactorySettings}. The
+	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
+	 * request factory type (when possible).
+	 * @param requestFactorySettings the new request factory settings
+	 * @return the new template
+	 * @since 3.4.1
+	 */
+	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
+		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
+				this.restTemplate.getUriTemplateHandler());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -996,7 +1022,11 @@ public class TestRestTemplate {
 		/**
 		 * Use a {@link TlsSocketStrategy} that trusts self-signed certificates.
 		 */
-		SSL
+		SSL;
+
+		boolean isPresent(HttpClientOption[] options) {
+			return ObjectUtils.containsElement(options, this);
+		}
 
 	}
 
@@ -1031,12 +1061,10 @@ public class TestRestTemplate {
 		 */
 		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
 				ClientHttpRequestFactorySettings settings) {
-			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
+			this.cookieSpec = (HttpClientOption.ENABLE_COOKIES.isPresent(httpClientOptions) ? StandardCookieSpec.STRICT
 					: StandardCookieSpec.IGNORE);
-			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS)
-					|| settings.redirects() != Redirects.DONT_FOLLOW;
-			boolean ssl = options.contains(HttpClientOption.SSL);
+			this.enableRedirects = settings.redirects() != Redirects.DONT_FOLLOW;
+			boolean ssl = HttpClientOption.SSL.isPresent(httpClientOptions);
 			if (settings.readTimeout() != null || ssl) {
 				setHttpClient(createHttpClient(settings.readTimeout(), ssl));
 			}
