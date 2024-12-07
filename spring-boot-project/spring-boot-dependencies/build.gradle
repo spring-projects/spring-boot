@@ -1217,7 +1217,7 @@ bom {
 		}
 		links {
 			site("https://logback.qos.ch")
-			javadoc("https://logback.qos.ch/apidocs", "ch.qos.logback")
+			javadoc("https://logback.qos.ch/apidocs/ch.qos.logback.core", "ch.qos.logback")
 		}
 	}
 	library("Lombok", "1.18.36") {
