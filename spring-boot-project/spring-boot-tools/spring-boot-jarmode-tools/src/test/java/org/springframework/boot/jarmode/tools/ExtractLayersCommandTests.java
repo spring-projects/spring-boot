@@ -42,10 +42,12 @@ import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 
@@ -146,8 +148,9 @@ class ExtractLayersCommandTests {
 		}
 		given(this.context.getArchiveFile()).willReturn(file);
 		try (TestPrintStream out = new TestPrintStream(this)) {
-			this.command.run(out, Collections.emptyMap(), Collections.emptyList());
-			assertThat(out).contains("is not compatible");
+			assertThatExceptionOfType(JarModeErrorException.class)
+				.isThrownBy(() -> this.command.run(out, Collections.emptyMap(), Collections.emptyList()))
+				.withMessageContaining("is not compatible");
 		}
 	}
 

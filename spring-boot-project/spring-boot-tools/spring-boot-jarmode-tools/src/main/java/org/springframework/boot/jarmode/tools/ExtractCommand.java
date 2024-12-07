@@ -43,7 +43,7 @@ import java.util.zip.ZipInputStream;
 
 import org.springframework.boot.jarmode.tools.JarStructure.Entry;
 import org.springframework.boot.jarmode.tools.JarStructure.Entry.Type;
-import org.springframework.boot.jarmode.tools.Layers.LayersNotEnabledException;
+import org.springframework.boot.loader.jarmode.JarModeErrorException;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -118,12 +118,6 @@ class ExtractCommand extends Command {
 		catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
-		catch (LayersNotEnabledException ex) {
-			printError(out, "Layers are not enabled");
-		}
-		catch (AbortException ex) {
-			printError(out, ex.getMessage());
-		}
 	}
 
 	private static void checkDirectoryIsEmpty(Map<Option, String> options, File destination) {
@@ -134,11 +128,11 @@ class ExtractCommand extends Command {
 			return;
 		}
 		if (!destination.isDirectory()) {
-			throw new AbortException(destination.getAbsoluteFile() + " already exists and is not a directory");
+			throw new JarModeErrorException(destination.getAbsoluteFile() + " already exists and is not a directory");
 		}
 		File[] files = destination.listFiles();
 		if (files != null && files.length > 0) {
-			throw new AbortException(destination.getAbsoluteFile() + " already exists and is not empty");
+			throw new JarModeErrorException(destination.getAbsoluteFile() + " already exists and is not empty");
 		}
 	}
 
@@ -147,16 +141,11 @@ class ExtractCommand extends Command {
 		try (ZipInputStream stream = new ZipInputStream(new FileInputStream(file))) {
 			ZipEntry entry = stream.getNextEntry();
 			if (entry == null) {
-				throw new AbortException(
+				throw new JarModeErrorException(
 						"File '%s' is not compatible; ensure jar file is valid and launch script is not enabled"
 							.formatted(file));
 			}
 		}
-	}
-
-	private void printError(PrintStream out, String message) {
-		out.println("Error: " + message);
-		out.println();
 	}
 
 	private void extractLibraries(FileResolver fileResolver, JarStructure jarStructure, Map<Option, String> options)
@@ -490,14 +479,6 @@ class ExtractCommand extends Command {
 
 		private boolean shouldExtractLayer(String layer) {
 			return this.layersToExtract.isEmpty() || this.layersToExtract.contains(layer);
-		}
-
-	}
-
-	private static final class AbortException extends RuntimeException {
-
-		AbortException(String message) {
-			super(message);
 		}
 
 	}
