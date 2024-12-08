@@ -19,6 +19,7 @@ package org.springframework.boot.jackson;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -145,6 +146,18 @@ class JsonObjectDeserializerTests {
 	}
 
 	@Test
+	void nullSafeValueWithMapperShouldTransformValue() {
+		JsonNode node = mock(JsonNode.class);
+		given(node.textValue()).willReturn("2023-12-01");
+
+		java.time.LocalDate result = this.testDeserializer.testNullSafeValue(
+				node, String.class, java.time.LocalDate::parse
+		);
+
+		assertThat(result).isEqualTo(java.time.LocalDate.of(2023, 12, 1));
+	}
+
+	@Test
 	void nullSafeValueWhenClassIsUnknownShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), InputStream.class))
@@ -188,6 +201,11 @@ class JsonObjectDeserializerTests {
 				JsonNode tree) {
 			return null;
 		}
+
+		<D, R> R testNullSafeValue(JsonNode jsonNode, Class<D> type, Function<D, R> mapper) {
+			return nullSafeValue(jsonNode, type, mapper);
+		}
+
 
 		<D> D testNullSafeValue(JsonNode jsonNode, Class<D> type) {
 			return nullSafeValue(jsonNode, type);
