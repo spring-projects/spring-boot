@@ -59,6 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Victor Mandujano
  * @author Parviz Rozikov
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class TomcatWebServerFactoryCustomizerTests {
 
@@ -192,6 +193,13 @@ class TomcatWebServerFactoryCustomizerTests {
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
 					.getMaxHttpRequestHeaderSize())
 			.isEqualTo(DataSize.ofMegabytes(10).toBytes()));
+	}
+
+	@Test
+	void customMaxParameterCount() {
+		bind("server.tomcat.max-parameter-count=100");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxParameterCount()).isEqualTo(100));
 	}
 
 	@Test
