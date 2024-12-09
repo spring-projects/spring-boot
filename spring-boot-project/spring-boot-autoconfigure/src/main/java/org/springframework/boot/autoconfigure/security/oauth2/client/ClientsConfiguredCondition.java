@@ -36,7 +36,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Madhura Bhave
  * @since 2.1.0
  */
-
 public class ClientsConfiguredCondition extends SpringBootCondition {
 
 	private static final Bindable<Map<String, OAuth2ClientProperties.Registration>> STRING_REGISTRATION_MAP = Bindable
