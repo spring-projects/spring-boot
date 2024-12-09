@@ -356,6 +356,14 @@ class RestTemplateBuilderTests {
 	}
 
 	@Test
+	void requestFactorySettings() {
+		ClientHttpRequestFactorySettings connectTimeoutSettings = ClientHttpRequestFactorySettings.defaults()
+			.withConnectTimeout(Duration.ofSeconds(1));
+		RestTemplateBuilder restTemplateBuilder = this.builder.requestFactorySettings(connectTimeoutSettings);
+		assertThat(restTemplateBuilder.requestFactorySettings().connectTimeout()).isEqualTo(Duration.ofSeconds(1));
+	}
+
+	@Test
 	void requestCustomizersAddsCustomizers() {
 		RestTemplate template = this.builder
 			.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))

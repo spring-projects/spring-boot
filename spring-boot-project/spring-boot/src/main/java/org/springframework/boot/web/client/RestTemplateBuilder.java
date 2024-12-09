@@ -436,6 +436,15 @@ public class RestTemplateBuilder {
 	}
 
 	/**
+	 * Gets the underlying {@link ClientHttpRequestFactorySettings}.
+	 * @return the underlying request factory settings
+	 * @since 3.4.1
+	 */
+	public ClientHttpRequestFactorySettings requestFactorySettings() {
+		return this.requestFactorySettings;
+	}
+
+	/**
 	 * Sets the {@link ClientHttpRequestFactorySettings}. This will replace any previously
 	 * set {@link #connectTimeout(Duration) connectTimeout} ,{@link #readTimeout(Duration)
 	 * readTimeout} and {@link #sslBundle(SslBundle) sslBundle} values.

@@ -974,6 +974,15 @@ public class TestRestTemplate {
 				this.restTemplate.getUriTemplateHandler());
 	}
 
+	/**
+	 * Returns the underlying {@link ClientHttpRequestFactorySettings}.
+	 * @return the underlying request factory settings
+	 * @since 3.4.1
+	 */
+	public ClientHttpRequestFactorySettings requestFactorySettings() {
+		return this.builder.requestFactorySettings();
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private RequestEntity<?> createRequestEntityWithRootAppliedUri(RequestEntity<?> requestEntity) {
 		return new RequestEntity(requestEntity.getBody(), requestEntity.getHeaders(), requestEntity.getMethod(),

@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.stream.Stream;
 
@@ -171,8 +172,8 @@ class TestRestTemplateTests {
 	void withSettingsUpdatesRedirectsForHttpComponents() {
 		TestRestTemplate template = new TestRestTemplate();
 		assertThat(getRequestConfig(template).isRedirectsEnabled()).isFalse();
-		assertThat(getRequestConfig(template
-			.withRequestFactorySettings(ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.FOLLOW)))
+		assertThat(getRequestConfig(
+				template.withRequestFactorySettings(template.requestFactorySettings().withRedirects(Redirects.FOLLOW)))
 			.isRedirectsEnabled()).isTrue();
 	}
 
@@ -181,9 +182,16 @@ class TestRestTemplateTests {
 		TestRestTemplate template = new TestRestTemplate(
 				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
 		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
-		assertThat(getJdkHttpClient(template.withRequestFactorySettings(
-				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW)))
+		assertThat(getJdkHttpClient(template
+			.withRequestFactorySettings(template.requestFactorySettings().withRedirects(Redirects.DONT_FOLLOW)))
 			.followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	@Test
+	void getUnderlyingRequestFactorySettings() {
+		TestRestTemplate template = new TestRestTemplate(new RestTemplateBuilder().requestFactorySettings(
+				ClientHttpRequestFactorySettings.defaults().withConnectTimeout(Duration.ofSeconds(1))));
+		assertThat(template.requestFactorySettings().connectTimeout()).isEqualTo(Duration.ofSeconds(1));
 	}
 
 	private RequestConfig getRequestConfig(RestTemplateBuilder builder, HttpClientOption... httpClientOptions) {
