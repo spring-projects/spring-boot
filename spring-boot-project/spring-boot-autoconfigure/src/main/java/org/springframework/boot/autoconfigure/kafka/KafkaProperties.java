@@ -183,10 +183,7 @@ public class KafkaProperties {
 	 * default {@code kafkaConsumerFactory} bean.
 	 * @return the consumer properties initialized with the customizations defined on this
 	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildConsumerProperties(SslBundles)}}
 	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
 	public Map<String, Object> buildConsumerProperties() {
 		return buildConsumerProperties(null);
 	}
@@ -213,10 +210,7 @@ public class KafkaProperties {
 	 * default {@code kafkaProducerFactory} bean.
 	 * @return the producer properties initialized with the customizations defined on this
 	 * instance
-	 * @deprecated since 3.2.0 for removal in 3.4.0 in favor of
-	 * {@link #buildProducerProperties(SslBundles)}}
 	 */
-	@Deprecated(since = "3.2.0", forRemoval = true)
 	public Map<String, Object> buildProducerProperties() {
 		return buildProducerProperties(null);
 	}
