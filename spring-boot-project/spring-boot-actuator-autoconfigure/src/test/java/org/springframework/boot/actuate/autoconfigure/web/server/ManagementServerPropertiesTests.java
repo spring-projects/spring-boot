@@ -68,4 +68,11 @@ class ManagementServerPropertiesTests {
 		assertThat(properties.getBasePath()).isEmpty();
 	}
 
+	@Test
+	void accessLogsArePrefixedByDefault() {
+		ManagementServerProperties properties = new ManagementServerProperties();
+		properties.setAccesslogPrefix(true);
+		assertThat(properties.getPrefixAccessLogs()).isTrue();
+	}
+
 }

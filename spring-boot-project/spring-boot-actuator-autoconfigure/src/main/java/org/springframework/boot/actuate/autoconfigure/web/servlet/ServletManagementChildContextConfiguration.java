@@ -89,8 +89,9 @@ class ServletManagementChildContextConfiguration {
 
 	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
-	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer() {
-		return new TomcatAccessLogCustomizer();
+	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(
+			ManagementServerProperties managementServerProperties) {
+		return new TomcatAccessLogCustomizer(managementServerProperties);
 	}
 
 	@Bean
@@ -165,13 +166,22 @@ class ServletManagementChildContextConfiguration {
 	static class TomcatAccessLogCustomizer extends AccessLogCustomizer
 			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
+		private final ManagementServerProperties managementServerProperties;
+
+		TomcatAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
+			this.managementServerProperties = managementServerProperties;
+		}
+
 		@Override
 		public void customize(TomcatServletWebServerFactory factory) {
 			AccessLogValve accessLogValve = findAccessLogValve(factory);
 			if (accessLogValve == null) {
 				return;
 			}
-			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
+
+			if (this.managementServerProperties.getPrefixAccessLogs()) {
+				accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
+			}
 		}
 
 		private AccessLogValve findAccessLogValve(TomcatServletWebServerFactory factory) {

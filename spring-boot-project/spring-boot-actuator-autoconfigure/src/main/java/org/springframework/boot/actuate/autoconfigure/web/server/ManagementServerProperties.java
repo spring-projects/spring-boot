@@ -54,6 +54,12 @@ public class ManagementServerProperties {
 	 */
 	private String basePath = "";
 
+	/**
+	 * Enable management access logs to be prefixed with management_
+	 * management.server.accesslog.prefix.
+	 */
+	private boolean accesslogPrefix = true;
+
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
@@ -115,6 +121,14 @@ public class ManagementServerProperties {
 			}
 		}
 		return candidate;
+	}
+
+	public boolean getPrefixAccessLogs() {
+		return this.accesslogPrefix;
+	}
+
+	public void setAccesslogPrefix(boolean accesslogPrefix) {
+		this.accesslogPrefix = accesslogPrefix;
 	}
 
 }
