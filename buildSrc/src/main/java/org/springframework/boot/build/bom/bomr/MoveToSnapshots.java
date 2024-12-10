@@ -93,7 +93,7 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 		if (existingUpgrade != null) {
 			lines.add("Supersedes #" + existingUpgrade.getNumber());
 		}
-		return String.join("\\r\\n\\r\\n", lines);
+		return String.join("\n\n", lines);
 	}
 
 	@Override
