@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.docker.compose.core.DockerCli.DockerComposeOptions;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.testsupport.container.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.container.TestImage;
@@ -51,12 +53,15 @@ class DefaultDockerComposeIntegrationTests {
 		// Profile 1 contains redis1 and redis3
 		// Profile 2 contains redis2 and redis3
 		File composeFile = createComposeFile(tempDir, "profiles.yaml").toFile();
-		DefaultDockerCompose dockerComposeWithProfile1 = new DefaultDockerCompose(
-				new DockerCli(tempDir.toFile(), DockerComposeFile.of(composeFile), Set.of("1")), null);
-		DefaultDockerCompose dockerComposeWithProfile2 = new DefaultDockerCompose(
-				new DockerCli(tempDir.toFile(), DockerComposeFile.of(composeFile), Set.of("2")), null);
-		DefaultDockerCompose dockerComposeWithAllProfiles = new DefaultDockerCompose(
-				new DockerCli(tempDir.toFile(), DockerComposeFile.of(composeFile), Set.of("1", "2")), null);
+		DefaultDockerCompose dockerComposeWithProfile1 = new DefaultDockerCompose(new DockerCli(tempDir.toFile(),
+				new DockerComposeOptions(DockerComposeFile.of(composeFile), Set.of("1"), Collections.emptyList())),
+				null);
+		DefaultDockerCompose dockerComposeWithProfile2 = new DefaultDockerCompose(new DockerCli(tempDir.toFile(),
+				new DockerComposeOptions(DockerComposeFile.of(composeFile), Set.of("2"), Collections.emptyList())),
+				null);
+		DefaultDockerCompose dockerComposeWithAllProfiles = new DefaultDockerCompose(new DockerCli(tempDir.toFile(),
+				new DockerComposeOptions(DockerComposeFile.of(composeFile), Set.of("1", "2"), Collections.emptyList())),
+				null);
 		dockerComposeWithAllProfiles.up(LogLevel.DEBUG);
 		try {
 			List<RunningService> runningServicesProfile1 = dockerComposeWithProfile1.getRunningServices();
