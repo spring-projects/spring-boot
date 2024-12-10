@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
 
 import javax.net.ssl.SSLContext;
 
@@ -971,6 +972,22 @@ public class TestRestTemplate {
 	 */
 	public TestRestTemplate withRequestFactorySettings(ClientHttpRequestFactorySettings requestFactorySettings) {
 		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettings),
+				this.restTemplate.getUriTemplateHandler());
+	}
+
+	/**
+	 * Creates a new {@code TestRestTemplate} with the same configuration as this one,
+	 * except that it will customize the {@link ClientHttpRequestFactorySettings}. The
+	 * request factory used is a new instance of the underlying {@link RestTemplate}'s
+	 * request factory type (when possible).
+	 * @param requestFactorySettingsCustomizer a {@link UnaryOperator} to update the
+	 * settings
+	 * @return the new template
+	 * @since 3.4.1
+	 */
+	public TestRestTemplate withRequestFactorySettings(
+			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
+		return new TestRestTemplate(this.builder.requestFactorySettings(requestFactorySettingsCustomizer),
 				this.restTemplate.getUriTemplateHandler());
 	}
 

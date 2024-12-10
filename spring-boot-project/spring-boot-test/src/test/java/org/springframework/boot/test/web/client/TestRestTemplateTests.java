@@ -168,7 +168,7 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void withSettingsUpdatesRedirectsForHttpComponents() {
+	void withRequestFactorySettingsRedirectsForHttpComponents() {
 		TestRestTemplate template = new TestRestTemplate();
 		assertThat(getRequestConfig(template).isRedirectsEnabled()).isFalse();
 		assertThat(getRequestConfig(template
@@ -177,12 +177,22 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void withSettingsUpdatesRedirectsForJdk() {
+	void withRequestFactorySettingsRedirectsForJdk() {
 		TestRestTemplate template = new TestRestTemplate(
 				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
 		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
 		assertThat(getJdkHttpClient(template.withRequestFactorySettings(
 				ClientHttpRequestFactorySettings.defaults().withRedirects(Redirects.DONT_FOLLOW)))
+			.followRedirects()).isEqualTo(Redirect.NEVER);
+	}
+
+	@Test
+	void withRequestFactorySettingsUpdateRedirectsForJdk() {
+		TestRestTemplate template = new TestRestTemplate(
+				new RestTemplateBuilder().requestFactoryBuilder(ClientHttpRequestFactoryBuilder.jdk()));
+		assertThat(getJdkHttpClient(template).followRedirects()).isEqualTo(Redirect.NORMAL);
+		assertThat(getJdkHttpClient(
+				template.withRequestFactorySettings((settings) -> settings.withRedirects(Redirects.DONT_FOLLOW)))
 			.followRedirects()).isEqualTo(Redirect.NEVER);
 	}
 
