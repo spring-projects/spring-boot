@@ -62,7 +62,7 @@ class DockerCliCommandTests {
 	void composePs() {
 		DockerCliCommand<?> command = new DockerCliCommand.ComposePs();
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand()).containsExactly("ps", "--format=json");
+		assertThat(command.getCommand()).containsExactly("ps", "--orphans=false", "--format=json");
 		assertThat(command.deserialize("[]")).isInstanceOf(List.class);
 	}
 

@@ -151,7 +151,8 @@ abstract sealed class DockerCliCommand<R> {
 	static final class ComposePs extends DockerCliCommand<List<DockerCliComposePsResponse>> {
 
 		ComposePs() {
-			super(Type.DOCKER_COMPOSE, DockerCliComposePsResponse.class, true, "ps", "--format=json");
+			super(Type.DOCKER_COMPOSE, DockerCliComposePsResponse.class, true, "ps", "--orphans=false",
+					"--format=json");
 		}
 
 	}
