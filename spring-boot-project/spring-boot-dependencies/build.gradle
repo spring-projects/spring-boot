@@ -2398,7 +2398,7 @@ bom {
 			releaseNotes("https://github.com/testcontainers/testcontainers-java/releases/tag/{version}")
 		}
 	}
-	library("Thymeleaf", "3.1.2.RELEASE") {
+	library("Thymeleaf", "3.1.3.RELEASE") {
 		group("org.thymeleaf") {
 			modules = [
 				"thymeleaf",
