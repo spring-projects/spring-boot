@@ -87,7 +87,9 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 		if (releaseNotesLink != null) {
 			lines.add("Upgrade to [%s](%s).".formatted(description, releaseNotesLink));
 		}
-		lines.add("Upgrade to %s.".formatted(description));
+		else {
+			lines.add("Upgrade to %s.".formatted(description));
+		}
 		if (existingUpgrade != null) {
 			lines.add("Supersedes #" + existingUpgrade.getNumber());
 		}
