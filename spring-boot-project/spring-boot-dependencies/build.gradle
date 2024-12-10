@@ -1115,6 +1115,7 @@ bom {
 				"kafka-log4j-appender",
 				"kafka-metadata",
 				"kafka-raft",
+				"kafka-server",
 				"kafka-server-common",
 				"kafka-server-common" {
 					classifier = "test"
