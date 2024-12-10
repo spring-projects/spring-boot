@@ -2392,7 +2392,7 @@ bom {
 			javadoc("https://javadoc.io/doc/com.redis/testcontainers-redis/{version}", "com.redis.testcontainers")
 		}
 	}
-	library("Thymeleaf", "3.1.2.RELEASE") {
+	library("Thymeleaf", "3.1.3.RELEASE") {
 		group("org.thymeleaf") {
 			modules = [
 				"thymeleaf",
