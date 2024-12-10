@@ -57,6 +57,8 @@ public class ManagementServerProperties {
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
+	private final Accesslog accesslog = new Accesslog();
+
 	/**
 	 * Returns the management port or {@code null} if the
 	 * {@link ServerProperties#getPort() server port} should be used.
@@ -115,6 +117,28 @@ public class ManagementServerProperties {
 			}
 		}
 		return candidate;
+	}
+
+	public Accesslog getAccesslog() {
+		return this.accesslog;
+	}
+
+	public static class Accesslog {
+
+		/**
+		 * Enable management access logs prefix customization
+		 * management.server.accesslog.prefix.
+		 */
+		private String prefix = "management_";
+
+		public String getPrefix() {
+			return this.prefix;
+		}
+
+		public void setPrefix(String prefix) {
+			this.prefix = prefix;
+		}
+
 	}
 
 }
