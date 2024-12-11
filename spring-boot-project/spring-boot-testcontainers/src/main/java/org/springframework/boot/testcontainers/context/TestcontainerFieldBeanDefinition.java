@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,10 @@ class TestcontainerFieldBeanDefinition extends RootBeanDefinition implements Tes
 	TestcontainerFieldBeanDefinition(Field field, Container<?> container) {
 		this.container = container;
 		this.annotations = MergedAnnotations.from(field);
-		this.setBeanClass(container.getClass());
+		setBeanClass(container.getClass());
 		setInstanceSupplier(() -> container);
 		setRole(ROLE_INFRASTRUCTURE);
+		setAttribute(TestcontainerFieldBeanDefinition.class.getName(), field);
 	}
 
 	@Override
