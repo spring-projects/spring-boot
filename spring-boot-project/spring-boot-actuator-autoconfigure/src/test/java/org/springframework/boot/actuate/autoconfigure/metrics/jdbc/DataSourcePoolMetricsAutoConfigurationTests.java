@@ -51,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Tommy Ludwig
+ * @author Yanming Zhou
  */
 class DataSourcePoolMetricsAutoConfigurationTests {
 
@@ -156,14 +157,15 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 
 	@Test
 	void allHikariDataSourcesCanBeInstrumented() {
-		this.contextRunner.withUserConfiguration(TwoHikariDataSourcesConfiguration.class)
+		this.contextRunner.withUserConfiguration(MultipleHikariDataSourcesConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.run((context) -> {
-				context.getBean("firstDataSource", DataSource.class).getConnection();
-				context.getBean("secondOne", DataSource.class).getConnection();
+				context.getBean("standardDataSource", DataSource.class).getConnection();
+				context.getBean("nonDefault", DataSource.class).getConnection();
+				context.getBean("nonAutowire", DataSource.class).getConnection();
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
-				registry.get("hikaricp.connections").tags("pool", "firstDataSource").meter();
-				registry.get("hikaricp.connections").tags("pool", "secondOne").meter();
+				assertThat(registry.find("hikaricp.connections").meters()).map((meter) -> meter.getId().getTag("pool"))
+					.containsOnly("standardDataSource", "nonDefault");
 			});
 	}
 
@@ -182,16 +184,17 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 
 	@Test
 	void allHikariDataSourcesCanBeInstrumentedWhenUsingLazyInitialization() {
-		this.contextRunner.withUserConfiguration(TwoHikariDataSourcesConfiguration.class)
+		this.contextRunner.withUserConfiguration(MultipleHikariDataSourcesConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withInitializer(
 					(context) -> context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
 			.run((context) -> {
-				context.getBean("firstDataSource", DataSource.class).getConnection();
-				context.getBean("secondOne", DataSource.class).getConnection();
+				context.getBean("standardDataSource", DataSource.class).getConnection();
+				context.getBean("nonDefault", DataSource.class).getConnection();
+				context.getBean("nonAutowire", DataSource.class).getConnection();
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
-				registry.get("hikaricp.connections").tags("pool", "firstDataSource").meter();
-				registry.get("hikaricp.connections").tags("pool", "secondOne").meter();
+				assertThat(registry.find("hikaricp.connections").meters()).map((meter) -> meter.getId().getTag("pool"))
+					.containsOnly("standardDataSource", "nonDefault");
 			});
 	}
 
@@ -257,16 +260,21 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class TwoHikariDataSourcesConfiguration {
+	static class MultipleHikariDataSourcesConfiguration {
 
 		@Bean
-		DataSource firstDataSource() {
-			return createHikariDataSource("firstDataSource");
+		DataSource standardDataSource() {
+			return createHikariDataSource("standardDataSource");
 		}
 
-		@Bean
-		DataSource secondOne() {
-			return createHikariDataSource("secondOne");
+		@Bean(defaultCandidate = false)
+		DataSource nonDefault() {
+			return createHikariDataSource("nonDefault");
+		}
+
+		@Bean(autowireCandidate = false)
+		DataSource nonAutowire() {
+			return createHikariDataSource("nonAutowire");
 		}
 
 	}
