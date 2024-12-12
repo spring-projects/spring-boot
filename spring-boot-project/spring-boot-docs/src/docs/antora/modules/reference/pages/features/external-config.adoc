@@ -26,7 +26,7 @@ Sources are considered in the following order:
 . `properties` attribute on your tests.
   Available on javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] and the xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.autoconfigured-tests[test annotations for testing a particular slice of your application].
 . javadoc:{url-spring-framework-javadoc}/org.springframework.test.context.DynamicPropertySource[format=annotation] annotations in your tests.
-. javadoc:{url-spring-framework-javadoc}/org.springframework.test.context.TestPropertySource[format=annotation] annotations on your tests.
+. javadoc:{url-spring-framework-javadoc}/org.springframework.test.context.TestPropertySource[format=annotation] or javadoc:org.springframework.boot.test.context.TestYamlPropertySource[format=annotation] annotations on your tests.
 . xref:using/devtools.adoc#using.devtools.globalsettings[Devtools global settings properties] in the `$HOME/.config/spring-boot` directory when devtools is active.
 
 Config data files are considered in the following order:
@@ -525,7 +525,7 @@ The lines immediately before and after the separator must not be same comment pr
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the xref:features/external-config.adoc#features.external-config.files.activation-properties[next section] for details.
 
-WARNING: Multi-document property files cannot be loaded by using the javadoc:org.springframework.context.annotation.PropertySource[format=annotation] or javadoc:org.springframework.test.context.TestPropertySource[format=annotation] annotations.
+WARNING: Multi-document property files cannot be loaded by using the javadoc:org.springframework.context.annotation.PropertySource[format=annotation], javadoc:org.springframework.test.context.TestPropertySource[format=annotation] or javadoc:org.springframework.boot.test.context.TestYamlPropertySource[format=annotation] annotations.
 
 
 
