@@ -97,7 +97,7 @@ class TestcontainersLifecycleBeanPostProcessor
 			}
 			else if (this.startables.get() == Startables.STARTED) {
 				logger.trace(LogMessage.format("Starting container %s", beanName));
-				startableBean.start();
+				TestcontainersStartup.start(startableBean);
 			}
 		}
 		return bean;
