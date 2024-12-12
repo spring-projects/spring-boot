@@ -47,6 +47,7 @@ import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFact
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.TomcatServletWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.UndertowServletWebServerFactoryCustomizer;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -73,6 +74,7 @@ import org.springframework.util.StringUtils;
  */
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
+@EnableConfigurationProperties(ManagementServerProperties.class)
 class ServletManagementChildContextConfiguration {
 
 	@Bean
@@ -83,20 +85,22 @@ class ServletManagementChildContextConfiguration {
 
 	@Bean
 	@ConditionalOnClass(name = "io.undertow.Undertow")
-	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer() {
-		return new UndertowAccessLogCustomizer();
+	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(
+			ManagementServerProperties managementServerProperties) {
+		return new UndertowAccessLogCustomizer(managementServerProperties);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
-	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer() {
-		return new TomcatAccessLogCustomizer();
+	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(
+			ManagementServerProperties managementServerProperties) {
+		return new TomcatAccessLogCustomizer(managementServerProperties);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
-	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer() {
-		return new JettyAccessLogCustomizer();
+	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
+		return new JettyAccessLogCustomizer(managementServerProperties);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -145,14 +149,18 @@ class ServletManagementChildContextConfiguration {
 
 	abstract static class AccessLogCustomizer implements Ordered {
 
-		private static final String MANAGEMENT_PREFIX = "management_";
+		protected final ManagementServerProperties managementServerProperties;
+
+		AccessLogCustomizer(ManagementServerProperties managementServerProperties) {
+			this.managementServerProperties = managementServerProperties;
+		}
 
 		protected String customizePrefix(String prefix) {
 			prefix = (prefix != null) ? prefix : "";
-			if (prefix.startsWith(MANAGEMENT_PREFIX)) {
+			if (prefix.startsWith(this.managementServerProperties.getAccesslog().getPrefix())) {
 				return prefix;
 			}
-			return MANAGEMENT_PREFIX + prefix;
+			return this.managementServerProperties.getAccesslog().getPrefix() + prefix;
 		}
 
 		@Override
@@ -165,12 +173,17 @@ class ServletManagementChildContextConfiguration {
 	static class TomcatAccessLogCustomizer extends AccessLogCustomizer
 			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
+		TomcatAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
+			super(managementServerProperties);
+		}
+
 		@Override
 		public void customize(TomcatServletWebServerFactory factory) {
 			AccessLogValve accessLogValve = findAccessLogValve(factory);
 			if (accessLogValve == null) {
 				return;
 			}
+
 			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
 		}
 
@@ -188,6 +201,10 @@ class ServletManagementChildContextConfiguration {
 	static class UndertowAccessLogCustomizer extends AccessLogCustomizer
 			implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
+		UndertowAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
+			super(managementServerProperties);
+		}
+
 		@Override
 		public void customize(UndertowServletWebServerFactory factory) {
 			factory.setAccessLogPrefix(customizePrefix(factory.getAccessLogPrefix()));
@@ -197,6 +214,10 @@ class ServletManagementChildContextConfiguration {
 
 	static class JettyAccessLogCustomizer extends AccessLogCustomizer
 			implements WebServerFactoryCustomizer<JettyServletWebServerFactory> {
+
+		JettyAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
+			super(managementServerProperties);
+		}
 
 		@Override
 		public void customize(JettyServletWebServerFactory factory) {
