@@ -18,7 +18,7 @@ package org.springframework.boot.gradle.testkit;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -55,6 +55,8 @@ import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
  */
 public class PluginClasspathGradleBuild extends GradleBuild {
 
+	private boolean kotlin = false;
+
 	public PluginClasspathGradleBuild() {
 		super();
 	}
@@ -63,35 +65,53 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 		super(dsl);
 	}
 
+	public PluginClasspathGradleBuild kotlin() {
+		this.kotlin = true;
+		return this;
+	}
+
 	@Override
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		return super.prepareRunner(arguments).withPluginClasspath(pluginClasspath());
 	}
 
 	private List<File> pluginClasspath() {
-		return Arrays.asList(new File("bin/main"), new File("build/classes/java/main"),
-				new File("build/resources/main"), new File(pathOfJarContaining(LaunchScript.class)),
-				new File(pathOfJarContaining(ClassVisitor.class)),
-				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
-				new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")),
-				new File(pathOfJarContaining(KotlinPlatformJvmPlugin.class)),
-				new File(pathOfJarContaining(KotlinProject.class)),
-				new File(pathOfJarContaining(KotlinToolingVersion.class)),
-				new File(pathOfJarContaining("org.jetbrains.kotlin.daemon.client.KotlinCompilerClient")),
-				new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)),
-				new File(pathOfJarContaining(LanguageSettings.class)),
-				new File(pathOfJarContaining(ArchiveEntry.class)), new File(pathOfJarContaining(BuildRequest.class)),
-				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
-				new File(pathOfJarContaining(HttpRequest.class)),
-				new File(pathOfJarContaining(HttpVersionPolicy.class)), new File(pathOfJarContaining(Module.class)),
-				new File(pathOfJarContaining(Versioned.class)),
-				new File(pathOfJarContaining(ParameterNamesModule.class)),
-				new File(pathOfJarContaining("com.github.openjson.JSONObject")),
-				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),
-				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)),
-				new File(pathOfJarContaining("org.graalvm.buildtools.gradle.NativeImagePlugin")),
-				new File(pathOfJarContaining("org.graalvm.reachability.GraalVMReachabilityMetadataRepository")),
-				new File(pathOfJarContaining("org.graalvm.buildtools.utils.SharedConstants")));
+		List<File> classpath = new ArrayList<>();
+		classpath.add(new File("bin/main"));
+		classpath.add(new File("build/classes/java/main"));
+		classpath.add(new File("build/resources/main"));
+		classpath.add(new File(pathOfJarContaining(LaunchScript.class)));
+		classpath.add(new File(pathOfJarContaining(ClassVisitor.class)));
+		classpath.add(new File(pathOfJarContaining(DependencyManagementPlugin.class)));
+		if (this.kotlin) {
+			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")));
+			classpath.add(new File(pathOfJarContaining(KotlinPlatformJvmPlugin.class)));
+			classpath.add(new File(pathOfJarContaining(KotlinProject.class)));
+			classpath.add(new File(pathOfJarContaining(KotlinToolingVersion.class)));
+			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.build.report.metrics.BuildTime")));
+			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.buildtools.api.CompilationService")));
+			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.daemon.client.KotlinCompilerClient")));
+			classpath.add(new File(pathOfJarContaining("org.jetbrains.kotlin.konan.library.KonanLibrary")));
+			classpath.add(new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)));
+			classpath.add(new File(pathOfJarContaining(LanguageSettings.class)));
+		}
+		classpath.add(new File(pathOfJarContaining(ArchiveEntry.class)));
+		classpath.add(new File(pathOfJarContaining(BuildRequest.class)));
+		classpath.add(new File(pathOfJarContaining(HttpClientConnectionManager.class)));
+		classpath.add(new File(pathOfJarContaining(HttpRequest.class)));
+		classpath.add(new File(pathOfJarContaining(HttpVersionPolicy.class)));
+		classpath.add(new File(pathOfJarContaining(Module.class)));
+		classpath.add(new File(pathOfJarContaining(Versioned.class)));
+		classpath.add(new File(pathOfJarContaining(ParameterNamesModule.class)));
+		classpath.add(new File(pathOfJarContaining("com.github.openjson.JSONObject")));
+		classpath.add(new File(pathOfJarContaining(JsonView.class)));
+		classpath.add(new File(pathOfJarContaining(Platform.class)));
+		classpath.add(new File(pathOfJarContaining(Toml.class)));
+		classpath.add(new File(pathOfJarContaining(Lexer.class)));
+		classpath.add(new File(pathOfJarContaining("org.graalvm.buildtools.gradle.NativeImagePlugin")));
+		classpath.add(new File(pathOfJarContaining("org.graalvm.reachability.GraalVMReachabilityMetadataRepository")));
+		classpath.add(new File(pathOfJarContaining("org.graalvm.buildtools.utils.SharedConstants")));
+		return classpath;
 	}
 
 	private String pathOfJarContaining(String className) {

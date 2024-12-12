@@ -4,16 +4,18 @@ plugins {
 
 apply plugin: 'org.jetbrains.kotlin.jvm'
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 tasks.withType(KotlinCompile) {
-	kotlinOptions.javaParameters = false
+	compilerOptions {
+		javaParameters = false
+	}
 }
 
 task('kotlinCompileTasksJavaParameters') {
 	doFirst {
 		tasks.withType(KotlinCompile) {
-			println "${name} java parameters: ${kotlinOptions.javaParameters}"
+			println "${name} java parameters: ${compilerOptions.javaParameters.get()}"
 		}
 	}
 }

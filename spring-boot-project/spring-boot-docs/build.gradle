@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import org.springframework.boot.build.docs.ConfigureJavadocLinks
 
 plugins {
@@ -44,6 +45,11 @@ javadocJar {
 
 sourcesJar {
 	enabled = false
+}
+
+// To avoid a redeclaration error with Kotlin compiler
+tasks.named('compileKotlin', KotlinCompilationTask.class) {
+    javaSources.from = []
 }
 
 plugins.withType(EclipsePlugin) {

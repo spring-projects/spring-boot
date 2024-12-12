@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.importingcontainerdeclarations
+package org.springframework.boot.docs.using.springbeansanddependencyinjection.multipleconstructors
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.context.ImportTestcontainers
-
-@TestConfiguration(proxyBeanMethods = false)
-@ImportTestcontainers(MyContainers::class)
-class MyContainersConfiguration
+interface AccountService {
+}

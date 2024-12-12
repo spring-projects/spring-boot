@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@
 package org.springframework.boot.build;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import dev.adamko.dokkatoo.DokkatooExtension;
 import dev.adamko.dokkatoo.formats.DokkatooHtmlPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions;
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget;
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions;
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion;
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 
 /**
@@ -56,14 +56,12 @@ class KotlinConventions {
 	}
 
 	private void configure(KotlinCompile compile) {
-		KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
-		kotlinOptions.setApiVersion("1.7");
-		kotlinOptions.setLanguageVersion("1.7");
-		kotlinOptions.setJvmTarget("17");
-		kotlinOptions.setAllWarningsAsErrors(true);
-		List<String> freeCompilerArgs = new ArrayList<>(kotlinOptions.getFreeCompilerArgs());
-		freeCompilerArgs.add("-Xsuppress-version-warnings");
-		kotlinOptions.setFreeCompilerArgs(freeCompilerArgs);
+		KotlinJvmCompilerOptions compilerOptions = compile.getCompilerOptions();
+		compilerOptions.getApiVersion().set(KotlinVersion.KOTLIN_2_1);
+		compilerOptions.getLanguageVersion().set(KotlinVersion.KOTLIN_2_1);
+		compilerOptions.getJvmTarget().set(JvmTarget.JVM_17);
+		compilerOptions.getAllWarningsAsErrors().set(true);
+		compilerOptions.getFreeCompilerArgs().addAll("-Xsuppress-version-warnings");
 	}
 
 	private void configureDokkatoo(Project project) {

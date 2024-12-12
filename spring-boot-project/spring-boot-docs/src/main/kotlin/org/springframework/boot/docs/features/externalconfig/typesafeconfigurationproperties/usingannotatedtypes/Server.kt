@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.testcontainers.atdevelopmenttime.importingcontainerdeclarations
+package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.usingannotatedtypes
 
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.testcontainers.context.ImportTestcontainers
+class Server(remoteAddress: Any?) {
+	fun start() {
 
-@TestConfiguration(proxyBeanMethods = false)
-@ImportTestcontainers(MyContainers::class)
-class MyContainersConfiguration
+	}
+}

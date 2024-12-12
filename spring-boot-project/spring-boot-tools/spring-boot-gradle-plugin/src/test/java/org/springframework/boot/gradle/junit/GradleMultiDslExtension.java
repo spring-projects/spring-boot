@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.boot.gradle.testkit.PluginClasspathGradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.Dsl;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
-import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
 
 /**
  * {@link Extension} that runs {@link TestTemplate templated tests} against the Groovy and
@@ -61,8 +60,7 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			GradleBuild gradleBuild = new PluginClasspathGradleBuild(this.dsl)
-				.gradleVersion(GradleVersions.minimumCompatible());
+			GradleBuild gradleBuild = new PluginClasspathGradleBuild(this.dsl);
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 

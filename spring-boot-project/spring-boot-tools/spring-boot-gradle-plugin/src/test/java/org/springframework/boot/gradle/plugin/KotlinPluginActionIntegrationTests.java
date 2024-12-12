@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(GradleBuildExtension.class)
 class KotlinPluginActionIntegrationTests {
 
-	GradleBuild gradleBuild = new PluginClasspathGradleBuild();
+	GradleBuild gradleBuild = new PluginClasspathGradleBuild().kotlin();
 
 	@Test
 	void noKotlinVersionPropertyWithoutKotlinPlugin() {
@@ -87,7 +87,7 @@ class KotlinPluginActionIntegrationTests {
 				configured.add(line.substring("Configuring :".length()));
 			}
 		}
-		assertThat(configured).containsExactlyInAnyOrder("help", "compileJava", "clean");
+		assertThat(configured).containsExactlyInAnyOrder("help", "clean");
 	}
 
 	private void expectConfigurationCacheRequestedDeprecationWarning() {
