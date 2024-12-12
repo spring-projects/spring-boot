@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minidev.json.JSONArray;
@@ -42,10 +43,12 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.quartz.DelegatingJob;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.LinkedMultiValueMap;
@@ -61,6 +64,10 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 class QuartzEndpointWebIntegrationTests {
+
+	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
+
+	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	private static final JobDetail jobOne = JobBuilder.newJob(Job.class)
 		.withIdentity("jobOne", "samples")
@@ -247,6 +254,92 @@ class QuartzEndpointWebIntegrationTests {
 	@WebEndpointTest
 	void quartzTriggerDetailWithUnknownKey(WebTestClient client) {
 		client.get().uri("/actuator/quartz/triggers/tests/does-not-exist").exchange().expectStatus().isNotFound();
+	}
+
+	@WebEndpointTest
+	void quartzTriggerJob(WebTestClient client) {
+		client.post()
+			.uri("/actuator/quartz/jobs/samples/jobOne")
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+			.bodyValue(Map.of("state", "running"))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("group")
+			.isEqualTo("samples")
+			.jsonPath("name")
+			.isEqualTo("jobOne")
+			.jsonPath("className")
+			.isEqualTo("org.quartz.Job")
+			.jsonPath("triggerTime")
+			.isNotEmpty();
+	}
+
+	@WebEndpointTest
+	void quartzTriggerJobV2(WebTestClient client) {
+		client.post()
+			.uri("/actuator/quartz/jobs/samples/jobOne")
+			.contentType(MediaType.parseMediaType(V2_JSON))
+			.accept(MediaType.APPLICATION_JSON)
+			.bodyValue(Map.of("state", "running"))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("group")
+			.isEqualTo("samples")
+			.jsonPath("name")
+			.isEqualTo("jobOne")
+			.jsonPath("className")
+			.isEqualTo("org.quartz.Job")
+			.jsonPath("triggerTime")
+			.isNotEmpty();
+	}
+
+	@WebEndpointTest
+	void quartzTriggerJobV3(WebTestClient client) {
+		client.post()
+			.uri("/actuator/quartz/jobs/samples/jobOne")
+			.contentType(MediaType.parseMediaType(V3_JSON))
+			.accept(MediaType.APPLICATION_JSON)
+			.bodyValue(Map.of("state", "running"))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("group")
+			.isEqualTo("samples")
+			.jsonPath("name")
+			.isEqualTo("jobOne")
+			.jsonPath("className")
+			.isEqualTo("org.quartz.Job")
+			.jsonPath("triggerTime")
+			.isNotEmpty();
+	}
+
+	@WebEndpointTest
+	void quartzTriggerJobWithUnknownJobKey(WebTestClient client) {
+		client.post()
+			.uri("/actuator/quartz/jobs/samples/does-not-exist")
+			.contentType(MediaType.APPLICATION_JSON)
+			.bodyValue(Map.of("state", "running"))
+			.exchange()
+			.expectStatus()
+			.isNotFound();
+	}
+
+	@WebEndpointTest
+	void quartzTriggerJobWithUnknownState(WebTestClient client) {
+		client.post()
+			.uri("/actuator/quartz/jobs/samples/jobOne")
+			.contentType(MediaType.parseMediaType(V3_JSON))
+			.accept(MediaType.APPLICATION_JSON)
+			.bodyValue(Map.of("state", "unknown"))
+			.exchange()
+			.expectStatus()
+			.isBadRequest();
 	}
 
 	@Configuration(proxyBeanMethods = false)
