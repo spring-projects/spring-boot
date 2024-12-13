@@ -1678,7 +1678,7 @@ bom {
 			releaseNotes("https://github.com/pgjdbc/pgjdbc/releases/tag/REL{version}")
 		}
 	}
-	library("Prometheus Client", "1.3.4") {
+	library("Prometheus Client", "1.3.5") {
 		group("io.prometheus") {
 			imports = [
 				"prometheus-metrics-bom"
