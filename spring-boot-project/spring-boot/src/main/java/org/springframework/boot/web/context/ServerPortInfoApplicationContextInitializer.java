@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * {@link Value @Value} or obtained through the {@link Environment}.
  * <p>
  * If the {@link WebServerInitializedEvent} has a
- * {@link WebServerApplicationContext#getServerNamespace() server namespace} , it will be
+ * {@link WebServerApplicationContext#getServerNamespace() server namespace}, it will be
  * used to construct the property name. For example, the "management" actuator context
  * will have the property name {@literal "local.management.port"}.
  * <p>

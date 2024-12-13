@@ -438,7 +438,7 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Sets the {@link ClientHttpRequestFactorySettings}. This will replace any previously
-	 * set {@link #connectTimeout(Duration) connectTimeout} ,{@link #readTimeout(Duration)
+	 * set {@link #connectTimeout(Duration) connectTimeout}, {@link #readTimeout(Duration)
 	 * readTimeout} and {@link #sslBundle(SslBundle) sslBundle} values.
 	 * @param requestFactorySettings the request factory settings
 	 * @return a new builder instance

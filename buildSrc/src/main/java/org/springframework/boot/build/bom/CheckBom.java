@@ -216,7 +216,7 @@ public abstract class CheckBom extends DefaultTask {
 			.getResolvedConfiguration()
 			.getResolvedArtifacts();
 		if (artifacts.size() != 1) {
-			throw new IllegalStateException("Expected a single file but '%s' resolved to %d artifacts"
+			throw new IllegalStateException("Expected a single artifact but '%s' resolved to %d artifacts"
 				.formatted(coordinates, artifacts.size()));
 		}
 		return artifacts.iterator().next().getFile();
