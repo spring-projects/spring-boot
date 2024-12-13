@@ -35,8 +35,6 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -62,7 +60,6 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Scott Frederick
  */
 @ExtendWith({ GradleBuildInjectionExtension.class, GradleBuildExtension.class })
-@EnabledForJreRange(max = JRE.JAVA_21)
 class PaketoBuilderTests {
 
 	GradleBuild gradleBuild;
