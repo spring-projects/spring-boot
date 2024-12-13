@@ -1219,7 +1219,7 @@ bom {
 			releaseNotes("https://github.com/liquibase/liquibase/releases/tag/v{version}")
 		}
 	}
-	library("Log4j2", "2.24.2") {
+	library("Log4j2", "2.24.3") {
 		group("org.apache.logging.log4j") {
 			imports = [
 				"log4j-bom"
