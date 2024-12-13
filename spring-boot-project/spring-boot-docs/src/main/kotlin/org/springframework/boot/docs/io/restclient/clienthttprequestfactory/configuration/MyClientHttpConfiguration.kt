@@ -10,7 +10,7 @@ import java.net.http.HttpClient
 class MyClientHttpConfiguration {
 
 	@Bean
-	fun clientHttpRequestFactoryBuilder(proxySelector: ProxySelector): ClientHttpRequestFactoryBuilder<*>? {
+	fun clientHttpRequestFactoryBuilder(proxySelector: ProxySelector): ClientHttpRequestFactoryBuilder<*> {
 		return ClientHttpRequestFactoryBuilder.jdk()
 				.withHttpClientCustomizer { builder -> builder.proxy(proxySelector) }
 	}

@@ -209,8 +209,8 @@ If multiple clients are available on the classpath, and not global configuration
 [[io.rest-client.clienthttprequestfactory.configuration]]
 === Global HTTP Client Configuration
 
-If the the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.client.factory[] property to pick a specific factory.
-For example, if you have Apache HttpClient on your classpath, but you prefer Jetty's javadoc:org.eclipse.jetty.client.HttpClient[] you can add use the following:
+If the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.client.factory[] property to pick a specific factory.
+For example, if you have Apache HttpClient on your classpath, but you prefer Jetty's javadoc:org.eclipse.jetty.client.HttpClient[] you can add the following:
 
 [configprops,yaml]
 ----
