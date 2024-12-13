@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -163,14 +164,14 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<CodecCustomizer> codecCustomizers;
 
-		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+		private final ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers;
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
 		public WebFluxConfig(Environment environment, WebProperties webProperties, WebFluxProperties webFluxProperties,
 				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
-				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
+				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers,
 				ObjectProvider<ViewResolver> viewResolvers) {
 			this.environment = environment;
 			this.resourceProperties = webProperties.getResources();
@@ -178,7 +179,7 @@ public class WebFluxAutoConfiguration {
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers;
 			this.codecCustomizers = codecCustomizers;
-			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizer.getIfAvailable();
+			this.resourceHandlerRegistrationCustomizers = resourceHandlerRegistrationCustomizers;
 			this.viewResolvers = viewResolvers;
 		}
 
@@ -210,19 +211,22 @@ public class WebFluxAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
+			List<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizers = this.resourceHandlerRegistrationCustomizers
+				.orderedStream()
+				.toList();
 			String webjarsPathPattern = this.webFluxProperties.getWebjarsPathPattern();
 			if (!registry.hasMappingForPattern(webjarsPathPattern)) {
 				ResourceHandlerRegistration registration = registry.addResourceHandler(webjarsPathPattern)
 					.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				configureResourceCaching(registration);
-				customizeResourceHandlerRegistration(registration);
+				resourceHandlerRegistrationCustomizers.forEach((customizer) -> customizer.customize(registration));
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
 				ResourceHandlerRegistration registration = registry.addResourceHandler(staticPathPattern)
 					.addResourceLocations(this.resourceProperties.getStaticLocations());
 				configureResourceCaching(registration);
-				customizeResourceHandlerRegistration(registration);
+				resourceHandlerRegistrationCustomizers.forEach((customizer) -> customizer.customize(registration));
 			}
 		}
 
@@ -245,12 +249,6 @@ public class WebFluxAutoConfiguration {
 		@Override
 		public void addFormatters(FormatterRegistry registry) {
 			ApplicationConversionService.addBeans(registry, this.beanFactory);
-		}
-
-		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
-			if (this.resourceHandlerRegistrationCustomizer != null) {
-				this.resourceHandlerRegistrationCustomizer.customize(registration);
-			}
 		}
 
 	}
