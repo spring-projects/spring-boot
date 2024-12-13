@@ -59,7 +59,7 @@ public class ExampleJsonComponent {
 		protected ExampleCustomObject deserializeObject(JsonParser jsonParser, DeserializationContext context,
 				ObjectCodec codec, JsonNode tree) throws IOException {
 			String value = nullSafeValue(tree.get("value"), String.class);
-			Date date = nullSafeValue(tree.get("date"), Integer.class, Date::new);
+			Date date = nullSafeValue(tree.get("date"), Long.class, Date::new);
 			UUID uuid = nullSafeValue(tree.get("uuid"), String.class, UUID::fromString);
 			return new ExampleCustomObject(value, date, uuid);
 		}

@@ -149,9 +149,9 @@ public class Instantiator<T> {
 	}
 
 	/**
-	 * Instantiate the given set of classes, injecting constructor arguments as necessary.
-	 * @param type the types to instantiate
-	 * @return a list of instantiated instances
+	 * Instantiate the given class, injecting constructor arguments as necessary.
+	 * @param type the type to instantiate
+	 * @return an instantiated instance
 	 * @since 3.4.0
 	 */
 	public T instantiateType(Class<?> type) {
