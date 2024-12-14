@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,8 +243,11 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			return ClassUtils.resolveClassName(foundClassName, testClass.getClassLoader());
 		}
 		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class).findFromClass(testClass);
-		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
-				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
+		Assert.state(found != null,
+				"Unable to find a @SpringBootConfiguration by searching packages upwards from the test. "
+						+ "You can use @ContextConfiguration, @SpringBootTest(classes=...) or other Spring Test "
+						+ "supported mechanisms to explicitly declare the configuration classes to load. Classes "
+						+ "annotated with @TestConfiguration are not considered.");
 		this.aotTestAttributes.setAttribute(propertyName, found.getName());
 		return found;
 	}
