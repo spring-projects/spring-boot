@@ -114,7 +114,7 @@ javadoc {
 		use = true
 		windowTitle = "Spring Boot Gradle Plugin ${project.version} API"
 		links "https://docs.gradle.org/$gradle.gradleVersion/javadoc/"
-		links "https://docs.oracle.com/en/java/javase/17/docs/api/"
+		links "https://docs.oracle.com/en/java/javase/17/docs/api"
 	}
 }
 
