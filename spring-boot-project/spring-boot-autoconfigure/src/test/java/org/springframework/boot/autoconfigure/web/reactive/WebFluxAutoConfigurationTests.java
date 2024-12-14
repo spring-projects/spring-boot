@@ -90,6 +90,7 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.BlockingExecutionConfigurer;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
+import org.springframework.web.reactive.config.ResourceHandlerRegistration;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.server.support.RouterFunctionMapping;
@@ -122,6 +123,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Tests for {@link WebFluxAutoConfiguration}.
@@ -179,6 +181,18 @@ class WebFluxAutoConfigurationTests {
 			CodecCustomizer codecCustomizer = context.getBean("firstCodecCustomizer", CodecCustomizer.class);
 			assertThat(codecCustomizer).isNotNull();
 			then(codecCustomizer).should().customize(any(ServerCodecConfigurer.class));
+		});
+	}
+
+	@Test
+	void shouldCustomizeResources() {
+		this.contextRunner.withUserConfiguration(ResourceHandlerRegistrationCustomizers.class).run((context) -> {
+			ResourceHandlerRegistrationCustomizer customizer1 = context
+				.getBean("firstResourceHandlerRegistrationCustomizer", ResourceHandlerRegistrationCustomizer.class);
+			ResourceHandlerRegistrationCustomizer customizer2 = context
+				.getBean("secondResourceHandlerRegistrationCustomizer", ResourceHandlerRegistrationCustomizer.class);
+			then(customizer1).should(times(2)).customize(any(ResourceHandlerRegistration.class));
+			then(customizer2).should(times(2)).customize(any(ResourceHandlerRegistration.class));
 		});
 	}
 
@@ -841,6 +855,21 @@ class WebFluxAutoConfigurationTests {
 		@Bean
 		CodecCustomizer firstCodecCustomizer() {
 			return mock(CodecCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ResourceHandlerRegistrationCustomizers {
+
+		@Bean
+		ResourceHandlerRegistrationCustomizer firstResourceHandlerRegistrationCustomizer() {
+			return mock(ResourceHandlerRegistrationCustomizer.class);
+		}
+
+		@Bean
+		ResourceHandlerRegistrationCustomizer secondResourceHandlerRegistrationCustomizer() {
+			return mock(ResourceHandlerRegistrationCustomizer.class);
 		}
 
 	}

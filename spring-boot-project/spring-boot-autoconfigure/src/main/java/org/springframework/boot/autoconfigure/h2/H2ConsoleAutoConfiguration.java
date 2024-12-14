@@ -75,8 +75,8 @@ public class H2ConsoleAutoConfiguration {
 	}
 
 	@Bean
-	H2ConsoleLogger h2ConsoleLogger(ObjectProvider<DataSource> dataSource) {
-		return new H2ConsoleLogger(dataSource, this.properties.getPath());
+	H2ConsoleLogger h2ConsoleLogger(ObjectProvider<DataSource> dataSources) {
+		return new H2ConsoleLogger(dataSources, this.properties.getPath());
 	}
 
 	private void configureH2ConsoleSettings(ServletRegistrationBean<JakartaWebServlet> registration,

@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.boot.testcontainers.lifecycle.TestcontainersStartup;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.ResolvableType;
@@ -188,7 +189,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			Assert.state(this.container != null,
 					"Container cannot be obtained before the connection details bean has been initialized");
 			if (this.container instanceof Startable startable) {
-				startable.start();
+				TestcontainersStartup.start(startable);
 			}
 			return this.container;
 		}

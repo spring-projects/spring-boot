@@ -1,0 +1,17 @@
+services:
+  redis1:
+    profiles:
+      - '1'
+    image: '{imageName}'
+    ports:
+      - '6379'
+  redis2:
+    profiles:
+      - '2'
+    image: '{imageName}'
+    ports:
+      - '6379'
+  redis3:
+    image: '{imageName}'
+    ports:
+      - '6379'

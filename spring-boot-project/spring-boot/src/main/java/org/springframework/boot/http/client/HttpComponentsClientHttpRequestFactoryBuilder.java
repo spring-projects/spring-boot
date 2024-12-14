@@ -182,7 +182,8 @@ public final class HttpComponentsClientHttpRequestFactoryBuilder
 			Consumer<RequestConfig.Builder> defaultRequestConfigCustomizer) {
 		Assert.notNull(defaultRequestConfigCustomizer, "'defaultRequestConfigCustomizer' must not be null");
 		return new HttpComponentsClientHttpRequestFactoryBuilder(getCustomizers(), this.httpClientCustomizer,
-				this.connectionManagerCustomizer, this.socketConfigCustomizer, defaultRequestConfigCustomizer,
+				this.connectionManagerCustomizer, this.socketConfigCustomizer,
+				this.defaultRequestConfigCustomizer.andThen(defaultRequestConfigCustomizer),
 				this.tlsSocketStrategyFactory);
 	}
 

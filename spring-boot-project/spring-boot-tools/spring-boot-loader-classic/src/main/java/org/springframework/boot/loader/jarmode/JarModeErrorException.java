@@ -16,29 +16,21 @@
 
 package org.springframework.boot.loader.jarmode;
 
-import java.util.Arrays;
-
 /**
- * {@link JarMode} for testing.
+ * Simple {@link RuntimeException} used to fail the jar mode with a simple printed error
+ * message.
  *
  * @author Phillip Webb
+ * @since 3.3.7
  */
-class TestJarMode implements JarMode {
+public class JarModeErrorException extends RuntimeException {
 
-	@Override
-	public boolean accepts(String mode) {
-		return "test".equals(mode);
+	public JarModeErrorException(String message) {
+		super(message);
 	}
 
-	@Override
-	public void run(String mode, String[] args) {
-		System.out.println("running in " + mode + " jar mode " + Arrays.asList(args));
-		if (args.length > 0 && "error".equals(args[0])) {
-			throw new JarModeErrorException("error message");
-		}
-		if (args.length > 0 && "fail".equals(args[0])) {
-			throw new IllegalStateException("bad");
-		}
+	public JarModeErrorException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

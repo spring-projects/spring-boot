@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
@@ -437,7 +438,7 @@ public class RestTemplateBuilder {
 
 	/**
 	 * Sets the {@link ClientHttpRequestFactorySettings}. This will replace any previously
-	 * set {@link #connectTimeout(Duration) connectTimeout} ,{@link #readTimeout(Duration)
+	 * set {@link #connectTimeout(Duration) connectTimeout}, {@link #readTimeout(Duration)
 	 * readTimeout} and {@link #sslBundle(SslBundle) sslBundle} values.
 	 * @param requestFactorySettings the request factory settings
 	 * @return a new builder instance
@@ -449,6 +450,22 @@ public class RestTemplateBuilder {
 				this.messageConverters, this.interceptors, this.requestFactoryBuilder, this.uriTemplateHandler,
 				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
 				this.requestCustomizers);
+	}
+
+	/**
+	 * Update the {@link ClientHttpRequestFactorySettings} using the given customizer.
+	 * @param requestFactorySettingsCustomizer a {@link UnaryOperator} to update request
+	 * factory settings
+	 * @return a new builder instance
+	 * @since 3.4.1
+	 */
+	public RestTemplateBuilder requestFactorySettings(
+			UnaryOperator<ClientHttpRequestFactorySettings> requestFactorySettingsCustomizer) {
+		Assert.notNull(requestFactorySettingsCustomizer, "ClientHttpRequestFactorySettingsCustomizer must not be null");
+		return new RestTemplateBuilder(requestFactorySettingsCustomizer.apply(this.requestFactorySettings),
+				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors,
+				this.requestFactoryBuilder, this.uriTemplateHandler, this.errorHandler, this.basicAuthentication,
+				this.defaultHeaders, this.customizers, this.requestCustomizers);
 	}
 
 	/**

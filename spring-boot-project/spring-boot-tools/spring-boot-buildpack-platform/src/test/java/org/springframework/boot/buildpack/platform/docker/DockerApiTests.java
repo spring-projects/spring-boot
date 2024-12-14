@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,17 +88,19 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 class DockerApiTests {
 
-	private static final String API_URL = "/v" + DockerApi.MINIMUM_API_VERSION;
+	private static final String API_URL = "/v" + DockerApi.API_VERSION;
+
+	private static final String PLATFORM_API_URL = "/v" + DockerApi.PLATFORM_API_VERSION;
 
 	public static final String PING_URL = "/_ping";
 
 	private static final String IMAGES_URL = API_URL + "/images";
 
-	private static final String IMAGES_1_41_URL = "/v" + ApiVersion.of(1, 41) + "/images";
+	private static final String PLATFORM_IMAGES_URL = PLATFORM_API_URL + "/images";
 
 	private static final String CONTAINERS_URL = API_URL + "/containers";
 
-	private static final String CONTAINERS_1_41_URL = "/v" + ApiVersion.of(1, 41) + "/containers";
+	private static final String PLATFORM_CONTAINERS_URL = PLATFORM_API_URL + "/containers";
 
 	private static final String VOLUMES_URL = API_URL + "/volumes";
 
@@ -235,9 +238,9 @@ class DockerApiTests {
 		void pullWithPlatformPullsImageAndProducesEvents() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			URI createUri = new URI(IMAGES_1_41_URL
+			URI createUri = new URI(PLATFORM_IMAGES_URL
 					+ "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase&platform=linux%2Farm64%2Fv1");
-			URI imageUri = new URI(IMAGES_1_41_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			URI imageUri = new URI(PLATFORM_IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
 			given(http().head(eq(new URI(PING_URL))))
 				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
 			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
@@ -254,9 +257,9 @@ class DockerApiTests {
 		void pullWithPlatformAndInsufficientApiVersionThrowsException() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			given(http().head(eq(new URI(PING_URL)))).willReturn(responseWithHeaders(
-					new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.MINIMUM_API_VERSION)));
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.pull(reference, platform, this.pullListener))
+			given(http().head(eq(new URI(PING_URL)))).willReturn(
+					responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, DockerApi.API_VERSION)));
+			assertThatIllegalStateException().isThrownBy(() -> this.api.pull(reference, platform, this.pullListener))
 				.withMessageContaining("must be at least 1.41")
 				.withMessageContaining("current API version is 1.24");
 		}
@@ -583,12 +586,23 @@ class DockerApiTests {
 
 		@Test
 		void createWithPlatformCreatesContainer() throws Exception {
+			createWithPlatform("1.41");
+		}
+
+		@Test
+		void createWithPlatformAndUnknownApiVersionAttemptsCreate() throws Exception {
+			createWithPlatform(null);
+		}
+
+		private void createWithPlatform(String apiVersion) throws IOException, URISyntaxException {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			given(http().head(eq(new URI(PING_URL))))
-				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.41")));
-			URI createUri = new URI(CONTAINERS_1_41_URL + "/create?platform=linux%2Farm64%2Fv1");
+			if (apiVersion != null) {
+				given(http().head(eq(new URI(PING_URL))))
+					.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, apiVersion)));
+			}
+			URI createUri = new URI(PLATFORM_CONTAINERS_URL + "/create?platform=linux%2Farm64%2Fv1");
 			given(http().post(eq(createUri), eq("application/json"), any()))
 				.willReturn(responseOf("create-container-response.json"));
 			ContainerReference containerReference = this.api.create(config, platform);
@@ -600,11 +614,13 @@ class DockerApiTests {
 		}
 
 		@Test
-		void createWithPlatformAndInsufficientApiVersionThrowsException() {
+		void createWithPlatformAndKnownInsufficientApiVersionThrowsException() throws Exception {
 			ImageReference imageReference = ImageReference.of("ubuntu:bionic");
 			ContainerConfig config = ContainerConfig.of(imageReference, (update) -> update.withCommand("/bin/bash"));
 			ImagePlatform platform = ImagePlatform.of("linux/arm64/v1");
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.create(config, platform))
+			given(http().head(eq(new URI(PING_URL))))
+				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "1.24")));
+			assertThatIllegalStateException().isThrownBy(() -> this.api.create(config, platform))
 				.withMessageContaining("must be at least 1.41")
 				.withMessageContaining("current API version is 1.24");
 		}
@@ -744,22 +760,22 @@ class DockerApiTests {
 		}
 
 		@Test
-		void getApiVersionWithEmptyVersionHeaderReturnsDefaultVersion() throws Exception {
+		void getApiVersionWithEmptyVersionHeaderReturnsUnknownVersion() throws Exception {
 			given(http().head(eq(new URI(PING_URL))))
 				.willReturn(responseWithHeaders(new BasicHeader(DockerApi.API_VERSION_HEADER_NAME, "")));
-			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.MINIMUM_API_VERSION);
+			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.UNKNOWN_API_VERSION);
 		}
 
 		@Test
-		void getApiVersionWithNoVersionHeaderReturnsDefaultVersion() throws Exception {
+		void getApiVersionWithNoVersionHeaderReturnsUnknownVersion() throws Exception {
 			given(http().head(eq(new URI(PING_URL)))).willReturn(emptyResponse());
-			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.MINIMUM_API_VERSION);
+			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.UNKNOWN_API_VERSION);
 		}
 
 		@Test
-		void getApiVersionWithExceptionReturnsDefaultVersion() throws Exception {
+		void getApiVersionWithExceptionReturnsUnknownVersion() throws Exception {
 			given(http().head(eq(new URI(PING_URL)))).willThrow(new IOException("simulated error"));
-			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.MINIMUM_API_VERSION);
+			assertThat(this.api.getApiVersion()).isEqualTo(DockerApi.UNKNOWN_API_VERSION);
 		}
 
 	}

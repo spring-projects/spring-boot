@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGINkey");
 		properties.getSsl().setTrustStoreCertificates("-----BEGINtrust");
 		properties.getSsl().setKeyStoreCertificateChain("-----BEGINchain");
-		Map<String, Object> consumerProperties = properties.buildConsumerProperties(null);
+		Map<String, Object> consumerProperties = properties.buildConsumerProperties();
 		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, "-----BEGINkey");
 		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, "-----BEGINtrust");
 		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG,
@@ -103,7 +103,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
 		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-			.isThrownBy(() -> properties.buildConsumerProperties(null));
+			.isThrownBy(() -> properties.buildConsumerProperties());
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
 		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-			.isThrownBy(() -> properties.buildConsumerProperties(null));
+			.isThrownBy(() -> properties.buildConsumerProperties());
 	}
 
 	@Test
