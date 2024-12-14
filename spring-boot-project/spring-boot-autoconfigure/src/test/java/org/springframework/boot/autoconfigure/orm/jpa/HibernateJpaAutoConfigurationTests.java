@@ -78,6 +78,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.SQLExceptionTranslator;
+import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -167,6 +169,24 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void hibernateDialectIsNotSetByDefault() {
 		contextRunner().run(assertJpaVendorAdapter(
 				(adapter) -> assertThat(adapter.getJpaPropertyMap()).doesNotContainKeys("hibernate.dialect")));
+	}
+
+	@Test
+	void shouldConfigureHibernateJpaDialectWithSqlExceptionTranslatorIfPresent() {
+		SQLStateSQLExceptionTranslator sqlExceptionTranslator = new SQLStateSQLExceptionTranslator();
+		contextRunner().withBean(SQLStateSQLExceptionTranslator.class, () -> sqlExceptionTranslator)
+			.run(assertJpaVendorAdapter((adapter) -> assertThat(adapter.getJpaDialect())
+				.hasFieldOrPropertyWithValue("jdbcExceptionTranslator", sqlExceptionTranslator)));
+	}
+
+	@Test
+	void shouldNotConfigureHibernateJpaDialectWithSqlExceptionTranslatorIfNotUnique() {
+		SQLStateSQLExceptionTranslator sqlExceptionTranslator1 = new SQLStateSQLExceptionTranslator();
+		SQLStateSQLExceptionTranslator sqlExceptionTranslator2 = new SQLStateSQLExceptionTranslator();
+		contextRunner().withBean("sqlExceptionTranslator1", SQLExceptionTranslator.class, () -> sqlExceptionTranslator1)
+			.withBean("sqlExceptionTranslator2", SQLExceptionTranslator.class, () -> sqlExceptionTranslator2)
+			.run(assertJpaVendorAdapter((adapter) -> assertThat(adapter.getJpaDialect())
+				.hasFieldOrPropertyWithValue("jdbcExceptionTranslator", null)));
 	}
 
 	@Test
