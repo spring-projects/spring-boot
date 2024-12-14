@@ -2299,7 +2299,7 @@ bom {
 		}
 		links {
 			site("https://github.com/spring-projects/spring-retry")
-			javadoc("https://javadoc.io/doc/org.springframework.retry/spring-retry/{version}", "org.springframework.retry")
+			javadoc("https://docs.spring.io/spring-retry/docs/{version}/apidocs", "org.springframework.retry")
 			releaseNotes("https://github.com/spring-projects/spring-retry/releases/tag/v{version}")
 		}
 	}
