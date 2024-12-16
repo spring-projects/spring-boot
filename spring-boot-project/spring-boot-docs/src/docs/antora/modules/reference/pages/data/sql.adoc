@@ -179,6 +179,8 @@ spring:
       max-rows: 500
 ----
 
+If tuning of SQL exceptions is required, you can define your own `SQLExceptionTranslator` bean so that it is associated with the auto-configured `JdbcTemplate`.
+
 NOTE: The javadoc:org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate[] reuses the same javadoc:org.springframework.jdbc.core.JdbcTemplate[] instance behind the scenes.
 If more than one javadoc:org.springframework.jdbc.core.JdbcTemplate[] is defined and no primary candidate exists, the javadoc:org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate[] is not auto-configured.
 
