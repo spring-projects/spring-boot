@@ -2303,7 +2303,7 @@ bom {
 			releaseNotes("https://github.com/spring-projects/spring-retry/releases/tag/v{version}")
 		}
 	}
-	library("Spring Security", "6.4.2-SNAPSHOT") {
+	library("Spring Security", "6.4.2") {
 		considerSnapshots()
 		group("org.springframework.security") {
 			imports = [
