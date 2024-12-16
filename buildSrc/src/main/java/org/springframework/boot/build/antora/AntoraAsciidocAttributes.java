@@ -204,7 +204,7 @@ public class AntoraAsciidocAttributes {
 	}
 
 	private void addUrlJava(Map<String, String> attributes) {
-		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api/");
+		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api");
 		attributes.put("javadoc-location-java-beans", "{url-javase-javadoc}/java.desktop");
 		attributes.put("javadoc-location-java-lang", "{url-javase-javadoc}/java.base");
 		attributes.put("javadoc-location-java-net", "{url-javase-javadoc}/java.base");

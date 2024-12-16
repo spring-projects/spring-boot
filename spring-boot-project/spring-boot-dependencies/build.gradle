@@ -86,7 +86,7 @@ bom {
 			]
 		}
 		links {
-			site("https://assertj.github.io/doc/")
+			site("https://assertj.github.io/doc")
 			releaseNotes("https://github.com/assertj/assertj/releases/tag/assertj-build-{version}")
 		}
 	}
@@ -145,7 +145,7 @@ bom {
 			]
 		}
 		links {
-			site("https://bytebuddy.net/")
+			site("https://bytebuddy.net")
 			docs("https://bytebuddy.net/#/tutorial")
 			releaseNotes("https://github.com/raphw/byte-buddy/releases/tag/byte-buddy-{version}")
 		}
@@ -298,7 +298,7 @@ bom {
 		}
 		links {
 			site("https://github.com/spring-gradle-plugins/dependency-management-plugin")
-			docs("https://docs.spring.io/dependency-management-plugin/docs/{version}/reference/html/")
+			docs("https://docs.spring.io/dependency-management-plugin/docs/{version}/reference/html")
 			releaseNotes("https://github.com/spring-gradle-plugins/dependency-management-plugin/releases/tag/v{version}")
 		}
 	}
@@ -333,7 +333,7 @@ bom {
 			]
 		}
 		links {
-			site("https://www.ehcache.org/")
+			site("https://www.ehcache.org")
 			releaseNotes("https://github.com/ehcache/ehcache3/releases/tag/v{version}")
 		}
 	}
@@ -450,7 +450,7 @@ bom {
 			]
 		}
 		links {
-			site("https://www.graphql-java.com/")
+			site("https://www.graphql-java.com")
 			javadoc("https://javadoc.io/doc/com.graphql-java/graphql-java/{version}", "graphql.schema", "graphql.execution")
 			releaseNotes("https://github.com/graphql-java/graphql-java/releases/tag/v{version}")
 		}
@@ -510,7 +510,7 @@ bom {
 		}
 		links {
 			site("https://hazelcast.com")
-			javadoc("https://docs.hazelcast.org/docs/{version}/javadoc/", "com.hazelcast")
+			javadoc("https://docs.hazelcast.org/docs/{version}/javadoc", "com.hazelcast")
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
@@ -631,7 +631,7 @@ bom {
 			]
 		}
 		links {
-			site("https://infinispan.org/")
+			site("https://infinispan.org")
 			javadoc(version -> "https://docs.jboss.org/infinispan/%s.%s/apidocs".formatted(version.major(), version.minor()), "org.infinispan")
 			releaseNotes("https://github.com/infinispan/infinispan/releases/tag/{version}")
 		}
@@ -1155,7 +1155,7 @@ bom {
 			]
 		}
 		links {
-			site("https://kotlinlang.org/")
+			site("https://kotlinlang.org")
 			docs("https://kotlinlang.org/docs/reference")
 			releaseNotes("https://github.com/JetBrains/kotlin/releases/tag/v{version}")
 		}
@@ -1253,7 +1253,7 @@ bom {
 		}
 		links {
 			site("https://projectlombok.org")
-			javadoc("https://projectlombok.org/api/")
+			javadoc("https://projectlombok.org/api")
 		}
 	}
 	library("MariaDB", "3.4.1") {
@@ -1263,8 +1263,8 @@ bom {
 			]
 		}
 		links {
-			site("https://mariadb.com/kb/en/mariadb-connector-j/")
-			releaseNotes(version -> "https://mariadb.com/kb/en/mariadb-connector-j-%s-release-notes/"
+			site("https://mariadb.com/kb/en/mariadb-connector-j")
+			releaseNotes(version -> "https://mariadb.com/kb/en/mariadb-connector-j-%s-release-notes"
 				.formatted(version.toString("-")))
 		}
 	}
@@ -1488,7 +1488,7 @@ bom {
 			]
 		}
 		links {
-			site("https://site.mockito.org/")
+			site("https://site.mockito.org")
 			releaseNotes("https://github.com/mockito/mockito/releases/tag/v{version}")
 		}
 	}
@@ -1854,7 +1854,7 @@ bom {
 		}
 		links {
 			site("https://github.com/rabbitmq/rabbitmq-java-client")
-			javadoc("https://rabbitmq.github.io/rabbitmq-java-client/api/current/", "com.rabbitmq")
+			javadoc("https://rabbitmq.github.io/rabbitmq-java-client/api/current", "com.rabbitmq")
 			releaseNotes("https://github.com/rabbitmq/rabbitmq-java-client/releases/tag/v{version}")
 		}
 	}
@@ -1885,7 +1885,7 @@ bom {
 			]
 		}
 		links {
-			site("https://projectreactor.io/")
+			site("https://projectreactor.io")
 			releaseNotes("https://github.com/reactor/reactor/releases/tag/{version}")
 		}
 	}
@@ -2266,7 +2266,7 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-pulsar")
 			github("https://github.com/spring-projects/spring-pulsar")
-			javadoc(version -> "https://docs.spring.io/spring-pulsar/docs/%s/api/"
+			javadoc(version -> "https://docs.spring.io/spring-pulsar/docs/%s/api"
 				.formatted(version.forMajorMinorGeneration()), "org.springframework.pulsar")
 			docs(version -> "https://docs.spring.io/spring-pulsar/docs/%s/reference"
 				.formatted(version.forMajorMinorGeneration()))
@@ -2283,9 +2283,9 @@ bom {
 		links {
 			site("https://spring.io/projects/spring-restdocs")
 			github("https://github.com/spring-projects/spring-restdocs")
-			javadoc(version -> "https://docs.spring.io/spring-restdocs/docs/%s/api/"
+			javadoc(version -> "https://docs.spring.io/spring-restdocs/docs/%s/api"
 				.formatted(version.forMajorMinorGeneration()), "org.springframework.restdocs")
-			docs(version -> "https://docs.spring.io/spring-restdocs/docs/%s/reference/htmlsingle/"
+			docs(version -> "https://docs.spring.io/spring-restdocs/docs/%s/reference/htmlsingle"
 					.formatted(version.forMajorMinorGeneration()))
 			releaseNotes("https://github.com/spring-projects/spring-restdocs/releases/tag/v{version}")
 		}
@@ -2400,7 +2400,7 @@ bom {
 			]
 		}
 		links {
-			site("https://www.thymeleaf.org/")
+			site("https://www.thymeleaf.org")
 			javadoc("thymeleaf", version -> "https://www.thymeleaf.org/apidocs/thymeleaf/%s".formatted(version), "org.thymeleaf")
 			javadoc("thymeleaf-spring6", version -> "https://www.thymeleaf.org/apidocs/thymeleaf-spring6/%s".formatted(version), "org.thymeleaf.spring6")
 			releaseNotes("https://github.com/thymeleaf/thymeleaf/releases/tag/thymeleaf-{version}")
