@@ -206,7 +206,7 @@ public enum TestImage {
 	/**
 	 * A container image suitable for testing Pulsar.
 	 */
-	PULSAR("apachepulsar/pulsar", "3.2.4", () -> PulsarContainer.class,
+	PULSAR("apachepulsar/pulsar", "3.3.3", () -> PulsarContainer.class,
 			(container) -> ((PulsarContainer) container).withStartupAttempts(2)
 				.withStartupTimeout(Duration.ofMinutes(3))),
 
