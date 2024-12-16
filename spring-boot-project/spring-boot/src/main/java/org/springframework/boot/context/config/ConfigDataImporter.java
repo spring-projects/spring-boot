@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.Assert;
 
 /**
  * Imports {@link ConfigData} by {@link ConfigDataLocationResolver resolving} and
@@ -63,6 +64,10 @@ class ConfigDataImporter {
 	 */
 	ConfigDataImporter(DeferredLogFactory logFactory, ConfigDataNotFoundAction notFoundAction,
 			ConfigDataLocationResolvers resolvers, ConfigDataLoaders loaders) {
+		Assert.notNull(resolvers, "ConfigDataLocationResolvers must not be null");
+		Assert.notNull(loaders, "ConfigDataLoaders must not be null");
+		Assert.notNull(notFoundAction, "ConfigDataNotFoundAction must not be null");
+
 		this.logger = logFactory.getLog(getClass());
 		this.resolvers = resolvers;
 		this.loaders = loaders;
