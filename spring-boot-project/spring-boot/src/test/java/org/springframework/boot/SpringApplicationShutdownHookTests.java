@@ -207,7 +207,7 @@ class SpringApplicationShutdownHookTests {
 	}
 
 	@Test
-	void handlersRunInDeterministicOrder() {
+	void handlersRunInDeterministicOrderFromLastRegisteredToFirst() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		Runnable r1 = mock(Runnable.class);
 		Runnable r2 = mock(Runnable.class);
@@ -217,9 +217,9 @@ class SpringApplicationShutdownHookTests {
 		shutdownHook.getHandlers().add(r3);
 		shutdownHook.run();
 		InOrder ordered = inOrder(r1, r2, r3);
-		ordered.verify(r2).run();
-		ordered.verify(r1).run();
 		ordered.verify(r3).run();
+		ordered.verify(r1).run();
+		ordered.verify(r2).run();
 		ordered.verifyNoMoreInteractions();
 	}
 
