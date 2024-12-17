@@ -1,69 +1,40 @@
 pipeline {
     agent any
 
-    environment {
-        // Define environment variables
-        MVN_HOME = '/opt/maven'  // Adjust this if your Maven is installed elsewhere
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk'
+    tools {
+        jdk 'JDK 17' // Ensure JDK 17 is configured in Jenkins tools
+        maven 'Maven 3.8.4' // Ensure Maven is configured in Jenkins tools
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out the repository...'
-                checkout scm  // Checkout the code from the repository
+                checkout scm
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                script {
-                    // Run Maven to clean, compile and package the application
-                    sh "${MVN_HOME}/bin/mvn clean package -DskipTests"
-                }
+                sh 'mvn clean install'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running unit tests...'
-                script {
-                    // Run Maven to execute tests
-                    sh "${MVN_HOME}/bin/mvn test"
-                }
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                echo 'Building Docker image...'
-                script {
-                    // Optional: Build Docker image if needed
-                   // sh 'docker build -t your-image-name .'
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying the application...'
-                // Optionally deploy to a staging or production server
-                // For example, you could use SSH or Kubernetes deployment
-                sh 'echo "Deploying application"'
+                sh 'mvn test'
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline execution finished.'
+            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
         }
         success {
-            echo 'Pipeline was successful.'
+            echo 'Build completed successfully.'
         }
         failure {
-            echo 'Pipeline failed.'
+            echo 'Build failed.'
         }
     }
 }
