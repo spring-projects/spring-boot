@@ -16,8 +16,10 @@
 
 package org.springframework.boot;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
@@ -103,12 +105,13 @@ class SpringApplicationShutdownHook implements Runnable {
 	public void run() {
 		Set<ConfigurableApplicationContext> contexts;
 		Set<ConfigurableApplicationContext> closedContexts;
-		Set<Handler> handlers;
+		List<Handler> handlers;
 		synchronized (SpringApplicationShutdownHook.class) {
 			this.inProgress = true;
 			contexts = new LinkedHashSet<>(this.contexts);
 			closedContexts = new LinkedHashSet<>(this.closedContexts);
-			handlers = new LinkedHashSet<>(this.handlers.getActions());
+			handlers = new ArrayList<>(this.handlers.getActions());
+			Collections.reverse(handlers);
 		}
 		contexts.forEach(this::closeAndWait);
 		closedContexts.forEach(this::closeAndWait);
