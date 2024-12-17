@@ -17,7 +17,6 @@
 package org.springframework.boot.build.bom.bomr;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.build.bom.BomExtension;
 import org.springframework.boot.build.bom.Library;
 import org.springframework.boot.build.bom.bomr.ReleaseSchedule.Release;
-import org.springframework.boot.build.bom.bomr.github.Issue;
 import org.springframework.boot.build.bom.bomr.github.Milestone;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.boot.build.properties.BuildProperties;
@@ -68,37 +66,9 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 	}
 
 	@Override
-	protected String issueTitle(Upgrade upgrade) {
-		return "Upgrade to " + description(upgrade);
-	}
-
-	private String description(Upgrade upgrade) {
-		String snapshotVersion = upgrade.getVersion().toString();
-		String releaseVersion = snapshotVersion.substring(0, snapshotVersion.length() - "-SNAPSHOT".length());
-		return upgrade.getLibrary().getName() + " " + releaseVersion;
-	}
-
-	@Override
-	protected String issueBody(Upgrade upgrade, Issue existingUpgrade) {
-		Library library = upgrade.getLibrary();
-		String releaseNotesLink = library.getLinkUrl("releaseNotes");
-		List<String> lines = new ArrayList<>();
-		String description = description(upgrade);
-		if (releaseNotesLink != null) {
-			lines.add("Upgrade to [%s](%s).".formatted(description, releaseNotesLink));
-		}
-		else {
-			lines.add("Upgrade to %s.".formatted(description));
-		}
-		if (existingUpgrade != null) {
-			lines.add("Supersedes #" + existingUpgrade.getNumber());
-		}
-		return String.join("\n\n", lines);
-	}
-
-	@Override
 	protected String commitMessage(Upgrade upgrade, int issueNumber) {
-		return "Start building against " + description(upgrade) + " snapshots" + "\n\nSee gh-" + issueNumber;
+		return "Start building against " + upgrade.toRelease().getNameAndVersion() + " snapshots" + "\n\nSee gh-"
+				+ issueNumber;
 	}
 
 	@Override

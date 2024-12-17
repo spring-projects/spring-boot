@@ -16,9 +16,6 @@
 
 package org.springframework.boot.build.bom.bomr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import org.gradle.api.Task;
@@ -27,8 +24,6 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
-import org.springframework.boot.build.bom.Library.LibraryVersion;
-import org.springframework.boot.build.bom.bomr.github.Issue;
 import org.springframework.boot.build.properties.BuildProperties;
 
 /**
@@ -64,31 +59,8 @@ public abstract class UpgradeBom extends UpgradeDependencies {
 	}
 
 	@Override
-	protected String issueTitle(Upgrade upgrade) {
-		return "Upgrade to " + upgrade.getLibrary().getName() + " " + upgrade.getVersion();
-	}
-
-	@Override
 	protected String commitMessage(Upgrade upgrade, int issueNumber) {
 		return issueTitle(upgrade) + "\n\nCloses gh-" + issueNumber;
-	}
-
-	@Override
-	protected String issueBody(Upgrade upgrade, Issue existingUpgrade) {
-		LibraryVersion upgradeVersion = new LibraryVersion(upgrade.getVersion());
-		String releaseNotesLink = upgrade.getLibrary().getLinkUrl("releaseNotes");
-		List<String> lines = new ArrayList<>();
-		String description = upgrade.getLibrary().getName() + " " + upgradeVersion;
-		if (releaseNotesLink != null) {
-			lines.add("Upgrade to [%s](%s).".formatted(description, releaseNotesLink));
-		}
-		else {
-			lines.add("Upgrade to %s.".formatted(description));
-		}
-		if (existingUpgrade != null) {
-			lines.add("Supersedes #" + existingUpgrade.getNumber());
-		}
-		return String.join("\n\n", lines);
 	}
 
 }

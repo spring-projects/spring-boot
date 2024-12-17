@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,16 +42,14 @@ class UpgradeApplicator {
 
 	Path apply(Upgrade upgrade) throws IOException {
 		String buildFileContents = Files.readString(this.buildFile);
-		Matcher matcher = Pattern.compile("library\\(\"" + upgrade.getLibrary().getName() + "\", \"(.+)\"\\)")
-			.matcher(buildFileContents);
+		String toName = upgrade.to().getName();
+		Matcher matcher = Pattern.compile("library\\(\"" + toName + "\", \"(.+)\"\\)").matcher(buildFileContents);
 		if (!matcher.find()) {
-			matcher = Pattern
-				.compile("library\\(\"" + upgrade.getLibrary().getName() + "\"\\) \\{\\s+version\\(\"(.+)\"\\)",
-						Pattern.MULTILINE)
+			matcher = Pattern.compile("library\\(\"" + toName + "\"\\) \\{\\s+version\\(\"(.+)\"\\)", Pattern.MULTILINE)
 				.matcher(buildFileContents);
 			if (!matcher.find()) {
-				throw new IllegalStateException("Failed to find definition for library '"
-						+ upgrade.getLibrary().getName() + "' in bom '" + this.buildFile + "'");
+				throw new IllegalStateException("Failed to find definition for library '" + upgrade.to().getName()
+						+ "' in bom '" + this.buildFile + "'");
 			}
 		}
 		String version = matcher.group(1);
@@ -68,14 +66,14 @@ class UpgradeApplicator {
 	private void updateGradleProperties(Upgrade upgrade, String version) throws IOException {
 		String property = version.substring(2, version.length() - 1);
 		String gradlePropertiesContents = Files.readString(this.gradleProperties);
-		String modified = gradlePropertiesContents.replace(
-				property + "=" + upgrade.getLibrary().getVersion().getVersion(), property + "=" + upgrade.getVersion());
+		String modified = gradlePropertiesContents.replace(property + "=" + upgrade.from().getVersion(),
+				property + "=" + upgrade.to().getVersion());
 		overwrite(this.gradleProperties, modified);
 	}
 
 	private void updateBuildFile(Upgrade upgrade, String buildFileContents, int versionStart, int versionEnd)
 			throws IOException {
-		String modified = buildFileContents.substring(0, versionStart) + upgrade.getVersion()
+		String modified = buildFileContents.substring(0, versionStart) + upgrade.to().getVersion()
 				+ buildFileContents.substring(versionEnd);
 		overwrite(this.buildFile, modified);
 	}
