@@ -303,18 +303,7 @@ If you do it that way, the library is not provided and, by default, Spring Boot 
 Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file (`META-INF/spring-autoconfigure-metadata.properties`).
 If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time.
 
-When building with Maven, it is recommended to add the following dependency in a module that contains auto-configurations:
-
-[source,xml]
-----
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-autoconfigure-processor</artifactId>
-	<optional>true</optional>
-</dependency>
-----
-
-If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the uber jar:
+When building with Maven, configure the compiler plugin (3.12.0 or later) to add `spring-boot-autoconfigure-processor` to the annotation processor paths:
 
 [source,xml]
 ----
@@ -322,15 +311,15 @@ If you have defined auto-configurations directly in your application, make sure 
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>
+					<annotationProcessorPaths>
+						<path>
 							<groupId>org.springframework.boot</groupId>
 							<artifactId>spring-boot-autoconfigure-processor</artifactId>
-						</exclude>
-					</excludes>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 		</plugins>
