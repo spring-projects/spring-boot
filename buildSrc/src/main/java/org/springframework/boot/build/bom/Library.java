@@ -101,7 +101,7 @@ public class Library {
 		this.versionAlignment = versionAlignment;
 		this.alignsWithBom = alignsWithBom;
 		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
-		this.links = Collections.unmodifiableMap(new TreeMap<>(links));
+		this.links = (links != null) ? Collections.unmodifiableMap(new TreeMap<>(links)) : Collections.emptyMap();
 	}
 
 	private static String generateLinkRootName(String name) {
@@ -165,6 +165,15 @@ public class Library {
 
 	public List<Link> getLinks(String name) {
 		return this.links.get(name);
+	}
+
+	public String getNameAndVersion() {
+		return getName() + " " + getVersion();
+	}
+
+	public Library withVersion(LibraryVersion version) {
+		return new Library(this.name, this.calendarName, version, this.groups, this.prohibitedVersions,
+				this.considerSnapshots, this.versionAlignment, this.alignsWithBom, this.linkRootName, this.links);
 	}
 
 	/**

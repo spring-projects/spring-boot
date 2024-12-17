@@ -51,10 +51,12 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 		for (Library library : libraries) {
 			librariesByName.put(library.getName(), library);
 		}
-		List<LibraryWithVersionOptions> libraryUpdates = this.libraryUpdateResolver
-			.findLibraryUpdates(librariesToUpgrade, librariesByName);
 		try {
-			return libraryUpdates.stream().map(this::resolveUpgrade).filter(Objects::nonNull).toList();
+			return this.libraryUpdateResolver.findLibraryUpdates(librariesToUpgrade, librariesByName)
+				.stream()
+				.map(this::resolveUpgrade)
+				.filter(Objects::nonNull)
+				.toList();
 		}
 		catch (UpgradesInterruptedException ex) {
 			return Collections.emptyList();
@@ -62,24 +64,29 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 	}
 
 	private Upgrade resolveUpgrade(LibraryWithVersionOptions libraryWithVersionOptions) {
-		if (libraryWithVersionOptions.getVersionOptions().isEmpty()) {
+		Library library = libraryWithVersionOptions.getLibrary();
+		List<VersionOption> versionOptions = libraryWithVersionOptions.getVersionOptions();
+		if (versionOptions.isEmpty()) {
 			return null;
 		}
-		VersionOption defaultOption = new VersionOption(
-				libraryWithVersionOptions.getLibrary().getVersion().getVersion());
+		VersionOption defaultOption = new VersionOption(library.getVersion().getVersion());
+		VersionOption selected = selectOption(defaultOption, library, versionOptions);
+		return (selected.equals(defaultOption)) ? null : new Upgrade(library, selected.getVersion());
+	}
+
+	private VersionOption selectOption(VersionOption defaultOption, Library library,
+			List<VersionOption> versionOptions) {
 		VersionOption selected = this.userInputHandler.askUser((questions) -> {
-			String question = libraryWithVersionOptions.getLibrary().getName() + " "
-					+ libraryWithVersionOptions.getLibrary().getVersion().getVersion();
+			String question = library.getNameAndVersion();
 			List<VersionOption> options = new ArrayList<>();
 			options.add(defaultOption);
-			options.addAll(libraryWithVersionOptions.getVersionOptions());
+			options.addAll(versionOptions);
 			return questions.selectOption(question, options, defaultOption);
 		}).get();
 		if (this.userInputHandler.interrupted()) {
 			throw new UpgradesInterruptedException();
 		}
-		return (selected.equals(defaultOption)) ? null
-				: new Upgrade(libraryWithVersionOptions.getLibrary(), selected.getVersion());
+		return selected;
 	}
 
 	static class UpgradesInterruptedException extends RuntimeException {
