@@ -55,8 +55,7 @@ public class JarFileRemoteApplicationLauncher extends RemoteApplicationLauncher 
 		List<String> entries = new ArrayList<>();
 		entries.add(appJar.getAbsolutePath());
 		entries.addAll(getDependencyJarPaths());
-		String classpath = StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
-		return classpath;
+		return StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 	}
 
 	private void addToJar(JarOutputStream output, File root, File current) throws IOException {

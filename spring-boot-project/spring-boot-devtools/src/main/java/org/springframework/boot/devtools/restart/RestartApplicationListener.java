@@ -62,7 +62,7 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 	}
 
 	private void onApplicationStartingEvent(ApplicationStartingEvent event) {
-		// It's too early to use the Spring environment but we should still allow
+		// It's too early to use the Spring environment, but we should still allow
 		// users to disable restart using a System property.
 		String enabled = System.getProperty(ENABLED_PROPERTY);
 		RestartInitializer restartInitializer = null;

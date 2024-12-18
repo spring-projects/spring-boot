@@ -167,7 +167,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	/**
-	 * Compound {@link Enumeration} that adds an additional item to the front.
+	 * Compound {@link Enumeration} that adds an item to the front.
 	 */
 	private static class CompoundEnumeration<E> implements Enumeration<E> {
 
