@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroupsDescriptor;
@@ -77,6 +78,18 @@ public class QuartzEndpointWebExtension {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return handle(jobsOrTriggers, () -> this.delegate.quartzJob(group, name, showUnsanitized),
 				() -> this.delegate.quartzTrigger(group, name, showUnsanitized));
+	}
+
+	@WriteOperation
+	public WebEndpointResponse<Object> triggerQuartzJob(@Selector String jobs, @Selector String group,
+			@Selector String name, String state) throws SchedulerException {
+		if (!"jobs".equals(jobs)) {
+			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
+		}
+		if (!"running".equals(state)) {
+			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
+		}
+		return handleNull(this.delegate.triggerQuartzJob(group, name));
 	}
 
 	private <T> WebEndpointResponse<T> handle(String jobsOrTriggers, ResponseSupplier<T> jobAction,
