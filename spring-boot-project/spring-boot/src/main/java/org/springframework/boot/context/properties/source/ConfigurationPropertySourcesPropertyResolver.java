@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.env.AbstractPropertyResolver;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
@@ -79,7 +80,14 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		if (resolveNestedPlaceholders && value instanceof String string) {
 			value = resolveNestedPlaceholders(string);
 		}
-		return convertValueIfNecessary(value, targetValueType);
+		try {
+			return convertValueIfNecessary(value, targetValueType);
+		}
+		catch (ConversionFailedException ex) {
+			Exception wrappedCause = new InvalidConfigurationPropertyValueException(key, value,
+					"Failed to convert to type " + ex.getTargetType(), ex.getCause());
+			throw new ConversionFailedException(ex.getSourceType(), ex.getTargetType(), ex.getValue(), wrappedCause);
+		}
 	}
 
 	private Object findPropertyValue(String key) {
