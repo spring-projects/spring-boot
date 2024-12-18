@@ -88,6 +88,20 @@ class KafkaPropertiesTests {
 	}
 
 	@Test
+	void sslPemConfigurationWithEmptyBundle() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.getSsl().setKeyStoreKey("-----BEGINkey");
+		properties.getSsl().setTrustStoreCertificates("-----BEGINtrust");
+		properties.getSsl().setKeyStoreCertificateChain("-----BEGINchain");
+		properties.getSsl().setBundle("");
+		Map<String, Object> consumerProperties = properties.buildConsumerProperties();
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, "-----BEGINkey");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, "-----BEGINtrust");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG,
+				"-----BEGINchain");
+	}
+
+	@Test
 	void sslBundleConfiguration() {
 		KafkaProperties properties = new KafkaProperties();
 		properties.getSsl().setBundle("myBundle");
