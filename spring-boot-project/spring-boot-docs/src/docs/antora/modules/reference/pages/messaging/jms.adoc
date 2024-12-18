@@ -149,7 +149,7 @@ Spring's javadoc:org.springframework.jms.core.JmsTemplate[] is auto-configured, 
 
 include-code::MyBean[]
 
-NOTE: javadoc:{url-spring-framework-javadoc}/org.springframework.jms.core.JmsMessagingTemplate[] can be injected in a similar manner.
+NOTE: javadoc:org.springframework.jms.core.JmsMessagingTemplate[] can be injected in a similar manner.
 If a javadoc:org.springframework.jms.support.destination.DestinationResolver[] or a javadoc:org.springframework.jms.support.converter.MessageConverter[] bean is defined, it is associated automatically to the auto-configured javadoc:org.springframework.jms.core.JmsTemplate[].
 
 
@@ -178,7 +178,7 @@ The following component creates a listener endpoint on the `someQueue` destinati
 
 include-code::MyBean[]
 
-TIP: See the javadoc:{url-spring-framework-javadoc}/org.springframework.jms.annotation.EnableJms[format=annotation] API documentation for more details.
+TIP: See the javadoc:org.springframework.jms.annotation.EnableJms[format=annotation] API documentation for more details.
 
 If you need to create more javadoc:org.springframework.jms.config.JmsListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.jms.config.DefaultJmsListenerContainerFactory[] with the same settings as the one that is auto-configured.
 
