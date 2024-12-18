@@ -208,7 +208,15 @@ server:
     bundle: "example"
 ----
 
-NOTE: The `server.ssl.bundle` property can not be combined with the discrete Java KeyStore or PEM property options under `server.ssl`.
+[NOTE]
+====
+The `server.ssl.bundle` property can not be combined with the discrete Java KeyStore or PEM property options under `server.ssl`.
+
+The configprop:server.ssl.ciphers[], configprop:server.ssl.enabled-protocols[], configprop:server.ssl.protocol[] properties are also ignored when using a bundle.
+These properties should instead be defined using `spring.ssl.bundle.<type>.<name>.options` properties.
+====
+
+
 
 [[howto.webserver.configure-ssl.sni]]
 === Configure Server Name Indication
