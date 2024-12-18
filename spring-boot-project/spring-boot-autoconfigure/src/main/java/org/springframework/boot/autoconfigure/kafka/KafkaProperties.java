@@ -44,6 +44,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -1399,60 +1400,67 @@ public class KafkaProperties {
 
 		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			validate();
+			String bundleName = getBundle();
+			if (StringUtils.hasText(bundleName)) {
+				return buildPropertiesForSslBundle(sslBundles, bundleName);
+			}
 			Properties properties = new Properties();
-			if (getBundle() != null) {
-				properties.in(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG)
-					.accept(SslBundleSslEngineFactory.class.getName());
-				properties.in(SslBundle.class.getName()).accept(sslBundles.getBundle(getBundle()));
-			}
-			else {
-				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-				map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
-				map.from(this::getKeyStoreCertificateChain)
-					.to(properties.in(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG));
-				map.from(this::getKeyStoreKey).to(properties.in(SslConfigs.SSL_KEYSTORE_KEY_CONFIG));
-				map.from(this::getKeyStoreLocation)
-					.as(this::resourceToPath)
-					.to(properties.in(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG));
-				map.from(this::getKeyStorePassword).to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
-				map.from(this::getKeyStoreType).to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
-				map.from(this::getTrustStoreCertificates)
-					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG));
-				map.from(this::getTrustStoreLocation)
-					.as(this::resourceToPath)
-					.to(properties.in(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG));
-				map.from(this::getTrustStorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
-				map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
-				map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
-			}
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
+			map.from(this::getKeyStoreCertificateChain)
+				.to(properties.in(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG));
+			map.from(this::getKeyStoreKey).to(properties.in(SslConfigs.SSL_KEYSTORE_KEY_CONFIG));
+			map.from(this::getKeyStoreLocation)
+				.as(this::resourceToPath)
+				.to(properties.in(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG));
+			map.from(this::getKeyStorePassword).to(properties.in(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG));
+			map.from(this::getKeyStoreType).to(properties.in(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG));
+			map.from(this::getTrustStoreCertificates).to(properties.in(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG));
+			map.from(this::getTrustStoreLocation)
+				.as(this::resourceToPath)
+				.to(properties.in(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG));
+			map.from(this::getTrustStorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
+			map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
+			map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
+			return properties;
+		}
+
+		private Map<String, Object> buildPropertiesForSslBundle(SslBundles sslBundles, String name) {
+			Properties properties = new Properties();
+			properties.in(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG).accept(SslBundleSslEngineFactory.class.getName());
+			properties.in(SslBundle.class.getName()).accept(sslBundles.getBundle(name));
 			return properties;
 		}
 
 		private void validate() {
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.key-store-key", getKeyStoreKey());
 				entries.put("spring.kafka.ssl.key-store-location", getKeyStoreLocation());
-			});
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			}, this::hasValue);
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.trust-store-certificates", getTrustStoreCertificates());
 				entries.put("spring.kafka.ssl.trust-store-location", getTrustStoreLocation());
-			});
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			}, this::hasValue);
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.bundle", getBundle());
 				entries.put("spring.kafka.ssl.key-store-key", getKeyStoreKey());
-			});
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			}, this::hasValue);
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.bundle", getBundle());
 				entries.put("spring.kafka.ssl.key-store-location", getKeyStoreLocation());
-			});
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			}, this::hasValue);
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.bundle", getBundle());
 				entries.put("spring.kafka.ssl.trust-store-certificates", getTrustStoreCertificates());
-			});
-			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleNonNullValuesIn((entries) -> {
+			}, this::hasValue);
+			MutuallyExclusiveConfigurationPropertiesException.throwIfMultipleMatchingValuesIn((entries) -> {
 				entries.put("spring.kafka.ssl.bundle", getBundle());
 				entries.put("spring.kafka.ssl.trust-store-location", getTrustStoreLocation());
-			});
+			}, this::hasValue);
+		}
+
+		private boolean hasValue(Object value) {
+			return (value instanceof String string) ? StringUtils.hasText(string) : value != null;
 		}
 
 		private String resourceToPath(Resource resource) {
