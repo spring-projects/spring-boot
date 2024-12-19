@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * {@link ReactiveAuthenticationManagerResolver}.
  *
  * @author Madhura Bhave
+ * @author Lasse Wulff
  * @since 2.0.0
  */
 @AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class, after = RSocketMessagingAutoConfiguration.class)
@@ -65,6 +67,7 @@ import org.springframework.util.StringUtils;
 		type = { "org.springframework.security.oauth2.jwt.ReactiveJwtDecoder" })
 @Conditional({ ReactiveUserDetailsServiceAutoConfiguration.RSocketEnabledOrReactiveWebApplication.class,
 		ReactiveUserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.class })
+@ConditionalOnWebApplication(type = Type.REACTIVE)
 @EnableConfigurationProperties(SecurityProperties.class)
 public class ReactiveUserDetailsServiceAutoConfiguration {
 
