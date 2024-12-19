@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.boot.web.error.ErrorWrapper;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -32,7 +33,6 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.method.MethodValidationResult;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -48,8 +48,8 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message (if configured)</li>
- * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} or
- * {@link MethodValidationResult} exception (if configured)</li>
+ * <li>errors - Any validation errors wrapped in {@link ErrorWrapper}, derived from a
+ * {@link BindingResult} or {@link MethodValidationResult} exception (if configured)</li>
  * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * <li>requestId - Unique ID associated with the current request</li>
@@ -61,6 +61,7 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Scott Frederick
  * @author Moritz Halbritter
  * @author Yanming Zhou
+ * @author Yongjun Hong
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -141,10 +142,9 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
 			MethodValidationResult result) {
-		List<ObjectError> errors = result.getAllErrors()
+		List<ErrorWrapper> errors = result.getAllErrors()
 			.stream()
-			.filter(ObjectError.class::isInstance)
-			.map(ObjectError.class::cast)
+			.map(ErrorWrapper::new)
 			.toList();
 		errorAttributes.put("message",
 				"Validation failed for method='" + result.getMethod() + "'. Error count: " + errors.size());
