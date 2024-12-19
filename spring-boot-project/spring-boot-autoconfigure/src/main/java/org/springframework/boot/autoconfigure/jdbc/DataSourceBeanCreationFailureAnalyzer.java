@@ -66,8 +66,8 @@ class DataSourceBeanCreationFailureAnalyzer extends AbstractFailureAnalyzer<Data
 		StringBuilder action = new StringBuilder();
 		action.append(String.format("Consider the following:%n"));
 		if (EmbeddedDatabaseConnection.NONE == cause.getConnection()) {
-			action.append(String
-					.format("\tIf you're using Testcontainers to set up your development datasource, consider starting the application from the test sources instead.%n"));
+			action.append(String.format(
+					"\tIf you're using Testcontainers to set up your development datasource, consider starting the application from the test sources instead.%n"));
 			action.append(String
 				.format("\tIf you want an embedded database (H2, HSQL or Derby), please put it on the classpath.%n"));
 		}
