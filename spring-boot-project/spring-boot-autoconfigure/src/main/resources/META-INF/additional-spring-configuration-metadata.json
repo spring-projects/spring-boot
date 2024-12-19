@@ -2925,6 +2925,52 @@
       ]
     },
     {
+      "name": "spring.data.redis.lettuce.read-from",
+      "values": [
+        {
+          "value": "any",
+          "description": "Read from any node."
+        },
+        {
+          "value": "any-replica",
+          "description": "Read from any replica node."
+        },
+        {
+          "value": "lowest-latency",
+          "description": "Read from the node with the lowest latency during topology discovery."
+        },
+        {
+          "value": "regex:",
+          "description": "Read from any node that has RedisURI matching with the given pattern."
+        },
+        {
+          "value": "replica",
+          "description": "Read from the replica only."
+        },
+        {
+          "value": "replica-preferred",
+          "description": "Read preferred from replica and fall back to upstream if no replica is available."
+        },
+        {
+          "value": "subnet:",
+          "description": "Read from any node in the subnets."
+        },
+        {
+          "value": "upstream",
+          "description": "Read from the upstream only."
+        },
+        {
+          "value": "upstream-preferred",
+          "description": "Read preferred from the upstream and fall back to a replica if the upstream is not available."
+        }
+      ],
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
       "name": "spring.datasource.data",
       "providers": [
         {
