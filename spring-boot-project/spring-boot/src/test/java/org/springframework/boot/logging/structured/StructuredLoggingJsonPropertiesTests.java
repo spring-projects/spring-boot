@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ class StructuredLoggingJsonPropertiesTests {
 		environment.setProperty("logging.structured.json.customizer", TestCustomizer.class.getName());
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		assertThat(properties).isEqualTo(new StructuredLoggingJsonProperties(Set.of("a", "b"), Set.of("c", "d"),
-				Map.of("e", "f"), Map.of("g", "h"), TestCustomizer.class));
+				Map.of("e", "f"), Map.of("g", "h"), List.of(TestCustomizer.class)));
 	}
 
 	@Test
