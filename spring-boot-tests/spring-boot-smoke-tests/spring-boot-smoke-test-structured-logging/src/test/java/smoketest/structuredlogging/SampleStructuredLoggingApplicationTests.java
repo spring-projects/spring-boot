@@ -65,4 +65,10 @@ class SampleStructuredLoggingApplicationTests {
 		assertThat(output).contains("epoch=").contains("msg=\"Starting SampleStructuredLoggingApplication");
 	}
 
+	@Test
+	void shouldCaptureCustomizerError(CapturedOutput output) {
+		SampleStructuredLoggingApplication.main(new String[] { "--spring.profiles.active=on-error" });
+		assertThat(output).contains("The name 'test' has already been written");
+	}
+
 }
