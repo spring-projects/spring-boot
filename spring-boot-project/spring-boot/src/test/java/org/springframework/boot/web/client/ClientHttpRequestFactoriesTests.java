@@ -79,14 +79,6 @@ class ClientHttpRequestFactoriesTests {
 	}
 
 	@Test
-	void getOfOkHttpFactoryReturnsOkHttpFactory() {
-		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(
-				org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class,
-				ClientHttpRequestFactorySettings.DEFAULTS);
-		assertThat(requestFactory).isInstanceOf(org.springframework.http.client.OkHttp3ClientHttpRequestFactory.class);
-	}
-
-	@Test
 	void getOfJdkFactoryReturnsJdkFactory() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(JdkClientHttpRequestFactory.class,
 				ClientHttpRequestFactorySettings.DEFAULTS);

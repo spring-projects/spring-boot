@@ -106,7 +106,6 @@ dependencies {
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
 	testImplementation("com.mysql:mysql-connector-j")
-	testImplementation("com.squareup.okhttp3:okhttp")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
