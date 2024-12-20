@@ -95,6 +95,18 @@ class FileWatcherTests {
 	}
 
 	@Test
+	void shouldFollowSymlink(@TempDir Path tempDir) throws Exception {
+		Path realFile = tempDir.resolve("realFile.txt");
+		Path symLink = tempDir.resolve("symlink.txt");
+		Files.createFile(realFile);
+		Files.createSymbolicLink(symLink, realFile);
+		WaitingCallback callback = new WaitingCallback();
+		this.fileWatcher.watch(Set.of(symLink), callback);
+		Files.writeString(realFile, "Some content");
+		callback.expectChanges();
+	}
+
+	@Test
 	void shouldIgnoreNotWatchedFiles(@TempDir Path tempDir) throws Exception {
 		Path watchedFile = tempDir.resolve("watched.txt");
 		Path notWatchedFile = tempDir.resolve("not-watched.txt");
