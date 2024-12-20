@@ -26,9 +26,11 @@ import java.util.function.Supplier;
 import org.testcontainers.containers.Container;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -153,6 +155,15 @@ public class TestcontainersPropertySource extends MapPropertySource {
 				TestcontainersPropertySource.getOrAdd((ConfigurableEnvironment) this.environment)
 					.addEventPublisher(this.eventPublisher);
 			}
+		}
+
+	}
+
+	static class EventPublisherRegistrarBeanRegistrationExcludeFilter implements BeanRegistrationExcludeFilter {
+
+		@Override
+		public boolean isExcludedFromAotProcessing(RegisteredBean registeredBean) {
+			return EventPublisherRegistrar.NAME.equals(registeredBean.getBeanName());
 		}
 
 	}
