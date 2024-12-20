@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
+import org.springframework.boot.web.error.ErrorWrapper;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -52,8 +53,8 @@ import org.springframework.web.servlet.ModelAndView;
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message (if configured)</li>
- * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} or
- * {@link MethodValidationResult} exception (if configured)</li>
+ * <li>errors - Any validation errors wrapped in {@link ErrorWrapper}, derived from a
+ * {@link BindingResult} or {@link MethodValidationResult} exception (if configured)</li>
  * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * </ul>
@@ -65,6 +66,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Scott Frederick
  * @author Moritz Halbritter
  * @author Yanming Zhou
+ * @author Yongjun Hong
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -153,6 +155,17 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		}
 	}
 
+	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
+			MethodValidationResult result) {
+		List<ErrorWrapper> errors = result.getAllErrors()
+			.stream()
+			.map(ErrorWrapper::new)
+			.toList();
+		errorAttributes.put("message",
+				"Validation failed for method='" + result.getMethod() + "'. Error count: " + errors.size());
+		errorAttributes.put("errors", errors);
+	}
+
 	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
 		errorAttributes.put("message", getMessage(webRequest, error));
 	}
@@ -185,16 +198,6 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	private void addMessageAndErrorsFromBindingResult(Map<String, Object> errorAttributes, BindingResult result) {
 		addMessageAndErrorsForValidationFailure(errorAttributes, "object='" + result.getObjectName() + "'",
 				result.getAllErrors());
-	}
-
-	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
-			MethodValidationResult result) {
-		List<ObjectError> errors = result.getAllErrors()
-			.stream()
-			.filter(ObjectError.class::isInstance)
-			.map(ObjectError.class::cast)
-			.toList();
-		addMessageAndErrorsForValidationFailure(errorAttributes, "method='" + result.getMethod() + "'", errors);
 	}
 
 	private void addMessageAndErrorsForValidationFailure(Map<String, Object> errorAttributes, String validated,
