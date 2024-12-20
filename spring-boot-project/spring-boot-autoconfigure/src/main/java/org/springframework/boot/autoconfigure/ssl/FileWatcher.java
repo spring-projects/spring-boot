@@ -86,12 +86,23 @@ class FileWatcher implements Closeable {
 					this.thread = new WatcherThread();
 					this.thread.start();
 				}
-				this.thread.register(new Registration(paths, action));
+				this.thread.register(new Registration(resolveSymlinks(paths), action));
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
 			}
 		}
+	}
+
+	private Set<Path> resolveSymlinks(Set<Path> paths) throws IOException {
+		Set<Path> result = new HashSet<>();
+		for (Path path : paths) {
+			result.add(path);
+			if (Files.isSymbolicLink(path)) {
+				result.add(Files.readSymbolicLink(path));
+			}
+		}
+		return result;
 	}
 
 	@Override
