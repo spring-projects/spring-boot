@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
@@ -54,9 +55,11 @@ import org.quartz.spi.OperableTrigger;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension;
+import org.springframework.boot.json.JsonWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.scheduling.quartz.DelegatingJob;
@@ -68,8 +71,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 
@@ -383,6 +390,23 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.apply(document("quartz/trigger-details-custom",
 					relaxedResponseFields(fieldWithPath("custom").description("Custom trigger specific details."))
 						.andWithPrefix("custom.", customTriggerSummary)));
+	}
+
+	@Test
+	void quartzTriggerJob() throws Exception {
+		mockJobs(jobOne);
+		String json = JsonWriter.standard().writeToString(Map.of("state", "running"));
+		assertThat(this.mvc.post()
+			.content(json)
+			.contentType(MediaType.APPLICATION_JSON)
+			.uri("/actuator/quartz/jobs/samples/jobOne"))
+			.hasStatusOk()
+			.apply(document("quartz/trigger-job", preprocessRequest(), preprocessResponse(prettyPrint()),
+					requestFields(fieldWithPath("state").description("The desired state of the job.")),
+					responseFields(fieldWithPath("group").description("Name of the group."),
+							fieldWithPath("name").description("Name of the job."),
+							fieldWithPath("className").description("Fully qualified name of the job implementation."),
+							fieldWithPath("triggerTime").description("Time the job is triggered."))));
 	}
 
 	private <T extends Trigger> void setupTriggerDetails(TriggerBuilder<T> builder, TriggerState state)
