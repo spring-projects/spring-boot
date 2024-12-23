@@ -683,17 +683,6 @@ class ConditionalOnMissingBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAnnotation
-	static class ScopedFooConfiguration {
-
-		@Bean
-		String foo() {
-			return "foo";
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class NotAutowireCandidateConfig {
 
 		@Bean(autowireCandidate = false)
