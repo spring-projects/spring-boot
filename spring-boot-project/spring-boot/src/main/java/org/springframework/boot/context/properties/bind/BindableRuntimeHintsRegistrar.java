@@ -29,6 +29,8 @@ import java.util.stream.StreamSupport;
 
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
@@ -58,6 +60,8 @@ import org.springframework.util.ReflectionUtils;
  * @since 3.0.0
  */
 public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+
+	private static final Log logger = LogFactory.getLog(BindableRuntimeHintsRegistrar.class);
 
 	private final Bindable<?>[] bindables;
 
@@ -89,7 +93,12 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 */
 	public void registerHints(RuntimeHints hints) {
 		for (Bindable<?> bindable : this.bindables) {
-			new Processor(bindable).process(hints.reflection());
+			try {
+				new Processor(bindable).process(hints.reflection());
+			}
+			catch (Exception ex) {
+				logger.debug("Skipping hints for " + bindable, ex);
+			}
 		}
 	}
 
