@@ -18,12 +18,9 @@ package org.springframework.boot.actuate.health;
 
 import java.util.function.Function;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Mono;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Base {@link ReactiveHealthIndicator} implementations that encapsulates creation of
@@ -37,10 +34,6 @@ import org.springframework.util.StringUtils;
 public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthIndicator {
 
 	private static final String NO_MESSAGE = null;
-
-	private static final String DEFAULT_MESSAGE = "Health check failed";
-
-	private final Log logger = LogFactory.getLog(getClass());
 
 	private final Function<Throwable, String> healthCheckFailedMessage;
 
@@ -79,22 +72,15 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 		try {
 			Health.Builder builder = new Health.Builder();
 			Mono<Health> result = doHealthCheck(builder).onErrorResume(this::handleFailure);
-			return result.doOnNext((health) -> logExceptionIfPresent(builder.getException()));
+			return result.doOnNext((health) -> HealthLogger.logExceptionIfPresent(builder.getException()));
 		}
 		catch (Exception ex) {
 			return handleFailure(ex);
 		}
 	}
 
-	private void logExceptionIfPresent(Throwable ex) {
-		if (ex != null && this.logger.isWarnEnabled()) {
-			String message = (ex instanceof Exception) ? this.healthCheckFailedMessage.apply(ex) : null;
-			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, ex);
-		}
-	}
-
 	private Mono<Health> handleFailure(Throwable ex) {
-		logExceptionIfPresent(ex);
+		HealthLogger.logExceptionIfPresent(ex);
 		return Mono.just(new Health.Builder().down(ex).build());
 	}
 

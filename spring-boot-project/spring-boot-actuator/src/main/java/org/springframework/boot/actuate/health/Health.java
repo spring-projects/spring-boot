@@ -55,6 +55,8 @@ public final class Health extends HealthComponent {
 
 	private final Map<String, Object> details;
 
+	private final Throwable exception;
+
 	/**
 	 * Create a new {@link Health} instance with the specified status and details.
 	 * @param builder the Builder to use
@@ -63,11 +65,13 @@ public final class Health extends HealthComponent {
 		Assert.notNull(builder, "Builder must not be null");
 		this.status = builder.status;
 		this.details = Collections.unmodifiableMap(builder.details);
+		this.exception = builder.exception;
 	}
 
 	Health(Status status, Map<String, Object> details) {
 		this.status = status;
 		this.details = details;
+		this.exception = null;
 	}
 
 	/**
@@ -86,6 +90,14 @@ public final class Health extends HealthComponent {
 	@JsonInclude(Include.NON_EMPTY)
 	public Map<String, Object> getDetails() {
 		return this.details;
+	}
+
+	/**
+	 * Return the exception of the health.
+	 * @return the exception (or {@code null})
+	 */
+	public Throwable getException() {
+		return this.exception;
 	}
 
 	/**

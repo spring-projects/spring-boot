@@ -169,7 +169,9 @@ abstract class HealthEndpointSupport<C, T> {
 	private T getLoggedHealth(C contributor, String name, boolean showDetails) {
 		Instant start = Instant.now();
 		try {
-			return getHealth(contributor, showDetails);
+			T health = getHealth(contributor, showDetails);
+			HealthLogger.logExceptionIfPresent(health.getException());
+			return health;
 		}
 		finally {
 			if (logger.isWarnEnabled() && this.slowIndicatorLoggingThreshold != null) {

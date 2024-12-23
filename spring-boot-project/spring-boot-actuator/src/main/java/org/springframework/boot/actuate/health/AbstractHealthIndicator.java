@@ -18,12 +18,8 @@ package org.springframework.boot.actuate.health;
 
 import java.util.function.Function;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Base {@link HealthIndicator} implementations that encapsulates creation of
@@ -39,10 +35,6 @@ import org.springframework.util.StringUtils;
 public abstract class AbstractHealthIndicator implements HealthIndicator {
 
 	private static final String NO_MESSAGE = null;
-
-	private static final String DEFAULT_MESSAGE = "Health check failed";
-
-	private final Log logger = LogFactory.getLog(getClass());
 
 	private final Function<Exception, String> healthCheckFailedMessage;
 
@@ -84,15 +76,8 @@ public abstract class AbstractHealthIndicator implements HealthIndicator {
 		catch (Exception ex) {
 			builder.down(ex);
 		}
-		logExceptionIfPresent(builder.getException());
+		HealthLogger.logExceptionIfPresent(builder.getException());
 		return builder.build();
-	}
-
-	private void logExceptionIfPresent(Throwable throwable) {
-		if (throwable != null && this.logger.isWarnEnabled()) {
-			String message = (throwable instanceof Exception ex) ? this.healthCheckFailedMessage.apply(ex) : null;
-			this.logger.warn(StringUtils.hasText(message) ? message : DEFAULT_MESSAGE, throwable);
-		}
 	}
 
 	/**
