@@ -97,10 +97,7 @@ class FileWatcher implements Closeable {
 	private Set<Path> resolveSymlinks(Set<Path> paths) throws IOException {
 		Set<Path> result = new HashSet<>();
 		for (Path path : paths) {
-			result.add(path);
-			if (Files.isSymbolicLink(path)) {
-				result.add(Files.readSymbolicLink(path));
-			}
+			result.add(Files.isSymbolicLink(path) ? Files.readSymbolicLink(path) : path);
 		}
 		return result;
 	}
