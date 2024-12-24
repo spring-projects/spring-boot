@@ -862,7 +862,7 @@ bom {
 		}
 		links {
 			releaseNotes("https://github.com/jakartaee/jaxb-api/releases/tag/{version}")
-			javadoc(version -> "https://jakarta.ee/specifications/xml-binding/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/xml-binding/%s.%s/apidocs/jakarta.xml.bind"
 				.formatted(version.major(), version.minor()), "jakarta.xml.bind")
 		}
 	}
