@@ -19,11 +19,13 @@ package org.springframework.boot.info;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import java.lang.management.PlatformManagedObject;
 
 /**
  * Information about the process of the application.
  *
  * @author Jonatan Ivanov
+ * @author Andrey Litvitski
  * @since 3.3.0
  */
 public class ProcessInfo {
@@ -72,6 +74,34 @@ public class ProcessInfo {
 		return new MemoryInfo();
 	}
 
+	/**
+	 * Virtual threads information for the process. These values provide details about the
+	 * current state of virtual threads, including the number of mounted threads, queued threads,
+	 * the parallelism level, and the thread pool size.
+	 *
+	 * @return an instance of {@link VirtualThreadsInfo} containing information about virtual threads,
+	 * or {@code null} if the VirtualThreadSchedulerMXBean is not available.
+	 * @since 3.4.2
+	 */
+	public VirtualThreadsInfo getVirtualThreads() {
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends PlatformManagedObject> mxBeanClass =
+					(Class<? extends PlatformManagedObject>) Class.forName("jdk.management.VirtualThreadSchedulerMXBean");
+
+			Object bean = ManagementFactory.getPlatformMXBean(mxBeanClass);
+
+			return new VirtualThreadsInfo(
+					(Integer) mxBeanClass.getMethod("getMountedVirtualThreadCount").invoke(bean),
+					(Long) mxBeanClass.getMethod("getQueuedVirtualThreadCount").invoke(bean),
+					(Integer) mxBeanClass.getMethod("getParallelism").invoke(bean),
+					(Integer) mxBeanClass.getMethod("getPoolSize").invoke(bean)
+			);
+		} catch (ReflectiveOperationException e) {
+			return null;
+		}
+	}
+
 	public long getPid() {
 		return this.pid;
 	}
@@ -82,6 +112,46 @@ public class ProcessInfo {
 
 	public String getOwner() {
 		return this.owner;
+	}
+
+	/**
+	 * Virtual threads information.
+	 *
+	 * @since 3.4.2
+	 */
+	public static class VirtualThreadsInfo {
+
+		private final int mounted;
+
+		private final long queued;
+
+		private final int parallelism;
+
+		private final int poolSize;
+
+		public VirtualThreadsInfo(int mounted, long queued, int parallelism, int poolSize) {
+			this.mounted = mounted;
+			this.queued = queued;
+			this.parallelism = parallelism;
+			this.poolSize = poolSize;
+		}
+
+		public long getMounted() {
+			return this.mounted;
+		}
+
+		public long getQueued() {
+			return this.queued;
+		}
+
+		public int getParallelism() {
+			return this.parallelism;
+		}
+
+		public int getPoolSize() {
+			return this.poolSize;
+		}
+
 	}
 
 	/**

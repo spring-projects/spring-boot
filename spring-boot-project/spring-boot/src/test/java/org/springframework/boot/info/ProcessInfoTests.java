@@ -16,9 +16,13 @@
 
 package org.springframework.boot.info;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.PlatformManagedObject;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.info.ProcessInfo.MemoryInfo.MemoryUsageInfo;
+import org.springframework.boot.info.ProcessInfo.VirtualThreadsInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ProcessInfo}.
  *
  * @author Jonatan Ivanov
+ * @author Andrey Litvitski
  */
 class ProcessInfoTests {
 
@@ -52,6 +57,30 @@ class ProcessInfoTests {
 		assertThat(nonHeapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getCommitted());
 		assertThat(nonHeapUsageInfo.getCommitted()).isPositive();
 		assertThat(nonHeapUsageInfo.getMax()).isEqualTo(-1);
+	}
+
+	@Test
+	void virtualThreadsInfoIsNullWhenMXBeanIsNotAccessible() {
+		if (!isVirtualThreadMXBeanAvailable()) {
+			ProcessInfo processInfo = new ProcessInfo();
+
+			VirtualThreadsInfo virtualThreadsInfo = processInfo.getVirtualThreads();
+
+			assertThat(virtualThreadsInfo).isNull();
+		}
+	}
+
+	private boolean isVirtualThreadMXBeanAvailable() {
+		try {
+			@SuppressWarnings("unchecked")
+			Class<? extends PlatformManagedObject> mxBeanClass =
+					(Class<? extends PlatformManagedObject>) Class.forName("jdk.management.VirtualThreadSchedulerMXBean");
+
+			ManagementFactory.getPlatformMXBean(mxBeanClass);
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 
 }
