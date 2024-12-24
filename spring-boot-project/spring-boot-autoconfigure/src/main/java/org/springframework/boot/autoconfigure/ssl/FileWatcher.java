@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,12 +86,24 @@ class FileWatcher implements Closeable {
 					this.thread = new WatcherThread();
 					this.thread.start();
 				}
-				this.thread.register(new Registration(paths, action));
+				Set<Path> actualPaths = new HashSet<>();
+				for (Path path : paths) {
+					actualPaths.add(resolveSymlinkIfNecessary(path));
+				}
+				this.thread.register(new Registration(actualPaths, action));
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
 			}
 		}
+	}
+
+	private static Path resolveSymlinkIfNecessary(Path path) throws IOException {
+		if (Files.isSymbolicLink(path)) {
+			Path target = Files.readSymbolicLink(path);
+			return resolveSymlinkIfNecessary(target);
+		}
+		return path;
 	}
 
 	@Override
