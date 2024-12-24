@@ -6,7 +6,7 @@ When you create a jar containing the layers index file, the `spring-boot-jarmode
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 
 CAUTION: The `tools` mode can not be used with a xref:how-to:deployment/installing.adoc[fully executable Spring Boot archive] that includes a launch script.
-Disable launch script configuration when building a jar file that is intended to be used with `layertools`.
+Disable launch script configuration when building a jar file that is intended to be used with the `extract` tools mode command.
 
 Here’s how you can launch your jar with a `tools` jar mode:
 
