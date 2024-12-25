@@ -19,6 +19,8 @@ package org.springframework.boot.info;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.info.ProcessInfo.MemoryInfo.MemoryUsageInfo;
+import org.springframework.boot.info.ProcessInfo.VirtualThreadsInfo;
+import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ProcessInfo}.
  *
  * @author Jonatan Ivanov
+ * @author Andrey Litvitski
  */
 class ProcessInfoTests {
 
@@ -52,6 +55,25 @@ class ProcessInfoTests {
 		assertThat(nonHeapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getCommitted());
 		assertThat(nonHeapUsageInfo.getCommitted()).isPositive();
 		assertThat(nonHeapUsageInfo.getMax()).isEqualTo(-1);
+	}
+
+	@Test
+	void virtualThreadsInfoIsNullWhenMXBeanIsNotAccessible() {
+		if (ClassUtils.isPresent("jdk.management.VirtualThreadSchedulerMXBean", null)) {
+			ProcessInfo processInfo = new ProcessInfo();
+
+			VirtualThreadsInfo virtualThreadsInfo = processInfo.getVirtualThreads();
+
+			assertThat(virtualThreadsInfo).isNotNull();
+			assertThat(virtualThreadsInfo.getMounted()).isGreaterThanOrEqualTo(0);
+			assertThat(virtualThreadsInfo.getQueued()).isGreaterThanOrEqualTo(0);
+			assertThat(virtualThreadsInfo.getParallelism()).isGreaterThan(0);
+			assertThat(virtualThreadsInfo.getPoolSize()).isGreaterThan(0);
+		} else {
+			ProcessInfo processInfo = new ProcessInfo();
+
+			assertThat(processInfo.getVirtualThreads()).isNull();
+		}
 	}
 
 }
