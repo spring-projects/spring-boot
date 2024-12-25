@@ -52,8 +52,13 @@ class MavenBuildOutputTimestampTests {
 	}
 
 	@Test
-	void shouldParseIso8601WithMilliseconds() {
-		assertThat(parse("2011-12-03T10:15:30.12345Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30Z"));
+	void shouldParseIso8601WithSeconds_whenMillisecondsNotPresent() {
+		assertThat(parse("2011-12-03T10:15:30Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30Z"));
+	}
+
+	@Test
+	void shouldParseIso8601WithMillisecondsPreserved_whenPresent() {
+		assertThat(parse("2024-12-19T19:59:39.040Z")).isEqualTo(Instant.parse("2024-12-19T19:59:39.040Z"));
 	}
 
 	@Test

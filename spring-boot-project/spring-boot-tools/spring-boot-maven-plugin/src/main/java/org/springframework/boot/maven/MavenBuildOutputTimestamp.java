@@ -88,7 +88,7 @@ class MavenBuildOutputTimestamp {
 		try {
 			Instant instant = OffsetDateTime.parse(this.timestamp)
 				.withOffsetSameInstant(ZoneOffset.UTC)
-				.truncatedTo(ChronoUnit.SECONDS)
+				.truncatedTo(ChronoUnit.MILLIS)
 				.toInstant();
 			if (instant.isBefore(DATE_MIN) || instant.isAfter(DATE_MAX)) {
 				throw new IllegalArgumentException(
