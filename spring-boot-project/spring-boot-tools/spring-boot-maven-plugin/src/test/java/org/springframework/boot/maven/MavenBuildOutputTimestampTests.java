@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,17 +48,17 @@ class MavenBuildOutputTimestampTests {
 
 	@Test
 	void shouldParseIso8601() {
-		assertThat(parse("2011-12-03T10:15:30Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30Z"));
+		assertThat(parse("2011-12-03T10:15:30Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30.000Z"));
 	}
 
 	@Test
-	void shouldParseIso8601WithSeconds_whenMillisecondsNotPresent() {
-		assertThat(parse("2011-12-03T10:15:30Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30Z"));
+	void shouldParseIso8601WithMilliseconds() {
+		assertThat(parse("2011-12-03T10:15:30.123Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30.123Z"));
 	}
 
 	@Test
-	void shouldParseIso8601WithMillisecondsPreserved_whenPresent() {
-		assertThat(parse("2024-12-19T19:59:39.040Z")).isEqualTo(Instant.parse("2024-12-19T19:59:39.040Z"));
+	void shouldParseIso8601WithSeconds() {
+		assertThat(parse("2011-12-03T10:15:30Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30.000Z"));
 	}
 
 	@Test
