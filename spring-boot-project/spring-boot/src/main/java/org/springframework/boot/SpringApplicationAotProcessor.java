@@ -66,7 +66,7 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 	public static void main(String[] args) throws Exception {
 		int requiredArgs = 6;
 		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + SpringApplicationAotProcessor.class.getName()
-				+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
+				+ " <applicationMainClass> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
 		Class<?> application = Class.forName(args[0]);
 		Settings settings = Settings.builder()
 			.sourceOutput(Paths.get(args[1]))
