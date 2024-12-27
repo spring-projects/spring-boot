@@ -118,6 +118,7 @@ class PluginXmlParser {
 			.replace("<br>", " ")
 			.replace("\n", " ")
 			.replace("&quot;", "\"")
+			.replace("<p>", " ")
 			.replaceAll("\\{@code (.*?)}", "`$1`")
 			.replaceAll("\\{@link (.*?)}", "`$1`")
 			.replaceAll("\\{@literal (.*?)}", "`$1`")
