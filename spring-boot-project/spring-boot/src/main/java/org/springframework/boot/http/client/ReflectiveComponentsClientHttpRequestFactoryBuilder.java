@@ -44,12 +44,12 @@ final class ReflectiveComponentsClientHttpRequestFactoryBuilder<T extends Client
 	private final Supplier<T> requestFactorySupplier;
 
 	ReflectiveComponentsClientHttpRequestFactoryBuilder(Supplier<T> requestFactorySupplier) {
-		Assert.notNull(requestFactorySupplier, "'requestFactorySupplier' must not be null");
+		Assert.notNull(requestFactorySupplier, () -> String.format("'%s' must not be null", "requestFactorySupplier"));
 		this.requestFactorySupplier = requestFactorySupplier;
 	}
 
 	ReflectiveComponentsClientHttpRequestFactoryBuilder(Class<T> requestFactoryType) {
-		Assert.notNull(requestFactoryType, "'requestFactoryType' must not be null");
+		Assert.notNull(requestFactoryType, () -> String.format("'%s' must not be null", "requestFactoryType"));
 		this.requestFactorySupplier = () -> createRequestFactory(requestFactoryType);
 	}
 
