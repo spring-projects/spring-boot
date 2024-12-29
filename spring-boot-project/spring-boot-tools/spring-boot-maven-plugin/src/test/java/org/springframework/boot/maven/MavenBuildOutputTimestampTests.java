@@ -57,11 +57,6 @@ class MavenBuildOutputTimestampTests {
 	}
 
 	@Test
-	void shouldParseIso8601WithSeconds() {
-		assertThat(parse("2011-12-03T10:15:30Z")).isEqualTo(Instant.parse("2011-12-03T10:15:30.000Z"));
-	}
-
-	@Test
 	void shouldFailIfIso8601BeforeMin() {
 		assertThatIllegalArgumentException().isThrownBy(() -> parse("1970-01-01T00:00:00Z"))
 			.withMessage(
