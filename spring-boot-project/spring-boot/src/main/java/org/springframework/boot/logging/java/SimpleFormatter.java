@@ -32,7 +32,7 @@ import org.springframework.boot.logging.LoggingSystemProperty;
  */
 public class SimpleFormatter extends Formatter {
 
-	private static final String DEFAULT_FORMAT = "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL] - %8$s %4$s [%7$s] --- %3$s: %5$s%6$s%n";
+	private static final String DEFAULT_FORMAT =  "[%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL] - %2$s %4$s [%7$s] --- %2$s: %5$s%6$s%n";
 
 	private final String format = getOrUseDefault("LOG_FORMAT", DEFAULT_FORMAT);
 
@@ -45,7 +45,7 @@ public class SimpleFormatter extends Formatter {
 		String message = formatMessage(record);
 		String throwable = getThrowable(record);
 		String thread = getThreadName();
-		return String.format(this.format, date, source, record.getLoggerName(), record.getLevel().getLocalizedName(),
+		return String.format(this.format, date, source, record.getLevel().getLocalizedName(),
 				message, throwable, thread, this.pid);
 	}
 
