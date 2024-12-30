@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.http;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -163,4 +164,19 @@ class HttpMessageConvertersTests {
 		return null;
 	}
 
+	@Test
+	void replaceDefaultStringHttpConverter() {
+		StringHttpMessageConverter converter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
+		HttpMessageConverters converters = new HttpMessageConverters(converter);
+		assertThat(converters.getConverters()).contains(converter);
+		List<StringHttpMessageConverter> httpConverters = new ArrayList<>();
+		for (HttpMessageConverter<?> candidate : converters) {
+			if (candidate instanceof StringHttpMessageConverter) {
+				httpConverters.add((StringHttpMessageConverter) candidate);
+			}
+		}
+
+		assertThat(httpConverters).hasSize(1);
+		assertThat(httpConverters.get(0)).isEqualTo(converter);
+	}
 }

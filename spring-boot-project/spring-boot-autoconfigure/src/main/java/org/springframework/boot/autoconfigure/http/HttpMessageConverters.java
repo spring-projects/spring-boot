@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
@@ -121,14 +122,24 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 		List<HttpMessageConverter<?>> processing = new ArrayList<>(converters);
 		for (HttpMessageConverter<?> defaultConverter : defaultConverters) {
 			Iterator<HttpMessageConverter<?>> iterator = processing.iterator();
+			boolean skipDefault = false;
 			while (iterator.hasNext()) {
 				HttpMessageConverter<?> candidate = iterator.next();
 				if (isReplacement(defaultConverter, candidate)) {
 					combined.add(candidate);
 					iterator.remove();
+
+					if (defaultConverter instanceof StringHttpMessageConverter
+							&& defaultConverter.getSupportedMediaTypes().equals(candidate.getSupportedMediaTypes())) {
+						skipDefault = true;
+					}
 				}
 			}
-			combined.add(defaultConverter);
+
+			if (!skipDefault) {
+				combined.add(defaultConverter);
+			}
+
 			if (defaultConverter instanceof AllEncompassingFormHttpMessageConverter allEncompassingConverter) {
 				configurePartConverters(allEncompassingConverter, converters);
 			}
