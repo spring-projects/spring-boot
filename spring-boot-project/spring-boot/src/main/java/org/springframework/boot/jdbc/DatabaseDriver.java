@@ -19,7 +19,11 @@ package org.springframework.boot.jdbc;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -228,6 +232,14 @@ public enum DatabaseDriver {
 
 	private final String validationQuery;
 
+	private static final Map<DatabaseDriver, Set<String>> URL_PREFIX_CACHE = new HashMap<>();
+
+	static {
+		for (DatabaseDriver driver : values()) {
+			URL_PREFIX_CACHE.put(driver, new HashSet<>(driver.getUrlPrefixes()));
+		}
+	}
+
 	DatabaseDriver(String productName, String driverClassName) {
 		this(productName, driverClassName, null);
 	}
@@ -296,8 +308,9 @@ public enum DatabaseDriver {
 		if (StringUtils.hasLength(url)) {
 			Assert.isTrue(url.startsWith("jdbc"), "URL must start with 'jdbc'");
 			String urlWithoutPrefix = url.substring("jdbc".length()).toLowerCase(Locale.ENGLISH);
-			for (DatabaseDriver driver : values()) {
-				for (String urlPrefix : driver.getUrlPrefixes()) {
+			for (Map.Entry<DatabaseDriver, Set<String>> entry : URL_PREFIX_CACHE.entrySet()) {
+				DatabaseDriver driver = entry.getKey();
+				for (String urlPrefix : entry.getValue()) {
 					String prefix = ":" + urlPrefix + ":";
 					if (driver != UNKNOWN && urlWithoutPrefix.startsWith(prefix)) {
 						return driver;
@@ -307,6 +320,7 @@ public enum DatabaseDriver {
 		}
 		return UNKNOWN;
 	}
+
 
 	/**
 	 * Find a {@link DatabaseDriver} for the given product name.
