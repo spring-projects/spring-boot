@@ -123,7 +123,7 @@ public class GroovyTemplateAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, LocaleContextHolder.class, UrlBasedViewResolver.class })
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@ConditionalOnProperty(name = "spring.groovy.template.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.groovy.template.enabled", havingValue = "true", matchIfMissing = true)
 	public static class GroovyWebConfiguration {
 
 		@Bean

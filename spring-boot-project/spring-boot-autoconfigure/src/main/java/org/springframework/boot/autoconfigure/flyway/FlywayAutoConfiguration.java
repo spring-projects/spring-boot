@@ -105,7 +105,7 @@ import org.springframework.util.function.SingletonSupplier;
 		HibernateJpaAutoConfiguration.class })
 @ConditionalOnClass(Flyway.class)
 @Conditional(FlywayDataSourceCondition.class)
-@ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @ImportRuntimeHints(FlywayAutoConfigurationRuntimeHints.class)
 public class FlywayAutoConfiguration {

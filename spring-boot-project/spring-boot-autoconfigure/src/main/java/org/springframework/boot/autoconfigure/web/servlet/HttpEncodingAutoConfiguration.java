@@ -44,7 +44,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @EnableConfigurationProperties(ServerProperties.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(CharacterEncodingFilter.class)
-@ConditionalOnProperty(prefix = "server.servlet.encoding", value = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "server.servlet.encoding", value = "enabled", havingValue = "true",
+		matchIfMissing = true)
 public class HttpEncodingAutoConfiguration {
 
 	private final Encoding properties;

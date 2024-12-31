@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Bean;
  */
 @AutoConfiguration
 @ConditionalOnBean(AuditEventRepository.class)
-@ConditionalOnProperty(prefix = "management.auditevents", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.auditevents", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class AuditAutoConfiguration {
 
 	@Bean

@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Import;
 		ArtemisAutoConfiguration.class, HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class,
 		TransactionManagerCustomizationAutoConfiguration.class })
 @ConditionalOnClass(jakarta.transaction.Transaction.class)
-@ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.jta", value = "enabled", havingValue = "true", matchIfMissing = true)
 @Import(JndiJtaConfiguration.class)
 public class JtaAutoConfiguration {
 

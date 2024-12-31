@@ -163,14 +163,15 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled")
+	@ConditionalOnProperty(prefix = "spring.mvc.hiddenmethod.filter", name = "enabled", havingValue = "true")
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(FormContentFilter.class)
-	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.filter", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.mvc.formcontent.filter", name = "enabled", havingValue = "true",
+			matchIfMissing = true)
 	public OrderedFormContentFilter formContentFilter() {
 		return new OrderedFormContentFilter();
 	}

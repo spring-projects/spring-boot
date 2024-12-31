@@ -102,7 +102,8 @@ public class RemoteDevToolsAutoConfiguration {
 	 * Configuration for remote update and restarts.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.remote.restart", name = "enabled", havingValue = "true",
+			matchIfMissing = true)
 	static class RemoteRestartConfiguration {
 
 		@Bean

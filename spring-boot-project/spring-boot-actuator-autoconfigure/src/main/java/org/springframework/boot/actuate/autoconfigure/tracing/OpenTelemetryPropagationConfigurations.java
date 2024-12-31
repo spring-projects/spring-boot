@@ -58,7 +58,8 @@ class OpenTelemetryPropagationConfigurations {
 	 * Propagates traces and baggage.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "management.tracing.baggage", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "management.tracing.baggage", name = "enabled", havingValue = "true",
+			matchIfMissing = true)
 	@EnableConfigurationProperties(TracingProperties.class)
 	static class PropagationWithBaggage {
 
@@ -81,7 +82,7 @@ class OpenTelemetryPropagationConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnProperty(prefix = "management.tracing.baggage.correlation", name = "enabled",
-				matchIfMissing = true)
+				havingValue = "true", matchIfMissing = true)
 		Slf4JBaggageEventListener otelSlf4JBaggageEventListener() {
 			return new Slf4JBaggageEventListener(this.tracingProperties.getBaggage().getCorrelation().getFields());
 		}

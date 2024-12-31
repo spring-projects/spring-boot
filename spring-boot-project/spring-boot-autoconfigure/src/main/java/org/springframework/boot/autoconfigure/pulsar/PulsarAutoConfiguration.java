@@ -161,7 +161,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarAwareTransactionManager.class)
-	@ConditionalOnProperty(prefix = "spring.pulsar.transaction", name = "enabled")
+	@ConditionalOnProperty(prefix = "spring.pulsar.transaction", name = "enabled", havingValue = "true")
 	public PulsarTransactionManager pulsarTransactionManager(PulsarClient pulsarClient) {
 		return new PulsarTransactionManager(pulsarClient);
 	}

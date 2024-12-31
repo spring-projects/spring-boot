@@ -59,7 +59,7 @@ class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration
 
 	@Bean
 	@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
-	@ConditionalOnProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.freemarker.enabled", havingValue = "true", matchIfMissing = true)
 	FreeMarkerViewResolver freeMarkerViewResolver() {
 		FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
 		resolver.setPrefix(getProperties().getPrefix());
