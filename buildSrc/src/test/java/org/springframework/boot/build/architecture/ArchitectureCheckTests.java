@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -204,14 +205,15 @@ class ArchitectureCheckTests {
 		});
 	}
 
-	private void prepareTask(String classes, Callback<ArchitectureCheck> callback) throws Exception {
+	private void prepareTask(String classes, ThrowingConsumer<ArchitectureCheck> callback) throws Exception {
 		File projectDir = new File(this.temp, "project");
 		projectDir.mkdirs();
 		copyClasses(classes, projectDir);
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build();
-		ArchitectureCheck architectureCheck = project.getTasks()
-			.create("checkArchitecture", ArchitectureCheck.class, (task) -> task.setClasses(project.files("classes")));
-		callback.accept(architectureCheck);
+		project.getTasks().register("checkArchitecture", ArchitectureCheck.class, (task) -> {
+			task.setClasses(project.files("classes"));
+			callback.accept(task);
+		});
 	}
 
 	private void copyClasses(String name, File projectDir) throws IOException {
@@ -219,12 +221,6 @@ class ArchitectureCheckTests {
 		Resource root = resolver.getResource("classpath:org/springframework/boot/build/architecture/" + name);
 		FileSystemUtils.copyRecursively(root.getFile(),
 				new File(projectDir, "classes/org/springframework/boot/build/architecture/" + name));
-	}
-
-	private interface Callback<T> {
-
-		void accept(T item) throws Exception;
-
 	}
 
 }

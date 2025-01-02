@@ -47,14 +47,14 @@ task syncTestRepository(type: Sync) {
 }
 
 task syncAntSources(type: Sync) {
-	destinationDir file(layout.buildDirectory.dir("ant"))
+	destinationDir = file(layout.buildDirectory.dir("ant"))
 	from project.layout.projectDirectory
 	include "*.xml"
 	filter(springRepositoryTransformers.ant())
 }
 
 task antRun(type: JavaExec) {
-	workingDir layout.buildDirectory.dir("ant")
+	workingDir = layout.buildDirectory.dir("ant")
 	dependsOn syncTestRepository, syncAntSources, configurations.antDependencies
 	classpath = configurations.antDependencies;
 	mainClass = "org.apache.tools.ant.launch.Launcher"

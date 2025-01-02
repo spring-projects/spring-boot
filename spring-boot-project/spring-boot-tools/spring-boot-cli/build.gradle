@@ -116,8 +116,8 @@ if (BuildProperties.get(project).buildType() == BuildType.OPEN_SOURCE) {
 	}
 
 	def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
-		type "rb"
-		classifier "homebrew"
+		type = "rb"
+		classifier = "homebrew"
 		builtBy "homebrewFormula"
 	}
 
