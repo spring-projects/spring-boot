@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPublication;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
@@ -61,10 +62,10 @@ public class BomPlugin implements Plugin<Project> {
 		javaPlatform.allowDependencies();
 		createApiEnforcedConfiguration(project);
 		BomExtension bom = project.getExtensions().create("bom", BomExtension.class, project);
-		CheckBom checkBom = project.getTasks().create("bomrCheck", CheckBom.class, bom);
+		TaskProvider<CheckBom> checkBom = project.getTasks().register("bomrCheck", CheckBom.class, bom);
 		project.getTasks().named("check").configure((check) -> check.dependsOn(checkBom));
-		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
-		project.getTasks().create("moveToSnapshots", MoveToSnapshots.class, bom);
+		project.getTasks().register("bomrUpgrade", UpgradeBom.class, bom);
+		project.getTasks().register("moveToSnapshots", MoveToSnapshots.class, bom);
 		project.getTasks().register("checkLinks", CheckLinks.class, bom);
 		new PublishingCustomizer(project, bom).customize();
 	}

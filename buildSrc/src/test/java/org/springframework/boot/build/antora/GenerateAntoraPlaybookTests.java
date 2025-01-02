@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,9 +78,10 @@ class GenerateAntoraPlaybookTests {
 		File projectDir = new File(rootProjectDir, "project");
 		projectDir.mkdirs();
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).withParent(rootProject).build();
-		GenerateAntoraPlaybook task = project.getTasks().create("generateAntoraPlaybook", GenerateAntoraPlaybook.class);
-		customizer.accept(task);
-		task.writePlaybookYml();
+		project.getTasks()
+			.register("generateAntoraPlaybook", GenerateAntoraPlaybook.class, customizer::accept)
+			.get()
+			.writePlaybookYml();
 	}
 
 }

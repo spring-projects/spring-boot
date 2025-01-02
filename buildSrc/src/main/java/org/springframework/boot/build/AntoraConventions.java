@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 the original author or authors.
+ * Copyright 2023-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.TaskContainer;
+import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.build.antora.AntoraAsciidocAttributes;
 import org.springframework.boot.build.antora.GenerateAntoraPlaybook;
@@ -75,16 +76,16 @@ public class AntoraConventions {
 	}
 
 	private void apply(Project project, AntoraPlugin antoraPlugin) {
-		ExtractVersionConstraints dependencyVersionsTask = addDependencyVersionsTask(project);
+		TaskProvider<ExtractVersionConstraints> dependencyVersionsTask = addDependencyVersionsTask(project);
 		project.getPlugins().apply(GenerateAntoraYmlPlugin.class);
 		TaskContainer tasks = project.getTasks();
-		GenerateAntoraPlaybook generateAntoraPlaybookTask = tasks.create(GENERATE_ANTORA_PLAYBOOK_TASK_NAME,
-				GenerateAntoraPlaybook.class);
-		configureGenerateAntoraPlaybookTask(project, generateAntoraPlaybookTask);
-		Copy copyAntoraPackageJsonTask = tasks.create("copyAntoraPackageJson", Copy.class);
-		configureCopyAntoraPackageJsonTask(project, copyAntoraPackageJsonTask);
-		NpmInstallTask npmInstallTask = tasks.create("antoraNpmInstall", NpmInstallTask.class);
-		configureNpmInstallTask(project, npmInstallTask, copyAntoraPackageJsonTask);
+		TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask = tasks.register(
+				GENERATE_ANTORA_PLAYBOOK_TASK_NAME, GenerateAntoraPlaybook.class,
+				(task) -> configureGenerateAntoraPlaybookTask(project, task));
+		TaskProvider<Copy> copyAntoraPackageJsonTask = tasks.register("copyAntoraPackageJson", Copy.class,
+				(task) -> configureCopyAntoraPackageJsonTask(project, task));
+		TaskProvider<NpmInstallTask> npmInstallTask = tasks.register("antoraNpmInstall", NpmInstallTask.class,
+				(task) -> configureNpmInstallTask(project, task, copyAntoraPackageJsonTask));
 		tasks.withType(GenerateAntoraYmlTask.class, (generateAntoraYmlTask) -> configureGenerateAntoraYmlTask(project,
 				generateAntoraYmlTask, dependencyVersionsTask));
 		tasks.withType(AntoraTask.class,
@@ -107,7 +108,8 @@ public class AntoraConventions {
 			.into(getNodeProjectDir(project));
 	}
 
-	private void configureNpmInstallTask(Project project, NpmInstallTask npmInstallTask, Copy copyAntoraPackageJson) {
+	private void configureNpmInstallTask(Project project, NpmInstallTask npmInstallTask,
+			TaskProvider<Copy> copyAntoraPackageJson) {
 		npmInstallTask.dependsOn(copyAntoraPackageJson);
 		Map<String, String> environment = new HashMap<>();
 		environment.put("npm_config_omit", "optional");
@@ -116,14 +118,14 @@ public class AntoraConventions {
 		npmInstallTask.getNpmCommand().set(List.of("ci", "--silent", "--no-progress"));
 	}
 
-	private ExtractVersionConstraints addDependencyVersionsTask(Project project) {
+	private TaskProvider<ExtractVersionConstraints> addDependencyVersionsTask(Project project) {
 		return project.getTasks()
-			.create("dependencyVersions", ExtractVersionConstraints.class,
+			.register("dependencyVersions", ExtractVersionConstraints.class,
 					(task) -> task.enforcedPlatform(DEPENDENCIES_PATH));
 	}
 
 	private void configureGenerateAntoraYmlTask(Project project, GenerateAntoraYmlTask generateAntoraYmlTask,
-			ExtractVersionConstraints dependencyVersionsTask) {
+			TaskProvider<ExtractVersionConstraints> dependencyVersionsTask) {
 		generateAntoraYmlTask.getOutputs().doNotCacheIf("getAsciidocAttributes() changes output", (task) -> true);
 		generateAntoraYmlTask.dependsOn(dependencyVersionsTask);
 		generateAntoraYmlTask.setProperty("componentName", "boot");
@@ -150,17 +152,16 @@ public class AntoraConventions {
 	}
 
 	private Provider<Map<String, String>> getAsciidocAttributes(Project project,
-			ExtractVersionConstraints dependencyVersionsTask) {
-		return project.provider(() -> {
+			TaskProvider<ExtractVersionConstraints> dependencyVersionsTask) {
+		return dependencyVersionsTask.map((task) -> task.getVersionConstraints()).map((constraints) -> {
 			BomExtension bom = (BomExtension) project.project(DEPENDENCIES_PATH).getExtensions().getByName("bom");
-			Map<String, String> dependencyVersions = dependencyVersionsTask.getVersionConstraints();
-			AntoraAsciidocAttributes attributes = new AntoraAsciidocAttributes(project, bom, dependencyVersions);
-			return attributes.get();
+			return new AntoraAsciidocAttributes(project, bom, constraints).get();
 		});
 	}
 
-	private void configureAntoraTask(Project project, AntoraTask antoraTask, NpmInstallTask npmInstallTask,
-			GenerateAntoraPlaybook generateAntoraPlaybookTask) {
+	private void configureAntoraTask(Project project, AntoraTask antoraTask,
+			TaskProvider<NpmInstallTask> npmInstallTask,
+			TaskProvider<GenerateAntoraPlaybook> generateAntoraPlaybookTask) {
 		antoraTask.setGroup("Documentation");
 		antoraTask.dependsOn(npmInstallTask, generateAntoraPlaybookTask);
 		antoraTask.setPlaybook("antora-playbook.yml");
