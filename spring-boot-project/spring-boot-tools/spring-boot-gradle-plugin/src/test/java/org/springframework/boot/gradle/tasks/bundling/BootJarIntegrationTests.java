@@ -25,6 +25,7 @@ import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -41,8 +42,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @GradleCompatibility(configurationCache = true)
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
+	private String commonsLang3Version;
+
 	BootJarIntegrationTests() {
 		super("bootJar", "BOOT-INF/lib/", "BOOT-INF/classes/", "BOOT-INF/");
+	}
+
+	@BeforeEach
+	void configureGradleBuild() {
+		this.commonsLang3Version = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
+				"commonsLang3Version");
+		this.gradleBuild.scriptProperty("commonsLang3Version", this.commonsLang3Version);
 	}
 
 	@TestTemplate
@@ -66,7 +76,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		String output = result.getOutput();
 		assertThat(output).containsPattern("1\\. .*classes");
 		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
-		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+		assertThat(output).containsPattern("3\\. .*commons-lang3-" + this.commonsLang3Version + ".jar");
 		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
 		assertThat(output).doesNotContain("5. ");
 	}
@@ -79,7 +89,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertThat(output).containsPattern("1\\. .*classes");
 		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
 		assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
-		assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
+		assertThat(output).containsPattern("4\\. .*commons-lang3-" + this.commonsLang3Version + ".jar");
 		assertThat(output).doesNotContain("5. ");
 	}
 

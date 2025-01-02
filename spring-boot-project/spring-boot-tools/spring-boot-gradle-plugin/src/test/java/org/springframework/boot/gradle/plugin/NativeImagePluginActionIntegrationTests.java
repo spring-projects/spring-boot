@@ -29,6 +29,7 @@ import java.util.jar.Manifest;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -48,6 +49,19 @@ class NativeImagePluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
 
+	private String jlineVersion;
+
+	private String logbackVersion;
+
+	@BeforeEach
+	void configureGradleBuild() {
+		this.jlineVersion = this.gradleBuild.getProperty(new File("../../../gradle.properties"), "jlineVersion");
+		this.logbackVersion = this.gradleBuild.getProperty(new File("../../../gradle.properties"), "logbackVersion");
+		this.gradleBuild.scriptProperty("jlineVersion", this.jlineVersion);
+		this.gradleBuild.scriptProperty("logbackVersion", this.logbackVersion);
+		this.gradleBuild.scriptPropertyFrom(new File("../../../gradle.properties"), "commonsLang3Version");
+	}
+
 	@TestTemplate
 	void applyingNativeImagePluginAppliesAotPlugin() {
 		assertThat(this.gradleBuild.build("aotPluginApplied").getOutput())
@@ -63,11 +77,11 @@ class NativeImagePluginActionIntegrationTests {
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(buildLibs.listFiles()).contains(jarFile);
 		assertThat(getEntryNames(jarFile)).contains(
-				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/jni-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/proxy-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
+				"META-INF/native-image/ch.qos.logback/logback-classic/" + this.logbackVersion + "/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/jni-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/proxy-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/resource-config.json");
 	}
 
 	@TestTemplate
@@ -81,11 +95,11 @@ class NativeImagePluginActionIntegrationTests {
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(buildLibs.listFiles()).contains(jarFile);
 		assertThat(getEntryNames(jarFile)).contains(
-				"META-INF/native-image/ch.qos.logback/logback-classic/1.2.11/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/jni-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/proxy-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/reflect-config.json",
-				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
+				"META-INF/native-image/ch.qos.logback/logback-classic/" + this.logbackVersion + "/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/jni-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/proxy-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/reflect-config.json",
+				"META-INF/native-image/org.jline/jline/" + this.jlineVersion + "/resource-config.json");
 	}
 
 	@TestTemplate

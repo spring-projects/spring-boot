@@ -215,7 +215,7 @@ bom {
 			]
 		}
 	}
-	library("TestNG", "6.14.3") {
+	library("TestNG", testNGVersion) {
 		group("org.testng") {
 			modules = [
 				"testng"

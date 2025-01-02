@@ -246,7 +246,7 @@ public class GradleBuild {
 		}
 	}
 
-	private String getProperty(File propertiesFile, String key) {
+	public String getProperty(File propertiesFile, String key) {
 		try {
 			assertThat(propertiesFile)
 				.withFailMessage("Expecting properties file to exist at path '%s'", propertiesFile.getCanonicalFile())

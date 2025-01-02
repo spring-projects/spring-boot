@@ -32,8 +32,8 @@ repositories {
 
 dependencies {
 	implementation("com.example:library:1.0-SNAPSHOT")
-	implementation("org.apache.commons:commons-lang3:3.9")
-	implementation("org.springframework:spring-core:5.2.5.RELEASE")
+	implementation("org.apache.commons:commons-lang3:{commonsLang3Version}")
+	implementation("org.springframework:spring-core:{springFrameworkVersion}")
 }
 
 task listLayers(type: JavaExec) {

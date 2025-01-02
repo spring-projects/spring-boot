@@ -514,7 +514,7 @@ bom {
 			releaseNotes("https://github.com/hazelcast/hazelcast/releases/tag/v{version}")
 		}
 	}
-	library("Hibernate", "6.6.4.Final") {
+	library("Hibernate", hibernateVersion) {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
@@ -598,7 +598,7 @@ bom {
 			]
 		}
 	}
-	library("HttpClient5", "5.4.1") {
+	library("HttpClient5", httpclient5Version) {
 		group("org.apache.httpcomponents.client5") {
 			modules = [
 				"httpclient5",
@@ -769,7 +769,7 @@ bom {
 				.formatted(version.major(), version.minor(), version))
 		}
 	}
-	library("Jakarta Servlet", "6.0.0") {
+	library("Jakarta Servlet", jakartaServletVersion) {
 		prohibit {
 			versionRange "[6.1.0-M1,6.1.0]"
 			because "it's part of Jakarta EE 11"
@@ -1219,7 +1219,7 @@ bom {
 			releaseNotes("https://github.com/liquibase/liquibase/releases/tag/v{version}")
 		}
 	}
-	library("Log4j2", "2.24.3") {
+	library("Log4j2", log4j2Version) {
 		group("org.apache.logging.log4j") {
 			imports = [
 				"log4j-bom"
@@ -1233,7 +1233,7 @@ bom {
 			releaseNotes("https://github.com/apache/logging-log4j2/releases/tag/rel%2F{version}")
 		}
 	}
-	library("Logback", "1.5.12") {
+	library("Logback", logbackVersion) {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-classic",
@@ -2057,7 +2057,7 @@ bom {
 			releaseNotes("https://github.com/sendgrid/sendgrid-java/releases/tag/{version}")
 		}
 	}
-	library("SLF4J", "2.0.16") {
+	library("SLF4J", slf4jVersion) {
 		group("org.slf4j") {
 			modules = [
 				"jcl-over-slf4j",

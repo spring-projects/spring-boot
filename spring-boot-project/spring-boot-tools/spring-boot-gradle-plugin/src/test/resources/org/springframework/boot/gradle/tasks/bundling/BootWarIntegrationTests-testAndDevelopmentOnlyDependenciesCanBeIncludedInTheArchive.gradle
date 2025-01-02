@@ -12,8 +12,8 @@ repositories {
 }
 
 dependencies {
-	testAndDevelopmentOnly("org.apache.commons:commons-lang3:3.9")
-	implementation("commons-io:commons-io:2.6")
+	testAndDevelopmentOnly("org.apache.commons:commons-lang3:{commonsLang3Version}")
+	implementation("commons-io:commons-io:{commonsIoVersion}")
 }
 
 bootWar {

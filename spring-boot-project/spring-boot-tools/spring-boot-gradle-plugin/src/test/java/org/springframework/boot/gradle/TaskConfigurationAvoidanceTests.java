@@ -19,10 +19,10 @@ package org.springframework.boot.gradle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import com.tngtech.archunit.base.DescribedPredicate;
-import com.tngtech.archunit.base.Predicate;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.domain.JavaType;
@@ -75,9 +75,9 @@ class TaskConfigurationAvoidanceTests {
 		}
 
 		@Override
-		public boolean apply(JavaMethodCall methodCall) {
+		public boolean test(JavaMethodCall methodCall) {
 			for (Predicate<JavaMethodCall> spec : this.prohibited) {
-				if (spec.apply(methodCall)) {
+				if (spec.test(methodCall)) {
 					return true;
 				}
 			}
@@ -119,7 +119,7 @@ class TaskConfigurationAvoidanceTests {
 			}
 
 			@Override
-			public boolean apply(JavaMethodCall methodCall) {
+			public boolean test(JavaMethodCall methodCall) {
 				return methodCall.getTargetOwner().isEquivalentTo(this.owner) && methodCall.getName().equals(this.name);
 			}
 
@@ -135,8 +135,8 @@ class TaskConfigurationAvoidanceTests {
 			}
 
 			@Override
-			public boolean apply(JavaMethodCall methodCall) {
-				return super.apply(methodCall) && match(methodCall.getTarget().getParameterTypes());
+			public boolean test(JavaMethodCall methodCall) {
+				return super.test(methodCall) && match(methodCall.getTarget().getParameterTypes());
 			}
 
 			private boolean match(List<JavaType> callParameterTypes) {

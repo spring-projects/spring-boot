@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.EnabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
@@ -41,6 +42,11 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 class SpringBootAotPluginIntegrationTests {
 
 	GradleBuild gradleBuild;
+
+	@BeforeEach
+	void configureGradleBuild() {
+		this.gradleBuild.scriptPropertyFrom(new File("../../../gradle.properties"), "commonsLang3Version");
+	}
 
 	@TestTemplate
 	void noProcessAotTaskWithoutAotPluginApplied() {

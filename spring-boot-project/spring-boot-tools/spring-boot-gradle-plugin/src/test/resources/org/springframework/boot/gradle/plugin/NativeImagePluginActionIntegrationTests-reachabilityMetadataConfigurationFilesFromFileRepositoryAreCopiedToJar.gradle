@@ -11,8 +11,8 @@ repositories {
 }
 
 dependencies {
-	implementation "ch.qos.logback:logback-classic:1.2.11"
-	implementation "org.jline:jline:3.21.0"
+	implementation "ch.qos.logback:logback-classic:{logbackVersion}"
+	implementation "org.jline:jline:{jlineVersion}"
 }
 
 graalvmNative {

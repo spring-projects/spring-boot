@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-	implementation "org.hibernate.orm:hibernate-core:6.1.1.Final"
+	implementation "org.hibernate.orm:hibernate-core:{hibernateVersion}"
 }
 
 task('processAotClasspath') {

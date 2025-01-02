@@ -16,7 +16,7 @@ description = "Spring Boot Gradle Plugins"
 configurations {
 	"testCompileClasspath" {
 		// Downgrade SLF4J is required for tests to run in Eclipse
-		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
+		resolutionStrategy.force("org.slf4j:slf4j-api:${slf4jVersion}")
 	}
 }
 
@@ -47,7 +47,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.fasterxml.jackson.core:jackson-databind")
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
-	testImplementation("com.tngtech.archunit:archunit-junit5:0.22.0")
+	testImplementation("com.tngtech.archunit:archunit-junit5:${archunitVersion}")
 	testImplementation("net.java.dev.jna:jna-platform")
 	testImplementation("org.apache.commons:commons-compress")
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
@@ -59,7 +59,7 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.tomlj:tomlj:1.0.0")
+	testImplementation("org.tomlj:tomlj:${tomljVersion}")
 }
 
 repositories {

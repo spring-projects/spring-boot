@@ -50,6 +50,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.loader.tools.FileUtils;
@@ -78,6 +79,20 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	private final String indexPath;
 
+	private String commonsLang3Version;
+
+	private String commonsIoVersion;
+
+	private String springFrameworkVersion;
+
+	private String lastReleaseSpringBootVersion;
+
+	private String slf4jVersion;
+
+	private String log4j2Version;
+
+	private String logbackVersion;
+
 	GradleBuild gradleBuild;
 
 	protected AbstractBootArchiveIntegrationTests(String taskName, String libPath, String classesPath,
@@ -86,6 +101,30 @@ abstract class AbstractBootArchiveIntegrationTests {
 		this.libPath = libPath;
 		this.classesPath = classesPath;
 		this.indexPath = indexPath;
+	}
+
+	@BeforeEach
+	void configureGradleBuild() {
+		this.commonsLang3Version = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
+				"commonsLang3Version");
+		this.commonsIoVersion = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
+				"commonsIoVersion");
+		this.springFrameworkVersion = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
+				"springFrameworkVersion");
+		this.lastReleaseSpringBootVersion = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
+				"lastReleaseSpringBootVersion");
+		this.slf4jVersion = this.gradleBuild.getProperty(new File("../../../gradle.properties"), "slf4jVersion");
+		this.log4j2Version = this.gradleBuild.getProperty(new File("../../../gradle.properties"), "log4j2Version");
+		this.logbackVersion = this.gradleBuild.getProperty(new File("../../../gradle.properties"), "logbackVersion");
+
+		this.gradleBuild.scriptProperty("commonsLang3Version", this.commonsLang3Version);
+		this.gradleBuild.scriptProperty("commonsIoVersion", this.commonsIoVersion);
+		this.gradleBuild.scriptProperty("springFrameworkVersion", this.springFrameworkVersion);
+		this.gradleBuild.scriptProperty("lastReleaseSpringBootVersion", this.lastReleaseSpringBootVersion);
+		this.gradleBuild.scriptProperty("slf4jVersion", this.slf4jVersion);
+		this.gradleBuild.scriptProperty("log4j2Version", this.log4j2Version);
+		this.gradleBuild.scriptProperty("logbackVersion", this.logbackVersion);
+
 	}
 
 	@TestTemplate
@@ -209,7 +248,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
 				.filter((name) -> name.startsWith(this.libPath));
-			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar");
+			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-" + this.commonsIoVersion + ".jar");
 			Stream<String> classesEntryNames = jarFile.stream()
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
@@ -227,8 +266,8 @@ abstract class AbstractBootArchiveIntegrationTests {
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
 				.filter((name) -> name.startsWith(this.libPath));
-			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar",
-					this.libPath + "commons-lang3-3.9.jar");
+			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-" + this.commonsIoVersion + ".jar",
+					this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar");
 		}
 	}
 
@@ -244,7 +283,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
 				.filter((name) -> name.startsWith(this.libPath));
-			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar");
+			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-" + this.commonsIoVersion + ".jar");
 			Stream<String> classesEntryNames = jarFile.stream()
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
@@ -262,8 +301,8 @@ abstract class AbstractBootArchiveIntegrationTests {
 				.filter((entry) -> !entry.isDirectory())
 				.map(JarEntry::getName)
 				.filter((name) -> name.startsWith(this.libPath));
-			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar",
-					this.libPath + "commons-lang3-3.9.jar");
+			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-" + this.commonsIoVersion + ".jar",
+					this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar");
 		}
 	}
 
@@ -361,9 +400,12 @@ abstract class AbstractBootArchiveIntegrationTests {
 		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-core-5.2.5.RELEASE.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "library-1.0-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "static/file.txt")).isNotNull();
@@ -373,16 +415,17 @@ abstract class AbstractBootArchiveIntegrationTests {
 				"application");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedDependencies = new TreeSet<>();
-		expectedDependencies.add(this.libPath + "commons-lang3-3.9.jar");
-		expectedDependencies.add(this.libPath + "spring-core-5.2.5.RELEASE.jar");
-		expectedDependencies.add(this.libPath + "spring-jcl-5.2.5.RELEASE.jar");
-		expectedDependencies.add(this.libPath + "jul-to-slf4j-1.7.28.jar");
-		expectedDependencies.add(this.libPath + "log4j-api-2.12.1.jar");
-		expectedDependencies.add(this.libPath + "log4j-to-slf4j-2.12.1.jar");
-		expectedDependencies.add(this.libPath + "logback-classic-1.2.3.jar");
-		expectedDependencies.add(this.libPath + "logback-core-1.2.3.jar");
-		expectedDependencies.add(this.libPath + "slf4j-api-1.7.28.jar");
-		expectedDependencies.add(this.libPath + "spring-boot-starter-logging-2.2.0.RELEASE.jar");
+		expectedDependencies.add(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar");
+		expectedDependencies.add(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar");
+		expectedDependencies.add(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar");
+		expectedDependencies.add(this.libPath + "jul-to-slf4j-" + this.slf4jVersion + ".jar");
+		expectedDependencies.add(this.libPath + "log4j-api-" + this.log4j2Version + ".jar");
+		expectedDependencies.add(this.libPath + "log4j-to-slf4j-" + this.log4j2Version + ".jar");
+		expectedDependencies.add(this.libPath + "logback-classic-" + this.logbackVersion + ".jar");
+		expectedDependencies.add(this.libPath + "logback-core-" + this.logbackVersion + ".jar");
+		expectedDependencies.add(this.libPath + "slf4j-api-" + this.slf4jVersion + ".jar");
+		expectedDependencies
+			.add(this.libPath + "spring-boot-starter-logging-" + this.lastReleaseSpringBootVersion + ".jar");
 		Set<String> expectedSnapshotDependencies = new TreeSet<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
@@ -416,9 +459,12 @@ abstract class AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(this.libPath + "alpha-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "bravo-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "charlie-1.2.3.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-core-5.2.5.RELEASE.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "library-1.0-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "static/file.txt")).isNotNull();
@@ -428,9 +474,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 				"application");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedDependencies = new TreeSet<>();
-		expectedDependencies.add(this.libPath + "commons-lang3-3.9.jar");
-		expectedDependencies.add(this.libPath + "spring-core-5.2.5.RELEASE.jar");
-		expectedDependencies.add(this.libPath + "spring-jcl-5.2.5.RELEASE.jar");
+		expectedDependencies.add(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar");
+		expectedDependencies.add(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar");
+		expectedDependencies.add(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar");
 		Set<String> expectedSnapshotDependencies = new TreeSet<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
@@ -459,9 +505,12 @@ abstract class AbstractBootArchiveIntegrationTests {
 		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-core-5.2.5.RELEASE.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "library-1.0-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "static/file.txt")).isNotNull();
@@ -472,13 +521,14 @@ abstract class AbstractBootArchiveIntegrationTests {
 				"static", "app");
 		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
 		Set<String> expectedDependencies = new TreeSet<>();
-		expectedDependencies.add(this.libPath + "spring-core-5.2.5.RELEASE.jar");
-		expectedDependencies.add(this.libPath + "spring-jcl-5.2.5.RELEASE.jar");
+		expectedDependencies.add(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar");
+		expectedDependencies.add(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar");
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
-		assertThat(indexedLayers.get("commons-dependencies")).containsExactly(this.libPath + "commons-lang3-3.9.jar");
+		assertThat(indexedLayers.get("commons-dependencies"))
+			.containsExactly(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("static")).containsExactly(this.classesPath + "static/");
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
@@ -509,9 +559,12 @@ abstract class AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(this.libPath + "alpha-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "bravo-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "charlie-1.2.3.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-core-5.2.5.RELEASE.jar")).isNotNull();
-			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
+			assertThat(jarFile.getEntry(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar"))
+				.isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "library-1.0-SNAPSHOT.jar")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "example/Main.class")).isNotNull();
 			assertThat(jarFile.getEntry(this.classesPath + "static/file.txt")).isNotNull();
@@ -526,15 +579,16 @@ abstract class AbstractBootArchiveIntegrationTests {
 		expectedSubprojectDependencies.add(this.libPath + "bravo-1.2.3.jar");
 		expectedSubprojectDependencies.add(this.libPath + "charlie-1.2.3.jar");
 		Set<String> expectedDependencies = new TreeSet<>();
-		expectedDependencies.add(this.libPath + "spring-core-5.2.5.RELEASE.jar");
-		expectedDependencies.add(this.libPath + "spring-jcl-5.2.5.RELEASE.jar");
+		expectedDependencies.add(this.libPath + "spring-core-" + this.springFrameworkVersion + ".RELEASE.jar");
+		expectedDependencies.add(this.libPath + "spring-jcl-" + this.springFrameworkVersion + ".RELEASE.jar");
 		List<String> expectedSnapshotDependencies = new ArrayList<>();
 		expectedSnapshotDependencies.add(this.libPath + "library-1.0-SNAPSHOT.jar");
 		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
 		assertThat(indexedLayers.get("subproject-dependencies"))
 			.containsExactlyElementsOf(expectedSubprojectDependencies);
 		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
-		assertThat(indexedLayers.get("commons-dependencies")).containsExactly(this.libPath + "commons-lang3-3.9.jar");
+		assertThat(indexedLayers.get("commons-dependencies"))
+			.containsExactly(this.libPath + "commons-lang3-" + this.commonsLang3Version + ".jar");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("static")).containsExactly(this.classesPath + "static/");
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));

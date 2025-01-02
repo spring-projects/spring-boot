@@ -12,9 +12,9 @@ repositories {
 }
 
 dependencies {
-	testAndDevelopmentOnly("org.apache.commons:commons-lang3:3.9")
-	testAndDevelopmentOnly("commons-io:commons-io:2.6")
-	implementation("commons-io:commons-io:2.6")
+	testAndDevelopmentOnly("org.apache.commons:commons-lang3:{commonsLang3Version}")
+	testAndDevelopmentOnly("commons-io:commons-io:{commonsIoVersion}")
+	implementation("commons-io:commons-io:{commonsIoVersion}")
 }
 
 bootJar {

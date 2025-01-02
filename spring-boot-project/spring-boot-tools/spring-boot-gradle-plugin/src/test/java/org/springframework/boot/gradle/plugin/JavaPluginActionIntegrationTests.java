@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.util.GradleVersion;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -46,6 +47,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JavaPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
+
+	String commonsLang3Version;
+
+	@BeforeEach
+	void configureGradleBuild() {
+		this.commonsLang3Version = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
+				"commonsLang3Version");
+		this.gradleBuild.scriptProperty("commonsLang3Version", this.commonsLang3Version);
+	}
 
 	@TestTemplate
 	void noBootJarTaskWithoutJavaPluginApplied() {
@@ -154,42 +164,50 @@ class JavaPluginActionIntegrationTests {
 
 	@TestTemplate
 	void testCompileClasspathIncludesTestAndDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.contains("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
 	void testRuntimeClasspathIncludesTestAndDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.contains("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
 	void testCompileClasspathDoesNotIncludeDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.doesNotContain("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
 	void testRuntimeClasspathDoesNotIncludeDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.doesNotContain("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
 	void compileClasspathDoesNotIncludeTestAndDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.doesNotContain("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
 	void runtimeClasspathIncludesTestAndDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.contains("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
 	void compileClasspathDoesNotIncludeDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.doesNotContain("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
 	void runtimeClasspathIncludesDevelopmentOnlyDependencies() {
-		assertThat(this.gradleBuild.build("help").getOutput()).contains("commons-lang3-3.12.0.jar");
+		assertThat(this.gradleBuild.build("help").getOutput())
+			.contains("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
