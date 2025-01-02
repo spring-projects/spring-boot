@@ -43,7 +43,8 @@ import org.springframework.util.ClassUtils;
  */
 @AutoConfiguration(after = MockMvcAutoConfiguration.class)
 @ConditionalOnClass(HtmlUnitDriver.class)
-@ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.test.mockmvc.webdriver", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 public class MockMvcWebDriverAutoConfiguration {
 
 	private static final String SECURITY_CONTEXT_EXECUTOR = "org.springframework.security.concurrent.DelegatingSecurityContextExecutor";

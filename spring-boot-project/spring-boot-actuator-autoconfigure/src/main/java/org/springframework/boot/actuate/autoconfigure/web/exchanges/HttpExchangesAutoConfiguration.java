@@ -40,7 +40,8 @@ import org.springframework.context.annotation.Configuration;
  */
 @AutoConfiguration
 @ConditionalOnWebApplication
-@ConditionalOnProperty(prefix = "management.httpexchanges.recording", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.httpexchanges.recording", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 @ConditionalOnBean(HttpExchangeRepository.class)
 @EnableConfigurationProperties(HttpExchangesProperties.class)
 public class HttpExchangesAutoConfiguration {

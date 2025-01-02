@@ -65,7 +65,7 @@ import org.springframework.util.ReflectionUtils;
 @AutoConfiguration(
 		after = { JacksonAutoConfiguration.class, GsonAutoConfiguration.class, JsonbAutoConfiguration.class })
 @ConditionalOnClass(name = "org.assertj.core.api.Assert")
-@ConditionalOnProperty("spring.test.jsontesters.enabled")
+@ConditionalOnProperty(name = "spring.test.jsontesters.enabled", havingValue = "true")
 public class JsonTestersAutoConfiguration {
 
 	@Bean

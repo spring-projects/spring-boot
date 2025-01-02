@@ -68,7 +68,8 @@ public class LocalDevToolsAutoConfiguration {
 	 * Local LiveReload configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.livereload", name = "enabled", havingValue = "true",
+			matchIfMissing = true)
 	static class LiveReloadConfiguration {
 
 		@Bean
@@ -96,7 +97,8 @@ public class LocalDevToolsAutoConfiguration {
 	 */
 	@Lazy(false)
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
+	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", havingValue = "true",
+			matchIfMissing = true)
 	static class RestartConfiguration {
 
 		private final DevToolsProperties properties;

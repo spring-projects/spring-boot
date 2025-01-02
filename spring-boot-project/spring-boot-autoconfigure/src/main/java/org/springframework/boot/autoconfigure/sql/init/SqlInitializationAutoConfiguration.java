@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(SqlInitializationProperties.class)
 @Import({ DatabaseInitializationDependencyConfigurer.class, R2dbcInitializationConfiguration.class,
 		DataSourceInitializationConfiguration.class })
-@ConditionalOnProperty(prefix = "spring.sql.init", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.sql.init", name = "enabled", havingValue = "true", matchIfMissing = true)
 @Conditional(SqlInitializationModeCondition.class)
 public class SqlInitializationAutoConfiguration {
 

@@ -47,7 +47,7 @@ import org.springframework.web.client.RestTemplate;
  * @see AutoConfigureMockRestServiceServer
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver", name = "enabled")
+@ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver", name = "enabled", havingValue = "true")
 public class MockRestServiceServerAutoConfiguration {
 
 	@Bean

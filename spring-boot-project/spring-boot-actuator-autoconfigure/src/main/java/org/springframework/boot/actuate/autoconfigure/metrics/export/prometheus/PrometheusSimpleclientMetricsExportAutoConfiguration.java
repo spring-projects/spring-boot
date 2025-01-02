@@ -119,7 +119,8 @@ public class PrometheusSimpleclientMetricsExportAutoConfiguration {
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(PushGateway.class)
-	@ConditionalOnProperty(prefix = "management.prometheus.metrics.export.pushgateway", name = "enabled")
+	@ConditionalOnProperty(prefix = "management.prometheus.metrics.export.pushgateway", name = "enabled",
+			havingValue = "true")
 	static class PrometheusPushGatewayConfiguration {
 
 		/**

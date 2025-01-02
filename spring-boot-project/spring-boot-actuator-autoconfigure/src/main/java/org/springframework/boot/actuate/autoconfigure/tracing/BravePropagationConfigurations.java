@@ -68,7 +68,7 @@ class BravePropagationConfigurations {
 	 * Propagates traces and baggage.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(value = "management.tracing.baggage.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(value = "management.tracing.baggage.enabled", havingValue = "true", matchIfMissing = true)
 	@EnableConfigurationProperties(TracingProperties.class)
 	static class PropagationWithBaggage {
 
@@ -143,7 +143,7 @@ class BravePropagationConfigurations {
 		@Bean
 		@Order(0)
 		@ConditionalOnProperty(prefix = "management.tracing.baggage.correlation", name = "enabled",
-				matchIfMissing = true)
+				havingValue = "true", matchIfMissing = true)
 		CorrelationScopeCustomizer correlationFieldsCorrelationScopeCustomizer() {
 			return (builder) -> {
 				Correlation correlationProperties = this.tracingProperties.getBaggage().getCorrelation();

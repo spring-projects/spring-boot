@@ -37,7 +37,8 @@ import org.springframework.test.web.servlet.htmlunit.MockMvcWebClientBuilder;
  */
 @AutoConfiguration(after = MockMvcAutoConfiguration.class)
 @ConditionalOnClass(WebClient.class)
-@ConditionalOnProperty(prefix = "spring.test.mockmvc.webclient", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.test.mockmvc.webclient", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
 public class MockMvcWebClientAutoConfiguration {
 
 	@Bean
