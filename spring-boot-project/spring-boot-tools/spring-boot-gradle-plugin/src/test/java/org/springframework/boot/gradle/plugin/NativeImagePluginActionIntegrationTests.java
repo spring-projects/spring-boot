@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Joshua Chen
  */
 @GradleCompatibility
 class NativeImagePluginActionIntegrationTests {

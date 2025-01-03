@@ -17,7 +17,7 @@ dependencies {
 	implementation("org.apache.commons:commons-compress")
 	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.springframework:spring-core")
-	implementation("org.tomlj:tomlj:${tomljVersion}")
+	implementation("org.tomlj:tomlj:1.0.0")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.jayway.jsonpath:json-path")

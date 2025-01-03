@@ -23,6 +23,7 @@ import java.util.TreeSet;
 
 import org.assertj.core.api.Assumptions;
 import org.gradle.util.GradleVersion;
+import org.junit.jupiter.api.BeforeEach;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 
@@ -31,12 +32,18 @@ import org.springframework.boot.gradle.junit.GradleCompatibility;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Joshua Chen
  */
 @GradleCompatibility(configurationCache = true)
 class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootWarIntegrationTests() {
 		super("bootWar", "WEB-INF/lib/", "WEB-INF/classes/", "WEB-INF/");
+	}
+
+	@BeforeEach
+	void configureGradleBuild() {
+		super.configureGradleBuild();
 	}
 
 	@Override

@@ -5,14 +5,18 @@ plugins {
 
 description = "Spring Boot Antlib"
 
+ext {
+	antVersion = "1.10.7"
+}
+
 configurations {
 	antUnit
 	antIvy
 }
 
 dependencies {
-	antUnit "org.apache.ant:ant-antunit:${antunitVersion}"
-	antIvy "org.apache.ivy:ivy:${ivyVersion}"
+	antUnit "org.apache.ant:ant-antunit:1.3"
+	antIvy "org.apache.ivy:ivy:2.5.0"
 
 	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 	compileOnly("org.apache.ant:ant:${antVersion}")

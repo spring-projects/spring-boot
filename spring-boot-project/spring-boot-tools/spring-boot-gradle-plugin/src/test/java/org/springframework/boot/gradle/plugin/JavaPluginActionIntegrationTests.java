@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link JavaPluginAction}.
  *
  * @author Andy Wilkinson
+ * @author Joshua Chen
  */
 @GradleCompatibility(configurationCache = true)
 class JavaPluginActionIntegrationTests {

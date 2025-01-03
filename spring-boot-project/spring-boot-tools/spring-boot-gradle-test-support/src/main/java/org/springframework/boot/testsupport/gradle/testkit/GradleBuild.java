@@ -48,6 +48,7 @@ import static org.assertj.core.api.Assertions.fail;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Joshua Chen
  */
 public class GradleBuild {
 

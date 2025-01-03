@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  * Integration tests for {@link SpringBootAotPlugin}.
  *
  * @author Andy Wilkinson
+ * @author Joshua Chen
  */
 @GradleCompatibility
 class SpringBootAotPluginIntegrationTests {
@@ -46,6 +47,7 @@ class SpringBootAotPluginIntegrationTests {
 	@BeforeEach
 	void configureGradleBuild() {
 		this.gradleBuild.scriptPropertyFrom(new File("../../../gradle.properties"), "commonsLang3Version");
+		this.gradleBuild.scriptPropertyFrom(new File("../../../gradle.properties"), "hibernateVersion");
 	}
 
 	@TestTemplate

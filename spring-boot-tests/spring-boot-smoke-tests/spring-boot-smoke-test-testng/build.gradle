@@ -13,7 +13,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-test"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.springframework:spring-test")
-	testImplementation("org.testng:testng:${testNGVersion}")
+	testImplementation("org.testng:testng:6.8.13")
 }
 
 test {

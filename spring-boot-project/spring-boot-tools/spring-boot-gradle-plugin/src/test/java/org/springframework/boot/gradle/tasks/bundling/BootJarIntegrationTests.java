@@ -38,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Paddy Drury
+ * @author Joshua Chen
  */
 @GradleCompatibility(configurationCache = true)
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
@@ -50,9 +51,11 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	@BeforeEach
 	void configureGradleBuild() {
+		super.configureGradleBuild();
 		this.commonsLang3Version = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
 				"commonsLang3Version");
 		this.gradleBuild.scriptProperty("commonsLang3Version", this.commonsLang3Version);
+		this.gradleBuild.scriptPropertyFrom(new File("../../../gradle.properties"), "bcprovJdk18onVersion");
 	}
 
 	@TestTemplate

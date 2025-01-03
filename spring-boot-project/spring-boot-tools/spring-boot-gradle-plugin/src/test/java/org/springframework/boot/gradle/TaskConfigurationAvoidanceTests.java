@@ -39,6 +39,7 @@ import org.gradle.api.tasks.TaskContainer;
  * Tests that verify the plugin's compliance with task configuration avoidance.
  *
  * @author Andy Wilkinson
+ * @author Joshua Chen
  */
 @AnalyzeClasses(packages = "org.springframework.boot.gradle",
 		importOptions = TaskConfigurationAvoidanceTests.DoNotIncludeTests.class)

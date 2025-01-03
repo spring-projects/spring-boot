@@ -28,6 +28,7 @@ import org.assertj.core.api.Assumptions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.util.GradleVersion;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -40,11 +41,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for the {@link BootRun} task.
  *
  * @author Andy Wilkinson
+ * @author Joshua Chen
  */
 @GradleCompatibility(configurationCache = true)
 class BootRunIntegrationTests {
 
+	private String commonsLang3Version;
+
 	GradleBuild gradleBuild;
+
+	@BeforeEach
+	void configureGradleBuild() {
+		this.commonsLang3Version = this.gradleBuild.getProperty(new File("../../../gradle.properties"),
+				"commonsLang3Version");
+		this.gradleBuild.scriptProperty("commonsLang3Version", this.commonsLang3Version);
+	}
 
 	@TestTemplate
 	void basicExecution() throws IOException {
@@ -151,7 +162,7 @@ class BootRunIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
+		assertThat(result.getOutput()).contains("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	@TestTemplate
@@ -159,7 +170,7 @@ class BootRunIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
+		assertThat(result.getOutput()).contains("commons-lang3-" + this.commonsLang3Version + ".jar");
 	}
 
 	private void copyMainClassApplication() throws IOException {
