@@ -107,6 +107,8 @@ dependencies {
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
 	testImplementation("com.mysql:mysql-connector-j")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
+	// TODO: Define strategy for mocking env vars and if/which 3pp to use
+	testImplementation("uk.org.webcompere:system-stubs-core:2.1.7")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("jakarta.inject:jakarta.inject-api")

@@ -32,7 +32,9 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * {@link EnvironmentPostProcessor} that loads and applies {@link ConfigData} to Spring's
@@ -92,7 +94,13 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	void postProcessEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			Collection<String> additionalProfiles) {
 		this.logger.trace("Post-processing environment to add config data");
-		resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
+		if (resourceLoader == null) {
+			DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader();
+			SpringFactoriesLoader.forDefaultResourceLocation(defaultResourceLoader.getClassLoader())
+				.load(ProtocolResolver.class)
+				.forEach(defaultResourceLoader::addProtocolResolver);
+			resourceLoader = defaultResourceLoader;
+		}
 		getConfigDataEnvironment(environment, resourceLoader, additionalProfiles).processAndApply();
 	}
 

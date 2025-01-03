@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Locale;
+
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.util.StringUtils;
 
@@ -51,7 +53,8 @@ class StandardConfigDataReference {
 	StandardConfigDataReference(ConfigDataLocation configDataLocation, String directory, String root, String profile,
 			String extension, PropertySourceLoader propertySourceLoader) {
 		this.configDataLocation = configDataLocation;
-		String profileSuffix = (StringUtils.hasText(profile)) ? "-" + profile : "";
+		String profileSuffix = (StringUtils.hasText(profile))
+				? root.startsWith("env:") ? "_" + profile.toUpperCase(Locale.ROOT) : "-" + profile : "";
 		this.resourceLocation = root + profileSuffix + ((extension != null) ? "." + extension : "");
 		this.directory = directory;
 		this.profile = profile;
