@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -126,11 +127,12 @@ class JavaConventions {
 	}
 
 	private void configureJarManifestConventions(Project project) {
-		ExtractResources extractLegalResources = project.getTasks()
-			.create("extractLegalResources", ExtractResources.class);
-		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
-		extractLegalResources.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
-		extractLegalResources.getProperties().put("version", project.getVersion().toString());
+		TaskProvider<ExtractResources> extractLegalResources = project.getTasks()
+			.register("extractLegalResources", ExtractResources.class, (task) -> {
+				task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
+				task.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
+				task.getProperties().put("version", project.getVersion().toString());
+			});
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 		Set<String> sourceJarTaskNames = sourceSets.stream()
 			.map(SourceSet::getSourcesJarTaskName)
@@ -295,10 +297,10 @@ class JavaConventions {
 	}
 
 	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
-		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks()
-			.create("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
-					CheckClasspathForProhibitedDependencies.class);
-		checkClasspathForProhibitedDependencies.setClasspath(classpath);
+		TaskProvider<CheckClasspathForProhibitedDependencies> checkClasspathForProhibitedDependencies = project
+			.getTasks()
+			.register("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+					CheckClasspathForProhibitedDependencies.class, (task) -> task.setClasspath(classpath));
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
 	}
 

@@ -8,8 +8,9 @@ apply(plugin = "io.spring.dependency-management")
 // end::apply[]
 
 tasks.register("verify") {
+	val plugins = project.plugins
 	doLast {
-		project.plugins.getPlugin(JavaPlugin::class)
-		project.plugins.getPlugin(io.spring.gradle.dependencymanagement.DependencyManagementPlugin::class)
+		plugins.getPlugin(JavaPlugin::class)
+		plugins.getPlugin(io.spring.gradle.dependencymanagement.DependencyManagementPlugin::class)
 	}
 }

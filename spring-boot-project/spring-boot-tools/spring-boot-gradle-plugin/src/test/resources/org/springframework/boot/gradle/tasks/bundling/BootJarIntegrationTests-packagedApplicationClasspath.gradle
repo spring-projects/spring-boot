@@ -9,7 +9,9 @@ task launch(type: JavaExec) {
 
 repositories {
 	mavenCentral()
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencies {
