@@ -20,8 +20,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -619,6 +621,62 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 			.run("--spring.config.location=classpath:application-import-with-profile-variant.properties");
 		assertThat(context.getEnvironment().getProperty("my.value"))
 			.isEqualTo("application-import-with-profile-variant-imported-dev");
+	}
+
+	@Test
+	void runWhenImportYamlFromEnvironmentVariable() throws Exception {
+		ConfigurableApplicationContext context = uk.org.webcompere.systemstubs.SystemStubs
+			.withEnvironmentVariable("MY_CONFIG_YAML", """
+					my:
+					  value: from-env-first-doc
+					---
+					my:
+					  value: from-env-second-doc
+					""")
+			.execute(() -> this.application
+				.run("--spring.config.location=classpath:application-import-yaml-from-environment.properties"));
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("from-env-second-doc");
+	}
+
+	@Test
+	void runWhenImportYamlFromEnvironmentVariableWithProfileVariant() throws Exception {
+		this.application.setAdditionalProfiles("dev");
+		ConfigurableApplicationContext context = uk.org.webcompere.systemstubs.SystemStubs
+			.withEnvironmentVariables("MY_CONFIG_YAML", """
+					my:
+					  value: my_config_yaml
+					""", "MY_CONFIG_YAML_DEV", """
+					my:
+					  value: my_config_yaml_dev
+					""")
+			.execute(() -> this.application.run(
+					"--spring.config.location=classpath:application-import-yaml-from-environment-with-profile-variant.properties"));
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("my_config_yaml_dev");
+	}
+
+	@Test
+	void runWhenImportBase64YamlFromEnvironmentVariable() throws Exception {
+		ConfigurableApplicationContext context = uk.org.webcompere.systemstubs.SystemStubs
+			.withEnvironmentVariable("MY_CONFIG_BASE64_YAML", Base64.getEncoder().encodeToString("""
+					my:
+					  value: from-base64-yaml
+					""".getBytes(StandardCharsets.UTF_8)))
+			.execute(() -> this.application
+				.run("--spring.config.location=classpath:application-import-base64-yaml-from-environment.properties"));
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("from-base64-yaml");
+	}
+
+	@Test
+	void runWhenImportPropertiesFromEnvironmentVariable() throws Exception {
+		ConfigurableApplicationContext context = uk.org.webcompere.systemstubs.SystemStubs
+			.withEnvironmentVariable("MY_CONFIG_PROPERTIES", """
+					my.value1: from-properties-1
+					my.value2: from-properties-2
+					""")
+			.execute(() -> this.application
+				.run("--spring.config.location=classpath:application-import-properties-from-environment.properties"));
+		assertThat(context.getEnvironment().getProperty("my.value1")).isEqualTo("from-properties-1");
+		assertThat(context.getEnvironment().getProperty("my.value2")).isEqualTo("from-properties-2");
 	}
 
 	@Test

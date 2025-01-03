@@ -104,4 +104,5 @@ org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector
 
 # Resource Locator Protocol Resolvers
 org.springframework.core.io.ProtocolResolver=\
-org.springframework.boot.io.Base64ProtocolResolver
+org.springframework.boot.io.Base64ProtocolResolver,\
+org.springframework.boot.io.EnvironmentVariableProtocolResolver
