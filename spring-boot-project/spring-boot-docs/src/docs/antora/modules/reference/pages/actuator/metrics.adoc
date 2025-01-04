@@ -5,6 +5,7 @@ Spring Boot Actuator provides dependency management and auto-configuration for {
 
 - xref:actuator/metrics.adoc#actuator.metrics.export.appoptics[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.atlas[]
+- xref:actuator/metrics.adoc#actuator.metrics.export.dash0[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.datadog[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.dynatrace[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.elastic[]
@@ -115,6 +116,26 @@ management:
     metrics:
       export:
         uri: "https://atlas.example.com:7101/api/v1/publish"
+----
+
+
+
+[[actuator.metrics.export.dash0]]
+=== Dash0
+
+Dash0 is 100% {url-micrometer-docs-implementations}/otlp[OpenTelemetry] compatible, so
+you can provide the location of the https://www.dash0.com/[Dash0 metric endpoint] to use by using the `otlp` exporter.
+Additionally you need to provide your `AUTH_TOKEN` as `Authorization` header.
+
+[configprops,yaml]
+----
+management:
+  otlp:
+    metrics:
+      export:
+        url: "https://ingress.eu-west-1.aws.dash0-dev.com/v1/metrics"
+        headers:
+          Authorization: Bearer AUTH_TOKEN
 ----
 
 
