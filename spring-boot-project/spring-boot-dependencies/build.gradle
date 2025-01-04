@@ -702,7 +702,7 @@ bom {
 		links {
 			site(version -> "https://jakarta.ee/specifications/messaging/%s.%s"
 				.formatted(version.major(), version.minor()))
-			javadoc(version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs"
+			javadoc(version -> "https://jakarta.ee/specifications/messaging/%s.%s/apidocs/jakarta.messaging"
 				.formatted(version.major(), version.minor()), "jakarta.jms")
 		}
 	}
