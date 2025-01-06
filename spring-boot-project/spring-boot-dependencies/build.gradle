@@ -1608,7 +1608,7 @@ bom {
 			releaseNotes("https://github.com/open-telemetry/opentelemetry-java/releases/tag/v{version}")
 		}
 	}
-	library("Oracle Database", "23.5.0.24.07") {
+	library("Oracle Database", "23.6.0.24.10") {
 		alignWith {
 			dependencyManagementDeclaredIn("com.oracle.database.jdbc:ojdbc-bom")
 		}
@@ -1622,11 +1622,13 @@ bom {
 			modules = [
 				"ojdbc11",
 				"ojdbc11-production",
+				"ojdbc17",
 				"ojdbc8",
 				"ojdbc8-production",
 				"rsi",
 				"ucp",
-				"ucp11"
+				"ucp11",
+				"ucp17"
 			]
 		}
 		group("com.oracle.database.nls") {
