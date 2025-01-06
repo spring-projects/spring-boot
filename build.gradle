@@ -45,3 +45,7 @@ allprojects {
 tasks.named("checkstyleNohttp").configure {
 	maxHeapSize = "1536m"
 }
+
+dependencies {
+	 "org.codehaus.mojo:versions-maven-plugin:2.18.0"
+}
