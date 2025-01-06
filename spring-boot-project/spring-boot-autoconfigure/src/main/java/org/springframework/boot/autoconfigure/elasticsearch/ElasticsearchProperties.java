@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class ElasticsearchProperties {
 
 	/**
-	 * Comma-separated list of the Elasticsearch instances to use.
+	 * List of the Elasticsearch instances to use.
 	 */
 	private List<String> uris = new ArrayList<>(Collections.singletonList("http://localhost:9200"));
 

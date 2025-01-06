@@ -14,7 +14,6 @@ dependencies {
 	api("org.glassfish.jersey.core:jersey-server")
 	api("org.glassfish.jersey.ext:jersey-bean-validation") {
 		exclude group: "jakarta.el", module: "jakarta.el-api"
-		exclude group: "org.glassfish", module: "jakarta.el"
 	}
 	api("org.glassfish.jersey.ext:jersey-spring6")
 	api("org.glassfish.jersey.media:jersey-media-json-jackson")

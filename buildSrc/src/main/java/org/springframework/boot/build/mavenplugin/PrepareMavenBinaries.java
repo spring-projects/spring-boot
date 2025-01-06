@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,22 @@
 
 package org.springframework.boot.build.mavenplugin;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.file.ArchiveOperations;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.file.FileTree;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -33,39 +41,37 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class PrepareMavenBinaries extends DefaultTask {
+public abstract class PrepareMavenBinaries extends DefaultTask {
 
-	private final Set<String> versions = new LinkedHashSet<>();
+	private final FileSystemOperations fileSystemOperations;
 
-	private File outputDir;
+	private final Provider<Set<FileTree>> binaries;
+
+	@Inject
+	public PrepareMavenBinaries(FileSystemOperations fileSystemOperations, ArchiveOperations archiveOperations) {
+		this.fileSystemOperations = fileSystemOperations;
+		ConfigurationContainer configurations = getProject().getConfigurations();
+		DependencyHandler dependencies = getProject().getDependencies();
+		this.binaries = getVersions().map((versions) -> versions.stream()
+			.map((version) -> configurations
+				.detachedConfiguration(dependencies.create("org.apache.maven:apache-maven:" + version + ":bin@zip")))
+			.map(Configuration::getSingleFile)
+			.map(archiveOperations::zipTree)
+			.collect(Collectors.toSet()));
+	}
 
 	@OutputDirectory
-	public File getOutputDir() {
-		return this.outputDir;
-	}
-
-	public void setOutputDir(File outputDir) {
-		this.outputDir = outputDir;
-	}
+	public abstract DirectoryProperty getOutputDir();
 
 	@Input
-	public Set<String> getVersions() {
-		return this.versions;
-	}
-
-	public void versions(String... versions) {
-		this.versions.addAll(Arrays.asList(versions));
-	}
+	public abstract SetProperty<String> getVersions();
 
 	@TaskAction
 	public void prepareBinaries() {
-		for (String version : this.versions) {
-			Configuration configuration = getProject().getConfigurations()
-				.detachedConfiguration(
-						getProject().getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
-			getProject()
-				.copy((copy) -> copy.into(this.outputDir).from(getProject().zipTree(configuration.getSingleFile())));
-		}
+		this.fileSystemOperations.sync((sync) -> {
+			sync.into(getOutputDir());
+			this.binaries.get().forEach(sync::from);
+		});
 	}
 
 }

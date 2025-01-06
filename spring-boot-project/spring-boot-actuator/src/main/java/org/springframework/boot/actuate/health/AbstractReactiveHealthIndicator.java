@@ -99,7 +99,7 @@ public abstract class AbstractReactiveHealthIndicator implements ReactiveHealthI
 	}
 
 	/**
-	 * Actual health check logic. If an error occurs in the pipeline it will be handled
+	 * Actual health check logic. If an error occurs in the pipeline, it will be handled
 	 * automatically.
 	 * @param builder the {@link Health.Builder} to report health status and details
 	 * @return a {@link Mono} that provides the {@link Health}

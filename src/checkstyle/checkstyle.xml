@@ -23,7 +23,9 @@
 			<property name="id" value="mainCodeIllegalImportCheck"/>
 			<property name="regexp" value="true" />
 			<property name="illegalClasses"
-				value="^javax.annotation.PostConstruct"/>
+				value="javax.annotation.PostConstruct, jakarta.annotation.PostConstruct"/>
+			<property name="illegalPkgs"
+				value="^io\.opentelemetry\.semconv.*, ^org\.gradle\.(?!api).*\.tasks.*"/>
 		</module>
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck">
@@ -33,7 +35,7 @@
 		</module>
 		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
 			<property name="maximum" value="0"/>
-			<property name="format" value="org\.junit\.Assert\.assert" />
+			<property name="format" value="org\.junit\.Assert|org\.junit\.jupiter\.api\.Assertions" />
 			<property name="message"
 				value="Please use AssertJ imports." />
 			<property name="ignoreComments" value="true" />
@@ -45,6 +47,15 @@
 				value="assertThatExceptionOfType\((NullPointerException|IllegalArgumentException|IOException|IllegalStateException)\.class\)" />
 			<property name="message"
 				value="Please use specialized AssertJ assertThat*Exception method." />
+			<property name="ignoreComments" value="true" />
+		</module>
+		<module
+			name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0" />
+			<property name="format"
+					  value="assertThatThrownBy\(" />
+			<property name="message"
+					  value="Please use AssertJ assertThatExceptionOfType method." />
 			<property name="ignoreComments" value="true" />
 		</module>
  		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,6 @@ class CalendarVersionDependencyVersion extends ArtifactVersionDependencyVersion 
 
 	protected CalendarVersionDependencyVersion(ArtifactVersion artifactVersion, ComparableVersion comparableVersion) {
 		super(artifactVersion, comparableVersion);
-	}
-
-	@Override
-	public boolean isNewerThan(DependencyVersion other) {
-		if (other instanceof ReleaseTrainDependencyVersion) {
-			return true;
-		}
-		return super.isNewerThan(other);
 	}
 
 	static CalendarVersionDependencyVersion parse(String version) {

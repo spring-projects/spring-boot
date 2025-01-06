@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor.fieldvalues.javac;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +28,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
+import org.springframework.boot.configurationprocessor.fieldvalues.javac.ExpressionTree.Member;
+import org.springframework.boot.configurationprocessor.support.ConventionUtils;
 
 /**
  * {@link FieldValuesParser} implementation for the standard Java compiler.
@@ -57,7 +60,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 	/**
 	 * {@link TreeVisitor} to collect fields.
 	 */
-	private static class FieldCollector implements TreeVisitor {
+	private static final class FieldCollector implements TreeVisitor {
 
 		private static final Map<String, Class<?>> WRAPPER_TYPES;
 
@@ -165,12 +168,12 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			Class<?> wrapperType = WRAPPER_TYPES.get(variable.getType());
 			Object defaultValue = DEFAULT_TYPE_VALUES.get(wrapperType);
 			if (initializer != null) {
-				return getValue(initializer, defaultValue);
+				return getValue(variable.getType(), initializer, defaultValue);
 			}
 			return defaultValue;
 		}
 
-		private Object getValue(ExpressionTree expression, Object defaultValue) throws Exception {
+		private Object getValue(String variableType, ExpressionTree expression, Object defaultValue) throws Exception {
 			Object literalValue = expression.getLiteralValue();
 			if (literalValue != null) {
 				return literalValue;
@@ -183,7 +186,7 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			if (arrayValues != null) {
 				Object[] result = new Object[arrayValues.size()];
 				for (int i = 0; i < arrayValues.size(); i++) {
-					Object value = getValue(arrayValues.get(i), null);
+					Object value = getValue(variableType, arrayValues.get(i), null);
 					if (value == null) { // One of the elements could not be resolved
 						return defaultValue;
 					}
@@ -195,7 +198,16 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 				return this.staticFinals.get(expression.toString());
 			}
 			if (expression.getKind().equals("MEMBER_SELECT")) {
-				return WELL_KNOWN_STATIC_FINALS.get(expression.toString());
+				Object value = WELL_KNOWN_STATIC_FINALS.get(expression.toString());
+				if (value != null) {
+					return value;
+				}
+				Member selectedMember = expression.getSelectedMember();
+				// Type matching the expression, assuming an enum
+				if (selectedMember != null && selectedMember.expression().equals(variableType)) {
+					return ConventionUtils.toDashedCase(selectedMember.identifier().toLowerCase(Locale.ENGLISH));
+				}
+				return null;
 			}
 			return defaultValue;
 		}

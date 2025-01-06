@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration.DockerHostConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,24 +39,28 @@ class LocalHttpClientTransportTests {
 	@Test
 	void createWhenDockerHostIsFileReturnsTransport(@TempDir Path tempDir) throws IOException {
 		String socketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath().toString();
-		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(new DockerHost(socketFilePath));
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(DockerHostConfiguration.forAddress(socketFilePath));
 		LocalHttpClientTransport transport = LocalHttpClientTransport.create(dockerHost);
 		assertThat(transport).isNotNull();
+		assertThat(transport.getHost().toHostString()).isEqualTo(socketFilePath);
 	}
 
 	@Test
 	void createWhenDockerHostIsFileThatDoesNotExistReturnsTransport(@TempDir Path tempDir) {
 		String socketFilePath = Paths.get(tempDir.toString(), "dummy").toAbsolutePath().toString();
-		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(new DockerHost(socketFilePath));
+		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(DockerHostConfiguration.forAddress(socketFilePath));
 		LocalHttpClientTransport transport = LocalHttpClientTransport.create(dockerHost);
 		assertThat(transport).isNotNull();
+		assertThat(transport.getHost().toHostString()).isEqualTo(socketFilePath);
 	}
 
 	@Test
 	void createWhenDockerHostIsAddressReturnsTransport() {
-		ResolvedDockerHost dockerHost = ResolvedDockerHost.from(new DockerHost("tcp://192.168.1.2:2376"));
+		ResolvedDockerHost dockerHost = ResolvedDockerHost
+			.from(DockerHostConfiguration.forAddress("tcp://192.168.1.2:2376"));
 		LocalHttpClientTransport transport = LocalHttpClientTransport.create(dockerHost);
 		assertThat(transport).isNotNull();
+		assertThat(transport.getHost().toHostString()).isEqualTo("tcp://192.168.1.2:2376");
 	}
 
 }

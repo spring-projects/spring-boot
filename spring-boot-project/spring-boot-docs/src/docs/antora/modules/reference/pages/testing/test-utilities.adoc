@@ -1,0 +1,69 @@
+[[testing.utilities]]
+= Test Utilities
+
+A few test utility classes that are generally useful when testing your application are packaged as part of `spring-boot`.
+
+
+
+[[testing.utilities.config-data-application-context-initializer]]
+== ConfigDataApplicationContextInitializer
+
+javadoc:org.springframework.boot.test.context.ConfigDataApplicationContextInitializer[] is an javadoc:org.springframework.context.ApplicationContextInitializer[] that you can apply to your tests to load Spring Boot `application.properties` files.
+You can use it when you do not need the full set of features provided by javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation], as shown in the following example:
+
+include-code::MyConfigFileTests[]
+
+NOTE: Using javadoc:org.springframework.boot.test.context.ConfigDataApplicationContextInitializer[] alone does not provide support for `@Value("${...}")` injection.
+Its only job is to ensure that `application.properties` files are loaded into Spring's javadoc:org.springframework.core.env.Environment[].
+For javadoc:org.springframework.beans.factory.annotation.Value[format=annotation] support, you need to either additionally configure a javadoc:org.springframework.context.support.PropertySourcesPlaceholderConfigurer[] or use javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation], which auto-configures one for you.
+
+
+
+[[testing.utilities.test-property-values]]
+== TestPropertyValues
+
+javadoc:org.springframework.boot.test.util.TestPropertyValues[] lets you quickly add properties to a javadoc:org.springframework.core.env.ConfigurableEnvironment[] or javadoc:org.springframework.context.ConfigurableApplicationContext[].
+You can call it with `key=value` strings, as follows:
+
+include-code::MyEnvironmentTests[]
+
+
+
+[[testing.utilities.output-capture]]
+== OutputCaptureExtension
+
+javadoc:org.springframework.boot.test.system.OutputCaptureExtension[] is a JUnit javadoc:org.junit.jupiter.api.extension.Extension[] that you can use to capture javadoc:java.lang.System#out[] and javadoc:java.lang.System#err[] output.
+To use it, add `@ExtendWith(OutputCaptureExtension.class)` and inject javadoc:org.springframework.boot.test.system.CapturedOutput[] as an argument to your test class constructor or test method as follows:
+
+include-code::MyOutputCaptureTests[]
+
+
+
+[[testing.utilities.test-rest-template]]
+== TestRestTemplate
+
+javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] is a convenience alternative to Spring's javadoc:org.springframework.web.client.RestTemplate[] that is useful in integration tests.
+You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
+In either case, the template is fault tolerant.
+This means that it behaves in a test-friendly way by not throwing exceptions on 4xx and 5xx errors.
+Instead, such errors can be detected through the returned javadoc:org.springframework.http.ResponseEntity[] and its status code.
+
+TIP: Spring Framework 5.0 provides a new javadoc:org.springframework.test.web.reactive.server.WebTestClient[] that works for xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.spring-webflux-tests[WebFlux integration tests] and both xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.with-running-server[WebFlux and MVC end-to-end testing].
+It provides a fluent API for assertions, unlike javadoc:org.springframework.boot.test.web.client.TestRestTemplate[].
+
+It is recommended, but not mandatory, to use the Apache HTTP Client (version 5.1 or better).
+If you have that on your classpath, the javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] responds by configuring the client appropriately.
+If you do use Apache's HTTP client, some additional test-friendly features are enabled:
+
+* Redirects are not followed (so you can assert the response location).
+* Cookies are ignored (so the template is stateless).
+
+javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] can be instantiated directly in your integration tests, as shown in the following example:
+
+include-code::MyTests[]
+
+Alternatively, if you use the javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotation with `WebEnvironment.RANDOM_PORT` or `WebEnvironment.DEFINED_PORT`, you can inject a fully configured javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] and start using it.
+If necessary, additional customizations can be applied through the javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] bean.
+Any URLs that do not specify a host and port automatically connect to the embedded server, as shown in the following example:
+
+include-code::MySpringBootTests[]

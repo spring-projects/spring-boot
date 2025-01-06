@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.endpoint.web.annotation;
 
 import java.util.Collections;
 
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredEndpoint;
@@ -28,14 +29,15 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 class DiscoveredControllerEndpoint extends AbstractDiscoveredEndpoint<Operation>
 		implements ExposableControllerEndpoint {
 
 	private final String rootPath;
 
 	DiscoveredControllerEndpoint(EndpointDiscoverer<?, ?> discoverer, Object endpointBean, EndpointId id,
-			String rootPath, boolean enabledByDefault) {
-		super(discoverer, endpointBean, id, enabledByDefault, Collections.emptyList());
+			String rootPath, Access defaultAccess) {
+		super(discoverer, endpointBean, id, defaultAccess, Collections.emptyList());
 		this.rootPath = rootPath;
 	}
 

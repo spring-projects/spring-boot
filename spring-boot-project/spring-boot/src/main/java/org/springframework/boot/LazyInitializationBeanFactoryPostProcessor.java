@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,15 @@ import org.springframework.core.Ordered;
  * automatically excluded from lazy initialization to ensure that their
  * {@link SmartInitializingSingleton#afterSingletonsInstantiated() callback method} is
  * invoked.
+ * <p>
+ * Beans that are in the {@link BeanDefinition#ROLE_INFRASTRUCTURE infrastructure role}
+ * are automatically excluded from lazy initialization, too.
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
  * @author Tyler Van Gorder
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.2.0
  * @see LazyInitializationExcludeFilter
  */
@@ -63,6 +67,7 @@ public final class LazyInitializationBeanFactoryPostProcessor implements BeanFac
 		ArrayList<LazyInitializationExcludeFilter> filters = new ArrayList<>(
 				beanFactory.getBeansOfType(LazyInitializationExcludeFilter.class, false, false).values());
 		filters.add(LazyInitializationExcludeFilter.forBeanTypes(SmartInitializingSingleton.class));
+		filters.add(new InfrastructureRoleLazyInitializationExcludeFilter());
 		return filters;
 	}
 
@@ -103,6 +108,20 @@ public final class LazyInitializationBeanFactoryPostProcessor implements BeanFac
 	@Override
 	public int getOrder() {
 		return Ordered.HIGHEST_PRECEDENCE;
+	}
+
+	/**
+	 * Excludes all {@link BeanDefinition bean definitions} which have the infrastructure
+	 * role from lazy initialization.
+	 */
+	private static final class InfrastructureRoleLazyInitializationExcludeFilter
+			implements LazyInitializationExcludeFilter {
+
+		@Override
+		public boolean isExcluded(String beanName, BeanDefinition beanDefinition, Class<?> beanType) {
+			return beanDefinition.getRole() == BeanDefinition.ROLE_INFRASTRUCTURE;
+		}
+
 	}
 
 }

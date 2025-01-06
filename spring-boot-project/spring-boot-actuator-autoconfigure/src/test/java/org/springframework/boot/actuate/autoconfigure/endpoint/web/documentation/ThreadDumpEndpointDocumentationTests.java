@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,11 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.operation.preprocess.ContentModifyingOperationPreprocessor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing {@link ThreadDumpEndpoint}.
@@ -46,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void jsonThreadDump() throws Exception {
+	void jsonThreadDump() {
 		ReentrantLock lock = new ReentrantLock();
 		CountDownLatch latch = new CountDownLatch(1);
 		new Thread(() -> {
@@ -63,9 +62,8 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 				Thread.currentThread().interrupt();
 			}
 		}).start();
-		this.mockMvc.perform(get("/actuator/threaddump").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation
+		assertThat(this.mvc.get().uri("/actuator/threaddump").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.apply(MockMvcRestDocumentation
 				.document("threaddump/json", preprocessResponse(limit("threads")), responseFields(
 						fieldWithPath("threads").description("JVM's threads."),
 						fieldWithPath("threads.[].blockedCount")
@@ -178,10 +176,9 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 	}
 
 	@Test
-	void textThreadDump() throws Exception {
-		this.mockMvc.perform(get("/actuator/threaddump").accept(MediaType.TEXT_PLAIN))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("threaddump/text",
+	void textThreadDump() {
+		assertThat(this.mvc.get().uri("/actuator/threaddump").accept(MediaType.TEXT_PLAIN)).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("threaddump/text",
 					preprocessResponse(new ContentModifyingOperationPreprocessor((bytes, mediaType) -> {
 						String content = new String(bytes, StandardCharsets.UTF_8);
 						int mainThreadIndex = content.indexOf("\"main\" - Thread");

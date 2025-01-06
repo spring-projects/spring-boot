@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,71 +16,74 @@
 
 package org.springframework.boot.build.bom.bomr;
 
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.build.bom.Library;
-import org.springframework.boot.build.bom.UpgradePolicy;
 
 /**
- * Uses multiple threads to find library updates.
+ * {@link LibraryUpdateResolver} decorator that uses multiple threads to find library
+ * updates.
  *
  * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
-class MultithreadedLibraryUpdateResolver extends StandardLibraryUpdateResolver {
+class MultithreadedLibraryUpdateResolver implements LibraryUpdateResolver {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MultithreadedLibraryUpdateResolver.class);
+	private static final Logger logger = LoggerFactory.getLogger(MultithreadedLibraryUpdateResolver.class);
 
 	private final int threads;
 
-	MultithreadedLibraryUpdateResolver(VersionResolver versionResolver, UpgradePolicy upgradePolicy, int threads) {
-		super(versionResolver, upgradePolicy);
+	private final LibraryUpdateResolver delegate;
+
+	MultithreadedLibraryUpdateResolver(int threads, LibraryUpdateResolver delegate) {
 		this.threads = threads;
+		this.delegate = delegate;
 	}
 
 	@Override
 	public List<LibraryWithVersionOptions> findLibraryUpdates(Collection<Library> librariesToUpgrade,
 			Map<String, Library> librariesByName) {
-		LOGGER.info("Looking for updates using {} threads", this.threads);
+		logger.info("Looking for updates using {} threads", this.threads);
 		ExecutorService executorService = Executors.newFixedThreadPool(this.threads);
 		try {
-			List<Future<LibraryWithVersionOptions>> jobs = new ArrayList<>();
-			for (Library library : librariesToUpgrade) {
-				if (isLibraryExcluded(library)) {
-					continue;
+			return librariesToUpgrade.stream().map((library) -> {
+				if (library.getVersionAlignment() == null) {
+					return executorService.submit(() -> this.delegate
+						.findLibraryUpdates(Collections.singletonList(library), librariesByName));
 				}
-				jobs.add(executorService.submit(() -> {
-					LOGGER.info("Looking for updates for {}", library.getName());
-					long start = System.nanoTime();
-					List<VersionOption> versionOptions = getVersionOptions(library, librariesByName);
-					LOGGER.info("Found {} updates for {}, took {}", versionOptions.size(), library.getName(),
-							Duration.ofNanos(System.nanoTime() - start));
-					return new LibraryWithVersionOptions(library, versionOptions);
-				}));
-			}
-			List<LibraryWithVersionOptions> result = new ArrayList<>();
-			for (Future<LibraryWithVersionOptions> job : jobs) {
-				try {
-					result.add(job.get());
+				else {
+					return CompletableFuture.completedFuture(
+							this.delegate.findLibraryUpdates(Collections.singletonList(library), librariesByName));
 				}
-				catch (InterruptedException | ExecutionException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-			return result;
+			}).flatMap(this::getResult).toList();
 		}
 		finally {
 			executorService.shutdownNow();
+		}
+	}
+
+	private Stream<LibraryWithVersionOptions> getResult(Future<List<LibraryWithVersionOptions>> job) {
+		try {
+			return job.get().stream();
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(ex);
+		}
+		catch (ExecutionException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 

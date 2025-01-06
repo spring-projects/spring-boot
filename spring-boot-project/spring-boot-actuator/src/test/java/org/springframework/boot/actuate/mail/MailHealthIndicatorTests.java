@@ -43,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Johannes Edmeier
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class MailHealthIndicatorTests {
 
@@ -58,6 +59,52 @@ class MailHealthIndicatorTests {
 		given(this.mailSender.getHost()).willReturn("smtp.acme.org");
 		given(this.mailSender.getSession()).willReturn(session);
 		this.indicator = new MailHealthIndicator(this.mailSender);
+	}
+
+	@Test
+	void smtpOnDefaultHostAndPortIsUp() {
+		given(this.mailSender.getHost()).willReturn(null);
+		given(this.mailSender.getPort()).willReturn(-1);
+		given(this.mailSender.getProtocol()).willReturn("success");
+		Health health = this.indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).doesNotContainKey("location");
+	}
+
+	@Test
+	void smtpOnDefaultHostAndPortIsDown() throws MessagingException {
+		given(this.mailSender.getHost()).willReturn(null);
+		given(this.mailSender.getPort()).willReturn(-1);
+		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
+		Health health = this.indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails()).doesNotContainKey("location");
+		Object errorMessage = health.getDetails().get("error");
+		assertThat(errorMessage).isNotNull();
+		assertThat(errorMessage.toString()).contains("A test exception");
+	}
+
+	@Test
+	void smtpOnDefaultHostAndCustomPortIsUp() {
+		given(this.mailSender.getHost()).willReturn(null);
+		given(this.mailSender.getPort()).willReturn(1234);
+		given(this.mailSender.getProtocol()).willReturn("success");
+		Health health = this.indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("location")).isEqualTo(":1234");
+	}
+
+	@Test
+	void smtpOnDefaultHostAndCustomPortIsDown() throws MessagingException {
+		given(this.mailSender.getHost()).willReturn(null);
+		given(this.mailSender.getPort()).willReturn(1234);
+		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
+		Health health = this.indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails().get("location")).isEqualTo(":1234");
+		Object errorMessage = health.getDetails().get("error");
+		assertThat(errorMessage).isNotNull();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test
@@ -78,7 +125,7 @@ class MailHealthIndicatorTests {
 		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
 	@Test

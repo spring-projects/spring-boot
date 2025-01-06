@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfi
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
@@ -48,6 +47,8 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.web.server.ServerWebExchange;
@@ -70,17 +71,55 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 				HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 				WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
 				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class,
-				ReactiveManagementWebSecurityAutoConfiguration.class));
+				ReactiveSecurityAutoConfiguration.class, ReactiveManagementWebSecurityAutoConfiguration.class));
 
 	@Test
 	void permitAllForHealth() {
-		this.contextRunner.run((context) -> assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull());
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.run((context) -> assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull());
+	}
+
+	@Test
+	void withAdditionalPathsOnSamePort() {
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.test1.include=*",
+					"management.endpoint.health.group.test2.include=*",
+					"management.endpoint.health.group.test1.additional-path=server:/check1",
+					"management.endpoint.health.group.test2.additional-path=management:/check2")
+			.run((context) -> {
+				assertThat(getAuthenticateHeader(context, "/check1")).isNull();
+				assertThat(getAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
+				assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull();
+			});
+	}
+
+	@Test
+	void withAdditionalPathsOnDifferentPort() {
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.test1.include=*",
+					"management.endpoint.health.group.test2.include=*",
+					"management.endpoint.health.group.test1.additional-path=server:/check1",
+					"management.endpoint.health.group.test2.additional-path=management:/check2",
+					"management.server.port=0")
+			.run((context) -> {
+				assertThat(getAuthenticateHeader(context, "/check1")).isNull();
+				assertThat(getAuthenticateHeader(context, "/check2").get(0)).contains("Basic realm=");
+				assertThat(getAuthenticateHeader(context, "/actuator/health").get(0)).contains("Basic realm=");
+			});
 	}
 
 	@Test
 	void securesEverythingElse() {
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class).run((context) -> {
+			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
+			assertThat(getAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
+		});
+	}
+
+	@Test
+	void noExistingAuthenticationManagerOrUserDetailsService() {
 		this.contextRunner.run((context) -> {
+			assertThat(getAuthenticateHeader(context, "/actuator/health")).isNull();
 			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
 			assertThat(getAuthenticateHeader(context, "/foo").toString()).contains("Basic realm=");
 		});
@@ -88,10 +127,12 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	@Test
 	void usesMatchersBasedOffConfiguredActuatorBasePath() {
-		this.contextRunner.withPropertyValues("management.endpoints.web.base-path=/").run((context) -> {
-			assertThat(getAuthenticateHeader(context, "/health")).isNull();
-			assertThat(getAuthenticateHeader(context, "/foo").get(0)).contains("Basic realm=");
-		});
+		this.contextRunner.withUserConfiguration(UserDetailsServiceConfiguration.class)
+			.withPropertyValues("management.endpoints.web.base-path=/")
+			.run((context) -> {
+				assertThat(getAuthenticateHeader(context, "/health")).isNull();
+				assertThat(getAuthenticateHeader(context, "/foo").get(0)).contains("Basic realm=");
+			});
 	}
 
 	@Test
@@ -156,6 +197,17 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class UserDetailsServiceConfiguration {
+
+		@Bean
+		MapReactiveUserDetailsService userDetailsService() {
+			return new MapReactiveUserDetailsService(
+					User.withUsername("alice").password("secret").roles("admin").build());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomSecurityConfiguration {
 
 		@Bean
@@ -166,6 +218,11 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 			});
 			http.formLogin(withDefaults());
 			return http.build();
+		}
+
+		@Bean
+		ReactiveAuthenticationManager authenticationManager() {
+			return mock(ReactiveAuthenticationManager.class);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
@@ -45,38 +46,23 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class CheckSpringConfigurationMetadata extends DefaultTask {
+public abstract class CheckSpringConfigurationMetadata extends DefaultTask {
 
-	private List<String> exclusions = new ArrayList<>();
-
-	private final RegularFileProperty reportLocation;
-
-	private final RegularFileProperty metadataLocation;
+	private final Path projectRoot;
 
 	public CheckSpringConfigurationMetadata() {
-		this.metadataLocation = getProject().getObjects().fileProperty();
-		this.reportLocation = getProject().getObjects().fileProperty();
+		this.projectRoot = getProject().getProjectDir().toPath();
 	}
 
 	@OutputFile
-	public RegularFileProperty getReportLocation() {
-		return this.reportLocation;
-	}
+	public abstract RegularFileProperty getReportLocation();
 
 	@InputFile
 	@PathSensitive(PathSensitivity.RELATIVE)
-	public RegularFileProperty getMetadataLocation() {
-		return this.metadataLocation;
-	}
-
-	public void setExclusions(List<String> exclusions) {
-		this.exclusions = exclusions;
-	}
+	public abstract RegularFileProperty getMetadataLocation();
 
 	@Input
-	public List<String> getExclusions() {
-		return this.exclusions;
-	}
+	public abstract ListProperty<String> getExclusions();
 
 	@TaskAction
 	void check() throws JsonParseException, IOException {
@@ -92,8 +78,8 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 	@SuppressWarnings("unchecked")
 	private Report createReport() throws IOException, JsonParseException, JsonMappingException {
 		ObjectMapper objectMapper = new ObjectMapper();
-		File file = this.metadataLocation.get().getAsFile();
-		Report report = new Report(getProject().getProjectDir().toPath().relativize(file.toPath()));
+		File file = getMetadataLocation().get().getAsFile();
+		Report report = new Report(this.projectRoot.relativize(file.toPath()));
 		Map<String, Object> json = objectMapper.readValue(file, Map.class);
 		List<Map<String, Object>> properties = (List<Map<String, Object>>) json.get("properties");
 		for (Map<String, Object> property : properties) {
@@ -106,7 +92,7 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 	}
 
 	private boolean isExcluded(String propertyName) {
-		for (String exclusion : this.exclusions) {
+		for (String exclusion : getExclusions().get()) {
 			if (propertyName.equals(exclusion)) {
 				return true;
 			}

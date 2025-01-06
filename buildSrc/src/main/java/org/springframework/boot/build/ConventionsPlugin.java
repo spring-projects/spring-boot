@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.build;
 
-import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
+import org.antora.gradle.AntoraPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaBasePlugin;
@@ -32,8 +32,8 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * When the {@link MavenPublishPlugin} is applied, the conventions in
  * {@link MavenPublishingConventions} are applied.
  *
- * When the {@link AsciidoctorJPlugin} is applied, the conventions in
- * {@link AsciidoctorConventions} are applied.
+ * When the {@link AntoraPlugin} is applied, the conventions in {@link AntoraConventions}
+ * are applied.
  *
  * @author Andy Wilkinson
  * @author Christoph Dreis
@@ -43,12 +43,14 @@ public class ConventionsPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
+		new NoHttpConventions().apply(project);
 		new JavaConventions().apply(project);
 		new MavenPublishingConventions().apply(project);
-		new AsciidoctorConventions().apply(project);
+		new AntoraConventions().apply(project);
 		new KotlinConventions().apply(project);
 		new WarConventions().apply(project);
 		new EclipseConventions().apply(project);
+		RepositoryTransformersExtension.apply(project);
 	}
 
 }

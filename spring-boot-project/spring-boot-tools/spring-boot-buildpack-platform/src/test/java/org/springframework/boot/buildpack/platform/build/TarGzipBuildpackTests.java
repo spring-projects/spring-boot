@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,9 @@ class TarGzipBuildpackTests {
 	@Test
 	void resolveWhenFileUrlReturnsBuildpack() throws Exception {
 		Path compressedArchive = this.testTarGzip.createArchive();
-		BuildpackReference reference = BuildpackReference.of("file://" + compressedArchive.toString());
+		BuildpackReference reference = BuildpackReference.of(compressedArchive.toUri().toString());
 		Buildpack buildpack = TarGzipBuildpack.resolve(this.resolverContext, reference);
-		assertThat(buildpack).isNotNull();
+		assertThat(buildpack).as("Buildpack %s resolved from reference %s", buildpack, reference).isNotNull();
 		assertThat(buildpack.getCoordinates()).hasToString("example/buildpack1@0.0.1");
 		this.testTarGzip.assertHasExpectedLayers(buildpack);
 	}

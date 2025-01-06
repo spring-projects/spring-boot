@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.Ordered;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Micrometer
@@ -46,6 +45,8 @@ public class ObservationProperties {
 	 */
 	private Map<String, Boolean> enable = new LinkedHashMap<>();
 
+	private final LongTaskTimer longTaskTimer = new LongTaskTimer();
+
 	public Map<String, Boolean> getEnable() {
 		return this.enable;
 	}
@@ -64,6 +65,10 @@ public class ObservationProperties {
 
 	public void setKeyValues(Map<String, String> keyValues) {
 		this.keyValues = keyValues;
+	}
+
+	public LongTaskTimer getLongTaskTimer() {
+		return this.longTaskTimer;
 	}
 
 	public static class Http {
@@ -111,14 +116,8 @@ public class ObservationProperties {
 
 			private final ServerRequests requests = new ServerRequests();
 
-			private final Filter filter = new Filter();
-
 			public ServerRequests getRequests() {
 				return this.requests;
-			}
-
-			public Filter getFilter() {
-				return this.filter;
 			}
 
 			public static class ServerRequests {
@@ -138,23 +137,23 @@ public class ObservationProperties {
 
 			}
 
-			public static class Filter {
+		}
 
-				/**
-				 * Order of the filter that creates the observations.
-				 */
-				private int order = Ordered.HIGHEST_PRECEDENCE + 1;
+	}
 
-				public int getOrder() {
-					return this.order;
-				}
+	public static class LongTaskTimer {
 
-				public void setOrder(int order) {
-					this.order = order;
-				}
+		/**
+		 * Whether to create a LongTaskTimer for every observation.
+		 */
+		private boolean enabled = true;
 
-			}
+		public boolean isEnabled() {
+			return this.enabled;
+		}
 
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

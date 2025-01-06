@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.neo4j;
 import java.net.URI;
 
 import org.neo4j.driver.AuthToken;
+import org.neo4j.driver.AuthTokenManager;
 import org.neo4j.driver.AuthTokens;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
@@ -47,6 +48,16 @@ public interface Neo4jConnectionDetails extends ConnectionDetails {
 	 */
 	default AuthToken getAuthToken() {
 		return AuthTokens.none();
+	}
+
+	/**
+	 * Returns the {@link AuthTokenManager} to use for authentication. Defaults to
+	 * {@code null} in which case the {@link #getAuthToken() auth token} should be used.
+	 * @return the auth token manager
+	 * @since 3.2.0
+	 */
+	default AuthTokenManager getAuthTokenManager() {
+		return null;
 	}
 
 }

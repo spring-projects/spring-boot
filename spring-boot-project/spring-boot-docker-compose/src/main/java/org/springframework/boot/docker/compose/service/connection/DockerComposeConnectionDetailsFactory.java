@@ -56,6 +56,16 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 
 	/**
 	 * Create a new {@link DockerComposeConnectionDetailsFactory} instance.
+	 * @param connectionNames the required connection name
+	 * @param requiredClassNames the names of classes that must be present
+	 * @since 3.2.0
+	 */
+	protected DockerComposeConnectionDetailsFactory(String[] connectionNames, String... requiredClassNames) {
+		this(new ConnectionNamePredicate(connectionNames), requiredClassNames);
+	}
+
+	/**
+	 * Create a new {@link DockerComposeConnectionDetailsFactory} instance.
 	 * @param predicate a predicate used to check when a service is accepted
 	 * @param requiredClassNames the names of classes that must be present
 	 */

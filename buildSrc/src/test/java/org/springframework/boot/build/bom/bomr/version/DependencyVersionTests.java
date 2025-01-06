@@ -68,9 +68,4 @@ class DependencyVersionTests {
 		assertThat(DependencyVersion.parse("2020.0.0-M1")).isInstanceOf(CalendarVersionDependencyVersion.class);
 	}
 
-	@Test
-	void calendarVersionShouldBeNewerThanAReleaseCalendarVersion() {
-
-	}
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ class CompressionConnectorCustomizer implements TomcatConnectorCustomizer {
 	public void customize(Connector connector) {
 		if (this.compression != null && this.compression.getEnabled()) {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol) {
-				customize((AbstractHttp11Protocol<?>) handler);
+			if (handler instanceof AbstractHttp11Protocol<?> abstractHttp11Protocol) {
+				customize(abstractHttp11Protocol);
 			}
 		}
 	}

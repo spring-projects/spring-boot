@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,11 @@ import org.springframework.web.reactive.function.client.WebClient.Builder;
  *
  * @author Marcin Grzejszczak
  * @since 3.0.0
+ * @deprecated since 3.3.0 for removal in 3.5.0 in favor of
+ * {@link ZipkinHttpClientBuilderCustomizer}
  */
 @FunctionalInterface
+@Deprecated(since = "3.3.0", forRemoval = true)
 public interface ZipkinWebClientBuilderCustomizer {
 
 	/**

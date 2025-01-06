@@ -39,7 +39,8 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationServerMetadata;
 import org.springframework.security.oauth2.server.authorization.oidc.OidcProviderConfiguration;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,14 +63,14 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		OidcProviderConfiguration config = OidcProviderConfiguration.withClaims(entity.getBody()).build();
-		assertThat(config.getIssuer().toString()).isEqualTo("https://provider.com");
-		assertThat(config.getAuthorizationEndpoint().toString()).isEqualTo("https://provider.com/authorize");
-		assertThat(config.getTokenEndpoint().toString()).isEqualTo("https://provider.com/token");
-		assertThat(config.getJwkSetUrl().toString()).isEqualTo("https://provider.com/jwks");
-		assertThat(config.getTokenRevocationEndpoint().toString()).isEqualTo("https://provider.com/revoke");
-		assertThat(config.getEndSessionEndpoint().toString()).isEqualTo("https://provider.com/logout");
-		assertThat(config.getTokenIntrospectionEndpoint().toString()).isEqualTo("https://provider.com/introspect");
-		assertThat(config.getUserInfoEndpoint().toString()).isEqualTo("https://provider.com/user");
+		assertThat(config.getIssuer()).hasToString("https://provider.com");
+		assertThat(config.getAuthorizationEndpoint()).hasToString("https://provider.com/authorize");
+		assertThat(config.getTokenEndpoint()).hasToString("https://provider.com/token");
+		assertThat(config.getJwkSetUrl()).hasToString("https://provider.com/jwks");
+		assertThat(config.getTokenRevocationEndpoint()).hasToString("https://provider.com/revoke");
+		assertThat(config.getEndSessionEndpoint()).hasToString("https://provider.com/logout");
+		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
+		assertThat(config.getUserInfoEndpoint()).hasToString("https://provider.com/user");
 		// OIDC Client Registration is disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
 	}
@@ -82,12 +83,12 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 
 		OAuth2AuthorizationServerMetadata config = OAuth2AuthorizationServerMetadata.withClaims(entity.getBody())
 			.build();
-		assertThat(config.getIssuer().toString()).isEqualTo("https://provider.com");
-		assertThat(config.getAuthorizationEndpoint().toString()).isEqualTo("https://provider.com/authorize");
-		assertThat(config.getTokenEndpoint().toString()).isEqualTo("https://provider.com/token");
-		assertThat(config.getJwkSetUrl().toString()).isEqualTo("https://provider.com/jwks");
-		assertThat(config.getTokenRevocationEndpoint().toString()).isEqualTo("https://provider.com/revoke");
-		assertThat(config.getTokenIntrospectionEndpoint().toString()).isEqualTo("https://provider.com/introspect");
+		assertThat(config.getIssuer()).hasToString("https://provider.com");
+		assertThat(config.getAuthorizationEndpoint()).hasToString("https://provider.com/authorize");
+		assertThat(config.getTokenEndpoint()).hasToString("https://provider.com/token");
+		assertThat(config.getJwkSetUrl()).hasToString("https://provider.com/jwks");
+		assertThat(config.getTokenRevocationEndpoint()).hasToString("https://provider.com/revoke");
+		assertThat(config.getTokenIntrospectionEndpoint()).hasToString("https://provider.com/introspect");
 		// OIDC Client Registration is disabled by default
 		assertThat(config.getClientRegistrationEndpoint()).isNull();
 	}
@@ -103,13 +104,13 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 	void validTokenRequestShouldReturnTokenResponse() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBasicAuth("messaging-client", "secret");
-		HttpEntity<Object> request = new HttpEntity<>(headers);
-		String requestUri = UriComponentsBuilder.fromUriString("/token")
-			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
-			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
-			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
-			.toUriString();
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
+		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
+		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
+		HttpEntity<Object> request = new HttpEntity<>(body, headers);
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
 				MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> tokenResponse = Objects.requireNonNull(entity.getBody());
@@ -123,13 +124,13 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 	@Test
 	void anonymousTokenRequestShouldReturnUnauthorized() {
 		HttpHeaders headers = new HttpHeaders();
-		HttpEntity<Object> request = new HttpEntity<>(headers);
-		String requestUri = UriComponentsBuilder.fromUriString("/token")
-			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
-			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
-			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
-			.toUriString();
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
+		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
+		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
+		HttpEntity<Object> request = new HttpEntity<>(body, headers);
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
 				MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
@@ -137,14 +138,14 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 	@Test
 	void anonymousTokenRequestWithAcceptHeaderAllShouldReturnUnauthorized() {
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.setAccept(List.of(MediaType.ALL));
-		HttpEntity<Object> request = new HttpEntity<>(headers);
-		String requestUri = UriComponentsBuilder.fromUriString("/token")
-			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
-			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
-			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
-			.toUriString();
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
+		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
+		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
+		HttpEntity<Object> request = new HttpEntity<>(body, headers);
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
 				MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
@@ -152,14 +153,14 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 	@Test
 	void anonymousTokenRequestWithAcceptHeaderTextHtmlShouldRedirectToLogin() {
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		headers.setAccept(List.of(MediaType.TEXT_HTML));
-		HttpEntity<Object> request = new HttpEntity<>(headers);
-		String requestUri = UriComponentsBuilder.fromUriString("/token")
-			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
-			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
-			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
-			.toUriString();
-		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
+		MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+		body.add(OAuth2ParameterNames.CLIENT_ID, "messaging-client");
+		body.add(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue());
+		body.add(OAuth2ParameterNames.SCOPE, "message.read message.write");
+		HttpEntity<Object> request = new HttpEntity<>(body, headers);
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange("/token", HttpMethod.POST, request,
 				MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
 		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));

@@ -43,7 +43,11 @@ public class InvalidConfigurationPropertyValueException extends RuntimeException
 	 * returns are allowed.
 	 */
 	public InvalidConfigurationPropertyValueException(String name, Object value, String reason) {
-		super("Property " + name + " with value '" + value + "' is invalid: " + reason);
+		this(name, value, reason, null);
+	}
+
+	InvalidConfigurationPropertyValueException(String name, Object value, String reason, Throwable cause) {
+		super("Property " + name + " with value '" + value + "' is invalid: " + reason, cause);
 		Assert.notNull(name, "Name must not be null");
 		this.name = name;
 		this.value = value;

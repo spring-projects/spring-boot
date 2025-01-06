@@ -1,7 +1,16 @@
+# Endpoint Exposure Outcome Contributors
+org.springframework.boot.actuate.autoconfigure.endpoint.condition.EndpointExposureOutcomeContributor=\
+org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryEndpointExposureOutcomeContributor
+
 # Failure Analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.springframework.boot.actuate.autoconfigure.health.NoSuchHealthContributorFailureAnalyzer,\
 org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.actuate.autoconfigure.tracing.LogCorrelationEnvironmentPostProcessor
+
+# Application Listeners
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryEventPublisherBeansApplicationListener

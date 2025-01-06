@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,6 +167,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);
 			}
 			catch (ClassNotFoundException ex) {
+				// Ignore
 			}
 		}
 		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
@@ -187,7 +188,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		if (mergedConfig instanceof WebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.SERVLET);
 			if (!isEmbeddedWebEnvironment(mergedConfig)) {
-				new WebConfigurer().configure(mergedConfig, application, initializers);
+				new WebConfigurer().configure(mergedConfig, initializers);
 			}
 		}
 		else if (mergedConfig instanceof ReactiveWebMergedContextConfiguration) {
@@ -196,8 +197,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		else {
 			application.setWebApplicationType(WebApplicationType.NONE);
 		}
-		application.setApplicationContextFactory(
-				(webApplicationType) -> getApplicationContextFactory(mergedConfig, webApplicationType));
+		application.setApplicationContextFactory(getApplicationContextFactory(mergedConfig));
 		if (mergedConfig.getParent() != null) {
 			application.setBannerMode(Banner.Mode.OFF);
 		}
@@ -212,17 +212,26 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 	}
 
-	private ConfigurableApplicationContext getApplicationContextFactory(MergedContextConfiguration mergedConfig,
-			WebApplicationType webApplicationType) {
-		if (webApplicationType != WebApplicationType.NONE && !isEmbeddedWebEnvironment(mergedConfig)) {
-			if (webApplicationType == WebApplicationType.REACTIVE) {
-				return new GenericReactiveWebApplicationContext();
+	/**
+	 * Return the {@link ApplicationContextFactory} that should be used for the test. By
+	 * default this method will return a factory that will create an appropriate
+	 * {@link ApplicationContext} for the {@link WebApplicationType}.
+	 * @param mergedConfig the merged context configuration
+	 * @return the application context factory to use
+	 * @since 3.2.0
+	 */
+	protected ApplicationContextFactory getApplicationContextFactory(MergedContextConfiguration mergedConfig) {
+		return (webApplicationType) -> {
+			if (webApplicationType != WebApplicationType.NONE && !isEmbeddedWebEnvironment(mergedConfig)) {
+				if (webApplicationType == WebApplicationType.REACTIVE) {
+					return new GenericReactiveWebApplicationContext();
+				}
+				if (webApplicationType == WebApplicationType.SERVLET) {
+					return new GenericWebApplicationContext();
+				}
 			}
-			if (webApplicationType == WebApplicationType.SERVLET) {
-				return new GenericWebApplicationContext();
-			}
-		}
-		return ApplicationContextFactory.DEFAULT.create(webApplicationType);
+			return ApplicationContextFactory.DEFAULT.create(webApplicationType);
+		};
 	}
 
 	private void prepareEnvironment(MergedContextConfiguration mergedConfig, SpringApplication application,
@@ -230,8 +239,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		setActiveProfiles(environment, mergedConfig.getActiveProfiles(), applicationEnvironment);
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
 				: new DefaultResourceLoader(null);
-		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
-				mergedConfig.getPropertySourceLocations());
+		TestPropertySourceUtils.addPropertySourcesToEnvironment(environment, resourceLoader,
+				mergedConfig.getPropertySourceDescriptors());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(mergedConfig));
 	}
 
@@ -372,10 +381,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	/**
 	 * Inner class to configure {@link WebMergedContextConfiguration}.
 	 */
-	private static class WebConfigurer {
+	private static final class WebConfigurer {
 
-		void configure(MergedContextConfiguration mergedConfig, SpringApplication application,
-				List<ApplicationContextInitializer<?>> initializers) {
+		void configure(MergedContextConfiguration mergedConfig, List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webMergedConfig = (WebMergedContextConfiguration) mergedConfig;
 			addMockServletContext(initializers, webMergedConfig);
 		}
@@ -548,6 +556,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				}
 			}
 			catch (AbandonedRunException ex) {
+				// Ignore
 			}
 			catch (Exception ex) {
 				if (this.failedContexts.size() == 1) {

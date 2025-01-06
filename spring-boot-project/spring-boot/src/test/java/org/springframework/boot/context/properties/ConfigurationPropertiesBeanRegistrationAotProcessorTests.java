@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,8 +102,22 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 
 	@Test
 	@CompileWithForkedClassLoader
+	void aotContributedInitializerBindsValueObjectWithSpecificConstructor() {
+		compile(createContext(ValueObjectSampleBeanWithSpecificConstructorConfiguration.class), (freshContext) -> {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello",
+					"test.counter=30");
+			freshContext.refresh();
+			ValueObjectWithSpecificConstructorSampleBean bean = freshContext
+				.getBean(ValueObjectWithSpecificConstructorSampleBean.class);
+			assertThat(bean.name).isEqualTo("Hello");
+			assertThat(bean.counter).isEqualTo(30);
+		});
+	}
+
+	@Test
+	@CompileWithForkedClassLoader
 	void aotContributedInitializerBindsJavaBean() {
-		compile(createContext(JavaBeanSampleBeanConfiguration.class), (freshContext) -> {
+		compile(createContext(), (freshContext) -> {
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(freshContext, "test.name=Hello");
 			freshContext.refresh();
 			JavaBeanSampleBean bean = freshContext.getBean(JavaBeanSampleBean.class);
@@ -189,6 +203,33 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 
 		ValueObjectSampleBean(String name) {
 			this.name = name;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ValueObjectWithSpecificConstructorSampleBean.class)
+	static class ValueObjectSampleBeanWithSpecificConstructorConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	public static class ValueObjectWithSpecificConstructorSampleBean {
+
+		@SuppressWarnings("unused")
+		private final String name;
+
+		@SuppressWarnings("unused")
+		private final Integer counter;
+
+		ValueObjectWithSpecificConstructorSampleBean(String name, Integer counter) {
+			this.name = name;
+			this.counter = counter;
+		}
+
+		@SuppressWarnings("unused")
+		private ValueObjectWithSpecificConstructorSampleBean(String name) {
+			this(name, 42);
 		}
 
 	}

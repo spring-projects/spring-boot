@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
-import org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint;
-import org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
+import org.springframework.boot.actuate.endpoint.EndpointAccessResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -47,10 +45,12 @@ import org.springframework.web.servlet.DispatcherServlet;
 public class ServletEndpointManagementContextConfiguration {
 
 	@Bean
-	public IncludeExcludeEndpointFilter<ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
+	@SuppressWarnings("removal")
+	public IncludeExcludeEndpointFilter<org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint> servletExposeExcludePropertyEndpointFilter(
 			WebEndpointProperties properties) {
 		WebEndpointProperties.Exposure exposure = properties.getExposure();
-		return new IncludeExcludeEndpointFilter<>(ExposableServletEndpoint.class, exposure.getInclude(),
+		return new IncludeExcludeEndpointFilter<>(
+				org.springframework.boot.actuate.endpoint.web.ExposableServletEndpoint.class, exposure.getInclude(),
 				exposure.getExclude());
 	}
 
@@ -59,10 +59,14 @@ public class ServletEndpointManagementContextConfiguration {
 	public static class WebMvcServletEndpointManagementContextConfiguration {
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier, DispatcherServletPath dispatcherServletPath) {
-			return new ServletEndpointRegistrar(dispatcherServletPath.getRelativePath(properties.getBasePath()),
-					servletEndpointsSupplier.getEndpoints());
+		@SuppressWarnings({ "deprecation", "removal" })
+		public org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar servletEndpointRegistrar(
+				WebEndpointProperties properties,
+				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
+				DispatcherServletPath dispatcherServletPath, EndpointAccessResolver endpointAccessResolver) {
+			return new org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar(
+					dispatcherServletPath.getRelativePath(properties.getBasePath()),
+					servletEndpointsSupplier.getEndpoints(), endpointAccessResolver);
 		}
 
 	}
@@ -73,10 +77,14 @@ public class ServletEndpointManagementContextConfiguration {
 	public static class JerseyServletEndpointManagementContextConfiguration {
 
 		@Bean
-		public ServletEndpointRegistrar servletEndpointRegistrar(WebEndpointProperties properties,
-				ServletEndpointsSupplier servletEndpointsSupplier, JerseyApplicationPath jerseyApplicationPath) {
-			return new ServletEndpointRegistrar(jerseyApplicationPath.getRelativePath(properties.getBasePath()),
-					servletEndpointsSupplier.getEndpoints());
+		@SuppressWarnings({ "deprecation", "removal" })
+		public org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar servletEndpointRegistrar(
+				WebEndpointProperties properties,
+				org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier servletEndpointsSupplier,
+				JerseyApplicationPath jerseyApplicationPath, EndpointAccessResolver endpointAccessResolver) {
+			return new org.springframework.boot.actuate.endpoint.web.ServletEndpointRegistrar(
+					jerseyApplicationPath.getRelativePath(properties.getBasePath()),
+					servletEndpointsSupplier.getEndpoints(), endpointAccessResolver);
 		}
 
 	}

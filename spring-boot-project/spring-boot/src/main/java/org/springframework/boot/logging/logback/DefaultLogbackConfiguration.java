@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,19 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.OutputStreamAppender;
+import ch.qos.logback.core.encoder.Encoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.spi.ScanException;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
 
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiElement;
+import org.springframework.boot.ansi.AnsiStyle;
 import org.springframework.boot.logging.LogFile;
+import org.springframework.util.StringUtils;
 
 /**
  * Default logback configuration used by Spring Boot. Uses {@link LogbackConfigurator} to
@@ -44,8 +50,28 @@ import org.springframework.boot.logging.LogFile;
  * @author Robert Thornton
  * @author Scott Frederick
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  */
 class DefaultLogbackConfiguration {
+
+	private static final String DEFAULT_CHARSET = Charset.defaultCharset().name();
+
+	private static final String NAME_AND_GROUP = "%esb(){APPLICATION_NAME}%esb{APPLICATION_GROUP}";
+
+	private static final String DATETIME = "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}";
+
+	private static final String DEFAULT_CONSOLE_LOG_PATTERN = faint(DATETIME) + " "
+			+ colorByLevel("${LOG_LEVEL_PATTERN:-%5p}") + " " + magenta("${PID:-}") + " "
+			+ faint("--- " + NAME_AND_GROUP + "[%15.15t] ${LOG_CORRELATION_PATTERN:-}") + cyan("%-40.40logger{39}")
+			+ " " + faint(":") + " %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}";
+
+	static final String CONSOLE_LOG_PATTERN = "${CONSOLE_LOG_PATTERN:-" + DEFAULT_CONSOLE_LOG_PATTERN;
+
+	private static final String DEFAULT_FILE_LOG_PATTERN = DATETIME + " ${LOG_LEVEL_PATTERN:-%5p} ${PID:-} --- "
+			+ NAME_AND_GROUP + "[%t] ${LOG_CORRELATION_PATTERN:-}"
+			+ "%-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}";
+
+	static final String FILE_LOG_PATTERN = "${FILE_LOG_PATTERN:-" + DEFAULT_FILE_LOG_PATTERN;
 
 	private final LogFile logFile;
 
@@ -54,7 +80,8 @@ class DefaultLogbackConfiguration {
 	}
 
 	void apply(LogbackConfigurator config) {
-		synchronized (config.getConfigurationLock()) {
+		config.getConfigurationLock().lock();
+		try {
 			defaults(config);
 			Appender<ILoggingEvent> consoleAppender = consoleAppender(config);
 			if (this.logFile != null) {
@@ -65,31 +92,26 @@ class DefaultLogbackConfiguration {
 				config.root(Level.INFO, consoleAppender);
 			}
 		}
+		finally {
+			config.getConfigurationLock().unlock();
+		}
 	}
 
 	private void defaults(LogbackConfigurator config) {
+		deprecatedDefaults(config);
 		config.conversionRule("clr", ColorConverter.class);
 		config.conversionRule("correlationId", CorrelationIdConverter.class);
+		config.conversionRule("esb", EnclosedInSquareBracketsConverter.class);
 		config.conversionRule("wex", WhitespaceThrowableProxyConverter.class);
 		config.conversionRule("wEx", ExtendedWhitespaceThrowableProxyConverter.class);
-		config.getContext()
-			.putProperty("CONSOLE_LOG_PATTERN", resolve(config, "${CONSOLE_LOG_PATTERN:-"
-					+ "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) "
-					+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr(${LOGGED_APPLICATION_NAME:-}[%15.15t]){faint} "
-					+ "%clr(${LOG_CORRELATION_PATTERN:-}){faint}%clr(%-40.40logger{39}){cyan} "
-					+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
-		String defaultCharset = Charset.defaultCharset().name();
-		config.getContext()
-			.putProperty("CONSOLE_LOG_CHARSET", resolve(config, "${CONSOLE_LOG_CHARSET:-" + defaultCharset + "}"));
-		config.getContext().putProperty("CONSOLE_LOG_THRESHOLD", resolve(config, "${CONSOLE_LOG_THRESHOLD:-TRACE}"));
-		config.getContext()
-			.putProperty("FILE_LOG_PATTERN", resolve(config, "${FILE_LOG_PATTERN:-"
-					+ "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- ${LOGGED_APPLICATION_NAME:-}[%t] "
-					+ "${LOG_CORRELATION_PATTERN:-}"
-					+ "%-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
-		config.getContext()
-			.putProperty("FILE_LOG_CHARSET", resolve(config, "${FILE_LOG_CHARSET:-" + defaultCharset + "}"));
-		config.getContext().putProperty("FILE_LOG_THRESHOLD", resolve(config, "${FILE_LOG_THRESHOLD:-TRACE}"));
+		putProperty(config, "CONSOLE_LOG_PATTERN", CONSOLE_LOG_PATTERN);
+		putProperty(config, "CONSOLE_LOG_CHARSET", "${CONSOLE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
+		putProperty(config, "CONSOLE_LOG_THRESHOLD", "${CONSOLE_LOG_THRESHOLD:-TRACE}");
+		putProperty(config, "CONSOLE_LOG_STRUCTURED_FORMAT", "${CONSOLE_LOG_STRUCTURED_FORMAT:-}");
+		putProperty(config, "FILE_LOG_PATTERN", FILE_LOG_PATTERN);
+		putProperty(config, "FILE_LOG_CHARSET", "${FILE_LOG_CHARSET:-" + DEFAULT_CHARSET + "}");
+		putProperty(config, "FILE_LOG_THRESHOLD", "${FILE_LOG_THRESHOLD:-TRACE}");
+		putProperty(config, "FILE_LOG_STRUCTURED_FORMAT", "${FILE_LOG_STRUCTURED_FORMAT:-}");
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -100,34 +122,63 @@ class DefaultLogbackConfiguration {
 		config.logger("org.springframework.boot.actuate.endpoint.jmx", Level.WARN);
 	}
 
+	@SuppressWarnings("removal")
+	private void deprecatedDefaults(LogbackConfigurator config) {
+		config.conversionRule("applicationName", ApplicationNameConverter.class);
+	}
+
+	void putProperty(LogbackConfigurator config, String name, String val) {
+		config.getContext().putProperty(name, resolve(config, val));
+	}
+
 	private Appender<ILoggingEvent> consoleAppender(LogbackConfigurator config) {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
-		ThresholdFilter filter = new ThresholdFilter();
-		filter.setLevel(resolve(config, "${CONSOLE_LOG_THRESHOLD}"));
-		appender.addFilter(filter);
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(resolve(config, "${CONSOLE_LOG_PATTERN}"));
-		encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
-		config.start(encoder);
-		appender.setEncoder(encoder);
+		createAppender(config, appender, "CONSOLE");
 		config.appender("CONSOLE", appender);
 		return appender;
 	}
 
 	private Appender<ILoggingEvent> fileAppender(LogbackConfigurator config, String logFile) {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
-		ThresholdFilter filter = new ThresholdFilter();
-		filter.setLevel(resolve(config, "${FILE_LOG_THRESHOLD}"));
-		appender.addFilter(filter);
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-		encoder.setPattern(resolve(config, "${FILE_LOG_PATTERN}"));
-		encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
-		appender.setEncoder(encoder);
-		config.start(encoder);
+		createAppender(config, appender, "FILE");
 		appender.setFile(logFile);
 		setRollingPolicy(appender, config);
 		config.appender("FILE", appender);
 		return appender;
+	}
+
+	private void createAppender(LogbackConfigurator config, OutputStreamAppender<ILoggingEvent> appender, String type) {
+		appender.addFilter(createThresholdFilter(config, type));
+		Encoder<ILoggingEvent> encoder = createEncoder(config, type);
+		appender.setEncoder(encoder);
+		config.start(encoder);
+	}
+
+	private ThresholdFilter createThresholdFilter(LogbackConfigurator config, String type) {
+		ThresholdFilter filter = new ThresholdFilter();
+		filter.setLevel(resolve(config, "${" + type + "_LOG_THRESHOLD}"));
+		filter.start();
+		return filter;
+	}
+
+	private Encoder<ILoggingEvent> createEncoder(LogbackConfigurator config, String type) {
+		Charset charset = resolveCharset(config, "${" + type + "_LOG_CHARSET}");
+		String structuredLogFormat = resolve(config, "${" + type + "_LOG_STRUCTURED_FORMAT}");
+		if (StringUtils.hasLength(structuredLogFormat)) {
+			StructuredLogEncoder encoder = createStructuredLogEncoder(structuredLogFormat);
+			encoder.setCharset(charset);
+			return encoder;
+		}
+		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+		encoder.setCharset(charset);
+		encoder.setPattern(resolve(config, "${" + type + "_LOG_PATTERN}"));
+		return encoder;
+	}
+
+	private StructuredLogEncoder createStructuredLogEncoder(String format) {
+		StructuredLogEncoder encoder = new StructuredLogEncoder();
+		encoder.setFormat(format);
+		return encoder;
 	}
 
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config) {
@@ -168,6 +219,26 @@ class DefaultLogbackConfiguration {
 		catch (ScanException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	private static String faint(String value) {
+		return color(value, AnsiStyle.FAINT);
+	}
+
+	private static String cyan(String value) {
+		return color(value, AnsiColor.CYAN);
+	}
+
+	private static String magenta(String value) {
+		return color(value, AnsiColor.MAGENTA);
+	}
+
+	private static String colorByLevel(String value) {
+		return "%clr(" + value + "){}";
+	}
+
+	private static String color(String value, AnsiElement ansiElement) {
+		return "%clr(" + value + "){" + ColorConverter.getName(ansiElement) + "}";
 	}
 
 }

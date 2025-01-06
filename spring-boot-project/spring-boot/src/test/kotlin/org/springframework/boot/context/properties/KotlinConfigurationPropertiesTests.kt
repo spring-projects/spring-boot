@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,17 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.support.TestPropertySourceUtils
 
 import org.assertj.core.api.Assertions.assertThat
+import org.springframework.boot.context.properties.bind.Name
 
 /**
  * Tests for {@link ConfigurationProperties @ConfigurationProperties}-annotated beans.
  *
  * @author Madhura Bhave
+ * @author Lasse Wulff
  */
 class KotlinConfigurationPropertiesTests {
 
@@ -37,7 +40,7 @@ class KotlinConfigurationPropertiesTests {
 
 	@AfterEach
 	fun cleanUp() {
-		this.context.close();
+		this.context.close()
 	}
 
 	@Test //gh-18652
@@ -47,36 +50,48 @@ class KotlinConfigurationPropertiesTests {
 				RootBeanDefinition(BingProperties::class.java))
 		beanFactory.registerSingleton("foo", BingProperties(""))
 		this.context.register(EnableConfigProperties::class.java)
-		this.context.refresh();
+		this.context.refresh()
 	}
 
 	@Test
 	fun `type with constructor bound lateinit property can be bound`() {
 		this.context.register(EnableLateInitProperties::class.java)
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "lateinit.inner.value=alpha");
-		this.context.refresh();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "lateinit.inner.value=alpha")
+		this.context.refresh()
 		assertThat(this.context.getBean(LateInitProperties::class.java).inner.value).isEqualTo("alpha")
+	}
+
+	@Test
+	fun `renamed property can be bound`() {
+		this.context.register(EnableRenamedProperties::class.java)
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "renamed.var=beta")
+		this.context.refresh()
+		assertThat(this.context.getBean(RenamedProperties::class.java).bar).isEqualTo("beta")
 	}
 
 	@Test
 	fun `type with constructor bound lateinit property with default can be bound`() {
 		this.context.register(EnableLateInitPropertiesWithDefault::class.java)
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "lateinit-with-default.inner.bravo=two");
-		this.context.refresh();
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "lateinit-with-default.inner.bravo=two")
+		this.context.refresh()
 		val properties = this.context.getBean(LateInitPropertiesWithDefault::class.java)
 		assertThat(properties.inner.alpha).isEqualTo("apple")
 		assertThat(properties.inner.bravo).isEqualTo("two")
 	}
 
-	@ConfigurationProperties(prefix = "foo")
-	class BingProperties(@Suppress("UNUSED_PARAMETER") bar: String) {
-
+	@Test
+	fun `mutable data class properties can be imported`() {
+		this.context.register(MutableDataClassPropertiesImporter::class.java)
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "mutable.prop=alpha")
+		this.context.refresh()
+		assertThat(this.context.getBean(MutableDataClassProperties::class.java).prop).isEqualTo("alpha")
 	}
+
+	@ConfigurationProperties(prefix = "foo")
+	class BingProperties(@Suppress("UNUSED_PARAMETER") bar: String)
 
 	@EnableConfigurationProperties
-	class EnableConfigProperties {
-
-	}
+	class EnableConfigProperties
 
 	@ConfigurationProperties("lateinit")
 	class LateInitProperties {
@@ -88,9 +103,7 @@ class KotlinConfigurationPropertiesTests {
 	data class Inner(val value: String)
 
 	@EnableConfigurationProperties(LateInitPropertiesWithDefault::class)
-	class EnableLateInitPropertiesWithDefault {
-
-	}
+	class EnableLateInitPropertiesWithDefault
 
 	@ConfigurationProperties("lateinit-with-default")
 	class LateInitPropertiesWithDefault {
@@ -102,8 +115,25 @@ class KotlinConfigurationPropertiesTests {
 	data class InnerWithDefault(val alpha: String = "apple", val bravo: String = "banana")
 
 	@EnableConfigurationProperties(LateInitProperties::class)
-	class EnableLateInitProperties {
+	class EnableLateInitProperties
 
+	@EnableConfigurationProperties
+	@Configuration(proxyBeanMethods = false)
+	@Import(MutableDataClassProperties::class)
+	class MutableDataClassPropertiesImporter
+
+	@ConfigurationProperties(prefix = "mutable")
+	data class MutableDataClassProperties(
+		var prop: String = ""
+	)
+
+	@EnableConfigurationProperties(RenamedProperties::class)
+	class EnableRenamedProperties
+
+	@ConfigurationProperties(prefix = "renamed")
+	class RenamedProperties{
+		@Name("var")
+		var bar: String = ""
 	}
 
 }

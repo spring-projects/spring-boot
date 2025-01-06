@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,7 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * {@link ConnectionCallback} to determine if a connection is embedded.
 	 */
-	private static class IsEmbedded implements ConnectionCallback<Boolean> {
+	private static final class IsEmbedded implements ConnectionCallback<Boolean> {
 
 		@Override
 		public Boolean doInConnection(Connection connection) throws SQLException, DataAccessException {

@@ -34,7 +34,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jdbc.datasource.init.ScriptStatementFailedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link DataSourceScriptDatabaseInitializer}.
@@ -82,7 +82,7 @@ class DataSourceScriptDatabaseInitializerTests
 				populator.setContinueOnError(false);
 			}
 		};
-		assertThatThrownBy(initializer::initializeDatabase).isInstanceOf(ScriptStatementFailedException.class);
+		assertThatExceptionOfType(ScriptStatementFailedException.class).isThrownBy(initializer::initializeDatabase);
 	}
 
 	@Override

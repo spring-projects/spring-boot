@@ -1,0 +1,272 @@
+[
+    {
+        "allDay": true,
+        "start": "2023-09-22",
+        "title": "Spring Modulith 1.0.1",
+        "url": "https://github.com/spring-projects/spring-modulith/milestone/15"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-22",
+        "title": "Spring Modulith 1.1 M1",
+        "url": "https://github.com/spring-projects/spring-modulith/milestone/16"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor 2020.0.36",
+        "url": "https://github.com/reactor/reactor/milestone/51"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor 2022.0.11",
+        "url": "https://github.com/reactor/reactor/milestone/52"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor 2023.0.0-M3",
+        "url": "https://github.com/reactor/reactor/milestone/53"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor Core 3.4.33",
+        "url": "https://github.com/reactor/reactor-core/milestone/158"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor Core 3.5.10",
+        "url": "https://github.com/reactor/reactor-core/milestone/159"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor Core 3.6.0-M3",
+        "url": "https://github.com/reactor/reactor-core/milestone/160"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-13",
+        "title": "Sts4 4.20.0.RELEASE",
+        "url": "https://github.com/spring-projects/sts4/milestone/66"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-20",
+        "title": "Spring Batch 5.1.0-M3",
+        "url": "https://github.com/spring-projects/spring-batch/milestone/150"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-19",
+        "title": "Spring Integration 6.2.0-M3",
+        "url": "https://github.com/spring-projects/spring-integration/milestone/306"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-19",
+        "title": "Spring Integration 5.5.19",
+        "url": "https://github.com/spring-projects/spring-integration/milestone/309"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-19",
+        "title": "Spring Integration 6.1.3",
+        "url": "https://github.com/spring-projects/spring-integration/milestone/310"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-15",
+        "title": "Spring Data Release 2023.1.0-M3",
+        "url": "https://github.com/spring-projects/spring-data-release/milestone/30"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-15",
+        "title": "Spring Data Release 2021.2.16",
+        "url": "https://github.com/spring-projects/spring-data-release/milestone/39"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-15",
+        "title": "Spring Data Release 2022.0.10",
+        "url": "https://github.com/spring-projects/spring-data-release/milestone/40"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-15",
+        "title": "Spring Data Release 2023.0.4",
+        "url": "https://github.com/spring-projects/spring-data-release/milestone/41"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-19",
+        "title": "Spring Graphql 1.0.5",
+        "url": "https://github.com/spring-projects/spring-graphql/milestone/27"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-19",
+        "title": "Spring Graphql 1.1.6",
+        "url": "https://github.com/spring-projects/spring-graphql/milestone/33"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-19",
+        "title": "Spring Graphql 1.2.3",
+        "url": "https://github.com/spring-projects/spring-graphql/milestone/34"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-19",
+        "title": "Spring Authorization Server 1.2.0-M1",
+        "url": "https://github.com/spring-projects/spring-authorization-server/milestone/34"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-18",
+        "title": "Spring Kafka 3.1.0-M1",
+        "url": "https://github.com/spring-projects/spring-kafka/milestone/225"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-14",
+        "title": "Spring Cloud Dataflow 2.11.0",
+        "url": "https://github.com/spring-cloud/spring-cloud-dataflow/milestone/159"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-11",
+        "title": "Micrometer 1.9.15",
+        "url": "https://github.com/micrometer-metrics/micrometer/milestone/217"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-11",
+        "title": "Micrometer 1.10.11",
+        "url": "https://github.com/micrometer-metrics/micrometer/milestone/218"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-11",
+        "title": "Micrometer 1.11.4",
+        "url": "https://github.com/micrometer-metrics/micrometer/milestone/219"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-11",
+        "title": "Micrometer 1.12.0-M3",
+        "url": "https://github.com/micrometer-metrics/micrometer/milestone/220"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-11",
+        "title": "Tracing 1.0.10",
+        "url": "https://github.com/micrometer-metrics/tracing/milestone/33"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-11",
+        "title": "Tracing 1.1.5",
+        "url": "https://github.com/micrometer-metrics/tracing/milestone/34"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-26",
+        "title": "Spring Cloud Release 2023.0.0-M2",
+        "url": "https://github.com/spring-cloud/spring-cloud-release/milestone/134"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-11",
+        "title": "Context Propagation 1.0.6",
+        "url": "https://github.com/micrometer-metrics/context-propagation/milestone/19"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-14",
+        "title": "Spring Ldap 3.2.0-M3",
+        "url": "https://github.com/spring-projects/spring-ldap/milestone/63"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-21",
+        "title": "Spring Boot 3.2.0-M3",
+        "url": "https://github.com/spring-projects/spring-boot/milestone/306"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-21",
+        "title": "Spring Boot 2.7.16",
+        "url": "https://github.com/spring-projects/spring-boot/milestone/315"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-21",
+        "title": "Spring Boot 3.0.11",
+        "url": "https://github.com/spring-projects/spring-boot/milestone/316"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-21",
+        "title": "Spring Boot 3.1.4",
+        "url": "https://github.com/spring-projects/spring-boot/milestone/317"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-14",
+        "title": "Spring Cloud Deployer 2.9.0",
+        "url": "https://github.com/spring-cloud/spring-cloud-deployer/milestone/116"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor Kafka 1.3.21",
+        "url": "https://github.com/reactor/reactor-kafka/milestone/38"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-18",
+        "title": "Spring Security 6.2.0-M3",
+        "url": "https://github.com/spring-projects/spring-security/milestone/308"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-22",
+        "title": "Stream Applications 4.0.0",
+        "url": "https://github.com/spring-cloud/stream-applications/milestone/7"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor Netty 1.1.11",
+        "url": "https://github.com/reactor/reactor-netty/milestone/153"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-12",
+        "title": "Reactor Netty 1.0.36",
+        "url": "https://github.com/reactor/reactor-netty/milestone/154"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-14",
+        "title": "Spring Framework 6.0.12",
+        "url": "https://github.com/spring-projects/spring-framework/milestone/331"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-14",
+        "title": "Spring Framework 5.3.30",
+        "url": "https://github.com/spring-projects/spring-framework/milestone/332"
+    },
+    {
+        "allDay": true,
+        "start": "2023-09-14",
+        "title": "Spring Framework 6.1.0-RC1",
+        "url": "https://github.com/spring-projects/spring-framework/milestone/333"
+    }
+]

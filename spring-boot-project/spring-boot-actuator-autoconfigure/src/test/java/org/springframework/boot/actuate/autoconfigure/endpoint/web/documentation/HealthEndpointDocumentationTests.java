@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,12 +52,11 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.util.unit.DataSize;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link HealthEndpoint}.
@@ -68,12 +66,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
-	private static final List<FieldDescriptor> componentFields = Arrays.asList(
+	private static final List<FieldDescriptor> componentFields = List.of(
 			fieldWithPath("status").description("Status of a specific part of the application"),
 			subsectionWithPath("details").description("Details of the health of a specific part of the application."));
 
 	@Test
-	void health() throws Exception {
+	void health() {
 		FieldDescriptor status = fieldWithPath("status").description("Overall status of the application.");
 		FieldDescriptor components = fieldWithPath("components").description("The components that make up the health.");
 		FieldDescriptor componentStatus = fieldWithPath("components.*.status")
@@ -85,24 +83,21 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			.description("Details of the health of a specific part of the application. "
 					+ "Presence is controlled by `management.endpoint.health.show-details`.")
 			.optional();
-		this.mockMvc.perform(get("/actuator/health").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("health",
+		assertThat(this.mvc.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.apply(document("health",
 					responseFields(status, components, componentStatus, nestedComponents, componentDetails)));
 	}
 
 	@Test
-	void healthComponent() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/db").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("health/component", responseFields(componentFields)));
+	void healthComponent() {
+		assertThat(this.mvc.get().uri("/actuator/health/db").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.apply(document("health/component", responseFields(componentFields)));
 	}
 
 	@Test
-	void healthComponentInstance() throws Exception {
-		this.mockMvc.perform(get("/actuator/health/broker/us1").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("health/instance", responseFields(componentFields)));
+	void healthComponentInstance() {
+		assertThat(this.mvc.get().uri("/actuator/health/broker/us1").accept(MediaType.APPLICATION_JSON)).hasStatusOk()
+			.apply(document("health/instance", responseFields(componentFields)));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -138,7 +133,7 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	}
 
-	private static class TestHealthEndpointGroup implements HealthEndpointGroup {
+	private static final class TestHealthEndpointGroup implements HealthEndpointGroup {
 
 		private final StatusAggregator statusAggregator = new SimpleStatusAggregator();
 

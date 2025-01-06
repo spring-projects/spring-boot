@@ -83,10 +83,10 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 
 	private void addExchangeOnCommit(ServerWebExchange exchange, PrincipalAndSession principalAndSession) {
 		RecordableServerHttpRequest sourceRequest = new RecordableServerHttpRequest(exchange.getRequest());
-		HttpExchange.Started startedHtppExchange = HttpExchange.start(sourceRequest);
+		HttpExchange.Started startedHttpExchange = HttpExchange.start(sourceRequest);
 		exchange.getResponse().beforeCommit(() -> {
 			RecordableServerHttpResponse sourceResponse = new RecordableServerHttpResponse(exchange.getResponse());
-			HttpExchange finishedExchange = startedHtppExchange.finish(sourceResponse,
+			HttpExchange finishedExchange = startedHttpExchange.finish(sourceResponse,
 					principalAndSession::getPrincipal, principalAndSession::getSessionId, this.includes);
 			this.repository.add(finishedExchange);
 			return Mono.empty();

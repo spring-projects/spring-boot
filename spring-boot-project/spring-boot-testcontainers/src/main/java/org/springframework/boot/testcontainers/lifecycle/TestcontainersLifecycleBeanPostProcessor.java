@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,20 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
+import org.testcontainers.utility.TestcontainersConfiguration;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -34,6 +39,8 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.log.LogMessage;
@@ -49,55 +56,118 @@ import org.springframework.core.log.LogMessage;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @see TestcontainersLifecycleApplicationContextInitializer
  */
+@SuppressWarnings({ "removal", "deprecation" })
 @Order(Ordered.LOWEST_PRECEDENCE)
-class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPostProcessor {
+class TestcontainersLifecycleBeanPostProcessor
+		implements DestructionAwareBeanPostProcessor, ApplicationListener<BeforeTestcontainerUsedEvent> {
 
 	private static final Log logger = LogFactory.getLog(TestcontainersLifecycleBeanPostProcessor.class);
 
 	private final ConfigurableListableBeanFactory beanFactory;
 
-	private volatile boolean containersInitialized = false;
+	private final TestcontainersStartup startup;
 
-	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory) {
+	private final AtomicReference<Startables> startables = new AtomicReference<>(Startables.UNSTARTED);
+
+	private final AtomicBoolean containersInitialized = new AtomicBoolean();
+
+	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory,
+			TestcontainersStartup startup) {
 		this.beanFactory = beanFactory;
+		this.startup = startup;
+	}
+
+	@Override
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	public void onApplicationEvent(BeforeTestcontainerUsedEvent event) {
+		initializeContainers();
 	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof Startable startable) {
-			startable.start();
-		}
-		if (this.beanFactory.isConfigurationFrozen()) {
+		if (this.beanFactory.isConfigurationFrozen() && !isAotProcessingInProgress()) {
 			initializeContainers();
+		}
+		if (bean instanceof Startable startableBean) {
+			if (this.startables.compareAndExchange(Startables.UNSTARTED, Startables.STARTING) == Startables.UNSTARTED) {
+				initializeStartables(startableBean, beanName);
+			}
+			else if (this.startables.get() == Startables.STARTED) {
+				logger.trace(LogMessage.format("Starting container %s", beanName));
+				TestcontainersStartup.start(startableBean);
+			}
 		}
 		return bean;
 	}
 
-	private void initializeContainers() {
-		if (this.containersInitialized) {
+	private boolean isAotProcessingInProgress() {
+		return Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING);
+	}
+
+	private void initializeStartables(Startable startableBean, String startableBeanName) {
+		logger.trace(LogMessage.format("Initializing startables"));
+		List<String> beanNames = new ArrayList<>(getBeanNames(Startable.class));
+		beanNames.remove(startableBeanName);
+		List<Object> beans = getBeans(beanNames);
+		if (beans == null) {
+			logger.trace(LogMessage.format("Failed to obtain startables %s", beanNames));
+			this.startables.set(Startables.UNSTARTED);
 			return;
 		}
-		this.containersInitialized = true;
-		Set<String> beanNames = new LinkedHashSet<>();
-		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false)));
-		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
+		beanNames.add(startableBeanName);
+		beans.add(startableBean);
+		logger.trace(LogMessage.format("Starting startables %s", beanNames));
+		start(beans);
+		this.startables.set(Startables.STARTED);
+		if (!beanNames.isEmpty()) {
+			logger.debug(LogMessage.format("Initialized and started startable beans '%s'", beanNames));
+		}
+	}
+
+	private void start(List<Object> beans) {
+		Set<Startable> startables = beans.stream()
+			.filter(Startable.class::isInstance)
+			.map(Startable.class::cast)
+			.collect(Collectors.toCollection(LinkedHashSet::new));
+		this.startup.start(startables);
+	}
+
+	private void initializeContainers() {
+		if (this.containersInitialized.compareAndSet(false, true)) {
+			logger.trace("Initializing containers");
+			List<String> beanNames = getBeanNames(ContainerState.class);
+			List<Object> beans = getBeans(beanNames);
+			if (beans != null) {
+				logger.trace(LogMessage.format("Initialized containers %s", beanNames));
+			}
+			else {
+				logger.trace(LogMessage.format("Failed to initialize containers %s", beanNames));
+				this.containersInitialized.set(false);
+			}
+		}
+	}
+
+	private List<String> getBeanNames(Class<?> type) {
+		return List.of(this.beanFactory.getBeanNamesForType(type, true, false));
+	}
+
+	private List<Object> getBeans(List<String> beanNames) {
+		List<Object> beans = new ArrayList<>(beanNames.size());
 		for (String beanName : beanNames) {
 			try {
-				this.beanFactory.getBean(beanName);
+				beans.add(this.beanFactory.getBean(beanName));
 			}
 			catch (BeanCreationException ex) {
 				if (ex.contains(BeanCurrentlyInCreationException.class)) {
-					this.containersInitialized = false;
-					return;
+					return null;
 				}
 				throw ex;
 			}
 		}
-		if (!beanNames.isEmpty()) {
-			logger.debug(LogMessage.format("Initialized container beans '%s'", beanNames));
-		}
+		return beans;
 	}
 
 	@Override
@@ -124,7 +194,14 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 	}
 
 	private boolean isReusedContainer(Object bean) {
-		return (bean instanceof GenericContainer<?> container) && container.isShouldBeReused();
+		return (bean instanceof GenericContainer<?> container) && container.isShouldBeReused()
+				&& TestcontainersConfiguration.getInstance().environmentSupportsReuse();
+	}
+
+	enum Startables {
+
+		UNSTARTED, STARTING, STARTED
+
 	}
 
 }

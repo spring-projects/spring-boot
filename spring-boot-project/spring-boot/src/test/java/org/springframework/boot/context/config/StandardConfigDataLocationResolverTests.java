@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class StandardConfigDataLocationResolverTests {
 
@@ -96,6 +97,16 @@ class StandardConfigDataLocationResolverTests {
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
 			.withMessageStartingWith("Unable to load config data from")
 			.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith("File extension is not known"));
+	}
+
+	@Test
+	void resolveWhenLocationHasUnknownPrefixAndNoMatchingLoaderThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation
+			.of("typo:src/test/resources/configdata/properties/application.unknown");
+		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
+			.withMessageStartingWith("Unable to load config data from")
+			.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith(
+					"Incorrect ConfigDataLocationResolver chosen or file extension is not known to any PropertySourceLoader"));
 	}
 
 	@Test
@@ -261,6 +272,25 @@ class StandardConfigDataLocationResolverTests {
 		List<StandardConfigDataResource> locations = this.resolver.resolveProfileSpecific(this.context, location,
 				profiles);
 		assertThat(locations).isEmpty();
+	}
+
+	@Test
+	void resolveWhenOptionalAndLoaderIsUnknownShouldNotFail() {
+		ConfigDataLocation location = ConfigDataLocation.of("optional:some-unknown-loader:dummy.properties");
+		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
+	}
+
+	@Test
+	void resolveWhenOptionalAndLoaderIsUnknownAndExtensionIsUnknownShouldNotFail() {
+		ConfigDataLocation location = ConfigDataLocation
+			.of("optional:some-unknown-loader:dummy.some-unknown-extension");
+		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
+	}
+
+	@Test
+	void resolveWhenOptionalAndExtensionIsUnknownShouldNotFail() {
+		ConfigDataLocation location = ConfigDataLocation.of("optional:file:dummy.some-unknown-extension");
+		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
 	}
 
 	private String filePath(String... components) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,13 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.util.Set;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
+import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import org.assertj.core.api.Condition;
@@ -64,7 +66,9 @@ class HazelcastAutoConfigurationClientTests {
 	@BeforeAll
 	static void init() {
 		Config config = Config.load();
-		config.getNetworkConfig().setPort(0);
+		NetworkConfig networkConfig = config.getNetworkConfig();
+		networkConfig.setPort(0);
+		networkConfig.setPublicAddress("localhost");
 		hazelcastServer = Hazelcast.newHazelcastInstance(config);
 		InetSocketAddress inetSocketAddress = (InetSocketAddress) hazelcastServer.getLocalEndpoint().getSocketAddress();
 		endpointAddress = inetSocketAddress.getHostString() + ":" + inetSocketAddress.getPort();
@@ -148,6 +152,21 @@ class HazelcastAutoConfigurationClientTests {
 	}
 
 	@Test
+	void connectionDetailsTakesPrecedenceOverConfigFile() {
+		this.contextRunner.withUserConfiguration(HazelcastConnectionDetailsConfig.class)
+			.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+			.run(assertSpecificHazelcastClient("connection-details"));
+	}
+
+	@Test
+	void connectionDetailsTakesPrecedenceOverUserDefinedClientConfig() {
+		this.contextRunner
+			.withUserConfiguration(HazelcastConnectionDetailsConfig.class, HazelcastServerAndClientConfig.class)
+			.withPropertyValues("spring.hazelcast.config=this-is-ignored.xml")
+			.run(assertSpecificHazelcastClient("connection-details"));
+	}
+
+	@Test
 	void clientConfigWithInstanceNameCreatesClientIfNecessary() throws MalformedURLException {
 		assertThat(HazelcastClient.getHazelcastClientByName("spring-boot")).isNull();
 		File config = prepareConfiguration("src/test/resources/org/springframework/"
@@ -197,6 +216,20 @@ class HazelcastAutoConfigurationClientTests {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HazelcastConnectionDetailsConfig {
+
+		@Bean
+		HazelcastConnectionDetails hazelcastConnectionDetails() {
+			ClientConfig config = new ClientConfig();
+			config.setLabels(Set.of("connection-details"));
+			config.getConnectionStrategyConfig().getConnectionRetryConfig().setClusterConnectTimeoutMillis(60000);
+			config.getNetworkConfig().getAddresses().add(endpointAddress);
+			return () -> config;
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

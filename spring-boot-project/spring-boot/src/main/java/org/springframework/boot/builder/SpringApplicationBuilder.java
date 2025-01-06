@@ -76,7 +76,7 @@ public class SpringApplicationBuilder {
 
 	private final SpringApplication application;
 
-	private ConfigurableApplicationContext context;
+	private volatile ConfigurableApplicationContext context;
 
 	private SpringApplicationBuilder parent;
 
@@ -145,10 +145,8 @@ public class SpringApplicationBuilder {
 		}
 		configureAsChildIfNecessary(args);
 		if (this.running.compareAndSet(false, true)) {
-			synchronized (this.running) {
-				// If not already running copy the sources over and then run.
-				this.context = build().run(args);
-			}
+			// If not already running copy the sources over and then run.
+			this.context = build().run(args);
 		}
 		return this.context;
 	}

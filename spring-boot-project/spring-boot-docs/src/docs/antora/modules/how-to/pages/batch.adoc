@@ -1,0 +1,94 @@
+[[howto.batch]]
+= Batch Applications
+
+A number of questions often arise when people use Spring Batch from within a Spring Boot application.
+This section addresses those questions.
+
+
+
+[[howto.batch.specifying-a-data-source]]
+== Specifying a Batch Data Source
+
+By default, batch applications require a javadoc:javax.sql.DataSource[] to store job details.
+Spring Batch expects a single javadoc:javax.sql.DataSource[] by default.
+To have it use a javadoc:javax.sql.DataSource[] other than the application’s main javadoc:javax.sql.DataSource[], declare a javadoc:javax.sql.DataSource[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.batch.BatchDataSource[format=annotation].
+If you do so and want two data sources (for example by retaining the main auto-configured javadoc:javax.sql.DataSource[]), set the `defaultCandidate` attribute of the javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation to `false`.
+To take greater control, add javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation] to one of your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes or extend javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[].
+See the API documentation of javadoc:org.springframework.batch.core.configuration.annotation.EnableBatchProcessing[format=annotation]
+and javadoc:org.springframework.batch.core.configuration.support.DefaultBatchConfiguration[] for more details.
+
+For more info about Spring Batch, see the {url-spring-batch-site}[Spring Batch project page].
+
+
+
+[[howto.batch.specifying-a-transaction-manager]]
+== Specifying a Batch Transaction Manager
+
+Similar to xref:batch.adoc#howto.batch.specifying-a-data-source[], you can define a javadoc:org.springframework.transaction.PlatformTransactionManager[] for use in batch processing by annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.batch.BatchTransactionManager[format=annotation].
+If you do so and want two transaction managers (for example by retaining the auto-configured javadoc:org.springframework.transaction.PlatformTransactionManager[]), set the `defaultCandidate` attribute of the javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation to `false`.
+
+
+
+[[howto.batch.specifying-a-task-executor]]
+== Specifying a Batch Task Executor
+
+Similar to xref:batch.adoc#howto.batch.specifying-a-data-source[], you can define a javadoc:org.springframework.core.task.TaskExecutor[] for use in batch processing by annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.batch.BatchTaskExecutor[format=annotation].
+If you do so and want two task executors (for example by retaining the auto-configured javadoc:org.springframework.core.task.TaskExecutor[]), set the `defaultCandidate` attribute of the javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation to `false`.
+
+
+
+[[howto.batch.running-jobs-on-startup]]
+== Running Spring Batch Jobs on Startup
+
+Spring Batch auto-configuration is enabled by adding `spring-boot-starter-batch` to your application's classpath.
+
+If a single javadoc:org.springframework.batch.core.Job[] bean is found in the application context, it is executed on startup (see javadoc:org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner[] for details).
+If multiple javadoc:org.springframework.batch.core.Job[] beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
+
+To disable running a javadoc:org.springframework.batch.core.Job[] found in the application context, set the configprop:spring.batch.job.enabled[] to `false`.
+
+See {code-spring-boot-autoconfigure-src}/batch/BatchAutoConfiguration.java[`BatchAutoConfiguration`] for more details.
+
+
+
+[[howto.batch.running-from-the-command-line]]
+== Running From the Command Line
+
+Spring Boot converts any command line argument starting with `--` to a property to add to the javadoc:org.springframework.core.env.Environment[], see xref:reference:features/external-config.adoc#features.external-config.command-line-args[accessing command line properties].
+This should not be used to pass arguments to batch jobs.
+To specify batch arguments on the command line, use the regular format (that is without `--`), as shown in the following example:
+
+[source,shell]
+----
+$ java -jar myapp.jar someParameter=someValue anotherParameter=anotherValue
+----
+
+If you specify a property of the javadoc:org.springframework.core.env.Environment[] on the command line, it is ignored by the job.
+Consider the following command:
+
+[source,shell]
+----
+$ java -jar myapp.jar --server.port=7070 someParameter=someValue
+----
+
+This provides only one argument to the batch job: `someParameter=someValue`.
+
+
+
+[[howto.batch.restarting-a-failed-job]]
+== Restarting a Stopped or Failed Job
+
+To restart a failed javadoc:org.springframework.batch.core.Job[], all parameters (identifying and non-identifying) must be re-specified on the command line.
+Non-identifying parameters are *not* copied from the previous execution.
+This allows them to be modified or removed.
+
+NOTE: When you're using a custom javadoc:org.springframework.batch.core.JobParametersIncrementer[], you have to gather all parameters managed by the incrementer to restart a failed execution.
+
+
+
+[[howto.batch.storing-job-repository]]
+== Storing the Job Repository
+
+Spring Batch requires a data store for the javadoc:org.springframework.batch.core.Job[] repository.
+If you use Spring Boot, you must use an actual database.
+Note that it can be an in-memory database, see {url-spring-batch-docs}/job.html#configuringJobRepository[Configuring a Job Repository].

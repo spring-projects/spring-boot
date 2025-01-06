@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,7 +35,7 @@ import org.springframework.util.ObjectUtils;
  */
 public final class ImageReference {
 
-	private static final Pattern JAR_VERSION_PATTERN = Pattern.compile("^(.*)(\\-\\d+)$");
+	private static final Pattern JAR_VERSION_PATTERN = Pattern.compile("^(.*)(-\\d+)$");
 
 	private static final String LATEST = "latest";
 
@@ -186,7 +187,7 @@ public final class ImageReference {
 	 */
 	public static ImageReference forJarFile(File jarFile) {
 		String filename = jarFile.getName();
-		Assert.isTrue(filename.toLowerCase().endsWith(".jar"), () -> "File '" + jarFile + "' is not a JAR");
+		Assert.isTrue(filename.toLowerCase(Locale.ROOT).endsWith(".jar"), () -> "File '" + jarFile + "' is not a JAR");
 		filename = filename.substring(0, filename.length() - 4);
 		int firstDot = filename.indexOf('.');
 		if (firstDot == -1) {
@@ -260,12 +261,21 @@ public final class ImageReference {
 				path = path.substring(0, tagSplit) + remainder;
 			}
 		}
-		Assert.isTrue(Regex.PATH.matcher(path).matches(),
+
+		Assert.isTrue(isLowerCase(path) && matchesPathRegex(path),
 				() -> "Unable to parse image reference \"" + value + "\". "
 						+ "Image reference must be in the form '[domainHost:port/][path/]name[:tag][@digest]', "
 						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
 		ImageName name = new ImageName(domain, path);
 		return new ImageReference(name, tag, digest);
+	}
+
+	private static boolean isLowerCase(String path) {
+		return path.toLowerCase(Locale.ENGLISH).equals(path);
+	}
+
+	private static boolean matchesPathRegex(String path) {
+		return Regex.PATH.matcher(path).matches();
 	}
 
 	/**

@@ -1,4 +1,10 @@
 {
+  "groups": [
+    {
+      "name": "relaxed",
+      "type": "com.example.SourceType"
+    }
+  ],
   "properties": [
     {
       "name": "test.two",
@@ -54,6 +60,18 @@
     {
       "name": "custom.the-map-replacement",
       "type": "java.util.Map<java.lang.String,java.lang.String>"
+    },
+    {
+      "name": "relaxed.thisthat-theother",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "relaxed.this-that-the-other"
+      }
+    },
+    {
+      "name": "relaxed.this-that-the-other",
+      "type": "java.lang.String",
+      "sourceType": "com.example.SourceType"
     }
   ]
 }

@@ -164,7 +164,7 @@ class ConditionEvaluationReportTests {
 	void springBootConditionPopulatesReport() {
 		ConditionEvaluationReport report = ConditionEvaluationReport
 			.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
-		assertThat(report.getConditionAndOutcomesBySource().size()).isNotZero();
+		assertThat(report.getConditionAndOutcomesBySource()).isNotEmpty();
 	}
 
 	@Test

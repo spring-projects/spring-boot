@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -29,13 +31,19 @@ import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InOrder;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFactory;
@@ -55,9 +63,14 @@ import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.retry.MessageRecoverer;
+import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SerializerMessageConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -68,6 +81,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
@@ -99,12 +113,15 @@ import static org.mockito.Mockito.mock;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class RabbitAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class, SslAutoConfiguration.class))
+		.withClassLoader(new FilteredClassLoader("org.springframework.rabbit.stream")); // gh-38750
 
 	@Test
 	void testDefaultRabbitConfiguration() {
@@ -147,6 +164,8 @@ class RabbitAutoConfigurationTests {
 			com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 			assertThat(rabbitConnectionFactory.getUsername()).isEqualTo(properties.getUsername());
 			assertThat(rabbitConnectionFactory.getPassword()).isEqualTo(properties.getPassword());
+			assertThat(rabbitConnectionFactory).extracting("maxInboundMessageBodySize")
+				.isEqualTo((int) properties.getMaxInboundMessageBodySize().toBytes());
 		});
 	}
 
@@ -157,7 +176,8 @@ class RabbitAutoConfigurationTests {
 			.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
 					"spring.rabbitmq.address-shuffle-mode=random", "spring.rabbitmq.username:alice",
 					"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost",
-					"spring.rabbitmq.connection-timeout:123", "spring.rabbitmq.channel-rpc-timeout:140")
+					"spring.rabbitmq.connection-timeout:123", "spring.rabbitmq.channel-rpc-timeout:140",
+					"spring.rabbitmq.max-inbound-message-body-size:128MB")
 			.run((context) -> {
 				CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 				assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
@@ -169,6 +189,7 @@ class RabbitAutoConfigurationTests {
 				assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
 				assertThat(rcf.getChannelRpcTimeout()).isEqualTo(140);
 				assertThat((List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses")).hasSize(1);
+				assertThat(rcf).hasFieldOrPropertyWithValue("maxInboundMessageBodySize", 1024 * 1024 * 128);
 			});
 	}
 
@@ -308,10 +329,10 @@ class RabbitAutoConfigurationTests {
 	void testRabbitTemplateRetry() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.template.retry.enabled:true",
-					"spring.rabbitmq.template.retry.maxAttempts:4",
-					"spring.rabbitmq.template.retry.initialInterval:2000",
-					"spring.rabbitmq.template.retry.multiplier:1.5", "spring.rabbitmq.template.retry.maxInterval:5000",
-					"spring.rabbitmq.template.receiveTimeout:123", "spring.rabbitmq.template.replyTimeout:456")
+					"spring.rabbitmq.template.retry.max-attempts:4",
+					"spring.rabbitmq.template.retry.initial-interval:2000",
+					"spring.rabbitmq.template.retry.multiplier:1.5", "spring.rabbitmq.template.retry.max-interval:5000",
+					"spring.rabbitmq.template.receive-timeout:123", "spring.rabbitmq.template.reply-timeout:456")
 			.run((context) -> {
 				RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 				assertThat(rabbitTemplate).hasFieldOrPropertyWithValue("receiveTimeout", 123L);
@@ -334,7 +355,7 @@ class RabbitAutoConfigurationTests {
 	void testRabbitTemplateRetryWithCustomizer() {
 		this.contextRunner.withUserConfiguration(RabbitRetryTemplateCustomizerConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.template.retry.enabled:true",
-					"spring.rabbitmq.template.retry.initialInterval:2000")
+					"spring.rabbitmq.template.retry.initial-interval:2000")
 			.run((context) -> {
 				RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 				RetryTemplate retryTemplate = (RetryTemplate) ReflectionTestUtils.getField(rabbitTemplate,
@@ -357,6 +378,16 @@ class RabbitAutoConfigurationTests {
 				RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 				assertThat(rabbitTemplate.getExchange()).isEqualTo("my-exchange");
 				assertThat(rabbitTemplate.getRoutingKey()).isEqualTo("my-routing-key");
+			});
+	}
+
+	@Test
+	void shouldConfigureObservationEnabledOnTemplate() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.template.observation-enabled:true")
+			.run((context) -> {
+				RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+				assertThat(rabbitTemplate).extracting("observationEnabled", InstanceOfAssertFactories.BOOLEAN).isTrue();
 			});
 	}
 
@@ -446,7 +477,7 @@ class RabbitAutoConfigurationTests {
 	void testConnectionFactoryCacheSettings() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.cache.channel.size=23",
-					"spring.rabbitmq.cache.channel.checkoutTimeout=1000",
+					"spring.rabbitmq.cache.channel.checkout-timeout=1000",
 					"spring.rabbitmq.cache.connection.mode=CONNECTION", "spring.rabbitmq.cache.connection.size=2")
 			.run((context) -> {
 				CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
@@ -508,18 +539,20 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner
 			.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.simple.retry.enabled:true",
-					"spring.rabbitmq.listener.simple.retry.maxAttempts:4",
-					"spring.rabbitmq.listener.simple.retry.initialInterval:2000",
+					"spring.rabbitmq.listener.simple.retry.max-attempts:4",
+					"spring.rabbitmq.listener.simple.retry.initial-interval:2000",
 					"spring.rabbitmq.listener.simple.retry.multiplier:1.5",
-					"spring.rabbitmq.listener.simple.retry.maxInterval:5000",
-					"spring.rabbitmq.listener.simple.autoStartup:false",
-					"spring.rabbitmq.listener.simple.acknowledgeMode:manual",
+					"spring.rabbitmq.listener.simple.retry.max-interval:5000",
+					"spring.rabbitmq.listener.simple.auto-startup:false",
+					"spring.rabbitmq.listener.simple.acknowledge-mode:manual",
 					"spring.rabbitmq.listener.simple.concurrency:5",
-					"spring.rabbitmq.listener.simple.maxConcurrency:10", "spring.rabbitmq.listener.simple.prefetch:40",
-					"spring.rabbitmq.listener.simple.defaultRequeueRejected:false",
-					"spring.rabbitmq.listener.simple.idleEventInterval:5",
-					"spring.rabbitmq.listener.simple.batchSize:20",
-					"spring.rabbitmq.listener.simple.missingQueuesFatal:false")
+					"spring.rabbitmq.listener.simple.max-concurrency:10", "spring.rabbitmq.listener.simple.prefetch:40",
+					"spring.rabbitmq.listener.simple.default-requeue-rejected:false",
+					"spring.rabbitmq.listener.simple.idle-event-interval:5",
+					"spring.rabbitmq.listener.simple.batch-size:20",
+					"spring.rabbitmq.listener.simple.missing-queues-fatal:false",
+					"spring.rabbitmq.listener.simple.force-stop:true",
+					"spring.rabbitmq.listener.simple.observation-enabled:true")
 			.run((context) -> {
 				SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
@@ -527,7 +560,50 @@ class RabbitAutoConfigurationTests {
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("maxConcurrentConsumers", 10);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("batchSize", 20);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", false);
+				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("observationEnabled", true);
 				checkCommonProps(context, rabbitListenerContainerFactory);
+			});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldConfigureVirtualThreadsForSimpleListener() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
+				.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
+			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
+				.isInstanceOf(VirtualThreadTaskExecutor.class);
+			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+			assertThat(threadCreated.getName()).containsPattern("rabbit-simple-[0-9]+");
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldConfigureVirtualThreadsForDirectListener() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			DirectRabbitListenerContainerFactoryConfigurer rabbitListenerContainerFactory = context.getBean(
+					"directRabbitListenerContainerFactoryConfigurer",
+					DirectRabbitListenerContainerFactoryConfigurer.class);
+			assertThat(rabbitListenerContainerFactory).extracting("taskExecutor")
+				.isInstanceOf(VirtualThreadTaskExecutor.class);
+			Object taskExecutor = ReflectionTestUtils.getField(rabbitListenerContainerFactory, "taskExecutor");
+			Object virtualThread = ReflectionTestUtils.getField(taskExecutor, "virtualThreadFactory");
+			Thread threadCreated = ((ThreadFactory) virtualThread).newThread(mock(Runnable.class));
+			assertThat(threadCreated.getName()).containsPattern("rabbit-direct-[0-9]+");
+		});
+	}
+
+	@Test
+	void testSimpleRabbitListenerContainerFactoryWithDefaultForceStop() {
+		this.contextRunner
+			.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
+			.run((context) -> {
+				SimpleRabbitListenerContainerFactory containerFactory = context
+					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
+				assertThat(containerFactory).hasFieldOrPropertyWithValue("forceStop", false);
 			});
 	}
 
@@ -537,23 +613,38 @@ class RabbitAutoConfigurationTests {
 			.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.type:direct",
 					"spring.rabbitmq.listener.direct.retry.enabled:true",
-					"spring.rabbitmq.listener.direct.retry.maxAttempts:4",
-					"spring.rabbitmq.listener.direct.retry.initialInterval:2000",
+					"spring.rabbitmq.listener.direct.retry.max-attempts:4",
+					"spring.rabbitmq.listener.direct.retry.initial-interval:2000",
 					"spring.rabbitmq.listener.direct.retry.multiplier:1.5",
-					"spring.rabbitmq.listener.direct.retry.maxInterval:5000",
-					"spring.rabbitmq.listener.direct.autoStartup:false",
-					"spring.rabbitmq.listener.direct.acknowledgeMode:manual",
+					"spring.rabbitmq.listener.direct.retry.max-interval:5000",
+					"spring.rabbitmq.listener.direct.auto-startup:false",
+					"spring.rabbitmq.listener.direct.acknowledge-mode:manual",
 					"spring.rabbitmq.listener.direct.consumers-per-queue:5",
 					"spring.rabbitmq.listener.direct.prefetch:40",
-					"spring.rabbitmq.listener.direct.defaultRequeueRejected:false",
-					"spring.rabbitmq.listener.direct.idleEventInterval:5",
-					"spring.rabbitmq.listener.direct.missingQueuesFatal:true")
+					"spring.rabbitmq.listener.direct.default-requeue-rejected:false",
+					"spring.rabbitmq.listener.direct.idle-event-interval:5",
+					"spring.rabbitmq.listener.direct.missing-queues-fatal:true",
+					"spring.rabbitmq.listener.direct.force-stop:true",
+					"spring.rabbitmq.listener.direct.observation-enabled:true")
 			.run((context) -> {
 				DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", DirectRabbitListenerContainerFactory.class);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("consumersPerQueue", 5);
 				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("missingQueuesFatal", true);
+				assertThat(rabbitListenerContainerFactory).hasFieldOrPropertyWithValue("observationEnabled", true);
 				checkCommonProps(context, rabbitListenerContainerFactory);
+			});
+	}
+
+	@Test
+	void testDirectRabbitListenerContainerFactoryWithDefaultForceStop() {
+		this.contextRunner
+			.withUserConfiguration(MessageConvertersConfiguration.class, MessageRecoverersConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.listener.type:direct")
+			.run((context) -> {
+				DirectRabbitListenerContainerFactory containerFactory = context
+					.getBean("rabbitListenerContainerFactory", DirectRabbitListenerContainerFactory.class);
+				assertThat(containerFactory).hasFieldOrPropertyWithValue("forceStop", false);
 			});
 	}
 
@@ -561,7 +652,7 @@ class RabbitAutoConfigurationTests {
 	void testSimpleRabbitListenerContainerFactoryRetryWithCustomizer() {
 		this.contextRunner.withUserConfiguration(RabbitRetryTemplateCustomizerConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.simple.retry.enabled:true",
-					"spring.rabbitmq.listener.simple.retry.maxAttempts:4")
+					"spring.rabbitmq.listener.simple.retry.max-attempts:4")
 			.run((context) -> {
 				SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", SimpleRabbitListenerContainerFactory.class);
@@ -575,7 +666,7 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(RabbitRetryTemplateCustomizerConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.type:direct",
 					"spring.rabbitmq.listener.direct.retry.enabled:true",
-					"spring.rabbitmq.listener.direct.retry.maxAttempts:4")
+					"spring.rabbitmq.listener.direct.retry.max-attempts:4")
 			.run((context) -> {
 				DirectRabbitListenerContainerFactory rabbitListenerContainerFactory = context
 					.getBean("rabbitListenerContainerFactory", DirectRabbitListenerContainerFactory.class);
@@ -598,7 +689,7 @@ class RabbitAutoConfigurationTests {
 	void testRabbitListenerContainerFactoryConfigurersAreAvailable() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.simple.concurrency:5",
-					"spring.rabbitmq.listener.simple.maxConcurrency:10", "spring.rabbitmq.listener.simple.prefetch:40",
+					"spring.rabbitmq.listener.simple.max-concurrency:10", "spring.rabbitmq.listener.simple.prefetch:40",
 					"spring.rabbitmq.listener.direct.consumers-per-queue:5",
 					"spring.rabbitmq.listener.direct.prefetch:40")
 			.run((context) -> {
@@ -611,7 +702,7 @@ class RabbitAutoConfigurationTests {
 	void testSimpleRabbitListenerContainerFactoryConfigurerUsesConfig() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.listener.simple.concurrency:5",
-					"spring.rabbitmq.listener.simple.maxConcurrency:10", "spring.rabbitmq.listener.simple.prefetch:40")
+					"spring.rabbitmq.listener.simple.max-concurrency:10", "spring.rabbitmq.listener.simple.prefetch:40")
 			.run((context) -> {
 				SimpleRabbitListenerContainerFactoryConfigurer configurer = context
 					.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
@@ -662,6 +753,7 @@ class RabbitAutoConfigurationTests {
 				context.getBean("myMessageConverter"));
 		assertThat(containerFactory).hasFieldOrPropertyWithValue("defaultRequeueRejected", Boolean.FALSE);
 		assertThat(containerFactory).hasFieldOrPropertyWithValue("idleEventInterval", 5L);
+		assertThat(containerFactory).hasFieldOrPropertyWithValue("forceStop", true);
 		Advice[] adviceChain = containerFactory.getAdviceChain();
 		assertThat(adviceChain).isNotNull();
 		assertThat(adviceChain).hasSize(1);
@@ -695,7 +787,7 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void customizeRequestedHeartBeat() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.requestedHeartbeat:20")
+			.withPropertyValues("spring.rabbitmq.requested-heartbeat:20")
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.getRequestedHeartbeat()).isEqualTo(20);
@@ -705,11 +797,32 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void customizeRequestedChannelMax() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.requestedChannelMax:12")
+			.withPropertyValues("spring.rabbitmq.requested-channel-max:12")
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.getRequestedChannelMax()).isEqualTo(12);
 			});
+	}
+
+	@ParameterizedTest
+	@ValueSource(classes = { TestConfiguration.class, TestConfiguration6.class })
+	@SuppressWarnings("unchecked")
+	void customizeAllowedListPatterns(Class<?> configuration) {
+		this.contextRunner.withUserConfiguration(configuration)
+			.withPropertyValues("spring.rabbitmq.template.allowed-list-patterns:*")
+			.run((context) -> {
+				MessageConverter messageConverter = context.getBean(RabbitTemplate.class).getMessageConverter();
+				assertThat(messageConverter).extracting("allowedListPatterns")
+					.isInstanceOfSatisfying(Collection.class, (set) -> assertThat(set).contains("*"));
+			});
+	}
+
+	@Test
+	void customizeAllowedListPatternsWhenHasNoAllowedListDeserializingMessageConverter() {
+		this.contextRunner.withUserConfiguration(CustomMessageConverterConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.template.allowed-list-patterns:*")
+			.run((context) -> assertThat(context).getFailure()
+				.hasRootCauseInstanceOf(InvalidConfigurationPropertyValueException.class));
 	}
 
 	@Test
@@ -734,11 +847,21 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void enableSslWithInvalidSslBundleFails() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.ssl.bundle=invalid")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure().hasMessageContaining("SSL bundle name 'invalid' cannot be found");
+			});
+	}
+
+	@Test
 	// Make sure that we at least attempt to load the store
 	void enableSslWithNonExistingKeystoreShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.keyStore=foo",
-					"spring.rabbitmq.ssl.keyStorePassword=secret")
+			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.key-store=foo",
+					"spring.rabbitmq.ssl.key-store-password=secret")
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context).getFailure().hasMessageContaining("foo");
@@ -750,8 +873,8 @@ class RabbitAutoConfigurationTests {
 	// Make sure that we at least attempt to load the store
 	void enableSslWithNonExistingTrustStoreShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.trustStore=bar",
-					"spring.rabbitmq.ssl.trustStorePassword=secret")
+			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.trust-store=bar",
+					"spring.rabbitmq.ssl.trust-store-password=secret")
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context).getFailure().hasMessageContaining("bar");
@@ -762,8 +885,8 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void enableSslWithInvalidKeystoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.keyStore=foo",
-					"spring.rabbitmq.ssl.keyStoreType=fooType")
+			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.key-store=foo",
+					"spring.rabbitmq.ssl.key-store-type=fooType")
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context).getFailure().hasMessageContaining("fooType");
@@ -774,8 +897,8 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void enableSslWithInvalidTrustStoreTypeShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.trustStore=bar",
-					"spring.rabbitmq.ssl.trustStoreType=barType")
+			.withPropertyValues("spring.rabbitmq.ssl.enabled:true", "spring.rabbitmq.ssl.trust-store=bar",
+					"spring.rabbitmq.ssl.trust-store-type=barType")
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context).getFailure().hasMessageContaining("barType");
@@ -784,13 +907,26 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void enableSslWithBundle() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.rabbitmq.ssl.bundle=test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password=password")
+			.run((context) -> {
+				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
+				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
+			});
+	}
+
+	@Test
 	void enableSslWithKeystoreTypeAndTrustStoreTypeShouldWork() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
-					"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
-					"spring.rabbitmq.ssl.keyStoreType=jks", "spring.rabbitmq.ssl.keyStorePassword=secret",
-					"spring.rabbitmq.ssl.trustStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
-					"spring.rabbitmq.ssl.trustStoreType=jks", "spring.rabbitmq.ssl.trustStorePassword=secret")
+					"spring.rabbitmq.ssl.key-store=/org/springframework/boot/autoconfigure/amqp/test.jks",
+					"spring.rabbitmq.ssl.key-store-type=jks", "spring.rabbitmq.ssl.key-store-password=secret",
+					"spring.rabbitmq.ssl.trust-store=/org/springframework/boot/autoconfigure/amqp/test.jks",
+					"spring.rabbitmq.ssl.trust-store-type=jks", "spring.rabbitmq.ssl.trust-store-password=secret")
 			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
@@ -798,7 +934,7 @@ class RabbitAutoConfigurationTests {
 	void enableSslWithValidateServerCertificateFalse(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
-					"spring.rabbitmq.ssl.validateServerCertificate=false")
+					"spring.rabbitmq.ssl.validate-server-certificate=false")
 			.run((context) -> {
 				com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
 				assertThat(rabbitConnectionFactory.isSSL()).isTrue();
@@ -821,12 +957,12 @@ class RabbitAutoConfigurationTests {
 	void enableSslWithValidStoreAlgorithmShouldWork() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
-					"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
-					"spring.rabbitmq.ssl.keyStoreType=jks", "spring.rabbitmq.ssl.keyStorePassword=secret",
-					"spring.rabbitmq.ssl.keyStoreAlgorithm=PKIX",
-					"spring.rabbitmq.ssl.trustStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
-					"spring.rabbitmq.ssl.trustStoreType=jks", "spring.rabbitmq.ssl.trustStorePassword=secret",
-					"spring.rabbitmq.ssl.trustStoreAlgorithm=PKIX")
+					"spring.rabbitmq.ssl.key-store=/org/springframework/boot/autoconfigure/amqp/test.jks",
+					"spring.rabbitmq.ssl.key-store-type=jks", "spring.rabbitmq.ssl.key-store-password=secret",
+					"spring.rabbitmq.ssl.key-store-algorithm=PKIX",
+					"spring.rabbitmq.ssl.trust-store=/org/springframework/boot/autoconfigure/amqp/test.jks",
+					"spring.rabbitmq.ssl.trust-store-type=jks", "spring.rabbitmq.ssl.trust-store-password=secret",
+					"spring.rabbitmq.ssl.trust-store-algorithm=PKIX")
 			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
@@ -834,9 +970,9 @@ class RabbitAutoConfigurationTests {
 	void enableSslWithInvalidKeyStoreAlgorithmShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
-					"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
-					"spring.rabbitmq.ssl.keyStoreType=jks", "spring.rabbitmq.ssl.keyStorePassword=secret",
-					"spring.rabbitmq.ssl.keyStoreAlgorithm=test-invalid-algo")
+					"spring.rabbitmq.ssl.key-store=/org/springframework/boot/autoconfigure/amqp/test.jks",
+					"spring.rabbitmq.ssl.key-store-type=jks", "spring.rabbitmq.ssl.key-store-password=secret",
+					"spring.rabbitmq.ssl.key-store-algorithm=test-invalid-algo")
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context).getFailure().hasMessageContaining("test-invalid-algo");
@@ -848,9 +984,9 @@ class RabbitAutoConfigurationTests {
 	void enableSslWithInvalidTrustStoreAlgorithmShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
-					"spring.rabbitmq.ssl.trustStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
-					"spring.rabbitmq.ssl.trustStoreType=jks", "spring.rabbitmq.ssl.trustStorePassword=secret",
-					"spring.rabbitmq.ssl.trustStoreAlgorithm=test-invalid-algo")
+					"spring.rabbitmq.ssl.trust-store=/org/springframework/boot/autoconfigure/amqp/test.jks",
+					"spring.rabbitmq.ssl.trust-store-type=jks", "spring.rabbitmq.ssl.trust-store-password=secret",
+					"spring.rabbitmq.ssl.trust-store-algorithm=test-invalid-algo")
 			.run((context) -> {
 				assertThat(context).hasFailed();
 				assertThat(context).getFailure().hasMessageContaining("test-invalid-algo");
@@ -1002,6 +1138,16 @@ class RabbitAutoConfigurationTests {
 		@Bean
 		RabbitListenerContainerFactory<?> rabbitListenerContainerFactory() {
 			return mock(SimpleRabbitListenerContainerFactory.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConfiguration6 {
+
+		@Bean
+		MessageConverter messageConverter() {
+			return new SerializerMessageConverter();
 		}
 
 	}
@@ -1273,6 +1419,29 @@ class RabbitAutoConfigurationTests {
 				@Override
 				public List<Address> getAddresses() {
 					return List.of(new Address("rabbit.example.com", 12345), new Address("rabbit2.example.com", 23456));
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration
+	static class CustomMessageConverterConfiguration {
+
+		@Bean
+		MessageConverter messageConverter() {
+			return new MessageConverter() {
+
+				@Override
+				public Message toMessage(Object object, MessageProperties messageProperties)
+						throws MessageConversionException {
+					return new Message(object.toString().getBytes());
+				}
+
+				@Override
+				public Object fromMessage(Message message) throws MessageConversionException {
+					return new String(message.getBody());
 				}
 
 			};

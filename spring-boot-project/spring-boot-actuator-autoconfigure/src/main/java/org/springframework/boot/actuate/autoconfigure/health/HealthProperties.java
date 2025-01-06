@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Properties used to configure the health endpoint and endpoint groups.
@@ -77,7 +78,7 @@ public abstract class HealthProperties {
 	public static class Status {
 
 		/**
-		 * Comma-separated list of health statuses in order of severity.
+		 * List of health statuses in order of severity.
 		 */
 		private List<String> order = new ArrayList<>();
 
@@ -92,7 +93,7 @@ public abstract class HealthProperties {
 		}
 
 		public void setOrder(List<String> statusOrder) {
-			if (statusOrder != null && !statusOrder.isEmpty()) {
+			if (!CollectionUtils.isEmpty(statusOrder)) {
 				this.order = statusOrder;
 			}
 		}

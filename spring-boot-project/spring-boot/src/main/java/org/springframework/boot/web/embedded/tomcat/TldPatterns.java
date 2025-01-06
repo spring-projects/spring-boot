@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +106,7 @@ final class TldPatterns {
 		skipPatterns.add("tagsoup-*.jar");
 		skipPatterns.add("tomcat-api.jar");
 		skipPatterns.add("tomcat-coyote.jar");
+		skipPatterns.add("tomcat-coyote-ffm.jar");
 		skipPatterns.add("tomcat-dbcp.jar");
 		skipPatterns.add("tomcat-i18n-*.jar");
 		skipPatterns.add("tomcat-jdbc.jar");
@@ -195,8 +196,7 @@ final class TldPatterns {
 	static final Set<String> DEFAULT_SCAN;
 
 	static {
-		Set<String> scanPatterns = new LinkedHashSet<>();
-		scanPatterns.addAll(TOMCAT_SCAN);
+		Set<String> scanPatterns = new LinkedHashSet<>(TOMCAT_SCAN);
 		DEFAULT_SCAN = Collections.unmodifiableSet(scanPatterns);
 	}
 

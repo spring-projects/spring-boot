@@ -28,6 +28,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
@@ -40,6 +41,7 @@ import org.springframework.web.servlet.mvc.ParameterizableViewController;
  *
  * @author Andy Wilkinson
  * @author Bruce Brouwer
+ * @author Moritz Halbritter
  * @see WelcomePageNotAcceptableHandlerMapping
  */
 final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
@@ -79,7 +81,13 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	private List<MediaType> getAcceptedMediaTypes(HttpServletRequest request) {
 		String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
 		if (StringUtils.hasText(acceptHeader)) {
-			return MediaType.parseMediaTypes(acceptHeader);
+			try {
+				return MediaType.parseMediaTypes(acceptHeader);
+			}
+			catch (InvalidMediaTypeException ex) {
+				logger.warn("Received invalid Accept header. Assuming all media types are accepted",
+						logger.isDebugEnabled() ? ex : null);
+			}
 		}
 		return MEDIA_TYPES_ALL;
 	}

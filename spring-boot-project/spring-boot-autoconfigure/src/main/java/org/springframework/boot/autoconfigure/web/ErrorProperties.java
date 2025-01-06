@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,11 @@ public class ErrorProperties {
 	 */
 	private IncludeAttribute includeBindingErrors = IncludeAttribute.NEVER;
 
+	/**
+	 * When to include "path" attribute.
+	 */
+	private IncludeAttribute includePath = IncludeAttribute.ALWAYS;
+
 	private final Whitelabel whitelabel = new Whitelabel();
 
 	public String getPath() {
@@ -95,6 +100,14 @@ public class ErrorProperties {
 
 	public void setIncludeBindingErrors(IncludeAttribute includeBindingErrors) {
 		this.includeBindingErrors = includeBindingErrors;
+	}
+
+	public IncludeAttribute getIncludePath() {
+		return this.includePath;
+	}
+
+	public void setIncludePath(IncludeAttribute includePath) {
+		this.includePath = includePath;
 	}
 
 	public Whitelabel getWhitelabel() {

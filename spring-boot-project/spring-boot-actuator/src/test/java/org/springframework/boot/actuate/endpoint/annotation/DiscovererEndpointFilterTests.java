@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
@@ -79,7 +80,7 @@ class DiscovererEndpointFilterTests {
 		TestDiscovererA(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 				Collection<OperationInvokerAdvisor> invokerAdvisors,
 				Collection<EndpointFilter<ExposableEndpoint<Operation>>> filters) {
-			super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
+			super(applicationContext, parameterValueMapper, invokerAdvisors, filters, Collections.emptyList());
 		}
 
 	}
@@ -89,7 +90,7 @@ class DiscovererEndpointFilterTests {
 		TestDiscovererB(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 				Collection<OperationInvokerAdvisor> invokerAdvisors,
 				Collection<EndpointFilter<ExposableEndpoint<Operation>>> filters) {
-			super(applicationContext, parameterValueMapper, invokerAdvisors, filters);
+			super(applicationContext, parameterValueMapper, invokerAdvisors, filters, Collections.emptyList());
 		}
 
 	}

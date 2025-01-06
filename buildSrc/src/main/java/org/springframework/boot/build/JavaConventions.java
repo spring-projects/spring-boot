@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import com.gradle.enterprise.gradleplugin.testretry.TestRetryExtension;
-import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionExtension;
+import com.gradle.develocity.agent.gradle.test.DevelocityTestConfiguration;
+import com.gradle.develocity.agent.gradle.test.PredictiveTestSelectionConfiguration;
+import com.gradle.develocity.agent.gradle.test.TestRetryConfiguration;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
@@ -43,6 +44,7 @@ import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -83,8 +85,8 @@ import org.springframework.util.StringUtils;
  * <ul>
  * <li>Use {@code -parameters}.
  * <li>Treat warnings as errors
- * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and {@code varags}
- * warnings
+ * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and
+ * {@code varargs} warnings
  * </ul>
  * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
  * files and the following manifest entries:
@@ -125,11 +127,12 @@ class JavaConventions {
 	}
 
 	private void configureJarManifestConventions(Project project) {
-		ExtractResources extractLegalResources = project.getTasks()
-			.create("extractLegalResources", ExtractResources.class);
-		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
-		extractLegalResources.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
-		extractLegalResources.property("version", project.getVersion().toString());
+		TaskProvider<ExtractResources> extractLegalResources = project.getTasks()
+			.register("extractLegalResources", ExtractResources.class, (task) -> {
+				task.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
+				task.getResourceNames().set(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
+				task.getProperties().put("version", project.getVersion().toString());
+			});
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 		Set<String> sourceJarTaskNames = sourceSets.stream()
 			.map(SourceSet::getSourcesJarTaskName)
@@ -178,8 +181,10 @@ class JavaConventions {
 	}
 
 	private void configureTestRetries(Test test) {
-		TestRetryExtension testRetry = test.getExtensions().getByType(TestRetryExtension.class);
-		testRetry.getFailOnPassedAfterRetry().set(true);
+		TestRetryConfiguration testRetry = test.getExtensions()
+			.getByType(DevelocityTestConfiguration.class)
+			.getTestRetry();
+		testRetry.getFailOnPassedAfterRetry().set(false);
 		testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 	}
 
@@ -189,8 +194,9 @@ class JavaConventions {
 
 	private void configurePredictiveTestSelection(Test test) {
 		if (isPredictiveTestSelectionEnabled()) {
-			PredictiveTestSelectionExtension predictiveTestSelection = test.getExtensions()
-				.getByType(PredictiveTestSelectionExtension.class);
+			PredictiveTestSelectionConfiguration predictiveTestSelection = test.getExtensions()
+				.getByType(DevelocityTestConfiguration.class)
+				.getPredictiveTestSelection();
 			predictiveTestSelection.getEnabled().convention(true);
 		}
 	}
@@ -239,10 +245,12 @@ class JavaConventions {
 		project.getTasks().withType(Format.class, (Format) -> Format.setEncoding("UTF-8"));
 		project.getPlugins().apply(CheckstylePlugin.class);
 		CheckstyleExtension checkstyle = project.getExtensions().getByType(CheckstyleExtension.class);
-		checkstyle.setToolVersion("8.45.1");
+		checkstyle.setToolVersion("10.12.4");
 		checkstyle.getConfigDirectory().set(project.getRootProject().file("src/checkstyle"));
 		String version = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
+		checkstyleDependencies
+			.add(project.getDependencies().create("com.puppycrawl.tools:checkstyle:" + checkstyle.getToolVersion()));
 		checkstyleDependencies
 			.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
 	}
@@ -255,8 +263,9 @@ class JavaConventions {
 			configuration.setCanBeResolved(false);
 		});
 		configurations
-			.matching((configuration) -> configuration.getName().endsWith("Classpath")
+			.matching((configuration) -> (configuration.getName().endsWith("Classpath")
 					|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
+					&& (!configuration.getName().contains("dokkatoo")))
 			.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		Dependency springBootParent = project.getDependencies()
 			.enforcedPlatform(project.getDependencies()
@@ -288,10 +297,10 @@ class JavaConventions {
 	}
 
 	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
-		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks()
-			.create("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
-					CheckClasspathForProhibitedDependencies.class);
-		checkClasspathForProhibitedDependencies.setClasspath(classpath);
+		TaskProvider<CheckClasspathForProhibitedDependencies> checkClasspathForProhibitedDependencies = project
+			.getTasks()
+			.register("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+					CheckClasspathForProhibitedDependencies.class, (task) -> task.setClasspath(classpath));
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
 	}
 

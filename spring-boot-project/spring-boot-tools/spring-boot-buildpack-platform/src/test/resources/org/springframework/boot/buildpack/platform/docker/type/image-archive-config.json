@@ -1,5 +1,5 @@
 {
-	"config": {
+	"Config": {
 		"Hostname": "",
 		"Domainname": "",
 		"User": "vcap",
@@ -25,8 +25,8 @@
 			"io.buildpacks.stack.id": "org.cloudfoundry.stacks.cflinuxfs3"
 		}
 	},
-	"created": "1980-01-01T00:00:01Z",
-	"history": [
+	"Created": "1980-01-01T00:00:01Z",
+	"History": [
 		{
 
 		},
@@ -169,8 +169,10 @@
 
 		}
 	],
-	"os": "linux",
-	"rootfs": {
+  "Architecture": "amd64",
+	"Os": "linux",
+  "Variant": "v1",
+	"RootFS": {
 		"diff_ids": [
 			"sha256:733a8e5ce32984099ef675fce04730f6e2a6dcfdf5bd292fea01a8f936265342",
 			"sha256:7755b972f0b4f49de73ef5114fb3ba9c69d80f217e80da99f56f0d0a5dcb3d70",

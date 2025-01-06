@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2022 the original author or authors.
+ * Copyright 2021-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,19 @@ public class CacheSpec {
 	}
 
 	/**
+	 * Configures a bind cache using the given {@code action}.
+	 * @param action the action
+	 */
+	public void bind(Action<BindCacheSpec> action) {
+		if (this.cache != null) {
+			throw new GradleException("Each image building cache can be configured only once");
+		}
+		BindCacheSpec spec = this.objectFactory.newInstance(BindCacheSpec.class);
+		action.execute(spec);
+		this.cache = Cache.bind(spec.getSource().get());
+	}
+
+	/**
 	 * Configuration for an image building cache stored in a Docker volume.
 	 */
 	public abstract static class VolumeCacheSpec {
@@ -71,6 +84,20 @@ public class CacheSpec {
 		 */
 		@Input
 		public abstract Property<String> getName();
+
+	}
+
+	/**
+	 * Configuration for an image building cache stored in a bind mount.
+	 */
+	public abstract static class BindCacheSpec {
+
+		/**
+		 * Returns the source of the cache.
+		 * @return the cache source
+		 */
+		@Input
+		public abstract Property<String> getSource();
 
 	}
 

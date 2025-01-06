@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -67,6 +68,9 @@ class PropertyMigration {
 
 	private static Integer determineLineNumber(ConfigurationProperty property) {
 		Origin origin = property.getOrigin();
+		if (origin instanceof PropertySourceOrigin propertySourceOrigin) {
+			origin = propertySourceOrigin.getOrigin();
+		}
 		if (origin instanceof TextResourceOrigin textOrigin) {
 			if (textOrigin.getLocation() != null) {
 				return textOrigin.getLocation().getLine() + 1;
@@ -85,11 +89,8 @@ class PropertyMigration {
 		if (replacementType.equals(currentType)) {
 			return true;
 		}
-		if (replacementType.equals(Duration.class.getName())
-				&& (currentType.equals(Long.class.getName()) || currentType.equals(Integer.class.getName()))) {
-			return true;
-		}
-		return false;
+		return replacementType.equals(Duration.class.getName())
+				&& (currentType.equals(Long.class.getName()) || currentType.equals(Integer.class.getName()));
 	}
 
 	private static String determineType(ConfigurationMetadataProperty metadata) {

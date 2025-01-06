@@ -5,3 +5,4 @@ org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoC
 org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.cassandra.CassandraRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
+optional:org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

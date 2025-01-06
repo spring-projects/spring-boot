@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,14 @@ public interface LoaderClassesWriter {
 	 * @throws IOException if the classes cannot be written
 	 */
 	void writeLoaderClasses() throws IOException;
+
+	/**
+	 * Write the default required spring-boot-loader classes to the JAR.
+	 * @param loaderImplementation the specific implementation to write
+	 * @throws IOException if the classes cannot be written
+	 * @since 3.2.0
+	 */
+	void writeLoaderClasses(LoaderImplementation loaderImplementation) throws IOException;
 
 	/**
 	 * Write custom required spring-boot-loader classes to the JAR.

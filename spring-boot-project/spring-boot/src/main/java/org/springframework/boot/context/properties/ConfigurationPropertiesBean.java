@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -42,8 +41,6 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -104,17 +101,6 @@ public final class ConfigurationPropertiesBean {
 	}
 
 	/**
-	 * Return the property binding method that was used for the bean.
-	 * @return the bind method
-	 * @deprecated since 3.0.8 for removal in 3.3.0 in favor of {@link #asBindTarget} and
-	 * {@link Bindable#getBindMethod}
-	 */
-	@Deprecated(since = "3.0.8", forRemoval = true)
-	public BindMethod getBindMethod() {
-		return BindMethod.from(this.bindTarget.getBindMethod());
-	}
-
-	/**
 	 * Return the {@link ConfigurationProperties} annotation for the bean. The annotation
 	 * may be defined on the bean itself or from the factory method that create the bean
 	 * (usually a {@link Bean @Bean} method).
@@ -171,6 +157,7 @@ public final class ConfigurationPropertiesBean {
 					}
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 		}
@@ -216,9 +203,6 @@ public final class ConfigurationPropertiesBean {
 		if (bindTarget.getBindMethod() == null && factoryMethod != null) {
 			bindTarget = bindTarget.withBindMethod(JAVA_BEAN_BIND_METHOD);
 		}
-		if (bindTarget.getBindMethod() == null) {
-			bindTarget = bindTarget.withBindMethod(deduceBindMethod(bindTarget));
-		}
 		if (bindTarget.getBindMethod() != VALUE_OBJECT_BIND_METHOD) {
 			bindTarget = bindTarget.withExistingValue(bean);
 		}
@@ -240,34 +224,10 @@ public final class ConfigurationPropertiesBean {
 		if (beanFactory.containsBeanDefinition(beanName)) {
 			BeanDefinition beanDefinition = beanFactory.getMergedBeanDefinition(beanName);
 			if (beanDefinition instanceof RootBeanDefinition rootBeanDefinition) {
-				Method resolvedFactoryMethod = rootBeanDefinition.getResolvedFactoryMethod();
-				if (resolvedFactoryMethod != null) {
-					return resolvedFactoryMethod;
-				}
+				return rootBeanDefinition.getResolvedFactoryMethod();
 			}
-			return findFactoryMethodUsingReflection(beanFactory, beanDefinition);
 		}
 		return null;
-	}
-
-	private static Method findFactoryMethodUsingReflection(ConfigurableListableBeanFactory beanFactory,
-			BeanDefinition beanDefinition) {
-		String factoryMethodName = beanDefinition.getFactoryMethodName();
-		String factoryBeanName = beanDefinition.getFactoryBeanName();
-		if (factoryMethodName == null || factoryBeanName == null) {
-			return null;
-		}
-		Class<?> factoryType = beanFactory.getType(factoryBeanName);
-		if (factoryType.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
-			factoryType = factoryType.getSuperclass();
-		}
-		AtomicReference<Method> factoryMethod = new AtomicReference<>();
-		ReflectionUtils.doWithMethods(factoryType, (method) -> {
-			if (method.getName().equals(factoryMethodName)) {
-				factoryMethod.set(method);
-			}
-		});
-		return factoryMethod.get();
 	}
 
 	static ConfigurationPropertiesBean forValueObject(Class<?> beanType, String beanName) {
@@ -340,37 +300,6 @@ public final class ConfigurationPropertiesBean {
 	private static org.springframework.boot.context.properties.bind.BindMethod deduceBindMethod(
 			Constructor<?> bindConstructor) {
 		return (bindConstructor != null) ? VALUE_OBJECT_BIND_METHOD : JAVA_BEAN_BIND_METHOD;
-	}
-
-	/**
-	 * The binding method that is used for the bean.
-	 *
-	 * @deprecated since 3.0.8 for removal in 3.3.0 in favor of
-	 * {@link org.springframework.boot.context.properties.bind.BindMethod}
-	 */
-	@Deprecated(since = "3.0.8", forRemoval = true)
-	public enum BindMethod {
-
-		/**
-		 * Java Bean using getter/setter binding.
-		 */
-		JAVA_BEAN,
-
-		/**
-		 * Value object using constructor binding.
-		 */
-		VALUE_OBJECT;
-
-		static BindMethod from(org.springframework.boot.context.properties.bind.BindMethod bindMethod) {
-			if (bindMethod == null) {
-				return null;
-			}
-			return switch (bindMethod) {
-				case VALUE_OBJECT -> BindMethod.VALUE_OBJECT;
-				case JAVA_BEAN -> BindMethod.JAVA_BEAN;
-			};
-		}
-
 	}
 
 }

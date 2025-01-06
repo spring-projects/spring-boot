@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import io.undertow.Undertow;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -39,8 +39,7 @@ import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.client.reactive.JettyResourceFactory;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 
 /**
  * Configuration classes for reactive web servers
@@ -97,17 +96,10 @@ abstract class ReactiveWebServerFactoryConfiguration {
 	static class EmbeddedJetty {
 
 		@Bean
-		@ConditionalOnMissingBean
-		JettyResourceFactory jettyServerResourceFactory() {
-			return new JettyResourceFactory();
-		}
-
-		@Bean
-		JettyReactiveWebServerFactory jettyReactiveWebServerFactory(JettyResourceFactory resourceFactory,
+		JettyReactiveWebServerFactory jettyReactiveWebServerFactory(
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyReactiveWebServerFactory serverFactory = new JettyReactiveWebServerFactory();
 			serverFactory.getServerCustomizers().addAll(serverCustomizers.orderedStream().toList());
-			serverFactory.setResourceFactory(resourceFactory);
 			return serverFactory;
 		}
 

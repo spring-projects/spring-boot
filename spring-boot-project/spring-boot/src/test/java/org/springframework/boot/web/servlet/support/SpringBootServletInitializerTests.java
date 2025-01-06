@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -119,7 +120,8 @@ class SpringBootServletInitializerTests {
 		new WithConfigurationAnnotation().onStartup(this.servletContext);
 		assertThat(this.servletContext.getAttribute(LoggingApplicationListener.REGISTER_SHUTDOWN_HOOK_PROPERTY))
 			.isEqualTo(false);
-		assertThat(this.application).hasFieldOrPropertyWithValue("registerShutdownHook", false);
+		Object properties = ReflectionTestUtils.getField(this.application, "properties");
+		assertThat(properties).hasFieldOrPropertyWithValue("registerShutdownHook", false);
 	}
 
 	@Test
@@ -228,6 +230,32 @@ class SpringBootServletInitializerTests {
 		assertThat(driversDeregistered).isTrue();
 	}
 
+	@Test
+	void whenServletContextIsDestroyedThenReactorSchedulersAreShutDown() throws ServletException {
+		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
+		given(servletContext.getInitParameterNames()).willReturn(new Vector<String>().elements());
+		given(servletContext.getAttributeNames()).willReturn(new Vector<String>().elements());
+		AtomicBoolean schedulersShutDown = new AtomicBoolean();
+		new SpringBootServletInitializer() {
+
+			@Override
+			protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+				return builder.sources(Config.class);
+			}
+
+			@Override
+			protected void shutDownSharedReactorSchedulers(ServletContext servletContext) {
+				schedulersShutDown.set(true);
+			}
+
+		}.onStartup(servletContext);
+		ArgumentCaptor<ServletContextListener> captor = ArgumentCaptor.forClass(ServletContextListener.class);
+		then(servletContext).should().addListener(captor.capture());
+		captor.getValue().contextDestroyed(new ServletContextEvent(servletContext));
+		assertThat(schedulersShutDown).isTrue();
+	}
+
 	static class PropertySourceVerifyingSpringBootServletInitializer extends SpringBootServletInitializer {
 
 		@Override
@@ -252,7 +280,7 @@ class SpringBootServletInitializerTests {
 
 	}
 
-	private class CustomSpringBootServletInitializer extends MockSpringBootServletInitializer {
+	private final class CustomSpringBootServletInitializer extends MockSpringBootServletInitializer {
 
 		private final CustomSpringApplicationBuilder applicationBuilder = new CustomSpringApplicationBuilder();
 

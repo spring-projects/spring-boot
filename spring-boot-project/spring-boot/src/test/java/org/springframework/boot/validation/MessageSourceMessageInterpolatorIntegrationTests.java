@@ -32,7 +32,7 @@ import org.springframework.context.support.StaticMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Integration tests for {@link MessageSourceMessageInterpolator}.
@@ -85,8 +85,8 @@ class MessageSourceMessageInterpolatorIntegrationTests {
 
 	@Test
 	void recursion() {
-		assertThatThrownBy(() -> validate("recursion"))
-			.hasStackTraceContaining("Circular reference '{recursion -> middle -> recursion}'");
+		assertThatException().isThrownBy(() -> validate("recursion"))
+			.withStackTraceContaining("Circular reference '{recursion -> middle -> recursion}'");
 	}
 
 	@Test

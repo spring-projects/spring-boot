@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,14 +54,14 @@ class ImageArchiveTests extends AbstractJsonTests {
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
 			for (int i = 0; i < EXISTING_IMAGE_LAYER_COUNT; i++) {
-				TarArchiveEntry blankEntry = tar.getNextTarEntry();
+				TarArchiveEntry blankEntry = tar.getNextEntry();
 				assertThat(blankEntry.getName()).isEqualTo("blank_" + i);
 			}
-			TarArchiveEntry layerEntry = tar.getNextTarEntry();
+			TarArchiveEntry layerEntry = tar.getNextEntry();
 			byte[] layerContent = read(tar, layerEntry.getSize());
-			TarArchiveEntry configEntry = tar.getNextTarEntry();
+			TarArchiveEntry configEntry = tar.getNextEntry();
 			byte[] configContent = read(tar, configEntry.getSize());
-			TarArchiveEntry manifestEntry = tar.getNextTarEntry();
+			TarArchiveEntry manifestEntry = tar.getNextEntry();
 			byte[] manifestContent = read(tar, manifestEntry.getSize());
 			assertExpectedLayer(layerEntry, layerContent);
 			assertExpectedConfig(configEntry, configContent);
@@ -72,13 +72,13 @@ class ImageArchiveTests extends AbstractJsonTests {
 	private void assertExpectedLayer(TarArchiveEntry entry, byte[] content) throws Exception {
 		assertThat(entry.getName()).isEqualTo("bb09e17fd1bd2ee47155f1349645fcd9fff31e1247c7ed99cad469f1c16a4216.tar");
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
-			TarArchiveEntry contentEntry = tar.getNextTarEntry();
+			TarArchiveEntry contentEntry = tar.getNextEntry();
 			assertThat(contentEntry.getName()).isEqualTo("/spring/");
 		}
 	}
 
 	private void assertExpectedConfig(TarArchiveEntry entry, byte[] content) throws Exception {
-		assertThat(entry.getName()).isEqualTo("682f8d24b9d9c313d1190a0e955dcb5e65ec9beea40420999839c6f0cbb38382.json");
+		assertThat(entry.getName()).isEqualTo("416c76dc7f691f91e80516ff039e056f32f996b59af4b1cb8114e6ae8171a374.json");
 		String actualJson = new String(content, StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("image-archive-config.json"), StandardCharsets.UTF_8);
 		JSONAssert.assertEquals(expectedJson, actualJson, false);

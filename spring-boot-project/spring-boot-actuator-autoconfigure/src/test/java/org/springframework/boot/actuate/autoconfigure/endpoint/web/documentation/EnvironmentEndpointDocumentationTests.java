@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,12 @@ import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.context.TestPropertySource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.replacePattern;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link EnvironmentEndpoint}.
@@ -64,6 +63,9 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	private static final FieldDescriptor activeProfiles = fieldWithPath("activeProfiles")
 		.description("Names of the active profiles, if any.");
 
+	private static final FieldDescriptor defaultProfiles = fieldWithPath("defaultProfiles")
+		.description("Names of the default profiles, if any.");
+
 	private static final FieldDescriptor propertySources = fieldWithPath("propertySources")
 		.description("Property sources in order of precedence.");
 
@@ -71,15 +73,14 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 		.description("Name of the property source.");
 
 	@Test
-	void env() throws Exception {
-		this.mockMvc.perform(get("/actuator/env"))
-			.andExpect(status().isOk())
-			.andDo(document("env/all",
+	void env() {
+		assertThat(this.mvc.get().uri("/actuator/env")).hasStatusOk()
+			.apply(document("env/all",
 					preprocessResponse(
 							replacePattern(Pattern.compile(
 									"org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"), ""),
 							filterProperties()),
-					responseFields(activeProfiles, propertySources, propertySourceName,
+					responseFields(activeProfiles, defaultProfiles, propertySources, propertySourceName,
 							fieldWithPath("propertySources.[].properties")
 								.description("Properties in the property source keyed by property name."),
 							fieldWithPath("propertySources.[].properties.*.value")
@@ -90,10 +91,9 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	}
 
 	@Test
-	void singlePropertyFromEnv() throws Exception {
-		this.mockMvc.perform(get("/actuator/env/com.example.cache.max-size"))
-			.andExpect(status().isOk())
-			.andDo(document("env/single",
+	void singlePropertyFromEnv() {
+		assertThat(this.mvc.get().uri("/actuator/env/com.example.cache.max-size")).hasStatusOk()
+			.apply(document("env/single",
 					preprocessResponse(replacePattern(Pattern
 						.compile("org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/"), "")),
 					responseFields(
@@ -101,7 +101,7 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 								.optional(),
 							fieldWithPath("property.source").description("Name of the source of the property."),
 							fieldWithPath("property.value").description("Value of the property."), activeProfiles,
-							propertySources, propertySourceName,
+							defaultProfiles, propertySources, propertySourceName,
 							fieldWithPath("propertySources.[].property")
 								.description("Property in the property source, if any.")
 								.optional(),
@@ -138,7 +138,7 @@ class EnvironmentEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	}
 
 	private boolean retainKey(String key) {
-		return key.startsWith("java.") || key.equals("JAVA_HOME") || key.startsWith("com.example");
+		return key.startsWith("java.") || key.equals("JAVA_HOME") || key.startsWith("com.example.");
 	}
 
 	@Configuration(proxyBeanMethods = false)

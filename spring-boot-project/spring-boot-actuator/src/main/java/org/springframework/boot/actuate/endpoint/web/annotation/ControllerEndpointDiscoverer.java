@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
@@ -31,7 +32,6 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer.ControllerEndpointDiscovererRuntimeHints;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -43,8 +43,11 @@ import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
  *
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated since 3.3.0 in favor of {@code @Endpoint} and {@code @WebEndpoint} support
  */
-@ImportRuntimeHints(ControllerEndpointDiscovererRuntimeHints.class)
+@ImportRuntimeHints(ControllerEndpointDiscoverer.ControllerEndpointDiscovererRuntimeHints.class)
+@Deprecated(since = "3.3.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableControllerEndpoint, Operation>
 		implements ControllerEndpointsSupplier {
 
@@ -58,7 +61,7 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	 */
 	public ControllerEndpointDiscoverer(ApplicationContext applicationContext, List<PathMapper> endpointPathMappers,
 			Collection<EndpointFilter<ExposableControllerEndpoint>> filters) {
-		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters);
+		super(applicationContext, ParameterValueMapper.NONE, Collections.emptyList(), filters, Collections.emptyList());
 		this.endpointPathMappers = endpointPathMappers;
 	}
 
@@ -69,10 +72,10 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	}
 
 	@Override
-	protected ExposableControllerEndpoint createEndpoint(Object endpointBean, EndpointId id, boolean enabledByDefault,
+	protected ExposableControllerEndpoint createEndpoint(Object endpointBean, EndpointId id, Access defaultAccess,
 			Collection<Operation> operations) {
 		String rootPath = PathMapper.getRootPath(this.endpointPathMappers, id);
-		return new DiscoveredControllerEndpoint(this, endpointBean, id, rootPath, enabledByDefault);
+		return new DiscoveredControllerEndpoint(this, endpointBean, id, rootPath, defaultAccess);
 	}
 
 	@Override
@@ -84,6 +87,11 @@ public class ControllerEndpointDiscoverer extends EndpointDiscoverer<ExposableCo
 	@Override
 	protected OperationKey createOperationKey(Operation operation) {
 		throw new IllegalStateException("ControllerEndpoints must not declare operations");
+	}
+
+	@Override
+	protected boolean isInvocable(ExposableControllerEndpoint endpoint) {
+		return true;
 	}
 
 	static class ControllerEndpointDiscovererRuntimeHints implements RuntimeHintsRegistrar {

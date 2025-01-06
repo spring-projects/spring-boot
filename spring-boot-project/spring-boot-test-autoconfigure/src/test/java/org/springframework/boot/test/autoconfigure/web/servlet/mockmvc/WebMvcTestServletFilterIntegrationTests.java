@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link WebMvcTest @WebMvcTest} servlet filter registration.
@@ -34,11 +33,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebMvcTestServletFilterIntegrationTests {
 
 	@Autowired
-	private MockMvc mvc;
+	private MockMvcTester mvc;
 
 	@Test
-	void shouldApplyFilter() throws Exception {
-		this.mvc.perform(get("/one")).andExpect(header().string("x-test", "abc"));
+	void shouldApplyFilter() {
+		assertThat(this.mvc.get().uri("/one")).hasHeader("x-test", "abc");
 	}
 
 }

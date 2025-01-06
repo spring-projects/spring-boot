@@ -1,0 +1,154 @@
+:navtitle: Documentation
+[[documentation]]
+= Documentation Overview
+
+This section provides a brief overview of Spring Boot reference documentation.
+It serves as a map for the rest of the document.
+
+
+
+[[documentation.first-steps]]
+== First Steps
+
+If you are getting started with Spring Boot or 'Spring' in general, start with the following topics:
+
+* *From scratch:* xref:index.adoc[Overview] | xref:system-requirements.adoc[Requirements] | xref:installing.adoc[Installation]
+* *Tutorial:* xref:tutorial:first-application/index.adoc[Part 1] | xref:tutorial:first-application/index.adoc#getting-started.first-application.code[Part 2]
+* *Running your example:* xref:tutorial:first-application/index.adoc#getting-started.first-application.run[Part 1] | xref:tutorial:first-application/index.adoc#getting-started.first-application.executable-jar[Part 2]
+
+
+
+[[documentation.upgrading]]
+== Upgrading From an Earlier Version
+
+You should always ensure that you are running a {url-github-wiki}/Supported-Versions[supported version] of Spring Boot.
+
+Depending on the version that you are upgrading to, you can find some additional tips here:
+
+* *From 1.x to 2.x:* xref:upgrading.adoc#upgrading.from-1x[Upgrading from 1.x]
+* *From 2.x:* xref:upgrading.adoc#upgrading.from-2x[Upgrading from 2.x]
+* *To a new feature release:* xref:upgrading.adoc#upgrading.to-feature[Upgrading to New Feature Release]
+* *Spring Boot CLI:* xref:upgrading.adoc#upgrading.cli[Upgrading the Spring Boot CLI]
+
+
+
+[[documentation.using]]
+== Developing With Spring Boot
+
+Ready to actually start using Spring Boot? xref:reference:using/index.adoc[We have you covered]:
+
+* *Build systems:* xref:reference:using/build-systems.adoc#using.build-systems.maven[Maven] | xref:reference:using/build-systems.adoc#using.build-systems.gradle[Gradle] | xref:reference:using/build-systems.adoc#using.build-systems.ant[Ant] | xref:reference:using/build-systems.adoc#using.build-systems.starters[Starters]
+* *Best practices:* xref:reference:using/structuring-your-code.adoc[Code Structure] | xref:reference:using/configuration-classes.adoc[@Configuration] | xref:reference:using/auto-configuration.adoc[@EnableAutoConfiguration] | xref:reference:using/spring-beans-and-dependency-injection.adoc[Beans and Dependency Injection]
+* *Running your code:* xref:reference:using/running-your-application.adoc#using.running-your-application.from-an-ide[IDE] | xref:reference:using/running-your-application.adoc#using.running-your-application.as-a-packaged-application[Packaged] | xref:reference:using/running-your-application.adoc#using.running-your-application.with-the-maven-plugin[Maven] | xref:reference:using/running-your-application.adoc#using.running-your-application.with-the-gradle-plugin[Gradle]
+* *Packaging your app:* xref:reference:using/packaging-for-production.adoc[Production jars]
+* *Spring Boot CLI:* xref:cli:index.adoc[Using the CLI]
+
+
+
+[[documentation.features]]
+== Learning About Spring Boot Features
+
+Need more details about Spring Boot's core features?
+xref:reference:features/index.adoc[The following content is for you]:
+
+* *Spring Application:* xref:reference:features/spring-application.adoc[SpringApplication]
+* *External Configuration:* xref:reference:features/external-config.adoc[External Configuration]
+* *Profiles:* xref:reference:features/profiles.adoc[Profiles]
+* *Logging:* xref:reference:features/logging.adoc[Logging]
+
+
+
+[[documentation.web]]
+== Web
+
+If you develop Spring Boot web applications, take a look at the following content:
+
+* *Servlet Web Applications:* xref:reference:web/servlet.adoc[Spring MVC, Jersey, Embedded Servlet Containers]
+* *Reactive Web Applications:* xref:reference:web/reactive.adoc[Spring Webflux, Embedded Servlet Containers]
+* *Graceful Shutdown:* xref:reference:web/graceful-shutdown.adoc[Graceful Shutdown]
+* *Spring Security:* xref:reference:web/spring-security.adoc[Default Security Configuration, Auto-configuration for OAuth2, SAML]
+* *Spring Session:* xref:reference:web/spring-session.adoc[Auto-configuration for Spring Session]
+* *Spring HATEOAS:* xref:reference:web/spring-hateoas.adoc[Auto-configuration for Spring HATEOAS]
+
+
+
+[[documentation.data]]
+== Data
+
+If your application deals with a datastore, you can see how to configure that here:
+
+* *SQL:* xref:reference:data/sql.adoc[Configuring a SQL Datastore, Embedded Database support, Connection pools, and more.]
+* *NOSQL:* xref:reference:data/nosql.adoc[Auto-configuration for NOSQL stores such as Redis, MongoDB, Neo4j, and others.]
+
+
+
+[[documentation.messaging]]
+== Messaging
+
+If your application uses any messaging protocol, see one or more of the following sections:
+
+* *JMS:* xref:reference:messaging/jms.adoc[Auto-configuration for ActiveMQ and Artemis, Sending and Receiving messages through JMS]
+* *AMQP:* xref:reference:messaging/amqp.adoc[Auto-configuration for RabbitMQ]
+* *Kafka:* xref:reference:messaging/kafka.adoc[Auto-configuration for Spring Kafka]
+* *Pulsar:* xref:reference:messaging/pulsar.adoc[Auto-configuration for Spring for Apache Pulsar]
+* *RSocket:* xref:reference:messaging/rsocket.adoc[Auto-configuration for Spring Framework's RSocket Support]
+* *Spring Integration:* xref:reference:messaging/spring-integration.adoc[Auto-configuration for Spring Integration]
+
+
+
+[[documentation.io]]
+== IO
+
+If your application needs IO capabilities, see one or more of the following sections:
+
+* *Caching:* xref:reference:io/caching.adoc[Caching support with EhCache, Hazelcast, Infinispan, and more]
+* *Quartz:* xref:reference:io/quartz.adoc[Quartz Scheduling]
+* *Mail:* xref:reference:io/email.adoc[Sending Email]
+* *Validation:* xref:reference:io/validation.adoc[JSR-303 Validation]
+* *REST Clients:* xref:reference:io/rest-client.adoc[Calling REST Services with RestTemplate and WebClient]
+* *Webservices:* xref:reference:io/webservices.adoc[Auto-configuration for Spring Web Services]
+* *JTA:* xref:reference:io/jta.adoc[Distributed Transactions with JTA]
+
+
+
+[[documentation.container-images]]
+== Container Images
+
+Spring Boot provides first-class support for building efficient container images. You can read more about it here:
+
+* *Efficient Container Images:* xref:reference:packaging/container-images/efficient-images.adoc[Tips to optimize container images such as Docker images]
+* *Dockerfiles:* xref:reference:packaging/container-images/dockerfiles.adoc[Building container images using dockerfiles]
+* *Cloud Native Buildpacks:* xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[Support for Cloud Native Buildpacks with Maven and Gradle]
+
+
+
+[[documentation.actuator]]
+== Moving to Production
+
+When you are ready to push your Spring Boot application to production, we have xref:how-to:actuator.adoc[some tricks] that you might like:
+
+* *Management endpoints:* xref:reference:actuator/endpoints.adoc[Overview]
+* *Connection options:* xref:reference:actuator/monitoring.adoc[HTTP] | xref:reference:actuator/jmx.adoc[JMX]
+* *Monitoring:* xref:reference:actuator/metrics.adoc[Metrics] | xref:reference:actuator/auditing.adoc[Auditing] | xref:reference:actuator/http-exchanges.adoc[HTTP Exchanges] | xref:reference:actuator/process-monitoring.adoc[Process]
+
+
+
+[[documentation.packaging]]
+== Optimizing for Production
+
+Spring Boot applications can be optimized for production using technologies described in these sections:
+
+* *Efficient Deployments:* xref:reference:packaging/efficient.adoc#packaging.efficient.unpacking[Unpacking the Executable JAR]
+* *GraalVM Native Images:* xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[Introduction] | xref:reference:packaging/native-image/advanced-topics.adoc[Advanced Topics] | xref:how-to:native-image/developing-your-first-application.adoc[Getting Started] | xref:how-to:native-image/testing-native-applications.adoc[Testing]
+* *Class Data Sharing:* xref:reference:packaging/class-data-sharing.adoc[Overview]
+* *Checkpoint and Restore* xref:reference:packaging/checkpoint-restore.adoc[Overview]
+
+
+[[documentation.advanced]]
+== Advanced Topics
+
+Finally, we have a few topics for more advanced users:
+
+* *Spring Boot Applications Deployment:* xref:how-to:deployment/cloud.adoc[Cloud Deployment] | xref:how-to:deployment/installing.adoc[OS Service]
+* *Build tool plugins:* xref:maven-plugin:index.adoc[Maven] | xref:gradle-plugin:index.adoc[Gradle]
+* *Appendix:* xref:appendix:application-properties/index.adoc[Application Properties] | xref:specification:configuration-metadata/index.adoc[Configuration Metadata] | xref:appendix:auto-configuration-classes/index.adoc[Auto-configuration Classes] | xref:appendix:test-auto-configuration/index.adoc[Test Auto-configuration Annotations] | xref:specification:executable-jar/index.adoc[Executable Jars] | xref:appendix:dependency-versions/index.adoc[Dependency Versions]

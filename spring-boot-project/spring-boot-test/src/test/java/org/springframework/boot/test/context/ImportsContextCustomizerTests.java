@@ -33,6 +33,7 @@ import org.springframework.boot.context.annotation.DeterminableImports;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ImportsContextCustomizer}.
  *
  * @author Andy Wilkinson
+ * @author Laurent Martelli
  */
 class ImportsContextCustomizerTests {
 
@@ -78,6 +80,30 @@ class ImportsContextCustomizerTests {
 	void customizersForTestClassesWithDifferentJUnitAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstJUnitAnnotatedTestClass.class))
 			.isEqualTo(new ImportsContextCustomizer(SecondJUnitAnnotatedTestClass.class));
+	}
+
+	@Test
+	void customizersForClassesWithDifferentImportsAreNotEqual() {
+		assertThat(new ImportsContextCustomizer(FirstAnnotatedTestClass.class))
+			.isNotEqualTo(new ImportsContextCustomizer(SecondAnnotatedTestClass.class));
+	}
+
+	@Test
+	void customizersForClassesWithDifferentMetaImportsAreNotEqual() {
+		assertThat(new ImportsContextCustomizer(FirstMetaAnnotatedTestClass.class))
+			.isNotEqualTo(new ImportsContextCustomizer(SecondMetaAnnotatedTestClass.class));
+	}
+
+	@Test
+	void customizersForClassesWithDifferentAliasedImportsAreNotEqual() {
+		assertThat(new ImportsContextCustomizer(FirstAliasAnnotatedTestClass.class))
+			.isNotEqualTo(new ImportsContextCustomizer(SecondAliasAnnotatedTestClass.class));
+	}
+
+	@Test
+	void importsCanBeScatteredOnMultipleAnnotations() {
+		assertThat(new ImportsContextCustomizer(SingleImportAnnotationTestClass.class))
+			.isEqualTo(new ImportsContextCustomizer(MultipleImportAnnotationTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)
@@ -152,6 +178,17 @@ class ImportsContextCustomizerTests {
 
 	}
 
+	@Import({ FirstImportedClass.class, SecondImportedClass.class })
+	static class SingleImportAnnotationTestClass {
+
+	}
+
+	@FirstMetaImport
+	@Import(SecondImportedClass.class)
+	static class MultipleImportAnnotationTestClass {
+
+	}
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Indicator1 {
 
@@ -159,6 +196,65 @@ class ImportsContextCustomizerTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Indicator2 {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import(AliasFor.class)
+	public @interface AliasedImport {
+
+		@AliasFor(annotation = Import.class)
+		Class<?>[] value();
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import(FirstImportedClass.class)
+	public @interface FirstMetaImport {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Import(SecondImportedClass.class)
+	public @interface SecondMetaImport {
+
+	}
+
+	static class FirstImportedClass {
+
+	}
+
+	static class SecondImportedClass {
+
+	}
+
+	@AliasedImport(FirstImportedClass.class)
+	static class FirstAliasAnnotatedTestClass {
+
+	}
+
+	@AliasedImport(SecondImportedClass.class)
+	static class SecondAliasAnnotatedTestClass {
+
+	}
+
+	@FirstMetaImport
+	static class FirstMetaAnnotatedTestClass {
+
+	}
+
+	@SecondMetaImport
+	static class SecondMetaAnnotatedTestClass {
+
+	}
+
+	@Import(FirstImportedClass.class)
+	static class FirstAnnotatedTestClass {
+
+	}
+
+	@Import(SecondImportedClass.class)
+	static class SecondAnnotatedTestClass {
 
 	}
 

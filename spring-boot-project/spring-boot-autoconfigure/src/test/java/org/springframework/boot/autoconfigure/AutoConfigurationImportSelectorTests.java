@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,22 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -34,6 +41,8 @@ import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DeferredImportSelector.Group;
+import org.springframework.context.annotation.DeferredImportSelector.Group.Entry;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.mock.env.MockEnvironment;
@@ -50,7 +59,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class AutoConfigurationImportSelectorTests {
 
-	private final TestAutoConfigurationImportSelector importSelector = new TestAutoConfigurationImportSelector();
+	private final TestAutoConfigurationImportSelector importSelector = new TestAutoConfigurationImportSelector(null);
 
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
@@ -60,9 +69,7 @@ class AutoConfigurationImportSelectorTests {
 
 	@BeforeEach
 	void setup() {
-		this.importSelector.setBeanFactory(this.beanFactory);
-		this.importSelector.setEnvironment(this.environment);
-		this.importSelector.setResourceLoader(new DefaultResourceLoader());
+		setupImportSelector(this.importSelector);
 	}
 
 	@Test
@@ -152,6 +159,17 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	void removedExclusionsAreApplied() {
+		TestAutoConfigurationImportSelector importSelector = new TestAutoConfigurationImportSelector(
+				TestAutoConfiguration.class);
+		setupImportSelector(importSelector);
+		AnnotationMetadata metadata = AnnotationMetadata.introspect(BasicEnableAutoConfiguration.class);
+		assertThat(importSelector.selectImports(metadata)).contains(ReplacementAutoConfiguration.class.getName());
+		this.environment.setProperty("spring.autoconfigure.exclude", DeprecatedAutoConfiguration.class.getName());
+		assertThat(importSelector.selectImports(metadata)).doesNotContain(ReplacementAutoConfiguration.class.getName());
+	}
+
+	@Test
 	void nonAutoConfigurationClassExclusionsShouldThrowException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
@@ -208,6 +226,22 @@ class AutoConfigurationImportSelectorTests {
 		assertThat(this.importSelector.getExclusionFilter().test("com.example.C")).isTrue();
 	}
 
+	@Test
+	void soringConsidersReplacements() {
+		TestAutoConfigurationImportSelector importSelector = new TestAutoConfigurationImportSelector(
+				TestAutoConfiguration.class);
+		setupImportSelector(importSelector);
+		AnnotationMetadata metadata = AnnotationMetadata.introspect(BasicEnableAutoConfiguration.class);
+		assertThat(importSelector.selectImports(metadata)).containsExactly(
+				AfterDeprecatedAutoConfiguration.class.getName(), ReplacementAutoConfiguration.class.getName());
+		Group group = BeanUtils.instantiateClass(importSelector.getImportGroup());
+		((BeanFactoryAware) group).setBeanFactory(this.beanFactory);
+		group.process(metadata, importSelector);
+		Stream<Entry> imports = StreamSupport.stream(group.selectImports().spliterator(), false);
+		assertThat(imports.map(Entry::getImportClassName)).containsExactly(ReplacementAutoConfiguration.class.getName(),
+				AfterDeprecatedAutoConfiguration.class.getName());
+	}
+
 	private String[] selectImports(Class<?> source) {
 		return this.importSelector.selectImports(AnnotationMetadata.introspect(source));
 	}
@@ -216,9 +250,19 @@ class AutoConfigurationImportSelectorTests {
 		return ImportCandidates.load(AutoConfiguration.class, getClass().getClassLoader()).getCandidates();
 	}
 
-	private class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
+	private void setupImportSelector(TestAutoConfigurationImportSelector importSelector) {
+		importSelector.setBeanFactory(this.beanFactory);
+		importSelector.setEnvironment(this.environment);
+		importSelector.setResourceLoader(new DefaultResourceLoader());
+	}
+
+	private final class TestAutoConfigurationImportSelector extends AutoConfigurationImportSelector {
 
 		private AutoConfigurationImportEvent lastEvent;
+
+		TestAutoConfigurationImportSelector(Class<?> autoConfigurationAnnotation) {
+			super(autoConfigurationAnnotation);
+		}
 
 		@Override
 		protected List<AutoConfigurationImportFilter> getAutoConfigurationImportFilters() {
@@ -269,54 +313,73 @@ class AutoConfigurationImportSelectorTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private class TestConfiguration {
+	private final class TestConfiguration {
 
 	}
 
 	@EnableAutoConfiguration
-	private class BasicEnableAutoConfiguration {
+	private final class BasicEnableAutoConfiguration {
 
 	}
 
 	@EnableAutoConfiguration(exclude = FreeMarkerAutoConfiguration.class)
-	private class EnableAutoConfigurationWithClassExclusions {
+	private final class EnableAutoConfigurationWithClassExclusions {
 
 	}
 
 	@SpringBootApplication(exclude = FreeMarkerAutoConfiguration.class)
-	private class SpringBootApplicationWithClassExclusions {
+	private final class SpringBootApplicationWithClassExclusions {
 
 	}
 
 	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
-	private class EnableAutoConfigurationWithClassNameExclusions {
+	private final class EnableAutoConfigurationWithClassNameExclusions {
 
 	}
 
 	@EnableAutoConfiguration(exclude = MustacheAutoConfiguration.class,
 			excludeName = "org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration")
-	private class EnableAutoConfigurationWithClassAndClassNameExclusions {
+	private final class EnableAutoConfigurationWithClassAndClassNameExclusions {
 
 	}
 
 	@EnableAutoConfiguration(exclude = TestConfiguration.class)
-	private class EnableAutoConfigurationWithFaultyClassExclude {
+	private final class EnableAutoConfigurationWithFaultyClassExclude {
 
 	}
 
 	@EnableAutoConfiguration(
 			excludeName = "org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration")
-	private class EnableAutoConfigurationWithFaultyClassNameExclude {
+	private final class EnableAutoConfigurationWithFaultyClassNameExclude {
 
 	}
 
 	@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.DoesNotExist1")
-	private class EnableAutoConfigurationWithAbsentClassNameExclude {
+	private final class EnableAutoConfigurationWithAbsentClassNameExclude {
 
 	}
 
 	@SpringBootApplication(excludeName = "org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration")
-	private class SpringBootApplicationWithClassNameExclusions {
+	private final class SpringBootApplicationWithClassNameExclusions {
+
+	}
+
+	static class DeprecatedAutoConfiguration {
+
+	}
+
+	static class ReplacementAutoConfiguration {
+
+	}
+
+	@AutoConfigureAfter(DeprecatedAutoConfiguration.class)
+	static class AfterDeprecatedAutoConfiguration {
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface TestAutoConfiguration {
 
 	}
 

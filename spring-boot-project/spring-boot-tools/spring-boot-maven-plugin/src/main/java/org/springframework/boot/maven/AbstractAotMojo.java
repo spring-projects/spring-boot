@@ -53,6 +53,7 @@ import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Omar YAYA
  * @since 3.0.0
  */
 public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
@@ -94,6 +95,15 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.aot.compilerArguments")
 	private String compilerArguments;
+
+	/**
+	 * Return Maven execution session.
+	 * @return session
+	 * @since 3.0.10
+	 */
+	protected final MavenSession getSession() {
+		return this.session;
+	}
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -148,10 +158,16 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 				options.add(releaseVersion);
 			}
 			else {
-				options.add("--source");
-				options.add(compilerConfiguration.getSourceMajorVersion());
-				options.add("--target");
-				options.add(compilerConfiguration.getTargetMajorVersion());
+				String source = compilerConfiguration.getSourceMajorVersion();
+				if (source != null) {
+					options.add("--source");
+					options.add(source);
+				}
+				String target = compilerConfiguration.getTargetMajorVersion();
+				if (target != null) {
+					options.add("--target");
+					options.add(target);
+				}
 			}
 			options.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);
@@ -211,7 +227,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		}
 
 		boolean hasReportedErrors() {
-			return this.message.length() > 0;
+			return !this.message.isEmpty();
 		}
 
 		@Override

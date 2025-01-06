@@ -39,7 +39,7 @@ class HttpComponentsClientHttpConnectorFactory
 
 	@Override
 	public HttpComponentsClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
-		HttpAsyncClientBuilder builder = HttpAsyncClients.custom();
+		HttpAsyncClientBuilder builder = HttpAsyncClients.custom().useSystemProperties();
 		if (sslBundle != null) {
 			SslOptions options = sslBundle.getOptions();
 			SSLContext sslContext = sslBundle.createSslContext();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MariaDbEnvironment {
 
@@ -52,7 +53,7 @@ class MariaDbEnvironment {
 		Assert.state(!env.containsKey("MYSQL_RANDOM_ROOT_PASSWORD"), "MYSQL_RANDOM_ROOT_PASSWORD is not supported");
 		Assert.state(!env.containsKey("MARIADB_ROOT_PASSWORD_HASH"), "MARIADB_ROOT_PASSWORD_HASH is not supported");
 		boolean allowEmpty = env.containsKey("MARIADB_ALLOW_EMPTY_PASSWORD")
-				|| env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD");
+				|| env.containsKey("MYSQL_ALLOW_EMPTY_PASSWORD") || env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("MARIADB_PASSWORD");
 		password = (password != null) ? password : env.get("MYSQL_PASSWORD");
 		password = (password != null) ? password : env.get("MARIADB_ROOT_PASSWORD");

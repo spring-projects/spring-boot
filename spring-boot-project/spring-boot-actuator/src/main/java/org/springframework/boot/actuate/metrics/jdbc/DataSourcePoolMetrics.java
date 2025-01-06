@@ -110,12 +110,8 @@ public class DataSourcePoolMetrics implements MeterBinder {
 
 		@Override
 		public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
-			DataSourcePoolMetadata metadata = cache.get(dataSource);
-			if (metadata == null) {
-				metadata = this.metadataProvider.getDataSourcePoolMetadata(dataSource);
-				cache.put(dataSource, metadata);
-			}
-			return metadata;
+			return cache.computeIfAbsent(dataSource,
+					(key) -> this.metadataProvider.getDataSourcePoolMetadata(dataSource));
 		}
 
 	}

@@ -1,0 +1,10 @@
+services:
+  database:
+    image: '{imageName}'
+    ports:
+      - '3306'
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=verysecret'
+      - 'MYSQL_USER=myuser'
+      - 'MYSQL_PASSWORD=secret'
+      - 'MYSQL_DATABASE=mydatabase'

@@ -84,10 +84,10 @@ class ResolvedDependencies {
 	}
 
 	void resolvedArtifacts(Provider<Set<ResolvedArtifactResult>> resolvedArtifacts) {
-		this.artifactFiles.addAll(resolvedArtifacts
-			.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getFile).collect(Collectors.toList())));
-		this.artifactIds.addAll(resolvedArtifacts
-			.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getId).collect(Collectors.toList())));
+		this.artifactFiles.addAll(
+				resolvedArtifacts.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getFile).toList()));
+		this.artifactIds.addAll(
+				resolvedArtifacts.map((artifacts) -> artifacts.stream().map(ResolvedArtifactResult::getId).toList()));
 	}
 
 	DependencyDescriptor find(File file) {

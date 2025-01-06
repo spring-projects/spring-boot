@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class CorrelationIdConverterTests {
 		@Override
 		public ReadOnlyStringMap getContextData() {
 			return new JdkMapAdapterStringMap(
-					Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
+					Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"), true);
 		}
 
 	}

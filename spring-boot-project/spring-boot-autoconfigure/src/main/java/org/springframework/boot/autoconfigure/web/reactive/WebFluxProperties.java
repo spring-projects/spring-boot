@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ConfigurationProperties properties} for Spring WebFlux.
+ * {@link ConfigurationProperties Properties} for Spring WebFlux.
  *
  * @author Brian Clozel
  * @author Vedran Pavic
@@ -99,17 +99,20 @@ public class WebFluxProperties {
 	public static class Format {
 
 		/**
-		 * Date format to use, for example 'dd/MM/yyyy'.
+		 * Date format to use, for example 'dd/MM/yyyy'. Used for formatting of
+		 * java.util.Date and java.time.LocalDate.
 		 */
 		private String date;
 
 		/**
-		 * Time format to use, for example 'HH:mm:ss'.
+		 * Time format to use, for example 'HH:mm:ss'. Used for formatting of java.time's
+		 * LocalTime and OffsetTime.
 		 */
 		private String time;
 
 		/**
-		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'.
+		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'. Used for formatting
+		 * of java.time's LocalDateTime, OffsetDateTime, and ZonedDateTime.
 		 */
 		private String dateTime;
 
@@ -142,7 +145,7 @@ public class WebFluxProperties {
 	public static class Problemdetails {
 
 		/**
-		 * Whether RFC 7807 Problem Details support should be enabled.
+		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
 		private boolean enabled = false;
 

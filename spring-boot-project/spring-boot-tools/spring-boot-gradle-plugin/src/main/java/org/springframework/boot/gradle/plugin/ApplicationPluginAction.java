@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -34,8 +33,9 @@ import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
-import org.gradle.jvm.application.tasks.CreateStartScripts;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.run.BootRun;
 
@@ -57,7 +57,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 			.register("bootStartScripts", CreateStartScripts.class,
 					(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
-		binCopySpec.setFileMode(0755);
+		configureFilePermissions(binCopySpec, 0755);
 		distribution.getContents().with(binCopySpec);
 		applyApplicationDefaultJvmArgsToRunTasks(project.getTasks(), javaApplication);
 	}
@@ -89,14 +89,14 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 			}
 		});
 		createStartScripts.getConventionMapping()
-			.map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
+			.map("outputDir", () -> project.getLayout().getBuildDirectory().dir("bootScripts").get().getAsFile());
 		createStartScripts.getConventionMapping().map("applicationName", javaApplication::getApplicationName);
 		createStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
 	}
 
 	private CopySpec artifactFilesToLibCopySpec(Project project, Configuration configuration) {
 		CopySpec copySpec = project.copySpec().into("lib").from(artifactFiles(configuration));
-		copySpec.setFileMode(0644);
+		configureFilePermissions(copySpec, 0644);
 		return copySpec;
 	}
 
@@ -122,6 +122,20 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		catch (IOException ex) {
 			throw new GradleException("Failed to read '" + name + "'", ex);
 		}
+	}
+
+	private void configureFilePermissions(CopySpec copySpec, int mode) {
+		if (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0) {
+			copySpec.filePermissions((filePermissions) -> filePermissions.unix(Integer.toString(mode, 8)));
+		}
+		else {
+			configureFileMode(copySpec, mode);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void configureFileMode(CopySpec copySpec, int mode) {
+		copySpec.setFileMode(mode);
 	}
 
 }

@@ -1,8 +1,10 @@
+import org.springframework.boot.build.properties.BuildProperties
+import org.springframework.boot.build.properties.BuildType
+
 plugins {
 	id "java"
 	id "eclipse"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.integration-test"
 }
 
@@ -49,7 +51,7 @@ dependencies {
 
 task fullJar(type: Jar) {
 	dependsOn configurations.loader
-	classifier = "full"
+	archiveClassifier = "full"
 	entryCompression = "stored"
 	from(configurations.runtimeClasspath) {
 		into "BOOT-INF/lib"
@@ -66,14 +68,14 @@ task fullJar(type: Jar) {
 	}
 	manifest {
 		attributes(
-			"Main-Class": "org.springframework.boot.loader.JarLauncher",
+			"Main-Class": "org.springframework.boot.loader.launch.JarLauncher",
 			"Start-Class": "org.springframework.boot.cli.SpringCli"
 		)
 	}
 }
 
 def configureArchive(archive) {
-	archive.classifier = "bin"
+	archive.archiveClassifier = "bin"
 	archive.into "spring-${project.version}"
 	archive.from(fullJar) {
 		rename {
@@ -82,16 +84,16 @@ def configureArchive(archive) {
 		into "lib/"
 	}
 	archive.from(file("src/main/content")) {
-		dirMode = 0755
-		fileMode = 0644
+		dirPermissions { unix(0755) }
+		filePermissions { unix(0644) }
 	}
 	archive.from(file("src/main/executablecontent")) {
-		fileMode = 0755
+		filePermissions { unix(0755) }
 	}
 }
 
 task zip(type: Zip) {
-	classifier = "bin"
+	archiveClassifier = "bin"
 	configureArchive it
 }
 
@@ -105,17 +107,27 @@ task tar(type: Tar) {
 	configureArchive it
 }
 
-task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
-	dependsOn tar
-	outputDir = file("${buildDir}/homebrew")
-	template = file("src/main/homebrew/spring-boot.rb")
-	archive = tar.archiveFile
-}
+if (BuildProperties.get(project).buildType() == BuildType.OPEN_SOURCE) {
+	task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
+		dependsOn tar
+		outputDir = layout.buildDirectory.dir("homebrew")
+		template = file("src/main/homebrew/spring-boot.rb")
+		archive = tar.archiveFile
+	}
 
-def homebrewFormulaArtifact = artifacts.add("archives", file("${buildDir}/homebrew/spring-boot.rb")) {
-	type "rb"
-	classifier "homebrew"
-	builtBy "homebrewFormula"
+	def homebrewFormulaArtifact = artifacts.add("archives", file(layout.buildDirectory.file("homebrew/spring-boot.rb"))) {
+		type = "rb"
+		classifier = "homebrew"
+		builtBy "homebrewFormula"
+	}
+
+	publishing {
+		publications {
+			getByName("maven") {
+				artifact homebrewFormulaArtifact
+			}
+		}
+	}
 }
 
 publishing {
@@ -124,7 +136,6 @@ publishing {
 			artifact fullJar
 			artifact tar
 			artifact zip
-			artifact homebrewFormulaArtifact
 		}
 	}
 }

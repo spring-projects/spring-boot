@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,12 @@
 package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+
+import org.springframework.boot.configurationprocessor.support.ConventionUtils;
 
 /**
  * Configuration meta-data.
@@ -35,13 +33,6 @@ import java.util.Set;
  * @see ItemMetadata
  */
 public class ConfigurationMetadata {
-
-	private static final Set<Character> SEPARATORS;
-
-	static {
-		List<Character> chars = Arrays.asList('-', '_');
-		SEPARATORS = Collections.unmodifiableSet(new HashSet<>(chars));
-	}
 
 	private final Map<String, List<ItemMetadata>> items;
 
@@ -136,6 +127,9 @@ public class ConfigurationMetadata {
 					if (deprecation.getLevel() != null) {
 						matchingDeprecation.setLevel(deprecation.getLevel());
 					}
+					if (deprecation.getSince() != null) {
+						matchingDeprecation.setSince(deprecation.getSince());
+					}
 				}
 			}
 		}
@@ -181,29 +175,9 @@ public class ConfigurationMetadata {
 
 	public static String nestedPrefix(String prefix, String name) {
 		String nestedPrefix = (prefix != null) ? prefix : "";
-		String dashedName = toDashedCase(name);
-		nestedPrefix += (nestedPrefix == null || nestedPrefix.isEmpty()) ? dashedName : "." + dashedName;
+		String dashedName = ConventionUtils.toDashedCase(name);
+		nestedPrefix += nestedPrefix.isEmpty() ? dashedName : "." + dashedName;
 		return nestedPrefix;
-	}
-
-	static String toDashedCase(String name) {
-		StringBuilder dashed = new StringBuilder();
-		Character previous = null;
-		for (int i = 0; i < name.length(); i++) {
-			char current = name.charAt(i);
-			if (SEPARATORS.contains(current)) {
-				dashed.append("-");
-			}
-			else if (Character.isUpperCase(current) && previous != null && !SEPARATORS.contains(previous)) {
-				dashed.append("-").append(current);
-			}
-			else {
-				dashed.append(current);
-			}
-			previous = current;
-
-		}
-		return dashed.toString().toLowerCase(Locale.ENGLISH);
 	}
 
 	private static <T extends Comparable<T>> List<T> flattenValues(Map<?, List<T>> map) {

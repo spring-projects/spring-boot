@@ -50,7 +50,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -117,8 +117,8 @@ class HibernateMetricsAutoConfigurationTests {
 			.withUserConfiguration(NonHibernateEntityManagerFactoryConfiguration.class)
 			.run((context) -> {
 				// ensure EntityManagerFactory is not a Hibernate SessionFactory
-				assertThatThrownBy(() -> context.getBean(EntityManagerFactory.class).unwrap(SessionFactory.class))
-					.isInstanceOf(PersistenceException.class);
+				assertThatExceptionOfType(PersistenceException.class)
+					.isThrownBy(() -> context.getBean(EntityManagerFactory.class).unwrap(SessionFactory.class));
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				assertThat(registry.find("hibernate.statements").meter()).isNull();
 			});

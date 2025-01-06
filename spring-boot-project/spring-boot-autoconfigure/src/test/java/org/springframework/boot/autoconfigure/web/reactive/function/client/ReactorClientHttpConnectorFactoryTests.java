@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 
 /**
  * Tests for {@link ReactorClientHttpConnectorFactory}.

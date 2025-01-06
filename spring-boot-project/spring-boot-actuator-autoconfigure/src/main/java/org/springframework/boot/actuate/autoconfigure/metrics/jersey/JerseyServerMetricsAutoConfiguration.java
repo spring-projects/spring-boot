@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,25 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.jersey;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jersey.server.AnnotationFinder;
-import io.micrometer.core.instrument.binder.jersey.server.DefaultJerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.JerseyTagsProvider;
-import io.micrometer.core.instrument.binder.jersey.server.MetricsApplicationEventListener;
 import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.observation.ObservationRegistry;
+import org.glassfish.jersey.micrometer.server.JerseyObservationConvention;
+import org.glassfish.jersey.micrometer.server.ObservationApplicationEventListener;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 
 /**
@@ -50,13 +43,14 @@ import org.springframework.core.annotation.Order;
  * @author Michael Weirauch
  * @author Michael Simons
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  * @since 2.1.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
+@AutoConfiguration(after = { ObservationAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
-@ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
-@EnableConfigurationProperties(MetricsProperties.class)
+@ConditionalOnClass({ ResourceConfig.class, ObservationApplicationEventListener.class })
+@ConditionalOnBean({ ResourceConfig.class, ObservationRegistry.class })
+@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
 public class JerseyServerMetricsAutoConfiguration {
 
 	private final ObservationProperties observationProperties;
@@ -66,17 +60,11 @@ public class JerseyServerMetricsAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(JerseyTagsProvider.class)
-	public DefaultJerseyTagsProvider jerseyTagsProvider() {
-		return new DefaultJerseyTagsProvider();
-	}
-
-	@Bean
-	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
-			JerseyTagsProvider tagsProvider) {
+	ResourceConfigCustomizer jerseyServerObservationResourceConfigCustomizer(ObservationRegistry observationRegistry,
+			ObjectProvider<JerseyObservationConvention> jerseyObservationConvention) {
 		String metricName = this.observationProperties.getHttp().getServer().getRequests().getName();
-		return (config) -> config.register(new MetricsApplicationEventListener(meterRegistry, tagsProvider, metricName,
-				true, new AnnotationUtilsAnnotationFinder()));
+		return (config) -> config.register(new ObservationApplicationEventListener(observationRegistry, metricName,
+				jerseyObservationConvention.getIfAvailable()));
 	}
 
 	@Bean
@@ -87,18 +75,6 @@ public class JerseyServerMetricsAutoConfiguration {
 				() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
 		return MeterFilter.maximumAllowableTags(metricName, "uri",
 				metricsProperties.getWeb().getServer().getMaxUriTags(), filter);
-	}
-
-	/**
-	 * An {@link AnnotationFinder} that uses {@link AnnotationUtils}.
-	 */
-	private static class AnnotationUtilsAnnotationFinder implements AnnotationFinder {
-
-		@Override
-		public <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
-			return AnnotationUtils.findAnnotation(annotatedElement, annotationType);
-		}
-
 	}
 
 }

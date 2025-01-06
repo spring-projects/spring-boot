@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import liquibase.changelog.ChangeSet.ExecType;
@@ -33,10 +32,9 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link LiquibaseEndpoint}.
@@ -46,12 +44,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void liquibase() throws Exception {
+	void liquibase() {
 		FieldDescriptor changeSetsField = fieldWithPath("contexts.*.liquibaseBeans.*.changeSets")
 			.description("Change sets made by the Liquibase beans, keyed by bean name.");
-		this.mockMvc.perform(get("/actuator/liquibase"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("liquibase",
+		assertThat(this.mvc.get().uri("/actuator/liquibase")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("liquibase",
 					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
 							changeSetsField)
 						.andWithPrefix("contexts.*.liquibaseBeans.*.changeSets[].", getChangeSetFieldDescriptors())
@@ -59,7 +56,7 @@ class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTe
 	}
 
 	private List<FieldDescriptor> getChangeSetFieldDescriptors() {
-		return Arrays.asList(fieldWithPath("author").description("Author of the change set."),
+		return List.of(fieldWithPath("author").description("Author of the change set."),
 				fieldWithPath("changeLog").description("Change log that contains the change set."),
 				fieldWithPath("comments").description("Comments on the change set."),
 				fieldWithPath("contexts").description("Contexts of the change set."),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockServletContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Tests for {@link ConditionEvaluationReportLoggingListener}.
@@ -58,7 +58,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
-		withDebugLogging(() -> context.refresh());
+		withDebugLogging(context::refresh);
 		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
 	}
 
@@ -67,7 +67,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
+		assertThatException().isThrownBy(context::refresh)
 			.satisfies((ex) -> withDebugLogging(() -> context
 				.publishEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
 		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
@@ -78,7 +78,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
+		assertThatException().isThrownBy(context::refresh)
 			.satisfies((ex) -> withInfoLogging(() -> context
 				.publishEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
 		assertThat(output).doesNotContain("CONDITIONS EVALUATION REPORT")

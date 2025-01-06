@@ -1,0 +1,50 @@
+antora:
+  extensions:
+  - require: '@springio/antora-extensions/override-navigation-builder-extension'
+  - require: '@springio/antora-extensions/static-page-extension'
+  - require: '@springio/antora-xref-extension'
+    stub:
+    - appendix:.*
+    - api:.*
+    - reference:.*
+  - require: '@springio/antora-zip-contents-collector-extension'
+    always_include:
+    - classifier: local-aggregate-content
+      name: test
+    locations:
+    - project/build/generated/docs/antora-content/test-${version}-${name}-${classifier}.zip
+    - project/build/generated/docs/antora-dependencies-content/test-dependency/test-${version}-${name}-${classifier}.zip
+    version_file: gradle.properties
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: boot
+site:
+  title: Spring Boot
+content:
+  sources:
+  - url: ./../../../../..
+    branches: HEAD
+    version: unspecified
+    start_paths:
+    - project/src/docs/antora
+asciidoc:
+  sourcemap: true
+  attributes:
+    chomp: all
+    hide-uri-scheme: '@'
+    javadoc-location: xref:api:java/
+    page-pagination: ''
+    page-stackoverflow-url: https://stackoverflow.com/tags/spring-boot
+    tabs-sync-option: '@'
+  extensions:
+  - '@asciidoctor/tabs'
+  - '@springio/asciidoctor-extensions'
+  - '@springio/asciidoctor-extensions/configuration-properties-extension'
+  - '@springio/asciidoctor-extensions/javadoc-extension'
+  - '@springio/asciidoctor-extensions/section-ids-extension'
+urls:
+  latest_version_segment: ''
+runtime:
+  log:
+    failure_level: warn
+output:
+  dir: ./../../../site

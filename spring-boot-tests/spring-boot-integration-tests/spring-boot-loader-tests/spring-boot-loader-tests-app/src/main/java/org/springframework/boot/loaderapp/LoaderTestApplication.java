@@ -17,8 +17,13 @@
 package org.springframework.boot.loaderapp;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import jakarta.servlet.ServletContext;
@@ -27,6 +32,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
 @SpringBootApplication
@@ -49,7 +56,18 @@ public class LoaderTestApplication {
 			String message = (!Arrays.equals(resourceContent, directContent)) ? "NO MATCH"
 					: directContent.length + " BYTES";
 			System.out.println(">>>>> " + message + " from " + resourceUrl);
+			testGh7161();
 		};
+	}
+
+	private void testGh7161() {
+		try {
+			Resource resource = new ClassPathResource("gh-7161");
+			Path path = Paths.get(resource.getURI());
+			System.out.println(">>>>> gh-7161 " + Files.list(path).toList());
+		} catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
 	}
 
 	public static void main(String[] args) {

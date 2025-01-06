@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.wavefront.sdk.common.clients.service.token.TokenService.Type;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -56,6 +58,11 @@ public class WavefrontProperties {
 	 * host.
 	 */
 	private String apiToken;
+
+	/**
+	 * Type of the API token.
+	 */
+	private TokenType apiTokenType;
 
 	/**
 	 * Application configuration.
@@ -132,7 +139,7 @@ public class WavefrontProperties {
 	 * @return the API token
 	 */
 	public String getApiTokenOrThrow() {
-		if (this.apiToken == null && !usesProxy()) {
+		if (this.apiTokenType != TokenType.NO_TOKEN && this.apiToken == null && !usesProxy()) {
 			throw new InvalidConfigurationPropertyValueException("management.wavefront.api-token", null,
 					"This property is mandatory whenever publishing directly to the Wavefront API");
 		}
@@ -165,6 +172,31 @@ public class WavefrontProperties {
 
 	public void setTraceDerivedCustomTagKeys(Set<String> traceDerivedCustomTagKeys) {
 		this.traceDerivedCustomTagKeys = traceDerivedCustomTagKeys;
+	}
+
+	public TokenType getApiTokenType() {
+		return this.apiTokenType;
+	}
+
+	public void setApiTokenType(TokenType apiTokenType) {
+		this.apiTokenType = apiTokenType;
+	}
+
+	/**
+	 * Returns the {@link Type Wavefront token type}.
+	 * @return the Wavefront token type
+	 * @since 3.2.0
+	 */
+	public Type getWavefrontApiTokenType() {
+		if (this.apiTokenType == null) {
+			return usesProxy() ? Type.NO_TOKEN : Type.WAVEFRONT_API_TOKEN;
+		}
+		return switch (this.apiTokenType) {
+			case NO_TOKEN -> Type.NO_TOKEN;
+			case WAVEFRONT_API_TOKEN -> Type.WAVEFRONT_API_TOKEN;
+			case CSP_API_TOKEN -> Type.CSP_API_TOKEN;
+			case CSP_CLIENT_CREDENTIALS -> Type.CSP_CLIENT_CREDENTIALS;
+		};
 	}
 
 	public static class Application {
@@ -318,6 +350,21 @@ public class WavefrontProperties {
 			 */
 			private String globalPrefix;
 
+			/**
+			 * Whether to report histogram distributions aggregated into minute intervals.
+			 */
+			private boolean reportMinuteDistribution = true;
+
+			/**
+			 * Whether to report histogram distributions aggregated into hour intervals.
+			 */
+			private boolean reportHourDistribution;
+
+			/**
+			 * Whether to report histogram distributions aggregated into day intervals.
+			 */
+			private boolean reportDayDistribution;
+
 			public String getGlobalPrefix() {
 				return this.globalPrefix;
 			}
@@ -342,7 +389,57 @@ public class WavefrontProperties {
 				throw new UnsupportedOperationException("Use Sender.setBatchSize(int) instead");
 			}
 
+			public boolean isReportMinuteDistribution() {
+				return this.reportMinuteDistribution;
+			}
+
+			public void setReportMinuteDistribution(boolean reportMinuteDistribution) {
+				this.reportMinuteDistribution = reportMinuteDistribution;
+			}
+
+			public boolean isReportHourDistribution() {
+				return this.reportHourDistribution;
+			}
+
+			public void setReportHourDistribution(boolean reportHourDistribution) {
+				this.reportHourDistribution = reportHourDistribution;
+			}
+
+			public boolean isReportDayDistribution() {
+				return this.reportDayDistribution;
+			}
+
+			public void setReportDayDistribution(boolean reportDayDistribution) {
+				this.reportDayDistribution = reportDayDistribution;
+			}
+
 		}
+
+	}
+
+	/**
+	 * Wavefront token type.
+	 *
+	 * @since 3.2.0
+	 */
+	public enum TokenType {
+
+		/**
+		 * No token.
+		 */
+		NO_TOKEN,
+		/**
+		 * Wavefront API token.
+		 */
+		WAVEFRONT_API_TOKEN,
+		/**
+		 * CSP API token.
+		 */
+		CSP_API_TOKEN,
+		/**
+		 * CSP client credentials.
+		 */
+		CSP_CLIENT_CREDENTIALS
 
 	}
 

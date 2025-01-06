@@ -30,6 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class KairosPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<KairosProperties, KairosPropertiesConfigAdapter> {
 
+	KairosPropertiesConfigAdapterTests() {
+		super(KairosPropertiesConfigAdapter.class);
+	}
+
 	@Override
 	protected KairosProperties createProperties() {
 		return new KairosProperties();

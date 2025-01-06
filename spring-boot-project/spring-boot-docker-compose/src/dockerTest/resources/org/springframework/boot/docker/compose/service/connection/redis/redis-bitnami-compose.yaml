@@ -1,0 +1,7 @@
+services:
+  redis:
+    image: '{imageName}'
+    ports:
+      - '6379'
+    environment:
+      - 'ALLOW_EMPTY_PASSWORD=yes'

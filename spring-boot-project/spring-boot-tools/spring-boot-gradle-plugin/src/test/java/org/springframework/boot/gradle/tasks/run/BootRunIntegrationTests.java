@@ -146,6 +146,22 @@ class BootRunIntegrationTests {
 		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
 	}
 
+	@TestTemplate
+	void developmentOnlyDependenciesAreOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void testAndDevelopmentOnlyDependenciesAreOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
+	}
+
 	private void copyMainClassApplication() throws IOException {
 		copyApplication("main");
 	}

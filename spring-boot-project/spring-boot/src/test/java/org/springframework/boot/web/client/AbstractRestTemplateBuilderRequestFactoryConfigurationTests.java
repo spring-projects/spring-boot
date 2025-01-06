@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ abstract class AbstractRestTemplateBuilderRequestFactoryConfigurationTests<T ext
 	@SuppressWarnings("unchecked")
 	void connectTimeoutCanBeConfiguredOnFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(this.factoryType)
-			.setConnectTimeout(Duration.ofMillis(1234))
+			.connectTimeout(Duration.ofMillis(1234))
 			.build()
 			.getRequestFactory();
 		assertThat(connectTimeout((T) requestFactory)).isEqualTo(1234);
@@ -55,7 +55,7 @@ abstract class AbstractRestTemplateBuilderRequestFactoryConfigurationTests<T ext
 	@SuppressWarnings("unchecked")
 	void readTimeoutCanBeConfiguredOnFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(this.factoryType)
-			.setReadTimeout(Duration.ofMillis(1234))
+			.readTimeout(Duration.ofMillis(1234))
 			.build()
 			.getRequestFactory();
 		assertThat(readTimeout((T) requestFactory)).isEqualTo(1234);
@@ -64,7 +64,7 @@ abstract class AbstractRestTemplateBuilderRequestFactoryConfigurationTests<T ext
 	@Test
 	@SuppressWarnings("unchecked")
 	void connectTimeoutCanBeConfiguredOnDetectedFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder.setConnectTimeout(Duration.ofMillis(1234))
+		ClientHttpRequestFactory requestFactory = this.builder.connectTimeout(Duration.ofMillis(1234))
 			.build()
 			.getRequestFactory();
 		assertThat(connectTimeout((T) requestFactory)).isEqualTo(1234);
@@ -73,7 +73,7 @@ abstract class AbstractRestTemplateBuilderRequestFactoryConfigurationTests<T ext
 	@Test
 	@SuppressWarnings("unchecked")
 	void readTimeoutCanBeConfiguredOnDetectedFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder.setReadTimeout(Duration.ofMillis(1234))
+		ClientHttpRequestFactory requestFactory = this.builder.readTimeout(Duration.ofMillis(1234))
 			.build()
 			.getRequestFactory();
 		assertThat(readTimeout((T) requestFactory)).isEqualTo(1234);

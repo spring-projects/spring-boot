@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.build.context.properties;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
@@ -36,11 +36,9 @@ import org.springframework.boot.build.context.properties.Snippet.Config;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-public class DocumentConfigurationProperties extends DefaultTask {
+public abstract class DocumentConfigurationProperties extends DefaultTask {
 
 	private FileCollection configurationPropertyMetadata;
-
-	private File outputDir;
 
 	@InputFiles
 	@PathSensitive(PathSensitivity.RELATIVE)
@@ -53,13 +51,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	@OutputDirectory
-	public File getOutputDir() {
-		return this.outputDir;
-	}
-
-	public void setOutputDir(File outputDir) {
-		this.outputDir = outputDir;
-	}
+	public abstract DirectoryProperty getOutputDir();
 
 	@TaskAction
 	void documentConfigurationProperties() throws IOException {
@@ -78,10 +70,12 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		snippets.add("application-properties.security", "Security Properties", this::securityPrefixes);
 		snippets.add("application-properties.rsocket", "RSocket Properties", this::rsocketPrefixes);
 		snippets.add("application-properties.actuator", "Actuator Properties", this::actuatorPrefixes);
-		snippets.add("application-properties.docker-compose", "Docker Compose Properties", this::dockerComposePrefixes);
 		snippets.add("application-properties.devtools", "Devtools Properties", this::devtoolsPrefixes);
+		snippets.add("application-properties.docker-compose", "Docker Compose Properties", this::dockerComposePrefixes);
+		snippets.add("application-properties.testcontainers", "Testcontainers Properties",
+				this::testcontainersPrefixes);
 		snippets.add("application-properties.testing", "Testing Properties", this::testingPrefixes);
-		snippets.writeTo(this.outputDir.toPath());
+		snippets.writeTo(getOutputDir().getAsFile().get().toPath());
 	}
 
 	private void corePrefixes(Config config) {
@@ -171,6 +165,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		prefix.accept("spring.integration");
 		prefix.accept("spring.jms");
 		prefix.accept("spring.kafka");
+		prefix.accept("spring.pulsar");
 		prefix.accept("spring.rabbitmq");
 		prefix.accept("spring.hazelcast");
 		prefix.accept("spring.webservices");
@@ -212,6 +207,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 
 	private void actuatorPrefixes(Config prefix) {
 		prefix.accept("management");
+		prefix.accept("micrometer");
 	}
 
 	private void dockerComposePrefixes(Config prefix) {
@@ -223,7 +219,11 @@ public class DocumentConfigurationProperties extends DefaultTask {
 	}
 
 	private void testingPrefixes(Config prefix) {
-		prefix.accept("spring.test");
+		prefix.accept("spring.test.");
+	}
+
+	private void testcontainersPrefixes(Config prefix) {
+		prefix.accept("spring.testcontainers.");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class RedisProperties {
 	private int database = 0;
 
 	/**
-	 * Connection URL. Overrides host, port, and password. User is ignored. Example:
+	 * Connection URL. Overrides host, port, username, and password. Example:
 	 * redis://user:password@example.com:6379
 	 */
 	private String url;
@@ -322,8 +322,8 @@ public class RedisProperties {
 	public static class Cluster {
 
 		/**
-		 * Comma-separated list of "host:port" pairs to bootstrap from. This represents an
-		 * "initial" list of cluster nodes and is required to have at least one entry.
+		 * List of "host:port" pairs to bootstrap from. This represents an "initial" list
+		 * of cluster nodes and is required to have at least one entry.
 		 */
 		private List<String> nodes;
 
@@ -362,7 +362,7 @@ public class RedisProperties {
 		private String master;
 
 		/**
-		 * Comma-separated list of "host:port" pairs.
+		 * List of "host:port" pairs.
 		 */
 		private List<String> nodes;
 

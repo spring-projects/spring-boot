@@ -100,15 +100,14 @@ class ConfigDataLoaders {
 	private <R extends ConfigDataResource> ConfigDataLoader<R> getLoader(ConfigDataLoaderContext context, R resource) {
 		ConfigDataLoader<R> result = null;
 		for (int i = 0; i < this.loaders.size(); i++) {
-			ConfigDataLoader<?> candidate = this.loaders.get(i);
+			ConfigDataLoader<R> candidate = this.loaders.get(i);
 			if (this.resourceTypes.get(i).isInstance(resource)) {
-				ConfigDataLoader<R> loader = (ConfigDataLoader<R>) candidate;
-				if (loader.isLoadable(context, resource)) {
+				if (candidate.isLoadable(context, resource)) {
 					if (result != null) {
 						throw new IllegalStateException("Multiple loaders found for resource '" + resource + "' ["
 								+ candidate.getClass().getName() + "," + result.getClass().getName() + "]");
 					}
-					result = loader;
+					result = candidate;
 				}
 			}
 		}

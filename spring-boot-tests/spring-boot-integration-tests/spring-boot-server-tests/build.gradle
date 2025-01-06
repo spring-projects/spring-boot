@@ -1,6 +1,5 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.integration-test"
 }
 
@@ -30,7 +29,7 @@ dependencies {
 }
 
 task syncTestRepository(type: Sync) {
-	destinationDir = file("${buildDir}/test-repository")
+	destinationDir = file(layout.buildDirectory.dir("test-repository"))
 	from {
 		configurations.testRepository
 	}
@@ -38,12 +37,12 @@ task syncTestRepository(type: Sync) {
 
 task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
 	sourceDirectory = file("spring-boot-server-tests-app")
-	destinationDirectory = file("${buildDir}/spring-boot-server-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-server-tests-app"))
 }
 
 task buildApps(type: GradleBuild) {
 	dependsOn syncAppSource, syncTestRepository
-	dir = "${buildDir}/spring-boot-server-tests-app"
+	dir = layout.buildDirectory.dir("spring-boot-server-tests-app")
 	startParameter.buildCacheEnabled = false
 	tasks = [
 		"jettyBootJar",
@@ -56,5 +55,17 @@ task buildApps(type: GradleBuild) {
 }
 
 intTest {
+	inputs.files(
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-jetty.war"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-resources.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat.war"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow.war")
+	)
+		.withPropertyName("applicationArchives")
+		.withPathSensitivity(PathSensitivity.RELATIVE)
+		.withNormalizer(ClasspathNormalizer)
 	dependsOn buildApps
 }

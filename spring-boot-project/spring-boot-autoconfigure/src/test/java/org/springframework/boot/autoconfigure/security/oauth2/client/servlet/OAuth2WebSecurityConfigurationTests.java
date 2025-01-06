@@ -48,6 +48,7 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.filter.CompositeFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -68,7 +69,7 @@ class OAuth2WebSecurityConfigurationTests {
 			.run((context) -> {
 				ClientRegistrationRepository expected = context.getBean(ClientRegistrationRepository.class);
 				ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils.getField(
-						getFilters(context, OAuth2LoginAuthenticationFilter.class).get(0),
+						getSecurityFilters(context, OAuth2LoginAuthenticationFilter.class).get(0),
 						"clientRegistrationRepository");
 				assertThat(isEqual(expected.findByRegistrationId("first"), actual.findByRegistrationId("first")))
 					.isTrue();
@@ -85,7 +86,7 @@ class OAuth2WebSecurityConfigurationTests {
 			.run((context) -> {
 				ClientRegistrationRepository expected = context.getBean(ClientRegistrationRepository.class);
 				ClientRegistrationRepository actual = (ClientRegistrationRepository) ReflectionTestUtils.getField(
-						getFilters(context, OAuth2AuthorizationCodeGrantFilter.class).get(0),
+						getSecurityFilters(context, OAuth2AuthorizationCodeGrantFilter.class).get(0),
 						"clientRegistrationRepository");
 				assertThat(isEqual(expected.findByRegistrationId("first"), actual.findByRegistrationId("first")))
 					.isTrue();
@@ -98,8 +99,8 @@ class OAuth2WebSecurityConfigurationTests {
 	void securityConfigurerBacksOffWhenClientRegistrationBeanAbsent() {
 		this.contextRunner.withUserConfiguration(TestConfig.class, OAuth2WebSecurityConfiguration.class)
 			.run((context) -> {
-				assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
-				assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
+				assertThat(getSecurityFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
+				assertThat(getSecurityFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 			});
 	}
 
@@ -124,8 +125,8 @@ class OAuth2WebSecurityConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
 			.withUserConfiguration(TestSecurityFilterChainConfiguration.class, OAuth2WebSecurityConfiguration.class)
 			.run((context) -> {
-				assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
-				assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
+				assertThat(getSecurityFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
+				assertThat(getSecurityFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 				assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
 			});
 	}
@@ -137,8 +138,8 @@ class OAuth2WebSecurityConfigurationTests {
 					OAuth2WebSecurityConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class))
 			.run((context) -> {
-				assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
-				assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
+				assertThat(getSecurityFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
+				assertThat(getSecurityFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 			});
 	}
 
@@ -164,11 +165,29 @@ class OAuth2WebSecurityConfigurationTests {
 			});
 	}
 
-	private List<Filter> getFilters(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
-		FilterChainProxy filterChain = (FilterChainProxy) context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
-		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
-		List<Filter> filters = filterChains.get(0).getFilters();
-		return filters.stream().filter(filter::isInstance).toList();
+	private List<Filter> getSecurityFilters(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
+		return getSecurityFilterChain(context).getFilters().stream().filter(filter::isInstance).toList();
+	}
+
+	private SecurityFilterChain getSecurityFilterChain(AssertableWebApplicationContext context) {
+		Filter springSecurityFilterChain = context.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
+		FilterChainProxy filterChainProxy = getFilterChainProxy(springSecurityFilterChain);
+		SecurityFilterChain securityFilterChain = filterChainProxy.getFilterChains().get(0);
+		return securityFilterChain;
+	}
+
+	private FilterChainProxy getFilterChainProxy(Filter filter) {
+		if (filter instanceof FilterChainProxy filterChainProxy) {
+			return filterChainProxy;
+		}
+		if (filter instanceof CompositeFilter) {
+			List<?> filters = (List<?>) ReflectionTestUtils.getField(filter, "filters");
+			return (FilterChainProxy) filters.stream()
+				.filter(FilterChainProxy.class::isInstance)
+				.findFirst()
+				.orElseThrow();
+		}
+		throw new IllegalStateException("No FilterChainProxy found");
 	}
 
 	private boolean isEqual(ClientRegistration reg1, ClientRegistration reg2) {

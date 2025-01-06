@@ -38,7 +38,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.log.LogMessage;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
@@ -60,7 +59,6 @@ import org.springframework.web.servlet.view.groovy.GroovyMarkupViewResolver;
 @AutoConfiguration(after = WebMvcAutoConfiguration.class)
 @ConditionalOnClass(MarkupTemplateEngine.class)
 @EnableConfigurationProperties(GroovyTemplateProperties.class)
-@ImportRuntimeHints(GroovyTemplateRuntimeHints.class)
 public class GroovyTemplateAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GroovyTemplateAutoConfiguration.class);

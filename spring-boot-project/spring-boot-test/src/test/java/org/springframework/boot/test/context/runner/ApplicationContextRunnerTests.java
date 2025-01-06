@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.context.runner;
 
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * Tests for {@link ApplicationContextRunner}.
@@ -31,6 +32,17 @@ class ApplicationContextRunnerTests extends
 	@Override
 	protected ApplicationContextRunner get() {
 		return new ApplicationContextRunner();
+	}
+
+	@Override
+	protected ApplicationContextRunner getWithAdditionalContextInterface() {
+		return new ApplicationContextRunner(TestAnnotationConfigApplicationContext::new,
+				AdditionalContextInterface.class);
+	}
+
+	static class TestAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext
+			implements AdditionalContextInterface {
+
 	}
 
 }

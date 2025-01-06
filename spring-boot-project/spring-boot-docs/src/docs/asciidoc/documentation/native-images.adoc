@@ -1,9 +1,0 @@
-[[documentation.native-images]]
-== GraalVM Native Images
-Spring Boot applications can be converted into native executables using GraalVM.
-You can read more about our native image support here:
-
-* *GraalVM Native Images:* <<native-image#native-image.introducing-graalvm-native-images, Introduction>> | <<native-image#native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments, Key Differences with the JVM>> | <<native-image#native-image.introducing-graalvm-native-images.understanding-aot-processing, Ahead-of-Time Processing>>
-* *Getting Started:* <<native-image#native-image.developing-your-first-application.buildpacks, Buildpacks>> | <<native-image#native-image.developing-your-first-application.native-build-tools, Native Build Tools>>
-* *Testing:* <<native-image#native-image.testing.with-the-jvm, JVM>> | <<native-image#native-image.testing.with-native-build-tools, Native Build Tools>>
-* *Advanced Topics:* <<native-image#native-image.advanced.nested-configuration-properties, Nested Configuration Properties>> | <<native-image#native-image.advanced.converting-executable-jars, Converting JARs>> | <<native-image#native-image.advanced.known-limitations, Known Limitations>>

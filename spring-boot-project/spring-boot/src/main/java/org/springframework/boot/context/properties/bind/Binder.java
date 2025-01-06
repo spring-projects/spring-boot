@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.beans.PropertyEditorRegistry;
@@ -270,8 +272,8 @@ public class Binder {
 
 	/**
 	 * Bind the specified target {@link Class} using this binder's
-	 * {@link ConfigurationPropertySource property sources} or create a new instance using
-	 * the type of the {@link Bindable} if the result of the binding is {@code null}.
+	 * {@link ConfigurationPropertySource property sources} or create a new instance of
+	 * the specified target {@link Class} if the result of the binding is {@code null}.
 	 * @param name the configuration property name to bind
 	 * @param target the target class
 	 * @param <T> the bound type
@@ -360,23 +362,20 @@ public class Binder {
 			result = context.getConverter().convert(result, target);
 		}
 		if (result == null && create) {
-			result = create(target, context);
+			result = fromDataObjectBinders(target.getBindMethod(),
+					(dataObjectBinder) -> dataObjectBinder.create(target, context));
 			result = handler.onCreate(name, target, context, result);
 			result = context.getConverter().convert(result, target);
-			Assert.state(result != null, () -> "Unable to create instance for " + target.getType());
+			if (result == null) {
+				IllegalStateException ex = new IllegalStateException(
+						"Unable to create instance for " + target.getType());
+				this.dataObjectBinders.get(target.getBindMethod())
+					.forEach((dataObjectBinder) -> dataObjectBinder.onUnableToCreateInstance(target, context, ex));
+				throw ex;
+			}
 		}
 		handler.onFinish(name, target, context, result);
 		return context.getConverter().convert(result, target);
-	}
-
-	private Object create(Bindable<?> target, Context context) {
-		for (DataObjectBinder dataObjectBinder : this.dataObjectBinders.get(target.getBindMethod())) {
-			Object instance = dataObjectBinder.create(target, context);
-			if (instance != null) {
-				return instance;
-			}
-		}
-		return null;
 	}
 
 	private <T> T handleBindError(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler,
@@ -477,15 +476,17 @@ public class Binder {
 		}
 		DataObjectPropertyBinder propertyBinder = (propertyName, propertyTarget) -> bind(name.append(propertyName),
 				propertyTarget, handler, context, false, false);
-		return context.withDataObject(type, () -> {
-			for (DataObjectBinder dataObjectBinder : this.dataObjectBinders.get(bindMethod)) {
-				Object instance = dataObjectBinder.bind(name, target, context, propertyBinder);
-				if (instance != null) {
-					return instance;
-				}
-			}
-			return null;
-		});
+		return context.withDataObject(type, () -> fromDataObjectBinders(bindMethod,
+				(dataObjectBinder) -> dataObjectBinder.bind(name, target, context, propertyBinder)));
+	}
+
+	private Object fromDataObjectBinders(BindMethod bindMethod, Function<DataObjectBinder, Object> operation) {
+		return this.dataObjectBinders.get(bindMethod)
+			.stream()
+			.map(operation)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
 	}
 
 	private boolean isUnbindableBean(ConfigurationPropertyName name, Bindable<?> target, Context context) {

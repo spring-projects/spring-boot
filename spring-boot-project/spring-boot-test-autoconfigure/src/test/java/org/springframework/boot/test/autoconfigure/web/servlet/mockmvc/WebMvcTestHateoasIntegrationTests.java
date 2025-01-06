@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for {@link WebMvcTest @WebMvcTest} and Spring HATEOAS.
@@ -37,18 +35,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class WebMvcTestHateoasIntegrationTests {
 
 	@Autowired
-	private MockMvc mockMvc;
+	private MockMvcTester mvc;
 
 	@Test
-	void plainResponse() throws Exception {
-		this.mockMvc.perform(get("/hateoas/plain"))
-			.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/json"));
+	void plainResponse() {
+		assertThat(this.mvc.get().uri("/hateoas/plain")).hasContentType("application/json");
 	}
 
 	@Test
-	void hateoasResponse() throws Exception {
-		this.mockMvc.perform(get("/hateoas/resource"))
-			.andExpect(header().string(HttpHeaders.CONTENT_TYPE, "application/hal+json"));
+	void hateoasResponse() {
+		assertThat(this.mvc.get().uri("/hateoas/resource")).hasContentType("application/hal+json");
 	}
 
 }

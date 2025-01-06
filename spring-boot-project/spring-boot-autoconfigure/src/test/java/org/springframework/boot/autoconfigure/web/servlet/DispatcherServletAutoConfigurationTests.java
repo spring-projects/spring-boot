@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,7 +141,6 @@ class DispatcherServletAutoConfigurationTests {
 	void dispatcherServletDefaultConfig() {
 		this.contextRunner.run((context) -> {
 			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
 			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(true);
 			assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(false);
 			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails").isEqualTo(false);
@@ -152,14 +151,21 @@ class DispatcherServletAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.2.0", forRemoval = true)
+	void dispatcherServletThrowExceptionIfNoHandlerFoundDefaultConfig() {
+		this.contextRunner.run((context) -> {
+			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
+			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
+		});
+	}
+
+	@Test
 	void dispatcherServletCustomConfig() {
 		this.contextRunner
-			.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:true",
-					"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
+			.withPropertyValues("spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
 					"spring.mvc.publish-request-handled-events:false", "spring.mvc.servlet.load-on-startup=5")
 			.run((context) -> {
 				DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-				assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
 				assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(false);
 				assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(true);
 				assertThat(dispatcherServlet).extracting("publishEvents").isEqualTo(false);

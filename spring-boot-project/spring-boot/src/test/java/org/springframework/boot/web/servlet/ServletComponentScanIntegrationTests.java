@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
-import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -46,7 +45,10 @@ import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFa
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.boot.web.servlet.testcomponents.TestMultipartServlet;
+import org.springframework.boot.web.servlet.testcomponents.filter.TestFilter;
+import org.springframework.boot.web.servlet.testcomponents.listener.TestListener;
+import org.springframework.boot.web.servlet.testcomponents.servlet.TestMultipartServlet;
+import org.springframework.boot.web.servlet.testcomponents.servlet.TestServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -128,11 +130,9 @@ class ServletComponentScanIntegrationTests {
 		File metaInf = new File(temp, "META-INF");
 		metaInf.mkdirs();
 		Properties index = new Properties();
-		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestFilter", WebFilter.class.getName());
-		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestListener",
-				WebListener.class.getName());
-		index.setProperty("org.springframework.boot.web.servlet.testcomponents.TestServlet",
-				WebServlet.class.getName());
+		index.setProperty(TestFilter.class.getName(), WebFilter.class.getName());
+		index.setProperty(TestListener.class.getName(), WebListener.class.getName());
+		index.setProperty(TestServlet.class.getName(), WebServlet.class.getName());
 		try (FileWriter writer = new FileWriter(new File(metaInf, "spring.components"))) {
 			index.store(writer, null);
 		}
@@ -159,7 +159,6 @@ class ServletComponentScanIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Servlet5ClassPathOverrides
 	static class JettyTestConfiguration extends AbstractTestConfiguration {
 
 		@Override

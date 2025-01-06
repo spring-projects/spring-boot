@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.docker.type.LayerId;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -115,31 +116,31 @@ final class ImageBuildpack implements Buildpack {
 
 		ExportedLayers(BuildpackResolverContext context, ImageReference imageReference) throws IOException {
 			List<Path> layerFiles = new ArrayList<>();
-			context.exportImageLayers(imageReference, (name, path) -> layerFiles.add(copyToTemp(path)));
+			context.exportImageLayers(imageReference,
+					(name, tarArchive) -> layerFiles.add(createLayerFile(tarArchive)));
 			this.layerFiles = Collections.unmodifiableList(layerFiles);
 		}
 
-		private Path copyToTemp(Path path) throws IOException {
-			Path outputPath = Files.createTempFile("create-builder-scratch-", null);
-			try (OutputStream out = Files.newOutputStream(outputPath)) {
-				copyLayerTar(path, out);
+		private Path createLayerFile(TarArchive tarArchive) throws IOException {
+			Path sourceTarFile = Files.createTempFile("create-builder-scratch-source-", null);
+			try (OutputStream out = Files.newOutputStream(sourceTarFile)) {
+				tarArchive.writeTo(out);
 			}
-			return outputPath;
-		}
-
-		private void copyLayerTar(Path path, OutputStream out) throws IOException {
-			try (TarArchiveInputStream tarIn = new TarArchiveInputStream(Files.newInputStream(path));
-					TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
-				tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-				TarArchiveEntry entry = tarIn.getNextTarEntry();
-				while (entry != null) {
-					tarOut.putArchiveEntry(entry);
-					StreamUtils.copy(tarIn, tarOut);
-					tarOut.closeArchiveEntry();
-					entry = tarIn.getNextTarEntry();
+			Path layerFile = Files.createTempFile("create-builder-scratch-", null);
+			try (TarArchiveOutputStream out = new TarArchiveOutputStream(Files.newOutputStream(layerFile))) {
+				try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(sourceTarFile))) {
+					out.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+					TarArchiveEntry entry = in.getNextEntry();
+					while (entry != null) {
+						out.putArchiveEntry(entry);
+						StreamUtils.copy(in, out);
+						out.closeArchiveEntry();
+						entry = in.getNextEntry();
+					}
+					out.finish();
 				}
-				tarOut.finish();
 			}
+			return layerFile;
 		}
 
 		void apply(IOConsumer<Layer> layers) throws IOException {

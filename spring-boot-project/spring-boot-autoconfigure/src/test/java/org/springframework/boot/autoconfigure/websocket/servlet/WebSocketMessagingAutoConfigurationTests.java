@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,17 @@ package org.springframework.boot.autoconfigure.websocket.servlet;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.websocket.WsWebSocketContainer;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,18 +38,26 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.SimpleMessageConverter;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -54,6 +65,8 @@ import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.security.util.FieldUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -69,12 +82,13 @@ import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Tests for {@link WebSocketMessagingAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Lasse Wulff
  */
 class WebSocketMessagingAutoConfigurationTests {
 
@@ -129,10 +143,54 @@ class WebSocketMessagingAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	void predefinedThreadExecutorIsSelectedForInboundChannel() throws Throwable {
+		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
+		ChannelRegistration registration = new ChannelRegistration();
+		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
+				new ObjectMapper(),
+				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
+		configuration.configureClientInboundChannel(registration);
+		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
+		assertThat(executor).isEqualTo(expectedExecutor);
+	}
+
+	@Test
+	void predefinedThreadExecutorIsSelectedForOutboundChannel() throws Throwable {
+		AsyncTaskExecutor expectedExecutor = new SimpleAsyncTaskExecutor();
+		ChannelRegistration registration = new ChannelRegistration();
+		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
+				new ObjectMapper(),
+				Map.of(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, expectedExecutor));
+		configuration.configureClientOutboundChannel(registration);
+		TaskExecutor executor = (TaskExecutor) FieldUtils.getFieldValue(registration, "executor");
+		assertThat(executor).isEqualTo(expectedExecutor);
+	}
+
+	@Test
+	void webSocketMessageBrokerConfigurerOrdering() throws Throwable {
+		TestPropertyValues.of("server.port:0", "spring.jackson.serialization.indent-output:true").applyTo(this.context);
+		this.context.register(WebSocketMessagingConfiguration.class, CustomLowWebSocketMessageBrokerConfigurer.class,
+				CustomHighWebSocketMessageBrokerConfigurer.class);
+		this.context.refresh();
+		DelegatingWebSocketMessageBrokerConfiguration delegatingConfiguration = this.context
+			.getBean(DelegatingWebSocketMessageBrokerConfiguration.class);
+		CustomHighWebSocketMessageBrokerConfigurer high = this.context
+			.getBean(CustomHighWebSocketMessageBrokerConfigurer.class);
+		WebSocketMessageConverterConfiguration autoConfiguration = this.context
+			.getBean(WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration.class);
+		WebSocketMessagingConfiguration configuration = this.context.getBean(WebSocketMessagingConfiguration.class);
+		CustomLowWebSocketMessageBrokerConfigurer low = this.context
+			.getBean(CustomLowWebSocketMessageBrokerConfigurer.class);
+		assertThat(delegatingConfiguration).extracting("configurers")
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
+			.containsExactly(high, autoConfiguration, configuration, low);
+	}
+
 	private List<MessageConverter> getCustomizedConverters() {
 		List<MessageConverter> customizedConverters = new ArrayList<>();
 		WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration configuration = new WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration(
-				new ObjectMapper());
+				new ObjectMapper(), Collections.emptyMap());
 		configuration.configureMessageConverters(customizedConverters);
 		return customizedConverters;
 	}
@@ -213,6 +271,7 @@ class WebSocketMessagingAutoConfigurationTests {
 
 		@Override
 		public void registerStompEndpoints(StompEndpointRegistry registry) {
+
 			registry.addEndpoint("/messaging").withSockJS();
 		}
 
@@ -235,6 +294,18 @@ class WebSocketMessagingAutoConfigurationTests {
 		TomcatWebSocketServletWebServerCustomizer tomcatCustomizer() {
 			return new TomcatWebSocketServletWebServerCustomizer();
 		}
+
+	}
+
+	@Component
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	static class CustomHighWebSocketMessageBrokerConfigurer implements WebSocketMessageBrokerConfigurer {
+
+	}
+
+	@Component
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	static class CustomLowWebSocketMessageBrokerConfigurer implements WebSocketMessageBrokerConfigurer {
 
 	}
 

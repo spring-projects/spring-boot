@@ -49,7 +49,7 @@ class GraphQlQueryByExampleAutoConfigurationTests {
 		.withConfiguration(
 				AutoConfigurations.of(GraphQlAutoConfiguration.class, GraphQlQueryByExampleAutoConfiguration.class))
 		.withUserConfiguration(MockRepositoryConfig.class)
-		.withPropertyValues("spring.main.web-application-type=reactive");
+		.withPropertyValues("spring.main.web-application-type=servlet");
 
 	@Test
 	void shouldRegisterDataFetcherForQueryByExampleRepositories() {

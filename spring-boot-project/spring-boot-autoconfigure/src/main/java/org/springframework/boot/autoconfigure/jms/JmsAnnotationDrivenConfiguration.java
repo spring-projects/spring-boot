@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
+import io.micrometer.observation.ObservationRegistry;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.ExceptionListener;
 
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.jms.ConnectionFactoryUnwrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
@@ -53,15 +55,19 @@ class JmsAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<ExceptionListener> exceptionListener;
 
+	private final ObjectProvider<ObservationRegistry> observationRegistry;
+
 	private final JmsProperties properties;
 
 	JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
 			ObjectProvider<JtaTransactionManager> transactionManager, ObjectProvider<MessageConverter> messageConverter,
-			ObjectProvider<ExceptionListener> exceptionListener, JmsProperties properties) {
+			ObjectProvider<ExceptionListener> exceptionListener,
+			ObjectProvider<ObservationRegistry> observationRegistry, JmsProperties properties) {
 		this.destinationResolver = destinationResolver;
 		this.transactionManager = transactionManager;
 		this.messageConverter = messageConverter;
 		this.exceptionListener = exceptionListener;
+		this.observationRegistry = observationRegistry;
 		this.properties = properties;
 	}
 
@@ -73,6 +79,7 @@ class JmsAnnotationDrivenConfiguration {
 		configurer.setTransactionManager(this.transactionManager.getIfUnique());
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
 		configurer.setExceptionListener(this.exceptionListener.getIfUnique());
+		configurer.setObservationRegistry(this.observationRegistry.getIfUnique());
 		configurer.setJmsProperties(this.properties);
 		return configurer;
 	}
@@ -83,7 +90,7 @@ class JmsAnnotationDrivenConfiguration {
 	DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
 			DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		configurer.configure(factory, connectionFactory);
+		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory));
 		return factory;
 	}
 

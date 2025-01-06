@@ -275,4 +275,16 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 		assertThat(((PortInUseException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
+	@Override
+	protected String startedLogMessage() {
+		return ((TomcatWebServer) this.webServer).getStartedLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+		connector.setPort(port);
+		((TomcatReactiveWebServerFactory) factory).addAdditionalTomcatConnectors(connector);
+	}
+
 }

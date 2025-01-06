@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -297,7 +297,7 @@ class FileSystemWatcherTests {
 	private void setupWatcher(long pollingInterval, long quietPeriod, SnapshotStateRepository snapshotStateRepository) {
 		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval), Duration.ofMillis(quietPeriod),
 				snapshotStateRepository);
-		this.watcher.addListener((changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
+		this.watcher.addListener(FileSystemWatcherTests.this.changes::add);
 	}
 
 	private File startWithNewDirectory() {
@@ -326,7 +326,7 @@ class FileSystemWatcherTests {
 		return file;
 	}
 
-	private static class TestSnapshotStateRepository implements SnapshotStateRepository {
+	private static final class TestSnapshotStateRepository implements SnapshotStateRepository {
 
 		private Object state;
 

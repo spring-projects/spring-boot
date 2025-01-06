@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,14 +29,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.messaging.converter.ByteArrayMessageConverter;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.config.AbstractMessageBrokerConfiguration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.socket.config.annotation.DelegatingWebSocketMessageBrokerConfiguration;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -44,6 +49,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
  * {@link EnableAutoConfiguration Auto-configuration} for WebSocket-based messaging.
  *
  * @author Andy Wilkinson
+ * @author Lasse Wulff
+ * @author Moritz Halbritter
  * @since 1.3.0
  */
 @AutoConfiguration(after = JacksonAutoConfiguration.class)
@@ -54,18 +61,29 @@ public class WebSocketMessagingAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean({ DelegatingWebSocketMessageBrokerConfiguration.class, ObjectMapper.class })
 	@ConditionalOnClass({ ObjectMapper.class, AbstractMessageBrokerConfiguration.class })
+	@Order(0)
 	static class WebSocketMessageConverterConfiguration implements WebSocketMessageBrokerConfigurer {
 
 		private final ObjectMapper objectMapper;
 
-		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper) {
+		private final AsyncTaskExecutor executor;
+
+		WebSocketMessageConverterConfiguration(ObjectMapper objectMapper,
+				Map<String, AsyncTaskExecutor> taskExecutors) {
 			this.objectMapper = objectMapper;
+			this.executor = determineAsyncTaskExecutor(taskExecutors);
+		}
+
+		private static AsyncTaskExecutor determineAsyncTaskExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
+			if (taskExecutors.size() == 1) {
+				return taskExecutors.values().iterator().next();
+			}
+			return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 		}
 
 		@Override
 		public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-			converter.setObjectMapper(this.objectMapper);
+			MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter(this.objectMapper);
 			DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
 			resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
 			converter.setContentTypeResolver(resolver);
@@ -73,6 +91,20 @@ public class WebSocketMessagingAutoConfiguration {
 			messageConverters.add(new ByteArrayMessageConverter());
 			messageConverters.add(converter);
 			return false;
+		}
+
+		@Override
+		public void configureClientInboundChannel(ChannelRegistration registration) {
+			if (this.executor != null) {
+				registration.executor(this.executor);
+			}
+		}
+
+		@Override
+		public void configureClientOutboundChannel(ChannelRegistration registration) {
+			if (this.executor != null) {
+				registration.executor(this.executor);
+			}
 		}
 
 		@Bean

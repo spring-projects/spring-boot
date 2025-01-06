@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -278,20 +278,20 @@ public class ApplicationConversionService extends FormattingConversionService {
 		beans.addAll(beanFactory.getBeansOfType(Printer.class).values());
 		beans.addAll(beanFactory.getBeansOfType(Parser.class).values());
 		for (Object bean : beans) {
-			if (bean instanceof GenericConverter) {
-				registry.addConverter((GenericConverter) bean);
+			if (bean instanceof GenericConverter genericConverter) {
+				registry.addConverter(genericConverter);
 			}
-			else if (bean instanceof Converter) {
-				registry.addConverter((Converter<?, ?>) bean);
+			else if (bean instanceof Converter<?, ?> converter) {
+				registry.addConverter(converter);
 			}
-			else if (bean instanceof Formatter) {
-				registry.addFormatter((Formatter<?>) bean);
+			else if (bean instanceof Formatter<?> formatter) {
+				registry.addFormatter(formatter);
 			}
-			else if (bean instanceof Printer) {
-				registry.addPrinter((Printer<?>) bean);
+			else if (bean instanceof Printer<?> printer) {
+				registry.addPrinter(printer);
 			}
-			else if (bean instanceof Parser) {
-				registry.addParser((Parser<?>) bean);
+			else if (bean instanceof Parser<?> parser) {
+				registry.addParser(parser);
 			}
 		}
 	}

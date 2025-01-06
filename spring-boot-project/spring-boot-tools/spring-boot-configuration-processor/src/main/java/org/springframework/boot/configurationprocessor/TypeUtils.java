@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.RecordComponentElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
@@ -44,6 +46,7 @@ import javax.lang.model.util.Types;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Pavel Anisimov
  */
 class TypeUtils {
 
@@ -63,8 +66,6 @@ class TypeUtils {
 	}
 
 	private static final Map<String, TypeKind> WRAPPER_TO_PRIMITIVE;
-
-	private static final Pattern NEW_LINE_PATTERN = Pattern.compile("[\r\n]+");
 
 	static {
 		Map<String, TypeKind> primitives = new HashMap<>();
@@ -176,10 +177,11 @@ class TypeUtils {
 	}
 
 	String getJavaDoc(Element element) {
-		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
-		if (javadoc != null) {
-			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
+		if (element instanceof RecordComponentElement) {
+			return getJavaDoc((RecordComponentElement) element);
 		}
+		String javadoc = (element != null) ? this.env.getElementUtils().getDocComment(element) : null;
+		javadoc = (javadoc != null) ? cleanUpJavaDoc(javadoc) : null;
 		return (javadoc == null || javadoc.isEmpty()) ? null : javadoc;
 	}
 
@@ -245,6 +247,38 @@ class TypeUtils {
 			TypeElement element = (TypeElement) this.types.asElement(type);
 			process(descriptor, element.getSuperclass());
 		}
+	}
+
+	private String getJavaDoc(RecordComponentElement recordComponent) {
+		String recordJavadoc = this.env.getElementUtils().getDocComment(recordComponent.getEnclosingElement());
+		if (recordJavadoc != null) {
+			Pattern paramJavadocPattern = paramJavadocPattern(recordComponent.getSimpleName().toString());
+			Matcher paramJavadocMatcher = paramJavadocPattern.matcher(recordJavadoc);
+			if (paramJavadocMatcher.find()) {
+				String paramJavadoc = cleanUpJavaDoc(paramJavadocMatcher.group());
+				return paramJavadoc.isEmpty() ? null : paramJavadoc;
+			}
+		}
+		return null;
+	}
+
+	private Pattern paramJavadocPattern(String paramName) {
+		String pattern = String.format("(?<=@param +%s).*?(?=([\r\n]+ *@)|$)", paramName);
+		return Pattern.compile(pattern, Pattern.DOTALL);
+	}
+
+	private String cleanUpJavaDoc(String javadoc) {
+		StringBuilder result = new StringBuilder(javadoc.length());
+		char lastChar = '.';
+		for (int i = 0; i < javadoc.length(); i++) {
+			char ch = javadoc.charAt(i);
+			boolean repeatedSpace = ch == ' ' && lastChar == ' ';
+			if (ch != '\r' && ch != '\n' && !repeatedSpace) {
+				result.append(ch);
+				lastChar = ch;
+			}
+		}
+		return result.toString().trim();
 	}
 
 	/**

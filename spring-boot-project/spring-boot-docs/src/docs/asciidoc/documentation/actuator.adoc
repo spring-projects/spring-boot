@@ -1,7 +1,0 @@
-[[documentation.actuator]]
-== Moving to Production
-When you are ready to push your Spring Boot application to production, we have <<actuator#actuator, some tricks>> that you might like:
-
-* *Management endpoints:* <<actuator#actuator.endpoints, Overview>>
-* *Connection options:* <<actuator#actuator.monitoring, HTTP>> | <<actuator#actuator.jmx, JMX>>
-* *Monitoring:* <<actuator#actuator.metrics, Metrics>> | <<actuator#actuator.auditing, Auditing>> | <<actuator#actuator.http-exchanges, HTTP Exchanges>> | <<actuator#actuator.process-monitoring, Process>>

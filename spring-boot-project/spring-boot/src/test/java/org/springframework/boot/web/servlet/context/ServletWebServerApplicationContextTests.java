@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,7 +215,7 @@ class ServletWebServerApplicationContextTests {
 	void cannotSecondRefresh() {
 		addWebServerFactoryBean();
 		this.context.refresh();
-		assertThatIllegalStateException().isThrownBy(() -> this.context.refresh());
+		assertThatIllegalStateException().isThrownBy(this.context::refresh);
 	}
 
 	@Test
@@ -229,7 +229,7 @@ class ServletWebServerApplicationContextTests {
 
 	@Test
 	void missingServletWebServerFactory() {
-		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(this.context::refresh)
 			.havingRootCause()
 			.withMessageContaining("Unable to start ServletWebServerApplicationContext due to missing "
 					+ "ServletWebServerFactory bean");
@@ -240,7 +240,7 @@ class ServletWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		this.context.registerBeanDefinition("webServerFactory2",
 				new RootBeanDefinition(MockServletWebServerFactory.class));
-		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
+		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(this.context::refresh)
 			.havingRootCause()
 			.withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
 					+ "multiple ServletWebServerFactory beans");

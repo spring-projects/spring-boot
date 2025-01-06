@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,17 +69,17 @@ class ConfigDataLocationResolvers {
 	@SuppressWarnings("rawtypes")
 	private List<ConfigDataLocationResolver<?>> reorder(List<ConfigDataLocationResolver> resolvers) {
 		List<ConfigDataLocationResolver<?>> reordered = new ArrayList<>(resolvers.size());
-		StandardConfigDataLocationResolver resourceResolver = null;
+		ConfigDataLocationResolver<?> standardConfigDataLocationResolver = null;
 		for (ConfigDataLocationResolver<?> resolver : resolvers) {
-			if (resolver instanceof StandardConfigDataLocationResolver configDataLocationResolver) {
-				resourceResolver = configDataLocationResolver;
+			if (resolver instanceof StandardConfigDataLocationResolver) {
+				standardConfigDataLocationResolver = resolver;
 			}
 			else {
 				reordered.add(resolver);
 			}
 		}
-		if (resourceResolver != null) {
-			reordered.add(resourceResolver);
+		if (standardConfigDataLocationResolver != null) {
+			reordered.add(standardConfigDataLocationResolver);
 		}
 		return Collections.unmodifiableList(reordered);
 	}

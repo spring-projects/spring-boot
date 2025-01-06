@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +24,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +42,7 @@ import ch.qos.logback.core.joran.spi.RuleStore;
 import ch.qos.logback.core.joran.util.PropertySetter;
 import ch.qos.logback.core.joran.util.beans.BeanDescription;
 import ch.qos.logback.core.model.ComponentModel;
+import ch.qos.logback.core.model.IncludeModel;
 import ch.qos.logback.core.model.Model;
 import ch.qos.logback.core.model.ModelUtil;
 import ch.qos.logback.core.model.processor.DefaultProcessor;
@@ -50,6 +51,8 @@ import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.ContextAwareBase;
 import ch.qos.logback.core.util.AggregationType;
 
+import org.springframework.aot.generate.GeneratedFiles.FileHandler;
+import org.springframework.aot.generate.GeneratedFiles.Kind;
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.SerializationHints;
@@ -57,15 +60,16 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.context.aot.AbstractAotProcessor;
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.NativeDetector;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.function.SingletonSupplier;
+import org.springframework.util.function.ThrowingConsumer;
 
 /**
  * Extended version of the Logback {@link JoranConfigurator} that adds additional Spring
@@ -107,6 +111,16 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		ruleStore.addTransparentPathPart("springProfile");
 	}
 
+	@Override
+	public void buildModelInterpretationContext() {
+		super.buildModelInterpretationContext();
+		this.modelInterpretationContext.setConfiguratorSupplier(() -> {
+			SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(this.initializationContext);
+			configurator.setContext(this.context);
+			return configurator;
+		});
+	}
+
 	boolean configureUsingAotGeneratedArtifacts() {
 		if (!new PatternRules(getContext()).load()) {
 			return false;
@@ -127,7 +141,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	private boolean isAotProcessingInProgress() {
-		return Boolean.getBoolean("spring.aot.processing");
+		return Boolean.getBoolean(AbstractAotProcessor.AOT_PROCESSING);
 	}
 
 	static final class LogbackConfigurationAotContribution implements BeanFactoryInitializationAotContribution {
@@ -165,15 +179,10 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		private void writeTo(GenerationContext generationContext) {
-			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-			try (ObjectOutputStream output = new ObjectOutputStream(bytes)) {
-				output.writeObject(this.model);
-			}
-			catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
-			Resource modelResource = new ByteArrayResource(bytes.toByteArray());
-			generationContext.getGeneratedFiles().addResourceFile(MODEL_RESOURCE_LOCATION, modelResource);
+			byte[] serializedModel = serializeModel();
+			generationContext.getGeneratedFiles()
+				.handleFile(Kind.RESOURCE, MODEL_RESOURCE_LOCATION,
+						new RequireNewOrMatchingContentFileHandler(serializedModel));
 			generationContext.getRuntimeHints().resources().registerPattern(MODEL_RESOURCE_LOCATION);
 			SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
 			serializationTypes(this.model).forEach(serializationHints::registerType);
@@ -181,6 +190,17 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 				.reflection()
 				.registerType(TypeReference.of(type), MemberCategory.INTROSPECT_PUBLIC_METHODS,
 						MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+		}
+
+		private byte[] serializeModel() {
+			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+			try (ObjectOutputStream output = new ObjectOutputStream(bytes)) {
+				output.writeObject(this.model);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+			return bytes.toByteArray();
 		}
 
 		@SuppressWarnings("unchecked")
@@ -316,12 +336,22 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 				try (ObjectInputStream input = new ObjectInputStream(modelInput)) {
 					Model model = (Model) input.readObject();
 					ModelUtil.resetForReuse(model);
+					markIncludesAsHandled(model);
 					return model;
 				}
 			}
 			catch (Exception ex) {
 				throw new RuntimeException("Failed to load model from '" + ModelWriter.MODEL_RESOURCE_LOCATION + "'",
 						ex);
+			}
+		}
+
+		private void markIncludesAsHandled(Model model) {
+			if (model instanceof IncludeModel) {
+				model.markAsHandled();
+			}
+			for (Model submodel : model.getSubModels()) {
+				markIncludesAsHandled(submodel);
 			}
 		}
 
@@ -368,7 +398,9 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 		private void save(GenerationContext generationContext) {
 			Map<String, String> registryMap = getRegistryMap();
-			generationContext.getGeneratedFiles().addResourceFile(RESOURCE_LOCATION, () -> asInputStream(registryMap));
+			byte[] rules = asBytes(registryMap);
+			generationContext.getGeneratedFiles()
+				.handleFile(Kind.RESOURCE, RESOURCE_LOCATION, new RequireNewOrMatchingContentFileHandler(rules));
 			generationContext.getRuntimeHints().resources().registerPattern(RESOURCE_LOCATION);
 			for (String ruleClassName : registryMap.values()) {
 				generationContext.getRuntimeHints()
@@ -377,7 +409,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			}
 		}
 
-		private InputStream asInputStream(Map<String, String> patternRuleRegistry) {
+		private byte[] asBytes(Map<String, String> patternRuleRegistry) {
 			Properties properties = CollectionFactory.createSortedProperties(true);
 			patternRuleRegistry.forEach(properties::setProperty);
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -387,7 +419,32 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-			return new ByteArrayInputStream(bytes.toByteArray());
+			return bytes.toByteArray();
+		}
+
+	}
+
+	private static final class RequireNewOrMatchingContentFileHandler implements ThrowingConsumer<FileHandler> {
+
+		private final byte[] newContent;
+
+		private RequireNewOrMatchingContentFileHandler(byte[] newContent) {
+			this.newContent = newContent;
+		}
+
+		@Override
+		public void acceptWithException(FileHandler file) throws Exception {
+			if (file.exists()) {
+				byte[] existingContent = file.getContent().getInputStream().readAllBytes();
+				if (!Arrays.equals(this.newContent, existingContent)) {
+					throw new IllegalStateException(
+							"Logging configuration differs from the configuration that has already been written. "
+									+ "Update your logging configuration so that it is the same for each context");
+				}
+			}
+			else {
+				file.create(new ByteArrayResource(this.newContent));
+			}
 		}
 
 	}

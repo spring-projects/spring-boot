@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.work.DisableCachingByDefault;
 
+import org.springframework.boot.loader.tools.LoaderImplementation;
+
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
  *
@@ -49,7 +51,7 @@ import org.gradle.work.DisableCachingByDefault;
 @DisableCachingByDefault(because = "Not worth caching")
 public abstract class BootJar extends Jar implements BootArchive {
 
-	private static final String LAUNCHER = "org.springframework.boot.loader.JarLauncher";
+	private static final String LAUNCHER = "org.springframework.boot.loader.launch.JarLauncher";
 
 	private static final String CLASSES_DIRECTORY = "BOOT-INF/classes/";
 
@@ -86,6 +88,7 @@ public abstract class BootJar extends Jar implements BootArchive {
 		this.projectName = project.provider(project::getName);
 		this.projectVersion = project.provider(project::getVersion);
 		this.resolvedDependencies = new ResolvedDependencies(project);
+		getIncludeTools().convention(true);
 	}
 
 	private void configureBootInfSpec(CopySpec bootInfSpec) {
@@ -141,12 +144,20 @@ public abstract class BootJar extends Jar implements BootArchive {
 
 	@Override
 	protected CopyAction createCopyAction() {
+		LoaderImplementation loaderImplementation = getLoaderImplementation().getOrElse(LoaderImplementation.DEFAULT);
+		LayerResolver layerResolver = null;
 		if (!isLayeredDisabled()) {
-			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
-			String layerToolsLocation = this.layered.getIncludeLayerTools().get() ? LIB_DIRECTORY : null;
-			return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, layerToolsLocation);
+			layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
 		}
-		return this.support.createCopyAction(this, this.resolvedDependencies);
+		String jarmodeToolsLocation = isIncludeJarmodeTools() ? LIB_DIRECTORY : null;
+		return this.support.createCopyAction(this, this.resolvedDependencies, loaderImplementation, true, layerResolver,
+				jarmodeToolsLocation);
+	}
+
+	@SuppressWarnings("removal")
+	private boolean isIncludeJarmodeTools() {
+		return Boolean.TRUE.equals(this.getIncludeTools().get())
+				&& Boolean.TRUE.equals(this.layered.getIncludeLayerTools().get());
 	}
 
 	@Override

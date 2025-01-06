@@ -17,9 +17,13 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,6 +101,30 @@ class FileUtilsTests {
 			outputStream.write(new byte[] { 1, 2, 3 });
 		}
 		assertThat(FileUtils.sha1Hash(file)).isEqualTo("7037807198c22a7d2b0807371d763779a84fdfcf");
+	}
+
+	@Test
+	void isSignedJarFileWhenSignedReturnsTrue() throws IOException {
+		Manifest manifest = new Manifest(getClass().getResourceAsStream("signed-manifest.mf"));
+		File jarFile = new File(this.tempDir, "test.jar");
+		writeTestJar(manifest, jarFile);
+		assertThat(FileUtils.isSignedJarFile(jarFile)).isTrue();
+	}
+
+	@Test
+	void isSignedJarFileWhenNotSignedReturnsFalse() throws IOException {
+		Manifest manifest = new Manifest();
+		File jarFile = new File(this.tempDir, "test.jar");
+		writeTestJar(manifest, jarFile);
+		assertThat(FileUtils.isSignedJarFile(jarFile)).isFalse();
+	}
+
+	private void writeTestJar(Manifest manifest, File jarFile) throws IOException, FileNotFoundException {
+		try (JarOutputStream out = new JarOutputStream(new FileOutputStream(jarFile))) {
+			out.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
+			manifest.write(out);
+			out.closeEntry();
+		}
 	}
 
 }

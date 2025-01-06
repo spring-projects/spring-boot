@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web.servlet;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -36,27 +37,34 @@ import org.springframework.web.servlet.HandlerMapping;
  */
 public class AdditionalHealthEndpointPathsWebMvcHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
-	private final ExposableWebEndpoint endpoint;
+	private final ExposableWebEndpoint healthEndpoint;
 
 	private final Set<HealthEndpointGroup> groups;
 
-	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint endpoint,
+	public AdditionalHealthEndpointPathsWebMvcHandlerMapping(ExposableWebEndpoint healthEndpoint,
 			Set<HealthEndpointGroup> groups) {
-		super(new EndpointMapping(""), Collections.singletonList(endpoint), null, false);
-		this.endpoint = endpoint;
+		super(new EndpointMapping(""), asList(healthEndpoint), null, false);
+		this.healthEndpoint = healthEndpoint;
 		this.groups = groups;
+	}
+
+	private static Collection<ExposableWebEndpoint> asList(ExposableWebEndpoint healthEndpoint) {
+		return (healthEndpoint != null) ? Collections.singletonList(healthEndpoint) : Collections.emptyList();
 	}
 
 	@Override
 	protected void initHandlerMethods() {
-		for (WebOperation operation : this.endpoint.getOperations()) {
+		if (this.healthEndpoint == null) {
+			return;
+		}
+		for (WebOperation operation : this.healthEndpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
 				for (HealthEndpointGroup group : this.groups) {
 					AdditionalHealthEndpointPath additionalPath = group.getAdditionalPath();
 					if (additionalPath != null) {
-						registerMapping(this.endpoint, predicate, operation, additionalPath.getValue());
+						registerMapping(this.healthEndpoint, predicate, operation, additionalPath.getValue());
 					}
 				}
 			}

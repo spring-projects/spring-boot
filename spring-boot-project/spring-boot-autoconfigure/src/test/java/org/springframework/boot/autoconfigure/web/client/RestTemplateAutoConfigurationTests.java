@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -35,6 +37,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -55,14 +58,22 @@ import static org.mockito.Mockito.mock;
  */
 class RestTemplateAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(RestTemplateAutoConfiguration.class, HttpClientAutoConfiguration.class));
 
 	@Test
 	void restTemplateBuilderConfigurerShouldBeLazilyDefined() {
 		this.contextRunner.run((context) -> assertThat(
 				context.getBeanFactory().getBeanDefinition("restTemplateBuilderConfigurer").isLazyInit())
 			.isTrue());
+	}
+
+	@Test
+	void shouldFailOnCustomRestTemplateBuilderConfigurer() {
+		this.contextRunner.withUserConfiguration(RestTemplateBuilderConfigurerConfig.class)
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(BeanDefinitionOverrideException.class)
+				.hasMessageContaining("with name 'restTemplateBuilderConfigurer'"));
 	}
 
 	@Test
@@ -182,6 +193,18 @@ class RestTemplateAutoConfigurationTests {
 				.doesNotHaveBean(RestTemplateBuilderConfigurer.class));
 	}
 
+	@Test
+	void whenHasFactoryProperty() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withUserConfiguration(RestTemplateConfig.class)
+			.withPropertyValues("spring.http.client.factory=simple")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(RestTemplate.class);
+				RestTemplate restTemplate = context.getBean(RestTemplate.class);
+				assertThat(restTemplate.getRequestFactory()).isInstanceOf(SimpleClientHttpRequestFactory.class);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class RestTemplateConfig {
 
@@ -259,6 +282,16 @@ class RestTemplateAutoConfigurationTests {
 		@Bean
 		RestTemplateRequestCustomizer<?> restTemplateRequestCustomizer() {
 			return (request) -> request.getHeaders().add("spring", "boot");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestTemplateBuilderConfigurerConfig {
+
+		@Bean
+		RestTemplateBuilderConfigurer restTemplateBuilderConfigurer() {
+			return new RestTemplateBuilderConfigurer();
 		}
 
 	}

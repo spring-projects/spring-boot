@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class ParentContextApplicationContextInitializer
 		}
 	}
 
-	private static class EventPublisher implements ApplicationListener<ContextRefreshedEvent>, Ordered {
+	private static final class EventPublisher implements ApplicationListener<ContextRefreshedEvent>, Ordered {
 
 		private static final EventPublisher INSTANCE = new EventPublisher();
 
@@ -72,8 +72,9 @@ public class ParentContextApplicationContextInitializer
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
 			ApplicationContext context = event.getApplicationContext();
-			if (context instanceof ConfigurableApplicationContext && context == event.getSource()) {
-				context.publishEvent(new ParentContextAvailableEvent((ConfigurableApplicationContext) context));
+			if (context instanceof ConfigurableApplicationContext configurableApplicationContext
+					&& context == event.getSource()) {
+				context.publishEvent(new ParentContextAvailableEvent(configurableApplicationContext));
 			}
 		}
 
@@ -82,7 +83,6 @@ public class ParentContextApplicationContextInitializer
 	/**
 	 * {@link ApplicationEvent} fired when a parent context is available.
 	 */
-	@SuppressWarnings("serial")
 	public static class ParentContextAvailableEvent extends ApplicationEvent {
 
 		public ParentContextAvailableEvent(ConfigurableApplicationContext applicationContext) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.couchbase;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -30,6 +29,7 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Brian Clozel
  * @author Michael Nitschinger
+ * @author Scott Frederick
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.couchbase")
@@ -49,6 +49,8 @@ public class CouchbaseProperties {
 	 * Cluster password.
 	 */
 	private String password;
+
+	private final Authentication authentication = new Authentication();
 
 	private final Env env = new Env();
 
@@ -76,8 +78,114 @@ public class CouchbaseProperties {
 		this.password = password;
 	}
 
+	public Authentication getAuthentication() {
+		return this.authentication;
+	}
+
 	public Env getEnv() {
 		return this.env;
+	}
+
+	public static class Authentication {
+
+		private final Pem pem = new Pem();
+
+		private final Jks jks = new Jks();
+
+		public Pem getPem() {
+			return this.pem;
+		}
+
+		public Jks getJks() {
+			return this.jks;
+		}
+
+		public static class Pem {
+
+			/**
+			 * PEM-formatted certificates for certificate-based cluster authentication.
+			 */
+			private String certificates;
+
+			/**
+			 * PEM-formatted private key for certificate-based cluster authentication.
+			 */
+			private String privateKey;
+
+			/**
+			 * Private key password for certificate-based cluster authentication.
+			 */
+			private String privateKeyPassword;
+
+			public String getCertificates() {
+				return this.certificates;
+			}
+
+			public void setCertificates(String certificates) {
+				this.certificates = certificates;
+			}
+
+			public String getPrivateKey() {
+				return this.privateKey;
+			}
+
+			public void setPrivateKey(String privateKey) {
+				this.privateKey = privateKey;
+			}
+
+			public String getPrivateKeyPassword() {
+				return this.privateKeyPassword;
+			}
+
+			public void setPrivateKeyPassword(String privateKeyPassword) {
+				this.privateKeyPassword = privateKeyPassword;
+			}
+
+		}
+
+		public static class Jks {
+
+			/**
+			 * Java KeyStore location for certificate-based cluster authentication.
+			 */
+			private String location;
+
+			/**
+			 * Java KeyStore password for certificate-based cluster authentication.
+			 */
+			private String password;
+
+			/**
+			 * Private key password for certificate-based cluster authentication.
+			 */
+			private String privateKeyPassword;
+
+			public String getLocation() {
+				return this.location;
+			}
+
+			public void setLocation(String location) {
+				this.location = location;
+			}
+
+			public String getPassword() {
+				return this.password;
+			}
+
+			public void setPassword(String password) {
+				this.password = password;
+			}
+
+			public String getPrivateKeyPassword() {
+				return this.privateKeyPassword;
+			}
+
+			public void setPrivateKeyPassword(String privateKeyPassword) {
+				this.privateKeyPassword = privateKeyPassword;
+			}
+
+		}
+
 	}
 
 	public static class Env {
@@ -118,7 +226,7 @@ public class CouchbaseProperties {
 		 * Length of time an HTTP connection may remain idle before it is closed and
 		 * removed from the pool.
 		 */
-		private Duration idleHttpConnectionTimeout = Duration.ofMillis(4500);
+		private Duration idleHttpConnectionTimeout = Duration.ofSeconds(1);
 
 		public int getMinEndpoints() {
 			return this.minEndpoints;
@@ -149,20 +257,10 @@ public class CouchbaseProperties {
 	public static class Ssl {
 
 		/**
-		 * Whether to enable SSL support. Enabled automatically if a "keyStore" or
-		 * "bundle" is provided unless specified otherwise.
+		 * Whether to enable SSL support. Enabled automatically if a "bundle" is provided
+		 * unless specified otherwise.
 		 */
 		private Boolean enabled;
-
-		/**
-		 * Path to the JVM key store that holds the certificates.
-		 */
-		private String keyStore;
-
-		/**
-		 * Password used to access the key store.
-		 */
-		private String keyStorePassword;
 
 		/**
 		 * SSL bundle name.
@@ -170,36 +268,11 @@ public class CouchbaseProperties {
 		private String bundle;
 
 		public Boolean getEnabled() {
-			return (this.enabled != null) ? this.enabled
-					: StringUtils.hasText(this.keyStore) || StringUtils.hasText(this.bundle);
+			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.bundle);
 		}
 
 		public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
-		}
-
-		@Deprecated(since = "3.1.0", forRemoval = true)
-		@DeprecatedConfigurationProperty(
-				reason = "SSL bundle support with spring.ssl.bundle and spring.couchbase.env.ssl.bundle should be used instead")
-		public String getKeyStore() {
-			return this.keyStore;
-		}
-
-		@Deprecated(since = "3.1.0", forRemoval = true)
-		public void setKeyStore(String keyStore) {
-			this.keyStore = keyStore;
-		}
-
-		@Deprecated(since = "3.1.0", forRemoval = true)
-		@DeprecatedConfigurationProperty(
-				reason = "SSL bundle support with spring.ssl.bundle and spring.couchbase.env.ssl.bundle should be used instead")
-		public String getKeyStorePassword() {
-			return this.keyStorePassword;
-		}
-
-		@Deprecated(since = "3.1.0", forRemoval = true)
-		public void setKeyStorePassword(String keyStorePassword) {
-			this.keyStorePassword = keyStorePassword;
 		}
 
 		public String getBundle() {

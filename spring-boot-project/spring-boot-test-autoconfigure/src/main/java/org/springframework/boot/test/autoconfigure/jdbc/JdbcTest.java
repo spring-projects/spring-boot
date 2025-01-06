@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Annotation for a JDBC test that focuses <strong>only</strong> on JDBC-based components.
  * <p>
- * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to JDBC tests.
+ * Using this annotation only enables auto-configuration that is relevant to JDBC tests.
+ * Similarly, component scanning is configured to skip regular components and
+ * configuration properties.
  * <p>
  * By default, tests annotated with {@code @JdbcTest} are transactional and roll back at
  * the end of each test. They also use an embedded in-memory database (replacing any

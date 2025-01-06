@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,15 @@ package org.springframework.boot.docker.compose.core;
 import java.util.regex.Pattern;
 
 /**
- * Regular Expressions for image names and references based on those found in the Docker
- * codebase.
+ * Regular Expressions for image names and references based on those found in the CNCF
+ * Distribution Project codebase.
  *
  * @author Scott Frederick
  * @author Phillip Webb
- * @see <a href=
- * "https://github.com/docker/distribution/blob/master/reference/reference.go">Docker
- * grammar reference</a>
- * @see <a href=
- * "https://github.com/docker/distribution/blob/master/reference/regexp.go">Docker grammar
- * implementation</a>
+ * @see <a href="https://github.com/distribution/reference/blob/main/reference.go">OCI
+ * Image grammar reference</a>
+ * @see <a href="https://github.com/distribution/reference/blob/main/regexp.go">OCI Image
+ * grammar implementation</a>
  * @see <a href=
  * "https://stackoverflow.com/questions/37861791/how-are-docker-image-names-parsed">How
  * are Docker image names parsed?</a>
@@ -50,7 +48,7 @@ final class Regex implements CharSequence {
 	private static final Regex PATH_COMPONENT;
 	static {
 		Regex segment = Regex.of("[a-z0-9]+");
-		Regex separator = Regex.group("[._]|__|[-]*");
+		Regex separator = Regex.group("[._-]{1,2}");
 		Regex separatedSegment = Regex.group(separator, segment).oneOrMoreTimes();
 		PATH_COMPONENT = Regex.of(segment, Regex.group(separatedSegment).zeroOrOnce());
 	}

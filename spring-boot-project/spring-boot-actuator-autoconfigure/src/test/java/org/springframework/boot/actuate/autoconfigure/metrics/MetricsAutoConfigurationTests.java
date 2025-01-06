@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.config.MeterFilterReply;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration.MeterRegistryCloser;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link MetricsAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class MetricsAutoConfigurationTests {
 
@@ -69,6 +71,21 @@ class MetricsAutoConfigurationTests {
 			assertThat(filters[2].accept((Meter.Id) null)).isEqualTo(MeterFilterReply.ACCEPT);
 			then((MeterBinder) context.getBean("meterBinder")).should().bindTo(meterRegistry);
 			then(context.getBean(MeterRegistryCustomizer.class)).should().customize(meterRegistry);
+		});
+	}
+
+	@Test
+	void shouldSupplyMeterRegistryCloser() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(MeterRegistryCloser.class));
+	}
+
+	@Test
+	void meterRegistryCloserShouldCloseRegistryOnShutdown() {
+		this.contextRunner.withUserConfiguration(MeterRegistryConfiguration.class).run((context) -> {
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThat(meterRegistry.isClosed()).isFalse();
+			context.close();
+			assertThat(meterRegistry.isClosed()).isTrue();
 		});
 	}
 

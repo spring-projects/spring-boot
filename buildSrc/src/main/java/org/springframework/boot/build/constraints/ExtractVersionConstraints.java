@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,17 +26,20 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencyConstraint;
 import org.gradle.api.artifacts.DependencyConstraintMetadata;
+import org.gradle.api.artifacts.DependencyConstraintSet;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.platform.base.Platform;
 
 import org.springframework.boot.build.bom.BomExtension;
+import org.springframework.boot.build.bom.BomPlugin;
 import org.springframework.boot.build.bom.Library;
 
 /**
@@ -45,7 +48,7 @@ import org.springframework.boot.build.bom.Library;
  *
  * @author Andy Wilkinson
  */
-public class ExtractVersionConstraints extends DefaultTask {
+public abstract class ExtractVersionConstraints extends DefaultTask {
 
 	private final Configuration configuration;
 
@@ -55,20 +58,28 @@ public class ExtractVersionConstraints extends DefaultTask {
 
 	private final Set<VersionProperty> versionProperties = new TreeSet<>();
 
-	private final List<String> projectPaths = new ArrayList<>();
+	private final List<DependencyConstraintSet> dependencyConstraintSets = new ArrayList<>();
+
+	private final List<BomExtension> boms = new ArrayList<>();
+
+	private final DependencyHandler dependencies;
 
 	public ExtractVersionConstraints() {
-		DependencyHandler dependencies = getProject().getDependencies();
+		this.dependencies = getProject().getDependencies();
 		this.configuration = getProject().getConfigurations().create(getName());
-		dependencies.getComponents().all(this::processMetadataDetails);
+		this.dependencies.getComponents().all(this::processMetadataDetails);
 	}
 
 	public void enforcedPlatform(String projectPath) {
 		this.configuration.getDependencies()
-			.add(getProject().getDependencies()
-				.enforcedPlatform(
-						getProject().getDependencies().project(Collections.singletonMap("path", projectPath))));
-		this.projectPaths.add(projectPath);
+			.add(this.dependencies
+				.enforcedPlatform(this.dependencies.project(Collections.singletonMap("path", projectPath))));
+		Project project = getProject().project(projectPath);
+		project.getPlugins().withType(BomPlugin.class).all((plugin) -> {
+			this.boms.add(project.getExtensions().getByType(BomExtension.class));
+			this.dependencyConstraintSets
+				.add(project.getConfigurations().getByName("apiElements").getAllDependencyConstraints());
+		});
 	}
 
 	@Internal
@@ -89,12 +100,9 @@ public class ExtractVersionConstraints extends DefaultTask {
 	@TaskAction
 	void extractVersionConstraints() {
 		this.configuration.resolve();
-		for (String projectPath : this.projectPaths) {
-			extractVersionProperties(projectPath);
-			for (DependencyConstraint constraint : getProject().project(projectPath)
-				.getConfigurations()
-				.getByName("apiElements")
-				.getAllDependencyConstraints()) {
+		this.boms.forEach(this::extractVersionProperties);
+		for (DependencyConstraintSet constraints : this.dependencyConstraintSets) {
+			for (DependencyConstraint constraint : constraints) {
 				this.versionConstraints.put(constraint.getGroup() + ":" + constraint.getName(),
 						constraint.getVersionConstraint().toString());
 				this.constrainedVersions.add(new ConstrainedVersion(constraint.getGroup(), constraint.getName(),
@@ -103,9 +111,7 @@ public class ExtractVersionConstraints extends DefaultTask {
 		}
 	}
 
-	private void extractVersionProperties(String projectPath) {
-		Object bom = getProject().project(projectPath).getExtensions().getByName("bom");
-		BomExtension bomExtension = (BomExtension) bom;
+	private void extractVersionProperties(BomExtension bomExtension) {
 		for (Library lib : bomExtension.getLibraries()) {
 			String versionProperty = lib.getVersionProperty();
 			if (versionProperty != null) {

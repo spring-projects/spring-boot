@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,6 +165,16 @@ class LoggingApplicationListenerTests {
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???").startsWith("null ").endsWith("BOOTBOOT");
+	}
+
+	@Test
+	@ClassPathExclusions("janino-*.jar")
+	void tryingToUseJaninoWhenItIsNotOnTheClasspathFailsGracefully(CapturedOutput output) {
+		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-janino.xml");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
+		assertThat(output)
+			.contains("Logging system failed to initialize using configuration from 'classpath:logback-janino.xml'");
 	}
 
 	@Test

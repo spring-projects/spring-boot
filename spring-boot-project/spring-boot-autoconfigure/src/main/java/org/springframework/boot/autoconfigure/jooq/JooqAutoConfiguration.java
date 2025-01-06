@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -53,6 +52,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class })
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
+@EnableConfigurationProperties(JooqProperties.class)
 public class JooqAutoConfiguration {
 
 	@Bean
@@ -70,35 +70,36 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider() {
-		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
+	public DefaultExecuteListenerProvider jooqExceptionTranslatorExecuteListenerProvider(
+			ExceptionTranslatorExecuteListener exceptionTranslatorExecuteListener) {
+		return new DefaultExecuteListenerProvider(exceptionTranslatorExecuteListener);
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	@Bean
+	@ConditionalOnMissingBean
+	public ExceptionTranslatorExecuteListener jooqExceptionTranslator() {
+		return ExceptionTranslatorExecuteListener.DEFAULT;
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(DSLContext.class)
-	@EnableConfigurationProperties(JooqProperties.class)
-	public static class DslContextConfiguration {
+	public DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
+		return new DefaultDSLContext(configuration);
+	}
 
-		@Bean
-		public DefaultDSLContext dslContext(org.jooq.Configuration configuration) {
-			return new DefaultDSLContext(configuration);
-		}
-
-		@Bean
-		@ConditionalOnMissingBean(org.jooq.Configuration.class)
-		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
-				DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
-				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
-				ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
-			DefaultConfiguration configuration = new DefaultConfiguration();
-			configuration.set(properties.determineSqlDialect(dataSource));
-			configuration.set(connectionProvider);
-			transactionProvider.ifAvailable(configuration::set);
-			configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
-			configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
-			return configuration;
-		}
-
+	@Bean
+	@ConditionalOnMissingBean(org.jooq.Configuration.class)
+	public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
+			DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
+			ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
+			ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
+		DefaultConfiguration configuration = new DefaultConfiguration();
+		configuration.set(properties.determineSqlDialect(dataSource));
+		configuration.set(connectionProvider);
+		transactionProvider.ifAvailable(configuration::set);
+		configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
+		configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
+		return configuration;
 	}
 
 }

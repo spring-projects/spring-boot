@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,11 @@ interface DataObjectBinder {
 	/**
 	 * Return a bound instance or {@code null} if the {@link DataObjectBinder} does not
 	 * support the specified {@link Bindable}.
+	 * @param <T> the source type
 	 * @param name the name being bound
 	 * @param target the bindable to bind
 	 * @param context the bind context
 	 * @param propertyBinder property binder
-	 * @param <T> the source type
 	 * @return a bound instance or {@code null}
 	 */
 	<T> T bind(ConfigurationPropertyName name, Bindable<T> target, Context context,
@@ -46,11 +46,22 @@ interface DataObjectBinder {
 	/**
 	 * Return a newly created instance or {@code null} if the {@link DataObjectBinder}
 	 * does not support the specified {@link Bindable}.
+	 * @param <T> the source type
 	 * @param target the bindable to create
 	 * @param context the bind context
-	 * @param <T> the source type
 	 * @return the created instance
 	 */
 	<T> T create(Bindable<T> target, Context context);
+
+	/**
+	 * Callback that can be used to add additional suppressed exceptions when an instance
+	 * cannot be created.
+	 * @param <T> the source type
+	 * @param target the bindable that was being created
+	 * @param context the bind context
+	 * @param exception the exception about to be thrown
+	 */
+	default <T> void onUnableToCreateInstance(Bindable<T> target, Context context, RuntimeException exception) {
+	}
 
 }

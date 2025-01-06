@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link RootUriTemplateHandler}.
@@ -60,7 +60,8 @@ class RootUriTemplateHandlerTests {
 
 	@Test
 	void createWithNullRootUriShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler((String) null))
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> new RootUriTemplateHandler((String) null, mock(UriTemplateHandler.class)))
 			.withMessageContaining("RootUri must not be null");
 	}
 
@@ -105,18 +106,6 @@ class RootUriTemplateHandlerTests {
 		Object[] uriVariables = new Object[0];
 		URI expanded = this.handler.expand("https://spring.io/hello", uriVariables);
 		then(this.delegate).should().expand("https://spring.io/hello", uriVariables);
-		assertThat(expanded).isEqualTo(this.uri);
-	}
-
-	@Test
-	void applyShouldWrapExistingTemplate() {
-		given(this.delegate.expand(anyString(), any(Object[].class))).willReturn(this.uri);
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setUriTemplateHandler(this.delegate);
-		this.handler = RootUriTemplateHandler.addTo(restTemplate, "https://example.com");
-		Object[] uriVariables = new Object[0];
-		URI expanded = this.handler.expand("/hello", uriVariables);
-		then(this.delegate).should().expand("https://example.com/hello", uriVariables);
 		assertThat(expanded).isEqualTo(this.uri);
 	}
 

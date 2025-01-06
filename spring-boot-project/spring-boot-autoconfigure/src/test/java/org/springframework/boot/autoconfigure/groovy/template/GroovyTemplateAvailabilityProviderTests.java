@@ -18,6 +18,12 @@ package org.springframework.boot.autoconfigure.groovy.template;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeHint;
+import org.springframework.beans.factory.aot.AotServices;
+import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider.GroovyTemplateAvailabilityProperties;
+import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider.GroovyTemplateAvailabilityRuntimeHints;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -82,6 +88,16 @@ class GroovyTemplateAvailabilityProviderTests {
 		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment, getClass().getClassLoader(),
 				this.resourceLoader))
 			.isTrue();
+	}
+
+	@Test
+	void shouldRegisterGroovyTemplateAvailabilityPropertiesRuntimeHints() {
+		assertThat(AotServices.factories().load(RuntimeHintsRegistrar.class))
+			.hasAtLeastOneElementOfType(GroovyTemplateAvailabilityRuntimeHints.class);
+		RuntimeHints hints = new RuntimeHints();
+		new GroovyTemplateAvailabilityRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		TypeHint typeHint = hints.reflection().getTypeHint(GroovyTemplateAvailabilityProperties.class);
+		assertThat(typeHint).isNotNull();
 	}
 
 }

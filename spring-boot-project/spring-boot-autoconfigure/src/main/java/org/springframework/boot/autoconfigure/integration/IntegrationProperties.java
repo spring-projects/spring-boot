@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,16 +130,21 @@ public class IntegrationProperties {
 		private boolean throwExceptionOnLateReply = false;
 
 		/**
-		 * A comma-separated list of message header names that should not be populated
-		 * into Message instances during a header copying operation.
+		 * List of message header names that should not be populated into Message
+		 * instances during a header copying operation.
 		 */
 		private List<String> readOnlyHeaders = new ArrayList<>();
 
 		/**
-		 * A comma-separated list of endpoint bean names patterns that should not be
-		 * started automatically during application startup.
+		 * List of endpoint bean names patterns that should not be started automatically
+		 * during application startup.
 		 */
 		private List<String> noAutoStartup = new ArrayList<>();
+
+		/**
+		 * Default timeout for blocking operations such as sending or receiving messages.
+		 */
+		private Duration defaultTimeout = Duration.ofSeconds(30);
 
 		public void setThrowExceptionOnLateReply(boolean throwExceptionOnLateReply) {
 			this.throwExceptionOnLateReply = throwExceptionOnLateReply;
@@ -163,6 +168,14 @@ public class IntegrationProperties {
 
 		public void setNoAutoStartup(List<String> noAutoStartup) {
 			this.noAutoStartup = noAutoStartup;
+		}
+
+		public Duration getDefaultTimeout() {
+			return this.defaultTimeout;
+		}
+
+		public void setDefaultTimeout(Duration defaultTimeout) {
+			this.defaultTimeout = defaultTimeout;
 		}
 
 	}
@@ -417,11 +430,10 @@ public class IntegrationProperties {
 		private boolean defaultLoggingEnabled = true;
 
 		/**
-		 * Comma-separated list of simple patterns to match against the names of Spring
-		 * Integration components. When matched, observation instrumentation will be
-		 * performed for the component. Please refer to the javadoc of the smartMatch
-		 * method of Spring Integration's PatternMatchUtils for details of the pattern
-		 * syntax.
+		 * List of simple patterns to match against the names of Spring Integration
+		 * components. When matched, observation instrumentation will be performed for the
+		 * component. Please refer to the javadoc of the smartMatch method of Spring
+		 * Integration's PatternMatchUtils for details of the pattern syntax.
 		 */
 		private List<String> observationPatterns = new ArrayList<>();
 

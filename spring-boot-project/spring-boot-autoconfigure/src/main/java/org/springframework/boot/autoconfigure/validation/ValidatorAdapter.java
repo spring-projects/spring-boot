@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,11 @@ import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 /**
  * {@link Validator} implementation that delegates calls to another {@link Validator}.
  * This {@link Validator} implements Spring's {@link SmartValidator} interface but does
- * not implement the JSR-303 {@code javax.validator.Validator} interface.
+ * not implement the JSR-303 {@code jakarta.validator.Validator} interface.
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Zisis Pavloudis
  * @since 2.0.0
  */
 public class ValidatorAdapter implements SmartValidator, ApplicationContextAware, InitializingBean, DisposableBean {
@@ -57,8 +58,8 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 	}
 
 	@Override
-	public boolean supports(Class<?> clazz) {
-		return this.target.supports(clazz);
+	public boolean supports(Class<?> type) {
+		return this.target.supports(type);
 	}
 
 	@Override
@@ -151,6 +152,15 @@ public class ValidatorAdapter implements SmartValidator, ApplicationContextAware
 			return new ValidatorAdapter(new SpringValidatorAdapter(jakartaValidator), existingBean);
 		}
 		return validator;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T unwrap(Class<T> type) {
+		if (type.isInstance(this.target)) {
+			return (T) this.target;
+		}
+		return this.target.unwrap(type);
 	}
 
 }

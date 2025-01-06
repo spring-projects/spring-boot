@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,13 +78,13 @@ public class OptionsCapableConnectionFactory implements Wrapped<ConnectionFactor
 	 * @since 2.5.1
 	 */
 	public static OptionsCapableConnectionFactory unwrapFrom(ConnectionFactory connectionFactory) {
-		if (connectionFactory instanceof OptionsCapableConnectionFactory) {
-			return (OptionsCapableConnectionFactory) connectionFactory;
+		if (connectionFactory instanceof OptionsCapableConnectionFactory optionsCapableConnectionFactory) {
+			return optionsCapableConnectionFactory;
 		}
-		if (connectionFactory instanceof Wrapped) {
-			Object unwrapped = ((Wrapped<?>) connectionFactory).unwrap();
-			if (unwrapped instanceof ConnectionFactory) {
-				return unwrapFrom((ConnectionFactory) unwrapped);
+		if (connectionFactory instanceof Wrapped<?> wrappedConnectionFactory) {
+			Object unwrapped = wrappedConnectionFactory.unwrap();
+			if (unwrapped instanceof ConnectionFactory unwrappedConnectionFactory) {
+				return unwrapFrom(unwrappedConnectionFactory);
 			}
 		}
 		return null;

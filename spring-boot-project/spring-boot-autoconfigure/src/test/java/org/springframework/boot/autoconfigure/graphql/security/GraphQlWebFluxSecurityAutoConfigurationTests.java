@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 the original author or authors.
+ * Copyright 2020-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity.CsrfSpec;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -161,7 +162,7 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 		@Bean
 		SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
-			return http.csrf((spec) -> spec.disable())
+			return http.csrf(CsrfSpec::disable)
 				// Demonstrate that method security works
 				// Best practice to use both for defense in depth
 				.authorizeExchange((requests) -> requests.anyExchange().permitAll())

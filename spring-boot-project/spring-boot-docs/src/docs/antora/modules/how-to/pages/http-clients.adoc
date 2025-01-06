@@ -1,0 +1,29 @@
+[[howto.http-clients]]
+= HTTP Clients
+
+Spring Boot offers a number of starters that work with HTTP clients.
+This section answers questions related to using them.
+
+
+
+[[howto.http-clients.rest-template-proxy-configuration]]
+== Configure RestTemplate to Use a Proxy
+
+As described in xref:reference:io/rest-client.adoc#io.rest-client.resttemplate.customization[RestTemplate Customization], you can use a javadoc:org.springframework.boot.web.client.RestTemplateCustomizer[] with javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] to build a customized javadoc:org.springframework.web.client.RestTemplate[].
+This is the recommended approach for creating a javadoc:org.springframework.web.client.RestTemplate[] configured to use a proxy.
+
+The exact details of the proxy configuration depend on the underlying client request factory that is being used.
+
+
+
+[[howto.http-clients.webclient-reactor-netty-customization]]
+== Configure the TcpClient used by a Reactor Netty-based WebClient
+
+When Reactor Netty is on the classpath a Reactor Netty-based javadoc:org.springframework.web.reactive.function.client.WebClient[] is auto-configured.
+To customize the client's handling of network connections, provide a javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] bean.
+The following example configures a 60 second connect timeout and adds a javadoc:io.netty.handler.timeout.ReadTimeoutHandler[]:
+
+include-code::MyReactorNettyClientConfiguration[]
+
+TIP: Note the use of javadoc:org.springframework.http.client.ReactorResourceFactory[] for the connection provider and event loop resources.
+This ensures efficient sharing of resources for the server receiving requests and the client making requests.

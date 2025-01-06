@@ -43,7 +43,7 @@ class ImmutablePropertiesMetadataGenerationTests extends AbstractMetadataGenerat
 			.withDefaultValue(false)
 			.fromSource(ImmutableSimpleProperties.class)
 			.withDescription("A simple flag.")
-			.withDeprecation(null, null));
+			.withDeprecation());
 		assertThat(metadata).has(Metadata.withProperty("immutable.comparator"));
 		assertThat(metadata).has(Metadata.withProperty("immutable.counter"));
 		assertThat(metadata.getItems()).hasSize(5);

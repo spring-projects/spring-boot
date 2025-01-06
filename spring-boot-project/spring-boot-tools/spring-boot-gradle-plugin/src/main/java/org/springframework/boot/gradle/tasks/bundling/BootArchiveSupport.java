@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import org.gradle.api.file.ConfigurableFilePermissions;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
@@ -36,17 +37,22 @@ import org.gradle.api.internal.file.copy.CopyActionProcessingStream;
 import org.gradle.api.internal.file.copy.FileCopyDetailsInternal;
 import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.java.archives.Manifest;
+import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
 import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
+import org.gradle.util.GradleVersion;
+
+import org.springframework.boot.loader.tools.LoaderImplementation;
 
 /**
  * Support class for implementations of {@link BootArchive}.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @see BootJar
  * @see BootWar
  */
@@ -60,9 +66,9 @@ class BootArchiveSupport {
 
 	static {
 		Set<String> defaultLauncherClasses = new HashSet<>();
-		defaultLauncherClasses.add("org.springframework.boot.loader.JarLauncher");
-		defaultLauncherClasses.add("org.springframework.boot.loader.PropertiesLauncher");
-		defaultLauncherClasses.add("org.springframework.boot.loader.WarLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.launch.JarLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.launch.PropertiesLauncher");
+		defaultLauncherClasses.add("org.springframework.boot.loader.launch.WarLauncher");
 		DEFAULT_LAUNCHER_CLASSES = Collections.unmodifiableSet(defaultLauncherClasses);
 	}
 
@@ -115,15 +121,19 @@ class BootArchiveSupport {
 		return (version != null) ? version : "unknown";
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies) {
-		return createCopyAction(jar, resolvedDependencies, null, null);
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
+			LoaderImplementation loaderImplementation, boolean supportsSignatureFile) {
+		return createCopyAction(jar, resolvedDependencies, loaderImplementation, supportsSignatureFile, null, null);
 	}
 
-	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies, LayerResolver layerResolver,
-			String layerToolsLocation) {
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies,
+			LoaderImplementation loaderImplementation, boolean supportsSignatureFile, LayerResolver layerResolver,
+			String jarmodeToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
+		Integer dirPermissions = getUnixNumericDirPermissions(jar);
+		Integer filePermissions = getUnixNumericFilePermissions(jar);
 		boolean includeDefaultLoader = isUsingDefaultLoader(jar);
 		Spec<FileTreeElement> requiresUnpack = this.requiresUnpack.getAsSpec();
 		Spec<FileTreeElement> exclusions = this.exclusions.getAsExcludeSpec();
@@ -131,10 +141,35 @@ class BootArchiveSupport {
 		Spec<FileCopyDetails> librarySpec = this.librarySpec;
 		Function<FileCopyDetails, ZipCompression> compressionResolver = this.compressionResolver;
 		String encoding = jar.getMetadataCharset();
-		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, includeDefaultLoader,
-				layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec, compressionResolver,
-				encoding, resolvedDependencies, layerResolver);
+		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, dirPermissions,
+				filePermissions, includeDefaultLoader, jarmodeToolsLocation, requiresUnpack, exclusions, launchScript,
+				librarySpec, compressionResolver, encoding, resolvedDependencies, supportsSignatureFile, layerResolver,
+				loaderImplementation);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
+	}
+
+	private Integer getUnixNumericDirPermissions(CopySpec copySpec) {
+		return (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0)
+				? asUnixNumeric(copySpec.getDirPermissions()) : getDirMode(copySpec);
+	}
+
+	private Integer getUnixNumericFilePermissions(CopySpec copySpec) {
+		return (GradleVersion.current().compareTo(GradleVersion.version("8.3")) >= 0)
+				? asUnixNumeric(copySpec.getFilePermissions()) : getFileMode(copySpec);
+	}
+
+	private Integer asUnixNumeric(Property<ConfigurableFilePermissions> permissions) {
+		return permissions.isPresent() ? permissions.get().toUnixNumeric() : null;
+	}
+
+	@SuppressWarnings("deprecation")
+	private Integer getDirMode(CopySpec copySpec) {
+		return copySpec.getDirMode();
+	}
+
+	@SuppressWarnings("deprecation")
+	private Integer getFileMode(CopySpec copySpec) {
+		return copySpec.getFileMode();
 	}
 
 	private boolean isUsingDefaultLoader(Jar jar) {

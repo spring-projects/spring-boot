@@ -103,12 +103,12 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	}
 
 	private void onApplicationStarted(ApplicationStartedEvent event) {
-		registerGauge(this.startedTimeMetricName, "Time taken (ms) to start the application", event.getTimeTaken(),
+		registerGauge(this.startedTimeMetricName, "Time taken to start the application", event.getTimeTaken(),
 				event.getSpringApplication());
 	}
 
 	private void onApplicationReady(ApplicationReadyEvent event) {
-		registerGauge(this.readyTimeMetricName, "Time taken (ms) for the application to be ready to service requests",
+		registerGauge(this.readyTimeMetricName, "Time taken for the application to be ready to service requests",
 				event.getTimeTaken(), event.getSpringApplication());
 	}
 

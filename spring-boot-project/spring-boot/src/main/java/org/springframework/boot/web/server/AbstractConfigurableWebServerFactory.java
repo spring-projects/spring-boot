@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,13 @@ import java.net.InetAddress;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.util.Assert;
 
 /**
@@ -50,9 +53,6 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	private Set<ErrorPage> errorPages = new LinkedHashSet<>();
 
 	private Ssl ssl;
-
-	@SuppressWarnings("removal")
-	private SslStoreProvider sslStoreProvider;
 
 	private SslBundles sslBundles;
 
@@ -135,15 +135,13 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 		this.ssl = ssl;
 	}
 
-	@SuppressWarnings("removal")
-	public SslStoreProvider getSslStoreProvider() {
-		return this.sslStoreProvider;
-	}
-
-	@Override
-	@SuppressWarnings("removal")
-	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
-		this.sslStoreProvider = sslStoreProvider;
+	/**
+	 * Return the configured {@link SslBundles}.
+	 * @return the {@link SslBundles} or {@code null}
+	 * @since 3.2.0
+	 */
+	public SslBundles getSslBundles() {
+		return this.sslBundles;
 	}
 
 	@Override
@@ -193,27 +191,18 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	}
 
 	/**
-	 * Return the provided {@link SslStoreProvider} or create one using {@link Ssl}
-	 * properties.
-	 * @return the {@code SslStoreProvider}
-	 * @deprecated since 3.1.0 for removal in 3.3.0 in favor of {@link #getSslBundle()}
-	 */
-	@Deprecated(since = "3.1.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	public final SslStoreProvider getOrCreateSslStoreProvider() {
-		if (this.sslStoreProvider != null) {
-			return this.sslStoreProvider;
-		}
-		return CertificateFileSslStoreProvider.from(this.ssl);
-	}
-
-	/**
 	 * Return the {@link SslBundle} that should be used with this server.
 	 * @return the SSL bundle
 	 */
-	@SuppressWarnings("removal")
 	protected final SslBundle getSslBundle() {
-		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider);
+		return WebServerSslBundle.get(this.ssl, this.sslBundles);
+	}
+
+	protected final Map<String, SslBundle> getServerNameSslBundles() {
+		return this.ssl.getServerNameBundles()
+			.stream()
+			.collect(Collectors.toMap(ServerNameSslBundle::serverName,
+					(serverNameSslBundle) -> this.sslBundles.getBundle(serverNameSslBundle.bundle())));
 	}
 
 	/**

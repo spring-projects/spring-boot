@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@
 
 package org.springframework.boot;
 
-import java.lang.management.ManagementFactory;
-import java.time.Duration;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 
 import org.springframework.aot.AotDetector;
+import org.springframework.boot.SpringApplication.Startup;
 import org.springframework.boot.system.ApplicationHome;
-import org.springframework.boot.system.ApplicationPid;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -42,8 +41,11 @@ class StartupInfoLogger {
 
 	private final Class<?> sourceClass;
 
-	StartupInfoLogger(Class<?> sourceClass) {
+	private final Environment environment;
+
+	StartupInfoLogger(Class<?> sourceClass, Environment environment) {
 		this.sourceClass = sourceClass;
+		this.environment = environment;
 	}
 
 	void logStarting(Log applicationLog) {
@@ -52,9 +54,9 @@ class StartupInfoLogger {
 		applicationLog.debug(LogMessage.of(this::getRunningMessage));
 	}
 
-	void logStarted(Log applicationLog, Duration timeTakenToStartup) {
+	void logStarted(Log applicationLog, Startup startup) {
 		if (applicationLog.isInfoEnabled()) {
-			applicationLog.info(getStartedMessage(timeTakenToStartup));
+			applicationLog.info(getStartedMessage(startup));
 		}
 	}
 
@@ -63,7 +65,7 @@ class StartupInfoLogger {
 		message.append("Starting");
 		appendAotMode(message);
 		appendApplicationName(message);
-		appendVersion(message, this.sourceClass);
+		appendApplicationVersion(message);
 		appendJavaVersion(message);
 		appendPid(message);
 		appendContext(message);
@@ -79,19 +81,17 @@ class StartupInfoLogger {
 		return message;
 	}
 
-	private CharSequence getStartedMessage(Duration timeTakenToStartup) {
+	private CharSequence getStartedMessage(Startup startup) {
 		StringBuilder message = new StringBuilder();
-		message.append("Started");
+		message.append(startup.action());
 		appendApplicationName(message);
 		message.append(" in ");
-		message.append(timeTakenToStartup.toMillis() / 1000.0);
+		message.append(startup.timeTakenToStarted().toMillis() / 1000.0);
 		message.append(" seconds");
-		try {
-			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;
+		Long uptimeMs = startup.processUptime();
+		if (uptimeMs != null) {
+			double uptime = uptimeMs / 1000.0;
 			message.append(" (process running for ").append(uptime).append(")");
-		}
-		catch (Throwable ex) {
-			// No JVM time available
 		}
 		return message;
 	}
@@ -109,8 +109,12 @@ class StartupInfoLogger {
 		append(message, "v", () -> source.getPackage().getImplementationVersion());
 	}
 
+	private void appendApplicationVersion(StringBuilder message) {
+		append(message, "v", () -> this.environment.getProperty("spring.application.version"));
+	}
+
 	private void appendPid(StringBuilder message) {
-		append(message, "with PID ", ApplicationPid::new);
+		append(message, "with PID ", () -> this.environment.getProperty("spring.application.pid"));
 	}
 
 	private void appendContext(StringBuilder message) {
@@ -121,7 +125,7 @@ class StartupInfoLogger {
 		}
 		append(context, "started by ", () -> System.getProperty("user.name"));
 		append(context, "in ", () -> System.getProperty("user.dir"));
-		if (context.length() > 0) {
+		if (!context.isEmpty()) {
 			message.append(" (");
 			message.append(context);
 			message.append(")");
@@ -143,7 +147,7 @@ class StartupInfoLogger {
 			value = defaultValue;
 		}
 		if (StringUtils.hasLength(value)) {
-			message.append((message.length() > 0) ? " " : "");
+			message.append((!message.isEmpty()) ? " " : "");
 			message.append(prefix);
 			message.append(value);
 		}

@@ -1,7 +1,7 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
@@ -12,6 +12,28 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-docker-compose"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.zaxxer:HikariCP")
+	dockerTestImplementation("io.projectreactor:reactor-test")
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("com.h2database:h2")
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.postgresql:postgresql")
+	dockerTestImplementation("org.testcontainers:cassandra")
+	dockerTestImplementation("org.testcontainers:couchbase")
+	dockerTestImplementation("org.testcontainers:elasticsearch")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:mongodb")
+	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:postgresql")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	dockerTestRuntimeOnly("io.lettuce:lettuce-core")
+	dockerTestRuntimeOnly("org.springframework.data:spring-data-redis")
+
 	optional("jakarta.json.bind:jakarta.json.bind-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")
@@ -20,12 +42,12 @@ dependencies {
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("com.sun.xml.messaging.saaj:saaj-impl")
-	optional("net.sourceforge.htmlunit:htmlunit") {
+	optional("org.hibernate.orm:hibernate-core")
+	optional("org.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	optional("org.hibernate.orm:hibernate-core")
 	optional("org.junit.jupiter:junit-jupiter-api")
-	optional("org.seleniumhq.selenium:htmlunit-driver") {
+	optional("org.seleniumhq.selenium:htmlunit3-driver") {
 		exclude(group: "commons-logging", module: "commons-logging")
 		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
@@ -62,14 +84,14 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
 	testImplementation("io.lettuce:lettuce-core")
-	testImplementation("io.micrometer:micrometer-registry-prometheus")
+	testImplementation("io.micrometer:micrometer-registry-prometheus-simpleclient")
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
@@ -96,13 +118,6 @@ dependencies {
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
-	testImplementation("org.testcontainers:cassandra")
-	testImplementation("org.testcontainers:couchbase")
-	testImplementation("org.testcontainers:elasticsearch")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:mongodb")
-	testImplementation("org.testcontainers:neo4j")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.thymeleaf:thymeleaf")
 }
 
@@ -122,5 +137,5 @@ test {
 
 task testSliceMetadata(type: org.springframework.boot.build.test.autoconfigure.TestSliceMetadata) {
 	sourceSet = sourceSets.main
-	outputFile = file("${buildDir}/test-slice-metadata.properties")
+	outputFile = layout.buildDirectory.file("test-slice-metadata.properties")
 }

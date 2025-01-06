@@ -17,6 +17,7 @@
 package org.springframework.boot.build.bom.bomr.github;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,8 +76,9 @@ final class StandardGitHubRepository implements GitHubRepository {
 
 	@Override
 	public List<Milestone> getMilestones() {
-		return get("milestones?per_page=100",
-				(milestone) -> new Milestone((String) milestone.get("title"), (Integer) milestone.get("number")));
+		return get("milestones?per_page=100", (milestone) -> new Milestone((String) milestone.get("title"),
+				(Integer) milestone.get("number"),
+				(milestone.get("due_on") != null) ? OffsetDateTime.parse((String) milestone.get("due_on")) : null));
 	}
 
 	@Override

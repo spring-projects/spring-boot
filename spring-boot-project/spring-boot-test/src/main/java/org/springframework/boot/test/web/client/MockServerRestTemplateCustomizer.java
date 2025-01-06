@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,10 @@ import org.springframework.web.client.RestTemplate;
  * obtain the mock server. If the customizer has been used more than once the
  * {@link #getServer(RestTemplate)} or {@link #getServers()} method must be used to access
  * the related server.
+ * <p>
+ * If a mock server is used in more than one test case in a test class, it might be
+ * necessary to reset the expectations on the server between tests using
+ * {@code getServer().reset()} or {@code getServer(restTemplate).reset()}.
  *
  * @author Phillip Webb
  * @author Moritz Halbritter
@@ -73,7 +77,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	/**
-	 * Crate a new {@link MockServerRestTemplateCustomizer} instance.
+	 * Create a new {@link MockServerRestTemplateCustomizer} instance.
 	 * @param expectationManager the expectation manager class to use
 	 */
 	public MockServerRestTemplateCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
@@ -82,7 +86,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	/**
-	 * Crate a new {@link MockServerRestTemplateCustomizer} instance.
+	 * Create a new {@link MockServerRestTemplateCustomizer} instance.
 	 * @param expectationManagerSupplier a supplier that provides the
 	 * {@link RequestExpectationManager} to use
 	 * @since 3.0.0

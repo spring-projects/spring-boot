@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,24 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.opentelemetry.OpenTelemetryProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnThreading;
+import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+import org.springframework.core.task.VirtualThreadTaskExecutor;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to OTLP.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  * @since 3.0.0
  */
 @AutoConfiguration(
@@ -44,25 +50,60 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(OtlpMeterRegistry.class)
 @ConditionalOnEnabledMetricsExport("otlp")
-@EnableConfigurationProperties(OtlpProperties.class)
+@EnableConfigurationProperties({ OtlpMetricsProperties.class, OpenTelemetryProperties.class })
 public class OtlpMetricsExportAutoConfiguration {
 
-	private final OtlpProperties properties;
+	private final OtlpMetricsProperties properties;
 
-	public OtlpMetricsExportAutoConfiguration(OtlpProperties properties) {
+	OtlpMetricsExportAutoConfiguration(OtlpMetricsProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public OtlpConfig otlpConfig() {
-		return new OtlpPropertiesConfigAdapter(this.properties);
+	OtlpMetricsConnectionDetails otlpMetricsConnectionDetails() {
+		return new PropertiesOtlpMetricsConnectionDetails(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
+	OtlpConfig otlpConfig(OpenTelemetryProperties openTelemetryProperties,
+			OtlpMetricsConnectionDetails connectionDetails, Environment environment) {
+		return new OtlpMetricsPropertiesConfigAdapter(this.properties, openTelemetryProperties, connectionDetails,
+				environment);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.PLATFORM)
 	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
 		return new OtlpMeterRegistry(otlpConfig, clock);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnThreading(Threading.VIRTUAL)
+	public OtlpMeterRegistry otlpMeterRegistryVirtualThreads(OtlpConfig otlpConfig, Clock clock) {
+		VirtualThreadTaskExecutor taskExecutor = new VirtualThreadTaskExecutor("otlp-meter-registry-");
+		return new OtlpMeterRegistry(otlpConfig, clock, taskExecutor.getVirtualThreadFactory());
+	}
+
+	/**
+	 * Adapts {@link OtlpMetricsProperties} to {@link OtlpMetricsConnectionDetails}.
+	 */
+	static class PropertiesOtlpMetricsConnectionDetails implements OtlpMetricsConnectionDetails {
+
+		private final OtlpMetricsProperties properties;
+
+		PropertiesOtlpMetricsConnectionDetails(OtlpMetricsProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getUrl() {
+			return this.properties.getUrl();
+		}
+
 	}
 
 }

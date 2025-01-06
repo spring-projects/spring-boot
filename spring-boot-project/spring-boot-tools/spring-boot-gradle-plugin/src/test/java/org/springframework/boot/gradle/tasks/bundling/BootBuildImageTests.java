@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
+import org.springframework.boot.buildpack.platform.docker.type.ImagePlatform;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
@@ -56,7 +58,7 @@ class BootBuildImageTests {
 		projectDir.mkdirs();
 		this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName("build-image-test").build();
 		this.project.setDescription("Test project for BootBuildImage");
-		this.buildImage = this.project.getTasks().create("buildImage", BootBuildImage.class);
+		this.buildImage = this.project.getTasks().register("buildImage", BootBuildImage.class).get();
 	}
 
 	@Test
@@ -171,13 +173,24 @@ class BootBuildImageTests {
 
 	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
-		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("paketobuildpacks/builder");
+		BuildRequest request = this.buildImage.createRequest();
+		assertThat(request.getBuilder().getName()).isEqualTo("paketobuildpacks/builder-jammy-java-tiny");
+		assertThat(request.isTrustBuilder()).isTrue();
 	}
 
 	@Test
 	void whenBuilderIsConfiguredThenRequestUsesSpecifiedBuilder() {
 		this.buildImage.getBuilder().set("example.com/test/builder:1.2");
-		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("test/builder");
+		BuildRequest request = this.buildImage.createRequest();
+		assertThat(request.getBuilder().getName()).isEqualTo("test/builder");
+		assertThat(request.isTrustBuilder()).isFalse();
+	}
+
+	@Test
+	void whenTrustBuilderIsEnabledThenRequestHasTrustBuilderEnabled() {
+		this.buildImage.getBuilder().set("example.com/test/builder:1.2");
+		this.buildImage.getTrustBuilder().set(true);
+		assertThat(this.buildImage.createRequest().isTrustBuilder()).isTrue();
 	}
 
 	@Test
@@ -291,6 +304,36 @@ class BootBuildImageTests {
 		this.buildImage.getTags().add("example.com/my-app:latest");
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
+	}
+
+	@Test
+	void whenSecurityOptionsAreNotConfiguredThenRequestHasNoSecurityOptions() {
+		assertThat(this.buildImage.createRequest().getSecurityOptions()).isNull();
+	}
+
+	@Test
+	void whenSecurityOptionsAreEmptyThenRequestHasEmptySecurityOptions() {
+		this.buildImage.getSecurityOptions().set(Collections.emptyList());
+		assertThat(this.buildImage.createRequest().getSecurityOptions()).isEmpty();
+	}
+
+	@Test
+	void whenSecurityOptionsAreConfiguredThenRequestHasSecurityOptions() {
+		this.buildImage.getSecurityOptions().add("label=user:USER");
+		this.buildImage.getSecurityOptions().add("label=role:ROLE");
+		assertThat(this.buildImage.createRequest().getSecurityOptions()).containsExactly("label=user:USER",
+				"label=role:ROLE");
+	}
+
+	@Test
+	void whenImagePlatformIsNotConfiguredThenRequestHasNoImagePlatform() {
+		assertThat(this.buildImage.createRequest().getImagePlatform()).isNull();
+	}
+
+	@Test
+	void whenImagePlatformIsConfiguredThenRequestHasImagePlatform() {
+		this.buildImage.getImagePlatform().set("linux/arm64/v1");
+		assertThat(this.buildImage.createRequest().getImagePlatform()).isEqualTo(ImagePlatform.of("linux/arm64/v1"));
 	}
 
 }

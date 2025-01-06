@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package smoketest.actuator;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalManagementPort;
@@ -30,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for separate management and main service ports with Actuator's MVC
- * {@link RestControllerEndpoint rest controller endpoints} and {@link ExceptionHandler
- * exception handler}.
+ * {@link org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint
+ * rest controller endpoints} and {@link ExceptionHandler exception handler}.
  *
  * @author Guirong Hu
  */

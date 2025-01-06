@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ final class CommandLineBuilder {
 		static String build(List<URL> classpathElements) {
 			StringBuilder classpath = new StringBuilder();
 			for (URL element : classpathElements) {
-				if (classpath.length() > 0) {
+				if (!classpath.isEmpty()) {
 					classpath.append(File.pathSeparator);
 				}
 				classpath.append(toFile(element));
@@ -120,7 +120,7 @@ final class CommandLineBuilder {
 	/**
 	 * Format System properties.
 	 */
-	private static class SystemPropertyFormatter {
+	private static final class SystemPropertyFormatter {
 
 		static String format(String key, String value) {
 			if (key == null) {

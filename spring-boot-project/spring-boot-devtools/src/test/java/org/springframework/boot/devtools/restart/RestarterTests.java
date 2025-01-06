@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -44,6 +46,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -91,6 +94,14 @@ class RestarterTests {
 	}
 
 	@Test
+	void testDisabled() {
+		Restarter.disable();
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		Restarter.getInstance().prepare(context);
+		assertThat(Restarter.getInstance()).extracting("rootContexts", as(InstanceOfAssertFactories.LIST)).isEmpty();
+	}
+
+	@Test
 	@SuppressWarnings("rawtypes")
 	void getOrAddAttributeWithNewAttribute() {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
@@ -134,12 +145,25 @@ class RestarterTests {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
 	void getOrAddAttributeWithExistingAttribute() {
 		Restarter.getInstance().getOrAddAttribute("x", () -> "abc");
-		ObjectFactory objectFactory = mock(ObjectFactory.class);
+		ObjectFactory<?> objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
 		assertThat(attribute).isEqualTo("abc");
+		then(objectFactory).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void getOrAddAttributeWithRecursion() {
+		Restarter restarter = Restarter.getInstance();
+		Object added = restarter.getOrAddAttribute("postgresContainer", () -> {
+			restarter.getOrAddAttribute("rabbitContainer", () -> "def");
+			return "abc";
+		});
+		ObjectFactory<?> objectFactory = mock(ObjectFactory.class);
+		assertThat(added).isEqualTo("abc");
+		assertThat(restarter.getOrAddAttribute("postgresContainer", objectFactory)).isEqualTo("abc");
+		assertThat(restarter.getOrAddAttribute("rabbitContainer", objectFactory)).isEqualTo("def");
 		then(objectFactory).shouldHaveNoInteractions();
 	}
 

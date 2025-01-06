@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class ArtifactsLibraries implements Libraries {
 	/**
 	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
 	 * @param artifacts all artifacts that can be represented as libraries
-	 * @param includedArtifacts the actual artifacts to include in the fat jar
+	 * @param includedArtifacts the actual artifacts to include in the uber jar
 	 * @param localProjects projects for which {@link Library#isLocal() local} libraries
 	 * should be created
 	 * @param unpacks artifacts that should be unpacked on launch

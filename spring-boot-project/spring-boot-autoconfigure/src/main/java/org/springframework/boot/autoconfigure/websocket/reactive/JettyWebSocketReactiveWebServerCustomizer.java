@@ -17,15 +17,13 @@
 package org.springframework.boot.autoconfigure.websocket.reactive;
 
 import jakarta.servlet.ServletContext;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.websocket.jakarta.server.JakartaWebSocketServerContainer;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
+import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.core.server.WebSocketMappings;
 import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
-import org.eclipse.jetty.websocket.jakarta.server.internal.JakartaWebSocketServerContainer;
-import org.eclipse.jetty.websocket.server.JettyWebSocketServerContainer;
-import org.eclipse.jetty.websocket.servlet.WebSocketUpgradeFilter;
 
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -47,13 +45,13 @@ public class JettyWebSocketReactiveWebServerCustomizer
 			if (servletContextHandler != null) {
 				ServletContext servletContext = servletContextHandler.getServletContext();
 				if (JettyWebSocketServerContainer.getContainer(servletContext) == null) {
-					WebSocketServerComponents.ensureWebSocketComponents(server, servletContext);
+					WebSocketServerComponents.ensureWebSocketComponents(server, servletContextHandler);
 					JettyWebSocketServerContainer.ensureContainer(servletContext);
 				}
 				if (JakartaWebSocketServerContainer.getContainer(servletContext) == null) {
-					WebSocketServerComponents.ensureWebSocketComponents(server, servletContext);
+					WebSocketServerComponents.ensureWebSocketComponents(server, servletContextHandler);
 					WebSocketUpgradeFilter.ensureFilter(servletContext);
-					WebSocketMappings.ensureMappings(servletContext);
+					WebSocketMappings.ensureMappings(servletContextHandler);
 					JakartaWebSocketServerContainer.ensureContainer(servletContext);
 				}
 			}
@@ -64,10 +62,10 @@ public class JettyWebSocketReactiveWebServerCustomizer
 		if (handler instanceof ServletContextHandler servletContextHandler) {
 			return servletContextHandler;
 		}
-		if (handler instanceof HandlerWrapper handlerWrapper) {
+		if (handler instanceof Handler.Wrapper handlerWrapper) {
 			return findServletContextHandler(handlerWrapper.getHandler());
 		}
-		if (handler instanceof HandlerCollection handlerCollection) {
+		if (handler instanceof Handler.Collection handlerCollection) {
 			for (Handler contained : handlerCollection.getHandlers()) {
 				ServletContextHandler servletContextHandler = findServletContextHandler(contained);
 				if (servletContextHandler != null) {

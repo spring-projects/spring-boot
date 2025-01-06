@@ -16,6 +16,8 @@
 
 package org.springframework.boot.jdbc.metadata;
 
+import java.time.Duration;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -83,7 +85,7 @@ class CommonsDbcp2DataSourcePoolMetadataTests
 		BasicDataSource dataSource = createDataSource();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxTotal(maxSize);
-		dataSource.setMinEvictableIdleTimeMillis(5000);
+		dataSource.setMinEvictableIdle(Duration.ofSeconds(5));
 		return new CommonsDbcp2DataSourcePoolMetadata(dataSource);
 	}
 

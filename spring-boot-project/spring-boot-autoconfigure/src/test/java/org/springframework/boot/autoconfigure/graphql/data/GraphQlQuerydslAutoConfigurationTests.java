@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.Book;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ import org.springframework.graphql.data.GraphQlRepository;
 import org.springframework.graphql.test.tester.ExecutionGraphQlServiceTester;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -50,7 +52,7 @@ class GraphQlQuerydslAutoConfigurationTests {
 		.withConfiguration(
 				AutoConfigurations.of(GraphQlAutoConfiguration.class, GraphQlQuerydslAutoConfiguration.class))
 		.withUserConfiguration(MockRepositoryConfig.class)
-		.withPropertyValues("spring.main.web-application-type=reactive");
+		.withPropertyValues("spring.main.web-application-type=servlet");
 
 	@Test
 	void shouldRegisterDataFetcherForQueryDslRepositories() {
@@ -63,6 +65,13 @@ class GraphQlQuerydslAutoConfigurationTests {
 				.entity(String.class)
 				.isEqualTo("Test title");
 		});
+	}
+
+	@Test
+	void shouldBackOffWithoutQueryDsl() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("com.querydsl.core"))
+			.run((context) -> assertThat(context).doesNotHaveBean("querydslRegistrar")
+				.doesNotHaveBean(GraphQlQuerydslAutoConfiguration.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

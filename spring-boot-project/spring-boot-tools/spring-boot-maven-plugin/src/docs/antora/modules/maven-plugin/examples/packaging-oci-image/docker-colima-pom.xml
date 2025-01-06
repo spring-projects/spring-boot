@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::docker-colima[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<docker>
+						<host>unix:///${user.home}/.colima/docker.sock</host>
+					</docker>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::docker-colima[] -->

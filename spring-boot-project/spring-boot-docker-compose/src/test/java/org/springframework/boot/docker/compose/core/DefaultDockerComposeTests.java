@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,36 +46,36 @@ class DefaultDockerComposeTests {
 
 	private static final String HOST = "192.168.1.1";
 
-	private DockerCli cli = mock(DockerCli.class);
+	private final DockerCli cli = mock(DockerCli.class);
 
 	@Test
 	void upRunsUpCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
-		compose.up(LogLevel.OFF);
-		then(this.cli).should().run(new DockerCliCommand.ComposeUp(LogLevel.OFF));
+		compose.up(LogLevel.OFF, Collections.emptyList());
+		then(this.cli).should().run(new DockerCliCommand.ComposeUp(LogLevel.OFF, Collections.emptyList()));
 	}
 
 	@Test
 	void downRunsDownCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
 		Duration timeout = Duration.ofSeconds(1);
-		compose.down(timeout);
-		then(this.cli).should().run(new DockerCliCommand.ComposeDown(timeout));
+		compose.down(timeout, Collections.emptyList());
+		then(this.cli).should().run(new DockerCliCommand.ComposeDown(timeout, Collections.emptyList()));
 	}
 
 	@Test
 	void startRunsStartCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
-		compose.start(LogLevel.OFF);
-		then(this.cli).should().run(new DockerCliCommand.ComposeStart(LogLevel.OFF));
+		compose.start(LogLevel.OFF, Collections.emptyList());
+		then(this.cli).should().run(new DockerCliCommand.ComposeStart(LogLevel.OFF, Collections.emptyList()));
 	}
 
 	@Test
 	void stopRunsStopCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
 		Duration timeout = Duration.ofSeconds(1);
-		compose.stop(timeout);
-		then(this.cli).should().run(new DockerCliCommand.ComposeStop(timeout));
+		compose.stop(timeout, Collections.emptyList());
+		then(this.cli).should().run(new DockerCliCommand.ComposeStop(timeout, Collections.emptyList()));
 	}
 
 	@Test
@@ -139,6 +139,22 @@ class DefaultDockerComposeTests {
 		assertThat(runningServices).hasSize(1);
 		RunningService runningService = runningServices.get(0);
 		assertThat(runningService.host()).isEqualTo("192.168.1.1");
+	}
+
+	@Test
+	void worksWithTruncatedIds() {
+		String shortId = "123";
+		String longId = "123456";
+		DockerCliComposePsResponse psResponse = new DockerCliComposePsResponse(shortId, "name", "redis", "running");
+		Config config = new Config("redis", Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList());
+		DockerCliInspectResponse inspectResponse = new DockerCliInspectResponse(longId, config, null, null);
+		willReturn(List.of(new DockerCliContextResponse("test", true, "https://192.168.1.1"))).given(this.cli)
+			.run(new DockerCliCommand.Context());
+		willReturn(List.of(psResponse)).given(this.cli).run(new DockerCliCommand.ComposePs());
+		willReturn(List.of(inspectResponse)).given(this.cli).run(new DockerCliCommand.Inspect(List.of(shortId)));
+		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, null);
+		List<RunningService> runningServices = compose.getRunningServices();
+		assertThat(runningServices).hasSize(1);
 	}
 
 }

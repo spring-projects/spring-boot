@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -25,9 +26,12 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * Interface to register key components of the {@link WebMvcConfigurationSupport} in place
  * of the default ones provided by Spring MVC.
  * <p>
- * All custom instances are later processed by Boot and Spring MVC configurations. A
- * single instance of this component should be registered, otherwise making it impossible
- * to choose from redundant MVC components.
+ * All custom instances are later processed by Boot and Spring MVC configurations. To
+ * participate in, and if desired, override that subsequent processing,
+ * {@link WebMvcConfigurer} should be used.
+ * <p>
+ * A single instance of this component should be registered, otherwise making it
+ * impossible to choose from redundant MVC components.
  *
  * @author Brian Clozel
  * @since 2.0.0

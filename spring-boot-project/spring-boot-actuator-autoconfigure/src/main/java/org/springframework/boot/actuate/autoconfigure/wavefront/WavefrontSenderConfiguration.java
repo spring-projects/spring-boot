@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,8 @@ public class WavefrontSenderConfiguration {
 	@ConditionalOnMissingBean
 	@Conditional(WavefrontTracingOrMetricsCondition.class)
 	public WavefrontSender wavefrontSender(WavefrontProperties properties) {
-		Builder builder = new Builder(properties.getEffectiveUri().toString(), properties.getApiTokenOrThrow());
+		Builder builder = new Builder(properties.getEffectiveUri().toString(), properties.getWavefrontApiTokenType(),
+				properties.getApiTokenOrThrow());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		WavefrontProperties.Sender sender = properties.getSender();
 		map.from(sender.getMaxQueueSize()).to(builder::maxQueueSize);
@@ -68,7 +69,7 @@ public class WavefrontSenderConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnEnabledTracing
+		@ConditionalOnEnabledTracing("wavefront")
 		static class TracingCondition {
 
 		}

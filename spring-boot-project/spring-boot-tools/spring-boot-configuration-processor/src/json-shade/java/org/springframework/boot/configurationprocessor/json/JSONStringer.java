@@ -173,7 +173,7 @@ public class JSONStringer {
 	 * @throws JSONException if processing of json failed
 	 */
 	JSONStringer open(Scope empty, String openBracket) throws JSONException {
-		if (this.stack.isEmpty() && this.out.length() > 0) {
+		if (this.stack.isEmpty() && !this.out.isEmpty()) {
 			throw new JSONException("Nesting problem: multiple top-level roots");
 		}
 		beforeValue();
@@ -423,7 +423,7 @@ public class JSONStringer {
 	 */
 	@Override
 	public String toString() {
-		return this.out.length() == 0 ? null : this.out.toString();
+		return this.out.isEmpty() ? null : this.out.toString();
 	}
 
 }

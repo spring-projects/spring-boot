@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,11 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExc
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMapper;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -95,9 +94,11 @@ class WebEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void webApplicationConfiguresEndpointDiscoverer() {
 		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(ControllerEndpointDiscoverer.class);
+			assertThat(context).hasSingleBean(
+					org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointDiscoverer.class);
 			assertThat(context).hasSingleBean(WebEndpointDiscoverer.class);
 		});
 	}
@@ -109,14 +110,18 @@ class WebEndpointAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void contextShouldConfigureServletEndpointDiscoverer() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ServletEndpointDiscoverer.class));
+		this.contextRunner.run((context) -> assertThat(context)
+			.hasSingleBean(org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer.class));
 	}
 
 	@Test
+	@SuppressWarnings("removal")
 	void contextWhenNotServletShouldNotConfigureServletEndpointDiscoverer() {
 		new ApplicationContextRunner().withConfiguration(CONFIGURATIONS)
-			.run((context) -> assertThat(context).doesNotHaveBean(ServletEndpointDiscoverer.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(
+					org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointDiscoverer.class));
 	}
 
 	@Component
@@ -125,7 +130,7 @@ class WebEndpointAutoConfigurationTests {
 		@Override
 		public String getRootPath(EndpointId endpointId) {
 			if (endpointId.toString().endsWith("one")) {
-				return "1/" + endpointId.toString();
+				return "1/" + endpointId;
 			}
 			return null;
 		}
@@ -136,17 +141,32 @@ class WebEndpointAutoConfigurationTests {
 	@Endpoint(id = "testone")
 	static class TestOneEndpoint {
 
+		@ReadOperation
+		String read() {
+			return "read";
+		}
+
 	}
 
 	@Component
 	@Endpoint(id = "testanotherone")
 	static class TestAnotherOneEndpoint {
 
+		@ReadOperation
+		String read() {
+			return "read";
+		}
+
 	}
 
 	@Component
 	@Endpoint(id = "testtwo")
 	static class TestTwoEndpoint {
+
+		@ReadOperation
+		String read() {
+			return "read";
+		}
 
 	}
 

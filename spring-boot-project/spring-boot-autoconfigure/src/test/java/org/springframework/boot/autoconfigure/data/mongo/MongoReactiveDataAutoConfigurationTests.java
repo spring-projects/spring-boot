@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.time.Duration;
+
 import com.mongodb.ConnectionString;
+import com.mongodb.reactivestreams.client.MongoCollection;
+import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -30,6 +35,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.NoOpDbRefResolver;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -68,20 +75,26 @@ class MongoReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void usesMongoConnectionDetailsIfAvailable() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
 			assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid-database-1");
 			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-			assertThat(template).hasFieldOrPropertyWithValue("bucket", "connection-details-bucket");
+			GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+				.block(Duration.ofSeconds(30));
+			assertThat(bucket.getBucketName()).isEqualTo("connection-details-bucket");
 		});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void whenGridFsBucketIsConfiguredThenGridFsTemplateUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
 			assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
 			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-			assertThat(template).hasFieldOrPropertyWithValue("bucket", "test-bucket");
+			GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+				.block(Duration.ofSeconds(30));
+			assertThat(bucket.getBucketName()).isEqualTo("test-bucket");
 		});
 	}
 
@@ -150,12 +163,22 @@ class MongoReactiveDataAutoConfigurationTests {
 			.run((context) -> assertThat(context).getFailure().hasMessageContaining("Database name must not be empty"));
 	}
 
+	@Test
+	void mappingMongoConverterHasANoOpDbRefResolver() {
+		this.contextRunner.run((context) -> {
+			MappingMongoConverter converter = context.getBean(MappingMongoConverter.class);
+			assertThat(converter).extracting("dbRefResolver").isInstanceOf(NoOpDbRefResolver.class);
+		});
+	}
+
+	@SuppressWarnings("unchecked")
 	private String grisFsTemplateDatabaseName(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
 		ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-		ReactiveMongoDatabaseFactory factory = (ReactiveMongoDatabaseFactory) ReflectionTestUtils.getField(template,
-				"dbFactory");
-		return factory.getMongoDatabase().block().getName();
+		GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+			.block(Duration.ofSeconds(30));
+		MongoCollection<?> collection = (MongoCollection<?>) ReflectionTestUtils.getField(bucket, "filesCollection");
+		return collection.getNamespace().getDatabaseName();
 	}
 
 	@Configuration(proxyBeanMethods = false)

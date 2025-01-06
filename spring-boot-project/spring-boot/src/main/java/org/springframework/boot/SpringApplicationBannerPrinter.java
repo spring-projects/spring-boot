@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.logging.Log;
 
@@ -95,10 +96,12 @@ class SpringApplicationBannerPrinter {
 
 	private String createStringFromBanner(Banner banner, Environment environment, Class<?> mainApplicationClass)
 			throws UnsupportedEncodingException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		banner.printBanner(environment, mainApplicationClass, new PrintStream(baos));
-		String charset = environment.getProperty("spring.banner.charset", "UTF-8");
-		return baos.toString(charset);
+		String charset = environment.getProperty("spring.banner.charset", StandardCharsets.UTF_8.name());
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		try (PrintStream out = new PrintStream(byteArrayOutputStream, false, charset)) {
+			banner.printBanner(environment, mainApplicationClass, out);
+		}
+		return byteArrayOutputStream.toString(charset);
 	}
 
 	/**

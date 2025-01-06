@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.build;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -32,6 +30,8 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+
+import org.springframework.util.FileSystemUtils;
 
 /**
  * A plugin to make a project's {@code deployment} publication available as a Maven
@@ -56,7 +56,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);
 		PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-		File repositoryLocation = new File(project.getBuildDir(), "maven-repository");
+		File repositoryLocation = project.getLayout().getBuildDirectory().dir("maven-repository").get().getAsFile();
 		publishing.getRepositories().maven((mavenRepository) -> {
 			mavenRepository.setName("project");
 			mavenRepository.setUrl(repositoryLocation.toURI());
@@ -95,10 +95,11 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 			.getDependencies()
 			.withType(ProjectDependency.class)
 			.all((dependency) -> {
-				Map<String, String> dependencyDescriptor = new HashMap<>();
-				dependencyDescriptor.put("path", dependency.getDependencyProject().getPath());
-				dependencyDescriptor.put("configuration", MAVEN_REPOSITORY_CONFIGURATION_NAME);
-				target.add(project.getDependencies().project(dependencyDescriptor));
+				ProjectDependency copy = dependency.copy();
+				if (copy.getAttributes().isEmpty()) {
+					copy.setTargetConfiguration(MAVEN_REPOSITORY_CONFIGURATION_NAME);
+				}
+				target.add(copy);
 			});
 	}
 
@@ -112,7 +113,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 
 		@Override
 		public void execute(Task task) {
-			task.getProject().delete(this.location);
+			FileSystemUtils.deleteRecursively(this.location);
 		}
 
 	}

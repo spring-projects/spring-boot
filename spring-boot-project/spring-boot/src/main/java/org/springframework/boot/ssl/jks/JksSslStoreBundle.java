@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,30 +18,38 @@ package org.springframework.boot.ssl.jks;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+import java.util.function.Supplier;
 
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link SslStoreBundle} backed by a Java keystore.
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public class JksSslStoreBundle implements SslStoreBundle {
 
 	private final JksSslStoreDetails keyStoreDetails;
 
-	private final JksSslStoreDetails trustStoreDetails;
+	private final ResourceLoader resourceLoader;
+
+	private final Supplier<KeyStore> keyStore;
+
+	private final Supplier<KeyStore> trustStore;
 
 	/**
 	 * Create a new {@link JksSslStoreBundle} instance.
@@ -49,13 +57,28 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 */
 	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails) {
+		this(keyStoreDetails, trustStoreDetails, ApplicationResourceLoader.get());
+	}
+
+	/**
+	 * Create a new {@link JksSslStoreBundle} instance.
+	 * @param keyStoreDetails the key store details
+	 * @param trustStoreDetails the trust store details
+	 * @param resourceLoader the resource loader used to load content
+	 * @since 3.3.5
+	 */
+	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails,
+			ResourceLoader resourceLoader) {
+		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.keyStoreDetails = keyStoreDetails;
-		this.trustStoreDetails = trustStoreDetails;
+		this.resourceLoader = resourceLoader;
+		this.keyStore = SingletonSupplier.of(() -> createKeyStore("key", keyStoreDetails));
+		this.trustStore = SingletonSupplier.of(() -> createKeyStore("trust", trustStoreDetails));
 	}
 
 	@Override
 	public KeyStore getKeyStore() {
-		return createKeyStore("key", this.keyStoreDetails);
+		return this.keyStore.get();
 	}
 
 	@Override
@@ -65,7 +88,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 
 	@Override
 	public KeyStore getTrustStore() {
-		return createKeyStore("trust", this.trustStoreDetails);
+		return this.trustStore.get();
 	}
 
 	private KeyStore createKeyStore(String name, JksSslStoreDetails details) {
@@ -109,14 +132,25 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	private void loadKeyStore(KeyStore store, String location, char[] password) {
 		Assert.state(StringUtils.hasText(location), () -> "Location must not be empty or null");
 		try {
-			URL url = ResourceUtils.getURL(location);
-			try (InputStream stream = url.openStream()) {
+			try (InputStream stream = this.resourceLoader.getResource(location).getInputStream()) {
 				store.load(stream, password);
 			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not load store from '" + location + "'", ex);
 		}
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		KeyStore keyStore = this.keyStore.get();
+		creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");
+		String keyStorePassword = getKeyStorePassword();
+		creator.append("keyStorePassword", (keyStorePassword != null) ? "******" : null);
+		KeyStore trustStore = this.trustStore.get();
+		creator.append("trustStore.type", (trustStore != null) ? trustStore.getType() : "none");
+		return creator.toString();
 	}
 
 }

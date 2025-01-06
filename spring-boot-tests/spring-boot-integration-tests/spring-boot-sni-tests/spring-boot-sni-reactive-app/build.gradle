@@ -1,0 +1,59 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
+plugins {
+	id "java"
+	id "org.springframework.boot"
+}
+
+java {
+	sourceCompatibility = '17'
+	targetCompatibility = '17'
+}
+
+repositories {
+	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	mavenCentral()
+	maven { url "https://repo.spring.io/snapshot" }
+	maven { url "https://repo.spring.io/milestone" }
+}
+
+configurations {
+	app {
+		extendsFrom(configurations.runtimeClasspath)
+	}
+	netty {
+		extendsFrom(app)
+	}
+	tomcat {
+		extendsFrom(app)
+	}
+	undertow {
+		extendsFrom(app)
+	}
+}
+
+dependencies {
+	compileOnly("org.springframework:spring-webflux")
+
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
+	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+	app(files(sourceSets.main.output))
+	app("org.springframework:spring-webflux") {
+		exclude group: "spring-boot-project", module: "spring-boot-starter-reactor-netty"
+	}
+	netty("org.springframework.boot:spring-boot-starter-webflux")
+	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
+	undertow("org.springframework.boot:spring-boot-starter-undertow")
+}
+
+["netty", "tomcat", "undertow"].each { webServer ->
+	def configurer = { task ->
+		task.mainClass = "org.springframework.boot.sni.server.SniServerApplication"
+		task.classpath = configurations.getByName(webServer)
+		task.archiveClassifier = webServer
+		task.targetJavaVersion = project.getTargetCompatibility()
+	}
+	tasks.register("${webServer}ServerApp", BootJar, configurer)
+}

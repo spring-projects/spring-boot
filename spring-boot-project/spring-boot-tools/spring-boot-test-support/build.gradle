@@ -1,6 +1,6 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Testing Support"
@@ -8,7 +8,7 @@ description = "Spring Boot Testing Support"
 dependencies {
 	api(platform(project(path: ":spring-boot-project:spring-boot-parent")))
 
-	compileOnly("com.datastax.oss:java-driver-core") {
+	compileOnly("org.apache.cassandra:java-driver-core") {
 		exclude(group: "org.slf4j", module: "jcl-over-slf4j")
 	}
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
@@ -19,8 +19,6 @@ dependencies {
 	compileOnly("org.mockito:mockito-core")
 	compileOnly("org.springframework:spring-context")
 	compileOnly("org.springframework.data:spring-data-redis")
-	compileOnly("org.testcontainers:cassandra")
-	compileOnly("org.testcontainers:testcontainers")
 
 	implementation("jakarta.inject:jakarta.inject-api")
 	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")

@@ -34,76 +34,81 @@ class OracleEnvironmentTests {
 
 	@Test
 	void getUsernameWhenHasAppUser() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(
+				Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"), "defaultDb");
 		assertThat(environment.getUsername()).isEqualTo("alice");
 	}
 
 	@Test
 	void getUsernameWhenHasNoAppUser() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("ORACLE_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(Map.of("ORACLE_PASSWORD", "secret"), "defaultDb");
 		assertThat(environment.getUsername()).isEqualTo("system");
 	}
 
 	@Test
 	void getPasswordWhenHasAppPassword() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("APP_USER", "alice", "APP_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(
+				Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret"), "defaultDb");
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
 	void getPasswordWhenHasOraclePassword() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("ORACLE_PASSWORD", "secret"));
+		OracleEnvironment environment = new OracleEnvironment(Map.of("ORACLE_PASSWORD", "secret"), "defaultDb");
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
 	void createWhenRandomPasswordAndAppPasswordDoesNotThrow() {
 		assertThatNoException().isThrownBy(() -> new OracleEnvironment(
-				Map.of("APP_USER", "alice", "APP_PASSWORD", "secret", "ORACLE_RANDOM_PASSWORD", "true")));
+				Map.of("APP_USER", "alice", "APP_USER_PASSWORD", "secret", "ORACLE_RANDOM_PASSWORD", "true"),
+				"defaultDb"));
 	}
 
 	@Test
 	void createWhenRandomPasswordThrowsException() {
 		assertThatIllegalStateException()
-			.isThrownBy(() -> new OracleEnvironment(Map.of("ORACLE_RANDOM_PASSWORD", "true")))
-			.withMessage("ORACLE_RANDOM_PASSWORD is not supported without APP_USER and APP_PASSWORD");
+			.isThrownBy(() -> new OracleEnvironment(Map.of("ORACLE_RANDOM_PASSWORD", "true"), "defaultDb"))
+			.withMessage("ORACLE_RANDOM_PASSWORD is not supported without APP_USER and APP_USER_PASSWORD");
 	}
 
 	@Test
 	void createWhenAppUserAndNoAppPasswordThrowsException() {
-		assertThatIllegalStateException().isThrownBy(() -> new OracleEnvironment(Map.of("APP_USER", "alice")))
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new OracleEnvironment(Map.of("APP_USER", "alice"), "defaultDb"))
 			.withMessage("No Oracle app password found");
 	}
 
 	@Test
 	void createWhenAppUserAndEmptyAppPasswordThrowsException() {
 		assertThatIllegalStateException()
-			.isThrownBy(() -> new OracleEnvironment(Map.of("APP_USER", "alice", "APP_PASSWORD", "")))
+			.isThrownBy(() -> new OracleEnvironment(Map.of("APP_USER", "alice", "APP_USER_PASSWORD", ""), "defaultDb"))
 			.withMessage("No Oracle app password found");
 	}
 
 	@Test
 	void createWhenHasNoPasswordThrowsException() {
-		assertThatIllegalStateException().isThrownBy(() -> new OracleEnvironment(Collections.emptyMap()))
+		assertThatIllegalStateException().isThrownBy(() -> new OracleEnvironment(Collections.emptyMap(), "defaultDb"))
 			.withMessage("No Oracle password found");
 	}
 
 	@Test
 	void createWhenHasEmptyPasswordThrowsException() {
-		assertThatIllegalStateException().isThrownBy(() -> new OracleEnvironment(Map.of("ORACLE_PASSWORD", "")))
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new OracleEnvironment(Map.of("ORACLE_PASSWORD", ""), "defaultDb"))
 			.withMessage("No Oracle password found");
 	}
 
 	@Test
 	void getDatabaseWhenHasNoOracleDatabase() {
-		OracleEnvironment environment = new OracleEnvironment(Map.of("ORACLE_PASSWORD", "secret"));
-		assertThat(environment.getDatabase()).isEqualTo("xepdb1");
+		OracleEnvironment environment = new OracleEnvironment(Map.of("ORACLE_PASSWORD", "secret"), "defaultDb");
+		assertThat(environment.getDatabase()).isEqualTo("defaultDb");
 	}
 
 	@Test
 	void getDatabaseWhenHasOracleDatabase() {
 		OracleEnvironment environment = new OracleEnvironment(
-				Map.of("ORACLE_PASSWORD", "secret", "ORACLE_DATABASE", "db"));
+				Map.of("ORACLE_PASSWORD", "secret", "ORACLE_DATABASE", "db"), "defaultDb");
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 

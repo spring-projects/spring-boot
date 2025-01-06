@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,6 +37,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.boot.buildpack.platform.io.TarArchive.Compression;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -175,10 +178,9 @@ class ImageBuildpackTests extends AbstractJsonTests {
 
 	private Object withMockLayers(InvocationOnMock invocation) {
 		try {
-			IOBiConsumer<String, Path> consumer = invocation.getArgument(1);
+			IOBiConsumer<String, TarArchive> consumer = invocation.getArgument(1);
 			File tarFile = File.createTempFile("create-builder-test-", null);
-			FileOutputStream out = new FileOutputStream(tarFile);
-			try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
+			try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(new FileOutputStream(tarFile))) {
 				tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
 				writeTarEntry(tarOut, "/cnb/");
 				writeTarEntry(tarOut, "/cnb/buildpacks/");
@@ -188,7 +190,10 @@ class ImageBuildpackTests extends AbstractJsonTests {
 				writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath);
 				tarOut.finish();
 			}
-			consumer.accept("test", tarFile.toPath());
+			try (FileInputStream tarFileStream = new FileInputStream(tarFile)) {
+				consumer.accept("test", TarArchive.fromInputStream(tarFileStream, Compression.NONE));
+			}
+			Files.delete(tarFile.toPath());
 		}
 		catch (IOException ex) {
 			fail("Error writing mock layers", ex);
@@ -213,10 +218,10 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		byte[] content = layers.get(0).toByteArray();
 		List<TarArchiveEntry> entries = new ArrayList<>();
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
-			TarArchiveEntry entry = tar.getNextTarEntry();
+			TarArchiveEntry entry = tar.getNextEntry();
 			while (entry != null) {
 				entries.add(entry);
-				entry = tar.getNextTarEntry();
+				entry = tar.getNextEntry();
 			}
 		}
 		assertThat(entries).extracting("name", "mode")

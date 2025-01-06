@@ -1,0 +1,37 @@
+[[io.webservices]]
+= Web Services
+
+Spring Boot provides Web Services auto-configuration so that all you must do is define your javadoc:org.springframework.ws.server.endpoint.annotation.Endpoint[format=annotation] beans.
+
+The {url-spring-webservices-docs}[Spring Web Services features] can be easily accessed with the `spring-boot-starter-webservices` module.
+
+javadoc:org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition[] and javadoc:org.springframework.xml.xsd.SimpleXsdSchema[] beans can be automatically created for your WSDLs and XSDs respectively.
+To do so, configure their location, as shown in the following example:
+
+
+[configprops,yaml]
+----
+spring:
+  webservices:
+    wsdl-locations: "classpath:/wsdl"
+----
+
+
+
+[[io.webservices.template]]
+== Calling Web Services with WebServiceTemplate
+
+If you need to call remote Web services from your application, you can use the {url-spring-webservices-docs}#client-web-service-template[`WebServiceTemplate`] class.
+Since javadoc:org.springframework.ws.client.core.WebServiceTemplate[] instances often need to be customized before being used, Spring Boot does not provide any single auto-configured javadoc:org.springframework.ws.client.core.WebServiceTemplate[] bean.
+It does, however, auto-configure a javadoc:org.springframework.boot.webservices.client.WebServiceTemplateBuilder[], which can be used to create javadoc:org.springframework.ws.client.core.WebServiceTemplate[] instances when needed.
+
+The following code shows a typical example:
+
+include-code::MyService[]
+
+By default, javadoc:org.springframework.boot.webservices.client.WebServiceTemplateBuilder[] detects a suitable HTTP-based javadoc:org.springframework.ws.transport.WebServiceMessageSender[] using the available HTTP client libraries on the classpath.
+You can also customize read and connection timeouts for an individual builder as follows:
+
+include-code::MyWebServiceTemplateConfiguration[]
+
+TIP: You can also change the xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[global HTTP client configuration] used if not specific template customization code is applied.

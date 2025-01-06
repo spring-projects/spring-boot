@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,12 @@ import org.springframework.boot.ssl.jks.JksSslStoreBundle;
 import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.ssl.pem.PemSslStoreBundle;
 import org.springframework.boot.ssl.pem.PemSslStoreDetails;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.util.function.ThrowingSupplier;
 
 /**
- * {@link SslBundle} backed by {@link Ssl} or an {@link SslStoreProvider}.
+ * {@link SslBundle} backed by {@link Ssl}.
  *
  * @author Scott Frederick
  * @author Phillip Webb
@@ -60,20 +60,30 @@ public final class WebServerSslBundle implements SslBundle {
 		this.managers = SslManagerBundle.from(this.stores, this.key);
 	}
 
-	private static SslStoreBundle createPemStoreBundle(Ssl ssl) {
+	private static SslStoreBundle createPemKeyStoreBundle(Ssl ssl) {
 		PemSslStoreDetails keyStoreDetails = new PemSslStoreDetails(ssl.getKeyStoreType(), ssl.getCertificate(),
-				ssl.getCertificatePrivateKey());
-		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails(ssl.getTrustStoreType(),
-				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey());
-		return new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, ssl.getKeyAlias());
+				ssl.getCertificatePrivateKey())
+			.withAlias(ssl.getKeyAlias());
+		return new PemSslStoreBundle(keyStoreDetails, null);
 	}
 
-	private static SslStoreBundle createJksStoreBundle(Ssl ssl) {
+	private static SslStoreBundle createPemTrustStoreBundle(Ssl ssl) {
+		PemSslStoreDetails trustStoreDetails = new PemSslStoreDetails(ssl.getTrustStoreType(),
+				ssl.getTrustCertificate(), ssl.getTrustCertificatePrivateKey())
+			.withAlias(ssl.getKeyAlias());
+		return new PemSslStoreBundle(null, trustStoreDetails);
+	}
+
+	private static SslStoreBundle createJksKeyStoreBundle(Ssl ssl) {
 		JksSslStoreDetails keyStoreDetails = new JksSslStoreDetails(ssl.getKeyStoreType(), ssl.getKeyStoreProvider(),
 				ssl.getKeyStore(), ssl.getKeyStorePassword());
+		return new JksSslStoreBundle(keyStoreDetails, null);
+	}
+
+	private static SslStoreBundle createJksTrustStoreBundle(Ssl ssl) {
 		JksSslStoreDetails trustStoreDetails = new JksSslStoreDetails(ssl.getTrustStoreType(),
 				ssl.getTrustStoreProvider(), ssl.getTrustStore(), ssl.getTrustStorePassword());
-		return new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return new JksSslStoreBundle(null, trustStoreDetails);
 	}
 
 	@Override
@@ -108,7 +118,7 @@ public final class WebServerSslBundle implements SslBundle {
 	 * @throws NoSuchSslBundleException if a bundle lookup fails
 	 */
 	public static SslBundle get(Ssl ssl) throws NoSuchSslBundleException {
-		return get(ssl, null, null);
+		return get(ssl, null);
 	}
 
 	/**
@@ -120,30 +130,8 @@ public final class WebServerSslBundle implements SslBundle {
 	 * @throws NoSuchSslBundleException if a bundle lookup fails
 	 */
 	public static SslBundle get(Ssl ssl, SslBundles sslBundles) throws NoSuchSslBundleException {
-		return get(ssl, sslBundles, null);
-	}
-
-	/**
-	 * Get the {@link SslBundle} that should be used for the given {@link Ssl} and
-	 * {@link SslStoreProvider} instances.
-	 * @param ssl the source {@link Ssl} instance
-	 * @param sslBundles the bundles that should be used when {@link Ssl#getBundle()} is
-	 * set
-	 * @param sslStoreProvider the {@link SslStoreProvider} to use or {@code null}
-	 * @return a {@link SslBundle} instance
-	 * @throws NoSuchSslBundleException if a bundle lookup fails
-	 * @deprecated since 3.1.0 for removal in 3.3.0 along with {@link SslStoreProvider}
-	 */
-	@Deprecated(since = "3.1.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	public static SslBundle get(Ssl ssl, SslBundles sslBundles, SslStoreProvider sslStoreProvider) {
 		Assert.state(Ssl.isEnabled(ssl), "SSL is not enabled");
-		String keyPassword = (sslStoreProvider != null) ? sslStoreProvider.getKeyPassword() : null;
-		keyPassword = (keyPassword != null) ? keyPassword : ssl.getKeyPassword();
-		if (sslStoreProvider != null) {
-			SslStoreBundle stores = new SslStoreProviderBundleAdapter(sslStoreProvider);
-			return new WebServerSslBundle(stores, keyPassword, ssl);
-		}
+		String keyPassword = ssl.getKeyPassword();
 		String bundleName = ssl.getBundle();
 		if (StringUtils.hasText(bundleName)) {
 			Assert.state(sslBundles != null,
@@ -156,57 +144,97 @@ public final class WebServerSslBundle implements SslBundle {
 	}
 
 	private static SslStoreBundle createStoreBundle(Ssl ssl) {
-		if (hasCertificateProperties(ssl)) {
-			return createPemStoreBundle(ssl);
-		}
-		if (hasJavaKeyStoreProperties(ssl)) {
-			return createJksStoreBundle(ssl);
-		}
-		throw new IllegalStateException("SSL is enabled but no trust material is configured");
+		KeyStore keyStore = createKeyStore(ssl);
+		KeyStore trustStore = createTrustStore(ssl);
+		return new WebServerSslStoreBundle(keyStore, trustStore, ssl.getKeyStorePassword());
 	}
 
-	static SslBundle createCertificateFileSslStoreProviderDelegate(Ssl ssl) {
-		if (!hasCertificateProperties(ssl)) {
-			return null;
+	private static KeyStore createKeyStore(Ssl ssl) {
+		if (hasPemKeyStoreProperties(ssl)) {
+			return createPemKeyStoreBundle(ssl).getKeyStore();
 		}
-		SslStoreBundle stores = createPemStoreBundle(ssl);
-		return new WebServerSslBundle(stores, ssl.getKeyPassword(), ssl);
+		else if (hasJksKeyStoreProperties(ssl)) {
+			return createJksKeyStoreBundle(ssl).getKeyStore();
+		}
+		return null;
 	}
 
-	private static boolean hasCertificateProperties(Ssl ssl) {
+	private static KeyStore createTrustStore(Ssl ssl) {
+		if (hasPemTrustStoreProperties(ssl)) {
+			return createPemTrustStoreBundle(ssl).getTrustStore();
+		}
+		else if (hasJksTrustStoreProperties(ssl)) {
+			return createJksTrustStoreBundle(ssl).getTrustStore();
+		}
+		return null;
+	}
+
+	private static boolean hasPemKeyStoreProperties(Ssl ssl) {
 		return Ssl.isEnabled(ssl) && ssl.getCertificate() != null && ssl.getCertificatePrivateKey() != null;
 	}
 
-	private static boolean hasJavaKeyStoreProperties(Ssl ssl) {
-		return Ssl.isEnabled(ssl) && ssl.getKeyStore() != null
-				|| (ssl.getKeyStoreType() != null && ssl.getKeyStoreType().equals("PKCS11"));
+	private static boolean hasPemTrustStoreProperties(Ssl ssl) {
+		return Ssl.isEnabled(ssl) && ssl.getTrustCertificate() != null;
 	}
 
-	/**
-	 * Class to adapt a {@link SslStoreProvider} into a {@link SslStoreBundle}.
-	 */
-	@SuppressWarnings("removal")
-	private static class SslStoreProviderBundleAdapter implements SslStoreBundle {
+	private static boolean hasJksKeyStoreProperties(Ssl ssl) {
+		return Ssl.isEnabled(ssl) && (ssl.getKeyStore() != null
+				|| (ssl.getKeyStoreType() != null && ssl.getKeyStoreType().equals("PKCS11")));
+	}
 
-		private final SslStoreProvider sslStoreProvider;
+	private static boolean hasJksTrustStoreProperties(Ssl ssl) {
+		return Ssl.isEnabled(ssl) && (ssl.getTrustStore() != null
+				|| (ssl.getTrustStoreType() != null && ssl.getTrustStoreType().equals("PKCS11")));
+	}
 
-		SslStoreProviderBundleAdapter(SslStoreProvider sslStoreProvider) {
-			this.sslStoreProvider = sslStoreProvider;
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		creator.append("key", this.key);
+		creator.append("protocol", this.protocol);
+		creator.append("stores", this.stores);
+		creator.append("options", this.options);
+		return creator.toString();
+	}
+
+	private static final class WebServerSslStoreBundle implements SslStoreBundle {
+
+		private final KeyStore keyStore;
+
+		private final KeyStore trustStore;
+
+		private final String keyStorePassword;
+
+		private WebServerSslStoreBundle(KeyStore keyStore, KeyStore trustStore, String keyStorePassword) {
+			Assert.state(keyStore != null || trustStore != null,
+					"SSL is enabled but no trust material is configured for the default host");
+			this.keyStore = keyStore;
+			this.trustStore = trustStore;
+			this.keyStorePassword = keyStorePassword;
 		}
 
 		@Override
 		public KeyStore getKeyStore() {
-			return ThrowingSupplier.of(this.sslStoreProvider::getKeyStore).get();
-		}
-
-		@Override
-		public String getKeyStorePassword() {
-			return null;
+			return this.keyStore;
 		}
 
 		@Override
 		public KeyStore getTrustStore() {
-			return ThrowingSupplier.of(this.sslStoreProvider::getTrustStore).get();
+			return this.trustStore;
+		}
+
+		@Override
+		public String getKeyStorePassword() {
+			return this.keyStorePassword;
+		}
+
+		@Override
+		public String toString() {
+			ToStringCreator creator = new ToStringCreator(this);
+			creator.append("keyStore.type", (this.keyStore != null) ? this.keyStore.getType() : "none");
+			creator.append("keyStorePassword", (this.keyStorePassword != null) ? "******" : null);
+			creator.append("trustStore.type", (this.trustStore != null) ? this.trustStore.getType() : "none");
+			return creator.toString();
 		}
 
 	}

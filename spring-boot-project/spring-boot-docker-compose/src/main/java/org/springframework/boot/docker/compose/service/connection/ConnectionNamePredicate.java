@@ -16,28 +16,33 @@
 
 package org.springframework.boot.docker.compose.service.connection;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.docker.compose.core.ImageReference;
 import org.springframework.boot.docker.compose.core.RunningService;
+import org.springframework.util.Assert;
 
 /**
- * {@link Predicate} that matches against connection names.
+ * {@link Predicate} that matches against connection name.
  *
  * @author Phillip Webb
  */
 class ConnectionNamePredicate implements Predicate<DockerComposeConnectionSource> {
 
-	private final String required;
+	private final Set<String> required;
 
-	ConnectionNamePredicate(String required) {
-		this.required = asCanonicalName(required);
+	ConnectionNamePredicate(String... required) {
+		Assert.notEmpty(required, "Required must not be empty");
+		this.required = Arrays.stream(required).map(this::asCanonicalName).collect(Collectors.toSet());
 	}
 
 	@Override
 	public boolean test(DockerComposeConnectionSource source) {
 		String actual = getActual(source.getRunningService());
-		return this.required.equals(actual);
+		return this.required.contains(actual);
 	}
 
 	private String getActual(RunningService service) {

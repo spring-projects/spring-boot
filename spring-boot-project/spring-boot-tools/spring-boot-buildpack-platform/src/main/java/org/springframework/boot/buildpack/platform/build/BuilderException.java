@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.buildpack.platform.build;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Exception thrown to indicate a Builder error.
@@ -52,7 +54,7 @@ public class BuilderException extends RuntimeException {
 
 	private static String buildMessage(String operation, int statusCode) {
 		StringBuilder message = new StringBuilder("Builder");
-		if (operation != null && !operation.isEmpty()) {
+		if (StringUtils.hasLength(operation)) {
 			message.append(" lifecycle '").append(operation).append("'");
 		}
 		message.append(" failed with status code ").append(statusCode);

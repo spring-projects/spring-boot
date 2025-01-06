@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Tests for {@link BuildInfo}.
@@ -100,7 +100,7 @@ class BuildInfoTests {
 	}
 
 	@Test
-	void nameCanBeExludedRemovedFromProperties() {
+	void nameCanBeExcludedFromProperties() {
 		BuildInfo task = createTask(createProject("test"));
 		task.getExcludes().add("name");
 		assertThat(buildInfoProperties(task)).doesNotContainKey("build.name");
@@ -167,8 +167,8 @@ class BuildInfoTests {
 	@Test
 	void nullAdditionalPropertyProducesInformativeFailure() {
 		BuildInfo task = createTask(createProject("test"));
-		assertThatThrownBy(() -> task.getProperties().getAdditional().put("a", null))
-			.hasMessage("Cannot add an entry with a null value to a property of type Map.");
+		assertThatException().isThrownBy(() -> task.getProperties().getAdditional().put("a", null))
+			.withMessage("Cannot add an entry with a null value to a property of type Map.");
 	}
 
 	private Project createProject(String projectName) {
@@ -176,12 +176,12 @@ class BuildInfoTests {
 		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
 		((ProjectInternal) project).getServices()
 			.get(GradlePropertiesController.class)
-			.loadGradlePropertiesFrom(projectDir);
+			.loadGradlePropertiesFrom(projectDir, false);
 		return project;
 	}
 
 	private BuildInfo createTask(Project project) {
-		return project.getTasks().create("testBuildInfo", BuildInfo.class);
+		return project.getTasks().register("testBuildInfo", BuildInfo.class).get();
 	}
 
 	private Properties buildInfoProperties(BuildInfo task) {

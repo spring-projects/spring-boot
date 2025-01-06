@@ -20,6 +20,8 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -27,7 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class AtlasPropertiesConfigAdapterTests {
+class AtlasPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<AtlasProperties, AtlasPropertiesConfigAdapter> {
+
+	AtlasPropertiesConfigAdapterTests() {
+		super(AtlasPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
@@ -114,6 +121,27 @@ class AtlasPropertiesConfigAdapterTests {
 		properties.setEvalUri("https://atlas.example.com/evaluate");
 		assertThat(new AtlasPropertiesConfigAdapter(properties).evalUri())
 			.isEqualTo("https://atlas.example.com/evaluate");
+	}
+
+	@Test
+	void whenPropertiesLwcStepIsSetAdapterLwcStepReturnsIt() {
+		AtlasProperties properties = new AtlasProperties();
+		properties.setLwcStep(Duration.ofSeconds(30));
+		assertThat(new AtlasPropertiesConfigAdapter(properties).lwcStep()).isEqualTo(Duration.ofSeconds(30));
+	}
+
+	@Test
+	void whenPropertiesLwcIgnorePublishStepIsSetAdapterLwcIgnorePublishStepReturnsIt() {
+		AtlasProperties properties = new AtlasProperties();
+		properties.setLwcIgnorePublishStep(false);
+		assertThat(new AtlasPropertiesConfigAdapter(properties).lwcIgnorePublishStep()).isFalse();
+	}
+
+	@Test
+	@Override
+	protected void adapterOverridesAllConfigMethods() {
+		adapterOverridesAllConfigMethodsExcept("autoStart", "commonTags", "debugRegistry", "publisher", "rollupPolicy",
+				"validTagCharacters");
 	}
 
 }

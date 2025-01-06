@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,9 @@ class PropertySourceOriginTests {
 				withSettings().extraInterfaces(OriginLookup.class));
 		OriginLookup<String> originCapablePropertySource = (OriginLookup<String>) propertySource;
 		given(originCapablePropertySource.getOrigin("foo")).willReturn(origin);
-		assertThat(PropertySourceOrigin.get(propertySource, "foo")).isSameAs(origin);
+		Origin actual = PropertySourceOrigin.get(propertySource, "foo");
+		assertThat(actual).hasToString(origin.toString());
+		assertThat(((PropertySourceOrigin) actual).getOrigin()).isSameAs(origin);
 	}
 
 	@Test

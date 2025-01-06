@@ -46,6 +46,9 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockPropertySource;
 import org.springframework.util.unit.DataSize;
 
@@ -148,6 +151,21 @@ class ConfigurationPropertiesReportEndpointTests {
 		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class)
 			.run(assertProperties("test", (properties) -> assertThat(properties.get("duration"))
 				.isEqualTo(Duration.ofSeconds(10).toString())));
+	}
+
+	@Test // gh-36076
+	void descriptorWithWrapperProperty() {
+		this.contextRunner.withUserConfiguration(TestPropertiesConfiguration.class).withInitializer((context) -> {
+			ConfigurableEnvironment environment = context.getEnvironment();
+			Map<String, Object> map = Collections.singletonMap("test.wrapper", 10);
+			PropertySource<?> propertySource = new MapPropertySource("test", map);
+			environment.getPropertySources().addLast(propertySource);
+		})
+			.run(assertProperties("test", (properties) -> assertThat(properties.get("wrapper")).isEqualTo(10),
+					(inputs) -> {
+						Map<String, Object> wrapper = (Map<String, Object>) inputs.get("wrapper");
+						assertThat(wrapper.get("value")).isEqualTo(10);
+					}));
 	}
 
 	@Test
@@ -452,6 +470,8 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private final String ignored = "dummy";
 
+		private Integer wrapper;
+
 		public String getDbPassword() {
 			return this.dbPassword;
 		}
@@ -486,6 +506,14 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public String getIgnored() {
 			return this.ignored;
+		}
+
+		public Integer getWrapper() {
+			return this.wrapper;
+		}
+
+		public void setWrapper(Integer wrapper) {
+			this.wrapper = wrapper;
 		}
 
 	}

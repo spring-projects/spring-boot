@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter;
@@ -38,11 +37,13 @@ import org.springframework.boot.type.classreading.ConcurrentReferenceCachingMeta
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 
@@ -124,6 +125,7 @@ class SharedMetadataReaderFactoryContextInitializer implements
 						registry.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
+				// Ignore
 			}
 		}
 
@@ -186,14 +188,14 @@ class SharedMetadataReaderFactoryContextInitializer implements
 	 * {@link FactoryBean} to create the shared {@link MetadataReaderFactory}.
 	 */
 	static class SharedMetadataReaderFactoryBean
-			implements FactoryBean<ConcurrentReferenceCachingMetadataReaderFactory>, BeanClassLoaderAware,
+			implements FactoryBean<ConcurrentReferenceCachingMetadataReaderFactory>, ResourceLoaderAware,
 			ApplicationListener<ContextRefreshedEvent> {
 
 		private ConcurrentReferenceCachingMetadataReaderFactory metadataReaderFactory;
 
 		@Override
-		public void setBeanClassLoader(ClassLoader classLoader) {
-			this.metadataReaderFactory = new ConcurrentReferenceCachingMetadataReaderFactory(classLoader);
+		public void setResourceLoader(ResourceLoader resourceLoader) {
+			this.metadataReaderFactory = new ConcurrentReferenceCachingMetadataReaderFactory(resourceLoader);
 		}
 
 		@Override

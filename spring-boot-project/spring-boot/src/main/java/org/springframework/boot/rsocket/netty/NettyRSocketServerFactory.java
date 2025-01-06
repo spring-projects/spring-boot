@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.rsocket.SocketAcceptor;
 import io.rsocket.transport.ServerTransport;
@@ -31,7 +33,7 @@ import io.rsocket.transport.netty.server.TcpServerTransport;
 import io.rsocket.transport.netty.server.WebsocketServerTransport;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
-import reactor.netty.tcp.AbstractProtocolSslContextSpec;
+import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 import reactor.netty.tcp.TcpServer;
 
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -43,9 +45,10 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.Ssl.ClientAuth;
+import org.springframework.boot.web.server.Ssl.ServerNameSslBundle;
 import org.springframework.boot.web.server.WebServerSslBundle;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
 
@@ -58,7 +61,6 @@ import org.springframework.util.unit.DataSize;
  * @author Scott Frederick
  * @since 2.2.0
  */
-@SuppressWarnings("removal")
 public class NettyRSocketServerFactory implements RSocketServerFactory, ConfigurableRSocketServerFactory {
 
 	private int port = 9898;
@@ -76,8 +78,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	private List<RSocketServerCustomizer> rSocketServerCustomizers = new ArrayList<>();
 
 	private Ssl ssl;
-
-	private SslStoreProvider sslStoreProvider;
 
 	private SslBundles sslBundles;
 
@@ -104,11 +104,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	@Override
 	public void setSsl(Ssl ssl) {
 		this.ssl = ssl;
-	}
-
-	@Override
-	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
-		this.sslStoreProvider = sslStoreProvider;
 	}
 
 	@Override
@@ -190,7 +185,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		return new SslServerCustomizer(null, this.ssl.getClientAuth(), getSslBundle()).apply(httpServer);
+		return new SslServerCustomizer(null, this.ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
+			.apply(httpServer);
 	}
 
 	private ServerTransport<CloseableChannel> createTcpTransport() {
@@ -199,14 +195,24 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
 		if (Ssl.isEnabled(this.ssl)) {
-			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), getSslBundle()).apply(tcpServer);
+			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), getSslBundle(), getServerNameSslBundles())
+				.apply(tcpServer);
 		}
 		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
 	}
 
-	@SuppressWarnings("deprecation")
 	private SslBundle getSslBundle() {
-		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider);
+		return WebServerSslBundle.get(this.ssl, this.sslBundles);
+	}
+
+	protected final Map<String, SslBundle> getServerNameSslBundles() {
+		return this.ssl.getServerNameBundles()
+			.stream()
+			.collect(Collectors.toMap(Ssl.ServerNameSslBundle::serverName, this::getBundle));
+	}
+
+	private SslBundle getBundle(ServerNameSslBundle serverNameSslBundle) {
+		return this.sslBundles.getBundle(serverNameSslBundle.bundle());
 	}
 
 	private InetSocketAddress getListenAddress() {
@@ -219,12 +225,16 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	private static final class TcpSslServerCustomizer
 			extends org.springframework.boot.web.embedded.netty.SslServerCustomizer {
 
-		private TcpSslServerCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
-			super(null, clientAuth, sslBundle);
+		private final SslBundle sslBundle;
+
+		private TcpSslServerCustomizer(ClientAuth clientAuth, SslBundle sslBundle,
+				Map<String, SslBundle> serverNameSslBundles) {
+			super(null, clientAuth, sslBundle, serverNameSslBundles);
+			this.sslBundle = sslBundle;
 		}
 
 		private TcpServer apply(TcpServer server) {
-			AbstractProtocolSslContextSpec<?> sslContextSpec = createSslContextSpec();
+			GenericSslContextSpec<?> sslContextSpec = createSslContextSpec(this.sslBundle);
 			return server.secure((spec) -> spec.sslContext(sslContextSpec));
 		}
 

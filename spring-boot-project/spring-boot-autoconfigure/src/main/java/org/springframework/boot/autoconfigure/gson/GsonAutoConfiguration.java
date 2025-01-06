@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,17 +78,22 @@ public class GsonAutoConfiguration {
 		public void customize(GsonBuilder builder) {
 			GsonProperties properties = this.properties;
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(properties::getGenerateNonExecutableJson).toCall(builder::generateNonExecutableJson);
+			map.from(properties::getGenerateNonExecutableJson).whenTrue().toCall(builder::generateNonExecutableJson);
 			map.from(properties::getExcludeFieldsWithoutExposeAnnotation)
+				.whenTrue()
 				.toCall(builder::excludeFieldsWithoutExposeAnnotation);
 			map.from(properties::getSerializeNulls).whenTrue().toCall(builder::serializeNulls);
-			map.from(properties::getEnableComplexMapKeySerialization).toCall(builder::enableComplexMapKeySerialization);
-			map.from(properties::getDisableInnerClassSerialization).toCall(builder::disableInnerClassSerialization);
+			map.from(properties::getEnableComplexMapKeySerialization)
+				.whenTrue()
+				.toCall(builder::enableComplexMapKeySerialization);
+			map.from(properties::getDisableInnerClassSerialization)
+				.whenTrue()
+				.toCall(builder::disableInnerClassSerialization);
 			map.from(properties::getLongSerializationPolicy).to(builder::setLongSerializationPolicy);
 			map.from(properties::getFieldNamingPolicy).to(builder::setFieldNamingPolicy);
-			map.from(properties::getPrettyPrinting).toCall(builder::setPrettyPrinting);
-			map.from(properties::getLenient).toCall(builder::setLenient);
-			map.from(properties::getDisableHtmlEscaping).toCall(builder::disableHtmlEscaping);
+			map.from(properties::getPrettyPrinting).whenTrue().toCall(builder::setPrettyPrinting);
+			map.from(properties::getStrictness).to(builder::setStrictness);
+			map.from(properties::getDisableHtmlEscaping).whenTrue().toCall(builder::disableHtmlEscaping);
 			map.from(properties::getDateFormat).to(builder::setDateFormat);
 		}
 

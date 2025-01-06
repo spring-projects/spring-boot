@@ -11,6 +11,7 @@ For complete details see the
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
 
 == Community Contributions
+
 If you create a starter for a technology that is not already in the standard list we can
 list it here. To ask us to do so, please open a pull request that updates this page.
 
@@ -88,6 +89,9 @@ do as they were designed before this was clarified.
 | https://elide.io/[Elide]
 | https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter
 
+| https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo[Embedded MongoDB]
+| https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo.spring
+
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
@@ -110,7 +114,7 @@ do as they were designed before this was clarified.
 | https://github.com/dabla/grizzly-spring-boot-starter
 
 | https://www.grpc.io/[gRPC]
-| https://github.com/LogNet/grpc-spring-boot-starter & https://github.com/yidongnan/grpc-spring-boot-starter
+| https://github.com/LogNet/grpc-spring-boot-starter & https://github.com/yidongnan/grpc-spring-boot-starter & https://github.com/DanielLiu1123/grpc-starter
 
 | https://ha-jdbc.github.io/[HA JDBC]
 | https://github.com/lievendoclo/hajdbc-spring-boot
@@ -151,6 +155,9 @@ do as they were designed before this was clarified.
 | https://kogito.kie.org/[Kogito]
 | https://github.com/kiegroup/kogito-runtimes/tree/main/springboot/starters
 
+| https://github.com/langchain4j/langchain4j[LangChain for Java]
+| https://github.com/langchain4j/langchain4j/tree/main/langchain4j-spring-boot-starter
+
 | https://www.liquigraph.org/[Liquigraph]
 | https://github.com/liquigraph/liquigraph
 
@@ -169,6 +176,9 @@ do as they were designed before this was clarified.
 | https://developer.nexmo.com/[Nexmo]
 | https://github.com/nexmo/nexmo-spring-boot-starter
 
+| https://github.com/nostr-protocol/nostr[Nostr]
+| https://github.com/theborakompanioni/nostr-spring-boot-starter
+
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
 
@@ -181,8 +191,17 @@ do as they were designed before this was clarified.
 | https://developer.okta.com/[Okta]
 | https://github.com/okta/okta-spring-boot
 
+| https://opentelemetry.io/docs/languages/java/automatic/spring-boot/#opentelemetry-spring-boot-starter[OpenTelemetry]
+| https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/spring/starters/spring-boot-starter
+
 | https://www.optaplanner.org/[OptaPlanner]
 | https://github.com/kiegroup/optaplanner/tree/master/optaplanner-spring-integration/optaplanner-spring-boot-starter
+
+| https://spring.coherence.community/3.0.0/refdocs/reference/html/spring-boot.html[Oracle Coherence]
+| https://github.com/coherence-community/coherence-spring/tree/main/coherence-spring-boot-starter
+
+| https://www.oracle.com/database/[Oracle Database]
+| https://github.com/oracle/microservices-datadriven/tree/main/spring/oracle-spring-boot-starters
 
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
@@ -216,6 +235,9 @@ do as they were designed before this was clarified.
 
 | https://projects.spring.io/spring-batch/[Spring Batch] (Advanced usage)
 | https://github.com/codecentric/spring-boot-starter-batch-web
+
+| https://docs.spring.io/spring-framework/reference/integration/rest-clients.html#rest-http-interface[Spring Http Interface]
+| https://github.com/DanielLiu1123/httpexchange-spring-boot-starter
 
 | https://projects.spring.io/spring-shell/[Spring Shell]
 | https://github.com/fonimus/ssh-shell-spring-boot

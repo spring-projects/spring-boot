@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.EnumFeature;
+import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -38,6 +40,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @author Marcel Overdijk
  * @author Johannes Edmeier
+ * @author Eddú Meléndez
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.jackson")
@@ -113,6 +116,8 @@ public class JacksonProperties {
 	 * Locale used for formatting.
 	 */
 	private Locale locale;
+
+	private final Datatype datatype = new Datatype();
 
 	public String getDateFormat() {
 		return this.dateFormat;
@@ -194,6 +199,10 @@ public class JacksonProperties {
 		this.locale = locale;
 	}
 
+	public Datatype getDatatype() {
+		return this.datatype;
+	}
+
 	public enum ConstructorDetectorStrategy {
 
 		/**
@@ -215,7 +224,29 @@ public class JacksonProperties {
 		 * Refuse to decide implicit mode and instead throw an InvalidDefinitionException
 		 * for ambiguous cases.
 		 */
-		EXPLICIT_ONLY;
+		EXPLICIT_ONLY
+
+	}
+
+	public static class Datatype {
+
+		/**
+		 * Jackson on/off features for enums.
+		 */
+		private final Map<EnumFeature, Boolean> enumFeatures = new EnumMap<>(EnumFeature.class);
+
+		/**
+		 * Jackson on/off features for JsonNodes.
+		 */
+		private final Map<JsonNodeFeature, Boolean> jsonNode = new EnumMap<>(JsonNodeFeature.class);
+
+		public Map<EnumFeature, Boolean> getEnum() {
+			return this.enumFeatures;
+		}
+
+		public Map<JsonNodeFeature, Boolean> getJsonNode() {
+			return this.jsonNode;
+		}
 
 	}
 

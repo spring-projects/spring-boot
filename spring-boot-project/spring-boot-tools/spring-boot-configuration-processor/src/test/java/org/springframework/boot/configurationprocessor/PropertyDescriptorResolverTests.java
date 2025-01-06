@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
+import org.springframework.boot.configurationsample.immutable.ConstructorParameterNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableDeducedConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
-import org.springframework.boot.configurationsample.immutable.ImmutableNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableSimpleProperties;
+import org.springframework.boot.configurationsample.immutable.JavaBeanNameAnnotationProperties;
+import org.springframework.boot.configurationsample.immutable.RecordComponentNameAnnotationProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
@@ -111,15 +113,16 @@ class PropertyDescriptorResolverTests {
 	void propertiesWithDeducedConstructorBinding() {
 		process(ImmutableDeducedConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag")));
-		process(ImmutableDeducedConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
-			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+		process(ImmutableDeducedConstructorBindingProperties.class,
+				properties((stream) -> assertThat(stream).isNotEmpty()
+					.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
 	void propertiesWithConstructorWithConstructorBinding() {
 		process(ImmutableSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
-		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream)
+		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
@@ -127,14 +130,14 @@ class PropertyDescriptorResolverTests {
 	void propertiesWithConstructorAndClassConstructorBinding() {
 		process(ImmutableClassConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
-		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
+		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
 	void propertiesWithAutowiredConstructor() {
 		process(AutowiredProperties.class, propertyNames((stream) -> assertThat(stream).containsExactly("theName")));
-		process(AutowiredProperties.class, properties((stream) -> assertThat(stream)
+		process(AutowiredProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
 	}
 
@@ -142,7 +145,7 @@ class PropertyDescriptorResolverTests {
 	void propertiesWithMultiConstructor() {
 		process(ImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
-		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
+		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream).isNotEmpty()
 			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
@@ -154,13 +157,25 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void propertiesWithNameAnnotationParameter() {
-		process(ImmutableNameAnnotationProperties.class,
+	void contructorParameterPropertyWithNameAnnotationParameter() {
+		process(ConstructorParameterNameAnnotationProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
+	}
+
+	@Test
+	void recordComponentPropertyWithNameAnnotationParameter() {
+		process(RecordComponentNameAnnotationProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
+	}
+
+	@Test
+	void javaBeanPropertyWithNameAnnotationParameter() {
+		process(JavaBeanNameAnnotationProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
 	}
 
 	private BiConsumer<TypeElement, MetadataGenerationEnvironment> properties(
-			Consumer<Stream<PropertyDescriptor<?>>> stream) {
+			Consumer<Stream<PropertyDescriptor>> stream) {
 		return (element, metadataEnv) -> {
 			PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
 			stream.accept(resolver.resolve(element, null));

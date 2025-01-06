@@ -1,0 +1,17 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version-spring-boot}'
+}
+
+// tag::env[]
+tasks.named("bootBuildImage") {
+	environment["HTTP_PROXY"] = "http://proxy.example.com"
+	environment["HTTPS_PROXY"] = "https://proxy.example.com"
+}
+// end::env[]
+
+tasks.register("bootBuildImageEnvironment") {
+	doFirst {
+		bootBuildImage.environment.get().each { name, value -> println "$name=$value" }
+	}
+}

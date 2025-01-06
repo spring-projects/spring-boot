@@ -20,7 +20,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.aot.hint.MemberCategory
 import org.springframework.aot.hint.RuntimeHints
-import org.springframework.aot.hint.predicate.RuntimeHintsPredicates
 
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,11 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.web.AdditionalPathsMapper;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
@@ -330,6 +334,24 @@ class AutoConfiguredHealthEndpointGroupsTests {
 				HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
 				HealthEndpointGroup groupA = groups.get("a");
 				assertThat(groupA.showDetails(SecurityContext.NONE)).isTrue();
+			});
+	}
+
+	@Test
+	void getAdditionalPathsReturnsAllAdditionalPaths() {
+		this.contextRunner
+			.withPropertyValues("management.endpoint.health.group.a.additional-path=server:/a",
+					"management.endpoint.health.group.b.additional-path=server:/b",
+					"management.endpoint.health.group.c.additional-path=management:/c",
+					"management.endpoint.health.group.d.additional-path=management:/d")
+			.run((context) -> {
+				AdditionalPathsMapper additionalPathsMapper = context.getBean(AdditionalPathsMapper.class);
+				assertThat(additionalPathsMapper.getAdditionalPaths(HealthEndpoint.ID, WebServerNamespace.SERVER))
+					.containsExactlyInAnyOrder("/a", "/b");
+				assertThat(additionalPathsMapper.getAdditionalPaths(HealthEndpoint.ID, WebServerNamespace.MANAGEMENT))
+					.containsExactlyInAnyOrder("/c", "/d");
+				assertThat(additionalPathsMapper.getAdditionalPaths(EndpointId.of("other"), WebServerNamespace.SERVER))
+					.isNull();
 			});
 	}
 

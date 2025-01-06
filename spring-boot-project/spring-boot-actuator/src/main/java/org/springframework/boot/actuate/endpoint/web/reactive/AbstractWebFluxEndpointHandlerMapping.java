@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -55,6 +57,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationResult;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -81,6 +84,7 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @ImportRuntimeHints(AbstractWebFluxEndpointHandlerMappingRuntimeHints.class)
@@ -176,10 +180,19 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		String path = this.endpointMapping.createSubPath(predicate.getPath());
+		List<String> paths = new ArrayList<>();
+		paths.add(path);
+		if (!StringUtils.hasText(path)) {
+			paths.add("/");
+		}
 		RequestMethod method = RequestMethod.valueOf(predicate.getHttpMethod().name());
 		String[] consumes = StringUtils.toStringArray(predicate.getConsumes());
 		String[] produces = StringUtils.toStringArray(predicate.getProduces());
-		return RequestMappingInfo.paths(path).methods(method).consumes(consumes).produces(produces).build();
+		return RequestMappingInfo.paths(paths.toArray(new String[0]))
+			.methods(method)
+			.consumes(consumes)
+			.produces(produces)
+			.build();
 	}
 
 	private void registerLinksMapping() {
@@ -249,6 +262,26 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	}
 
+	protected static final class ExceptionCapturingInvoker implements OperationInvoker {
+
+		private final OperationInvoker invoker;
+
+		public ExceptionCapturingInvoker(OperationInvoker invoker) {
+			this.invoker = invoker;
+		}
+
+		@Override
+		public Object invoke(InvocationContext context) {
+			try {
+				return this.invoker.invoke(context);
+			}
+			catch (Exception ex) {
+				return Mono.error(ex);
+			}
+		}
+
+	}
+
 	/**
 	 * Reactive handler providing actuator links at the root endpoint.
 	 */
@@ -292,9 +325,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		private OperationInvoker getInvoker(WebOperation operation) {
 			OperationInvoker invoker = operation::invoke;
 			if (operation.isBlocking()) {
-				invoker = new ElasticSchedulerInvoker(invoker);
+				return new ElasticSchedulerInvoker(invoker);
 			}
-			return invoker;
+			return new ExceptionCapturingInvoker(invoker);
 		}
 
 		private Supplier<Mono<? extends SecurityContext>> getSecurityContextSupplier() {
@@ -491,9 +524,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		@Override
 		public boolean isUserInRole(String role) {
 			String authority = (!role.startsWith(ROLE_PREFIX)) ? ROLE_PREFIX + role : role;
-			return AuthorityAuthorizationManager.hasAuthority(authority)
-				.check(this::getAuthentication, null)
-				.isGranted();
+			AuthorizationResult result = AuthorityAuthorizationManager.hasAuthority(authority)
+				.authorize(this::getAuthentication, null);
+			return result != null && result.isGranted();
 		}
 
 	}

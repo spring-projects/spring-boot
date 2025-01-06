@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,16 +57,6 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 	 * @param ssl the SSL configuration
 	 */
 	void setSsl(Ssl ssl);
-
-	/**
-	 * Sets a provider that will be used to obtain SSL stores.
-	 * @param sslStoreProvider the SSL store provider
-	 * @deprecated since 3.1.0 for removal in 3.3.0, in favor of
-	 * {@link #setSslBundles(SslBundles)}
-	 */
-	@Deprecated(since = "3.1.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 	/**
 	 * Sets the SSL bundles that can be used to configure SSL connections.

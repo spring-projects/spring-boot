@@ -19,7 +19,6 @@ package org.springframework.boot.docs.io.restclient.webclient.ssl;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl;
-import org.springframework.boot.docs.io.restclient.webclient.Details;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 

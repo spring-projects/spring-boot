@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 package org.springframework.boot.web.server;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple server-independent abstraction for SSL configuration.
@@ -66,6 +69,8 @@ public class Ssl {
 	private String trustCertificatePrivateKey;
 
 	private String protocol = "TLS";
+
+	private List<ServerNameSslBundle> serverNameBundles = new ArrayList<>();
 
 	/**
 	 * Return whether to enable SSL support.
@@ -318,11 +323,23 @@ public class Ssl {
 	/**
 	 * Returns if SSL is enabled for the given instance.
 	 * @param ssl the {@link Ssl SSL} instance or {@code null}
-	 * @return {@code true} is SSL is enabled
+	 * @return {@code true} if SSL is enabled
 	 * @since 3.1.0
 	 */
 	public static boolean isEnabled(Ssl ssl) {
 		return (ssl != null) && ssl.isEnabled();
+	}
+
+	/**
+	 * Return the mapping of host names to SSL bundles for SNI configuration.
+	 * @return the host name to SSL bundle mapping
+	 */
+	public List<ServerNameSslBundle> getServerNameBundles() {
+		return this.serverNameBundles;
+	}
+
+	public void setServerNameBundles(List<ServerNameSslBundle> serverNameBundles) {
+		this.serverNameBundles = serverNameBundles;
 	}
 
 	/**
@@ -335,6 +352,9 @@ public class Ssl {
 		Ssl ssl = new Ssl();
 		ssl.setBundle(bundle);
 		return ssl;
+	}
+
+	public record ServerNameSslBundle(String serverName, String bundle) {
 	}
 
 	/**

@@ -1,0 +1,27 @@
+[[using.configuration-classes]]
+= Configuration Classes
+
+Spring Boot favors Java-based configuration.
+Although it is possible to use javadoc:org.springframework.boot.SpringApplication[] with XML sources, we generally recommend that your primary source be a single javadoc:org.springframework.context.annotation.Configuration[format=annotation] class.
+Usually the class that defines the `main` method is a good candidate as the primary javadoc:org.springframework.context.annotation.Configuration[format=annotation].
+
+TIP: Many Spring configuration examples have been published on the Internet that use XML configuration.
+If possible, always try to use the equivalent Java-based configuration.
+Searching for `+Enable*+` annotations can be a good starting point.
+
+
+
+[[using.configuration-classes.importing-additional-configuration]]
+== Importing Additional Configuration Classes
+
+You need not put all your javadoc:org.springframework.context.annotation.Configuration[format=annotation] into a single class.
+The javadoc:org.springframework.context.annotation.Import[format=annotation] annotation can be used to import additional configuration classes.
+Alternatively, you can use javadoc:org.springframework.context.annotation.ComponentScan[format=annotation] to automatically pick up all Spring components, including javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes.
+
+
+
+[[using.configuration-classes.importing-xml-configuration]]
+== Importing XML Configuration
+
+If you absolutely must use XML based configuration, we recommend that you still start with a javadoc:org.springframework.context.annotation.Configuration[format=annotation] class.
+You can then use an javadoc:org.springframework.context.annotation.ImportResource[format=annotation] annotation to load XML configuration files.

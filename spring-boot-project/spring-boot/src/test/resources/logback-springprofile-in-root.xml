@@ -7,7 +7,7 @@
 	</appender>
 	<root level="INFO">
 		<springProfile name="profile">
-			<appender-ref ref="CONSOLE" />
+			<appender-ref ref="CONSOLE"/>
 		</springProfile>
 	</root>
 </configuration>

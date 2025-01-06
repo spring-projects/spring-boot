@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,9 +71,10 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
 	 * Collection of artifact definitions to include. The {@link Include} element defines
-	 * mandatory {@code groupId} and {@code artifactId} properties and an optional
-	 * mandatory {@code groupId} and {@code artifactId} properties and an optional
-	 * {@code classifier} property.
+	 * mandatory {@code groupId} and {@code artifactId} components and an optional
+	 * {@code classifier} component. When configured as a property, values should be
+	 * comma-separated with colon-separated components:
+	 * {@code groupId:artifactId,groupId:artifactId:classifier}
 	 * @since 1.2.0
 	 */
 	@Parameter(property = "spring-boot.includes")
@@ -81,8 +82,10 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
 	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
-	 * mandatory {@code groupId} and {@code artifactId} properties and an optional
-	 * {@code classifier} property.
+	 * mandatory {@code groupId} and {@code artifactId} components and an optional
+	 * {@code classifier} component. When configured as a property, values should be
+	 * comma-separated with colon-separated components:
+	 * {@code groupId:artifactId,groupId:artifactId:classifier}
 	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.excludes")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,14 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.ConnectionString;
+
+import org.springframework.util.StringUtils;
 
 /**
  * Adapts {@link MongoProperties} to {@link MongoConnectionDetails}.
@@ -46,10 +50,10 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		}
 		StringBuilder builder = new StringBuilder("mongodb://");
 		if (this.properties.getUsername() != null) {
-			builder.append(this.properties.getUsername());
+			builder.append(encode(this.properties.getUsername()));
 			builder.append(":");
 			if (this.properties.getPassword() != null) {
-				builder.append(this.properties.getPassword());
+				builder.append(encode(this.properties.getPassword()));
 			}
 			builder.append("@");
 		}
@@ -59,6 +63,7 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			builder.append(this.properties.getPort());
 		}
 		if (this.properties.getAdditionalHosts() != null) {
+			builder.append(",");
 			builder.append(String.join(",", this.properties.getAdditionalHosts()));
 		}
 		builder.append("/");
@@ -71,6 +76,14 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		return new ConnectionString(builder.toString());
 	}
 
+	private String encode(String input) {
+		return URLEncoder.encode(input, StandardCharsets.UTF_8);
+	}
+
+	private char[] encode(char[] input) {
+		return URLEncoder.encode(new String(input), StandardCharsets.UTF_8).toCharArray();
+	}
+
 	@Override
 	public GridFs getGridFs() {
 		return GridFs.of(PropertiesMongoConnectionDetails.this.properties.getGridfs().getDatabase(),
@@ -79,7 +92,7 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 
 	private List<String> getOptions() {
 		List<String> options = new ArrayList<>();
-		if (this.properties.getReplicaSetName() != null) {
+		if (StringUtils.hasText(this.properties.getReplicaSetName())) {
 			options.add("replicaSet=" + this.properties.getReplicaSetName());
 		}
 		if (this.properties.getUsername() != null && this.properties.getAuthenticationDatabase() != null) {

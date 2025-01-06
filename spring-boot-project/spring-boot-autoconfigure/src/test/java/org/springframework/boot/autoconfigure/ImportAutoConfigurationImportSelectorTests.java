@@ -75,6 +75,25 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
+	void importsAreSelectedFromImportsFile() throws Exception {
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(FromImportsFile.class);
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(
+				"org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration",
+				"org.springframework.boot.autoconfigure.missing.MissingAutoConfiguration");
+	}
+
+	@Test
+	void importsSelectedFromImportsFileIgnoreMissingOptionalClasses() throws Exception {
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(
+				FromImportsFileIgnoresMissingOptionalClasses.class);
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(
+				"org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration",
+				"org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration");
+	}
+
+	@Test
 	void propertyExclusionsAreApplied() throws IOException {
 		this.environment.setProperty("spring.autoconfigure.exclude", FreeMarkerAutoConfiguration.class.getName());
 		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImports.class);
@@ -309,6 +328,18 @@ class ImportAutoConfigurationImportSelectorTests {
 		Class<?>[] excludeAutoConfiguration() default {
 
 		};
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ImportAutoConfiguration
+	@interface FromImportsFile {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@ImportAutoConfiguration
+	@interface FromImportsFileIgnoresMissingOptionalClasses {
 
 	}
 

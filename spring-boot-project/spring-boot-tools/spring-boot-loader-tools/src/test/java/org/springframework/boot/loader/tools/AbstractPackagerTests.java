@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -121,7 +121,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -133,7 +133,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-			.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.launch.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -226,6 +226,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File file = this.testJarFile.getFile();
 		P packager = createPackager(file);
+		packager.setIncludeRelevantJarModeJars(false);
 		execute(packager, (callback) -> {
 			callback.library(newLibrary(libJarFile1, LibraryScope.COMPILE, false));
 			callback.library(newLibrary(libJarFile2, LibraryScope.COMPILE, false));
@@ -299,7 +300,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		assertThat(Arrays.asList(classpathIndex.split("\\n")))
-			.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-layertools.jar\"");
+			.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-tools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -606,6 +607,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("WEB-INF/classes/com/example/Application.class", ClassWithMainMethod.class);
 		this.testJarFile.addFile("WEB-INF/lib/" + webLibrary.getName(), webLibrary);
 		P packager = createPackager(this.testJarFile.getFile("war"));
+		packager.setIncludeRelevantJarModeJars(false);
 		packager.setLayout(new Layouts.War());
 		execute(packager, (callback) -> {
 			callback.library(newLibrary(webLibrary, LibraryScope.COMPILE, false, false));
@@ -651,7 +653,18 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expected.add("\\Q" + libraryTwo.getName() + "\\E");
 		expected.add("^/META-INF/native-image/.*");
 		assertThat(getPackagedEntryContent("META-INF/native-image/argfile"))
-			.isEqualTo(expected.stream().collect(Collectors.joining("\n")) + "\n");
+			.isEqualTo(String.join("\n", expected) + "\n");
+	}
+
+	@Test
+	void sbomManifestEntriesAreWritten() throws IOException {
+		this.testJarFile.addClass("com/example/Application.class", ClassWithMainMethod.class);
+		this.testJarFile.addFile("META-INF/sbom/application.cdx.json", new ByteArrayInputStream(new byte[0]));
+		P packager = createPackager(this.testJarFile.getFile());
+		execute(packager, NO_LIBRARIES);
+		assertThat(getPackagedManifest().getMainAttributes().getValue("Sbom-Format")).isEqualTo("CycloneDX");
+		assertThat(getPackagedManifest().getMainAttributes().getValue("Sbom-Location"))
+			.isEqualTo("META-INF/sbom/application.cdx.json");
 	}
 
 	private File createLibraryJar() throws IOException {
@@ -660,7 +673,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		return library.getFile();
 	}
 
-	private Library newLibrary(File file, LibraryScope scope, boolean unpackRequired) {
+	protected Library newLibrary(File file, LibraryScope scope, boolean unpackRequired) {
 		return new Library(null, file, scope, null, unpackRequired, false, true);
 	}
 
@@ -684,10 +697,10 @@ abstract class AbstractPackagerTests<P extends Packager> {
 
 	protected boolean hasPackagedLauncherClasses() throws IOException {
 		return hasPackagedEntry("org/springframework/boot/")
-				&& hasPackagedEntry("org/springframework/boot/loader/JarLauncher.class");
+				&& hasPackagedEntry("org/springframework/boot/loader/launch/JarLauncher.class");
 	}
 
-	private boolean hasPackagedEntry(String name) throws IOException {
+	protected boolean hasPackagedEntry(String name) throws IOException {
 		return getPackagedEntry(name) != null;
 	}
 

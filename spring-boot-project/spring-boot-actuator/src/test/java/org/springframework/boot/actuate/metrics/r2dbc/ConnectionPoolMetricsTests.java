@@ -72,6 +72,7 @@ class ConnectionPoolMetricsTests {
 		ConnectionPoolMetrics metrics = new ConnectionPoolMetrics(connectionPool, "test-pool",
 				Tags.of(testTag, regionTag));
 		metrics.bindTo(registry);
+		connectionPool.warmup().as(StepVerifier::create).expectNext(3).expectComplete().verify(Duration.ofSeconds(30));
 		// acquire two connections
 		connectionPool.create()
 			.as(StepVerifier::create)

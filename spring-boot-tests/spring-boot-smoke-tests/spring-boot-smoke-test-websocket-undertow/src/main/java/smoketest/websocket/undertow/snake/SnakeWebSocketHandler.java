@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,35 +69,29 @@ public class SnakeWebSocketHandler extends TextWebSocketHandler {
 		StringBuilder sb = new StringBuilder();
 		for (Iterator<Snake> iterator = SnakeTimer.getSnakes().iterator(); iterator.hasNext();) {
 			Snake snake = iterator.next();
-			sb.append(String.format("{id: %d, color: '%s'}", Integer.valueOf(snake.getId()), snake.getHexColor()));
+			sb.append(String.format("{id: %d, color: '%s'}", snake.getId(), snake.getHexColor()));
 			if (iterator.hasNext()) {
 				sb.append(',');
 			}
 		}
-		SnakeTimer.broadcast(String.format("{'type': 'join','data':[%s]}", sb.toString()));
+		SnakeTimer.broadcast(String.format("{'type': 'join','data':[%s]}", sb));
 	}
 
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		String payload = message.getPayload();
-		if ("west".equals(payload)) {
-			this.snake.setDirection(Direction.WEST);
-		}
-		else if ("north".equals(payload)) {
-			this.snake.setDirection(Direction.NORTH);
-		}
-		else if ("east".equals(payload)) {
-			this.snake.setDirection(Direction.EAST);
-		}
-		else if ("south".equals(payload)) {
-			this.snake.setDirection(Direction.SOUTH);
+		switch (payload) {
+			case "west" -> this.snake.setDirection(Direction.WEST);
+			case "north" -> this.snake.setDirection(Direction.NORTH);
+			case "east" -> this.snake.setDirection(Direction.EAST);
+			case "south" -> this.snake.setDirection(Direction.SOUTH);
 		}
 	}
 
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		SnakeTimer.removeSnake(this.snake);
-		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}", Integer.valueOf(this.id)));
+		SnakeTimer.broadcast(String.format("{'type': 'leave', 'id': %d}", this.id));
 	}
 
 }

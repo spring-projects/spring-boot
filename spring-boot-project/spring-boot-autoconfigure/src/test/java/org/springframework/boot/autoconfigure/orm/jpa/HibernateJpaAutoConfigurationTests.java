@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,14 @@ import jakarta.transaction.UserTransaction;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
-import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.cfg.ManagedBeanSettings;
+import org.hibernate.cfg.SchemaToolingSettings;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.hibernate.engine.transaction.jta.platform.spi.JtaPlatform;
 import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.MemberCategory;
@@ -75,6 +77,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -129,7 +132,8 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void testDmlScriptRunsEarly() {
 		contextRunner().withUserConfiguration(TestInitializedJpaConfiguration.class)
 			.withClassLoader(new HideDataScriptClassLoader())
-			.withPropertyValues("spring.jpa.show-sql=true", "spring.jpa.hibernate.ddl-auto:create-drop",
+			.withPropertyValues("spring.jpa.show-sql=true", "spring.jpa.properties.hibernate.format_sql=true",
+					"spring.jpa.properties.hibernate.highlight_sql=true", "spring.jpa.hibernate.ddl-auto:create-drop",
 					"spring.sql.init.data-locations:/city.sql", "spring.jpa.defer-datasource-initialization=true")
 			.run((context) -> assertThat(context.getBean(TestInitializedJpaConfiguration.class).called).isTrue());
 	}
@@ -153,7 +157,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Test
 	void testLiquibasePlusValidation() {
 		contextRunner()
-			.withPropertyValues("spring.liquibase.changeLog:classpath:db/changelog/db.changelog-city.yaml",
+			.withPropertyValues("spring.liquibase.change-log:classpath:db/changelog/db.changelog-city.yaml",
 					"spring.jpa.hibernate.ddl-auto:validate")
 			.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
 			.run((context) -> assertThat(context).hasNotFailed());
@@ -386,8 +390,8 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Test
 	void vendorPropertiesWithEmbeddedDatabaseAndNoDdlProperty() {
 		contextRunner().run(vendorProperties((vendorProperties) -> {
-			assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
-			assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "create-drop");
+			assertThat(vendorProperties).doesNotContainKeys(SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
+			assertThat(vendorProperties).containsEntry(SchemaToolingSettings.HBM2DDL_AUTO, "create-drop");
 		}));
 	}
 
@@ -395,8 +399,8 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void vendorPropertiesWhenDdlAutoPropertyIsSet() {
 		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=update")
 			.run(vendorProperties((vendorProperties) -> {
-				assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
-				assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "update");
+				assertThat(vendorProperties).doesNotContainKeys(SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
+				assertThat(vendorProperties).containsEntry(SchemaToolingSettings.HBM2DDL_AUTO, "update");
 			}));
 	}
 
@@ -406,8 +410,8 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 			.withPropertyValues("spring.jpa.hibernate.ddl-auto=update",
 					"spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop")
 			.run(vendorProperties((vendorProperties) -> {
-				assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
-				assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "create-drop");
+				assertThat(vendorProperties).doesNotContainKeys(SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
+				assertThat(vendorProperties).containsEntry(SchemaToolingSettings.HBM2DDL_AUTO, "create-drop");
 			}));
 	}
 
@@ -415,7 +419,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void vendorPropertiesWhenDdlAutoPropertyIsSetToNone() {
 		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=none")
 			.run(vendorProperties((vendorProperties) -> assertThat(vendorProperties).doesNotContainKeys(
-					AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION, AvailableSettings.HBM2DDL_AUTO)));
+					SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION, SchemaToolingSettings.HBM2DDL_AUTO)));
 	}
 
 	@Test
@@ -423,8 +427,9 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		contextRunner()
 			.withPropertyValues("spring.jpa.properties.jakarta.persistence.schema-generation.database.action=create")
 			.run(vendorProperties((vendorProperties) -> {
-				assertThat(vendorProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION, "create");
-				assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_AUTO);
+				assertThat(vendorProperties).containsEntry(SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
+						"create");
+				assertThat(vendorProperties).doesNotContainKeys(SchemaToolingSettings.HBM2DDL_AUTO);
 			}));
 	}
 
@@ -434,8 +439,9 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 			.withPropertyValues("spring.jpa.properties.jakarta.persistence.schema-generation.database.action=create",
 					"spring.jpa.hibernate.ddl-auto=create-only")
 			.run(vendorProperties((vendorProperties) -> {
-				assertThat(vendorProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION, "create");
-				assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "create-only");
+				assertThat(vendorProperties).containsEntry(SchemaToolingSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
+						"create");
+				assertThat(vendorProperties).containsEntry(SchemaToolingSettings.HBM2DDL_AUTO, "create-only");
 			}));
 	}
 
@@ -508,6 +514,84 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		}
 	}
 
+	@Test
+	@Disabled("gh-40177")
+	void whenSpringJpaGenerateDdlIsNotSetThenTableIsNotCreated() {
+		// spring.jpa.generated-ddl defaults to false but this test still fails because
+		// we're using an embedded database which means that HibernateProperties defaults
+		// hibernate.hbm2ddl.auto to create-drop, replacing the
+		// hibernate.hbm2ddl.auto=none that comes from generate-ddl being false.
+		contextRunner().run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	@Test
+	void whenSpringJpaGenerateDdlIsTrueThenTableIsCreated() {
+		contextRunner().withPropertyValues("spring.jpa.generate-ddl=true")
+			.run((context) -> assertThat(tablesFrom(context)).contains("CITY"));
+	}
+
+	@Test
+	@Disabled("gh-40177")
+	void whenSpringJpaGenerateDdlIsFalseThenTableIsNotCreated() {
+		// This test fails because we're using an embedded database which means that
+		// HibernateProperties defaults hibernate.hbm2ddl.auto to create-drop, replacing
+		// the hibernate.hbm2ddl.auto=none that comes from setting generate-ddl to false.
+		contextRunner().withPropertyValues("spring.jpa.generate-ddl=false")
+			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	@Test
+	void whenHbm2DdlAutoIsNoneThenTableIsNotCreated() {
+		contextRunner().withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=none")
+			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	@Test
+	void whenSpringJpaHibernateDdlAutoIsNoneThenTableIsNotCreated() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=none")
+			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	@Test
+	@Disabled("gh-40177")
+	void whenSpringJpaGenerateDdlIsTrueAndSpringJpaHibernateDdlAutoIsNoneThenTableIsNotCreated() {
+		// This test fails because when ddl-auto is set to none, we remove
+		// hibernate.hbm2ddl.auto from Hibernate properties. This then allows
+		// spring.jpa.generate-ddl to set it to create-drop
+		contextRunner().withPropertyValues("spring.jpa.generate-ddl=true", "spring.jpa.hibernate.ddl-auto=none")
+			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	@Test
+	void whenSpringJpaGenerateDdlIsTrueAndSpringJpaHibernateDdlAutoIsDropThenTableIsNotCreated() {
+		contextRunner().withPropertyValues("spring.jpa.generate-ddl=true", "spring.jpa.hibernate.ddl-auto=drop")
+			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	@Test
+	void whenSpringJpaGenerateDdlIsTrueAndJakartaSchemaGenerationIsNoneThenTableIsNotCreated() {
+		contextRunner()
+			.withPropertyValues("spring.jpa.generate-ddl=true",
+					"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=none")
+			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	@Test
+	void whenSpringJpaGenerateDdlIsTrueSpringJpaHibernateDdlAutoIsCreateAndJakartaSchemaGenerationIsNoneThenTableIsNotCreated() {
+		contextRunner()
+			.withPropertyValues("spring.jpa.generate-ddl=true", "spring.jpa.hibernate.ddl-auto=create",
+					"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=none")
+			.run((context) -> assertThat(tablesFrom(context)).doesNotContain("CITY"));
+	}
+
+	private List<String> tablesFrom(AssertableApplicationContext context) {
+		DataSource dataSource = context.getBean(DataSource.class);
+		JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+		List<String> tables = jdbc.query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES",
+				(results, row) -> results.getString(1));
+		return tables;
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	@DependsOnDatabaseInitialization
@@ -570,7 +654,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 		@Bean
 		HibernatePropertiesCustomizer disableBeanContainerHibernatePropertiesCustomizer() {
-			return (hibernateProperties) -> hibernateProperties.remove(AvailableSettings.BEAN_CONTAINER);
+			return (hibernateProperties) -> hibernateProperties.remove(ManagedBeanSettings.BEAN_CONTAINER);
 		}
 
 	}

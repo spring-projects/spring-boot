@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.ExecutableHint;
@@ -34,12 +35,18 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.context.properties.BoundConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrarTests.BaseProperties.InheritedNested;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrarTests.ComplexNestedProperties.ListenerRetry;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrarTests.ComplexNestedProperties.Retry;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrarTests.ComplexNestedProperties.Simple;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link BindableRuntimeHintsRegistrar}.
@@ -210,7 +217,7 @@ class BindableRuntimeHintsRegistrarTests {
 	}
 
 	@Test
-	void pregisterHintsWhenHasUnresolvedGeneric() {
+	void registerHintsWhenHasUnresolvedGeneric() {
 		RuntimeHints runtimeHints = registerHints(WithGeneric.class);
 		assertThat(runtimeHints.reflection().typeHints()).hasSize(2)
 			.anySatisfy(javaBeanBinding(WithGeneric.class, "getGeneric"))
@@ -241,6 +248,48 @@ class BindableRuntimeHintsRegistrarTests {
 		assertThat(runtimeHints.reflection().typeHints()).singleElement()
 			.satisfies(javaBeanBinding(PackagePrivateGettersAndSetters.class, "getAlpha", "setAlpha", "getBravo",
 					"setBravo"));
+	}
+
+	@Test
+	void registerHintsWhenHasInheritedNestedProperties() {
+		RuntimeHints runtimeHints = registerHints(ExtendingProperties.class);
+		assertThat(runtimeHints.reflection().typeHints()).hasSize(3);
+		assertThat(runtimeHints.reflection().getTypeHint(BaseProperties.class)).satisfies((entry) -> {
+			assertThat(entry.getMemberCategories()).isEmpty();
+			assertThat(entry.methods()).extracting(ExecutableHint::getName)
+				.containsExactlyInAnyOrder("getInheritedNested", "setInheritedNested");
+		});
+		assertThat(runtimeHints.reflection().getTypeHint(ExtendingProperties.class))
+			.satisfies(javaBeanBinding(ExtendingProperties.class, "getBravo", "setBravo"));
+		assertThat(runtimeHints.reflection().getTypeHint(InheritedNested.class))
+			.satisfies(javaBeanBinding(InheritedNested.class, "getAlpha", "setAlpha"));
+	}
+
+	@Test
+	void registerHintsWhenHasComplexNestedProperties() {
+		RuntimeHints runtimeHints = registerHints(ComplexNestedProperties.class);
+		assertThat(runtimeHints.reflection().typeHints()).hasSize(4);
+		assertThat(runtimeHints.reflection().getTypeHint(Retry.class)).satisfies((entry) -> {
+			assertThat(entry.getMemberCategories()).isEmpty();
+			assertThat(entry.methods()).extracting(ExecutableHint::getName)
+				.containsExactlyInAnyOrder("getCount", "setCount");
+		});
+		assertThat(runtimeHints.reflection().getTypeHint(ListenerRetry.class))
+			.satisfies(javaBeanBinding(ListenerRetry.class, "isStateless", "setStateless"));
+		assertThat(runtimeHints.reflection().getTypeHint(Simple.class))
+			.satisfies(javaBeanBinding(Simple.class, "getRetry"));
+		assertThat(runtimeHints.reflection().getTypeHint(ComplexNestedProperties.class))
+			.satisfies(javaBeanBinding(ComplexNestedProperties.class, "getSimple"));
+	}
+
+	@Test
+	void registerHintsDoesNotThrowWhenParameterInformationForConstructorBindingIsNotAvailable()
+			throws NoSuchMethodException, SecurityException {
+		Constructor<?> constructor = PoolProperties.InterceptorProperty.class.getConstructor(String.class,
+				String.class);
+		String[] parameterNames = new StandardReflectionParameterNameDiscoverer().getParameterNames(constructor);
+		assertThat(parameterNames).isNull();
+		assertThatNoException().isThrownBy(() -> registerHints(PoolProperties.class));
 	}
 
 	private Consumer<TypeHint> javaBeanBinding(Class<?> type, String... expectedMethods) {
@@ -659,6 +708,96 @@ class BindableRuntimeHintsRegistrarTests {
 					this.field = field;
 				}
 
+			}
+
+		}
+
+	}
+
+	public abstract static class BaseProperties {
+
+		private InheritedNested inheritedNested;
+
+		public InheritedNested getInheritedNested() {
+			return this.inheritedNested;
+		}
+
+		public void setInheritedNested(InheritedNested inheritedNested) {
+			this.inheritedNested = inheritedNested;
+		}
+
+		public static class InheritedNested {
+
+			private String alpha;
+
+			public String getAlpha() {
+				return this.alpha;
+			}
+
+			public void setAlpha(String alpha) {
+				this.alpha = alpha;
+			}
+
+		}
+
+	}
+
+	public static class ExtendingProperties extends BaseProperties {
+
+		private String bravo;
+
+		public String getBravo() {
+			return this.bravo;
+		}
+
+		public void setBravo(String bravo) {
+			this.bravo = bravo;
+		}
+
+	}
+
+	public static class ComplexNestedProperties {
+
+		private final Simple simple = new Simple();
+
+		public Simple getSimple() {
+			return this.simple;
+		}
+
+		public static class Simple {
+
+			private final ListenerRetry retry = new ListenerRetry();
+
+			public ListenerRetry getRetry() {
+				return this.retry;
+			}
+
+		}
+
+		public abstract static class Retry {
+
+			private int count = 5;
+
+			public int getCount() {
+				return this.count;
+			}
+
+			public void setCount(int count) {
+				this.count = count;
+			}
+
+		}
+
+		public static class ListenerRetry extends Retry {
+
+			private boolean stateless;
+
+			public boolean isStateless() {
+				return this.stateless;
+			}
+
+			public void setStateless(boolean stateless) {
+				this.stateless = stateless;
 			}
 
 		}

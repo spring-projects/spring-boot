@@ -1,0 +1,33 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
+plugins {
+	id "java"
+	id "org.springframework.boot"
+}
+
+java {
+	sourceCompatibility = '17'
+	targetCompatibility = '17'
+}
+
+repositories {
+	maven { url "file:${rootDir}/../docker-test-maven-repository"}
+	mavenCentral()
+	spring.mavenRepositories()
+}
+
+dependencies {
+	implementation(platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES))
+	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+}
+
+tasks.register("bootJarUnpack", BootJar.class) {
+	mainClass = "org.springframework.boot.loaderapp.LoaderSignedJarTestApplication"
+	classpath = bootJar.classpath
+	requiresUnpack '**/bcprov-jdk18on-*.jar'
+	archiveClassifier.set("unpack")
+	targetJavaVersion = targetCompatibility
+}
+
+build.dependsOn bootJarUnpack

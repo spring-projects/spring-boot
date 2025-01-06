@@ -1,0 +1,42 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.docker-test"
+}
+
+description = "Spring Boot Classic Loader Integration Tests"
+
+configurations {
+	app
+}
+
+dependencies {
+	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+}
+
+task syncMavenRepository(type: Sync) {
+	from configurations.app
+	into layout.buildDirectory.dir("docker-test-maven-repository")
+}
+
+task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-loader-classic-tests-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-loader-classic-tests-app"))
+}
+
+task buildApp(type: GradleBuild) {
+	dependsOn syncAppSource, syncMavenRepository
+	dir = layout.buildDirectory.dir("spring-boot-loader-classic-tests-app")
+	startParameter.buildCacheEnabled = false
+	tasks  = ["build"]
+}
+
+tasks.named("dockerTest").configure {
+	dependsOn buildApp
+}

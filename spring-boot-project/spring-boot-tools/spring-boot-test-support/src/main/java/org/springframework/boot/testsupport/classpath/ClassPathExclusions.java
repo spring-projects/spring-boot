@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,12 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.core.annotation.AliasFor;
+
 /**
  * Annotation used to exclude entries from the classpath.
  *
  * @author Andy Wilkinson
- * @since 1.5.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
@@ -38,12 +39,31 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public @interface ClassPathExclusions {
 
 	/**
+	 * Alias for {@code files}.
+	 * <p>
 	 * One or more Ant-style patterns that identify entries to be excluded from the class
 	 * path. Matching is performed against an entry's {@link File#getName() file name}.
 	 * For example, to exclude Hibernate Validator from the classpath,
 	 * {@code "hibernate-validator-*.jar"} can be used.
 	 * @return the exclusion patterns
 	 */
-	String[] value();
+	@AliasFor("files")
+	String[] value() default {};
+
+	/**
+	 * One or more Ant-style patterns that identify entries to be excluded from the class
+	 * path. Matching is performed against an entry's {@link File#getName() file name}.
+	 * For example, to exclude Hibernate Validator from the classpath,
+	 * {@code "hibernate-validator-*.jar"} can be used.
+	 * @return the exclusion patterns
+	 */
+	@AliasFor("value")
+	String[] files() default {};
+
+	/**
+	 * One or more packages that should be excluded from the classpath.
+	 * @return the excluded packages
+	 */
+	String[] packages() default {};
 
 }

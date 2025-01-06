@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class SimpleStatusAggregator implements StatusAggregator {
 	/**
 	 * {@link Comparator} used to order {@link Status}.
 	 */
-	private class StatusComparator implements Comparator<Status> {
+	private final class StatusComparator implements Comparator<Status> {
 
 		@Override
 		public int compare(Status s1, Status s2) {

@@ -1,17 +1,43 @@
 plugins {
 	id "java-library"
-	id "org.jetbrains.kotlin.jvm"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.configuration-properties"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot AutoConfigure"
 
+configurations.all {
+	resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+		if (details.requested.module.group == "org.apache.kafka" && details.requested.module.name == "kafka-server-common") {
+			details.artifactSelection {
+				selectArtifact(DependencyArtifact.DEFAULT_TYPE, null, null)
+			}
+		}
+	}
+}
+
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
+
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.awaitility:awaitility")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.mockito:mockito-core")
+	dockerTestImplementation("org.springframework:spring-test")
+	dockerTestImplementation("org.testcontainers:cassandra")
+	dockerTestImplementation("org.testcontainers:couchbase")
+	dockerTestImplementation("org.testcontainers:elasticsearch")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:mongodb")
+	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:pulsar")
+	dockerTestImplementation("org.testcontainers:testcontainers")
 
 	optional("co.elastic.clients:elasticsearch-java") {
 		exclude group: "commons-logging", module: "commons-logging"
@@ -27,13 +53,15 @@ dependencies {
 	optional("com.hazelcast:hazelcast-spring")
 	optional("com.h2database:h2")
 	optional("com.nimbusds:oauth2-oidc-sdk")
-	optional("com.oracle.database.jdbc:ojdbc8")
-	optional("com.oracle.database.jdbc:ucp")
+	optional("com.oracle.database.jdbc:ojdbc11")
+	optional("com.oracle.database.jdbc:ucp11")
+	optional("com.querydsl:querydsl-core")
 	optional("com.samskivert:jmustache")
 	optional("io.lettuce:lettuce-core")
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.r2dbc:r2dbc-pool")
+	optional("io.r2dbc:r2dbc-proxy")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
 	optional("io.undertow:undertow-servlet")
@@ -48,7 +76,8 @@ dependencies {
 	optional("jakarta.ws.rs:jakarta.ws.rs-api")
 	optional("javax.cache:cache-api")
 	optional("javax.money:money-api")
-	optional("org.apache.activemq:activemq-client-jakarta")
+	optional("org.apache.activemq:activemq-broker")
+	optional("org.apache.activemq:activemq-client")
 	optional("org.apache.activemq:artemis-jakarta-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -78,20 +107,10 @@ dependencies {
 	optional("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-spring")
-	optional("org.eclipse.jetty:jetty-webapp") {
-		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
+	optional("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 	optional("org.eclipse.jetty:jetty-reactive-httpclient")
-	optional("org.eclipse.jetty.websocket:websocket-jakarta-server") {
-		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-websocket-api")
-	}
-	optional("org.eclipse.jetty.websocket:websocket-jetty-server") {
-		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
+	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
+	optional("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server")
 	optional("org.ehcache:ehcache") {
 		artifact {
 			classifier = 'jakarta'
@@ -104,6 +123,8 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.flywaydb:flyway-core")
+	optional("org.flywaydb:flyway-database-postgresql")
+	optional("org.flywaydb:flyway-database-oracle")
 	optional("org.flywaydb:flyway-sqlserver")
 	optional("org.freemarker:freemarker")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
@@ -114,23 +135,16 @@ dependencies {
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.orm:hibernate-jcache")
 	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.infinispan:infinispan-commons-jakarta")
+	optional("org.infinispan:infinispan-commons")
 	optional("org.infinispan:infinispan-component-annotations")
-	optional("org.infinispan:infinispan-core-jakarta")
-	optional("org.infinispan:infinispan-jcache") {
-		exclude group: "org.infinispan", module: "infinispan-commons"
-		exclude group: "org.infinispan", module: "infinispan-core"
-	}
-	optional("org.infinispan:infinispan-spring5-embedded") {
-		exclude group: "org.infinispan", module: "infinispan-commons"
-		exclude group: "org.infinispan", module: "infinispan-core"
-	}
+	optional("org.infinispan:infinispan-core")
+	optional("org.infinispan:infinispan-jcache")
+	optional("org.infinispan:infinispan-spring6-embedded")
 	optional("org.influxdb:influxdb-java")
 	optional("org.jooq:jooq") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("org.liquibase:liquibase-core") {
-		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("org.messaginghub:pooled-jms") {
@@ -142,11 +156,12 @@ dependencies {
 	optional("org.opensaml:opensaml-saml-api:4.0.1")
 	optional("org.opensaml:opensaml-saml-impl:4.0.1")
 	optional("org.quartz-scheduler:quartz")
-	optional("org.springframework:spring-jdbc")
 	optional("org.springframework.integration:spring-integration-core")
 	optional("org.springframework.integration:spring-integration-jdbc")
 	optional("org.springframework.integration:spring-integration-jmx")
 	optional("org.springframework.integration:spring-integration-rsocket")
+	optional("org.springframework:spring-aspects")
+	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-orm")
 	optional("org.springframework:spring-tx")
@@ -178,6 +193,8 @@ dependencies {
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.graphql:spring-graphql")
 	optional("org.springframework.hateoas:spring-hateoas")
+	optional("org.springframework.pulsar:spring-pulsar")
+	optional("org.springframework.pulsar:spring-pulsar-reactive")
 	optional("org.springframework.security:spring-security-acl")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-data") {
@@ -223,9 +240,9 @@ dependencies {
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.mysql:mysql-connector-j")
-	testImplementation("com.querydsl:querydsl-core")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
+	testImplementation("io.micrometer:context-propagation")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("jakarta.json:jakarta.json-api")
@@ -246,18 +263,15 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.graphql:spring-graphql-test")
-	testImplementation("org.springframework.kafka:spring-kafka-test")
+	testImplementation("org.springframework.kafka:spring-kafka-test") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
+	testImplementation("org.springframework.pulsar:spring-pulsar-cache-provider-caffeine")
 	testImplementation("org.springframework.security:spring-security-test")
-	testImplementation("org.testcontainers:cassandra")
-	testImplementation("org.testcontainers:couchbase")
-	testImplementation("org.testcontainers:elasticsearch")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:mongodb")
-	testImplementation("org.testcontainers:neo4j")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.yaml:snakeyaml")
 
 	testRuntimeOnly("jakarta.management.j2ee:jakarta.management.j2ee-api")
+	testRuntimeOnly("org.flywaydb:flyway-database-hsqldb")
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
 }
 

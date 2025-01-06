@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,11 +88,15 @@ public class ProcessAotMojo extends AbstractAotMojo {
 
 	@Override
 	protected void executeAot() throws Exception {
+		if (this.project.getPackaging().equals("pom")) {
+			getLog().debug("process-aot goal could not be applied to pom project.");
+			return;
+		}
 		String applicationClass = (this.mainClass != null) ? this.mainClass
 				: SpringBootApplicationClassFinder.findSingleClass(this.classesDirectory);
 		URL[] classPath = getClassPath();
 		generateAotAssets(classPath, AOT_PROCESSOR_CLASS_NAME, getAotArguments(applicationClass));
-		compileSourceFiles(classPath, this.generatedSources, this.classesDirectory);
+		compileSourceFiles(classPath, this.generatedSources, this.generatedClasses);
 		copyAll(this.generatedResources.toPath(), this.classesDirectory.toPath());
 		copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
 	}

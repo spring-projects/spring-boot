@@ -17,7 +17,9 @@ dependencyManagement {
 
 repositories {
 	mavenCentral()
-	maven { url 'file:repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 dependencies {
@@ -25,8 +27,9 @@ dependencies {
 }
 
 task kotlinVersion {
+	def properties = project.properties
 	doLast {
-		def kotlinVersion = project.hasProperty('kotlin.version') ? project.getProperty('kotlin.version') : 'none'
+		def kotlinVersion = properties.getOrDefault('kotlin.version', 'none')
 		println "Kotlin version: ${kotlinVersion}"
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -46,6 +47,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class UndertowWebServerFactoryDelegate {
 
@@ -143,7 +145,8 @@ class UndertowWebServerFactoryDelegate {
 		return this.useForwardHeaders;
 	}
 
-	Builder createBuilder(AbstractConfigurableWebServerFactory factory, Supplier<SslBundle> sslBundleSupplier) {
+	Builder createBuilder(AbstractConfigurableWebServerFactory factory, Supplier<SslBundle> sslBundleSupplier,
+			Supplier<Map<String, SslBundle>> serverNameSslBundlesSupplier) {
 		InetAddress address = factory.getAddress();
 		int port = factory.getPort();
 		Builder builder = Undertow.builder();
@@ -165,7 +168,8 @@ class UndertowWebServerFactoryDelegate {
 		}
 		Ssl ssl = factory.getSsl();
 		if (Ssl.isEnabled(ssl)) {
-			new SslBuilderCustomizer(factory.getPort(), address, ssl.getClientAuth(), sslBundleSupplier.get())
+			new SslBuilderCustomizer(factory.getPort(), address, ssl.getClientAuth(), sslBundleSupplier.get(),
+					serverNameSslBundlesSupplier.get())
 				.customize(builder);
 		}
 		else {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link Saml2RelyingPartyProperties}.
  *
  * @author Madhura Bhave
+ * @author Lasse Wulff
  */
 class Saml2RelyingPartyPropertiesTests {
 
@@ -67,7 +68,7 @@ class Saml2RelyingPartyPropertiesTests {
 			.get("simplesamlphp")
 			.getAssertingparty()
 			.getSinglesignon()
-			.isSignRequest()).isFalse();
+			.getSignRequest()).isFalse();
 	}
 
 	@Test
@@ -93,13 +94,20 @@ class Saml2RelyingPartyPropertiesTests {
 	}
 
 	@Test
-	void customizeSsoSignRequestsIsTrueByDefault() {
+	void customizeSsoSignRequestsIsNullByDefault() {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
 		assertThat(this.properties.getRegistration()
 			.get("simplesamlphp")
 			.getAssertingparty()
 			.getSinglesignon()
-			.isSignRequest()).isTrue();
+			.getSignRequest()).isNull();
+	}
+
+	@Test
+	void customizeNameIdFormat() {
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.name-id-format", "sampleNameIdFormat");
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getNameIdFormat())
+			.isEqualTo("sampleNameIdFormat");
 	}
 
 	private void bind(String name, String value) {

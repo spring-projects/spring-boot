@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfigurati
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +60,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
+	@ClassPathExclusions({ "spring-security-oauth2-client-*.jar", "spring-security-oauth2-resource-server-*.jar" })
 	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner()
 			.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
@@ -83,7 +85,7 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
 			ElasticsearchDataAutoConfiguration.class, RedisAutoConfiguration.class,
 			RedisRepositoriesAutoConfiguration.class, BraveAutoConfiguration.class,
-			OpenTelemetryAutoConfiguration.class })
+			OpenTelemetryTracingAutoConfiguration.class })
 	@SpringBootConfiguration
 	static class WebEndpointTestApplication {
 

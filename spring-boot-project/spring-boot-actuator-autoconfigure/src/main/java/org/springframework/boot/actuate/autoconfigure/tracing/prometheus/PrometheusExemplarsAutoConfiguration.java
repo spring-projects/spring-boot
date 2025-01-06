@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing.prometheus;
 
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
-import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
+import io.prometheus.metrics.tracer.common.SpanContext;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
@@ -41,48 +41,52 @@ import org.springframework.util.function.SingletonSupplier;
 @AutoConfiguration(before = PrometheusMetricsExportAutoConfiguration.class,
 		after = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnBean(Tracer.class)
-@ConditionalOnClass({ Tracer.class, SpanContextSupplier.class })
+@ConditionalOnClass({ Tracer.class, SpanContext.class })
 public class PrometheusExemplarsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	SpanContextSupplier spanContextSupplier(ObjectProvider<Tracer> tracerProvider) {
-		return new LazyTracingSpanContextSupplier(tracerProvider);
+	SpanContext spanContext(ObjectProvider<Tracer> tracerProvider) {
+		return new LazyTracingSpanContext(tracerProvider);
 	}
 
 	/**
 	 * Since the MeterRegistry can depend on the {@link Tracer} (Exemplars) and the
 	 * {@link Tracer} can depend on the MeterRegistry (recording metrics), this
-	 * {@link SpanContextSupplier} breaks the cycle by lazily loading the {@link Tracer}.
+	 * {@link SpanContext} breaks the cycle by lazily loading the {@link Tracer}.
 	 */
-	static class LazyTracingSpanContextSupplier implements SpanContextSupplier {
+	static class LazyTracingSpanContext implements SpanContext {
 
 		private final SingletonSupplier<Tracer> tracer;
 
-		LazyTracingSpanContextSupplier(ObjectProvider<Tracer> tracerProvider) {
+		LazyTracingSpanContext(ObjectProvider<Tracer> tracerProvider) {
 			this.tracer = SingletonSupplier.of(tracerProvider::getObject);
 		}
 
 		@Override
-		public String getTraceId() {
+		public String getCurrentTraceId() {
 			Span currentSpan = currentSpan();
 			return (currentSpan != null) ? currentSpan.context().traceId() : null;
 		}
 
 		@Override
-		public String getSpanId() {
+		public String getCurrentSpanId() {
 			Span currentSpan = currentSpan();
 			return (currentSpan != null) ? currentSpan.context().spanId() : null;
 		}
 
 		@Override
-		public boolean isSampled() {
+		public boolean isCurrentSpanSampled() {
 			Span currentSpan = currentSpan();
 			if (currentSpan == null) {
 				return false;
 			}
 			Boolean sampled = currentSpan.context().sampled();
 			return sampled != null && sampled;
+		}
+
+		@Override
+		public void markCurrentSpanAsExemplar() {
 		}
 
 		private Span currentSpan() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.micrometer.prometheus.HistogramFlavor;
-
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
@@ -55,8 +54,15 @@ public class PrometheusProperties {
 
 	/**
 	 * Histogram type for backing DistributionSummary and Timer.
+	 * @deprecated since 3.3.0 for removal in 3.5.0
 	 */
+	@Deprecated(since = "3.3.0", forRemoval = true)
 	private HistogramFlavor histogramFlavor = HistogramFlavor.Prometheus;
+
+	/**
+	 * Additional properties to pass to the Prometheus client.
+	 */
+	private final Map<String, String> properties = new HashMap<>();
 
 	/**
 	 * Step size (i.e. reporting frequency) to use.
@@ -71,6 +77,9 @@ public class PrometheusProperties {
 		this.descriptions = descriptions;
 	}
 
+	@Deprecated(since = "3.3.0", forRemoval = true)
+	@DeprecatedConfigurationProperty(since = "3.3.0",
+			reason = "No longer supported. Works only when using the Prometheus simpleclient.")
 	public HistogramFlavor getHistogramFlavor() {
 		return this.histogramFlavor;
 	}
@@ -97,6 +106,10 @@ public class PrometheusProperties {
 
 	public Pushgateway getPushgateway() {
 		return this.pushgateway;
+	}
+
+	public Map<String, String> getProperties() {
+		return this.properties;
 	}
 
 	/**
@@ -207,6 +220,18 @@ public class PrometheusProperties {
 		public void setShutdownOperation(ShutdownOperation shutdownOperation) {
 			this.shutdownOperation = shutdownOperation;
 		}
+
+	}
+
+	/**
+	 * Prometheus Histogram flavor.
+	 *
+	 * @deprecated since 3.3.0 for removal in 3.5.0
+	 */
+	@Deprecated(since = "3.3.0", forRemoval = true)
+	public enum HistogramFlavor {
+
+		Prometheus, VictoriaMetrics
 
 	}
 

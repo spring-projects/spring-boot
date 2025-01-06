@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Lasse Wulff
  * @since 2.0.0
  */
 @AutoConfiguration(after = { WebFluxAutoConfiguration.class })
@@ -60,8 +61,11 @@ public class HttpHandlerAutoConfiguration {
 		}
 
 		@Bean
-		public HttpHandler httpHandler(ObjectProvider<WebFluxProperties> propsProvider) {
-			HttpHandler httpHandler = WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
+		public HttpHandler httpHandler(ObjectProvider<WebFluxProperties> propsProvider,
+				ObjectProvider<WebHttpHandlerBuilderCustomizer> handlerBuilderCustomizers) {
+			WebHttpHandlerBuilder handlerBuilder = WebHttpHandlerBuilder.applicationContext(this.applicationContext);
+			handlerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(handlerBuilder));
+			HttpHandler httpHandler = handlerBuilder.build();
 			WebFluxProperties properties = propsProvider.getIfAvailable();
 			if (properties != null && StringUtils.hasText(properties.getBasePath())) {
 				Map<String, HttpHandler> handlersMap = Collections.singletonMap(properties.getBasePath(), httpHandler);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,14 +102,14 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	}
 
 	private void addJsonBean(Object bean, Class<?>[] types, Scope scope) {
-		if (bean instanceof JsonSerializer) {
-			addJsonSerializerBean((JsonSerializer<?>) bean, scope, types);
+		if (bean instanceof JsonSerializer<?> jsonSerializer) {
+			addJsonSerializerBean(jsonSerializer, scope, types);
 		}
-		else if (bean instanceof JsonDeserializer) {
-			addJsonDeserializerBean((JsonDeserializer<?>) bean, types);
+		else if (bean instanceof JsonDeserializer<?> jsonDeserializer) {
+			addJsonDeserializerBean(jsonDeserializer, types);
 		}
-		else if (bean instanceof KeyDeserializer) {
-			addKeyDeserializerBean((KeyDeserializer) bean, types);
+		else if (bean instanceof KeyDeserializer keyDeserializer) {
+			addKeyDeserializerBean(keyDeserializer, types);
 		}
 		for (Class<?> innerClass : bean.getClass().getDeclaredClasses()) {
 			if (isSuitableInnerClass(innerClass)) {

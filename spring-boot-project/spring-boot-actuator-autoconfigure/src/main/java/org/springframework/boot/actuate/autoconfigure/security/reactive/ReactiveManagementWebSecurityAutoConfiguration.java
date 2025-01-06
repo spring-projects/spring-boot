@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.reactive;
 
+import reactor.core.publisher.Mono;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,12 +31,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
 import org.springframework.web.cors.reactive.PreFlightRequestHandler;
 import org.springframework.web.cors.reactive.PreFlightRequestWebFilter;
 
@@ -50,7 +58,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @AutoConfiguration(before = ReactiveSecurityAutoConfiguration.class,
 		after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, ReactiveOAuth2ClientAutoConfiguration.class,
-				ReactiveOAuth2ResourceServerAutoConfiguration.class })
+				ReactiveOAuth2ResourceServerAutoConfiguration.class,
+				ReactiveUserDetailsServiceAutoConfiguration.class })
 @ConditionalOnClass({ EnableWebFluxSecurity.class, WebFilterChainProxy.class })
 @ConditionalOnMissingBean({ SecurityWebFilterChain.class, WebFilterChainProxy.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
@@ -59,7 +68,7 @@ public class ReactiveManagementWebSecurityAutoConfiguration {
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, PreFlightRequestHandler handler) {
 		http.authorizeExchange((exchanges) -> {
-			exchanges.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
+			exchanges.matchers(healthMatcher(), additionalHealthPathsMatcher()).permitAll();
 			exchanges.anyExchange().authenticated();
 		});
 		PreFlightRequestWebFilter filter = new PreFlightRequestWebFilter(handler);
@@ -67,6 +76,20 @@ public class ReactiveManagementWebSecurityAutoConfiguration {
 		http.httpBasic(withDefaults());
 		http.formLogin(withDefaults());
 		return http.build();
+	}
+
+	private ServerWebExchangeMatcher healthMatcher() {
+		return EndpointRequest.to(HealthEndpoint.class);
+	}
+
+	private ServerWebExchangeMatcher additionalHealthPathsMatcher() {
+		return EndpointRequest.toAdditionalPaths(WebServerNamespace.SERVER, HealthEndpoint.class);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean({ ReactiveAuthenticationManager.class, ReactiveUserDetailsService.class })
+	ReactiveAuthenticationManager denyAllAuthenticationManager() {
+		return (authentication) -> Mono.error(new UsernameNotFoundException(authentication.getName()));
 	}
 
 }

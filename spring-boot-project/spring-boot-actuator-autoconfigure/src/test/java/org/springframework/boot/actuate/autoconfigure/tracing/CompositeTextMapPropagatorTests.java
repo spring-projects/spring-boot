@@ -22,15 +22,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.ContextKey;
 import io.opentelemetry.context.propagation.TextMapGetter;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.context.propagation.TextMapSetter;
+import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+
+import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Propagation;
+import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Propagation.PropagationType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link CompositeTextMapPropagator}.
  *
  * @author Moritz Halbritter
+ * @author Scott Frederick
  */
 class CompositeTextMapPropagatorTests {
 
@@ -89,6 +95,17 @@ class CompositeTextMapPropagatorTests {
 		context = propagator.extract(context, carrier, new MapTextMapGetter());
 		Object c = context.get(getObjectContextKey("c"));
 		assertThat(c).isEqualTo("c-value");
+	}
+
+	@Test
+	void createMapsInjectorsAndExtractors() {
+		Propagation properties = new Propagation();
+		properties.setProduce(List.of(PropagationType.W3C));
+		properties.setConsume(List.of(PropagationType.B3));
+		CompositeTextMapPropagator propagator = (CompositeTextMapPropagator) CompositeTextMapPropagator
+			.create(properties, null);
+		assertThat(propagator.getInjectors()).hasExactlyElementsOfTypes(W3CTraceContextPropagator.class);
+		assertThat(propagator.getExtractors()).hasExactlyElementsOfTypes(B3Propagator.class);
 	}
 
 	private DummyTextMapPropagator field(String field) {

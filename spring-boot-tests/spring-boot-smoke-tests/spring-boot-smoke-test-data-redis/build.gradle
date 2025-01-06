@@ -1,23 +1,24 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Data Redis smoke test"
 
 dependencies {
-	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("io.projectreactor:reactor-core")
+	dockerTestImplementation("io.projectreactor:reactor-test")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.junit.platform:junit-platform-engine")
+	dockerTestImplementation("org.junit.platform:junit-platform-launcher")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+	dockerTestImplementation("redis.clients:jedis")
 
-	testImplementation(project(":spring-boot-project:spring-boot-test"))
-	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
-	testImplementation("io.projectreactor:reactor-core")
-	testImplementation("io.projectreactor:reactor-test")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.junit.platform:junit-platform-engine")
-	testImplementation("org.junit.platform:junit-platform-launcher")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:testcontainers")
-	testImplementation("redis.clients:jedis")
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
-import com.mongodb.connection.netty.NettyStreamFactoryFactory;
+import com.mongodb.connection.TransportSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -113,11 +113,10 @@ public class MongoReactiveAutoConfiguration {
 
 		@Override
 		public void customize(Builder builder) {
-			if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
+			if (!isCustomTransportConfiguration(this.settings.getIfAvailable())) {
 				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 				this.eventLoopGroup = eventLoopGroup;
-				builder
-					.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build());
+				builder.transportSettings(TransportSettings.nettyBuilder().eventLoopGroup(eventLoopGroup).build());
 			}
 		}
 
@@ -130,8 +129,8 @@ public class MongoReactiveAutoConfiguration {
 			}
 		}
 
-		private boolean isStreamFactoryFactoryDefined(MongoClientSettings settings) {
-			return settings != null && settings.getStreamFactoryFactory() != null;
+		private boolean isCustomTransportConfiguration(MongoClientSettings settings) {
+			return settings != null && settings.getTransportSettings() != null;
 		}
 
 	}

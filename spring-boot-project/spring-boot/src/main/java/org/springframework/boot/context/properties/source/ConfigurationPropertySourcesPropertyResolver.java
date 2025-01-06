@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.env.AbstractPropertyResolver;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
@@ -49,6 +50,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 					return attached.findConfigurationProperty(name) != null;
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 		}
@@ -78,7 +80,14 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		if (resolveNestedPlaceholders && value instanceof String string) {
 			value = resolveNestedPlaceholders(string);
 		}
-		return convertValueIfNecessary(value, targetValueType);
+		try {
+			return convertValueIfNecessary(value, targetValueType);
+		}
+		catch (ConversionFailedException ex) {
+			Exception wrappedCause = new InvalidConfigurationPropertyValueException(key, value,
+					"Failed to convert to type " + ex.getTargetType(), ex.getCause());
+			throw new ConversionFailedException(ex.getSourceType(), ex.getTargetType(), ex.getValue(), wrappedCause);
+		}
 	}
 
 	private Object findPropertyValue(String key) {
@@ -91,6 +100,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 					return (configurationProperty != null) ? configurationProperty.getValue() : null;
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 		}

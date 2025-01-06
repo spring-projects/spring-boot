@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 		registerHintsForLogbackLoggingSystemTypeChecks(reflection, classLoader);
 		registerHintsForBuiltInLogbackConverters(reflection);
 		registerHintsForSpringBootConverters(reflection);
+		registerHintsForDeprecateSpringBootConverters(reflection);
 	}
 
 	private void registerHintsForLogbackLoggingSystemTypeChecks(ReflectionHints reflection, ClassLoader classLoader) {
@@ -59,8 +60,13 @@ class LogbackRuntimeHints implements RuntimeHintsRegistrar {
 
 	private void registerHintsForSpringBootConverters(ReflectionHints reflection) {
 		registerForPublicConstructorInvocation(reflection, ColorConverter.class,
-				ExtendedWhitespaceThrowableProxyConverter.class, WhitespaceThrowableProxyConverter.class,
-				CorrelationIdConverter.class);
+				EnclosedInSquareBracketsConverter.class, ExtendedWhitespaceThrowableProxyConverter.class,
+				WhitespaceThrowableProxyConverter.class, CorrelationIdConverter.class);
+	}
+
+	@SuppressWarnings("removal")
+	private void registerHintsForDeprecateSpringBootConverters(ReflectionHints reflection) {
+		registerForPublicConstructorInvocation(reflection, ApplicationNameConverter.class);
 	}
 
 	private void registerForPublicConstructorInvocation(ReflectionHints reflection, Class<?>... classes) {

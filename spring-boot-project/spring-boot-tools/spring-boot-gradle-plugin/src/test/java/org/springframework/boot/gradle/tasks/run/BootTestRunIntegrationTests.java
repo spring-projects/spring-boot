@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,8 +113,24 @@ class BootTestRunIntegrationTests {
 		else {
 			assertThat(result.getOutput())
 				.contains("Main class name has not been configured and it could not be resolved from classpath "
-						+ String.join(File.separator, "build", "classes", "java", "test"));
+						+ canonicalPathOf("build/classes/java/test"));
 		}
+	}
+
+	@TestTemplate
+	void developmentOnlyDependenciesAreNotOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootTestRun");
+		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).doesNotContain("commons-lang3-3.12.0.jar");
+	}
+
+	@TestTemplate
+	void testAndDevelopmentOnlyDependenciesAreOnTheClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootTestRun");
+		assertThat(result.task(":bootTestRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("commons-lang3-3.12.0.jar");
 	}
 
 	private void copyClasspathApplication() throws IOException {

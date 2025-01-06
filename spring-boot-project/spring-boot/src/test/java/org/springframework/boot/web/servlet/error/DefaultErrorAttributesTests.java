@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.web.servlet.error;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.ServletException;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -34,9 +36,12 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.method.MethodValidationResult;
+import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.ModelAndView;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,6 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Vedran Pavic
  * @author Scott Frederick
+ * @author Moritz Halbritter
+ * @author Yanming Zhou
  */
 class DefaultErrorAttributesTests {
 
@@ -88,8 +95,6 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
-		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-			.isSameAs(ex);
 		assertThat(modelAndView).isNull();
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).containsEntry("message", "Test");
@@ -102,8 +107,6 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
-		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-			.isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).containsEntry("message", "Test");
 	}
@@ -115,8 +118,6 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
-		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-			.isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).doesNotContainKey("message");
 	}
@@ -166,8 +167,6 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(wrapped);
-		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-			.isSameAs(wrapped);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).containsEntry("message", "Test");
 	}
@@ -179,8 +178,6 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(error);
-		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-			.isSameAs(error);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).containsEntry("message", "Test error");
 	}
@@ -211,18 +208,40 @@ class DefaultErrorAttributesTests {
 		testBindingResult(bindingResult, ex, ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
 	}
 
+	@Test
+	void withHandlerMethodValidationExceptionBindingErrors() {
+		Object target = "test";
+		Method method = ReflectionUtils.findMethod(String.class, "substring", int.class);
+		MethodParameter parameter = new MethodParameter(method, 0);
+		MethodValidationResult methodValidationResult = MethodValidationResult.create(target, method,
+				List.of(new ParameterValidationResult(parameter, -1,
+						List.of(new ObjectError("beginIndex", "beginIndex is negative")), null, null, null,
+						(error, sourceType) -> {
+							throw new IllegalArgumentException("No source object of the given type");
+						})));
+		HandlerMethodValidationException ex = new HandlerMethodValidationException(methodValidationResult);
+		testErrors(methodValidationResult.getAllErrors(),
+				"Validation failed for method='public java.lang.String java.lang.String.substring(int)'. Error count: 1",
+				ex, ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
+	}
+
 	private void testBindingResult(BindingResult bindingResult, Exception ex, ErrorAttributeOptions options) {
+		testErrors(bindingResult.getAllErrors(), "Validation failed for object='objectName'. Error count: 1", ex,
+				options);
+	}
+
+	private void testErrors(List<? extends MessageSourceResolvable> errors, String expectedMessage, Exception ex,
+			ErrorAttributeOptions options) {
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, options);
 		if (options.isIncluded(Include.MESSAGE)) {
-			assertThat(attributes).containsEntry("message",
-					"Validation failed for object='objectName'. Error count: 1");
+			assertThat(attributes).containsEntry("message", expectedMessage);
 		}
 		else {
 			assertThat(attributes).doesNotContainKey("message");
 		}
 		if (options.isIncluded(Include.BINDING_ERRORS)) {
-			assertThat(attributes).containsEntry("errors", bindingResult.getAllErrors());
+			assertThat(attributes).containsEntry("errors", errors);
 		}
 		else {
 			assertThat(attributes).doesNotContainKey("errors");
@@ -259,11 +278,27 @@ class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	void path() {
+	void shouldIncludePathByDefault() {
 		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).containsEntry("path", "path");
+	}
+
+	@Test
+	void shouldIncludePath() {
+		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.of(Include.PATH));
+		assertThat(attributes).containsEntry("path", "path");
+	}
+
+	@Test
+	void shouldExcludePath() {
+		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.of());
+		assertThat(attributes).doesNotContainEntry("path", "path");
 	}
 
 	@Test
@@ -277,6 +312,22 @@ class DefaultErrorAttributesTests {
 
 		}.getErrorAttributes(this.webRequest, ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(attributes).containsEntry("message", "custom message");
+	}
+
+	@Test
+	void excludeStatus() {
+		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.defaults().excluding(Include.STATUS));
+		assertThat(attributes).doesNotContainKey("status");
+	}
+
+	@Test
+	void excludeError() {
+		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.defaults().excluding(Include.ERROR));
+		assertThat(attributes).doesNotContainKey("error");
 	}
 
 }

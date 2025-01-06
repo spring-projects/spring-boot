@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Jinseong Hwang
+ * @author Scott Frederick
  */
 class MariaDbEnvironmentTests {
 
@@ -74,21 +76,21 @@ class MariaDbEnvironmentTests {
 	}
 
 	@Test
-	void getUsernameWhenHasMySqlUser() {
+	void getUsernameWhenHasMysqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MYSQL_USER", "myself", "MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
 	}
 
 	@Test
-	void getUsernameWhenHasMariadbUserAndMySqlUser() {
+	void getUsernameWhenHasMariadbUserAndMysqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(Map.of("MARIADB_USER", "myself", "MYSQL_USER", "me",
 				"MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("myself");
 	}
 
 	@Test
-	void getUsernameWhenHasNoMariadbUserOrMySqlUser() {
+	void getUsernameWhenHasNoMariadbUserOrMysqlUser() {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getUsername()).isEqualTo("root");
@@ -127,6 +129,13 @@ class MariaDbEnvironmentTests {
 		MariaDbEnvironment environment = new MariaDbEnvironment(
 				Map.of("MARIADB_PASSWORD", "secret", "MYSQL_ROOT_PASSWORD", "donttell", "MARIADB_DATABASE", "db"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
+	}
+
+	@Test
+	void getPasswordWhenHasNoPasswordAndAllowEmptyPassword() {
+		MariaDbEnvironment environment = new MariaDbEnvironment(
+				Map.of("ALLOW_EMPTY_PASSWORD", "true", "MARIADB_DATABASE", "db"));
+		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test

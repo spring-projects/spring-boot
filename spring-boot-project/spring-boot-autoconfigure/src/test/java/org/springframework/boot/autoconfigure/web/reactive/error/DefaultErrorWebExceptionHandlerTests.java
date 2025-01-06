@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -33,12 +32,10 @@ import org.springframework.http.codec.HttpMessageReader;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,18 +52,9 @@ import static org.mockito.Mockito.mock;
 class DefaultErrorWebExceptionHandlerTests {
 
 	@Test
-	void disconnectedClientExceptionsMatchesFramework() {
-		Object errorHandlers = ReflectionTestUtils.getField(AbstractErrorWebExceptionHandler.class,
-				"DISCONNECTED_CLIENT_EXCEPTIONS");
-		Object webHandlers = ReflectionTestUtils.getField(HttpWebHandlerAdapter.class,
-				"DISCONNECTED_CLIENT_EXCEPTIONS");
-		assertThat(errorHandlers).isNotNull().isEqualTo(webHandlers);
-	}
-
-	@Test
 	void nonStandardErrorStatusCodeShouldNotFail() {
 		ErrorAttributes errorAttributes = mock(ErrorAttributes.class);
-		given(errorAttributes.getErrorAttributes(any(), any())).willReturn(getErrorAttributes());
+		given(errorAttributes.getErrorAttributes(any(), any())).willReturn(Collections.singletonMap("status", 498));
 		Resources resourceProperties = new Resources();
 		ErrorProperties errorProperties = new ErrorProperties();
 		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
@@ -76,10 +64,6 @@ class DefaultErrorWebExceptionHandlerTests {
 		ServerWebExchange exchange = MockServerWebExchange
 			.from(MockServerHttpRequest.get("/some-other-path").accept(MediaType.TEXT_HTML));
 		exceptionHandler.handle(exchange, new RuntimeException()).block();
-	}
-
-	private Map<String, Object> getErrorAttributes() {
-		return Collections.singletonMap("status", 498);
 	}
 
 	private void setupViewResolver(DefaultErrorWebExceptionHandler exceptionHandler) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
+import java.time.Duration;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.awaitility.Awaitility;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -47,7 +53,12 @@ class JettyVirtualThreadsWebServerFactoryCustomizerTests {
 		then(factory).should().setThreadPool(assertArg((threadPool) -> {
 			assertThat(threadPool).isInstanceOf(QueuedThreadPool.class);
 			QueuedThreadPool queuedThreadPool = (QueuedThreadPool) threadPool;
-			assertThat(queuedThreadPool.getVirtualThreadsExecutor()).isNotNull();
+			Executor executor = queuedThreadPool.getVirtualThreadsExecutor();
+			assertThat(executor).isNotNull();
+			AtomicReference<String> threadName = new AtomicReference<>();
+			executor.execute(() -> threadName.set(Thread.currentThread().getName()));
+			Awaitility.await().atMost(Duration.ofSeconds(1)).untilAtomic(threadName, Matchers.notNullValue());
+			assertThat(threadName.get()).startsWith("jetty-");
 		}));
 	}
 

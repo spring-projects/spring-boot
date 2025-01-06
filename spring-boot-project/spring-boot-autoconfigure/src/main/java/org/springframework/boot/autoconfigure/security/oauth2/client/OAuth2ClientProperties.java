@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author MyeongHyeon Lee
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
@@ -60,12 +61,12 @@ public class OAuth2ClientProperties implements InitializingBean {
 	}
 
 	public void validate() {
-		getRegistration().values().forEach(this::validateRegistration);
+		getRegistration().forEach(this::validateRegistration);
 	}
 
-	private void validateRegistration(Registration registration) {
+	private void validateRegistration(String id, Registration registration) {
 		if (!StringUtils.hasText(registration.getClientId())) {
-			throw new IllegalStateException("Client id must not be empty.");
+			throw new IllegalStateException("Client id of registration '%s' must not be empty.".formatted(id));
 		}
 	}
 

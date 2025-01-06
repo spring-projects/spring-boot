@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
@@ -70,13 +71,13 @@ import static org.mockito.Mockito.mock;
  */
 class CloudFoundryMvcWebEndpointIntegrationTests {
 
-	private static final TokenValidator tokenValidator = mock(TokenValidator.class);
+	private final TokenValidator tokenValidator = mock(TokenValidator.class);
 
-	private static final CloudFoundrySecurityService securityService = mock(CloudFoundrySecurityService.class);
+	private final CloudFoundrySecurityService securityService = mock(CloudFoundrySecurityService.class);
 
 	@Test
 	void operationWithSecurityInterceptorForbidden() {
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get()
 					.uri("/cfApplication/test")
@@ -89,7 +90,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	@Test
 	void operationWithSecurityInterceptorSuccess() {
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get()
 					.uri("/cfApplication/test")
@@ -119,7 +120,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	@Test
 	void linksToOtherEndpointsWithFullAccess() {
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get()
 					.uri("/cfApplication")
@@ -157,7 +158,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 	void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 				"invalid-token");
-		willThrow(exception).given(tokenValidator).validate(any());
+		willThrow(exception).given(this.tokenValidator).validate(any());
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get()
 					.uri("/cfApplication")
@@ -170,7 +171,7 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	@Test
 	void linksToOtherEndpointsWithRestrictedAccess() {
-		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
+		given(this.securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
 				(client) -> client.get()
 					.uri("/cfApplication")
@@ -198,24 +199,21 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 					.doesNotExist());
 	}
 
-	private AnnotationConfigServletWebServerApplicationContext createApplicationContext(Class<?>... config) {
-		return new AnnotationConfigServletWebServerApplicationContext(config);
+	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
+		BiConsumer<ApplicationContext, WebTestClient> consumer = (context, client) -> clientConsumer.accept(client);
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+			.withUserConfiguration(configuration, CloudFoundryMvcConfiguration.class)
+			.withBean(TokenValidator.class, () -> this.tokenValidator)
+			.withBean(CloudFoundrySecurityService.class, () -> this.securityService)
+			.run((context) -> consumer.accept(context, WebTestClient.bindToServer()
+				.baseUrl("http://localhost:" + getPort(
+						(AnnotationConfigServletWebServerApplicationContext) context.getSourceApplicationContext()))
+				.responseTimeout(Duration.ofMinutes(5))
+				.build()));
 	}
 
 	private int getPort(AnnotationConfigServletWebServerApplicationContext context) {
 		return context.getWebServer().getPort();
-	}
-
-	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
-		BiConsumer<ApplicationContext, WebTestClient> consumer = (context, client) -> clientConsumer.accept(client);
-		try (AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(configuration,
-				CloudFoundryMvcConfiguration.class)) {
-			consumer.accept(context,
-					WebTestClient.bindToServer()
-						.baseUrl("http://localhost:" + getPort(context))
-						.responseTimeout(Duration.ofMinutes(5))
-						.build());
-		}
 	}
 
 	private String mockAccessToken() {
@@ -229,7 +227,8 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 	static class CloudFoundryMvcConfiguration {
 
 		@Bean
-		CloudFoundrySecurityInterceptor interceptor() {
+		CloudFoundrySecurityInterceptor interceptor(TokenValidator tokenValidator,
+				CloudFoundrySecurityService securityService) {
 			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
@@ -257,8 +256,8 @@ class CloudFoundryMvcWebEndpointIntegrationTests {
 				EndpointMediaTypes endpointMediaTypes) {
 			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
-			return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes, null,
-					Collections.emptyList(), Collections.emptyList());
+			return new WebEndpointDiscoverer(applicationContext, parameterMapper, endpointMediaTypes, null, null,
+					Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 		}
 
 		@Bean

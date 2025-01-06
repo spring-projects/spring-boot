@@ -1,0 +1,9 @@
+services:
+  database:
+    image: '{imageName}'
+    ports:
+      - '5432'
+    environment:
+      - 'POSTGRESQL_USER=myuser'
+      - 'POSTGRESQL_DB=mydatabase'
+      - 'POSTGRESQL_PASSWORD=secret'

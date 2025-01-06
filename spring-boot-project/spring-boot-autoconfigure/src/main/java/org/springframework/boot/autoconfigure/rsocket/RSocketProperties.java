@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.unit.DataSize;
 
 /**
- * {@link ConfigurationProperties properties} for RSocket support.
+ * {@link ConfigurationProperties Properties} for RSocket support.
  *
  * @author Brian Clozel
  * @author Chris Bono
@@ -73,6 +73,8 @@ public class RSocketProperties {
 		@NestedConfigurationProperty
 		private Ssl ssl;
 
+		private final Spec spec = new Spec();
+
 		public Integer getPort() {
 			return this.port;
 		}
@@ -119,6 +121,66 @@ public class RSocketProperties {
 
 		public void setSsl(Ssl ssl) {
 			this.ssl = ssl;
+		}
+
+		public Spec getSpec() {
+			return this.spec;
+		}
+
+		public static class Spec {
+
+			/**
+			 * Sub-protocols to use in websocket handshake signature.
+			 */
+			private String protocols;
+
+			/**
+			 * Maximum allowable frame payload length.
+			 */
+			private DataSize maxFramePayloadLength = DataSize.ofBytes(65536);
+
+			/**
+			 * Whether to proxy websocket ping frames or respond to them.
+			 */
+			private boolean handlePing;
+
+			/**
+			 * Whether the websocket compression extension is enabled.
+			 */
+			private boolean compress;
+
+			public String getProtocols() {
+				return this.protocols;
+			}
+
+			public void setProtocols(String protocols) {
+				this.protocols = protocols;
+			}
+
+			public DataSize getMaxFramePayloadLength() {
+				return this.maxFramePayloadLength;
+			}
+
+			public void setMaxFramePayloadLength(DataSize maxFramePayloadLength) {
+				this.maxFramePayloadLength = maxFramePayloadLength;
+			}
+
+			public boolean isHandlePing() {
+				return this.handlePing;
+			}
+
+			public void setHandlePing(boolean handlePing) {
+				this.handlePing = handlePing;
+			}
+
+			public boolean isCompress() {
+				return this.compress;
+			}
+
+			public void setCompress(boolean compress) {
+				this.compress = compress;
+			}
+
 		}
 
 	}

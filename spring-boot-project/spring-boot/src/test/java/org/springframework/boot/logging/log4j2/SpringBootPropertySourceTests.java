@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
@@ -46,8 +47,7 @@ class SpringBootPropertySourceTests {
 
 	@Test
 	void allDefaultMethodsAreImplemented() {
-		assertThat(Stream.of(SpringBootPropertySource.class.getMethods()).filter((method) -> method.isDefault()))
-			.isEmpty();
+		assertThat(Stream.of(SpringBootPropertySource.class.getMethods()).filter(Method::isDefault)).isEmpty();
 	}
 
 }

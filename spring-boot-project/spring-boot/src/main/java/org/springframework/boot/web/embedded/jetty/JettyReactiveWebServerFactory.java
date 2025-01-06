@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -35,10 +37,7 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
@@ -185,7 +184,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		server.setStopTimeout(0);
 		ServletHolder servletHolder = new ServletHolder(servlet);
 		servletHolder.setAsyncSupported(true);
-		ServletContextHandler contextHandler = new ServletContextHandler(server, "/", false, false);
+		ServletContextHandler contextHandler = new ServletContextHandler("/", false, false);
 		contextHandler.addServlet(servletHolder, "/");
 		server.setHandler(addHandlerWrappers(contextHandler));
 		JettyReactiveWebServerFactory.logger.info("Server initialized with port: " + port);
@@ -206,6 +205,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			statisticsHandler.setHandler(server.getHandler());
 			server.setHandler(statisticsHandler);
 		}
+		server.setAttribute(org.springframework.boot.web.server.WebServerFactory.class.getName(), getClass());
 		return server;
 	}
 
@@ -243,7 +243,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return handler;
 	}
 
-	private Handler applyWrapper(Handler handler, HandlerWrapper wrapper) {
+	private Handler applyWrapper(Handler handler, Handler.Wrapper wrapper) {
 		wrapper.setHandler(handler);
 		return wrapper;
 	}

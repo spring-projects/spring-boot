@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousByteChannel;
 import java.nio.channels.AsynchronousCloseException;
@@ -71,6 +72,16 @@ public class NamedPipeSocket extends Socket {
 				awaiter.accept(path);
 			}
 		}
+	}
+
+	@Override
+	public void connect(SocketAddress endpoint) throws IOException {
+		// No-op
+	}
+
+	@Override
+	public void connect(SocketAddress endpoint, int timeout) throws IOException {
+		// No-op
 	}
 
 	@Override
@@ -128,8 +139,8 @@ public class NamedPipeSocket extends Socket {
 					}
 					handler.failed(exc, attachment);
 				}
-			});
 
+			});
 		}
 
 		@Override
@@ -159,7 +170,7 @@ public class NamedPipeSocket extends Socket {
 			return this.fileChannel.isOpen();
 		}
 
-		private static class CompletableFutureHandler extends CompletableFuture<Integer>
+		private static final class CompletableFutureHandler extends CompletableFuture<Integer>
 				implements CompletionHandler<Integer, Object> {
 
 			@Override
@@ -183,7 +194,7 @@ public class NamedPipeSocket extends Socket {
 	/**
 	 * Waits for the name pipe file using a simple sleep.
 	 */
-	private static class SleepAwaiter implements Consumer<String> {
+	private static final class SleepAwaiter implements Consumer<String> {
 
 		@Override
 		public void accept(String path) {
@@ -200,7 +211,7 @@ public class NamedPipeSocket extends Socket {
 	/**
 	 * Waits for the name pipe file using Windows specific logic.
 	 */
-	private static class WindowsAwaiter implements Consumer<String> {
+	private static final class WindowsAwaiter implements Consumer<String> {
 
 		@Override
 		public void accept(String path) {

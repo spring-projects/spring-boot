@@ -22,10 +22,16 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.HikariCheckpointRestoreLifecycle;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Olga Maciaszek-Sharma
  */
 class HikariDataSourceConfigurationTests {
 
@@ -122,12 +129,74 @@ class HikariDataSourceConfigurationTests {
 			});
 	}
 
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName())
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableAndDataSourceHasBeenWrappedHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withUserConfiguration(DataSourceWrapperConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Test
+	void whenCheckpointRestoreIsNotAvailableHikariAutoConfigDoesNotRegisterLifecycleBean() {
+		this.contextRunner
+			.run((context) -> assertThat(context).doesNotHaveBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
+	@Test
+	@ClassPathOverrides("org.crac:crac:1.3.0")
+	void whenCheckpointRestoreIsAvailableAndDataSourceIsFromUserConfigurationHikariAutoConfigRegistersLifecycleBean() {
+		this.contextRunner.withUserConfiguration(UserDataSourceConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(HikariCheckpointRestoreLifecycle.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class ConnectionDetailsConfiguration {
 
 		@Bean
 		JdbcConnectionDetails sqlConnectionDetails() {
 			return new TestJdbcConnectionDetails();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DataSourceWrapperConfiguration {
+
+		@Bean
+		static BeanPostProcessor dataSourceWrapper() {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+					if (bean instanceof DataSource dataSource) {
+						return new DelegatingDataSource(dataSource);
+					}
+					return bean;
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserDataSourceConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			return DataSourceBuilder.create()
+				.driverClassName("org.postgresql.Driver")
+				.url("jdbc:postgresql://localhost:5432/database")
+				.username("user")
+				.password("password")
+				.build();
 		}
 
 	}

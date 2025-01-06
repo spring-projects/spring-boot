@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.Owner;
+import org.springframework.util.CollectionUtils;
 
 /**
  * A short-lived builder that is created for each {@link Lifecycle} run.
@@ -66,7 +67,7 @@ class EphemeralBuilder {
 			update.withUpdatedConfig(this.builderMetadata::attachTo);
 			update.withUpdatedConfig((config) -> config.withLabel(BUILDER_FOR_LABEL_NAME, targetImage.toString()));
 			update.withTag(name);
-			if (env != null && !env.isEmpty()) {
+			if (!CollectionUtils.isEmpty(env)) {
 				update.withNewLayer(getEnvLayer(env));
 			}
 			if (buildpacks != null) {

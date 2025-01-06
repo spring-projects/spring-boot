@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,11 @@ class MavenBuild {
 	}
 
 	MavenBuild project(String project) {
-		this.projectDir = new File("src/intTest/projects/" + project);
+		return project("intTest", project);
+	}
+
+	MavenBuild project(String root, String project) {
+		this.projectDir = new File("src/" + root + "/projects/" + project);
 		return this;
 	}
 
@@ -156,8 +160,8 @@ class MavenBuild {
 				}
 
 			});
-			String settingsXml = Files.readString(Paths.get("src", "intTest", "projects", "settings.xml"))
-				.replace("@localCentralUrl@", new File("build/int-test-maven-repository").toURI().toURL().toString())
+			String settingsXml = Files.readString(Paths.get("build", "generated-resources", "settings", "settings.xml"))
+				.replace("@localCentralUrl@", new File("build/test-maven-repository").toURI().toURL().toString())
 				.replace("@localRepositoryPath@", new File("build/local-maven-repository").getAbsolutePath());
 			Files.writeString(destination.resolve("settings.xml"), settingsXml, StandardOpenOption.CREATE_NEW);
 			request.setBaseDirectory(this.temp);

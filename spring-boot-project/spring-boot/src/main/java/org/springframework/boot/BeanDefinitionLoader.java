@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,8 @@ class BeanDefinitionLoader {
 
 	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
-		if (source instanceof Class<?> clazz) {
-			load(clazz);
+		if (source instanceof Class<?> type) {
+			load(type);
 			return;
 		}
 		if (source instanceof Resource resource) {
@@ -265,7 +265,7 @@ class BeanDefinitionLoader {
 				.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
 				String className = StringUtils.stripFilenameExtension(resource.getFilename());
-				load(Class.forName(source.toString() + "." + className));
+				load(Class.forName(source + "." + className));
 				break;
 			}
 		}
@@ -305,8 +305,8 @@ class BeanDefinitionLoader {
 		ClassExcludeFilter(Object... sources) {
 			super(false, false);
 			for (Object source : sources) {
-				if (source instanceof Class<?>) {
-					this.classNames.add(((Class<?>) source).getName());
+				if (source instanceof Class<?> classSource) {
+					this.classNames.add(classSource.getName());
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				return true;
 			}
 			Class<?> userClass = ClassUtils.getUserClass(type);
-			return (userClass != type) ? isAutowiredPresent(userClass) : false;
+			return (userClass != type) && isAutowiredPresent(userClass);
 		}
 
 		private static Constructor<?>[] getCandidateConstructors(Class<?> type) {
@@ -135,7 +135,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				return new Constructor<?>[0];
 			}
 			return Arrays.stream(type.getDeclaredConstructors())
-				.filter((constructor) -> isNonSynthetic(constructor, type))
+				.filter(Constructors::isNonSynthetic)
 				.toArray(Constructor[]::new);
 		}
 
@@ -148,7 +148,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			}
 		}
 
-		private static boolean isNonSynthetic(Constructor<?> constructor, Class<?> type) {
+		private static boolean isNonSynthetic(Constructor<?> constructor) {
 			return !constructor.isSynthetic();
 		}
 

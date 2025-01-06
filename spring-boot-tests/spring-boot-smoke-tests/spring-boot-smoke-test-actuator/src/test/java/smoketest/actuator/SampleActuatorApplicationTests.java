@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,6 +175,18 @@ class SampleActuatorApplicationTests {
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/anotherlegacy", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains(entry("legacy", "legacy"));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void testInfo() {
+		ResponseEntity<Map<String, Object>> entity = asMapEntity(
+				this.restTemplate.withBasicAuth("user", "password").getForEntity("/actuator/info", Map.class));
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(entity.getBody()).containsKey("build");
+		Map<String, Object> body = entity.getBody();
+		Map<String, Object> example = (Map<String, Object>) body.get("example");
+		assertThat(example).containsEntry("someKey", "someValue");
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

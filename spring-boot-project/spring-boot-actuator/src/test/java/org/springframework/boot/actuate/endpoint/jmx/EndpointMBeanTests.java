@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -165,7 +166,7 @@ class EndpointMBeanTests {
 				new TestJmxOperation((arguments) -> Flux.just("flux", "result")));
 		EndpointMBean bean = new EndpointMBean(this.responseMapper, null, endpoint);
 		Object result = bean.invoke("testOperation", NO_PARAMS, NO_SIGNATURE);
-		assertThat(result).asList().containsExactly("flux", "result");
+		assertThat(result).asInstanceOf(InstanceOfAssertFactories.LIST).containsExactly("flux", "result");
 	}
 
 	@Test

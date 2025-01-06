@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class DisabledOnOsCondition implements ExecutionCondition {
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-		if (!context.getElement().isPresent()) {
+		if (context.getElement().isEmpty()) {
 			return ConditionEvaluationResult.enabled("No element for @DisabledOnOs found");
 		}
 		MergedAnnotation<DisabledOnOs> annotation = MergedAnnotations
@@ -53,7 +53,7 @@ class DisabledOnOsCondition implements ExecutionCondition {
 		String architecture = System.getProperty("os.arch");
 		String os = System.getProperty("os.name");
 		boolean onDisabledOs = Arrays.stream(annotation.os()).anyMatch(OS::isCurrentOs);
-		boolean onDisabledArchitecture = Arrays.stream(annotation.architecture()).anyMatch(architecture::equals);
+		boolean onDisabledArchitecture = Arrays.asList(annotation.architecture()).contains(architecture);
 		if (onDisabledOs && onDisabledArchitecture) {
 			String reason = annotation.disabledReason().isEmpty()
 					? String.format("Disabled on OS = %s, architecture = %s", os, architecture)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,11 @@ public class MailProperties {
 	 */
 	private String jndiName;
 
+	/**
+	 * SSL configuration.
+	 */
+	private final Ssl ssl = new Ssl();
+
 	public String getHost() {
 		return this.host;
 	}
@@ -134,6 +139,45 @@ public class MailProperties {
 
 	public String getJndiName() {
 		return this.jndiName;
+	}
+
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. If enabled, 'mail.(protocol).ssl.enable'
+		 * property is set to 'true'.
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * SSL bundle name. If set, 'mail.(protocol).ssl.socketFactory' property is set to
+		 * an SSLSocketFactory obtained from the corresponding SSL bundle.
+		 * <p>
+		 * Note that the STARTTLS command can use the corresponding SSLSocketFactory, even
+		 * if the 'mail.(protocol).ssl.enable' property is not set.
+		 */
+		private String bundle;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
+		}
+
 	}
 
 }

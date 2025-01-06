@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.method.MethodValidationResult;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
@@ -46,8 +48,8 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message (if configured)</li>
- * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception (if
- * configured)</li>
+ * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} or
+ * {@link MethodValidationResult} exception (if configured)</li>
  * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * <li>requestId - Unique ID associated with the current request</li>
@@ -57,6 +59,8 @@ import org.springframework.web.server.ServerWebExchange;
  * @author Stephane Nicoll
  * @author Michele Mancioppi
  * @author Scott Frederick
+ * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -67,25 +71,14 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
-		if (!options.isIncluded(Include.EXCEPTION)) {
-			errorAttributes.remove("exception");
-		}
-		if (!options.isIncluded(Include.STACK_TRACE)) {
-			errorAttributes.remove("trace");
-		}
-		if (!options.isIncluded(Include.MESSAGE) && errorAttributes.get("message") != null) {
-			errorAttributes.remove("message");
-		}
-		if (!options.isIncluded(Include.BINDING_ERRORS)) {
-			errorAttributes.remove("errors");
-		}
+		options.retainIncluded(errorAttributes);
 		return errorAttributes;
 	}
 
 	private Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
-		errorAttributes.put("path", request.path());
+		errorAttributes.put("path", request.requestPath().value());
 		Throwable error = getError(request);
 		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
 			.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY)
@@ -93,9 +86,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
-		errorAttributes.put("message", determineMessage(error, responseStatusAnnotation));
 		errorAttributes.put("requestId", request.exchange().getRequest().getId());
-		handleException(errorAttributes, determineException(error), includeStackTrace);
+		handleException(errorAttributes, error, responseStatusAnnotation, includeStackTrace);
 		return errorAttributes;
 	}
 
@@ -109,27 +101,6 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		return responseStatusAnnotation.getValue("code", HttpStatus.class).orElse(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
-		if (error instanceof BindingResult) {
-			return error.getMessage();
-		}
-		if (error instanceof ResponseStatusException responseStatusException) {
-			return responseStatusException.getReason();
-		}
-		String reason = responseStatusAnnotation.getValue("reason", String.class).orElse("");
-		if (StringUtils.hasText(reason)) {
-			return reason;
-		}
-		return (error.getMessage() != null) ? error.getMessage() : "";
-	}
-
-	private Throwable determineException(Throwable error) {
-		if (error instanceof ResponseStatusException) {
-			return (error.getCause() != null) ? error.getCause() : error;
-		}
-		return error;
-	}
-
 	private void addStackTrace(Map<String, Object> errorAttributes, Throwable error) {
 		StringWriter stackTrace = new StringWriter();
 		error.printStackTrace(new PrintWriter(stackTrace));
@@ -137,22 +108,52 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("trace", stackTrace.toString());
 	}
 
-	private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace) {
-		errorAttributes.put("exception", error.getClass().getName());
-		if (includeStackTrace) {
-			addStackTrace(errorAttributes, error);
+	private void handleException(Map<String, Object> errorAttributes, Throwable error,
+			MergedAnnotation<ResponseStatus> responseStatusAnnotation, boolean includeStackTrace) {
+		Throwable exception;
+		if (error instanceof BindingResult bindingResult) {
+			errorAttributes.put("message", error.getMessage());
+			errorAttributes.put("errors", bindingResult.getAllErrors());
+			exception = error;
 		}
-		if (error instanceof BindingResult result) {
-			if (result.hasErrors()) {
-				errorAttributes.put("errors", result.getAllErrors());
+		else if (error instanceof MethodValidationResult methodValidationResult) {
+			addMessageAndErrorsFromMethodValidationResult(errorAttributes, methodValidationResult);
+			exception = error;
+		}
+		else if (error instanceof ResponseStatusException responseStatusException) {
+			errorAttributes.put("message", responseStatusException.getReason());
+			exception = (responseStatusException.getCause() != null) ? responseStatusException.getCause() : error;
+			if (exception instanceof BindingResult bindingResult) {
+				errorAttributes.put("errors", bindingResult.getAllErrors());
 			}
 		}
+		else {
+			exception = error;
+			String reason = responseStatusAnnotation.getValue("reason", String.class).orElse("");
+			String message = StringUtils.hasText(reason) ? reason : error.getMessage();
+			errorAttributes.put("message", (message != null) ? message : "");
+		}
+		errorAttributes.put("exception", exception.getClass().getName());
+		if (includeStackTrace) {
+			addStackTrace(errorAttributes, exception);
+		}
+	}
+
+	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
+			MethodValidationResult result) {
+		List<ObjectError> errors = result.getAllErrors()
+			.stream()
+			.filter(ObjectError.class::isInstance)
+			.map(ObjectError.class::cast)
+			.toList();
+		errorAttributes.put("message",
+				"Validation failed for method='" + result.getMethod() + "'. Error count: " + errors.size());
+		errorAttributes.put("errors", errors);
 	}
 
 	@Override
 	public Throwable getError(ServerRequest request) {
 		Optional<Object> error = request.attribute(ERROR_INTERNAL_ATTRIBUTE);
-		error.ifPresent((value) -> request.attributes().putIfAbsent(ErrorAttributes.ERROR_ATTRIBUTE, value));
 		return (Throwable) error
 			.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
 	}

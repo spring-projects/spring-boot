@@ -1,0 +1,6 @@
+services:
+  otlp:
+    image: '{imageName}'
+    ports:
+      - '4317'
+      - '4318'

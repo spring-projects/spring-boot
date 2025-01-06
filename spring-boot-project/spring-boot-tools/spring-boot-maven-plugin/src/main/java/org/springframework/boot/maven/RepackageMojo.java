@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,8 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.attribute.FileTime;
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
@@ -38,7 +36,9 @@ import org.springframework.boot.loader.tools.DefaultLaunchScript;
 import org.springframework.boot.loader.tools.LaunchScript;
 import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
+import org.springframework.boot.loader.tools.LoaderImplementation;
 import org.springframework.boot.loader.tools.Repackager;
+import org.springframework.util.StringUtils;
 
 /**
  * Repackage existing JAR and WAR archives so that they can be executed from the command
@@ -108,7 +108,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private boolean attach = true;
 
 	/**
-	 * A list of the libraries that must be unpacked from fat jars in order to run.
+	 * A list of the libraries that must be unpacked from uber jars in order to run.
 	 * Specify each library as a {@code <dependency>} with a {@code <groupId>} and a
 	 * {@code <artifactId>} and they will be unpacked at runtime.
 	 * @since 1.1.0
@@ -164,6 +164,13 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private LayoutType layout;
 
 	/**
+	 * The loader implementation that should be used.
+	 * @since 3.2.0
+	 */
+	@Parameter
+	private LoaderImplementation loaderImplementation;
+
+	/**
 	 * The layout factory that will be used to create the executable archive if no
 	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
 	 * parties.
@@ -180,6 +187,11 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	@Override
 	protected LayoutType getLayout() {
 		return this.layout;
+	}
+
+	@Override
+	protected LoaderImplementation getLoaderImplementation() {
+		return this.loaderImplementation;
 	}
 
 	/**
@@ -209,6 +221,10 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private void repackage() throws MojoExecutionException {
 		Artifact source = getSourceArtifact(this.classifier);
 		File target = getTargetFile(this.finalName, this.classifier, this.outputDirectory);
+		if (source.getFile() == null) {
+			throw new MojoExecutionException(
+					"Source file is not available, make sure 'package' runs as part of the same lifecycle");
+		}
 		Repackager repackager = getRepackager(source.getFile());
 		Libraries libraries = getLibraries(this.requiresUnpack);
 		try {
@@ -221,21 +237,12 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		updateArtifact(source, target, repackager.getBackupFile());
 	}
 
-	private FileTime parseOutputTimestamp() {
-		// Maven ignores a single-character timestamp as it is "useful to override a full
-		// value during pom inheritance"
-		if (this.outputTimestamp == null || this.outputTimestamp.length() < 2) {
-			return null;
-		}
-		return FileTime.from(getOutputTimestampEpochSeconds(), TimeUnit.SECONDS);
-	}
-
-	private long getOutputTimestampEpochSeconds() {
+	private FileTime parseOutputTimestamp() throws MojoExecutionException {
 		try {
-			return Long.parseLong(this.outputTimestamp);
+			return new MavenBuildOutputTimestamp(this.outputTimestamp).toFileTime();
 		}
-		catch (NumberFormatException ex) {
-			return OffsetDateTime.parse(this.outputTimestamp).toInstant().getEpochSecond();
+		catch (IllegalArgumentException ex) {
+			throw new MojoExecutionException("Invalid value for parameter 'outputTimestamp'", ex);
 		}
 	}
 
@@ -269,7 +276,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	private void putIfMissing(Properties properties, String key, String... valueCandidates) {
 		if (!properties.containsKey(key)) {
 			for (String candidate : valueCandidates) {
-				if (candidate != null && !candidate.isEmpty()) {
+				if (StringUtils.hasLength(candidate)) {
 					properties.put(key, candidate);
 					return;
 				}

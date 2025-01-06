@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.boot.web.server.Cookie;
 
 /**
  * Session properties.
@@ -104,8 +103,17 @@ public class Session {
 	}
 
 	/**
+	 * Session cookie properties. This class is provided only for back-compatibility
+	 * reasons, consider using {@link org.springframework.boot.web.server.Cookie} whenever
+	 * possible.
+	 */
+	public static class Cookie extends org.springframework.boot.web.server.Cookie {
+
+	}
+
+	/**
 	 * Available session tracking modes (mirrors
-	 * {@link jakarta.servlet.SessionTrackingMode}.
+	 * {@link jakarta.servlet.SessionTrackingMode}).
 	 */
 	public enum SessionTrackingMode {
 

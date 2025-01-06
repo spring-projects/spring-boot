@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Collections;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
@@ -54,17 +58,41 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author HaiTao Zhang
+ * @author Lasse Wulff
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class UserDetailsServiceAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withUserConfiguration(TestSecurityConfiguration.class)
 		.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
 	@Test
+	void shouldSupplyUserDetailsServiceInServletApp() {
+		this.contextRunner.with(AuthenticationExclude.servletApp())
+			.run((context) -> assertThat(context).hasSingleBean(UserDetailsService.class));
+	}
+
+	@Test
+	void shouldNotSupplyUserDetailsServiceInReactiveApp() {
+		new ReactiveWebApplicationContextRunner().withUserConfiguration(TestSecurityConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class))
+			.with(AuthenticationExclude.reactiveApp())
+			.run((context) -> assertThat(context).doesNotHaveBean(UserDetailsService.class));
+	}
+
+	@Test
+	void shouldNotSupplyUserDetailsServiceInNonWebApp() {
+		new ApplicationContextRunner().withUserConfiguration(TestSecurityConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class))
+			.with(AuthenticationExclude.noWebApp())
+			.run((context) -> assertThat(context).doesNotHaveBean(UserDetailsService.class));
+	}
+
+	@Test
 	void testDefaultUsernamePassword(CapturedOutput output) {
-		this.contextRunner.run((context) -> {
+		this.contextRunner.with(AuthenticationExclude.servletApp()).run((context) -> {
 			UserDetailsService manager = context.getBean(UserDetailsService.class);
 			assertThat(output).contains("Using generated security password:");
 			assertThat(manager.loadUserByUsername("user")).isNotNull();
@@ -126,11 +154,13 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
-		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run(((context) -> {
-			InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
-			String password = userDetailsService.loadUserByUsername("user").getPassword();
-			assertThat(password).startsWith("{noop}");
-		}));
+		this.contextRunner.with(AuthenticationExclude.servletApp())
+			.withUserConfiguration(TestSecurityConfiguration.class)
+			.run(((context) -> {
+				InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
+				String password = userDetailsService.loadUserByUsername("user").getPassword();
+				assertThat(password).startsWith("{noop}");
+			}));
 	}
 
 	@Test
@@ -150,26 +180,75 @@ class UserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Test
-	void userDetailsServiceWhenClientRegistrationRepositoryBeanPresent() {
-		this.contextRunner.withUserConfiguration(TestConfigWithClientRegistrationRepository.class)
+	void userDetailsServiceWhenClientRegistrationRepositoryPresent() {
+		this.contextRunner
+			.withClassLoader(
+					new FilteredClassLoader(OpaqueTokenIntrospector.class, RelyingPartyRegistrationRepository.class))
 			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
 	@Test
-	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryBeanPresent() {
+	void userDetailsServiceWhenOpaqueTokenIntrospectorPresent() {
 		this.contextRunner
-			.withBean(RelyingPartyRegistrationRepository.class, () -> mock(RelyingPartyRegistrationRepository.class))
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class,
+					RelyingPartyRegistrationRepository.class))
 			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
+	@Test
+	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryPresent() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class))
+			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
+	}
+
+	@Test
+	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryPresentAndUsernameConfigured() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class))
+			.withPropertyValues("spring.security.user.name=alice")
+			.run(((context) -> assertThat(context).hasSingleBean(InMemoryUserDetailsManager.class)));
+	}
+
+	@Test
+	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryPresentAndPasswordConfigured() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class))
+			.withPropertyValues("spring.security.user.password=secret")
+			.run(((context) -> assertThat(context).hasSingleBean(InMemoryUserDetailsManager.class)));
+	}
+
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
-		this.contextRunner.withUserConfiguration(configClass)
+		this.contextRunner.with(AuthenticationExclude.servletApp())
+			.withClassLoader(new FilteredClassLoader(ClientRegistrationRepository.class, OpaqueTokenIntrospector.class,
+					RelyingPartyRegistrationRepository.class))
+			.withUserConfiguration(configClass)
 			.withPropertyValues("spring.security.user.password=" + providedPassword)
 			.run(((context) -> {
 				InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
 				String password = userDetailsService.loadUserByUsername("user").getPassword();
 				assertThat(password).isEqualTo(expectedPassword);
 			}));
+	}
+
+	private static final class AuthenticationExclude {
+
+		private static final FilteredClassLoader filteredClassLoader = new FilteredClassLoader(
+				ClientRegistrationRepository.class, OpaqueTokenIntrospector.class,
+				RelyingPartyRegistrationRepository.class);
+
+		static Function<WebApplicationContextRunner, WebApplicationContextRunner> servletApp() {
+			return (contextRunner) -> contextRunner.withClassLoader(filteredClassLoader);
+		}
+
+		static Function<ReactiveWebApplicationContextRunner, ReactiveWebApplicationContextRunner> reactiveApp() {
+			return (contextRunner) -> contextRunner.withClassLoader(filteredClassLoader);
+		}
+
+		static Function<ApplicationContextRunner, ApplicationContextRunner> noWebApp() {
+			return (contextRunner) -> contextRunner.withClassLoader(filteredClassLoader);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

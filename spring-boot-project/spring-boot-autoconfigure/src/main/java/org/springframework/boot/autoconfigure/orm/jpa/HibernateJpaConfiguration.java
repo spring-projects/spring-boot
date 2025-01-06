@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
-import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.cfg.ManagedBeanSettings;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -121,7 +121,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		List<HibernatePropertiesCustomizer> customizers = new ArrayList<>();
 		if (ClassUtils.isPresent("org.hibernate.resource.beans.container.spi.BeanContainer",
 				getClass().getClassLoader())) {
-			customizers.add((properties) -> properties.put(AvailableSettings.BEAN_CONTAINER,
+			customizers.add((properties) -> properties.put(ManagedBeanSettings.BEAN_CONTAINER,
 					new SpringBeanContainer(beanFactory)));
 		}
 		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {

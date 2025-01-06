@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import org.springframework.boot.logging.LogFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for generating documentation describing the {@link LogFileWebEndpoint}.
@@ -37,17 +37,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void logFile() throws Exception {
-		this.mockMvc.perform(get("/actuator/logfile"))
-			.andExpect(status().isOk())
-			.andDo(MockMvcRestDocumentation.document("logfile/entire"));
+	void logFile() {
+		assertThat(this.mvc.get().uri("/actuator/logfile")).hasStatusOk()
+			.apply(MockMvcRestDocumentation.document("logfile/entire"));
 	}
 
 	@Test
-	void logFileRange() throws Exception {
-		this.mockMvc.perform(get("/actuator/logfile").header("Range", "bytes=0-1023"))
-			.andExpect(status().isPartialContent())
-			.andDo(MockMvcRestDocumentation.document("logfile/range"));
+	void logFileRange() {
+		assertThat(this.mvc.get().uri("/actuator/logfile").header("Range", "bytes=0-1023"))
+			.hasStatus(HttpStatus.PARTIAL_CONTENT)
+			.apply(MockMvcRestDocumentation.document("logfile/range"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

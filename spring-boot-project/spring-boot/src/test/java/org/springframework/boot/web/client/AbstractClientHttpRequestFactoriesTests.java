@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -56,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Andy Wilkinson
  */
 @DirtiesUrlFactories
+@SuppressWarnings("removal")
 abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpRequestFactory> {
 
 	private final Class<T> requestFactoryType;
@@ -65,6 +67,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void getReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
 			.get(ClientHttpRequestFactorySettings.DEFAULTS);
@@ -72,6 +75,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void getOfGeneralTypeReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(ClientHttpRequestFactory.class,
 				ClientHttpRequestFactorySettings.DEFAULTS);
@@ -79,6 +83,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void getOfSpecificTypeReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(this.requestFactoryType,
 				ClientHttpRequestFactorySettings.DEFAULTS);
@@ -86,7 +91,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	void getReturnsRequestFactoryWithConfiguredConnectTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
 			.get(ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60)));
@@ -94,15 +99,38 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	void getReturnsRequestFactoryWithConfiguredReadTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
 			.get(ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(120)));
 		assertThat(readTimeout((T) requestFactory)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
 
+	@Test
+	@SuppressWarnings("deprecation")
+	void shouldSetConnectTimeoutsWhenUsingReflective() {
+		Assumptions.assumeTrue(supportsSettingConnectTimeout());
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+			.withConnectTimeout(Duration.ofSeconds(1));
+		T requestFactory = ClientHttpRequestFactories
+			.get(() -> ClientHttpRequestFactories.get(this.requestFactoryType, settings), settings);
+		assertThat(connectTimeout(requestFactory)).isEqualTo(1000);
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	void shouldSetReadTimeoutsWhenUsingReflective() {
+		Assumptions.assumeTrue(supportsSettingReadTimeout());
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
+			.withReadTimeout(Duration.ofSeconds(2));
+		T requestFactory = ClientHttpRequestFactories
+			.get(() -> ClientHttpRequestFactories.get(this.requestFactoryType, settings), settings);
+		assertThat(readTimeout(requestFactory)).isEqualTo(2000);
+	}
+
 	@ParameterizedTest
-	@CsvSource({ "GET", "POST" })
+	@SuppressWarnings("deprecation")
+	@ValueSource(strings = { "GET", "POST" })
 	void connectWithSslBundle(String httpMethod) throws Exception {
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
 		Ssl ssl = new Ssl();
@@ -136,7 +164,11 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 		}
 	}
 
+	protected abstract boolean supportsSettingConnectTimeout();
+
 	protected abstract long connectTimeout(T requestFactory);
+
+	protected abstract boolean supportsSettingReadTimeout();
 
 	protected abstract long readTimeout(T requestFactory);
 

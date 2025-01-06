@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,13 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Gary Russell
  * @author Stephane Nicoll
  * @author Tomaz Fernandes
+ * @author Andy Wilkinson
  */
 @DisabledOnOs(OS.WINDOWS)
 @EmbeddedKafka(topics = KafkaAutoConfigurationIntegrationTests.TEST_TOPIC)
@@ -113,7 +116,7 @@ class KafkaAutoConfigurationIntegrationTests {
 		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived)
 			.containsExactly("foo", "bar");
 		assertThat(listener).extracting(RetryListener::getTopics)
-			.asList()
+			.asInstanceOf(InstanceOfAssertFactories.LIST)
 			.hasSize(5)
 			.containsSequence("testRetryTopic", "testRetryTopic-retry-0", "testRetryTopic-retry-1",
 					"testRetryTopic-retry-2");
@@ -133,6 +136,7 @@ class KafkaAutoConfigurationIntegrationTests {
 	private AnnotationConfigApplicationContext doLoad(Class<?>[] configs, String... environment) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.register(configs);
+		applicationContext.register(SslAutoConfiguration.class);
 		applicationContext.register(KafkaAutoConfiguration.class);
 		TestPropertyValues.of(environment).applyTo(applicationContext);
 		applicationContext.refresh();

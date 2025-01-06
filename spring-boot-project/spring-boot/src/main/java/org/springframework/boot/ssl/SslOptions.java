@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import java.util.Set;
 
 import javax.net.ssl.SSLEngine;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * Configuration options that should be applied when establishing an SSL connection.
  *
@@ -43,7 +45,7 @@ public interface SslOptions {
 	 * @return {@code true} if SSL options have been specified
 	 */
 	default boolean isSpecified() {
-		return (getCiphers() != null) && (getEnabledProtocols() != null);
+		return (getCiphers() != null) || (getEnabledProtocols() != null);
 	}
 
 	/**
@@ -79,6 +81,14 @@ public interface SslOptions {
 			@Override
 			public String[] getEnabledProtocols() {
 				return enabledProtocols;
+			}
+
+			@Override
+			public String toString() {
+				ToStringCreator creator = new ToStringCreator(this);
+				creator.append("ciphers", ciphers);
+				creator.append("enabledProtocols", enabledProtocols);
+				return creator.toString();
 			}
 
 		};

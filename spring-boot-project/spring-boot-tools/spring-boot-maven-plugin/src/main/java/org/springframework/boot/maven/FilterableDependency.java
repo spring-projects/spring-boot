@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,16 @@ package org.springframework.boot.maven;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
+import org.springframework.util.Assert;
+
 /**
  * A model for a dependency to include or exclude.
  *
  * @author Stephane Nicoll
  * @author David Turanski
+ * @since 3.1.11
  */
-abstract class FilterableDependency {
+public abstract class FilterableDependency {
 
 	/**
 	 * The groupId of the artifact to exclude.
@@ -66,6 +69,22 @@ abstract class FilterableDependency {
 
 	void setClassifier(String classifier) {
 		this.classifier = classifier;
+	}
+
+	/**
+	 * Configures the include or exclude using a user-provided property in the form
+	 * {@code groupId:artifactId} or {@code groupId:artifactId:classifier}.
+	 * @param property the user-provided property
+	 */
+	public void set(String property) {
+		String[] parts = property.split(":");
+		Assert.isTrue(parts.length == 2 || parts.length == 3, getClass().getSimpleName()
+				+ " must be in the form groupId:artifactId or groupId:artifactId:classifier");
+		setGroupId(parts[0]);
+		setArtifactId(parts[1]);
+		if (parts.length == 3) {
+			setClassifier(parts[2]);
+		}
 	}
 
 }

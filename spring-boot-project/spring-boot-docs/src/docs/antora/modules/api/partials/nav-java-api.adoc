@@ -1,0 +1,4 @@
+* Java APIs
+** xref:api:java/index.html[Spring Boot,role=link-external, window=_blank]
+** xref:gradle-plugin:api/java/index.html[Gradle Plugin,role=link-external, window=_blank]
+** xref:maven-plugin:api/java/index.html[Maven Plugin,role=link-external, window=_blank]

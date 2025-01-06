@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("Teradata")).isEqualTo(DatabaseDriver.TERADATA);
 		assertThat(DatabaseDriver.fromProductName("Informix Dynamic Server")).isEqualTo(DatabaseDriver.INFORMIX);
 		assertThat(DatabaseDriver.fromProductName("Apache Phoenix")).isEqualTo(DatabaseDriver.PHOENIX);
+		assertThat(DatabaseDriver.fromProductName("ClickHouse")).isEqualTo(DatabaseDriver.CLICKHOUSE);
 	}
 
 	@Test
@@ -117,6 +118,9 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:phoenix:localhost")).isEqualTo(DatabaseDriver.PHOENIX);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:tc:mysql://localhost:3306/sample"))
 			.isEqualTo(DatabaseDriver.TESTCONTAINERS);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:clickhouse://localhost:3306/sample"))
+			.isEqualTo(DatabaseDriver.CLICKHOUSE);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:ch://localhost:3306/sample")).isEqualTo(DatabaseDriver.CLICKHOUSE);
 	}
 
 }

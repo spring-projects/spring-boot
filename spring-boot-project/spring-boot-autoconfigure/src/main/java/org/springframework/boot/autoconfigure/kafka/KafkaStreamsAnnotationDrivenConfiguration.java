@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -46,6 +47,7 @@ import org.springframework.kafka.core.CleanupConfig;
  * @author Eddú Meléndez
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamsBuilder.class)
@@ -61,8 +63,8 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
-			KafkaConnectionDetails connectionDetails) {
-		Map<String, Object> properties = this.properties.buildStreamsProperties();
+			KafkaConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
+		Map<String, Object> properties = this.properties.buildStreamsProperties(sslBundles.getIfAvailable());
 		applyKafkaConnectionDetailsForStreams(properties, connectionDetails);
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");

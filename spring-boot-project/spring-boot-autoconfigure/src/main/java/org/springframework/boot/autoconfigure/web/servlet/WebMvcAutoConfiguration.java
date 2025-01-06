@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,6 +95,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.RequestToViewNameTranslator;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -469,6 +470,13 @@ public class WebMvcAutoConfiguration {
 			return super.flashMapManager();
 		}
 
+		@Override
+		@Bean
+		@ConditionalOnMissingBean(name = DispatcherServlet.REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME)
+		public RequestToViewNameTranslator viewNameTranslator() {
+			return super.viewNameTranslator();
+		}
+
 		private Resource getIndexHtmlResource() {
 			for (String location : this.resourceProperties.getStaticLocations()) {
 				Resource indexHtml = getIndexHtmlResource(location);
@@ -495,6 +503,7 @@ public class WebMvcAutoConfiguration {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 			return null;
 		}
@@ -662,6 +671,7 @@ public class WebMvcAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(ResponseEntityExceptionHandler.class)
+		@Order(0)
 		ProblemDetailsExceptionHandler problemDetailsExceptionHandler() {
 			return new ProblemDetailsExceptionHandler();
 		}

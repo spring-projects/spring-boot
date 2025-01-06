@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 1.3.0
  * @see ErrorAttributes
  */
@@ -74,16 +75,41 @@ public abstract class AbstractErrorController implements ErrorController {
 		return this.errorAttributes.getErrorAttributes(webRequest, options);
 	}
 
+	/**
+	 * Returns whether the trace parameter is set.
+	 * @param request the request
+	 * @return whether the trace parameter is set
+	 */
 	protected boolean getTraceParameter(HttpServletRequest request) {
 		return getBooleanParameter(request, "trace");
 	}
 
+	/**
+	 * Returns whether the message parameter is set.
+	 * @param request the request
+	 * @return whether the message parameter is set
+	 */
 	protected boolean getMessageParameter(HttpServletRequest request) {
 		return getBooleanParameter(request, "message");
 	}
 
+	/**
+	 * Returns whether the errors parameter is set.
+	 * @param request the request
+	 * @return whether the errors parameter is set
+	 */
 	protected boolean getErrorsParameter(HttpServletRequest request) {
 		return getBooleanParameter(request, "errors");
+	}
+
+	/**
+	 * Returns whether the path parameter is set.
+	 * @param request the request
+	 * @return whether the path parameter is set
+	 * @since 3.3.0
+	 */
+	protected boolean getPathParameter(HttpServletRequest request) {
+		return getBooleanParameter(request, "path");
 	}
 
 	protected boolean getBooleanParameter(HttpServletRequest request, String parameterName) {

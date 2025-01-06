@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.core.io.Resource;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -154,8 +155,8 @@ final class BindConverter {
 	private static class TypeConverterConversionService extends GenericConversionService {
 
 		TypeConverterConversionService(Consumer<PropertyEditorRegistry> initializer) {
-			addConverter(new TypeConverterConverter(initializer));
 			ApplicationConversionService.addDelimitedStringConverters(this);
+			addConverter(new TypeConverterConverter(initializer));
 		}
 
 		@Override
@@ -196,15 +197,22 @@ final class BindConverter {
 
 		@Override
 		public Set<ConvertiblePair> getConvertibleTypes() {
-			return Collections.singleton(new ConvertiblePair(String.class, Object.class));
+			return Set.of(new ConvertiblePair(String.class, Object.class),
+					new ConvertiblePair(String.class, Resource[].class),
+					new ConvertiblePair(String.class, Collection.class));
 		}
 
 		@Override
 		public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 			Class<?> type = targetType.getType();
-			if (type == null || type == Object.class || Collection.class.isAssignableFrom(type)
-					|| Map.class.isAssignableFrom(type)) {
+			if (type == null || type == Object.class || Map.class.isAssignableFrom(type)) {
 				return false;
+			}
+			if (Collection.class.isAssignableFrom(type)) {
+				TypeDescriptor elementType = targetType.getElementTypeDescriptor();
+				if (elementType == null || (!Resource.class.isAssignableFrom(elementType.getType()))) {
+					return false;
+				}
 			}
 			PropertyEditor editor = this.matchesOnlyTypeConverter.getDefaultEditor(type);
 			if (editor == null) {
@@ -218,7 +226,7 @@ final class BindConverter {
 
 		@Override
 		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-			return createTypeConverter().convertIfNecessary(source, targetType.getType());
+			return createTypeConverter().convertIfNecessary(source, targetType.getType(), targetType);
 		}
 
 		private SimpleTypeConverter createTypeConverter() {

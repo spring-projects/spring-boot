@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import org.junit.jupiter.api.Test;
-import zipkin2.Span;
-import zipkin2.codec.BytesEncoder;
-import zipkin2.codec.SpanBytesEncoder;
+import zipkin2.reporter.Encoding;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -41,21 +39,21 @@ class ZipkinAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyBeans() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(BytesEncoder.class)
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Encoding.class)
 			.hasSingleBean(PropertiesZipkinConnectionDetails.class));
 	}
 
 	@Test
 	void shouldNotSupplyBeansIfZipkinReporterIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.reporter"))
-			.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(Encoding.class));
 	}
 
 	@Test
 	void shouldBackOffOnCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("customBytesEncoder");
-			assertThat(context).hasSingleBean(BytesEncoder.class);
+			assertThat(context).hasBean("customEncoding");
+			assertThat(context).hasSingleBean(Encoding.class);
 		});
 	}
 
@@ -66,14 +64,8 @@ class ZipkinAutoConfigurationTests {
 
 	@Test
 	void shouldUseCustomConnectionDetailsWhenDefined() {
-		this.contextRunner.withBean(ZipkinConnectionDetails.class, () -> new ZipkinConnectionDetails() {
-
-			@Override
-			public String getSpanEndpoint() {
-				return "http://localhost";
-			}
-
-		})
+		this.contextRunner
+			.withBean(ZipkinConnectionDetails.class, () -> new FixedZipkinConnectionDetails("http://localhost"))
 			.run((context) -> assertThat(context).hasSingleBean(ZipkinConnectionDetails.class)
 				.doesNotHaveBean(PropertiesZipkinConnectionDetails.class));
 	}
@@ -86,12 +78,27 @@ class ZipkinAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
+	private static final class FixedZipkinConnectionDetails implements ZipkinConnectionDetails {
+
+		private final String spanEndpoint;
+
+		private FixedZipkinConnectionDetails(String spanEndpoint) {
+			this.spanEndpoint = spanEndpoint;
+		}
+
+		@Override
+		public String getSpanEndpoint() {
+			return this.spanEndpoint;
+		}
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
-	private static class CustomConfiguration {
+	private static final class CustomConfiguration {
 
 		@Bean
-		BytesEncoder<Span> customBytesEncoder() {
-			return SpanBytesEncoder.JSON_V2;
+		Encoding customEncoding() {
+			return Encoding.PROTO3;
 		}
 
 	}

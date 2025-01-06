@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,7 +196,13 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	private RequestMappingInfo createRequestMappingInfo(WebOperationRequestPredicate predicate, String path) {
-		return RequestMappingInfo.paths(this.endpointMapping.createSubPath(path))
+		String subPath = this.endpointMapping.createSubPath(path);
+		List<String> paths = new ArrayList<>();
+		paths.add(subPath);
+		if (!StringUtils.hasLength(subPath)) {
+			paths.add("/");
+		}
+		return RequestMappingInfo.paths(paths.toArray(new String[0]))
 			.options(this.builderConfig)
 			.methods(RequestMethod.valueOf(predicate.getHttpMethod().name()))
 			.consumes(predicate.getConsumes().toArray(new String[0]))
@@ -397,7 +403,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			return body;
 		}
 
-		private static class FluxBodyConverter implements Function<Object, Object> {
+		private static final class FluxBodyConverter implements Function<Object, Object> {
 
 			@Override
 			public Object apply(Object body) {

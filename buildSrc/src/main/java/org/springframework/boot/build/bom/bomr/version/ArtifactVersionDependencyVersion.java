@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
+import org.springframework.util.StringUtils;
+
 /**
  * A {@link DependencyVersion} backed by an {@link ArtifactVersion}.
  *
@@ -33,8 +35,19 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	private final ArtifactVersion artifactVersion;
 
 	protected ArtifactVersionDependencyVersion(ArtifactVersion artifactVersion) {
-		super(new ComparableVersion(artifactVersion.toString()));
+		super(new ComparableVersion(toNormalizedString(artifactVersion)));
 		this.artifactVersion = artifactVersion;
+	}
+
+	private static String toNormalizedString(ArtifactVersion artifactVersion) {
+		String versionString = artifactVersion.toString();
+		if (versionString.endsWith(".RELEASE")) {
+			return versionString.substring(0, versionString.length() - 8);
+		}
+		if (versionString.endsWith(".BUILD-SNAPSHOT")) {
+			return versionString.substring(0, versionString.length() - 15) + "-SNAPSHOT";
+		}
+		return versionString;
 	}
 
 	protected ArtifactVersionDependencyVersion(ArtifactVersion artifactVersion, ComparableVersion comparableVersion) {
@@ -43,37 +56,73 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	}
 
 	@Override
-	public boolean isNewerThan(DependencyVersion other) {
+	public boolean isSameMajor(DependencyVersion other) {
 		if (other instanceof ReleaseTrainDependencyVersion) {
 			return false;
 		}
-		return compareTo(other) > 0;
+		return extractArtifactVersionDependencyVersion(other).map(this::isSameMajor).orElse(true);
+	}
+
+	private boolean isSameMajor(ArtifactVersionDependencyVersion other) {
+		return this.artifactVersion.getMajorVersion() == other.artifactVersion.getMajorVersion();
 	}
 
 	@Override
-	public boolean isSameMajorAndNewerThan(DependencyVersion other) {
+	public boolean isSameMinor(DependencyVersion other) {
 		if (other instanceof ReleaseTrainDependencyVersion) {
 			return false;
 		}
-		return extractArtifactVersionDependencyVersion(other).map(this::isSameMajorAndNewerThan).orElse(true);
+		return extractArtifactVersionDependencyVersion(other).map(this::isSameMinor).orElse(true);
 	}
 
-	private boolean isSameMajorAndNewerThan(ArtifactVersionDependencyVersion other) {
-		return this.artifactVersion.getMajorVersion() == other.artifactVersion.getMajorVersion() && isNewerThan(other);
+	private boolean isSameMinor(ArtifactVersionDependencyVersion other) {
+		return isSameMajor(other) && this.artifactVersion.getMinorVersion() == other.artifactVersion.getMinorVersion();
 	}
 
 	@Override
-	public boolean isSameMinorAndNewerThan(DependencyVersion other) {
-		if (other instanceof ReleaseTrainDependencyVersion) {
+	public boolean isUpgrade(DependencyVersion candidate, boolean movingToSnapshots) {
+		if (candidate instanceof MultipleComponentsDependencyVersion) {
+			return super.isUpgrade(candidate, movingToSnapshots);
+		}
+		if (!(candidate instanceof ArtifactVersionDependencyVersion)) {
 			return false;
 		}
-		return extractArtifactVersionDependencyVersion(other).map(this::isSameMinorAndNewerThan).orElse(true);
+		ArtifactVersion other = ((ArtifactVersionDependencyVersion) candidate).artifactVersion;
+		if (this.artifactVersion.equals(other)) {
+			return false;
+		}
+		if (sameMajorMinorIncremental(other)) {
+			if (!StringUtils.hasLength(this.artifactVersion.getQualifier())
+					|| "RELEASE".equals(this.artifactVersion.getQualifier())) {
+				return false;
+			}
+			if (isSnapshot()) {
+				return true;
+			}
+			else if (((ArtifactVersionDependencyVersion) candidate).isSnapshot()) {
+				return movingToSnapshots;
+			}
+		}
+		return super.isUpgrade(candidate, movingToSnapshots);
 	}
 
-	private boolean isSameMinorAndNewerThan(ArtifactVersionDependencyVersion other) {
-		return this.artifactVersion.getMajorVersion() == other.artifactVersion.getMajorVersion()
-				&& this.artifactVersion.getMinorVersion() == other.artifactVersion.getMinorVersion()
-				&& isNewerThan(other);
+	private boolean sameMajorMinorIncremental(ArtifactVersion other) {
+		return this.artifactVersion.getMajorVersion() == other.getMajorVersion()
+				&& this.artifactVersion.getMinorVersion() == other.getMinorVersion()
+				&& this.artifactVersion.getIncrementalVersion() == other.getIncrementalVersion();
+	}
+
+	private boolean isSnapshot() {
+		return "SNAPSHOT".equals(this.artifactVersion.getQualifier())
+				|| "BUILD".equals(this.artifactVersion.getQualifier());
+	}
+
+	@Override
+	public boolean isSnapshotFor(DependencyVersion candidate) {
+		if (!isSnapshot() || !(candidate instanceof ArtifactVersionDependencyVersion)) {
+			return false;
+		}
+		return sameMajorMinorIncremental(((ArtifactVersionDependencyVersion) candidate).artifactVersion);
 	}
 
 	@Override

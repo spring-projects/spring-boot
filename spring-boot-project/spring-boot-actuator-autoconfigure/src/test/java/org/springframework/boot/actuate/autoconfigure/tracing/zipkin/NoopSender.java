@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,16 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.io.IOException;
 import java.util.List;
 
-import zipkin2.Call;
-import zipkin2.Callback;
-import zipkin2.codec.Encoding;
-import zipkin2.reporter.Sender;
+import zipkin2.reporter.BytesMessageSender;
+import zipkin2.reporter.Encoding;
 
-class NoopSender extends Sender {
+class NoopSender extends BytesMessageSender.Base {
 
-	@Override
-	public Encoding encoding() {
-		return Encoding.JSON;
+	NoopSender(Encoding encoding) {
+		super(encoding);
 	}
 
 	@Override
@@ -36,27 +34,11 @@ class NoopSender extends Sender {
 	}
 
 	@Override
-	public int messageSizeInBytes(List<byte[]> encodedSpans) {
-		return encoding().listSizeInBytes(encodedSpans);
+	public void send(List<byte[]> encodedSpans) {
 	}
 
 	@Override
-	public Call<Void> sendSpans(List<byte[]> encodedSpans) {
-		return new Call.Base<>() {
-			@Override
-			public Call<Void> clone() {
-				return this;
-			}
-
-			@Override
-			protected Void doExecute() {
-				return null;
-			}
-
-			@Override
-			protected void doEnqueue(Callback<Void> callback) {
-			}
-		};
+	public void close() throws IOException {
 	}
 
 }

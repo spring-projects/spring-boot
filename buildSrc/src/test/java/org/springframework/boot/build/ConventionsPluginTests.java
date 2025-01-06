@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class ConventionsPluginTests {
 		File settingsFile = new File(this.projectDir, "settings.gradle");
 		try (PrintWriter out = new PrintWriter(new FileWriter(settingsFile))) {
 			out.println("plugins {");
-			out.println("    id 'com.gradle.enterprise'");
+			out.println("    id 'com.gradle.develocity'");
 			out.println("}");
 			out.println("include ':spring-boot-project:spring-boot-parent'");
 		}
@@ -187,7 +187,7 @@ class ConventionsPluginTests {
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "true"), "retryConfig", "--stacktrace").getOutput())
 			.contains("maxRetries: 3")
-			.contains("failOnPassedAfterRetry: true");
+			.contains("failOnPassedAfterRetry: false");
 	}
 
 	@Test
@@ -209,7 +209,7 @@ class ConventionsPluginTests {
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
 			.contains("maxRetries: 0")
-			.contains("failOnPassedAfterRetry: true");
+			.contains("failOnPassedAfterRetry: false");
 	}
 
 	private BuildResult runGradle(String... args) {

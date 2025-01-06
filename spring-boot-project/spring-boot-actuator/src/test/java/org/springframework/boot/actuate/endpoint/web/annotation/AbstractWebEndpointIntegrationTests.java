@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
+import org.springframework.boot.actuate.endpoint.web.PathMapper;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -106,6 +107,21 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 					.expectBody()
 					.jsonPath("All")
 					.isEqualTo(true));
+	}
+
+	@Test
+	void readOperationWithEndpointPathMappedToTheRoot() {
+		load(EndpointPathMappedToRootConfiguration.class, "", (client) -> {
+			client.get().uri("/").exchange().expectStatus().isOk().expectBody().jsonPath("All").isEqualTo(true);
+			client.get()
+				.uri("/some-part")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("part")
+				.isEqualTo("some-part");
+		});
 	}
 
 	@Test
@@ -211,6 +227,31 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	void readOperationWithQueryParametersMissing() {
+		load(QueryEndpointConfiguration.class,
+				(client) -> client.get().uri("/query").exchange().expectStatus().isBadRequest());
+	}
+
+	@Test
+	void reactiveReadOperationWithSingleQueryParameters() {
+		load(ReactiveQueryEndpointConfiguration.class,
+				(client) -> client.get()
+					.uri("/query?param=test")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("query")
+					.isEqualTo("test"));
+	}
+
+	@Test
+	void reactiveReadOperationWithQueryParametersMissing() {
+		load(ReactiveQueryEndpointConfiguration.class,
+				(client) -> client.get().uri("/query").exchange().expectStatus().isBadRequest());
+	}
+
+	@Test
 	void readOperationWithSingleQueryParametersAndMultipleValues() {
 		load(QueryEndpointConfiguration.class,
 				(client) -> client.get()
@@ -270,6 +311,24 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			body.put("foo", "one");
 			body.put("bar", "two");
 			client.post().uri("/test").bodyValue(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
+		});
+	}
+
+	@Test
+	void writeOperationWithListOfValuesIsRejected() {
+		load(TestEndpointConfiguration.class, (client) -> {
+			Map<String, Object> body = new HashMap<>();
+			body.put("generic", List.of("one", "two"));
+			client.post().uri("/test/one").bodyValue(body).exchange().expectStatus().isBadRequest();
+		});
+	}
+
+	@Test
+	void writeOperationWithNestedValueIsRejected() {
+		load(TestEndpointConfiguration.class, (client) -> {
+			Map<String, Object> body = new HashMap<>();
+			body.put("generic", Map.of("nested", "one"));
+			client.post().uri("/test/one").bodyValue(body).exchange().expectStatus().isBadRequest();
 		});
 	}
 
@@ -673,6 +732,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@Import(TestEndpointConfiguration.class)
+	protected static class EndpointPathMappedToRootConfiguration {
+
+		@Bean
+		PathMapper pathMapper() {
+			return (endpointId) -> "/";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class MatchAllRemainingEndpointConfiguration {
 
@@ -701,6 +771,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@Bean
 		QueryWithListEndpoint queryEndpoint() {
 			return new QueryWithListEndpoint();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class ReactiveQueryEndpointConfiguration {
+
+		@Bean
+		ReactiveQueryEndpoint reactiveQueryEndpoint() {
+			return new ReactiveQueryEndpoint();
 		}
 
 	}
@@ -905,6 +986,11 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			this.endpointDelegate.write(foo, bar);
 		}
 
+		@WriteOperation
+		void writeGeneric(@Selector String part, Object generic) {
+			this.endpointDelegate.write(generic.toString(), generic.toString());
+		}
+
 		@DeleteOperation
 		Map<String, Object> deletePart(@Selector String part) {
 			return Collections.singletonMap("part", part);
@@ -943,6 +1029,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		Map<String, String> queryWithParameterList(String one, List<String> two) {
 			return Collections.singletonMap("query", one + " " + two);
+		}
+
+	}
+
+	@Endpoint(id = "query")
+	static class ReactiveQueryEndpoint {
+
+		@ReadOperation
+		Mono<Map<String, String>> query(String param) {
+			return Mono.just(Collections.singletonMap("query", param));
 		}
 
 	}

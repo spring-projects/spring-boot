@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +77,7 @@ public class UndertowWebServerFactoryCustomizer
 	public void customize(ConfigurableUndertowWebServerFactory factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ServerOptions options = new ServerOptions(factory);
-		ServerProperties properties = this.serverProperties;
-		map.from(properties::getMaxHttpRequestHeaderSize)
+		map.from(this.serverProperties::getMaxHttpRequestHeaderSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
 			.to(options.option(UndertowOptions.MAX_HEADER_SIZE));
@@ -164,6 +163,7 @@ public class UndertowWebServerFactoryCustomizer
 						lookup.put(getCanonicalName(field.getName()), option);
 					}
 					catch (IllegalAccessException ex) {
+						// Ignore
 					}
 				}
 			});

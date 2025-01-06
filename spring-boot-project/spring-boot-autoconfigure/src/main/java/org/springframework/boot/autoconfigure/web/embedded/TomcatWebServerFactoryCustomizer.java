@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ import org.springframework.util.unit.DataSize;
 public class TomcatWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory>, Ordered {
 
-	static final int order = 0;
+	static final int ORDER = 0;
 
 	private final Environment environment;
 
@@ -80,10 +80,11 @@ public class TomcatWebServerFactoryCustomizer
 
 	@Override
 	public int getOrder() {
-		return order;
+		return ORDER;
 	}
 
 	@Override
+	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
 		ServerProperties.Tomcat properties = this.serverProperties.getTomcat();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -96,10 +97,13 @@ public class TomcatWebServerFactoryCustomizer
 		ServerProperties.Tomcat.Threads threadProperties = properties.getThreads();
 		map.from(threadProperties::getMax)
 			.when(this::isPositive)
-			.to((maxThreads) -> customizeMaxThreads(factory, threadProperties.getMax()));
+			.to((maxThreads) -> customizeMaxThreads(factory, maxThreads));
 		map.from(threadProperties::getMinSpare)
 			.when(this::isPositive)
 			.to((minSpareThreads) -> customizeMinThreads(factory, minSpareThreads));
+		map.from(threadProperties::getMaxQueueCapacity)
+			.when(this::isPositive)
+			.to((maxQueueCapacity) -> customizeMaxQueueCapacity(factory, maxQueueCapacity));
 		map.from(this.serverProperties.getMaxHttpRequestHeaderSize())
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
@@ -141,14 +145,27 @@ public class TomcatWebServerFactoryCustomizer
 			.as(this::joinCharacters)
 			.whenHasText()
 			.to((relaxedChars) -> customizeRelaxedQueryChars(factory, relaxedChars));
-		map.from(properties::isRejectIllegalHeader)
-			.to((rejectIllegalHeader) -> customizeRejectIllegalHeader(factory, rejectIllegalHeader));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(this.serverProperties.getError(), factory);
 	}
 
 	private boolean isPositive(int value) {
 		return value > 0;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void customizeMaxThreads(ConfigurableTomcatWebServerFactory factory, int maxThreads) {
+		customizeHandler(factory, maxThreads, AbstractProtocol.class, AbstractProtocol::setMaxThreads);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void customizeMinThreads(ConfigurableTomcatWebServerFactory factory, int minSpareThreads) {
+		customizeHandler(factory, minSpareThreads, AbstractProtocol.class, AbstractProtocol::setMinSpareThreads);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void customizeMaxQueueCapacity(ConfigurableTomcatWebServerFactory factory, int maxQueueCapacity) {
+		customizeHandler(factory, maxQueueCapacity, AbstractProtocol.class, AbstractProtocol::setMaxQueueSize);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -200,16 +217,6 @@ public class TomcatWebServerFactoryCustomizer
 		factory.addConnectorCustomizers((connector) -> connector.setProperty("relaxedQueryChars", relaxedChars));
 	}
 
-	@SuppressWarnings("deprecation")
-	private void customizeRejectIllegalHeader(ConfigurableTomcatWebServerFactory factory, boolean rejectIllegalHeader) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol<?> protocol) {
-				protocol.setRejectIllegalHeader(rejectIllegalHeader);
-			}
-		});
-	}
-
 	private String joinCharacters(List<Character> content) {
 		return content.stream().map(String::valueOf).collect(Collectors.joining());
 	}
@@ -249,16 +256,6 @@ public class TomcatWebServerFactoryCustomizer
 			return platform != null && platform.isUsingForwardHeaders();
 		}
 		return this.serverProperties.getForwardHeadersStrategy() == ServerProperties.ForwardHeadersStrategy.NATIVE;
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void customizeMaxThreads(ConfigurableTomcatWebServerFactory factory, int maxThreads) {
-		customizeHandler(factory, maxThreads, AbstractProtocol.class, AbstractProtocol::setMaxThreads);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void customizeMinThreads(ConfigurableTomcatWebServerFactory factory, int minSpareThreads) {
-		customizeHandler(factory, minSpareThreads, AbstractProtocol.class, AbstractProtocol::setMinSpareThreads);
 	}
 
 	@SuppressWarnings("rawtypes")

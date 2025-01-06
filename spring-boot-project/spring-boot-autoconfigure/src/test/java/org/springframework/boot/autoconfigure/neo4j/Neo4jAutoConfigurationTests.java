@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.neo4j.driver.AuthTokenManagers;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Config;
 import org.neo4j.driver.Config.ConfigBuilder;
@@ -38,7 +39,6 @@ import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Security.Tru
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -110,7 +110,7 @@ class Neo4jAutoConfigurationTests {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesNeo4jConnectionDetails.class));
 	}
 
-	@Bean
+	@Test
 	void shouldUseCustomConnectionDetailsWhenDefined() {
 		this.contextRunner.withBean(Neo4jConnectionDetails.class, () -> new Neo4jConnectionDetails() {
 
@@ -144,7 +144,7 @@ class Neo4jAutoConfigurationTests {
 
 	@Test
 	void uriShouldDefaultToLocalhost() {
-		assertThat(new PropertiesNeo4jConnectionDetails(new Neo4jProperties()).getUri())
+		assertThat(new PropertiesNeo4jConnectionDetails(new Neo4jProperties(), null).getUri())
 			.isEqualTo(URI.create("bolt://localhost:7687"));
 	}
 
@@ -153,12 +153,12 @@ class Neo4jAutoConfigurationTests {
 		URI customUri = URI.create("bolt://localhost:4242");
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.setUri(customUri);
-		assertThat(new PropertiesNeo4jConnectionDetails(properties).getUri()).isEqualTo(customUri);
+		assertThat(new PropertiesNeo4jConnectionDetails(properties, null).getUri()).isEqualTo(customUri);
 	}
 
 	@Test
 	void authenticationShouldDefaultToNone() {
-		assertThat(new PropertiesNeo4jConnectionDetails(new Neo4jProperties()).getAuthToken())
+		assertThat(new PropertiesNeo4jConnectionDetails(new Neo4jProperties(), null).getAuthToken())
 			.isEqualTo(AuthTokens.none());
 	}
 
@@ -167,8 +167,9 @@ class Neo4jAutoConfigurationTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getAuthentication().setUsername("Farin");
 		properties.getAuthentication().setPassword("Urlaub");
-		assertThat(new PropertiesNeo4jConnectionDetails(properties).getAuthToken())
-			.isEqualTo(AuthTokens.basic("Farin", "Urlaub"));
+		PropertiesNeo4jConnectionDetails connectionDetails = new PropertiesNeo4jConnectionDetails(properties, null);
+		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("Farin", "Urlaub"));
+		assertThat(connectionDetails.getAuthTokenManager()).isNull();
 	}
 
 	@Test
@@ -178,8 +179,22 @@ class Neo4jAutoConfigurationTests {
 		authentication.setUsername("Farin");
 		authentication.setPassword("Urlaub");
 		authentication.setRealm("Test Realm");
-		assertThat(new PropertiesNeo4jConnectionDetails(properties).getAuthToken())
-			.isEqualTo(AuthTokens.basic("Farin", "Urlaub", "Test Realm"));
+		PropertiesNeo4jConnectionDetails connectionDetails = new PropertiesNeo4jConnectionDetails(properties, null);
+		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("Farin", "Urlaub", "Test Realm"));
+		assertThat(connectionDetails.getAuthTokenManager()).isNull();
+	}
+
+	@Test
+	void authenticationWithAuthTokenManagerAndUsernameShouldProvideAuthTokenManger() {
+		Neo4jProperties properties = new Neo4jProperties();
+		Authentication authentication = properties.getAuthentication();
+		authentication.setUsername("Farin");
+		authentication.setPassword("Urlaub");
+		authentication.setRealm("Test Realm");
+		assertThat(new PropertiesNeo4jConnectionDetails(properties,
+				AuthTokenManagers.bearer(
+						() -> AuthTokens.basic("username", "password").expiringAt(System.currentTimeMillis() + 5000)))
+			.getAuthTokenManager()).isNotNull();
 	}
 
 	@Test
@@ -187,7 +202,7 @@ class Neo4jAutoConfigurationTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		Authentication authentication = properties.getAuthentication();
 		authentication.setKerberosTicket("AABBCCDDEE");
-		assertThat(new PropertiesNeo4jConnectionDetails(properties).getAuthToken())
+		assertThat(new PropertiesNeo4jConnectionDetails(properties, null).getAuthToken())
 			.isEqualTo(AuthTokens.kerberos("AABBCCDDEE"));
 	}
 
@@ -198,7 +213,7 @@ class Neo4jAutoConfigurationTests {
 		authentication.setUsername("Farin");
 		authentication.setKerberosTicket("AABBCCDDEE");
 		assertThatIllegalStateException()
-			.isThrownBy(() -> new PropertiesNeo4jConnectionDetails(properties).getAuthToken())
+			.isThrownBy(() -> new PropertiesNeo4jConnectionDetails(properties, null).getAuthToken())
 			.withMessage("Cannot specify both username ('Farin') and kerberos ticket ('AABBCCDDEE')");
 	}
 
@@ -314,7 +329,7 @@ class Neo4jAutoConfigurationTests {
 
 	private Config mapDriverConfig(Neo4jProperties properties, ConfigBuilderCustomizer... customizers) {
 		return new Neo4jAutoConfiguration().mapDriverConfig(properties,
-				new PropertiesNeo4jConnectionDetails(properties), Arrays.asList(customizers));
+				new PropertiesNeo4jConnectionDetails(properties, null), Arrays.asList(customizers));
 	}
 
 }

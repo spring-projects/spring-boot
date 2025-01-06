@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,10 @@ class LoggerConfigurationTests {
 	}
 
 	@Test
-	void createWithLevelConfigurationWhenEffectiveLevelIsNullThrowsException() {
+	void createWithLevelConfigurationWhenInheritedLevelConfigurationIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration("test", null, (LevelConfiguration) null))
-			.withMessage("EffectiveLevelConfiguration must not be null");
+			.withMessage("InheritedLevelConfiguration must not be null");
 	}
 
 	@Test
@@ -160,7 +160,7 @@ class LoggerConfigurationTests {
 		@Test
 		void getLevelWhenCustomThrowsException() {
 			LevelConfiguration configuration = LevelConfiguration.ofCustom("FINE");
-			assertThatIllegalStateException().isThrownBy(() -> configuration.getLevel())
+			assertThatIllegalStateException().isThrownBy(configuration::getLevel)
 				.withMessage("Unable to provide LogLevel for 'FINE'");
 		}
 

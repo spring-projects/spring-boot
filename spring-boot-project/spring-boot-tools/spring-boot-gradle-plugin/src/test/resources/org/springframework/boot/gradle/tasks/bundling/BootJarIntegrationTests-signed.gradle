@@ -1,0 +1,19 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootJar {
+	mainClass = 'com.example.Application'
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url = 'repository'
+	}
+}
+
+dependencies {
+	implementation("org.bouncycastle:bcprov-jdk18on:1.78.1")
+}

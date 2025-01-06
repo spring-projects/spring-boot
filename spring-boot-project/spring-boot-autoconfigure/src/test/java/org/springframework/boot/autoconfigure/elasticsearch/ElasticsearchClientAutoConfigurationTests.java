@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,14 +65,16 @@ class ElasticsearchClientAutoConfigurationTests {
 
 	@Test
 	void withoutJsonbOrJacksonShouldDefineSimpleMapper() {
-		this.contextRunner.withUserConfiguration(RestClientConfiguration.class)
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ObjectMapper.class))
+			.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
 				.hasSingleBean(SimpleJsonpMapper.class));
 	}
 
 	@Test
 	void withJsonbShouldDefineJsonbMapper() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ObjectMapper.class))
+			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
 			.withUserConfiguration(RestClientConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(JsonpMapper.class)
 				.hasSingleBean(JsonbJsonpMapper.class));
@@ -151,7 +154,7 @@ class ElasticsearchClientAutoConfigurationTests {
 	static class TransportConfiguration {
 
 		@Bean
-		ElasticsearchTransport customElasticsearchTransport() {
+		ElasticsearchTransport customElasticsearchTransport(JsonpMapper mapper) {
 			return mock(ElasticsearchTransport.class);
 		}
 

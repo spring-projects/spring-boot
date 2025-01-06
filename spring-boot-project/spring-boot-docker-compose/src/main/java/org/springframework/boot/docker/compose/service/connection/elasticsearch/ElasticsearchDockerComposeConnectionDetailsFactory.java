@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,17 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ElasticsearchDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<ElasticsearchConnectionDetails> {
 
+	private static final String[] ELASTICSEARCH_CONTAINER_NAMES = { "elasticsearch", "bitnami/elasticsearch" };
+
 	private static final int ELASTICSEARCH_PORT = 9200;
 
 	protected ElasticsearchDockerComposeConnectionDetailsFactory() {
-		super("elasticsearch");
+		super(ELASTICSEARCH_CONTAINER_NAMES);
 	}
 
 	@Override

@@ -1,0 +1,112 @@
+[[actuator.observability]]
+= Observability
+
+Observability is the ability to observe the internal state of a running system from the outside.
+It consists of the three pillars: logging, metrics and traces.
+
+For metrics and traces, Spring Boot uses {url-micrometer-docs}/observation[Micrometer Observation].
+To create your own observations (which will lead to metrics and traces), you can inject an javadoc:io.micrometer.observation.ObservationRegistry[].
+
+include-code::MyCustomObservation[]
+
+NOTE: Low cardinality tags will be added to metrics and traces, while high cardinality tags will only be added to traces.
+
+Beans of type javadoc:io.micrometer.observation.ObservationPredicate[], javadoc:io.micrometer.observation.GlobalObservationConvention[], javadoc:io.micrometer.observation.ObservationFilter[] and javadoc:io.micrometer.observation.ObservationHandler[] will be automatically registered on the javadoc:io.micrometer.observation.ObservationRegistry[].
+You can additionally register any number of javadoc:org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer[] beans to further configure the registry.
+
+TIP: Observability for JDBC can be configured using a separate project.
+The https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project] provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.
+Read more about it https://jdbc-observations.github.io/datasource-micrometer/docs/current/docs/html/[in the reference documentation].
+
+TIP: Observability for R2DBC is built into Spring Boot.
+To enable it, add the `io.r2dbc:r2dbc-proxy` dependency to your project.
+
+
+
+[[actuator.observability.context-propagation]]
+== Context Propagation
+Observability support relies on the https://github.com/micrometer-metrics/context-propagation[Context Propagation library] for forwarding the current observation across threads and reactive pipelines.
+By default, javadoc:java.lang.ThreadLocal[] values are not automatically reinstated in reactive operators.
+This behavior is controlled with the configprop:spring.reactor.context-propagation[] property, which can be set to `auto` to enable automatic propagation.
+
+For more details about observations please see the {url-micrometer-docs}/observation[Micrometer Observation documentation].
+
+
+
+[[actuator.observability.common-tags]]
+== Common Tags
+
+Common tags are generally used for dimensional drill-down on the operating environment, such as host, instance, region, stack, and others.
+Common tags are applied to all observations as low cardinality tags and can be configured, as the following example shows:
+
+[configprops,yaml]
+----
+management:
+  observations:
+    key-values:
+      region: "us-east-1"
+      stack: "prod"
+----
+
+The preceding example adds `region` and `stack` tags to all observations with a value of `us-east-1` and `prod`, respectively.
+
+
+
+[[actuator.observability.preventing-observations]]
+== Preventing Observations
+
+If you'd like to prevent some observations from being reported, you can use the configprop:management.observations.enable[] properties:
+
+[configprops,yaml]
+----
+management:
+  observations:
+    enable:
+      denied:
+        prefix: false
+      another:
+        denied:
+          prefix: false
+----
+
+The preceding example will prevent all observations with a name starting with `denied.prefix` or `another.denied.prefix`.
+
+TIP: If you want to prevent Spring Security from reporting observations, set the property configprop:management.observations.enable.spring.security[] to `false`.
+
+If you need greater control over the prevention of observations, you can register beans of type javadoc:io.micrometer.observation.ObservationPredicate[].
+Observations are only reported if all the javadoc:io.micrometer.observation.ObservationPredicate[] beans return `true` for that observation.
+
+include-code::MyObservationPredicate[]
+
+The preceding example will prevent all observations whose name contains "denied".
+
+
+
+[[actuator.observability.opentelemetry]]
+== OpenTelemetry Support
+
+NOTE: There are several ways to support https://opentelemetry.io/[OpenTelemetry] in your application.
+You can use the https://opentelemetry.io/docs/zero-code/java/agent/[OpenTelemetry Java Agent] or the https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/[OpenTelemetry Spring Boot Starter],
+which are supported by the OTel community; the metrics and traces use the semantic conventions defined by OTel libraries.
+This documentation describes OpenTelemetry as officially supported by the Spring team, using Micrometer and the OTLP exporter;
+the metrics and traces use the semantic conventions described in the Spring projects documentation, such as {url-spring-framework-docs}/integration/observability.html[Spring Framework].
+
+Spring Boot's actuator module includes basic support for OpenTelemetry.
+
+It provides a bean of type javadoc:io.opentelemetry.api.OpenTelemetry[], and if there are beans of type javadoc:io.opentelemetry.sdk.trace.SdkTracerProvider[], javadoc:io.opentelemetry.context.propagation.ContextPropagators[], javadoc:io.opentelemetry.sdk.logs.SdkLoggerProvider[] or javadoc:io.opentelemetry.sdk.metrics.SdkMeterProvider[] in the application context, they automatically get registered.
+Additionally, it provides a javadoc:io.opentelemetry.sdk.resources.Resource[] bean.
+The attributes of the auto-configured javadoc:io.opentelemetry.sdk.resources.Resource[] can be configured via the configprop:management.opentelemetry.resource-attributes[] configuration property.
+If you have defined your own javadoc:io.opentelemetry.sdk.resources.Resource[] bean, this will no longer be the case.
+
+NOTE: Spring Boot does not provide auto-configuration for OpenTelemetry metrics or logging.
+OpenTelemetry tracing is only auto-configured when used together with xref:actuator/tracing.adoc[Micrometer Tracing].
+
+The next sections will provide more details about logging, metrics and traces.
+
+
+
+[[actuator.observability.annotations]]
+== Micrometer Observation Annotations support
+
+To enable scanning of metrics and tracing annotations like javadoc:io.micrometer.core.annotation.Timed[format=annotation], javadoc:io.micrometer.core.annotation.Counted[format=annotation], javadoc:io.micrometer.core.aop.MeterTag[format=annotation] and javadoc:io.micrometer.tracing.annotation.NewSpan[format=annotation] annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
+This feature is supported Micrometer directly. Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer] and {url-micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.

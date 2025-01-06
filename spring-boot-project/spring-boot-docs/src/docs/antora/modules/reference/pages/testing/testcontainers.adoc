@@ -1,0 +1,133 @@
+[[testing.testcontainers]]
+= Testcontainers
+
+The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
+It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
+Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
+
+Testcontainers can be used in a Spring Boot test as follows:
+
+include-code::vanilla/MyIntegrationTests[]
+
+This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
+In most cases, you will need to configure the application to connect to the service running in the container.
+
+
+
+[[testing.testcontainers.service-connections]]
+== Service Connections
+
+A service connection is a connection to any remote service.
+Spring Boot's auto-configuration can consume the details of a service connection and use them to establish a connection to a remote service.
+When doing so, the connection details take precedence over any connection-related configuration properties.
+
+When using Testcontainers, connection details can be automatically created for a service running in a container by annotating the container field in the test class.
+
+include-code::MyIntegrationTests[]
+
+Thanks to javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation], the above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
+This is done by automatically defining a javadoc:org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails[] bean which is then used by the Neo4j auto-configuration, overriding any connection-related configuration properties.
+
+NOTE: You'll need to add the `spring-boot-testcontainers` module as a test dependency in order to use service connections with Testcontainers.
+
+Service connection annotations are processed by javadoc:org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory[] classes registered with `spring.factories`.
+A javadoc:org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory[] can create a javadoc:org.springframework.boot.autoconfigure.service.connection.ConnectionDetails[] bean based on a specific javadoc:org.testcontainers.containers.Container[] subclass, or the Docker image name.
+
+The following service connection factories are provided in the `spring-boot-testcontainers` jar:
+
+|===
+| Connection Details | Matched on
+
+| javadoc:org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionDetails[]
+| Containers named "symptoma/activemq" or javadoc:org.testcontainers.activemq.ActiveMQContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.jms.artemis.ArtemisConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.activemq.ArtemisContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.cassandra.CassandraContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.couchbase.CouchbaseConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.couchbase.CouchbaseContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.elasticsearch.ElasticsearchContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails[]
+| Containers of type javadoc:org.testcontainers.kafka.KafkaContainer[], javadoc:org.testcontainers.kafka.ConfluentKafkaContainer[] or javadoc:org.testcontainers.redpanda.RedpandaContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-jdbc-javadoc}/org.testcontainers.containers.JdbcDatabaseContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-mongodb-javadoc}/org.testcontainers.containers.MongoDBContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[]
+
+| javadoc:org.springframework.boot.actuate.autoconfigure.logging.otlp.OtlpLoggingConnectionDetails[]
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
+
+| javadoc:org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsConnectionDetails[]
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
+
+| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingConnectionDetails[]
+| Containers named "otel/opentelemetry-collector-contrib" or of type `LgtmStackContainer`
+
+| javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-pulsar-javadoc}/org.testcontainers.containers.PulsarContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[]
+| Containers of type `ClickHouseContainer`, javadoc:{url-testcontainers-mariadb-javadoc}/org.testcontainers.containers.MariaDBContainer[], javadoc:{url-testcontainers-mssqlserver-javadoc}/org.testcontainers.containers.MSSQLServerContainer[], javadoc:{url-testcontainers-mysql-javadoc}/org.testcontainers.containers.MySQLContainer[], javadoc:{url-testcontainers-oracle-free-javadoc}/org.testcontainers.OracleContainer[OracleContainer (free)], javadoc:{url-testcontainers-oracle-xe-javadoc}/org.testcontainers.oracle.OracleContainer[OracleContainer (XE)] or javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails[]
+| Containers of type javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[]
+
+| javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[]
+| Containers of type javadoc:com.redis.testcontainers.RedisContainer[] or javadoc:com.redis.testcontainers.RedisStackContainer[], or containers named "redis", "redis/redis-stack" or "redis/redis-stack-server"
+
+| javadoc:org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails[]
+| Containers named "openzipkin/zipkin"
+|===
+
+[TIP]
+====
+By default all applicable connection details beans will be created for a given javadoc:org.testcontainers.containers.Container[].
+For example, a javadoc:{url-testcontainers-postgresql-javadoc}/org.testcontainers.containers.PostgreSQLContainer[] will create both javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[] and javadoc:org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails[].
+
+If you want to create only a subset of the applicable types, you can use the `type` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
+====
+
+By default `Container.getDockerImageName().getRepository()` is used to obtain the name used to find connection details.
+The repository portion of the Docker image name ignores any registry and the version.
+This works as long as Spring Boot is able to get the instance of the javadoc:org.testcontainers.containers.Container[], which is the case when using a `static` field like in the example above.
+
+If you're using a javadoc:org.springframework.context.annotation.Bean[format=annotation] method, Spring Boot won't call the bean method to get the Docker image name, because this would cause eager initialization issues.
+Instead, the return type of the bean method is used to find out which connection detail should be used.
+This works as long as you're using typed containers such as javadoc:{url-testcontainers-neo4j-javadoc}/org.testcontainers.containers.Neo4jContainer[] or javadoc:{url-testcontainers-rabbitmq-javadoc}/org.testcontainers.containers.RabbitMQContainer[].
+This stops working if you're using javadoc:org.testcontainers.containers.GenericContainer[], for example with Redis as shown in the following example:
+
+include-code::MyRedisConfiguration[]
+
+Spring Boot can't tell from javadoc:org.testcontainers.containers.GenericContainer[] which container image is used, so the `name` attribute from javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] must be used to provide that hint.
+
+You can also use the `name` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] to override which connection detail will be used, for example when using custom images.
+If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd use `@ServiceConnection(name="redis")` to ensure javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[] are created.
+
+
+
+[[testing.testcontainers.dynamic-properties]]
+== Dynamic Properties
+
+A slightly more verbose but also more flexible alternative to service connections is javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation].
+A static javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation] method allows adding dynamic property values to the Spring Environment.
+
+include-code::MyIntegrationTests[]
+
+The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.

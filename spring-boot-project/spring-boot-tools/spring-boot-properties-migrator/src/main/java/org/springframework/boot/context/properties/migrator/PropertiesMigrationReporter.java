@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 package org.springframework.boot.context.properties.migrator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
@@ -34,6 +35,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.origin.OriginTrackedValue;
+import org.springframework.boot.origin.PropertySourceOrigin;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.LinkedMultiValueMap;
@@ -65,7 +67,7 @@ class PropertiesMigrationReporter {
 	 */
 	PropertiesMigrationReport getReport() {
 		PropertiesMigrationReport report = new PropertiesMigrationReport();
-		Map<String, List<PropertyMigration>> properties = getMatchingProperties(
+		Map<String, List<PropertyMigration>> properties = getPropertySourceMigrations(
 				ConfigurationMetadataProperty::isDeprecated);
 		if (properties.isEmpty()) {
 			return report;
@@ -79,72 +81,72 @@ class PropertiesMigrationReporter {
 		return report;
 	}
 
-	private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
-			List<PropertyMigration> properties) {
-		report.add(name, properties);
-		List<PropertyMigration> renamed = properties.stream()
-			.filter(PropertyMigration::isCompatibleType)
-			.collect(Collectors.toList());
-		if (renamed.isEmpty()) {
-			return null;
-		}
-		NameTrackingPropertySource nameTrackingPropertySource = new NameTrackingPropertySource();
-		this.environment.getPropertySources().addFirst(nameTrackingPropertySource);
-		try {
-			String target = "migrate-" + name;
-			Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
-			for (PropertyMigration candidate : renamed) {
-				String newPropertyName = candidate.getNewPropertyName();
-				Object value = candidate.getProperty().getValue();
-				if (nameTrackingPropertySource.isPlaceholderThatAccessesName(value, newPropertyName)) {
-					continue;
-				}
-				OriginTrackedValue originTrackedValue = OriginTrackedValue.of(value,
-						candidate.getProperty().getOrigin());
-				content.put(newPropertyName, originTrackedValue);
-			}
-			return new OriginTrackedMapPropertySource(target, content);
-		}
-		finally {
-			this.environment.getPropertySources().remove(nameTrackingPropertySource.getName());
-		}
-	}
-
-	private boolean isMapType(ConfigurationMetadataProperty property) {
-		String type = property.getType();
-		return type != null && type.startsWith(Map.class.getName());
-	}
-
-	private Map<String, List<PropertyMigration>> getMatchingProperties(
+	private Map<String, List<PropertyMigration>> getPropertySourceMigrations(
 			Predicate<ConfigurationMetadataProperty> filter) {
+		return getPropertySourceMigrations(this.allProperties.values().stream().filter(filter).toList());
+	}
+
+	private Map<String, List<PropertyMigration>> getPropertySourceMigrations(
+			List<ConfigurationMetadataProperty> metadataProperties) {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
-		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
-			.stream()
-			.filter(filter)
-			.collect(Collectors.toList());
-		getPropertySourcesAsMap().forEach((propertySourceName, propertySource) -> candidates.forEach((metadata) -> {
-			ConfigurationPropertyName metadataName = ConfigurationPropertyName.isValid(metadata.getId())
-					? ConfigurationPropertyName.of(metadata.getId())
-					: ConfigurationPropertyName.adapt(metadata.getId(), '.');
-			// Direct match
-			ConfigurationProperty match = propertySource.getConfigurationProperty(metadataName);
-			if (match != null) {
-				result.add(propertySourceName,
-						new PropertyMigration(match, metadata, determineReplacementMetadata(metadata), false));
+		getPropertySourcesAsMap().forEach((propertySourceName, propertySource) -> {
+			for (ConfigurationMetadataProperty metadataProperty : metadataProperties) {
+				result.addAll(propertySourceName, getMigrations(propertySource, metadataProperty));
 			}
-			// Prefix match for maps
-			if (isMapType(metadata) && propertySource instanceof IterableConfigurationPropertySource) {
-				IterableConfigurationPropertySource iterableSource = (IterableConfigurationPropertySource) propertySource;
-				iterableSource.stream()
-					.filter(metadataName::isAncestorOf)
-					.map(propertySource::getConfigurationProperty)
-					.forEach((property) -> {
-						ConfigurationMetadataProperty replacement = determineReplacementMetadata(metadata);
-						result.add(propertySourceName, new PropertyMigration(property, metadata, replacement, true));
-					});
-			}
-		}));
+		});
 		return result;
+	}
+
+	private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {
+		Map<String, ConfigurationPropertySource> map = new LinkedHashMap<>();
+		for (ConfigurationPropertySource source : ConfigurationPropertySources.get(this.environment)) {
+			map.put(determinePropertySourceName(source), source);
+		}
+		return map;
+	}
+
+	private String determinePropertySourceName(ConfigurationPropertySource source) {
+		if (source.getUnderlyingSource() instanceof PropertySource<?> underlyingSource) {
+			return underlyingSource.getName();
+		}
+		return source.getUnderlyingSource().toString();
+	}
+
+	private List<PropertyMigration> getMigrations(ConfigurationPropertySource propertySource,
+			ConfigurationMetadataProperty metadataProperty) {
+		ConfigurationPropertyName propertyName = asConfigurationPropertyName(metadataProperty);
+		List<PropertyMigration> migrations = new ArrayList<>();
+		addMigration(propertySource, metadataProperty, propertyName, false, migrations);
+		if (isMapType(metadataProperty) && propertySource instanceof IterableConfigurationPropertySource iterable) {
+			iterable.stream()
+				.filter(propertyName::isAncestorOf)
+				.forEach((ancestorPropertyName) -> addMigration(propertySource, metadataProperty, ancestorPropertyName,
+						true, migrations));
+		}
+		return migrations;
+	}
+
+	private ConfigurationPropertyName asConfigurationPropertyName(ConfigurationMetadataProperty metadataProperty) {
+		return ConfigurationPropertyName.isValid(metadataProperty.getId())
+				? ConfigurationPropertyName.of(metadataProperty.getId())
+				: ConfigurationPropertyName.adapt(metadataProperty.getId(), '.');
+	}
+
+	private void addMigration(ConfigurationPropertySource propertySource,
+			ConfigurationMetadataProperty metadataProperty, ConfigurationPropertyName propertyName,
+			boolean mapMigration, List<PropertyMigration> migrations) {
+		ConfigurationProperty property = propertySource.getConfigurationProperty(propertyName);
+		if (property != null) {
+			ConfigurationMetadataProperty replacement = determineReplacementMetadata(metadataProperty);
+			if (replacement == null || !hasSameName(property, replacement)) {
+				migrations.add(new PropertyMigration(property, metadataProperty, replacement, mapMigration));
+			}
+		}
+	}
+
+	private boolean hasSameName(ConfigurationProperty property, ConfigurationMetadataProperty replacement) {
+		return (property.getOrigin() instanceof PropertySourceOrigin propertySourceOrigin)
+				&& Objects.equals(propertySourceOrigin.getPropertyName(), replacement.getId());
 	}
 
 	private ConfigurationMetadataProperty determineReplacementMetadata(ConfigurationMetadataProperty metadata) {
@@ -171,19 +173,38 @@ class PropertiesMigrationReporter {
 		return null;
 	}
 
-	private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {
-		Map<String, ConfigurationPropertySource> map = new LinkedHashMap<>();
-		for (ConfigurationPropertySource source : ConfigurationPropertySources.get(this.environment)) {
-			map.put(determinePropertySourceName(source), source);
-		}
-		return map;
+	private boolean isMapType(ConfigurationMetadataProperty property) {
+		String type = property.getType();
+		return type != null && type.startsWith(Map.class.getName());
 	}
 
-	private String determinePropertySourceName(ConfigurationPropertySource source) {
-		if (source.getUnderlyingSource() instanceof PropertySource) {
-			return ((PropertySource<?>) source.getUnderlyingSource()).getName();
+	private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
+			List<PropertyMigration> properties) {
+		report.add(name, properties);
+		List<PropertyMigration> renamed = properties.stream().filter(PropertyMigration::isCompatibleType).toList();
+		if (renamed.isEmpty()) {
+			return null;
 		}
-		return source.getUnderlyingSource().toString();
+		NameTrackingPropertySource nameTrackingPropertySource = new NameTrackingPropertySource();
+		this.environment.getPropertySources().addFirst(nameTrackingPropertySource);
+		try {
+			String target = "migrate-" + name;
+			Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
+			for (PropertyMigration candidate : renamed) {
+				String newPropertyName = candidate.getNewPropertyName();
+				Object value = candidate.getProperty().getValue();
+				if (nameTrackingPropertySource.isPlaceholderThatAccessesName(value, newPropertyName)) {
+					continue;
+				}
+				OriginTrackedValue originTrackedValue = OriginTrackedValue.of(value,
+						candidate.getProperty().getOrigin());
+				content.put(newPropertyName, originTrackedValue);
+			}
+			return new OriginTrackedMapPropertySource(target, content);
+		}
+		finally {
+			this.environment.getPropertySources().remove(nameTrackingPropertySource.getName());
+		}
 	}
 
 	/**

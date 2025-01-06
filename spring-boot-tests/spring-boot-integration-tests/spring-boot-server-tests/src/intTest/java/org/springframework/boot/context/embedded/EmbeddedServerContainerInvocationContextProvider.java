@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,8 +116,9 @@ class EmbeddedServerContainerInvocationContextProvider
 	private AbstractApplicationLauncher getAbstractApplicationLauncher(Application application,
 			Class<? extends AbstractApplicationLauncher> launcherClass) {
 		String cacheKey = application.getContainer() + ":" + application.getPackaging() + ":" + launcherClass.getName();
-		if (this.launcherCache.containsKey(cacheKey)) {
-			return this.launcherCache.get(cacheKey);
+		AbstractApplicationLauncher cachedLauncher = this.launcherCache.get(cacheKey);
+		if (cachedLauncher != null) {
+			return cachedLauncher;
 		}
 		AbstractApplicationLauncher launcher = ReflectionUtils.newInstance(launcherClass, application,
 				new File(buildOutput.getRootLocation(), "app-launcher-" + UUID.randomUUID()));
@@ -155,10 +156,7 @@ class EmbeddedServerContainerInvocationContextProvider
 			if (parameterContext.getParameter().getType().equals(AbstractApplicationLauncher.class)) {
 				return true;
 			}
-			if (parameterContext.getParameter().getType().equals(RestTemplate.class)) {
-				return true;
-			}
-			return false;
+			return parameterContext.getParameter().getType().equals(RestTemplate.class);
 		}
 
 		@Override

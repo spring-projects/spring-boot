@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.ssl;
 
 import java.security.KeyStore;
+
+import org.springframework.core.style.ToStringCreator;
 
 /**
  * A bundle of key and trust stores that can be used to establish an SSL connection.
@@ -73,6 +75,15 @@ public interface SslStoreBundle {
 			@Override
 			public String getKeyStorePassword() {
 				return keyStorePassword;
+			}
+
+			@Override
+			public String toString() {
+				ToStringCreator creator = new ToStringCreator(this);
+				creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");
+				creator.append("keyStorePassword", (keyStorePassword != null) ? "******" : null);
+				creator.append("trustStore.type", (trustStore != null) ? trustStore.getType() : "none");
+				return creator.toString();
 			}
 
 		};

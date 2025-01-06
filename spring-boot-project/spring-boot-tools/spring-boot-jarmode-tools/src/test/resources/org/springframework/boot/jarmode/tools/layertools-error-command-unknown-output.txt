@@ -1,0 +1,10 @@
+Error: Unknown command "invalid"
+
+Usage:
+  java -Djarmode=layertools -jar test.jar
+
+Available commands:
+  help     Help about any command
+Deprecated commands:
+  list     List layers from the jar that can be extracted
+  extract  Extracts layers from the jar for image creation

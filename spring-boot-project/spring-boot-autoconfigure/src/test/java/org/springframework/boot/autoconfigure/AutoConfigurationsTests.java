@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure;
+
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,12 +38,42 @@ class AutoConfigurationsTests {
 				AutoConfigureA.class);
 	}
 
+	@Test
+	void whenHasReplacementForAutoConfigureAfterShouldCreateOrderedConfigurations() {
+		Configurations configurations = new AutoConfigurations(this::replaceB,
+				Arrays.asList(AutoConfigureA.class, AutoConfigureB2.class));
+		assertThat(Configurations.getClasses(configurations)).containsExactly(AutoConfigureB2.class,
+				AutoConfigureA.class);
+	}
+
+	@Test
+	void whenHasReplacementForClassShouldReplaceClass() {
+		Configurations configurations = new AutoConfigurations(this::replaceB,
+				Arrays.asList(AutoConfigureA.class, AutoConfigureB.class));
+		assertThat(Configurations.getClasses(configurations)).containsExactly(AutoConfigureB2.class,
+				AutoConfigureA.class);
+	}
+
+	@Test
+	void getBeanNameShouldUseClassName() {
+		Configurations configurations = AutoConfigurations.of(AutoConfigureA.class, AutoConfigureB.class);
+		assertThat(configurations.getBeanName(AutoConfigureA.class)).isEqualTo(AutoConfigureA.class.getName());
+	}
+
+	private String replaceB(String className) {
+		return (!AutoConfigureB.class.getName().equals(className)) ? className : AutoConfigureB2.class.getName();
+	}
+
 	@AutoConfigureAfter(AutoConfigureB.class)
 	static class AutoConfigureA {
 
 	}
 
 	static class AutoConfigureB {
+
+	}
+
+	static class AutoConfigureB2 {
 
 	}
 

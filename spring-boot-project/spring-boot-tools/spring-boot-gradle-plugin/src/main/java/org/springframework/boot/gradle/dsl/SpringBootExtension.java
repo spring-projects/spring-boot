@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
-import org.gradle.jvm.tasks.Jar;
+import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
 
@@ -93,7 +93,7 @@ public class SpringBootExtension {
 			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
 			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
 				.getArtifact()
-				.convention(this.project.provider(() -> determineArtifactBaseName())));
+				.convention(this.project.provider(this::determineArtifactBaseName)));
 		});
 		if (configurer != null) {
 			bootBuildInfo.configure(configurer);

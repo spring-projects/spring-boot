@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,13 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	private String issuer;
 
 	/**
+	 * Whether multiple issuers are allowed per host. Using path components in the URL of
+	 * the issuer identifier enables supporting multiple issuers per host in a
+	 * multi-tenant hosting configuration.
+	 */
+	private boolean multipleIssuersAllowed = false;
+
+	/**
 	 * Registered clients of the Authorization Server.
 	 */
 	private final Map<String, Client> client = new HashMap<>();
@@ -51,6 +58,14 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 	 * Authorization Server endpoints.
 	 */
 	private final Endpoint endpoint = new Endpoint();
+
+	public boolean isMultipleIssuersAllowed() {
+		return this.multipleIssuersAllowed;
+	}
+
+	public void setMultipleIssuersAllowed(boolean multipleIssuersAllowed) {
+		this.multipleIssuersAllowed = multipleIssuersAllowed;
+	}
 
 	public String getIssuer() {
 		return this.issuer;

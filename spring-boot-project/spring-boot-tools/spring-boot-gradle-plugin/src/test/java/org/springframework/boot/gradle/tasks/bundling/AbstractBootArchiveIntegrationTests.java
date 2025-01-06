@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,6 +45,9 @@ import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.archivers.zip.UnixStat;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
@@ -61,6 +65,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Madhura Bhave
+ * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 abstract class AbstractBootArchiveIntegrationTests {
 
@@ -99,6 +105,16 @@ abstract class AbstractBootArchiveIntegrationTests {
 			.isEqualTo(TaskOutcome.SUCCESS);
 		String secondHash = FileUtils.sha1Hash(jar);
 		assertThat(firstHash).isEqualTo(secondHash);
+	}
+
+	@TestTemplate
+	void classicLoader() throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
+			.isEqualTo(TaskOutcome.SUCCESS);
+		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
+		try (JarFile jarFile = new JarFile(jar)) {
+			assertThat(jarFile.getEntry("org/springframework/boot/loader/LaunchedURLClassLoader.class")).isNotNull();
+		}
 	}
 
 	@TestTemplate
@@ -217,6 +233,41 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void testAndDevelopmentOnlyDependenciesAreNotIncludedInTheArchiveByDefault() throws IOException {
+		File srcMainResources = new File(this.gradleBuild.getProjectDir(), "src/main/resources");
+		srcMainResources.mkdirs();
+		new File(srcMainResources, "resource").createNewFile();
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
+			.isEqualTo(TaskOutcome.SUCCESS);
+		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			Stream<String> libEntryNames = jarFile.stream()
+				.filter((entry) -> !entry.isDirectory())
+				.map(JarEntry::getName)
+				.filter((name) -> name.startsWith(this.libPath));
+			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar");
+			Stream<String> classesEntryNames = jarFile.stream()
+				.filter((entry) -> !entry.isDirectory())
+				.map(JarEntry::getName)
+				.filter((name) -> name.startsWith(this.classesPath));
+			assertThat(classesEntryNames).containsExactly(this.classesPath + "resource");
+		}
+	}
+
+	@TestTemplate
+	void testAndDevelopmentOnlyDependenciesCanBeIncludedInTheArchive() throws IOException {
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
+			.isEqualTo(TaskOutcome.SUCCESS);
+		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			Stream<String> libEntryNames = jarFile.stream()
+				.filter((entry) -> !entry.isDirectory())
+				.map(JarEntry::getName)
+				.filter((name) -> name.startsWith(this.libPath));
+			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar",
+					this.libPath + "commons-lang3-3.9.jar");
+		}
+	}
+
+	@TestTemplate
 	void jarTypeFilteringIsApplied() throws IOException {
 		File flatDirRepository = new File(this.gradleBuild.getProjectDir(), "repository");
 		createDependenciesStarterJar(new File(flatDirRepository, "starter.jar"));
@@ -283,6 +334,18 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void notUpToDateWhenBuiltWithToolsAndThenWithoutTools() {
+		assertThat(this.gradleBuild.scriptProperty("includeTools", "")
+			.build(this.taskName)
+			.task(":" + this.taskName)
+			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("includeTools", "includeTools = false")
+			.build(this.taskName)
+			.task(":" + this.taskName)
+			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
 	void layersWithCustomSourceSet() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 			.isEqualTo(TaskOutcome.SUCCESS);
@@ -295,7 +358,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 			.isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.LAYER_TOOLS.getName();
+		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
@@ -347,7 +410,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 			.isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.LAYER_TOOLS.getName();
+		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "alpha-1.2.3.jar")).isNotNull();
@@ -393,7 +456,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		BuildResult build = this.gradleBuild.build(this.taskName);
 		assertThat(build.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.LAYER_TOOLS.getName();
+		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "commons-lang3-3.9.jar")).isNotNull();
@@ -440,7 +503,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 		BuildResult build = this.gradleBuild.build(this.taskName);
 		assertThat(build.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Map<String, List<String>> indexedLayers;
-		String layerToolsJar = this.libPath + JarModeLibrary.LAYER_TOOLS.getName();
+		String layerToolsJar = this.libPath + JarModeLibrary.TOOLS.getName();
 		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry(this.libPath + "alpha-1.2.3.jar")).isNotNull();
@@ -523,13 +586,59 @@ abstract class AbstractBootArchiveIntegrationTests {
 		}
 	}
 
+	@TestTemplate
+	void defaultDirAndFileModesAreUsed() throws IOException {
+		BuildResult result = this.gradleBuild.build(this.taskName);
+		assertThat(result.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		try (ZipFile jarFile = new ZipFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			Enumeration<ZipArchiveEntry> entries = jarFile.getEntries();
+			while (entries.hasMoreElements()) {
+				ZipArchiveEntry entry = entries.nextElement();
+				if (entry.getName().startsWith("META-INF/")) {
+					continue;
+				}
+				if (entry.isDirectory()) {
+					assertEntryMode(entry, UnixStat.DIR_FLAG | UnixStat.DEFAULT_DIR_PERM);
+				}
+				else {
+					assertEntryMode(entry, UnixStat.FILE_FLAG | UnixStat.DEFAULT_FILE_PERM);
+				}
+			}
+		}
+	}
+
+	@TestTemplate
+	void dirModeAndFileModeAreApplied() throws IOException {
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.8-rc-1")
+			.expectDeprecationMessages("The CopyProcessingSpec.setDirMode(Integer) method has been deprecated",
+					"The CopyProcessingSpec.setFileMode(Integer) method has been deprecated",
+					"upgrading_version_8.html#unix_file_permissions_deprecated")
+			.build(this.taskName);
+		assertThat(result.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		try (ZipFile jarFile = new ZipFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			Enumeration<ZipArchiveEntry> entries = jarFile.getEntries();
+			while (entries.hasMoreElements()) {
+				ZipArchiveEntry entry = entries.nextElement();
+				if (entry.getName().startsWith("META-INF/")) {
+					continue;
+				}
+				if (entry.isDirectory()) {
+					assertEntryMode(entry, 0500);
+				}
+				else {
+					assertEntryMode(entry, 0400);
+				}
+			}
+		}
+	}
+
 	private void copyMainClassApplication() throws IOException {
 		copyApplication("main");
 	}
 
 	protected void copyApplication(String name) throws IOException {
 		File output = new File(this.gradleBuild.getProjectDir(),
-				"src/main/java/com/example/" + this.taskName.toLowerCase() + "/" + name);
+				"src/main/java/com/example/" + this.taskName.toLowerCase(Locale.ROOT) + "/" + name);
 		output.mkdirs();
 		FileSystemUtils.copyRecursively(
 				new File("src/test/java/com/example/" + this.taskName.toLowerCase(Locale.ENGLISH) + "/" + name),
@@ -558,6 +667,9 @@ abstract class AbstractBootArchiveIntegrationTests {
 		try (PrintWriter writer = new PrintWriter(
 				new FileWriter(new File(this.gradleBuild.getProjectDir(), "settings.gradle")))) {
 			writer.println("include 'alpha', 'bravo', 'charlie'");
+			new File(this.gradleBuild.getProjectDir(), "alpha").mkdirs();
+			new File(this.gradleBuild.getProjectDir(), "bravo").mkdirs();
+			new File(this.gradleBuild.getProjectDir(), "charlie").mkdirs();
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -658,6 +770,13 @@ abstract class AbstractBootArchiveIntegrationTests {
 			}
 		}
 		return false;
+	}
+
+	private static void assertEntryMode(ZipArchiveEntry entry, int expectedMode) {
+		assertThat(entry.getUnixMode())
+			.withFailMessage(() -> "Expected mode " + Integer.toOctalString(expectedMode) + " for entry "
+					+ entry.getName() + " but actual is " + Integer.toOctalString(entry.getUnixMode()))
+			.isEqualTo(expectedMode);
 	}
 
 }

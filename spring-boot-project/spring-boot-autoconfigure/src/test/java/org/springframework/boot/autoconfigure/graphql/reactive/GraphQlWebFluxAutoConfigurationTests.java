@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.graphql.reactive;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -44,6 +45,7 @@ import org.springframework.graphql.server.webflux.GraphQlWebSocketHandler;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
@@ -94,7 +96,46 @@ class GraphQlWebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void httpGetQueryShouldBeSupported() {
+	void SseSubscriptionShouldWork() {
+		testWithWebClient((client) -> {
+			String query = "{ booksOnSale(minPages: 50){ id name pageCount author } }";
+			EntityExchangeResult<String> result = client.post()
+				.uri("/graphql")
+				.accept(MediaType.TEXT_EVENT_STREAM)
+				.bodyValue("{  \"query\": \"subscription TestSubscription " + query + "\"}")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectHeader()
+				.contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
+				.expectBody(String.class)
+				.returnResult();
+			assertThat(result.getResponseBody()).contains("event:next",
+					"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-1\",\"name\":\"GraphQL for beginners\",\"pageCount\":100,\"author\":\"John GraphQL\"}}}",
+					"event:next",
+					"data:{\"data\":{\"booksOnSale\":{\"id\":\"book-2\",\"name\":\"Harry Potter and the Philosopher's Stone\",\"pageCount\":223,\"author\":\"Joanne Rowling\"}}}",
+					"event:complete");
+		});
+	}
+
+	@Test
+	void unsupportedContentTypeShouldBeRejected() {
+		testWithWebClient((client) -> {
+			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
+			client.post()
+				.uri("/graphql")
+				.contentType(MediaType.TEXT_PLAIN)
+				.bodyValue("{  \"query\": \"" + query + "\"}")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+				.expectHeader()
+				.valueEquals("Accept", "application/json");
+		});
+	}
+
+	@Test
+	void httpGetQueryShouldBeRejected() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author } }";
 			client.get()
@@ -197,6 +238,20 @@ class GraphQlWebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldConfigureWebSocketProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.graphql.websocket.path=/ws",
+					"spring.graphql.websocket.connection-init-timeout=120s", "spring.graphql.websocket.keep-alive=30s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(GraphQlWebSocketHandler.class);
+				GraphQlWebSocketHandler graphQlWebSocketHandler = context.getBean(GraphQlWebSocketHandler.class);
+				assertThat(graphQlWebSocketHandler).extracting("initTimeoutDuration")
+					.isEqualTo(Duration.ofSeconds(120));
+				assertThat(graphQlWebSocketHandler).extracting("keepAliveDuration").isEqualTo(Duration.ofSeconds(30));
+			});
+	}
+
+	@Test
 	void routerFunctionShouldHaveOrderZero() {
 		this.contextRunner.withUserConfiguration(CustomRouterFunctions.class).run((context) -> {
 			Map<String, ?> beans = context.getBeansOfType(RouterFunction.class);
@@ -233,8 +288,12 @@ class GraphQlWebFluxAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher() {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
-				.dataFetcher("bookById", GraphQlTestDataFetchers.getBookByIdDataFetcher()));
+			return (builder) -> {
+				builder.type(TypeRuntimeWiring.newTypeWiring("Query")
+					.dataFetcher("bookById", GraphQlTestDataFetchers.getBookByIdDataFetcher()));
+				builder.type(TypeRuntimeWiring.newTypeWiring("Subscription")
+					.dataFetcher("booksOnSale", GraphQlTestDataFetchers.getBooksOnSaleDataFetcher()));
+			};
 		}
 
 	}

@@ -96,7 +96,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		Assert.state(isJettyAlpnPresent(),
 				() -> "An 'org.eclipse.jetty:jetty-alpn-*-server' dependency is required for HTTP/2 support.");
 		Assert.state(isJettyHttp2Present(),
-				() -> "The 'org.eclipse.jetty.http2:http2-server' dependency is required for HTTP/2 support.");
+				() -> "The 'org.eclipse.jetty.http2:jetty-http2-server' dependency is required for HTTP/2 support.");
 		return createHttp2ServerConnector(config, sslContextFactory, server);
 	}
 
@@ -111,19 +111,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 
 	private SslConnectionFactory createSslConnectionFactory(SslContextFactory.Server sslContextFactory,
 			String protocol) {
-		try {
-			return new SslConnectionFactory(sslContextFactory, protocol);
-		}
-		catch (NoSuchMethodError ex) {
-			// Jetty 10
-			try {
-				return SslConnectionFactory.class.getConstructor(SslContextFactory.Server.class, String.class)
-					.newInstance(sslContextFactory, protocol);
-			}
-			catch (Exception ex2) {
-				throw new RuntimeException(ex2);
-			}
-		}
+		return new SslConnectionFactory(sslContextFactory, protocol);
 	}
 
 	private boolean isJettyAlpnPresent() {

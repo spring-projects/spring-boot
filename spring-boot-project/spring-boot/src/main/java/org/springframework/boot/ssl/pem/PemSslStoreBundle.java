@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +16,37 @@
 
 package org.springframework.boot.ssl.pem;
 
+import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 
 /**
  * {@link SslStoreBundle} backed by PEM-encoded certificates and private keys.
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 public class PemSslStoreBundle implements SslStoreBundle {
 
-	private static final String DEFAULT_KEY_ALIAS = "ssl";
+	private static final String DEFAULT_ALIAS = "ssl";
 
-	private final PemSslStoreDetails keyStoreDetails;
+	private final Supplier<KeyStore> keyStore;
 
-	private final PemSslStoreDetails trustStoreDetails;
-
-	private final String keyAlias;
-
-	private final String keyPassword;
+	private final Supplier<KeyStore> trustStore;
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
@@ -50,38 +54,23 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 * @param trustStoreDetails the trust store details
 	 */
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails) {
-		this(keyStoreDetails, trustStoreDetails, null);
+		this(PemSslStore.load(keyStoreDetails), PemSslStore.load(trustStoreDetails));
 	}
 
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
-	 * @param keyStoreDetails the key store details
-	 * @param trustStoreDetails the trust store details
-	 * @param keyAlias the key alias to use or {@code null} to use a default alias
+	 * @param pemKeyStore the PEM key store
+	 * @param pemTrustStore the PEM trust store
+	 * @since 3.2.0
 	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails,
-			String keyAlias) {
-		this(keyStoreDetails, trustStoreDetails, keyAlias, null);
-	}
-
-	/**
-	 * Create a new {@link PemSslStoreBundle} instance.
-	 * @param keyStoreDetails the key store details
-	 * @param trustStoreDetails the trust store details
-	 * @param keyAlias the key alias to use or {@code null} to use a default alias
-	 * @param keyPassword the password to use for the key
-	 */
-	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String keyAlias,
-			String keyPassword) {
-		this.keyAlias = keyAlias;
-		this.keyStoreDetails = keyStoreDetails;
-		this.trustStoreDetails = trustStoreDetails;
-		this.keyPassword = keyPassword;
+	public PemSslStoreBundle(PemSslStore pemKeyStore, PemSslStore pemTrustStore) {
+		this.keyStore = SingletonSupplier.of(() -> createKeyStore("key", pemKeyStore));
+		this.trustStore = SingletonSupplier.of(() -> createKeyStore("trust", pemTrustStore));
 	}
 
 	@Override
 	public KeyStore getKeyStore() {
-		return createKeyStore("key", this.keyStoreDetails);
+		return this.keyStore.get();
 	}
 
 	@Override
@@ -91,23 +80,25 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	@Override
 	public KeyStore getTrustStore() {
-		return createKeyStore("trust", this.trustStoreDetails);
+		return this.trustStore.get();
 	}
 
-	private KeyStore createKeyStore(String name, PemSslStoreDetails details) {
-		if (details == null || details.isEmpty()) {
+	private static KeyStore createKeyStore(String name, PemSslStore pemSslStore) {
+		if (pemSslStore == null) {
 			return null;
 		}
 		try {
-			Assert.notNull(details.certificate(), "Certificate content must not be null");
-			String type = (!StringUtils.hasText(details.type())) ? KeyStore.getDefaultType() : details.type();
-			KeyStore store = KeyStore.getInstance(type);
-			store.load(null);
-			String certificateContent = PemContent.load(details.certificate());
-			String privateKeyContent = PemContent.load(details.privateKey());
-			X509Certificate[] certificates = PemCertificateParser.parse(certificateContent);
-			PrivateKey privateKey = PemPrivateKeyParser.parse(privateKeyContent, details.privateKeyPassword());
-			addCertificates(store, certificates, privateKey);
+			List<X509Certificate> certificates = pemSslStore.certificates();
+			Assert.notEmpty(certificates, "Certificates must not be empty");
+			String alias = (pemSslStore.alias() != null) ? pemSslStore.alias() : DEFAULT_ALIAS;
+			KeyStore store = createKeyStore(pemSslStore.type());
+			PrivateKey privateKey = pemSslStore.privateKey();
+			if (privateKey != null) {
+				addPrivateKey(store, privateKey, alias, pemSslStore.password(), certificates);
+			}
+			else {
+				addCertificates(store, certificates, alias);
+			}
 			return store;
 		}
 		catch (Exception ex) {
@@ -115,18 +106,37 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		}
 	}
 
-	private void addCertificates(KeyStore keyStore, X509Certificate[] certificates, PrivateKey privateKey)
+	private static KeyStore createKeyStore(String type)
+			throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
+		KeyStore store = KeyStore.getInstance(StringUtils.hasText(type) ? type : KeyStore.getDefaultType());
+		store.load(null);
+		return store;
+	}
+
+	private static void addPrivateKey(KeyStore keyStore, PrivateKey privateKey, String alias, String keyPassword,
+			List<X509Certificate> certificateChain) throws KeyStoreException {
+		keyStore.setKeyEntry(alias, privateKey, (keyPassword != null) ? keyPassword.toCharArray() : null,
+				certificateChain.toArray(X509Certificate[]::new));
+	}
+
+	private static void addCertificates(KeyStore keyStore, List<X509Certificate> certificates, String alias)
 			throws KeyStoreException {
-		String alias = (this.keyAlias != null) ? this.keyAlias : DEFAULT_KEY_ALIAS;
-		if (privateKey != null) {
-			keyStore.setKeyEntry(alias, privateKey, (this.keyPassword != null) ? this.keyPassword.toCharArray() : null,
-					certificates);
+		for (int index = 0; index < certificates.size(); index++) {
+			String entryAlias = alias + ((certificates.size() == 1) ? "" : "-" + index);
+			X509Certificate certificate = certificates.get(index);
+			keyStore.setCertificateEntry(entryAlias, certificate);
 		}
-		else {
-			for (int index = 0; index < certificates.length; index++) {
-				keyStore.setCertificateEntry(alias + "-" + index, certificates[index]);
-			}
-		}
+	}
+
+	@Override
+	public String toString() {
+		ToStringCreator creator = new ToStringCreator(this);
+		KeyStore keyStore = this.keyStore.get();
+		KeyStore trustStore = this.trustStore.get();
+		creator.append("keyStore.type", (keyStore != null) ? keyStore.getType() : "none");
+		creator.append("keyStorePassword", null);
+		creator.append("trustStore.type", (trustStore != null) ? trustStore.getType() : "none");
+		return creator.toString();
 	}
 
 }

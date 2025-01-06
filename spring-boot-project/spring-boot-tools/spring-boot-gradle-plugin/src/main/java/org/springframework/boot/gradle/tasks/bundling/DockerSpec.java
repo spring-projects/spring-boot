@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,10 @@ public abstract class DockerSpec {
 		this.builderRegistry = builderRegistry;
 		this.publishRegistry = publishRegistry;
 	}
+
+	@Input
+	@Optional
+	public abstract Property<String> getContext();
 
 	@Input
 	@Optional
@@ -124,7 +128,15 @@ public abstract class DockerSpec {
 	}
 
 	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
+		String context = getContext().getOrNull();
 		String host = getHost().getOrNull();
+		if (context != null && host != null) {
+			throw new GradleException(
+					"Invalid Docker configuration, either context or host can be provided but not both");
+		}
+		if (context != null) {
+			return dockerConfiguration.withContext(context);
+		}
 		if (host != null) {
 			return dockerConfiguration.withHost(host, getTlsVerify().get(), getCertPath().getOrNull());
 		}

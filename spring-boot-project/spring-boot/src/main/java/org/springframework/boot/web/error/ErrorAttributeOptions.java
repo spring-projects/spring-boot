@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -79,6 +80,19 @@ public final class ErrorAttributeOptions {
 		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
 	}
 
+	/**
+	 * Remove elements from the given map if they are not included in this set of options.
+	 * @param map the map to update
+	 * @since 3.2.7
+	 */
+	public void retainIncluded(Map<String, Object> map) {
+		for (Include candidate : Include.values()) {
+			if (!this.includes.contains(candidate)) {
+				map.remove(candidate.key);
+			}
+		}
+	}
+
 	private EnumSet<Include> copyIncludes() {
 		return (this.includes.isEmpty()) ? EnumSet.noneOf(Include.class) : EnumSet.copyOf(this.includes);
 	}
@@ -88,7 +102,7 @@ public final class ErrorAttributeOptions {
 	 * @return an {@code ErrorAttributeOptions}
 	 */
 	public static ErrorAttributeOptions defaults() {
-		return of();
+		return of(Include.PATH, Include.STATUS, Include.ERROR);
 	}
 
 	/**
@@ -120,22 +134,46 @@ public final class ErrorAttributeOptions {
 		/**
 		 * Include the exception class name attribute.
 		 */
-		EXCEPTION,
+		EXCEPTION("exception"),
 
 		/**
 		 * Include the stack trace attribute.
 		 */
-		STACK_TRACE,
+		STACK_TRACE("trace"),
 
 		/**
 		 * Include the message attribute.
 		 */
-		MESSAGE,
+		MESSAGE("message"),
 
 		/**
 		 * Include the binding errors attribute.
 		 */
-		BINDING_ERRORS
+		BINDING_ERRORS("errors"),
+
+		/**
+		 * Include the HTTP status code.
+		 * @since 3.2.7
+		 */
+		STATUS("status"),
+
+		/**
+		 * Include the HTTP status code.
+		 * @since 3.2.7
+		 */
+		ERROR("error"),
+
+		/**
+		 * Include the request path.
+		 * @since 3.3.0
+		 */
+		PATH("path");
+
+		private final String key;
+
+		Include(String key) {
+			this.key = key;
+		}
 
 	}
 

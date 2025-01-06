@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -42,54 +40,30 @@ import org.springframework.util.PropertyPlaceholderHelper;
  *
  * @author Andy Wilkinson
  */
-public class ExtractResources extends DefaultTask {
+public abstract class ExtractResources extends DefaultTask {
 
 	private final PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("${", "}");
 
-	private final Map<String, String> properties = new HashMap<>();
-
-	private final DirectoryProperty destinationDirectory;
-
-	private List<String> resourceNames = new ArrayList<>();
-
-	public ExtractResources() {
-		this.destinationDirectory = getProject().getObjects().directoryProperty();
-	}
-
 	@Input
-	public List<String> getResourceNames() {
-		return this.resourceNames;
-	}
-
-	public void setResourcesNames(List<String> resourceNames) {
-		this.resourceNames = resourceNames;
-	}
+	public abstract ListProperty<String> getResourceNames();
 
 	@OutputDirectory
-	public DirectoryProperty getDestinationDirectory() {
-		return this.destinationDirectory;
-	}
-
-	public void property(String name, String value) {
-		this.properties.put(name, value);
-	}
+	public abstract DirectoryProperty getDestinationDirectory();
 
 	@Input
-	public Map<String, String> getProperties() {
-		return this.properties;
-	}
+	public abstract MapProperty<String, String> getProperties();
 
 	@TaskAction
 	void extractResources() throws IOException {
-		for (String resourceName : this.resourceNames) {
+		for (String resourceName : getResourceNames().get()) {
 			InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceName);
 			if (resourceStream == null) {
 				throw new GradleException("Resource '" + resourceName + "' does not exist");
 			}
 			String resource = FileCopyUtils.copyToString(new InputStreamReader(resourceStream, StandardCharsets.UTF_8));
-			resource = this.propertyPlaceholderHelper.replacePlaceholders(resource, this.properties::get);
+			resource = this.propertyPlaceholderHelper.replacePlaceholders(resource, getProperties().get()::get);
 			FileCopyUtils.copy(resource,
-					new FileWriter(this.destinationDirectory.file(resourceName).get().getAsFile()));
+					new FileWriter(getDestinationDirectory().file(resourceName).get().getAsFile()));
 		}
 	}
 

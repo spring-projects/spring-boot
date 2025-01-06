@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,7 +169,7 @@ public class ErrorMvcAutoConfiguration {
 	/**
 	 * {@link SpringBootCondition} that matches when no error template view is detected.
 	 */
-	private static class ErrorTemplateMissingCondition extends SpringBootCondition {
+	private static final class ErrorTemplateMissingCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -188,7 +188,7 @@ public class ErrorMvcAutoConfiguration {
 	/**
 	 * Simple {@link View} implementation that writes a default HTML error page.
 	 */
-	private static class StaticView implements View {
+	private static final class StaticView implements View {
 
 		private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html", StandardCharsets.UTF_8);
 

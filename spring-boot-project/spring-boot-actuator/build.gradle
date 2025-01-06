@@ -1,8 +1,8 @@
 plugins {
 	id "java-library"
-	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.configuration-properties"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.docker-test"
 	id "org.springframework.boot.deployed"
 }
 
@@ -11,7 +11,19 @@ description = "Spring Boot Actuator"
 dependencies {
 	api(project(":spring-boot-project:spring-boot"))
 
-	optional("com.datastax.oss:java-driver-core") {
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.springframework:spring-test")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:mongodb")
+	dockerTestImplementation("org.testcontainers:neo4j")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
+	optional("org.apache.cassandra:java-driver-core") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 	optional("com.fasterxml.jackson.core:jackson-databind")
@@ -22,9 +34,11 @@ dependencies {
 	optional("com.zaxxer:HikariCP")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
-	optional("io.micrometer:micrometer-core")
+	optional("io.micrometer:micrometer-jakarta9")
 	optional("io.micrometer:micrometer-tracing")
 	optional("io.micrometer:micrometer-registry-prometheus")
+	optional("io.micrometer:micrometer-registry-prometheus-simpleclient")
+	optional("io.prometheus:prometheus-metrics-exposition-formats")
 	optional("io.prometheus:simpleclient_pushgateway") {
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
@@ -50,7 +64,6 @@ dependencies {
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.liquibase:liquibase-core") {
-		exclude group: "javax.activation", module: "javax.activation-api"
 		exclude(group: "javax.xml.bind", module: "jaxb-api")
 	}
 	optional("org.mongodb:mongodb-driver-reactivestreams")
@@ -99,9 +112,6 @@ dependencies {
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
-	testImplementation("org.testcontainers:junit-jupiter")
-	testImplementation("org.testcontainers:neo4j")
-	testImplementation("org.testcontainers:testcontainers")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")

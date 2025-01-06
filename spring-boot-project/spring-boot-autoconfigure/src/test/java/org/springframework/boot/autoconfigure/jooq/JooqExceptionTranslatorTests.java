@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,10 @@ import static org.mockito.Mockito.never;
  * Tests for {@link JooqExceptionTranslator}
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.3.0 for removal in 3.5.0
  */
+@Deprecated(since = "3.3.0")
+@SuppressWarnings("removal")
 class JooqExceptionTranslatorTests {
 
 	private final JooqExceptionTranslator exceptionTranslator = new JooqExceptionTranslator();

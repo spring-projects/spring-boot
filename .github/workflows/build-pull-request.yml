@@ -1,36 +1,24 @@
 name: Build Pull Request
 on: pull_request
-
 permissions:
   contents: read
-
 jobs:
   build:
-    name: Build pull request
-    runs-on: ubuntu-latest
+    name: Build Pull Request
     if: ${{ github.repository == 'spring-projects/spring-boot' }}
+    runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'liberica'
-
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
-
+      - name: Check Out Code
+        uses: actions/checkout@v4
       - name: Build
-        env:
-          CI: 'true'
-          GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-        run: ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false --no-daemon --max-workers=4 --continue build
-
-      - name: Print JVM thread dumps when cancelled
-        uses: ./.github/actions/print-jvm-thread-dumps
+        id: build
+        uses: ./.github/actions/build
+      - name: Print JVM Thread Dumps When Cancelled
         if: cancelled()
+        uses: ./.github/actions/print-jvm-thread-dumps
+      - name: Upload Build Reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-reports
+          path: '**/build/reports/'

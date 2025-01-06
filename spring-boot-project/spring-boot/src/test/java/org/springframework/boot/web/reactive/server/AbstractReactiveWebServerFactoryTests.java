@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,10 @@ import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.util.StringRequestContent;
+import org.eclipse.jetty.client.ContentResponse;
+import org.eclipse.jetty.client.StringRequestContent;
 import org.eclipse.jetty.http2.client.HTTP2Client;
-import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
+import org.eclipse.jetty.http2.client.transport.HttpClientTransportOverHTTP2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -52,6 +52,7 @@ import reactor.core.publisher.Sinks;
 import reactor.netty.NettyPipeline;
 import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.SslProvider.GenericSslContextSpec;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.web.server.Compression;
@@ -79,7 +80,6 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Base for testing classes that extends {@link AbstractReactiveWebServerFactory}.
@@ -242,11 +242,12 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected void assertThatSslWithInvalidAliasCallFails(ThrowingCallable call) {
-		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain alias 'test-alias-404'");
+		assertThatException().isThrownBy(call)
+			.withStackTraceContaining("Keystore does not contain alias 'test-alias-404'");
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
-		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
+		GenericSslContextSpec<?> sslContextSpec = Http11SslContextSpec.forClient()
 			.configure((builder) -> builder.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE));
 		HttpClient client = HttpClient.create().wiretap(true).secure((spec) -> spec.sslContext(sslContextSpec));
@@ -285,7 +286,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, keyStorePassword.toCharArray());
 
-		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
+		GenericSslContextSpec<?> sslContextSpec = Http11SslContextSpec.forClient()
 			.configure((builder) -> builder.sslProvider(SslProvider.JDK)
 				.trustManager(InsecureTrustManagerFactory.INSTANCE)
 				.keyManager(clientKeyManagerFactory));
@@ -569,18 +570,15 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		factory.setHttp2(http2);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
-				new HttpClientTransportOverHTTP2(new HTTP2Client()));
-		client.start();
-		try {
+
+		try (org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
+				new HttpClientTransportOverHTTP2(new HTTP2Client()))) {
+			client.start();
 			ContentResponse response = client.POST("http://localhost:" + this.webServer.getPort())
 				.body(new StringRequestContent("text/plain", "Hello World"))
 				.send();
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 			assertThat(response.getContentAsString()).isEqualTo("Hello World");
-		}
-		finally {
-			client.stop();
 		}
 	}
 
@@ -600,6 +598,25 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			.retrieve()
 			.bodyToMono(String.class);
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
+	}
+
+	@Test
+	void startedLogMessageWithSinglePort() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches(
+				"(Jetty|Netty|Tomcat|Undertow) started on port " + this.webServer.getPort() + " \\(http(/1.1)?\\)");
+	}
+
+	@Test
+	protected void startedLogMessageWithMultiplePorts() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		addConnector(0, factory);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on ports " + this.webServer.getPort()
+				+ " \\(http(/1.1)?\\), [0-9]+ \\(http(/1.1)?\\)");
 	}
 
 	protected WebClient prepareCompressionTest() {
@@ -672,6 +689,10 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			action.run(blockedPort);
 		}
 	}
+
+	protected abstract String startedLogMessage();
+
+	protected abstract void addConnector(int port, AbstractReactiveWebServerFactory factory);
 
 	public interface BlockedPortAction {
 

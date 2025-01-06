@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentatio
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -81,7 +80,7 @@ class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumen
 
 	@Test
 	void mappings() {
-		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
+		List<FieldDescriptor> requestMappingConditions = List.of(
 				requestMappingConditionField("").description("Details of the request mapping conditions.").optional(),
 				requestMappingConditionField(".consumes").description("Details of the consumes condition"),
 				requestMappingConditionField(".consumes.[].mediaType").description("Consumed media type."),
@@ -101,7 +100,7 @@ class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumen
 				requestMappingConditionField(".produces").description("Details of the produces condition."),
 				requestMappingConditionField(".produces.[].mediaType").description("Produced media type."),
 				requestMappingConditionField(".produces.[].negated").description("Whether the media type is negated."));
-		List<FieldDescriptor> handlerMethod = Arrays.asList(
+		List<FieldDescriptor> handlerMethod = List.of(
 				fieldWithPath("*.[].details.handlerMethod").optional()
 					.type(JsonFieldType.OBJECT)
 					.description("Details of the method, if any, that will handle requests to this mapping."),
@@ -111,13 +110,13 @@ class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumen
 					.description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor").type(JsonFieldType.STRING)
 					.description("Descriptor of the method as specified in the Java Language Specification."));
-		List<FieldDescriptor> handlerFunction = Arrays.asList(
+		List<FieldDescriptor> handlerFunction = List.of(
 				fieldWithPath("*.[].details.handlerFunction").optional()
 					.type(JsonFieldType.OBJECT)
 					.description("Details of the function, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerFunction.className").type(JsonFieldType.STRING)
 					.description("Fully qualified name of the class of the function."));
-		List<FieldDescriptor> dispatcherHandlerFields = new ArrayList<>(Arrays.asList(
+		List<FieldDescriptor> dispatcherHandlerFields = new ArrayList<>(List.of(
 				fieldWithPath("*")
 					.description("Dispatcher handler mappings, if any, keyed by dispatcher handler bean name."),
 				fieldWithPath("*.[].details").optional()

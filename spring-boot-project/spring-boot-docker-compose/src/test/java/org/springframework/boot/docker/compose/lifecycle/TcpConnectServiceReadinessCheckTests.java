@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,14 +58,14 @@ class TcpConnectServiceReadinessCheckTests {
 
 	@Test
 	void checkWhenServerWritesData() throws Exception {
-		withServer((socket) -> socket.getOutputStream().write('!'), (port) -> check(port));
+		withServer((socket) -> socket.getOutputStream().write('!'), this::check);
 	}
 
 	@Test
 	void checkWhenNoSocketOutput() throws Exception {
 		// Simulate waiting for traffic from client to server. The sleep duration must
 		// be longer than the read timeout of the ready check!
-		withServer((socket) -> sleep(Duration.ofSeconds(10)), (port) -> check(port));
+		withServer((socket) -> sleep(Duration.ofSeconds(10)), this::check);
 	}
 
 	@Test

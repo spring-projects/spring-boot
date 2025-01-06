@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,13 @@
 package org.springframework.boot.autoconfigure.liquibase;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
+import liquibase.UpdateSummaryEnum;
+import liquibase.UpdateSummaryOutputEnum;
 import liquibase.integration.spring.SpringLiquibase;
+import liquibase.ui.UIServiceEnum;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -48,9 +52,9 @@ public class LiquibaseProperties {
 	private boolean clearChecksums;
 
 	/**
-	 * Comma-separated list of runtime contexts to use.
+	 * List of runtime contexts to use.
 	 */
-	private String contexts;
+	private List<String> contexts;
 
 	/**
 	 * Default database schema.
@@ -109,9 +113,9 @@ public class LiquibaseProperties {
 	private String url;
 
 	/**
-	 * Comma-separated list of runtime labels to use.
+	 * List of runtime labels to use.
 	 */
-	private String labelFilter;
+	private List<String> labelFilter;
 
 	/**
 	 * Change log parameters.
@@ -135,6 +139,21 @@ public class LiquibaseProperties {
 	 */
 	private String tag;
 
+	/**
+	 * Whether to print a summary of the update operation.
+	 */
+	private ShowSummary showSummary;
+
+	/**
+	 * Where to print a summary of the update operation.
+	 */
+	private ShowSummaryOutput showSummaryOutput;
+
+	/**
+	 * Which UIService to use.
+	 */
+	private UiService uiService;
+
 	public String getChangeLog() {
 		return this.changeLog;
 	}
@@ -144,11 +163,11 @@ public class LiquibaseProperties {
 		this.changeLog = changeLog;
 	}
 
-	public String getContexts() {
+	public List<String> getContexts() {
 		return this.contexts;
 	}
 
-	public void setContexts(String contexts) {
+	public void setContexts(List<String> contexts) {
 		this.contexts = contexts;
 	}
 
@@ -248,11 +267,11 @@ public class LiquibaseProperties {
 		this.url = url;
 	}
 
-	public String getLabelFilter() {
+	public List<String> getLabelFilter() {
 		return this.labelFilter;
 	}
 
-	public void setLabelFilter(String labelFilter) {
+	public void setLabelFilter(List<String> labelFilter) {
 		this.labelFilter = labelFilter;
 	}
 
@@ -286,6 +305,101 @@ public class LiquibaseProperties {
 
 	public void setTag(String tag) {
 		this.tag = tag;
+	}
+
+	public ShowSummary getShowSummary() {
+		return this.showSummary;
+	}
+
+	public void setShowSummary(ShowSummary showSummary) {
+		this.showSummary = showSummary;
+	}
+
+	public ShowSummaryOutput getShowSummaryOutput() {
+		return this.showSummaryOutput;
+	}
+
+	public void setShowSummaryOutput(ShowSummaryOutput showSummaryOutput) {
+		this.showSummaryOutput = showSummaryOutput;
+	}
+
+	public UiService getUiService() {
+		return this.uiService;
+	}
+
+	public void setUiService(UiService uiService) {
+		this.uiService = uiService;
+	}
+
+	/**
+	 * Enumeration of types of summary to show. Values are the same as those on
+	 * {@link UpdateSummaryEnum}. To maximize backwards compatibility, the Liquibase enum
+	 * is not used directly.
+	 *
+	 * @since 3.2.1
+	 */
+	public enum ShowSummary {
+
+		/**
+		 * Do not show a summary.
+		 */
+		OFF,
+
+		/**
+		 * Show a summary.
+		 */
+		SUMMARY,
+
+		/**
+		 * Show a verbose summary.
+		 */
+		VERBOSE
+
+	}
+
+	/**
+	 * Enumeration of destinations to which the summary should be output. Values are the
+	 * same as those on {@link UpdateSummaryOutputEnum}. To maximize backwards
+	 * compatibility, the Liquibase enum is not used directly.
+	 *
+	 * @since 3.2.1
+	 */
+	public enum ShowSummaryOutput {
+
+		/**
+		 * Log the summary.
+		 */
+		LOG,
+
+		/**
+		 * Output the summary to the console.
+		 */
+		CONSOLE,
+
+		/**
+		 * Log the summary and output it to the console.
+		 */
+		ALL
+
+	}
+
+	/**
+	 * Enumeration of types of UIService. Values are the same as those on
+	 * {@link UIServiceEnum}. To maximize backwards compatibility, the Liquibase enum is
+	 * not used directly.
+	 */
+	public enum UiService {
+
+		/**
+		 * Console-based UIService.
+		 */
+		CONSOLE,
+
+		/**
+		 * Logging-based UIService.
+		 */
+		LOGGER
+
 	}
 
 }

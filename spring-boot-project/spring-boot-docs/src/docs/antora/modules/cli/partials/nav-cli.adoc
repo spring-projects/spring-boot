@@ -1,0 +1,4 @@
+* xref:cli:index.adoc[]
+
+** xref:cli:installation.adoc[]
+** xref:cli:using-the-cli.adoc[]

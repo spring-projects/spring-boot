@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,13 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,15 +55,14 @@ class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withPropertyValues("VCAP_APPLICATION={}")
 		.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
-				ReactiveUserDetailsServiceAutoConfiguration.class, WebFluxAutoConfiguration.class,
-				JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class,
+				WebFluxAutoConfiguration.class, JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
 				ReactiveCloudFoundryActuatorAutoConfigurationTests.WebClientCustomizerConfig.class,
 				WebClientAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
 				ReactiveCloudFoundryActuatorAutoConfiguration.class))
-		.withUserConfiguration(TestHealthIndicator.class);
+		.withUserConfiguration(TestHealthIndicator.class, UserDetailsServiceConfiguration.class);
 
 	@Test
 	void healthComponentsAlwaysPresent() {
@@ -73,11 +75,22 @@ class CloudFoundryReactiveHealthEndpointWebExtensionTests {
 		});
 	}
 
-	private static class TestHealthIndicator implements HealthIndicator {
+	private static final class TestHealthIndicator implements HealthIndicator {
 
 		@Override
 		public Health health() {
 			return Health.up().withDetail("spring", "boot").build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserDetailsServiceConfiguration {
+
+		@Bean
+		MapReactiveUserDetailsService userDetailsService() {
+			return new MapReactiveUserDetailsService(
+					User.withUsername("alice").password("secret").roles("admin").build());
 		}
 
 	}

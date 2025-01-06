@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,14 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.web.reactive.context.GenericReactiveWebApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -158,11 +160,11 @@ class SpringBootContextLoaderTests {
 			.stream()
 			.map(PropertySource::getName)
 			.collect(Collectors.toCollection(ArrayList::new));
-		String last = names.remove(names.size() - 1);
+		String configResource = names.remove(names.size() - 2);
 		assertThat(names).containsExactly("configurationProperties", "Inlined Test Properties", "commandLineArgs",
 				"servletConfigInitParams", "servletContextInitParams", "systemProperties", "systemEnvironment",
-				"random");
-		assertThat(last).startsWith("Config resource");
+				"random", "applicationInfo");
+		assertThat(configResource).startsWith("Config resource");
 	}
 
 	@Test
@@ -244,6 +246,13 @@ class SpringBootContextLoaderTests {
 		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext)
 			.havingCause()
 			.withMessage("UseMainMethod.ALWAYS cannot be used with @ContextHierarchy tests");
+	}
+
+	@Test
+	void whenSubclassProvidesCustomApplicationContextFactory() {
+		TestContext testContext = new ExposedTestContextManager(CustomApplicationContextTest.class)
+			.getExposedTestContext();
+		assertThat(testContext.getApplicationContext()).isInstanceOf(CustomAnnotationConfigApplicationContext.class);
 	}
 
 	private String[] getActiveProfiles(Class<?> testClass) {
@@ -370,6 +379,25 @@ class SpringBootContextLoaderTests {
 
 	}
 
+	@SpringBootTest
+	@ContextConfiguration(classes = Config.class, loader = CustomApplicationContextSpringBootContextLoader.class)
+	static class CustomApplicationContextTest {
+
+	}
+
+	static class CustomApplicationContextSpringBootContextLoader extends SpringBootContextLoader {
+
+		@Override
+		protected ApplicationContextFactory getApplicationContextFactory(MergedContextConfiguration mergedConfig) {
+			return (webApplicationType) -> new CustomAnnotationConfigApplicationContext();
+		}
+
+	}
+
+	static class CustomAnnotationConfigApplicationContext extends AnnotationConfigApplicationContext {
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
@@ -446,7 +474,8 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	private static class ContextLoaderApplicationContextFailureProcessor implements ApplicationContextFailureProcessor {
+	private static final class ContextLoaderApplicationContextFailureProcessor
+			implements ApplicationContextFailureProcessor {
 
 		static ApplicationContext failedContext;
 

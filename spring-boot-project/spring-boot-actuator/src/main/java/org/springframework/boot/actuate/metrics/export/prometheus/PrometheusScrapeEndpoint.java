@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,16 @@
 
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Enumeration;
+import java.util.Properties;
 import java.util.Set;
 
-import io.prometheus.client.Collector.MetricFamilySamples;
-import io.prometheus.client.CollectorRegistry;
+import io.prometheus.metrics.config.PrometheusProperties;
+import io.prometheus.metrics.config.PrometheusPropertiesLoader;
+import io.prometheus.metrics.expositionformats.ExpositionFormats;
+import io.prometheus.metrics.model.registry.PrometheusRegistry;
+import io.prometheus.metrics.model.snapshots.MetricSnapshots;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -37,6 +39,7 @@ import org.springframework.lang.Nullable;
  *
  * @author Jon Schneider
  * @author Johnny Lim
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @WebEndpoint(id = "prometheus")
@@ -44,30 +47,49 @@ public class PrometheusScrapeEndpoint {
 
 	private static final int METRICS_SCRAPE_CHARS_EXTRA = 1024;
 
-	private final CollectorRegistry collectorRegistry;
+	private final PrometheusRegistry prometheusRegistry;
+
+	private final ExpositionFormats expositionFormats;
 
 	private volatile int nextMetricsScrapeSize = 16;
 
-	public PrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
-		this.collectorRegistry = collectorRegistry;
+	/**
+	 * Creates a new {@link PrometheusScrapeEndpoint}.
+	 * @param prometheusRegistry the Prometheus registry to use
+	 * @deprecated since 3.3.1 for removal in 3.5.0 in favor of
+	 * {@link #PrometheusScrapeEndpoint(PrometheusRegistry, Properties)}
+	 */
+	@Deprecated(since = "3.3.1", forRemoval = true)
+	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry) {
+		this(prometheusRegistry, null);
 	}
 
-	@ReadOperation(producesFrom = TextOutputFormat.class)
-	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
+	/**
+	 * Creates a new {@link PrometheusScrapeEndpoint}.
+	 * @param prometheusRegistry the Prometheus registry to use
+	 * @param exporterProperties the properties used to configure Prometheus'
+	 * {@link ExpositionFormats}
+	 * @since 3.3.1
+	 */
+	public PrometheusScrapeEndpoint(PrometheusRegistry prometheusRegistry, Properties exporterProperties) {
+		this.prometheusRegistry = prometheusRegistry;
+		PrometheusProperties prometheusProperties = (exporterProperties != null)
+				? PrometheusPropertiesLoader.load(exporterProperties) : PrometheusPropertiesLoader.load();
+		this.expositionFormats = ExpositionFormats.init(prometheusProperties.getExporterProperties());
+	}
+
+	@ReadOperation(producesFrom = PrometheusOutputFormat.class)
+	public WebEndpointResponse<byte[]> scrape(PrometheusOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
-			Writer writer = new StringWriter(this.nextMetricsScrapeSize);
-			Enumeration<MetricFamilySamples> samples = (includedNames != null)
-					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
-					: this.collectorRegistry.metricFamilySamples();
-			format.write(writer, samples);
-
-			String scrapePage = writer.toString();
-			this.nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
-
-			return new WebEndpointResponse<>(scrapePage, format);
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(this.nextMetricsScrapeSize);
+			MetricSnapshots metricSnapshots = (includedNames != null)
+					? this.prometheusRegistry.scrape(includedNames::contains) : this.prometheusRegistry.scrape();
+			format.write(this.expositionFormats, outputStream, metricSnapshots);
+			byte[] content = outputStream.toByteArray();
+			this.nextMetricsScrapeSize = content.length + METRICS_SCRAPE_CHARS_EXTRA;
+			return new WebEndpointResponse<>(content, format);
 		}
 		catch (IOException ex) {
-			// This actually never happens since StringWriter doesn't throw an IOException
 			throw new IllegalStateException("Writing metrics failed", ex);
 		}
 	}

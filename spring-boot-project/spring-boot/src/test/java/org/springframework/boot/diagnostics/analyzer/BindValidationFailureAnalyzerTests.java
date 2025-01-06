@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,11 @@ class BindValidationFailureAnalyzerTests {
 	@Test
 	void bindExceptionWithFieldErrorsDueToValidationFailure() {
 		FailureAnalysis analysis = performAnalysis(FieldValidationFailureConfiguration.class);
-		assertThat(analysis.getDescription()).contains(failure("test.foo.foo", "null", "must not be null"));
-		assertThat(analysis.getDescription()).contains(failure("test.foo.value", "0", "at least five"));
-		assertThat(analysis.getDescription()).contains(failure("test.foo.nested.bar", "null", "must not be null"));
+		assertThat(analysis.getDescription()).contains(failure("test.foo.foo", "null", "must not be null"))
+			.contains(failure("test.foo.value", "0", "at least five"))
+			.contains(failure("test.foo.nested.bar", "null", "must not be null"))
+			.contains(
+					"Binding to target org.springframework.boot.diagnostics.analyzer.BindValidationFailureAnalyzerTests$FieldValidationFailureProperties failed:");
 	}
 
 	@Test
@@ -200,7 +202,7 @@ class BindValidationFailureAnalyzerTests {
 		}
 
 		@Override
-		public boolean supports(Class<?> clazz) {
+		public boolean supports(Class<?> type) {
 			return true;
 		}
 

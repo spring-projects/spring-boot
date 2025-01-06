@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,14 @@ import org.springframework.util.ClassUtils;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Brian Clozel
  * @see ConditionalOnEnabledResourceChain
  */
 class OnEnabledResourceChainCondition extends SpringBootCondition {
 
 	private static final String WEBJAR_ASSET_LOCATOR = "org.webjars.WebJarAssetLocator";
+
+	private static final String WEBJAR_VERSION_LOCATOR = "org.webjars.WebJarVersionLocator";
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -47,10 +50,13 @@ class OnEnabledResourceChainCondition extends SpringBootCondition {
 		Boolean match = Chain.getEnabled(fixed, content, chain);
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnEnabledResourceChain.class);
 		if (match == null) {
+			if (ClassUtils.isPresent(WEBJAR_VERSION_LOCATOR, getClass().getClassLoader())) {
+				return ConditionOutcome.match(message.found("class").items(WEBJAR_VERSION_LOCATOR));
+			}
 			if (ClassUtils.isPresent(WEBJAR_ASSET_LOCATOR, getClass().getClassLoader())) {
 				return ConditionOutcome.match(message.found("class").items(WEBJAR_ASSET_LOCATOR));
 			}
-			return ConditionOutcome.noMatch(message.didNotFind("class").items(WEBJAR_ASSET_LOCATOR));
+			return ConditionOutcome.noMatch(message.didNotFind("class").items(WEBJAR_VERSION_LOCATOR));
 		}
 		if (match) {
 			return ConditionOutcome.match(message.because("enabled"));

@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.core;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 final class DockerJson {
 
 	private static final ObjectMapper objectMapper = JsonMapper.builder()
+		.defaultLocale(Locale.ENGLISH)
 		.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)
 		.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 		.addModule(new ParameterNamesModule())

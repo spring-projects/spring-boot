@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @deprecated since 3.2.11 for removal in 3.6.0
  */
 @ExtendWith(OutputCaptureExtension.class)
+@Deprecated(since = "3.2.11", forRemoval = true)
+@SuppressWarnings("removal")
 class ConditionReportApplicationContextFailureProcessorTests {
 
 	@Test
-	void loadFailureShouldPrintReport(CapturedOutput output) throws Exception {
+	void loadFailureShouldPrintReport(CapturedOutput output) {
 		SpringApplication application = new SpringApplication(TestConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext applicationContext = application.run();

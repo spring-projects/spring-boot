@@ -29,6 +29,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -66,6 +67,24 @@ class PlatformPlaceholderDatabaseDriverResolverTests {
 	void resolveAllWithDataSourceWhenValueDoesNotContainPlaceholderShouldReturnValueUnchanged() {
 		assertThat(new PlatformPlaceholderDatabaseDriverResolver().resolveAll(mock(DataSource.class), "schema.sql"))
 			.containsExactly("schema.sql");
+	}
+
+	@Test
+	void resolveAllWithDataSourceWhenValueDoesNotContainPlaceholderShouldNotInteractWithDataSource() {
+		DataSource dataSource = mock(DataSource.class);
+		new PlatformPlaceholderDatabaseDriverResolver().resolveAll(dataSource, "schema.sql");
+		then(dataSource).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void resolveAllWithFailingDataSourceWhenValuesContainPlaceholdersShouldThrowNestedCause() throws SQLException {
+		DataSource dataSource = mock(DataSource.class);
+		given(dataSource.getConnection()).willThrow(new IllegalStateException("Test: invalid password"));
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new PlatformPlaceholderDatabaseDriverResolver().resolveAll(dataSource, "schema.sql",
+					"schema-@@platform@@.sql", "data-@@platform@@.sql"))
+			.withMessage("Failed to determine DatabaseDriver")
+			.withStackTraceContaining("Test: invalid password");
 	}
 
 	@Test

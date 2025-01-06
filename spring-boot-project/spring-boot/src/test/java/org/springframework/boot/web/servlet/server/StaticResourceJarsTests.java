@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ package org.springframework.boot.web.servlet.server;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
@@ -29,6 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link StaticResourceJars}.
@@ -81,9 +86,35 @@ class StaticResourceJarsTests {
 	void ignoreWildcardUrls() throws Exception {
 		File jarFile = createResourcesJar("test-resources.jar");
 		URL folderUrl = jarFile.getParentFile().toURI().toURL();
-		URL wildcardUrl = new URL(folderUrl.toString() + "*.jar");
+		URL wildcardUrl = new URL(folderUrl + "*.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(wildcardUrl);
 		assertThat(staticResourceJarUrls).isEmpty();
+	}
+
+	@Test
+	void doesNotCloseJarFromCachedConnection() throws Exception {
+		File jarFile = createResourcesJar("test-resources.jar");
+		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(true);
+		URL url = new URL("jar", null, 0, jarFile.toURI().toURL() + "!/", handler);
+		try {
+			new StaticResourceJars().getUrlsFrom(url);
+			assertThatNoException()
+				.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment());
+		}
+		finally {
+			((JarURLConnection) handler.getConnection()).getJarFile().close();
+		}
+	}
+
+	@Test
+	void closesJarFromNonCachedConnection() throws Exception {
+		File jarFile = createResourcesJar("test-resources.jar");
+		TrackedURLStreamHandler handler = new TrackedURLStreamHandler(false);
+		URL url = new URL("jar", null, 0, jarFile.toURI().toURL() + "!/", handler);
+		new StaticResourceJars().getUrlsFrom(url);
+		assertThatIllegalStateException()
+			.isThrownBy(() -> ((JarURLConnection) handler.getConnection()).getJarFile().getComment())
+			.withMessageContaining("closed");
 	}
 
 	private File createResourcesJar(String name) throws IOException {
@@ -111,6 +142,29 @@ class StaticResourceJarsTests {
 		}
 		jarOutputStream.close();
 		return jarFile;
+	}
+
+	private static class TrackedURLStreamHandler extends URLStreamHandler {
+
+		private final boolean useCaches;
+
+		private URLConnection connection;
+
+		TrackedURLStreamHandler(boolean useCaches) {
+			this.useCaches = useCaches;
+		}
+
+		@Override
+		protected URLConnection openConnection(URL u) throws IOException {
+			this.connection = new URL(u.toExternalForm()).openConnection();
+			this.connection.setUseCaches(this.useCaches);
+			return this.connection;
+		}
+
+		URLConnection getConnection() {
+			return this.connection;
+		}
+
 	}
 
 }

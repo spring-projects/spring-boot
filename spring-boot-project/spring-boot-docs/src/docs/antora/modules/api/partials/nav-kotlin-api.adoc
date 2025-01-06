@@ -1,0 +1,2 @@
+* Kotlin APIs
+** xref:api:kotlin/index.html[Spring Boot,role=link-external, window=_blank]

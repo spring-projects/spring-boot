@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web.reactive;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -41,21 +42,28 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 
 	private final EndpointMapping endpointMapping;
 
-	private final ExposableWebEndpoint endpoint;
+	private final ExposableWebEndpoint healthEndpoint;
 
 	private final Set<HealthEndpointGroup> groups;
 
 	public AdditionalHealthEndpointPathsWebFluxHandlerMapping(EndpointMapping endpointMapping,
-			ExposableWebEndpoint endpoint, Set<HealthEndpointGroup> groups) {
-		super(endpointMapping, Collections.singletonList(endpoint), null, null, false);
+			ExposableWebEndpoint healthEndpoint, Set<HealthEndpointGroup> groups) {
+		super(endpointMapping, asList(healthEndpoint), null, null, false);
 		this.endpointMapping = endpointMapping;
 		this.groups = groups;
-		this.endpoint = endpoint;
+		this.healthEndpoint = healthEndpoint;
+	}
+
+	private static Collection<ExposableWebEndpoint> asList(ExposableWebEndpoint healthEndpoint) {
+		return (healthEndpoint != null) ? Collections.singletonList(healthEndpoint) : Collections.emptyList();
 	}
 
 	@Override
 	protected void initHandlerMethods() {
-		for (WebOperation operation : this.endpoint.getOperations()) {
+		if (this.healthEndpoint == null) {
+			return;
+		}
+		for (WebOperation operation : this.healthEndpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 			String matchAllRemainingPathSegmentsVariable = predicate.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
@@ -64,7 +72,7 @@ public class AdditionalHealthEndpointPathsWebFluxHandlerMapping extends Abstract
 					if (additionalPath != null) {
 						RequestMappingInfo requestMappingInfo = getRequestMappingInfo(operation,
 								additionalPath.getValue());
-						registerReadMapping(requestMappingInfo, this.endpoint, operation);
+						registerReadMapping(requestMappingInfo, this.healthEndpoint, operation);
 					}
 				}
 			}

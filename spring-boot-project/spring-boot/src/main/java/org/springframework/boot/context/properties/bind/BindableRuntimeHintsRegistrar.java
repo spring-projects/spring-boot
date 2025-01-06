@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import java.util.stream.StreamSupport;
 
 import kotlin.jvm.JvmClassMappingKt;
 import kotlin.reflect.KClass;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
@@ -39,11 +41,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperties;
 import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperty;
 import org.springframework.core.KotlinDetector;
-import org.springframework.core.KotlinReflectionParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.core.PrioritizedParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -62,6 +60,8 @@ import org.springframework.util.ReflectionUtils;
  * @since 3.0.0
  */
 public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+
+	private static final Log logger = LogFactory.getLog(BindableRuntimeHintsRegistrar.class);
 
 	private final Bindable<?>[] bindables;
 
@@ -92,12 +92,13 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @param hints the hints contributed so far for the deployment unit
 	 */
 	public void registerHints(RuntimeHints hints) {
-		Set<Class<?>> compiledWithoutParameters = new HashSet<>();
 		for (Bindable<?> bindable : this.bindables) {
-			new Processor(bindable, compiledWithoutParameters).process(hints.reflection());
-		}
-		if (!compiledWithoutParameters.isEmpty()) {
-			throw new MissingParametersCompilerArgumentException(compiledWithoutParameters);
+			try {
+				new Processor(bindable).process(hints.reflection());
+			}
+			catch (Exception ex) {
+				logger.debug("Skipping hints for " + bindable, ex);
+			}
 		}
 	}
 
@@ -144,18 +145,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	/**
 	 * Processor used to register the hints.
 	 */
-	private final class Processor {
-
-		private static final ParameterNameDiscoverer parameterNameDiscoverer;
-
-		static {
-			PrioritizedParameterNameDiscoverer discoverer = new PrioritizedParameterNameDiscoverer();
-			if (KotlinDetector.isKotlinReflectPresent()) {
-				discoverer.addDiscoverer(new KotlinReflectionParameterNameDiscoverer());
-			}
-			discoverer.addDiscoverer(new StandardReflectionParameterNameDiscoverer());
-			parameterNameDiscoverer = discoverer;
-		}
+	private static final class Processor {
 
 		private final Class<?> type;
 
@@ -165,21 +155,17 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private final Set<Class<?>> seen;
 
-		private final Set<Class<?>> compiledWithoutParameters;
-
-		Processor(Bindable<?> bindable, Set<Class<?>> compiledWithoutParameters) {
-			this(bindable, false, new HashSet<>(), compiledWithoutParameters);
+		Processor(Bindable<?> bindable) {
+			this(bindable, false, new HashSet<>());
 		}
 
-		private Processor(Bindable<?> bindable, boolean nestedType, Set<Class<?>> seen,
-				Set<Class<?>> compiledWithoutParameters) {
+		private Processor(Bindable<?> bindable, boolean nestedType, Set<Class<?>> seen) {
 			this.type = bindable.getType().getRawClass();
 			this.bindConstructor = (bindable.getBindMethod() != BindMethod.JAVA_BEAN)
 					? BindConstructorProvider.DEFAULT.getBindConstructor(bindable.getType().resolve(), nestedType)
 					: null;
 			this.bean = JavaBeanBinder.BeanProperties.of(bindable);
 			this.seen = seen;
-			this.compiledWithoutParameters = compiledWithoutParameters;
 		}
 
 		void process(ReflectionHints hints) {
@@ -198,7 +184,6 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private void handleConstructor(ReflectionHints hints) {
 			if (this.bindConstructor != null) {
-				verifyParameterNamesAreAvailable();
 				if (KotlinDetector.isKotlinType(this.bindConstructor.getDeclaringClass())) {
 					KotlinDelegate.handleConstructor(hints, this.bindConstructor);
 				}
@@ -211,13 +196,6 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 				.filter(this::hasNoParameters)
 				.findFirst()
 				.ifPresent((constructor) -> hints.registerConstructor(constructor, ExecutableMode.INVOKE));
-		}
-
-		private void verifyParameterNamesAreAvailable() {
-			String[] parameterNames = parameterNameDiscoverer.getParameterNames(this.bindConstructor);
-			if (parameterNames == null) {
-				this.compiledWithoutParameters.add(this.bindConstructor.getDeclaringClass());
-			}
 		}
 
 		private boolean hasNoParameters(Constructor<?> candidate) {
@@ -268,7 +246,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private void processNested(Class<?> type, ReflectionHints hints) {
-			new Processor(Bindable.of(type), true, this.seen, this.compiledWithoutParameters).process(hints);
+			new Processor(Bindable.of(type), true, this.seen).process(hints);
 		}
 
 		private Class<?> getComponentClass(ResolvableType type) {
@@ -317,11 +295,19 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		 * @return whether the specified {@code propertyType} is a nested type
 		 */
 		private boolean isNestedType(String propertyName, Class<?> propertyType) {
-			if (this.type.equals(propertyType.getDeclaringClass())) {
+			Class<?> declaringClass = propertyType.getDeclaringClass();
+			if (declaringClass != null && isNested(declaringClass, this.type)) {
 				return true;
 			}
 			Field field = ReflectionUtils.findField(this.type, propertyName);
 			return (field != null) && MergedAnnotations.from(field).isPresent(Nested.class);
+		}
+
+		private static boolean isNested(Class<?> type, Class<?> candidate) {
+			if (type.isAssignableFrom(candidate)) {
+				return true;
+			}
+			return (candidate.getDeclaringClass() != null && isNested(type, candidate.getDeclaringClass()));
 		}
 
 		private boolean isJavaType(Class<?> candidate) {
@@ -333,7 +319,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	/**
 	 * Inner class to avoid a hard dependency on Kotlin at runtime.
 	 */
-	private static class KotlinDelegate {
+	private static final class KotlinDelegate {
 
 		static void handleConstructor(ReflectionHints hints, Constructor<?> constructor) {
 			KClass<?> kClass = JvmClassMappingKt.getKotlinClass(constructor.getDeclaringClass());

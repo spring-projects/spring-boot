@@ -27,6 +27,8 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
@@ -49,6 +51,7 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
 class HazelcastSessionConfiguration {
 
 	@Bean
+	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SessionRepositoryCustomizer<HazelcastIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, HazelcastSessionProperties hazelcastSessionProperties,
 			ServerProperties serverProperties) {

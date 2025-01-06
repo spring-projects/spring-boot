@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class LdapHealthIndicator extends AbstractHealthIndicator {
 		builder.up().withDetail("version", version);
 	}
 
-	private static class VersionContextExecutor implements ContextExecutor<String> {
+	private static final class VersionContextExecutor implements ContextExecutor<String> {
 
 		@Override
 		public String executeWithContext(DirContext ctx) throws NamingException {

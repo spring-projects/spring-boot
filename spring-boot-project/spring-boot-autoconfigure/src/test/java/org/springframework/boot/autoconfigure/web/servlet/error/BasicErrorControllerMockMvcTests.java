@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Parameter;
 import java.util.Map;
 
 import jakarta.servlet.DispatcherType;
@@ -41,15 +42,19 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.test.web.servlet.assertj.MvcTestResult;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,11 +63,9 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link BasicErrorController} using {@link MockMvc} and
+ * Tests for {@link BasicErrorController} using {@link MockMvcTester} and
  * {@link SpringBootTest @SpringBootTest}.
  *
  * @author Dave Syer
@@ -75,60 +78,51 @@ class BasicErrorControllerMockMvcTests {
 	@Autowired
 	private WebApplicationContext wac;
 
-	private MockMvc mockMvc;
+	private MockMvcTester mvc;
 
 	@BeforeEach
 	void setup() {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+		this.mvc = MockMvcTester.from(this.wac);
 	}
 
 	@Test
-	void testDirectAccessForMachineClient() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/error")).andExpect(status().is5xxServerError()).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("999");
+	void testDirectAccessForMachineClient() {
+		assertThat(this.mvc.get().uri("/error")).hasStatus5xxServerError().bodyText().contains("999");
 	}
 
 	@Test
-	void testErrorWithNotFoundResponseStatus() throws Exception {
-		MvcResult result = this.mockMvc.perform(get("/bang")).andExpect(status().isNotFound()).andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("Expected!");
+	void testErrorWithNotFoundResponseStatus() {
+		assertThat(this.mvc.get().uri("/bang")).hasStatus(HttpStatus.NOT_FOUND)
+			.satisfies((result) -> assertThat(this.mvc.perform(new ErrorDispatcher(result, "/error"))).bodyText()
+				.contains("Expected!"));
+
 	}
 
 	@Test
-	void testErrorWithNoContentResponseStatus() throws Exception {
-		MvcResult result = this.mockMvc.perform(get("/noContent").accept("some/thing"))
-			.andExpect(status().isNoContent())
-			.andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
-			.andExpect(status().isNoContent())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).isEmpty();
+	void testErrorWithNoContentResponseStatus() {
+		assertThat(this.mvc.get().uri("/noContent").accept("some/thing")).hasStatus(HttpStatus.NO_CONTENT)
+			.satisfies((result) -> assertThat(this.mvc.perform(new ErrorDispatcher(result, "/error")))
+				.hasStatus(HttpStatus.NO_CONTENT)
+				.body()
+				.isEmpty());
 	}
 
 	@Test
-	void testBindingExceptionForMachineClient() throws Exception {
+	void testBindingExceptionForMachineClient() {
 		// In a real server the response is carried over into the error dispatcher, but
-		// in the mock a new one is created so we have to assert the status at this
-		// intermediate point
-		MvcResult result = this.mockMvc.perform(get("/bind")).andExpect(status().is4xxClientError()).andReturn();
-		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error")).andReturn();
-		// And the rendered status code is always wrong (but would be 400 in a real
-		// system)
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("Validation failed");
+		// in the mock a new one is created, so we have to assert the status at this
+		// intermediate point, and the rendered status code is always wrong (but would
+		// be 400 in a real system)
+		assertThat(this.mvc.get().uri("/bind")).hasStatus4xxClientError()
+			.satisfies((result) -> assertThat(this.mvc.perform(new ErrorDispatcher(result, "/error"))).bodyText()
+				.contains("Validation failed"));
 	}
 
 	@Test
-	void testDirectAccessForBrowserClient() throws Exception {
-		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-			.andExpect(status().is5xxServerError())
-			.andReturn();
-		String content = response.getResponse().getContentAsString();
-		assertThat(content).contains("ERROR_BEAN");
+	void testDirectAccessForBrowserClient() {
+		assertThat(this.mvc.get().uri("/error").accept(MediaType.TEXT_HTML)).hasStatus5xxServerError()
+			.bodyText()
+			.contains("ERROR_BEAN");
 	}
 
 	@Target(ElementType.TYPE)
@@ -175,10 +169,12 @@ class BasicErrorControllerMockMvcTests {
 			}
 
 			@RequestMapping("/bind")
-			String bind() throws Exception {
+			String bind(@RequestAttribute(required = false) String foo) throws Exception {
 				BindException error = new BindException(this, "test");
 				error.rejectValue("foo", "bar.error");
-				throw error;
+				Parameter fooParameter = ReflectionUtils.findMethod(Errors.class, "bind", String.class)
+					.getParameters()[0];
+				throw new MethodArgumentNotValidException(MethodParameter.forParameter(fooParameter), error);
 			}
 
 			@RequestMapping("/noContent")
@@ -218,8 +214,8 @@ class BasicErrorControllerMockMvcTests {
 
 		private final String path;
 
-		ErrorDispatcher(MvcResult result, String path) {
-			this.result = result;
+		ErrorDispatcher(MvcTestResult mvcTestResult, String path) {
+			this.result = mvcTestResult.getMvcResult();
 			this.path = path;
 		}
 

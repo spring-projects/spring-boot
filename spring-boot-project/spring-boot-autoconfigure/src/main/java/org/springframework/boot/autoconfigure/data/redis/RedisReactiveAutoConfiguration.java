@@ -28,8 +28,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
-import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.RedisSerializer;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive Redis
@@ -48,14 +48,13 @@ public class RedisReactiveAutoConfiguration {
 	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 	public ReactiveRedisTemplate<Object, Object> reactiveRedisTemplate(
 			ReactiveRedisConnectionFactory reactiveRedisConnectionFactory, ResourceLoader resourceLoader) {
-		JdkSerializationRedisSerializer jdkSerializer = new JdkSerializationRedisSerializer(
-				resourceLoader.getClassLoader());
+		RedisSerializer<Object> javaSerializer = RedisSerializer.java(resourceLoader.getClassLoader());
 		RedisSerializationContext<Object, Object> serializationContext = RedisSerializationContext
 			.newSerializationContext()
-			.key(jdkSerializer)
-			.value(jdkSerializer)
-			.hashKey(jdkSerializer)
-			.hashValue(jdkSerializer)
+			.key(javaSerializer)
+			.value(javaSerializer)
+			.hashKey(javaSerializer)
+			.hashValue(javaSerializer)
 			.build();
 		return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory, serializationContext);
 	}

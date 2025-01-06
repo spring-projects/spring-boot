@@ -320,7 +320,8 @@ public class JSONTokener {
 		try {
 			return Double.valueOf(literal);
 		}
-		catch (NumberFormatException ignored) {
+		catch (NumberFormatException ex) {
+			// Ignore
 		}
 
 		/* ... finally give up. We have an unquoted string */

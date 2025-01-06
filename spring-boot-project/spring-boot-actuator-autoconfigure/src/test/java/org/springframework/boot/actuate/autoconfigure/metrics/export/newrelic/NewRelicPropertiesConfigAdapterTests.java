@@ -31,6 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NewRelicPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<NewRelicProperties, NewRelicPropertiesConfigAdapter> {
 
+	NewRelicPropertiesConfigAdapterTests() {
+		super(NewRelicPropertiesConfigAdapter.class);
+	}
+
 	@Override
 	protected NewRelicProperties createProperties() {
 		return new NewRelicProperties();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
+import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.EndpointExtension;
+import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +40,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConditionalOnAvailableEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withUserConfiguration(AllEndpointsConfiguration.class);
+		.withUserConfiguration(AllEndpointsConfiguration.class)
+		.withInitializer(
+				(context) -> context.getEnvironment().setConversionService(new ApplicationConversionService()));
 
 	@Test
 	void outcomeShouldMatchDefaults() {
@@ -252,6 +257,43 @@ class ConditionalOnAvailableEndpointTests {
 			.run((context) -> assertThat(context).doesNotHaveBean("unexposed"));
 	}
 
+	@Test
+	void whenBothAccessAndEnabledAreConfiguredThenThrows() {
+		this.contextRunner
+			.withPropertyValues("management.endpoints.web.exposure.include=*",
+					"management.endpoint.shutdown.enabled=true", "management.endpoint.shutdown.access=none")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.rootCause()
+				.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
+	}
+
+	@Test
+	void whenBothDefaultAccessAndDefaultEnabledAreConfiguredThenThrows() {
+		this.contextRunner
+			.withPropertyValues("management.endpoints.web.exposure.include=*",
+					"management.endpoints.enabled-by-default=true", "management.endpoints.access.default=none")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.rootCause()
+				.isInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class));
+	}
+
+	@Test
+	void whenDisabledAndAccessibleByDefaultEndpointIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(DisabledButAccessibleEndpointConfiguration.class)
+			.withPropertyValues("management.endpoints.web.exposure.include=*")
+			.run((context) -> assertThat(context).doesNotHaveBean(DisabledButAccessibleEndpoint.class));
+	}
+
+	@Test
+	void whenDisabledAndAccessibleByDefaultEndpointCanBeAvailable() {
+		this.contextRunner.withUserConfiguration(DisabledButAccessibleEndpointConfiguration.class)
+			.withPropertyValues("management.endpoints.web.exposure.include=*",
+					"management.endpoints.access.default=unrestricted")
+			.run((context) -> assertThat(context).hasSingleBean(DisabledButAccessibleEndpoint.class));
+	}
+
 	@Endpoint(id = "health")
 	static class HealthEndpoint {
 
@@ -272,13 +314,18 @@ class ConditionalOnAvailableEndpointTests {
 
 	}
 
-	@Endpoint(id = "shutdown", enableByDefault = false)
+	@Endpoint(id = "shutdown", defaultAccess = Access.NONE)
 	static class ShutdownEndpoint {
 
 	}
 
 	@Endpoint(id = "test-dashed")
 	static class DashedEndpoint {
+
+	}
+
+	@Endpoint(id = "disabledbutaccessible", enableByDefault = false)
+	static class DisabledButAccessibleEndpoint {
 
 	}
 
@@ -335,7 +382,7 @@ class ConditionalOnAvailableEndpointTests {
 	static class ComponentEnabledIfEndpointIsExposedConfiguration {
 
 		@Bean
-		@ConditionalOnAvailableEndpoint(endpoint = SpringEndpoint.class)
+		@ConditionalOnAvailableEndpoint(SpringEndpoint.class)
 		String springComponent() {
 			return "springComponent";
 		}
@@ -374,10 +421,20 @@ class ConditionalOnAvailableEndpointTests {
 	static class ExposureEndpointConfiguration {
 
 		@Bean
-		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class,
-				exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+		@ConditionalOnAvailableEndpoint(endpoint = TestEndpoint.class, exposure = EndpointExposure.WEB)
 		String unexposed() {
 			return "unexposed";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DisabledButAccessibleEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnAvailableEndpoint
+		DisabledButAccessibleEndpoint disabledButAccessible() {
+			return new DisabledButAccessibleEndpoint();
 		}
 
 	}

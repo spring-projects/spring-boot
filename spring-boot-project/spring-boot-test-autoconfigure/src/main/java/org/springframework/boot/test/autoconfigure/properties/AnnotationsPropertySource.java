@@ -91,7 +91,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			return;
 		}
 		Optional<Object> value = annotation.getValue(attribute.getName());
-		if (!value.isPresent()) {
+		if (value.isEmpty()) {
 			return;
 		}
 		if (skip == SkipPropertyMapping.ON_DEFAULT_VALUE) {

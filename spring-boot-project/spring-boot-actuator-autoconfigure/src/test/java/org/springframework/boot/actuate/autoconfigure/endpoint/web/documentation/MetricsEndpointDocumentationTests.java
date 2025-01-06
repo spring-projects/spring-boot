@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link MetricsEndpoint}.
@@ -42,18 +41,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void metricNames() throws Exception {
-		this.mockMvc.perform(get("/actuator/metrics"))
-			.andExpect(status().isOk())
-			.andDo(document("metrics/names",
+	void metricNames() {
+		assertThat(this.mvc.get().uri("/actuator/metrics")).hasStatusOk()
+			.apply(document("metrics/names",
 					responseFields(fieldWithPath("names").description("Names of the known metrics."))));
 	}
 
 	@Test
-	void metric() throws Exception {
-		this.mockMvc.perform(get("/actuator/metrics/jvm.memory.max"))
-			.andExpect(status().isOk())
-			.andDo(document("metrics/metric",
+	void metric() {
+		assertThat(this.mvc.get().uri("/actuator/metrics/jvm.memory.max")).hasStatusOk()
+			.apply(document("metrics/metric",
 					responseFields(fieldWithPath("name").description("Name of the metric"),
 							fieldWithPath("description").description("Description of the metric"),
 							fieldWithPath("baseUnit").description("Base unit of the metric"),
@@ -67,12 +64,12 @@ class MetricsEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	}
 
 	@Test
-	void metricWithTags() throws Exception {
-		this.mockMvc
-			.perform(get("/actuator/metrics/jvm.memory.max").param("tag", "area:nonheap")
-				.param("tag", "id:Compressed Class Space"))
-			.andExpect(status().isOk())
-			.andDo(document("metrics/metric-with-tags", queryParameters(
+	void metricWithTags() {
+		assertThat(this.mvc.get()
+			.uri("/actuator/metrics/jvm.memory.max")
+			.param("tag", "area:nonheap")
+			.param("tag", "id:Compressed Class Space")).hasStatusOk()
+			.apply(document("metrics/metric-with-tags", queryParameters(
 					parameterWithName("tag").description("A tag to use for drill-down in the form `name:value`."))));
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,16 @@
 
 package org.springframework.boot.ssl;
 
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.awaitility.Awaitility;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -28,14 +37,21 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link DefaultSslBundleRegistry}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
+@ExtendWith(OutputCaptureExtension.class)
 class DefaultSslBundleRegistryTests {
 
-	private SslBundle bundle1 = mock(SslBundle.class);
+	private final SslBundle bundle1 = mock(SslBundle.class);
 
-	private SslBundle bundle2 = mock(SslBundle.class);
+	private final SslBundle bundle2 = mock(SslBundle.class);
 
-	private DefaultSslBundleRegistry registry = new DefaultSslBundleRegistry();
+	private DefaultSslBundleRegistry registry;
+
+	@BeforeEach
+	void setUp() {
+		this.registry = new DefaultSslBundleRegistry();
+	}
 
 	@Test
 	void createWithNameAndBundleRegistersBundle() {
@@ -87,6 +103,38 @@ class DefaultSslBundleRegistryTests {
 		this.registry.registerBundle("test2", this.bundle2);
 		assertThat(this.registry.getBundle("test1")).isSameAs(this.bundle1);
 		assertThat(this.registry.getBundle("test2")).isSameAs(this.bundle2);
+	}
+
+	@Test
+	void getBundleNamesReturnsNames() {
+		this.registry.registerBundle("test1", this.bundle1);
+		this.registry.registerBundle("test2", this.bundle2);
+		assertThat(this.registry.getBundleNames()).containsExactly("test1", "test2");
+	}
+
+	@Test
+	void updateBundleShouldNotifyUpdateHandlers() {
+		AtomicReference<SslBundle> updatedBundle = new AtomicReference<>();
+		this.registry.registerBundle("test1", this.bundle1);
+		this.registry.addBundleUpdateHandler("test1", updatedBundle::set);
+		this.registry.updateBundle("test1", this.bundle2);
+		Awaitility.await().untilAtomic(updatedBundle, Matchers.equalTo(this.bundle2));
+	}
+
+	@Test
+	void shouldFailIfUpdatingNonRegisteredBundle() {
+		assertThatExceptionOfType(NoSuchSslBundleException.class)
+			.isThrownBy(() -> this.registry.updateBundle("dummy", this.bundle1))
+			.withMessageContaining("'dummy'");
+	}
+
+	@Test
+	void shouldLogIfUpdatingBundleWithoutListeners(CapturedOutput output) {
+		this.registry.registerBundle("test1", this.bundle1);
+		this.registry.getBundle("test1");
+		this.registry.updateBundle("test1", this.bundle2);
+		assertThat(output).contains(
+				"SSL bundle 'test1' has been updated but may be in use by a technology that doesn't support SSL reloading");
 	}
 
 }

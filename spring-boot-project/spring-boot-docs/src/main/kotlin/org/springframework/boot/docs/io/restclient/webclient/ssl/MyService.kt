@@ -17,7 +17,6 @@
 package org.springframework.boot.docs.io.restclient.webclient.ssl
 
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl
-import org.springframework.boot.docs.io.restclient.webclient.Details
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -28,11 +27,13 @@ class MyService(webClientBuilder: WebClient.Builder, ssl: WebClientSsl) {
 	private val webClient: WebClient
 
 	init {
-		webClient = webClientBuilder.baseUrl("https://example.org").apply(ssl.fromBundle("mybundle")).build()
+		webClient = webClientBuilder.baseUrl("https://example.org")
+				.apply(ssl.fromBundle("mybundle")).build()
 	}
 
 	fun someRestCall(name: String?): Mono<Details> {
-		return webClient.get().uri("/{name}/details", name).retrieve().bodyToMono(Details::class.java)
+		return webClient.get().uri("/{name}/details", name)
+				.retrieve().bodyToMono(Details::class.java)
 	}
 
 }

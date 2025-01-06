@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.jar.JarFile;
 
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -43,6 +46,15 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void signed() throws Exception {
+		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
+		try (JarFile jarFile = new JarFile(jar)) {
+			assertThat(jarFile.getEntry("META-INF/BOOT.SF")).isNotNull();
+		}
+	}
+
+	@TestTemplate
 	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
 		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.0").build("build");
 	}
@@ -55,7 +67,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertThat(output).containsPattern("1\\. .*classes");
 		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
 		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
-		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-layertools.*.jar");
+		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-tools.*.jar");
 		assertThat(output).doesNotContain("5. ");
 	}
 
@@ -65,7 +77,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		BuildResult result = this.gradleBuild.build("launch");
 		String output = result.getOutput();
 		assertThat(output).containsPattern("1\\. .*classes");
-		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-layertools.*.jar");
+		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-tools.*.jar");
 		assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
 		assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
 		assertThat(output).doesNotContain("5. ");

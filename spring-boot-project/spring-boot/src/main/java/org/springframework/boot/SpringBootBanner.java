@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,14 @@ import org.springframework.core.env.Environment;
  */
 class SpringBootBanner implements Banner {
 
-	private static final String[] BANNER = { "", "  .   ____          _            __ _ _",
-			" /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\", "( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\",
-			" \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )", "  '  |____| .__|_| |_|_| |_\\__, | / / / /",
-			" =========|_|==============|___/=/_/_/_/" };
+	private static final String BANNER = """
+			  .   ____          _            __ _ _
+			 /\\\\ / ___'_ __ _ _(_)_ __  __ _ \\ \\ \\ \\
+			( ( )\\___ | '_ | '_| | '_ \\/ _` | \\ \\ \\ \\
+			 \\\\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+			  '  |____| .__|_| |_|_| |_\\__, | / / / /
+			 =========|_|==============|___/=/_/_/_/
+			""";
 
 	private static final String SPRING_BOOT = " :: Spring Boot :: ";
 
@@ -41,17 +45,11 @@ class SpringBootBanner implements Banner {
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream printStream) {
-		for (String line : BANNER) {
-			printStream.println(line);
-		}
-		String version = SpringBootVersion.getVersion();
-		version = (version != null) ? " (v" + version + ")" : "";
-		StringBuilder padding = new StringBuilder();
-		while (padding.length() < STRAP_LINE_SIZE - (version.length() + SPRING_BOOT.length())) {
-			padding.append(" ");
-		}
-
-		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding.toString(),
+		printStream.println();
+		printStream.println(BANNER);
+		String version = String.format(" (v%s)", SpringBootVersion.getVersion());
+		String padding = " ".repeat(Math.max(0, STRAP_LINE_SIZE - (version.length() + SPRING_BOOT.length())));
+		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding,
 				AnsiStyle.FAINT, version));
 		printStream.println();
 	}

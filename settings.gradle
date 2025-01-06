@@ -1,10 +1,9 @@
 pluginManagement {
+	evaluate(new File("${rootDir}/buildSrc/SpringRepositorySupport.groovy")).apply(this)
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
-		if (version.endsWith('-SNAPSHOT')) {
-			maven { url "https://repo.spring.io/snapshot" }
-		}
+		spring.mavenRepositories();
 	}
 	resolutionStrategy {
 		eachPlugin {
@@ -19,8 +18,7 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.12.5"
-	id "io.spring.ge.conventions" version "0.0.13"
+	id "io.spring.develocity.conventions" version "0.0.22"
 }
 
 rootProject.name="spring-boot-build"
@@ -28,19 +26,12 @@ rootProject.name="spring-boot-build"
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 settings.gradle.projectsLoaded {
-	gradleEnterprise {
+	develocity {
 		buildScan {
 			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
 			if (toolchainVersion != null) {
 				value('Toolchain version', toolchainVersion)
 				tag("JDK-$toolchainVersion")
-			}
-			def buildDir = settings.gradle.rootProject.getBuildDir()
-			buildDir.mkdirs()
-			new File(buildDir, "build-scan-uri.txt").text = "build scan not generated"
-			buildScanPublished { scan ->
-				buildDir.mkdirs()
-				new File(buildDir, "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
 			}
 		}
 	}
@@ -53,15 +44,18 @@ include "spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-process
 include "spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"
 include "spring-boot-project:spring-boot-tools:spring-boot-cli"
 include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"
+include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata-changelog-generator"
 include "spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
 include "spring-boot-project:spring-boot-tools:spring-boot-gradle-test-support"
-include "spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"
+include "spring-boot-project:spring-boot-tools:spring-boot-jarmode-tools"
 include "spring-boot-project:spring-boot-tools:spring-boot-loader"
+include "spring-boot-project:spring-boot-tools:spring-boot-loader-classic"
 include "spring-boot-project:spring-boot-tools:spring-boot-loader-tools"
 include "spring-boot-project:spring-boot-tools:spring-boot-maven-plugin"
 include "spring-boot-project:spring-boot-tools:spring-boot-properties-migrator"
 include "spring-boot-project:spring-boot-tools:spring-boot-test-support"
+include "spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"
 include "spring-boot-project:spring-boot"
 include "spring-boot-project:spring-boot-autoconfigure"
 include "spring-boot-project:spring-boot-actuator"
@@ -75,7 +69,9 @@ include "spring-boot-project:spring-boot-test-autoconfigure"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-classic-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-sni-tests"
 include "spring-boot-system-tests:spring-boot-deployment-tests"
 include "spring-boot-system-tests:spring-boot-image-tests"
 

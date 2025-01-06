@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * Annotation that can be used for a R2DBC test that focuses <strong>only</strong> on Data
  * R2DBC components.
  * <p>
- * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Data R2DBC tests.
+ * Using this annotation only enables auto-configuration that is relevant to Data R2DBC
+ * tests. Similarly, component scanning is limited to R2DBC repositories and entities
+ * ({@code @Table}).
  * <p>
  * When using JUnit 4, this annotation should be used in combination with
  * {@code @RunWith(SpringRunner.class)}.

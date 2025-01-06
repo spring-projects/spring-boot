@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,9 +32,8 @@ import org.springframework.restdocs.cli.CurlRequestSnippet;
 import org.springframework.restdocs.operation.Operation;
 import org.springframework.util.FileCopyUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for generating documentation describing the {@link HeapDumpWebEndpoint}.
@@ -44,10 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	void heapDump() throws Exception {
-		this.mockMvc.perform(get("/actuator/heapdump"))
-			.andExpect(status().isOk())
-			.andDo(document("heapdump", new CurlRequestSnippet(CliDocumentation.multiLineFormat()) {
+	void heapDump() {
+		assertThat(this.mvc.get().uri("/actuator/heapdump")).hasStatusOk()
+			.apply(document("heapdump", new CurlRequestSnippet(CliDocumentation.multiLineFormat()) {
 
 				@Override
 				protected Map<String, Object> createModel(Operation operation) {

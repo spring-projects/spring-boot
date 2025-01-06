@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 
 package org.springframework.boot.autoconfigure.ssl;
 
-import java.util.List;
-
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.io.ApplicationResourceLoader;
 import org.springframework.boot.ssl.DefaultSslBundleRegistry;
 import org.springframework.boot.ssl.SslBundleRegistry;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ResourceLoader;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for SSL.
@@ -37,19 +38,30 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(SslProperties.class)
 public class SslAutoConfiguration {
 
-	SslAutoConfiguration() {
+	private final ResourceLoader resourceLoader;
+
+	private final SslProperties sslProperties;
+
+	SslAutoConfiguration(ResourceLoader resourceLoader, SslProperties sslProperties) {
+		this.resourceLoader = ApplicationResourceLoader.get(resourceLoader, true);
+		this.sslProperties = sslProperties;
 	}
 
 	@Bean
-	public SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(SslProperties sslProperties) {
-		return new SslPropertiesBundleRegistrar(sslProperties);
+	FileWatcher fileWatcher() {
+		return new FileWatcher(this.sslProperties.getBundle().getWatch().getFile().getQuietPeriod());
+	}
+
+	@Bean
+	SslPropertiesBundleRegistrar sslPropertiesSslBundleRegistrar(FileWatcher fileWatcher) {
+		return new SslPropertiesBundleRegistrar(this.sslProperties, fileWatcher, this.resourceLoader);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean({ SslBundleRegistry.class, SslBundles.class })
-	public DefaultSslBundleRegistry sslBundleRegistry(List<SslBundleRegistrar> sslBundleRegistrars) {
+	DefaultSslBundleRegistry sslBundleRegistry(ObjectProvider<SslBundleRegistrar> sslBundleRegistrars) {
 		DefaultSslBundleRegistry registry = new DefaultSslBundleRegistry();
-		sslBundleRegistrars.forEach((registrar) -> registrar.registerBundles(registry));
+		sslBundleRegistrars.orderedStream().forEach((registrar) -> registrar.registerBundles(registry));
 		return registry;
 	}
 

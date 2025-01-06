@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,9 +49,9 @@ class NotConstructorBoundInjectionFailureAnalyzer
 		InjectionPoint injectionPoint = findInjectionPoint(rootFailure);
 		if (isConstructorBindingConfigurationProperties(injectionPoint)) {
 			String simpleName = injectionPoint.getMember().getDeclaringClass().getSimpleName();
-			String action = String.format("Update your configuration so that " + simpleName + " is defined via @"
+			String action = "Update your configuration so that " + simpleName + " is defined via @"
 					+ ConfigurationPropertiesScan.class.getSimpleName() + " or @"
-					+ EnableConfigurationProperties.class.getSimpleName() + ".", simpleName);
+					+ EnableConfigurationProperties.class.getSimpleName() + ".";
 			return new FailureAnalysis(
 					simpleName + " is annotated with @" + ConstructorBinding.class.getSimpleName()
 							+ " but it is defined as a regular bean which caused dependency injection to fail.",
@@ -61,8 +61,8 @@ class NotConstructorBoundInjectionFailureAnalyzer
 	}
 
 	private boolean isConstructorBindingConfigurationProperties(InjectionPoint injectionPoint) {
-		return (injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor)
-				? isConstructorBindingConfigurationProperties(constructor) : false;
+		return injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor
+				&& isConstructorBindingConfigurationProperties(constructor);
 	}
 
 	private boolean isConstructorBindingConfigurationProperties(Constructor<?> constructor) {

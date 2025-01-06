@@ -1,0 +1,90 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.integration-test"
+}
+
+description = "Spring Boot SNI Integration Tests"
+
+configurations {
+	app
+}
+
+dependencies {
+	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-undertow", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
+
+	intTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
+	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	intTestImplementation("org.testcontainers:junit-jupiter")
+	intTestImplementation("org.testcontainers:testcontainers")
+}
+
+task syncMavenRepository(type: Sync) {
+	from configurations.app
+	into layout.buildDirectory.dir("int-test-maven-repository")
+}
+
+task syncReactiveServerAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-sni-reactive-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-reactive-app"))
+}
+
+task buildReactiveServerApps(type: GradleBuild) {
+	dependsOn syncReactiveServerAppSource, syncMavenRepository
+	dir = layout.buildDirectory.dir("spring-boot-sni-reactive-app")
+	startParameter.buildCacheEnabled = false
+	tasks = [
+			"nettyServerApp",
+			"tomcatServerApp",
+			"undertowServerApp"
+	]
+}
+
+task syncServletServerAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-sni-servlet-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-servlet-app"))
+}
+
+task buildServletServerApps(type: GradleBuild) {
+	dependsOn syncServletServerAppSource, syncMavenRepository
+	dir = layout.buildDirectory.dir("spring-boot-sni-servlet-app")
+	startParameter.buildCacheEnabled = false
+	tasks = [
+			"tomcatServerApp",
+			"undertowServerApp"
+	]
+}
+
+task syncClientAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-sni-client-app")
+	destinationDirectory = file(layout.buildDirectory.dir("spring-boot-sni-client-app"))
+}
+
+task buildClientApp(type: GradleBuild) {
+	dependsOn syncClientAppSource, syncMavenRepository
+	dir = layout.buildDirectory.dir("spring-boot-sni-client-app")
+	startParameter.buildCacheEnabled = false
+	tasks = ["build"]
+}
+
+intTest {
+	inputs.files(
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-netty-reactive.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat-reactive.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-tomcat-servlet.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow-reactive.jar"),
+			layout.buildDirectory.file("spring-boot-server-tests-app/build/libs/spring-boot-server-tests-app-undertow-servlet.jar")
+	)
+			.withPropertyName("applicationArchives")
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withNormalizer(ClasspathNormalizer)
+	dependsOn buildReactiveServerApps, buildServletServerApps, buildClientApp
+}

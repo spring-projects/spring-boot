@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,9 @@ class CacheMetricsAutoConfigurationTests {
 
 	@Test
 	void autoConfiguredCacheManagerIsInstrumented() {
-		this.contextRunner.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2")
+		this.contextRunner
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cache-names=cache1,cache2",
+					"spring.cache.caffeine.spec=recordStats")
 			.run((context) -> {
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
 				registry.get("cache.gets").tags("name", "cache1").tags("cache.manager", "cacheManager").meter();

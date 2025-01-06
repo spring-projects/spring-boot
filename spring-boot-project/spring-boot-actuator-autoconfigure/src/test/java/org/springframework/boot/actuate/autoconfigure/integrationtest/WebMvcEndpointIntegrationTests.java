@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
-import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
-import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
-import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -47,24 +43,17 @@ import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebAp
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.hasKey;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Integration tests for the Actuator's MVC endpoints.
@@ -92,25 +81,26 @@ class WebMvcEndpointIntegrationTests {
 	}
 
 	@Test
-	void endpointsAreSecureByDefault() throws Exception {
+	void endpointsAreSecureByDefault() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/actuator/beans").accept(MediaType.APPLICATION_JSON)).andExpect(status().isUnauthorized());
+		MockMvcTester mvc = createSecureMockMvcTester();
+		assertThat(mvc.get().uri("/actuator/beans").accept(MediaType.APPLICATION_JSON))
+			.hasStatus(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	void endpointsAreSecureByDefaultWithCustomBasePath() throws Exception {
+	void endpointsAreSecureByDefaultWithCustomBasePath() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.base-path:/management").applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/management/beans").accept(MediaType.APPLICATION_JSON))
-			.andExpect(status().isUnauthorized());
+		MockMvcTester mvc = createSecureMockMvcTester();
+		assertThat(mvc.get().uri("/management/beans").accept(MediaType.APPLICATION_JSON))
+			.hasStatus(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
-	void endpointsAreSecureWithActuatorRoleWithCustomBasePath() throws Exception {
+	void endpointsAreSecureWithActuatorRoleWithCustomBasePath() {
 		TestSecurityContextHolder.getContext()
 			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigServletWebApplicationContext();
@@ -118,55 +108,54 @@ class WebMvcEndpointIntegrationTests {
 		TestPropertyValues
 			.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
 			.applyTo(this.context);
-		MockMvc mockMvc = createSecureMockMvc();
-		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
+		MockMvcTester mvc = createSecureMockMvcTester();
+		assertThat(mvc.get().uri("/management/beans")).hasStatusOk();
 	}
 
 	@Test
-	void linksAreProvidedToAllEndpointTypes() throws Exception {
+	void linksAreProvidedToAllEndpointTypes() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
-		MockMvc mockMvc = doCreateMockMvc();
-		mockMvc.perform(get("/actuator").accept("*/*"))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("_links",
-					both(hasKey("beans")).and(hasKey("servlet"))
-						.and(hasKey("restcontroller"))
-						.and(hasKey("controller"))));
+		MockMvcTester mvc = doCreateMockMvcTester();
+		assertThat(mvc.get().uri("/actuator").accept("*/*")).hasStatusOk()
+			.bodyJson()
+			.extractingPath("_links")
+			.asMap()
+			.containsKeys("beans", "servlet", "restcontroller", "controller");
 	}
 
 	@Test
-	void linksPageIsNotAvailableWhenDisabled() throws Exception {
+	void linksPageIsNotAvailableWhenDisabled() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.discovery.enabled=false").applyTo(this.context);
-		MockMvc mockMvc = doCreateMockMvc();
-		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isNotFound());
+		MockMvcTester mvc = doCreateMockMvcTester();
+		assertThat(mvc.get().uri("/actuator").accept("*/*")).hasStatus(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
-	void endpointObjectMapperCanBeApplied() throws Exception {
+	void endpointObjectMapperCanBeApplied() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(EndpointObjectMapperConfiguration.class, DefaultConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
-		MockMvc mockMvc = doCreateMockMvc();
-		MvcResult result = mockMvc.perform(get("/actuator/beans")).andExpect(status().isOk()).andReturn();
-		assertThat(result.getResponse().getContentAsString()).contains("\"scope\":\"notelgnis\"");
+		MockMvcTester mvc = doCreateMockMvcTester();
+		assertThat(mvc.get().uri("/actuator/beans")).hasStatusOk().bodyText().contains("\"scope\":\"notelgnis\"");
 	}
 
-	private MockMvc createSecureMockMvc() {
-		return doCreateMockMvc(springSecurity());
+	private MockMvcTester createSecureMockMvcTester() {
+		return doCreateMockMvcTester(springSecurity());
 	}
 
-	private MockMvc doCreateMockMvc(MockMvcConfigurer... configurers) {
+	private MockMvcTester doCreateMockMvcTester(MockMvcConfigurer... configurers) {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
-		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.context);
-		for (MockMvcConfigurer configurer : configurers) {
-			builder.apply(configurer);
-		}
-		return builder.build();
+		return MockMvcTester.from(this.context, (builder) -> {
+			for (MockMvcConfigurer configurer : configurers) {
+				builder.apply(configurer);
+			}
+			return builder.build();
+		});
 	}
 
 	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
@@ -197,23 +186,27 @@ class WebMvcEndpointIntegrationTests {
 
 	}
 
-	@ServletEndpoint(id = "servlet")
-	static class TestServletEndpoint implements Supplier<EndpointServlet> {
+	@org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint(id = "servlet")
+	@SuppressWarnings({ "deprecation", "removal" })
+	static class TestServletEndpoint
+			implements Supplier<org.springframework.boot.actuate.endpoint.web.EndpointServlet> {
 
 		@Override
-		public EndpointServlet get() {
-			return new EndpointServlet(new HttpServlet() {
+		public org.springframework.boot.actuate.endpoint.web.EndpointServlet get() {
+			return new org.springframework.boot.actuate.endpoint.web.EndpointServlet(new HttpServlet() {
 			});
 		}
 
 	}
 
-	@ControllerEndpoint(id = "controller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint(id = "controller")
+	@SuppressWarnings("removal")
 	static class TestControllerEndpoint {
 
 	}
 
-	@RestControllerEndpoint(id = "restcontroller")
+	@org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint(id = "restcontroller")
+	@SuppressWarnings("removal")
 	static class TestRestControllerEndpoint {
 
 	}

@@ -40,8 +40,8 @@ class JmsPropertiesTests {
 	@Test
 	void formatConcurrencyOnlyLowerBound() {
 		JmsProperties properties = new JmsProperties();
-		properties.getListener().setConcurrency(2);
-		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2");
+		properties.getListener().setMinConcurrency(2);
+		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2-2");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class JmsPropertiesTests {
 	@Test
 	void formatConcurrencyBothBounds() {
 		JmsProperties properties = new JmsProperties();
-		properties.getListener().setConcurrency(2);
+		properties.getListener().setMinConcurrency(2);
 		properties.getListener().setMaxConcurrency(10);
 		assertThat(properties.getListener().formatConcurrency()).isEqualTo("2-10");
 	}

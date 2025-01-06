@@ -1,5 +1,6 @@
-= Spring Boot image:https://ci.spring.io/api/v1/teams/spring-boot/pipelines/spring-boot-3.2.x/jobs/build/badge["Build Status", link="https://ci.spring.io/teams/spring-boot/pipelines/spring-boot-3.2.x?groups=Build"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"] image:https://img.shields.io/badge/Revved%20up%20by-Gradle%20Enterprise-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Gradle Enterprise", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
-:docs: https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
+= Spring Boot image:https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml/badge.svg?branch=main["Build Status", link="https://github.com/spring-projects/spring-boot/actions/workflows/build-and-deploy-snapshot.yml?query=branch%3Amain"] image:https://badges.gitter.im/Join Chat.svg["Chat",link="https://gitter.im/spring-projects/spring-boot?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"] image:https://img.shields.io/badge/Revved%20up%20by-Develocity-06A0CE?logo=Gradle&labelColor=02303A["Revved up by Develocity", link="https://ge.spring.io/scans?&search.rootProjectNames=Spring%20Boot%20Build&search.rootProjectNames=spring-boot-build"]
+
+:docs: https://docs.spring.io/spring-boot
 :github: https://github.com/spring-projects/spring-boot
 
 Spring Boot helps you to create Spring-powered, production-grade applications and services with absolute minimum fuss.
@@ -18,38 +19,40 @@ Our primary goals are:
 
 
 == Installation and Getting Started
-The {docs}/html/[reference documentation] includes detailed {docs}/html/getting-started.html#getting-started-installing-spring-boot[installation instructions] as well as a comprehensive {docs}/html/getting-started.html#getting-started-first-application[``getting started``] guide.
+
+The {docs}[reference documentation] includes detailed {docs}/installing.html[installation instructions] as well as a comprehensive {docs}/tutorial/first-application/index.html[``getting started``] guide.
 
 Here is a quick teaser of a complete Spring Boot application in Java:
 
-[source,java,indent=0]
+[source,java]
 ----
-	import org.springframework.boot.*;
-	import org.springframework.boot.autoconfigure.*;
-	import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.web.bind.annotation.*;
 
-	@RestController
-	@SpringBootApplication
-	public class Example {
+@RestController
+@SpringBootApplication
+public class Example {
 
-		@RequestMapping("/")
-		String home() {
-			return "Hello World!";
-		}
-
-		public static void main(String[] args) {
-			SpringApplication.run(Example.class, args);
-		}
-
+	@RequestMapping("/")
+	String home() {
+		return "Hello World!";
 	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(Example.class, args);
+	}
+
+}
 ----
 
 
 
 == Getting Help
+
 Are you having trouble with Spring Boot? We want to help!
 
-* Check the {docs}/html/[reference documentation], especially the {docs}/html/howto.html#howto[How-to's] -- they provide solutions to the most common questions.
+* Check the {docs}/[reference documentation], especially the {docs}/how-to/index.html[How-to's] -- they provide solutions to the most common questions.
 * Learn the Spring basics -- Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] website for a wealth of reference documentation.
   If you are new to Spring, try one of the https://spring.io/guides[guides].
 * If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and "new and noteworthy" features.
@@ -60,6 +63,7 @@ Are you having trouble with Spring Boot? We want to help!
 
 
 == Reporting Issues
+
 Spring Boot uses GitHub's integrated issue tracking system to record bugs and feature requests.
 If you want to raise an issue, please follow the recommendations below:
 
@@ -74,31 +78,34 @@ We like to know the Spring Boot version, operating system, and JVM version you'r
 
 
 == Building from Source
+
 You don't need to build from source to use Spring Boot (binaries in https://repo.spring.io[repo.spring.io]), but if you want to try out the latest and greatest, Spring Boot can be built and published to your local Maven cache using the https://docs.gradle.org/current/userguide/gradle_wrapper.html[Gradle wrapper].
 You also need JDK 17.
 
-[indent=0]
+[source,shell]
 ----
-	$ ./gradlew publishToMavenLocal
+$ ./gradlew publishToMavenLocal
 ----
 
 This will build all of the jars and documentation and publish them to your local Maven cache.
 It won't run any of the tests.
 If you want to build everything, use the `build` task:
 
-[indent=0]
+[source,shell]
 ----
-	$ ./gradlew build
+$ ./gradlew build
 ----
 
 
 
 == Modules
+
 There are several modules in Spring Boot. Here is a quick overview:
 
 
 
 === spring-boot
+
 The main library providing features that support the other parts of Spring Boot. These include:
 
 * The `SpringApplication` class, providing static convenience methods that can be used to write a stand-alone Spring Application.
@@ -110,6 +117,7 @@ The main library providing features that support the other parts of Spring Boot.
 
 
 === spring-boot-autoconfigure
+
 Spring Boot can configure large parts of typical applications based on the content of their classpath.
 A single `@EnableAutoConfiguration` annotation triggers auto-configuration of the Spring context.
 
@@ -119,6 +127,7 @@ Auto-configuration will always back away as the user starts to define their own 
 
 
 === spring-boot-starters
+
 Starters are a set of convenient dependency descriptors that you can include in your application.
 You get a one-stop shop for all the Spring and related technology you need without having to hunt through sample code and copy-paste loads of dependency descriptors.
 For example, if you want to get started using Spring and JPA for database access, include the `spring-boot-starter-data-jpa` dependency in your project, and you are good to go.
@@ -126,6 +135,7 @@ For example, if you want to get started using Spring and JPA for database access
 
 
 === spring-boot-actuator
+
 Actuator endpoints let you monitor and interact with your application.
 Spring Boot Actuator provides the infrastructure required for actuator endpoints.
 It contains annotation support for actuator endpoints.
@@ -134,6 +144,7 @@ This module provides many endpoints, including the `HealthEndpoint`, `Environmen
 
 
 === spring-boot-actuator-autoconfigure
+
 This provides auto-configuration for actuator endpoints based on the content of the classpath and a set of properties.
 For instance, if Micrometer is on the classpath, it will auto-configure the `MetricsEndpoint`.
 It contains configuration to expose endpoints over HTTP or JMX.
@@ -142,36 +153,41 @@ Just like Spring Boot AutoConfigure, this will back away as the user starts to d
 
 
 === spring-boot-test
+
 This module contains core items and annotations that can be helpful when testing your application.
 
 
 
 === spring-boot-test-autoconfigure
+
 Like other Spring Boot auto-configuration modules, spring-boot-test-autoconfigure provides auto-configuration for tests based on the classpath.
 It includes many annotations that can automatically configure a slice of your application that needs to be tested.
 
 
 
 === spring-boot-loader
+
 Spring Boot Loader provides the secret sauce that allows you to build a single jar file that can be launched using `java -jar`.
 Generally, you will not need to use `spring-boot-loader` directly but work with the link:spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin[Gradle] or link:spring-boot-project/spring-boot-tools/spring-boot-maven-plugin[Maven] plugin instead.
 
 
 
 === spring-boot-devtools
+
 The spring-boot-devtools module provides additional development-time features, such as automatic restarts, for a smoother application development experience.
 Developer tools are automatically disabled when running a fully packaged application.
 
 
 
 == Guides
+
 The https://spring.io/[spring.io] site contains several guides that show how to use Spring Boot step-by-step:
 
 * https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot] is an introductory guide that shows you how to create an application, run it, and add some management services.
 * https://spring.io/guides/gs/actuator-service/[Building a RESTful Web Service with Spring Boot Actuator] is a guide to creating a REST web service and also shows how the server can be configured.
-* https://spring.io/guides/gs/convert-jar-to-war/[Converting a Spring Boot JAR Application to a WAR] shows you how to run applications in a web server as a WAR file.
 
 
 
 == License
+
 Spring Boot is Open Source software released under the https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].

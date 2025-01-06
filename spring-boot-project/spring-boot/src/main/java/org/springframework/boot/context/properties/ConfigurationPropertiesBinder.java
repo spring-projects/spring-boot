@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ class ConfigurationPropertiesBinder {
 
 	private final boolean jsr303Present;
 
-	private volatile Validator jsr303Validator;
+	private volatile List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors;
 
 	private volatile Binder binder;
 
@@ -128,6 +128,18 @@ class ConfigurationPropertiesBinder {
 		return handler;
 	}
 
+	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
+		List<ConfigurationPropertiesBindHandlerAdvisor> bindHandlerAdvisors = this.bindHandlerAdvisors;
+		if (bindHandlerAdvisors == null) {
+			bindHandlerAdvisors = this.applicationContext
+				.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
+				.orderedStream()
+				.toList();
+			this.bindHandlerAdvisors = bindHandlerAdvisors;
+		}
+		return bindHandlerAdvisors;
+	}
+
 	private IgnoreTopLevelConverterNotFoundBindHandler getHandler() {
 		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.applicationContext);
 		return (bound != null)
@@ -141,7 +153,7 @@ class ConfigurationPropertiesBinder {
 			validators.add(this.configurationPropertiesValidator);
 		}
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
-			validators.add(getJsr303Validator());
+			validators.add(getJsr303Validator(target.getType().resolve()));
 		}
 		Validator selfValidator = getSelfValidator(target);
 		if (selfValidator != null) {
@@ -156,23 +168,14 @@ class ConfigurationPropertiesBinder {
 			return (value instanceof Validator validator) ? validator : null;
 		}
 		Class<?> type = target.getType().resolve();
-		if (Validator.class.isAssignableFrom(type)) {
+		if (type != null && Validator.class.isAssignableFrom(type)) {
 			return new SelfValidatingConstructorBoundBindableValidator(type);
 		}
 		return null;
 	}
 
-	private Validator getJsr303Validator() {
-		if (this.jsr303Validator == null) {
-			this.jsr303Validator = new ConfigurationPropertiesJsr303Validator(this.applicationContext);
-		}
-		return this.jsr303Validator;
-	}
-
-	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
-		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
-			.orderedStream()
-			.toList();
+	private Validator getJsr303Validator(Class<?> type) {
+		return new ConfigurationPropertiesJsr303Validator(this.applicationContext, type);
 	}
 
 	private Binder getBinder() {
@@ -208,7 +211,7 @@ class ConfigurationPropertiesBinder {
 				.rootBeanDefinition(ConfigurationPropertiesBinderFactory.class)
 				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
+			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}
 	}
 

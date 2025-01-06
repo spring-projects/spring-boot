@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package org.springframework.boot.jdbc;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDependsOnDatabaseInitializationDetector;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.simple.JdbcClient;
 
 /**
  * {@link DependsOnDatabaseInitializationDetector} for Spring Framework's JDBC support.
@@ -35,7 +34,7 @@ class SpringJdbcDependsOnDatabaseInitializationDetector
 
 	@Override
 	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
-		return new HashSet<>(Arrays.asList(JdbcOperations.class, NamedParameterJdbcOperations.class));
+		return Set.of(JdbcClient.class, JdbcOperations.class, NamedParameterJdbcOperations.class);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.test.autoconfigure.json.app;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.UUID;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -44,7 +46,9 @@ public class ExampleJsonComponent {
 		@Override
 		protected void serializeObject(ExampleCustomObject value, JsonGenerator jgen, SerializerProvider provider)
 				throws IOException {
-			jgen.writeStringField("value", value.toString());
+			jgen.writeStringField("value", value.value());
+			jgen.writeNumberField("date", value.date().getTime());
+			jgen.writeStringField("uuid", value.uuid().toString());
 		}
 
 	}
@@ -54,7 +58,10 @@ public class ExampleJsonComponent {
 		@Override
 		protected ExampleCustomObject deserializeObject(JsonParser jsonParser, DeserializationContext context,
 				ObjectCodec codec, JsonNode tree) throws IOException {
-			return new ExampleCustomObject(nullSafeValue(tree.get("value"), String.class));
+			String value = nullSafeValue(tree.get("value"), String.class);
+			Date date = nullSafeValue(tree.get("date"), Long.class, Date::new);
+			UUID uuid = nullSafeValue(tree.get("uuid"), String.class, UUID::fromString);
+			return new ExampleCustomObject(value, date, uuid);
 		}
 
 	}

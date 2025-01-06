@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Rafiullah Hamedy
  * @author Victor Mandujano
  * @author Parviz Rozikov
+ * @author Moritz Halbritter
  */
 class TomcatWebServerFactoryCustomizerTests {
 
@@ -562,6 +563,18 @@ class TomcatWebServerFactoryCustomizerTests {
 		WebServer server = factory.getWebServer();
 		server.start();
 		server.stop();
+	}
+
+	@Test
+	void configureExecutor() {
+		bind("server.tomcat.threads.max=10", "server.tomcat.threads.min-spare=2",
+				"server.tomcat.threads.max-queue-capacity=20");
+		customizeAndRunServer((server) -> {
+			AbstractProtocol<?> protocol = (AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler();
+			assertThat(protocol.getMaxThreads()).isEqualTo(10);
+			assertThat(protocol.getMinSpareThreads()).isEqualTo(2);
+			assertThat(protocol.getMaxQueueSize()).isEqualTo(20);
+		});
 	}
 
 	private void bind(String... inlinedProperties) {

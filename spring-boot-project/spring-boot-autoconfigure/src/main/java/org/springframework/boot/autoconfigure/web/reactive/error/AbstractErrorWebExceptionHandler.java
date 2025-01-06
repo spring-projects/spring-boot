@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,8 @@ package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import reactor.core.publisher.Mono;
@@ -33,7 +31,6 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpLogging;
@@ -49,6 +46,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.util.DisconnectedClientHelper;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -56,24 +54,11 @@ import org.springframework.web.util.HtmlUtils;
  *
  * @author Brian Clozel
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @since 2.0.0
  * @see ErrorAttributes
  */
 public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExceptionHandler, InitializingBean {
-
-	/**
-	 * Currently duplicated from Spring WebFlux HttpWebHandlerAdapter.
-	 */
-	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS;
-
-	static {
-		Set<String> exceptions = new HashSet<>();
-		exceptions.add("AbortedException");
-		exceptions.add("ClientAbortException");
-		exceptions.add("EOFException");
-		exceptions.add("EofException");
-		DISCONNECTED_CLIENT_EXCEPTIONS = Collections.unmodifiableSet(exceptions);
-	}
 
 	private static final Log logger = HttpLogging.forLogName(AbstractErrorWebExceptionHandler.class);
 
@@ -182,6 +167,17 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 */
 	protected boolean isBindingErrorsEnabled(ServerRequest request) {
 		return getBooleanParameter(request, "errors");
+	}
+
+	/**
+	 * Check whether the path attribute has been set on the given request.
+	 * @param request the source request
+	 * @return {@code true} if the path attribute has been requested, {@code false}
+	 * otherwise
+	 * @since 3.3.0
+	 */
+	protected boolean isPathEnabled(ServerRequest request) {
+		return getBooleanParameter(request, "path");
 	}
 
 	private boolean getBooleanParameter(ServerRequest request, String parameterName) {
@@ -306,13 +302,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	private boolean isDisconnectedClientError(Throwable ex) {
-		return DISCONNECTED_CLIENT_EXCEPTIONS.contains(ex.getClass().getSimpleName())
-				|| isDisconnectedClientErrorMessage(NestedExceptionUtils.getMostSpecificCause(ex).getMessage());
-	}
-
-	private boolean isDisconnectedClientErrorMessage(String message) {
-		message = (message != null) ? message.toLowerCase() : "";
-		return (message.contains("broken pipe") || message.contains("connection reset by peer"));
+		return DisconnectedClientHelper.isClientDisconnectedException(ex);
 	}
 
 	/**
@@ -352,7 +342,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		return response.writeTo(exchange, new ResponseContext());
 	}
 
-	private class ResponseContext implements ServerResponse.Context {
+	private final class ResponseContext implements ServerResponse.Context {
 
 		@Override
 		public List<HttpMessageWriter<?>> messageWriters() {

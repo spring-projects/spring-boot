@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.authentication.event.LogoutSuccessEvent;
 import org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent;
 import org.springframework.util.ClassUtils;
 
@@ -51,6 +52,13 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 	 */
 	public static final String AUTHENTICATION_SWITCH = "AUTHENTICATION_SWITCH";
 
+	/**
+	 * Logout success event type.
+	 *
+	 * @since 3.4.0
+	 */
+	public static final String LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+
 	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
 
 	private final WebAuditListener webListener = maybeCreateWebListener();
@@ -73,6 +81,9 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 		else if (event instanceof AuthenticationSuccessEvent successEvent) {
 			onAuthenticationSuccessEvent(successEvent);
 		}
+		else if (event instanceof LogoutSuccessEvent logoutSuccessEvent) {
+			onLogoutSuccessEvent(logoutSuccessEvent);
+		}
 	}
 
 	private void onAuthenticationFailureEvent(AbstractAuthenticationFailureEvent event) {
@@ -93,7 +104,15 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 		publish(new AuditEvent(event.getAuthentication().getName(), AUTHENTICATION_SUCCESS, data));
 	}
 
-	private static class WebAuditListener {
+	private void onLogoutSuccessEvent(LogoutSuccessEvent event) {
+		Map<String, Object> data = new LinkedHashMap<>();
+		if (event.getAuthentication().getDetails() != null) {
+			data.put("details", event.getAuthentication().getDetails());
+		}
+		publish(new AuditEvent(event.getAuthentication().getName(), LOGOUT_SUCCESS, data));
+	}
+
+	private static final class WebAuditListener {
 
 		void process(AuthenticationAuditListener listener, AbstractAuthenticationEvent input) {
 			if (listener != null) {

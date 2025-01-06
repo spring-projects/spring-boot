@@ -27,8 +27,7 @@ import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigur
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.client.reactive.JettyResourceFactory;
-import org.springframework.http.client.reactive.ReactorResourceFactory;
+import org.springframework.http.client.ReactorResourceFactory;
 
 /**
  * Configuration classes for WebClient client connectors.
@@ -51,24 +50,6 @@ class ClientHttpConnectorFactoryConfiguration {
 				ReactorResourceFactory reactorResourceFactory,
 				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
 			return new ReactorClientHttpConnectorFactory(reactorResourceFactory, mapperProvider::orderedStream);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(org.eclipse.jetty.reactive.client.ReactiveRequest.class)
-	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
-	static class JettyClient {
-
-		@Bean
-		@ConditionalOnMissingBean
-		JettyResourceFactory jettyClientResourceFactory() {
-			return new JettyResourceFactory();
-		}
-
-		@Bean
-		JettyClientHttpConnectorFactory jettyClientHttpConnectorFactory(JettyResourceFactory jettyResourceFactory) {
-			return new JettyClientHttpConnectorFactory(jettyResourceFactory);
 		}
 
 	}

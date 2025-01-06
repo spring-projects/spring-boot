@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
  */
 public final class DockerConfiguration {
 
-	private final DockerHost host;
+	private final DockerHostConfiguration host;
 
 	private final DockerRegistryAuthentication builderAuthentication;
 
@@ -39,7 +39,7 @@ public final class DockerConfiguration {
 		this(null, null, null, false);
 	}
 
-	private DockerConfiguration(DockerHost host, DockerRegistryAuthentication builderAuthentication,
+	private DockerConfiguration(DockerHostConfiguration host, DockerRegistryAuthentication builderAuthentication,
 			DockerRegistryAuthentication publishAuthentication, boolean bindHostToBuilder) {
 		this.host = host;
 		this.builderAuthentication = builderAuthentication;
@@ -47,7 +47,7 @@ public final class DockerConfiguration {
 		this.bindHostToBuilder = bindHostToBuilder;
 	}
 
-	public DockerHost getHost() {
+	public DockerHostConfiguration getHost() {
 		return this.host;
 	}
 
@@ -65,7 +65,13 @@ public final class DockerConfiguration {
 
 	public DockerConfiguration withHost(String address, boolean secure, String certificatePath) {
 		Assert.notNull(address, "Address must not be null");
-		return new DockerConfiguration(new DockerHost(address, secure, certificatePath), this.builderAuthentication,
+		return new DockerConfiguration(DockerHostConfiguration.forAddress(address, secure, certificatePath),
+				this.builderAuthentication, this.publishAuthentication, this.bindHostToBuilder);
+	}
+
+	public DockerConfiguration withContext(String context) {
+		Assert.notNull(context, "Context must not be null");
+		return new DockerConfiguration(DockerHostConfiguration.forContext(context), this.builderAuthentication,
 				this.publishAuthentication, this.bindHostToBuilder);
 	}
 
@@ -105,6 +111,53 @@ public final class DockerConfiguration {
 	public DockerConfiguration withEmptyPublishRegistryAuthentication() {
 		return new DockerConfiguration(this.host, this.builderAuthentication,
 				new DockerRegistryUserAuthentication("", "", "", ""), this.bindHostToBuilder);
+	}
+
+	public static class DockerHostConfiguration {
+
+		private final String address;
+
+		private final String context;
+
+		private final boolean secure;
+
+		private final String certificatePath;
+
+		public DockerHostConfiguration(String address, String context, boolean secure, String certificatePath) {
+			this.address = address;
+			this.context = context;
+			this.secure = secure;
+			this.certificatePath = certificatePath;
+		}
+
+		public String getAddress() {
+			return this.address;
+		}
+
+		public String getContext() {
+			return this.context;
+		}
+
+		public boolean isSecure() {
+			return this.secure;
+		}
+
+		public String getCertificatePath() {
+			return this.certificatePath;
+		}
+
+		public static DockerHostConfiguration forAddress(String address) {
+			return new DockerHostConfiguration(address, null, false, null);
+		}
+
+		public static DockerHostConfiguration forAddress(String address, boolean secure, String certificatePath) {
+			return new DockerHostConfiguration(address, null, secure, certificatePath);
+		}
+
+		static DockerHostConfiguration forContext(String context) {
+			return new DockerHostConfiguration(null, context, false, null);
+		}
+
 	}
 
 }

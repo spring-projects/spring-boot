@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * Integration tests for the Maven plugin's run goal.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 @ExtendWith(MavenBuildExtension.class)
 class RunIntegrationTests {
@@ -37,7 +38,7 @@ class RunIntegrationTests {
 	@TestTemplate
 	void whenTheRunGoalIsExecutedTheApplicationIsForkedWithOptimizedJvmArguments(MavenBuild mavenBuild) {
 		mavenBuild.project("run").goals("spring-boot:run", "-X").execute((project) -> {
-			String jvmArguments = "JVM argument(s): -XX:TieredStopAtLevel=1";
+			String jvmArguments = "JVM argument: -XX:TieredStopAtLevel=1";
 			assertThat(buildLog(project)).contains("I haz been run").contains(jvmArguments);
 		});
 	}
@@ -105,6 +106,20 @@ class RunIntegrationTests {
 		mavenBuild.project("run-working-directory")
 			.goals("spring-boot:run")
 			.execute((project) -> assertThat(buildLog(project)).containsPattern("I haz been run from.*src.main.java"));
+	}
+
+	@TestTemplate
+	void whenAdditionalClasspathDirectoryIsConfiguredItsResourcesAreAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-additional-classpath-directory")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
+	}
+
+	@TestTemplate
+	void whenAdditionalClasspathFileIsConfiguredItsContentIsAvailableToTheApplication(MavenBuild mavenBuild) {
+		mavenBuild.project("run-additional-classpath-jar")
+			.goals("spring-boot:run")
+			.execute((project) -> assertThat(buildLog(project)).contains("I haz been run"));
 	}
 
 	@TestTemplate

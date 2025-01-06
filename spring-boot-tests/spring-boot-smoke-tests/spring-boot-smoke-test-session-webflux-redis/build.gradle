@@ -1,19 +1,20 @@
 plugins {
 	id "java"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Session WebFlux Redis smoke test"
 
 dependencies {
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("com.redis:testcontainers-redis")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-security"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
 
 	runtimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis-reactive"))
 	runtimeOnly("org.springframework.session:spring-session-data-redis")
-
-	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
-	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	testImplementation("org.testcontainers:junit-jupiter")
 }

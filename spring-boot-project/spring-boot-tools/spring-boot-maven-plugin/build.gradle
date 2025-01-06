@@ -1,32 +1,70 @@
 plugins {
-	id "org.asciidoctor.jvm.convert"
-	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.docker-test"
 }
 
 description = "Spring Boot Maven Plugin"
 
 configurations {
 	dependenciesBom
-	documentation
 }
 
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
-	compileOnly("org.sonatype.plexus:plexus-build-api")
-	compileOnly("org.apache.maven.shared:maven-common-artifact-filters") {
-		exclude(group: "javax.enterprise", module: "cdi-api")
+	compileOnly("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 	compileOnly("org.apache.maven:maven-plugin-api") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
 		exclude(group: "javax.enterprise", module: "cdi-api")
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 
-	implementation("org.springframework:spring-context")
+	dockerTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support-docker"))
+	dockerTestImplementation("org.apache.maven.shared:maven-invoker") {
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	dockerTestImplementation("org.assertj:assertj-core")
+	dockerTestImplementation("org.junit.jupiter:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:junit-jupiter")
+	dockerTestImplementation("org.testcontainers:testcontainers")
+
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	implementation("org.sonatype.plexus:plexus-build-api") {
+		exclude(group: "org.codehaus.plexus", module: "plexus-utils")
+	}
+	implementation("org.springframework:spring-core")
+	implementation("org.springframework:spring-context")
+
+	optional("org.apache.maven.plugins:maven-shade-plugin") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+
+	testImplementation("org.apache.maven:maven-core") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	testImplementation("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.annotation", module: "javax.annotation-api")
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.springframework:spring-core")
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -36,26 +74,13 @@ dependencies {
 	}
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
-	intTestImplementation("org.testcontainers:testcontainers")
-	intTestImplementation("org.testcontainers:junit-jupiter")
-
-	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin") {
-		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
 
 	mavenRepository(project(path: ":spring-boot-project:spring-boot", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
-
-	runtimeOnly("org.sonatype.plexus:plexus-build-api")
-
-	testImplementation("org.assertj:assertj-core")
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mockito:mockito-core")
-	testImplementation("org.mockito:mockito-junit-jupiter")
-	testImplementation("org.springframework:spring-core")
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-parent", configuration: "mavenRepository"))
 
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
@@ -65,42 +90,21 @@ ext {
 	xsdVersion = versionElements[0] + "." + versionElements[1]
 }
 
-syncDocumentationSourceForAsciidoctor {
-	from(documentPluginGoals) {
-		into "asciidoc/goals"
-	}
+task copySettingsXml(type: Copy) {
+	from file("src/intTest/projects/settings.xml")
+	into layout.buildDirectory.dir("generated-resources/settings")
+	filter(springRepositoryTransformers.mavenSettings())
 }
 
 sourceSets {
 	main {
-		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
+		output.dir(layout.buildDirectory.dir("generated/resources/xsd"), builtBy: "xsdResources")
 	}
 	intTest {
-		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: ["extractVersionProperties", "copySettingsXml"])
 	}
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	doFirst {
-		attributes "spring-boot-xsd-version" : project.ext.xsdVersion
-	}
-}
-
-asciidoctor {
-	sources {
-		include "index.adoc"
-	}
-}
-
-task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	sources {
-		include "index.adoc"
-	}
-}
-
-syncDocumentationSourceForAsciidoctorPdf {
-	from(documentPluginGoals) {
-		into "asciidoc/goals"
+	dockerTest {
+		output.dir(layout.buildDirectory.dir("generated-resources"), builtBy: "extractVersionProperties")
 	}
 }
 
@@ -117,31 +121,58 @@ javadoc {
 	}
 }
 
-task zip(type: Zip) {
-	dependsOn asciidoctor, asciidoctorPdf
-	duplicatesStrategy "fail"
-	from(asciidoctorPdf.outputDir) {
-		into "reference/pdf"
-		rename "index.pdf", "${project.name}-reference.pdf"
-	}
-	from(asciidoctor.outputDir) {
-		into "reference/htmlsingle"
-	}
-	from(javadoc) {
-		into "api"
-	}
-}
-
 task xsdResources(type: Sync) {
 	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
-	into "${buildDir}/generated/resources/xsd/org/springframework/boot/maven"
+	into layout.buildDirectory.dir("generated/resources/xsd/org/springframework/boot/maven")
 	rename { fileName -> "layers.xsd" }
 }
 
 prepareMavenBinaries {
-	versions "3.9.0", "3.8.5", "3.6.3"
+	versions = [ "3.9.9", "3.6.3" ]
 }
 
-artifacts {
-	"documentation" zip
+tasks.named("documentPluginGoals") {
+	goalSections = [
+		"build-image": "build-image",
+		"build-image-no-fork": "build-image",
+		"build-info": "build-info",
+		"help": "help",
+		"process-aot": "aot",
+		"process-test-aot": "aot",
+		"repackage": "packaging",
+		"run": "run",
+		"start": "integration-tests",
+		"stop": "integration-tests",
+		"test-run": "run"
+	]
+}
+
+antoraContributions {
+	'maven-plugin' {
+		aggregateContent {
+			from(documentPluginGoals) {
+				into "modules/maven-plugin/partials/goals"
+			}
+		}
+		catalogContent {
+			from(javadoc) {
+				into "api/java"
+			}
+		}
+		localAggregateContent {
+			from(tasks.named("generateAntoraYml")) {
+				into "modules"
+			}
+		}
+		source()
+	}
+}
+
+tasks.named("generateAntoraPlaybook") {
+	antoraExtensions.xref.stubs = ["appendix:.*", "api:.*", "reference:.*", "how-to:.*"]
+	asciidocExtensions.excludeJavadocExtension = true
+}
+
+tasks.named("dockerTest").configure {
+	dependsOn tasks.named("prepareMavenBinaries")
 }

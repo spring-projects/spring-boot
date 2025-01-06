@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,8 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	public static final String NAME_ANNOTATION = "org.springframework.boot.configurationsample.Name";
 
+	public static final String ENDPOINT_ACCESS_ENUM = "org.springframework.boot.configurationsample.Access";
+
 	public TestConfigurationMetadataAnnotationProcessor() {
 	}
 
@@ -121,6 +123,11 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	@Override
 	protected String nameAnnotation() {
 		return NAME_ANNOTATION;
+	}
+
+	@Override
+	protected String endpointAccessEnum() {
+		return ENDPOINT_ACCESS_ENUM;
 	}
 
 }

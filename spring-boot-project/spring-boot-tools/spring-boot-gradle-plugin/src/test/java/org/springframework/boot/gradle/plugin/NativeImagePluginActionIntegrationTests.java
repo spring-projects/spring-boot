@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
-@GradleCompatibility(configurationCache = false)
+@GradleCompatibility
 class NativeImagePluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -57,7 +57,7 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void reachabilityMetadataConfigurationFilesAreCopiedToJar() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1").build("bootJar");
+		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
@@ -75,7 +75,7 @@ class NativeImagePluginActionIntegrationTests {
 		writeDummySpringApplicationAotProcessorMainClass();
 		FileSystemUtils.copyRecursively(new File("src/test/resources/reachability-metadata-repository"),
 				new File(this.gradleBuild.getProjectDir(), "reachability-metadata-repository"));
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1").build("bootJar");
+		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		File jarFile = new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar");
@@ -89,33 +89,29 @@ class NativeImagePluginActionIntegrationTests {
 	}
 
 	@TestTemplate
-	void bootBuildImageIsConfiguredToBuildANativeImage() {
+	void developmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("bootBuildImageConfiguration");
-		assertThat(result.getOutput()).contains("paketobuildpacks/builder:tiny").contains("BP_NATIVE_IMAGE = true");
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
+		assertThat(result.getOutput()).doesNotContain("commons-lang");
 	}
 
 	@TestTemplate
-	void developmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
+	void testAndDevelopmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).doesNotContain("commons-lang");
 	}
 
 	@TestTemplate
 	void classesGeneratedDuringAotProcessingAreOnTheNativeImageClasspath() {
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("checkNativeImageClasspath");
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aot"),
 				projectPath("build/resources/aot"), projectPath("build/generated/aotClasses"));
 	}
 
 	@TestTemplate
 	void classesGeneratedDuringAotTestProcessingAreOnTheTestNativeImageClasspath() {
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1")
-			.build("checkTestNativeImageClasspath");
+		BuildResult result = this.gradleBuild.build("checkTestNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aotTest"),
 				projectPath("build/resources/aotTest"), projectPath("build/generated/aotTestClasses"));
 	}
@@ -123,12 +119,13 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void nativeEntryIsAddedToManifest() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1").build("bootJar");
+		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
-		JarFile jarFile = new JarFile(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"));
-		Manifest manifest = jarFile.getManifest();
-		assertThat(manifest.getMainAttributes().getValue("Spring-Boot-Native-Processed")).isEqualTo("true");
+		try (JarFile jarFile = new JarFile(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"))) {
+			Manifest manifest = jarFile.getManifest();
+			assertThat(manifest.getMainAttributes().getValue("Spring-Boot-Native-Processed")).isEqualTo("true");
+		}
 	}
 
 	private String projectPath(String path) {

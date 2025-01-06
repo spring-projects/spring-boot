@@ -21,6 +21,8 @@ import java.time.Duration;
 import io.micrometer.core.instrument.simple.CountingMode;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -28,7 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class SimplePropertiesConfigAdapterTests {
+class SimplePropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<SimpleProperties, SimplePropertiesConfigAdapter> {
+
+	SimplePropertiesConfigAdapterTests() {
+		super(SimplePropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {

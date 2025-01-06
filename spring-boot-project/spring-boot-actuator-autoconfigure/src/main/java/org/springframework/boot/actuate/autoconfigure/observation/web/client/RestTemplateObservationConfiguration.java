@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 import io.micrometer.observation.ObservationRegistry;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.actuate.metrics.web.client.ObservationRestTemplateCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -44,7 +43,7 @@ class RestTemplateObservationConfiguration {
 	@Bean
 	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
-			ObservationProperties observationProperties, MetricsProperties metricsProperties) {
+			ObservationProperties observationProperties) {
 		String name = observationProperties.getHttp().getClient().getRequests().getName();
 		ClientRequestObservationConvention observationConvention = customConvention
 			.getIfAvailable(() -> new DefaultClientRequestObservationConvention(name));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import graphql.GraphQL;
 import graphql.execution.instrumentation.Instrumentation;
-import graphql.schema.idl.RuntimeWiring.Builder;
-import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
+import graphql.introspection.Introspection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,10 +33,12 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +49,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.log.LogMessage;
 import org.springframework.data.domain.ScrollPosition;
 import org.springframework.graphql.ExecutionGraphQlService;
+import org.springframework.graphql.data.method.HandlerMethodArgumentResolver;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
 import org.springframework.graphql.data.pagination.ConnectionFieldTypeVisitor;
 import org.springframework.graphql.data.pagination.CursorEncoder;
@@ -101,17 +104,16 @@ public class GraphQlAutoConfiguration {
 			.exceptionResolvers(exceptionResolvers.orderedStream().toList())
 			.subscriptionExceptionResolvers(subscriptionExceptionResolvers.orderedStream().toList())
 			.instrumentation(instrumentations.orderedStream().toList());
+		if (properties.getSchema().getInspection().isEnabled()) {
+			builder.inspectSchemaMappings(logger::info);
+		}
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
-			builder.configureRuntimeWiring(this::enableIntrospection);
+			Introspection.enabledJvmWide(false);
 		}
 		builder.configureTypeDefinitions(new ConnectionTypeDefinitionConfigurer());
 		wiringConfigurers.orderedStream().forEach(builder::configureRuntimeWiring);
 		sourceCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
-	}
-
-	private Builder enableIntrospection(Builder wiring) {
-		return wiring.fieldVisibility(NoIntrospectionGraphqlFieldVisibility.NO_INTROSPECTION_FIELD_VISIBILITY);
 	}
 
 	private Resource[] resolveSchemaResources(ResourcePatternResolver resolver, String[] locations,
@@ -152,10 +154,14 @@ public class GraphQlAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public AnnotatedControllerConfigurer annotatedControllerConfigurer() {
+	public AnnotatedControllerConfigurer annotatedControllerConfigurer(
+			@Qualifier(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) ObjectProvider<Executor> executorProvider,
+			ObjectProvider<HandlerMethodArgumentResolver> argumentResolvers) {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();
 		controllerConfigurer
 			.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
+		executorProvider.ifAvailable(controllerConfigurer::setExecutor);
+		argumentResolvers.orderedStream().forEach(controllerConfigurer::addCustomArgumentResolver);
 		return controllerConfigurer;
 	}
 

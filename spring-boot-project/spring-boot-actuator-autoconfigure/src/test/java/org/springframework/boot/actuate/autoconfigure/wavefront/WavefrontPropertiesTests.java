@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,16 @@ package org.springframework.boot.actuate.autoconfigure.wavefront;
 
 import java.net.URI;
 
+import com.wavefront.sdk.common.clients.service.token.TokenService.Type;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.TokenType;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link WavefrontProperties}.
@@ -34,21 +38,54 @@ class WavefrontPropertiesTests {
 
 	@Test
 	void apiTokenIsOptionalWhenUsingProxy() {
-		WavefrontProperties sut = new WavefrontProperties();
-		sut.setUri(URI.create("proxy://localhost:2878"));
-		sut.setApiToken(null);
-		assertThat(sut.getApiTokenOrThrow()).isNull();
-		assertThat(sut.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setUri(URI.create("proxy://localhost:2878"));
+		properties.setApiToken(null);
+		assertThat(properties.getApiTokenOrThrow()).isNull();
+		assertThat(properties.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
 	}
 
 	@Test
 	void apiTokenIsMandatoryWhenNotUsingProxy() {
-		WavefrontProperties sut = new WavefrontProperties();
-		sut.setUri(URI.create("http://localhost:2878"));
-		sut.setApiToken(null);
-		assertThat(sut.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
-		assertThatThrownBy(sut::getApiTokenOrThrow).isInstanceOf(InvalidConfigurationPropertyValueException.class)
-			.hasMessageContaining("management.wavefront.api-token");
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setUri(URI.create("http://localhost:2878"));
+		properties.setApiToken(null);
+		assertThat(properties.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
+		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
+			.isThrownBy(properties::getApiTokenOrThrow)
+			.withMessageContaining("management.wavefront.api-token");
+	}
+
+	@Test
+	void shouldNotFailIfTokenTypeIsSetToNoToken() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setUri(URI.create("http://localhost:2878"));
+		properties.setApiTokenType(TokenType.NO_TOKEN);
+		properties.setApiToken(null);
+		assertThat(properties.getApiTokenOrThrow()).isNull();
+	}
+
+	@Test
+	void wavefrontApiTokenTypeWhenUsingProxy() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setUri(URI.create("proxy://localhost:2878"));
+		assertThat(properties.getWavefrontApiTokenType()).isEqualTo(Type.NO_TOKEN);
+	}
+
+	@Test
+	void wavefrontApiTokenTypeWhenNotUsingProxy() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setUri(URI.create("http://localhost:2878"));
+		assertThat(properties.getWavefrontApiTokenType()).isEqualTo(Type.WAVEFRONT_API_TOKEN);
+	}
+
+	@ParameterizedTest
+	@EnumSource
+	void wavefrontApiTokenMapping(TokenType from) {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setApiTokenType(from);
+		Type expected = Type.valueOf(from.name());
+		assertThat(properties.getWavefrontApiTokenType()).isEqualTo(expected);
 	}
 
 }

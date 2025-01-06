@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Fallback;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -115,9 +116,28 @@ class ConditionalOnSingleCandidateTests {
 	}
 
 	@Test
+	void singleCandidateTwoCandidatesOneNormalOneFallback() {
+		this.contextRunner
+			.withUserConfiguration(AlphaFallbackConfiguration.class, BravoConfiguration.class,
+					OnBeanSingleCandidateConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("consumer");
+				assertThat(context.getBean("consumer")).isEqualTo("bravo");
+			});
+	}
+
+	@Test
 	void singleCandidateMultipleCandidatesMultiplePrimary() {
 		this.contextRunner
 			.withUserConfiguration(AlphaPrimaryConfiguration.class, BravoPrimaryConfiguration.class,
+					OnBeanSingleCandidateConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("consumer"));
+	}
+
+	@Test
+	void singleCandidateMultipleCandidatesAllFallback() {
+		this.contextRunner
+			.withUserConfiguration(AlphaFallbackConfiguration.class, BravoFallbackConfiguration.class,
 					OnBeanSingleCandidateConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean("consumer"));
 	}
@@ -151,6 +171,28 @@ class ConditionalOnSingleCandidateTests {
 					assertThat(child).hasBean("consumer");
 					assertThat(child.getBean("consumer")).isEqualTo("alpha");
 				}));
+	}
+
+	@Test
+	void singleCandidateMultipleCandidatesOneAutowireCandidate() {
+		this.contextRunner
+			.withUserConfiguration(AlphaConfiguration.class, BravoNonAutowireConfiguration.class,
+					OnBeanSingleCandidateConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("consumer");
+				assertThat(context.getBean("consumer")).isEqualTo("alpha");
+			});
+	}
+
+	@Test
+	void singleCandidateMultipleCandidatesOneDefaultCandidate() {
+		this.contextRunner
+			.withUserConfiguration(AlphaConfiguration.class, BravoNonDefaultConfiguration.class,
+					OnBeanSingleCandidateConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("consumer");
+				assertThat(context.getBean("consumer")).isEqualTo("alpha");
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -209,6 +251,17 @@ class ConditionalOnSingleCandidateTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class AlphaFallbackConfiguration {
+
+		@Bean
+		@Fallback
+		String alpha() {
+			return "alpha";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class AlphaScopedProxyConfiguration {
 
 		@Bean
@@ -234,6 +287,37 @@ class ConditionalOnSingleCandidateTests {
 
 		@Bean
 		@Primary
+		String bravo() {
+			return "bravo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BravoFallbackConfiguration {
+
+		@Bean
+		@Fallback
+		String bravo() {
+			return "bravo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BravoNonAutowireConfiguration {
+
+		@Bean(autowireCandidate = false)
+		String bravo() {
+			return "bravo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BravoNonDefaultConfiguration {
+
+		@Bean(defaultCandidate = false)
 		String bravo() {
 			return "bravo";
 		}

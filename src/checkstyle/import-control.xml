@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE import-control PUBLIC "-//Checkstyle//DTD ImportControl Configuration 1.4//EN" "https://checkstyle.org/dtds/import_control_1_4.dtd">
 <import-control pkg="org.springframework.boot">
+	<allow pkg="io.micrometer.observation" />
 	<disallow pkg="io.micrometer" />
 	<disallow pkg="org.springframework.lang" />
 	<allow pkg=".*" regex="true" />
@@ -76,6 +77,7 @@
 	<!-- Logging -->
 	<subpackage name="logging">
 		<allow pkg="org.springframework.boot.context.properties.bind" />
+		<allow pkg="org.springframework.context.aot" />
 		<disallow pkg="org.springframework.context" />
 		<disallow pkg="org.springframework.boot.context" />
 	</subpackage>
@@ -101,6 +103,7 @@
 		</subpackage>
 		<subpackage name="server">
 			<disallow pkg="org.springframework.context" />
+			<allow pkg="org.springframework.boot.web.server"/>
 			<subpackage name="context">
 				<allow pkg="org.springframework.context" />
 			</subpackage>

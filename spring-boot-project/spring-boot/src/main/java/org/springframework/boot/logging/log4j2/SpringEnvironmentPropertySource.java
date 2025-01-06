@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.logging.log4j2;
 import org.apache.logging.log4j.util.PropertySource;
 
 import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
 
 /**
  * Returns properties from Spring.
@@ -33,12 +32,7 @@ class SpringEnvironmentPropertySource implements PropertySource {
 	 */
 	private static final int PRIORITY = -100;
 
-	private final Environment environment;
-
-	SpringEnvironmentPropertySource(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
-		this.environment = environment;
-	}
+	private volatile Environment environment;
 
 	@Override
 	public int getPriority() {
@@ -47,12 +41,18 @@ class SpringEnvironmentPropertySource implements PropertySource {
 
 	@Override
 	public String getProperty(String key) {
-		return this.environment.getProperty(key);
+		Environment environment = this.environment;
+		return (environment != null) ? environment.getProperty(key) : null;
 	}
 
 	@Override
 	public boolean containsProperty(String key) {
-		return this.environment.containsProperty(key);
+		Environment environment = this.environment;
+		return environment != null && environment.containsProperty(key);
+	}
+
+	void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 }

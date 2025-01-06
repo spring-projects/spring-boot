@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,13 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +43,6 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,6 +127,19 @@ class ConditionalOnBeanTests {
 		this.contextRunner
 			.withUserConfiguration(FactoryBeanConfiguration.class, OnAnnotationWithFactoryBeanConfiguration.class)
 			.run((context) -> {
+				assertThat(context).hasBean("bar");
+				assertThat(context).hasSingleBean(ExampleBean.class);
+			});
+	}
+
+	@Test
+	void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation2() {
+		this.contextRunner
+			.withUserConfiguration(EarlyInitializationFactoryBeanConfiguration.class,
+					EarlyInitializationOnAnnotationFactoryBeanConfiguration.class)
+			.run((context) -> {
+				assertThat(EarlyInitializationFactoryBeanConfiguration.calledWhenNoFrozen).as("calledWhenNoFrozen")
+					.isFalse();
 				assertThat(context).hasBean("bar");
 				assertThat(context).hasSingleBean(ExampleBean.class);
 			});
@@ -227,6 +241,53 @@ class ConditionalOnBeanTests {
 				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
+	@Test
+	void conditionalOnBeanTypeIgnoresNotAutowireCandidateBean() {
+		this.contextRunner
+			.withUserConfiguration(NotAutowireCandidateConfiguration.class, OnBeanClassConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void conditionalOnBeanNameMatchesNotAutowireCandidateBean() {
+		this.contextRunner.withUserConfiguration(NotAutowireCandidateConfiguration.class, OnBeanNameConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("bar"));
+	}
+
+	@Test
+	void conditionalOnAnnotatedBeanIgnoresNotAutowireCandidateBean() {
+		this.contextRunner
+			.withUserConfiguration(AnnotatedNotAutowireCandidateConfig.class, OnAnnotationConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void conditionalOnBeanTypeIgnoresNotDefaultCandidateBean() {
+		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfiguration.class, OnBeanClassConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void conditionalOnBeanTypeIgnoresNotDefaultCandidateFactoryBean() {
+		this.contextRunner
+			.withUserConfiguration(NotDefaultCandidateFactoryBeanConfiguration.class,
+					OnBeanClassWithFactoryBeanConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
+	@Test
+	void conditionalOnBeanNameMatchesNotDefaultCandidateBean() {
+		this.contextRunner.withUserConfiguration(NotDefaultCandidateConfiguration.class, OnBeanNameConfiguration.class)
+			.run((context) -> assertThat(context).hasBean("bar"));
+	}
+
+	@Test
+	void conditionalOnAnnotatedBeanIgnoresNotDefaultCandidateBean() {
+		this.contextRunner
+			.withUserConfiguration(AnnotatedNotDefaultCandidateConfig.class, OnAnnotationConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+	}
+
 	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {
 		return (context) -> {
 			String[] beans = context.getBeanNamesForType(ExampleBean.class);
@@ -258,7 +319,7 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(annotation = EnableScheduling.class)
+	@ConditionalOnBean(annotation = TestAnnotation.class)
 	static class OnAnnotationConfiguration {
 
 		@Bean
@@ -271,6 +332,17 @@ class ConditionalOnBeanTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(String.class)
 	static class OnBeanClassConfiguration {
+
+		@Bean
+		String bar() {
+			return "bar";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(ExampleFactoryBean.class)
+	static class OnBeanClassWithFactoryBeanConfiguration {
 
 		@Bean
 		String bar() {
@@ -302,12 +374,42 @@ class ConditionalOnBeanTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableScheduling
+	@TestAnnotation
 	static class FooConfiguration {
 
 		@Bean
 		String foo() {
 			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotAutowireCandidateConfiguration {
+
+		@Bean(autowireCandidate = false)
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotDefaultCandidateConfiguration {
+
+		@Bean(defaultCandidate = false)
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class NotDefaultCandidateFactoryBeanConfiguration {
+
+		@Bean(defaultCandidate = false)
+		ExampleFactoryBean exampleBeanFactoryBean() {
+			return new ExampleFactoryBean();
 		}
 
 	}
@@ -344,6 +446,35 @@ class ConditionalOnBeanTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(annotation = TestAnnotation.class)
 	static class OnAnnotationWithFactoryBeanConfiguration {
+
+		@Bean
+		String bar() {
+			return "bar";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EarlyInitializationFactoryBeanConfiguration {
+
+		static boolean calledWhenNoFrozen;
+
+		@Bean
+		@TestAnnotation
+		static FactoryBean<?> exampleBeanFactoryBean(ApplicationContext applicationContext) {
+			// NOTE: must be static and return raw FactoryBean and not the subclass so
+			// Spring can't guess type
+			ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) applicationContext)
+				.getBeanFactory();
+			calledWhenNoFrozen = calledWhenNoFrozen || !beanFactory.isConfigurationFrozen();
+			return new ExampleFactoryBean();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(annotation = TestAnnotation.class)
+	static class EarlyInitializationOnAnnotationFactoryBeanConfiguration {
 
 		@Bean
 		String bar() {
@@ -486,6 +617,26 @@ class ConditionalOnBeanTests {
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	static class AnnotatedNotAutowireCandidateConfig {
+
+		@Bean(autowireCandidate = false)
+		ExampleBean exampleBean() {
+			return new ExampleBean("value");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AnnotatedNotDefaultCandidateConfig {
+
+		@Bean(defaultCandidate = false)
+		ExampleBean exampleBean() {
+			return new ExampleBean("value");
+		}
+
+	}
+
 	@TestAnnotation
 	static class ExampleBean {
 
@@ -518,7 +669,7 @@ class ConditionalOnBeanTests {
 
 	}
 
-	@Target(ElementType.TYPE)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface TestAnnotation {

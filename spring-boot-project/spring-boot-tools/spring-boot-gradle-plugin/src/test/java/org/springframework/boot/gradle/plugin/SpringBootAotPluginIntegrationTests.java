@@ -23,11 +23,14 @@ import java.util.List;
 
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Integration tests for {@link SpringBootAotPlugin}.
@@ -103,8 +106,20 @@ class SpringBootAotPluginIntegrationTests {
 
 	@TestTemplate
 	void processTestAotDoesNotHaveDevelopmentOnlyDependenciesOnItsClasspath() {
-		String output = this.gradleBuild.build("processTestAotClasspath", "--stacktrace").getOutput();
+		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
 		assertThat(output).doesNotContain("commons-lang");
+	}
+
+	@TestTemplate
+	void processAotDoesNotHaveTestAndDevelopmentOnlyDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processAotClasspath").getOutput();
+		assertThat(output).doesNotContain("commons-lang");
+	}
+
+	@TestTemplate
+	void processTestAotHasTestAndDevelopmentOnlyDependenciesOnItsClasspath() {
+		String output = this.gradleBuild.build("processTestAotClasspath").getOutput();
+		assertThat(output).contains("commons-lang");
 	}
 
 	@TestTemplate
@@ -119,6 +134,13 @@ class SpringBootAotPluginIntegrationTests {
 	void processTestAotIsSkippedWhenProjectHasNoTestSource() {
 		assertThat(this.gradleBuild.build("processTestAot").task(":processTestAot").getOutcome())
 			.isEqualTo(TaskOutcome.NO_SOURCE);
+	}
+
+	// gh-37343
+	@TestTemplate
+	@EnabledOnJre(JRE.JAVA_17)
+	void applyingAotPluginDoesNotPreventConfigurationOfJavaToolchainLanguageVersion() {
+		assertThatNoException().isThrownBy(() -> this.gradleBuild.build("help").getOutput());
 	}
 
 	private void writeMainClass(String packageName, String className) throws IOException {

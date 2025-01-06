@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import zipkin2.Callback;
+import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.ClosedSenderException;
-import zipkin2.reporter.Sender;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Abstract base test class which is used for testing the different implementations of the
@@ -42,56 +36,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  */
 abstract class ZipkinHttpSenderTests {
 
-	protected Sender sut;
+	protected BytesMessageSender sender;
 
-	abstract Sender createSut();
+	abstract BytesMessageSender createSender();
 
 	@BeforeEach
-	void setUp() {
-		this.sut = createSut();
+	void beforeEach() {
+		this.sender = createSender();
+	}
+
+	@AfterEach
+	void afterEach() throws IOException {
+		this.sender.close();
 	}
 
 	@Test
-	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
-		this.sut.close();
-		assertThatThrownBy(() -> this.sut.sendSpans(Collections.emptyList())).isInstanceOf(ClosedSenderException.class);
-	}
-
-	protected void makeRequest(List<byte[]> encodedSpans, boolean async) throws IOException {
-		if (async) {
-			CallbackResult callbackResult = makeAsyncRequest(encodedSpans);
-			assertThat(callbackResult.success()).isTrue();
-		}
-		else {
-			makeSyncRequest(encodedSpans);
-		}
-	}
-
-	protected CallbackResult makeAsyncRequest(List<byte[]> encodedSpans) {
-		AtomicReference<CallbackResult> callbackResult = new AtomicReference<>();
-		this.sut.sendSpans(encodedSpans).enqueue(new Callback<>() {
-			@Override
-			public void onSuccess(Void value) {
-				callbackResult.set(new CallbackResult(true, null));
-			}
-
-			@Override
-			public void onError(Throwable t) {
-				callbackResult.set(new CallbackResult(false, t));
-			}
-		});
-		return Awaitility.await().atMost(Duration.ofSeconds(5)).until(callbackResult::get, Objects::nonNull);
-	}
-
-	protected void makeSyncRequest(List<byte[]> encodedSpans) throws IOException {
-		this.sut.sendSpans(encodedSpans).execute();
+	void sendShouldThrowIfCloseWasCalled() throws IOException {
+		this.sender.close();
+		assertThatExceptionOfType(ClosedSenderException.class)
+			.isThrownBy(() -> this.sender.send(Collections.emptyList()));
 	}
 
 	protected byte[] toByteArray(String input) {
 		return input.getBytes(StandardCharsets.UTF_8);
-	}
-
-	record CallbackResult(boolean success, Throwable error) {
 	}
 
 }

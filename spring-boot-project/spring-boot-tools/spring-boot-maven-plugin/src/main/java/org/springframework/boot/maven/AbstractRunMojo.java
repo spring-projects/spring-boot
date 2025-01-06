@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,6 +44,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Base class to run a Spring Boot application.
@@ -48,6 +54,7 @@ import org.springframework.boot.loader.tools.FileUtils;
  * @author David Liu
  * @author Daniel Young
  * @author Dmytro Nosan
+ * @author Moritz Halbritter
  * @since 1.3.0
  * @see RunMojo
  * @see StartMojo
@@ -165,12 +172,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private String mainClass;
 
 	/**
-	 * Additional directories besides the classes directory that should be added to the
-	 * classpath.
-	 * @since 1.0.0
+	 * Additional classpath elements that should be added to the classpath. An element can
+	 * be a directory with classes and resources or a jar file.
+	 * @since 3.2.0
 	 */
-	@Parameter(property = "spring-boot.run.directories")
-	private String[] directories;
+	@Parameter(property = "spring-boot.run.additional-classpath-elements")
+	private String[] additionalClasspathElements;
 
 	/**
 	 * Directory containing the classes and resource files that should be used to run the
@@ -226,6 +233,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		JavaProcessExecutor processExecutor = new JavaProcessExecutor(this.session, this.toolchainManager);
 		File workingDirectoryToUse = (this.workingDirectory != null) ? this.workingDirectory
 				: this.project.getBasedir();
+		if (getLog().isDebugEnabled()) {
+			getLog().debug("Working directory: " + workingDirectoryToUse);
+			getLog().debug("Java arguments: " + String.join(" ", args));
+		}
 		run(processExecutor, workingDirectoryToUse, args, determineEnvironmentVariables());
 	}
 
@@ -264,12 +275,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void addArgs(List<String> args) {
 		RunArguments applicationArguments = resolveApplicationArguments();
 		Collections.addAll(args, applicationArguments.asArray());
-		logArguments("Application argument(s): ", applicationArguments.asArray());
+		logArguments("Application argument", applicationArguments.asArray());
 	}
 
 	private Map<String, String> determineEnvironmentVariables() {
 		EnvVariables envVariables = resolveEnvVariables();
-		logArguments("Environment variable(s): ", envVariables.asArray());
+		logArguments("Environment variable", envVariables.asArray());
 		return envVariables.asMap();
 	}
 
@@ -294,7 +305,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private void addJvmArgs(List<String> args) {
 		RunArguments jvmArguments = resolveJvmArguments();
 		Collections.addAll(args, jvmArguments.asArray());
-		logArguments("JVM argument(s): ", jvmArguments.asArray());
+		logArguments("JVM argument", jvmArguments.asArray());
 	}
 
 	private void addAgents(List<String> args) {
@@ -321,7 +332,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				}
 			}
 			arguments.getArgs().addFirst(arg.toString());
-			logArguments("Active profile(s): ", this.profiles);
+			logArguments("Active profile", this.profiles);
 		}
 	}
 
@@ -329,7 +340,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		try {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
-				if (classpath.length() > 0) {
+				if (!classpath.isEmpty()) {
 					classpath.append(File.pathSeparator);
 				}
 				classpath.append(new File(ele.toURI()));
@@ -338,17 +349,38 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				getLog().debug("Classpath for forked process: " + classpath);
 			}
 			args.add("-cp");
-			args.add(classpath.toString());
+			if (needsClasspathArgFile()) {
+				args.add("@" + ArgFile.create(classpath).path());
+			}
+			else {
+				args.add(classpath.toString());
+			}
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
 		}
 	}
 
+	private boolean needsClasspathArgFile() {
+		// Windows limits the maximum command length, so we use an argfile there
+		return runsOnWindows();
+	}
+
+	private boolean runsOnWindows() {
+		String os = System.getProperty("os.name");
+		if (!StringUtils.hasLength(os)) {
+			if (getLog().isWarnEnabled()) {
+				getLog().warn("System property os.name is not set");
+			}
+			return false;
+		}
+		return os.toLowerCase(Locale.ROOT).contains("win");
+	}
+
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
 			List<URL> urls = new ArrayList<>();
-			addUserDefinedDirectories(urls);
+			addAdditionalClasspathLocations(urls);
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
@@ -359,10 +391,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addUserDefinedDirectories(List<URL> urls) throws MalformedURLException {
-		if (this.directories != null) {
-			for (String directory : this.directories) {
-				urls.add(new File(directory).toURI().toURL());
+	private void addAdditionalClasspathLocations(List<URL> urls) throws MalformedURLException {
+		if (this.additionalClasspathElements != null) {
+			for (String element : this.additionalClasspathElements) {
+				urls.add(new File(element).toURI().toURL());
 			}
 		}
 	}
@@ -395,8 +427,9 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void logArguments(String message, String[] args) {
+	private void logArguments(String name, String[] args) {
 		if (getLog().isDebugEnabled()) {
+			String message = (args.length == 1) ? name + ": " : name + "s: ";
 			getLog().debug(Arrays.stream(args).collect(Collectors.joining(" ", message, "")));
 		}
 	}
@@ -414,6 +447,39 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				return String.format("-D%s", key);
 			}
 			return String.format("-D%s=\"%s\"", key, value);
+		}
+
+	}
+
+	record ArgFile(Path path) {
+
+		private void write(CharSequence content) throws IOException {
+			Files.writeString(this.path, "\"" + escape(content) + "\"", getCharset());
+		}
+
+		private Charset getCharset() {
+			String nativeEncoding = System.getProperty("native.encoding");
+			if (nativeEncoding == null) {
+				return Charset.defaultCharset();
+			}
+			try {
+				return Charset.forName(nativeEncoding);
+			}
+			catch (UnsupportedCharsetException ex) {
+				return Charset.defaultCharset();
+			}
+		}
+
+		private String escape(CharSequence content) {
+			return content.toString().replace("\\", "\\\\");
+		}
+
+		static ArgFile create(CharSequence content) throws IOException {
+			Path tempFile = Files.createTempFile("spring-boot-", ".argfile");
+			tempFile.toFile().deleteOnExit();
+			ArgFile argFile = new ArgFile(tempFile);
+			argFile.write(content);
+			return argFile;
 		}
 
 	}

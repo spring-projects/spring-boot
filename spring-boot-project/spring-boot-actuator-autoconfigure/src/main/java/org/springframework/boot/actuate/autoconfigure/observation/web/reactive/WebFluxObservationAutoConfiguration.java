@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDenyMeterFilter;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -37,11 +34,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
-import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring
@@ -53,48 +48,34 @@ import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
  * @author Moritz Halbritter
  * @since 3.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
-		SimpleMetricsExportAutoConfiguration.class, ObservationAutoConfiguration.class })
-@ConditionalOnClass(Observation.class)
-@ConditionalOnBean(ObservationRegistry.class)
+@AutoConfiguration(after = { SimpleMetricsExportAutoConfiguration.class, ObservationAutoConfiguration.class })
+@ConditionalOnClass({ Observation.class, MeterRegistry.class })
+@ConditionalOnBean({ ObservationRegistry.class, MeterRegistry.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
-@SuppressWarnings("removal")
 public class WebFluxObservationAutoConfiguration {
 
 	private final ObservationProperties observationProperties;
 
-	public WebFluxObservationAutoConfiguration(ObservationProperties observationProperties) {
+	WebFluxObservationAutoConfiguration(ObservationProperties observationProperties) {
 		this.observationProperties = observationProperties;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ServerHttpObservationFilter.class)
-	public OrderedServerHttpObservationFilter webfluxObservationFilter(ObservationRegistry registry,
-			ObjectProvider<ServerRequestObservationConvention> customConvention) {
+	@Order(0)
+	MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties) {
 		String name = this.observationProperties.getHttp().getServer().getRequests().getName();
-		ServerRequestObservationConvention convention = customConvention
-			.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
-		int order = this.observationProperties.getHttp().getServer().getFilter().getOrder();
-		return new OrderedServerHttpObservationFilter(registry, convention, order);
+		MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
+				() -> "Reached the maximum number of URI tags for '%s'.".formatted(name));
+		return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
+				filter);
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(MeterRegistry.class)
-	@ConditionalOnBean(MeterRegistry.class)
-	static class MeterFilterConfiguration {
-
-		@Bean
-		@Order(0)
-		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
-				ObservationProperties observationProperties) {
-			String name = observationProperties.getHttp().getServer().getRequests().getName();
-			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> "Reached the maximum number of URI tags for '%s'.".formatted(name));
-			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
-					filter);
-		}
-
+	@Bean
+	@ConditionalOnMissingBean(ServerRequestObservationConvention.class)
+	DefaultServerRequestObservationConvention defaultServerRequestObservationConvention() {
+		return new DefaultServerRequestObservationConvention(
+				this.observationProperties.getHttp().getServer().getRequests().getName());
 	}
 
 }

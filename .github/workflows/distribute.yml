@@ -1,0 +1,41 @@
+name: Distribute
+on:
+  workflow_dispatch:
+    inputs:
+      build-number:
+        description: 'Number of the build to use to create the bundle'
+        required: true
+        type: string
+      create-bundle:
+        description: 'Whether to create the bundle. If unchecked, only the bundle distribution is executed'
+        required: true
+        type: boolean
+        default: true
+      version:
+        description: 'Version to bundle and distribute'
+        required: true
+        type: string
+jobs:
+  distribute-spring-enterprise-release-bundle:
+    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
+    steps:
+      - name: Create Bundle
+        if: ${{ vars.COMMERCIAL && inputs.create-bundle }}
+        shell: bash
+        run: |
+          curl -s -u "${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}:${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}" \
+            -X POST -H "X-JFrog-Signing-Key-Name: packagesKey" -H "Content-Type: application/json" \
+            "https://usw1.packages.broadcom.com/lifecycle/api/v2/release_bundle?project=spring" \
+            -d '{"release_bundle_name": "TNZ-spring-boot-commercial", "release_bundle_version": "${{ inputs.version }}", "skip_docker_manifest_resolution": true, "source_type": "builds", "source": {"builds": [ {"build_repository": "spring-build-info", "build_name": "spring-boot-commercial-${{ inputs.version }}", "build_number": "${{ inputs.build-number }}", "include_dependencies": false}]}}'
+      - name: Sleep
+        if: ${{ vars.COMMERCIAL && inputs.create-bundle }}
+        shell: bash
+        run: sleep 30
+      - name: Distribute Bundle
+        if: ${{ vars.COMMERCIAL }}
+        shell: bash
+        run: |
+          curl -s -u "${{ secrets.COMMERCIAL_ARTIFACTORY_USERNAME }}:${{ secrets.COMMERCIAL_ARTIFACTORY_PASSWORD }}" \
+            -X POST -H "Content-Type: application/json" \
+            "https://usw1.packages.broadcom.com/lifecycle/api/v2/distribution/distribute/TNZ-spring-boot-commercial/${{ inputs.version }}?project=spring" \
+            -d '{"auto_create_missing_repositories": "false", "distribution_rules": [{"site_name": "JP-SaaS"}], "modifications": {"mappings": [{"input": "spring-enterprise-maven-prod-local/(.*)", "output": "spring-enterprise/$1"}]}}'

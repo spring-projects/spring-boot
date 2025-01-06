@@ -59,14 +59,18 @@ class WebServletHandler extends ServletComponentHandler {
 				: beanDefinition.getBeanClassName());
 	}
 
-	private MultipartConfigElement determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
+	private BeanDefinition determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 			.getAnnotationAttributes(MultipartConfig.class.getName());
 		if (attributes == null) {
 			return null;
 		}
-		return new MultipartConfigElement((String) attributes.get("location"), (Long) attributes.get("maxFileSize"),
-				(Long) attributes.get("maxRequestSize"), (Integer) attributes.get("fileSizeThreshold"));
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(MultipartConfigElement.class);
+		builder.addConstructorArgValue(attributes.get("location"));
+		builder.addConstructorArgValue(attributes.get("maxFileSize"));
+		builder.addConstructorArgValue(attributes.get("maxRequestSize"));
+		builder.addConstructorArgValue(attributes.get("fileSizeThreshold"));
+		return builder.getBeanDefinition();
 	}
 
 }

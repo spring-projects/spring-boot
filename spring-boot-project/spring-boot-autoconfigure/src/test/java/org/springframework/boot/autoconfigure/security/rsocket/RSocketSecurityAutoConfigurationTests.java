@@ -22,12 +22,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.messaging.handler.invocation.reactive.AuthenticationPrincipalArgumentResolver;
 import org.springframework.security.rsocket.core.SecuritySocketAcceptorInterceptor;
 
@@ -42,9 +45,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RSocketSecurityAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
-				RSocketSecurityAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
-				RSocketStrategiesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RSocketSecurityAutoConfiguration.class,
+				RSocketMessagingAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class))
+		.withUserConfiguration(UserDetailsServiceConfiguration.class);
 
 	@Test
 	void autoConfigurationEnablesRSocketSecurity() {
@@ -79,6 +82,17 @@ class RSocketSecurityAutoConfigurationTests {
 			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers())
 				.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
 		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UserDetailsServiceConfiguration {
+
+		@Bean
+		MapReactiveUserDetailsService userDetailsService() {
+			return new MapReactiveUserDetailsService(
+					User.withUsername("alice").password("secret").roles("admin").build());
+		}
+
 	}
 
 }

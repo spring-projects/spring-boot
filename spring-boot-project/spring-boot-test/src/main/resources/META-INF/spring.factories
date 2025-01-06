@@ -6,7 +6,8 @@ org.springframework.boot.test.graphql.tester.HttpGraphQlTesterContextCustomizerF
 org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory,\
 org.springframework.boot.test.mock.mockito.MockitoContextCustomizerFactory,\
 org.springframework.boot.test.web.client.TestRestTemplateContextCustomizerFactory,\
-org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizerFactory
+org.springframework.boot.test.web.reactive.server.WebTestClientContextCustomizerFactory,\
+org.springframework.boot.test.web.reactor.netty.DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory
 
 # Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\

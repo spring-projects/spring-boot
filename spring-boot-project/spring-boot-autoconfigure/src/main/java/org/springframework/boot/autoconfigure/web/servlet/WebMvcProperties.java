@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
 
 /**
- * {@link ConfigurationProperties properties} for Spring MVC.
+ * {@link ConfigurationProperties Properties} for Spring MVC.
  *
  * @author Phillip Webb
  * @author Sébastien Deleuze
@@ -60,12 +60,6 @@ public class WebMvcProperties {
 	 * Whether to publish a ServletRequestHandledEvent at the end of each request.
 	 */
 	private boolean publishRequestHandledEvents = true;
-
-	/**
-	 * Whether a "NoHandlerFoundException" should be thrown if no Handler was found to
-	 * process a request.
-	 */
-	private boolean throwExceptionIfNoHandlerFound = false;
 
 	/**
 	 * Whether logging of (potentially sensitive) request details at DEBUG and TRACE level
@@ -119,14 +113,6 @@ public class WebMvcProperties {
 
 	public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
 		this.publishRequestHandledEvents = publishRequestHandledEvents;
-	}
-
-	public boolean isThrowExceptionIfNoHandlerFound() {
-		return this.throwExceptionIfNoHandlerFound;
-	}
-
-	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
-		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
 	}
 
 	public boolean isLogRequestDetails() {
@@ -251,7 +237,7 @@ public class WebMvcProperties {
 		}
 
 		public String getServletMapping() {
-			if (this.path.equals("") || this.path.equals("/")) {
+			if (this.path.isEmpty() || this.path.equals("/")) {
 				return "/";
 			}
 			if (this.path.endsWith("/")) {
@@ -377,17 +363,20 @@ public class WebMvcProperties {
 	public static class Format {
 
 		/**
-		 * Date format to use, for example 'dd/MM/yyyy'.
+		 * Date format to use, for example 'dd/MM/yyyy'. Used for formatting of
+		 * java.util.Date and java.time.LocalDate.
 		 */
 		private String date;
 
 		/**
-		 * Time format to use, for example 'HH:mm:ss'.
+		 * Time format to use, for example 'HH:mm:ss'. Used for formatting of java.time's
+		 * LocalTime and OffsetTime.
 		 */
 		private String time;
 
 		/**
-		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'.
+		 * Date-time format to use, for example 'yyyy-MM-dd HH:mm:ss'. Used for formatting
+		 * of java.time's LocalDateTime, OffsetDateTime, and ZonedDateTime.
 		 */
 		private String dateTime;
 
@@ -439,7 +428,7 @@ public class WebMvcProperties {
 	public static class Problemdetails {
 
 		/**
-		 * Whether RFC 7807 Problem Details support should be enabled.
+		 * Whether RFC 9457 Problem Details support should be enabled.
 		 */
 		private boolean enabled = false;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -66,7 +67,7 @@ public class StandardConfigDataLocationResolver
 
 	private static final Pattern URL_PREFIX = Pattern.compile("^([a-zA-Z][a-zA-Z0-9*]*?:)(.*$)");
 
-	private static final Pattern EXTENSION_HINT_PATTERN = Pattern.compile("^(.*)\\[(\\.\\w+)\\](?!\\[)$");
+	private static final Pattern EXTENSION_HINT_PATTERN = Pattern.compile("^(.*)\\[(\\.\\w+)](?!\\[)$");
 
 	private static final String NO_PROFILE = null;
 
@@ -228,8 +229,20 @@ public class StandardConfigDataLocationResolver
 				return Collections.singleton(reference);
 			}
 		}
-		throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
-				+ "If the location is meant to reference a directory, it must end in '/' or File.separator");
+		if (configDataLocation.isOptional()) {
+			return Collections.emptySet();
+		}
+		if (configDataLocation.hasPrefix(PREFIX) || configDataLocation.hasPrefix(ResourceUtils.FILE_URL_PREFIX)
+				|| configDataLocation.hasPrefix(ResourceUtils.CLASSPATH_URL_PREFIX)
+				|| configDataLocation.toString().indexOf(':') == -1) {
+			throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
+					+ "If the location is meant to reference a directory, it must end in '/' or File.separator");
+		}
+		throw new IllegalStateException(
+				"Incorrect ConfigDataLocationResolver chosen or file extension is not known to any PropertySourceLoader. "
+						+ "If the location is meant to reference a directory, it must end in '/' or File.separator. "
+						+ "The location is being resolved using the StandardConfigDataLocationResolver, "
+						+ "check the location prefix if a different resolver is expected");
 	}
 
 	private String getLoadableFileExtension(PropertySourceLoader loader, String file) {

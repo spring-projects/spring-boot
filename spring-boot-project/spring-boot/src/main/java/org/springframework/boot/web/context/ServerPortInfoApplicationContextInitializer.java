@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  * {@link Value @Value} or obtained through the {@link Environment}.
  * <p>
  * If the {@link WebServerInitializedEvent} has a
- * {@link WebServerApplicationContext#getServerNamespace() server namespace} , it will be
+ * {@link WebServerApplicationContext#getServerNamespace() server namespace}, it will be
  * used to construct the property name. For example, the "management" actuator context
  * will have the property name {@literal "local.management.port"}.
  * <p>
@@ -51,6 +51,8 @@ import org.springframework.util.StringUtils;
  */
 public class ServerPortInfoApplicationContextInitializer implements
 		ApplicationContextInitializer<ConfigurableApplicationContext>, ApplicationListener<WebServerInitializedEvent> {
+
+	private static final String PROPERTY_SOURCE_NAME = "server.ports";
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
@@ -80,9 +82,9 @@ public class ServerPortInfoApplicationContextInitializer implements
 	@SuppressWarnings("unchecked")
 	private void setPortProperty(ConfigurableEnvironment environment, String propertyName, int port) {
 		MutablePropertySources sources = environment.getPropertySources();
-		PropertySource<?> source = sources.get("server.ports");
+		PropertySource<?> source = sources.get(PROPERTY_SOURCE_NAME);
 		if (source == null) {
-			source = new MapPropertySource("server.ports", new HashMap<>());
+			source = new MapPropertySource(PROPERTY_SOURCE_NAME, new HashMap<>());
 			sources.addFirst(source);
 		}
 		((Map<String, Object>) source.getSource()).put(propertyName, port);

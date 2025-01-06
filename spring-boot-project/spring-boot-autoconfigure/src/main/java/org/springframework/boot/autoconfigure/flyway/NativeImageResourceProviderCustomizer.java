@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,8 @@ class NativeImageResourceProviderCustomizer extends ResourceProviderCustomizer {
 	@Override
 	public void customize(FluentConfiguration configuration) {
 		if (configuration.getResourceProvider() == null) {
-			Scanner<JavaMigration> scanner = new Scanner<>(JavaMigration.class,
-					Arrays.asList(configuration.getLocations()), configuration.getClassLoader(),
-					configuration.getEncoding(), configuration.isDetectEncoding(), false, new ResourceNameCache(),
-					new LocationScannerCache(), configuration.isFailOnMissingLocations());
+			Scanner<JavaMigration> scanner = new Scanner<>(JavaMigration.class, false, new ResourceNameCache(),
+					new LocationScannerCache(), configuration);
 			NativeImageResourceProvider resourceProvider = new NativeImageResourceProvider(scanner,
 					configuration.getClassLoader(), Arrays.asList(configuration.getLocations()),
 					configuration.getEncoding(), configuration.isFailOnMissingLocations());

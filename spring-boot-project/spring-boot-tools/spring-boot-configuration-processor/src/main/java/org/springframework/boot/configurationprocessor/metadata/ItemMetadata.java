@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.configurationprocessor.metadata;
 
 import java.util.Locale;
+
+import org.springframework.boot.configurationprocessor.support.ConventionUtils;
 
 /**
  * A group or property meta-data item from some {@link ConfigurationMetadata}.
@@ -65,10 +67,10 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 			fullName.append(prefix);
 		}
 		if (name != null) {
-			if (fullName.length() > 0) {
+			if (!fullName.isEmpty()) {
 				fullName.append('.');
 			}
-			fullName.append(ConfigurationMetadata.toDashedCase(name));
+			fullName.append(ConventionUtils.toDashedCase(name));
 		}
 		return fullName.toString();
 	}
@@ -196,7 +198,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 		return string.toString();
 	}
 
-	protected void buildToStringProperty(StringBuilder string, String property, Object value) {
+	private void buildToStringProperty(StringBuilder string, String property, Object value) {
 		if (value != null) {
 			string.append(" ").append(property).append(":").append(value);
 		}
@@ -218,7 +220,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 	}
 
 	public static String newItemMetadataPrefix(String prefix, String suffix) {
-		return prefix.toLowerCase(Locale.ENGLISH) + ConfigurationMetadata.toDashedCase(suffix);
+		return prefix.toLowerCase(Locale.ENGLISH) + ConventionUtils.toDashedCase(suffix);
 	}
 
 	/**

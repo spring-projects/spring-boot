@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -239,8 +239,7 @@ public final class ConfigData {
 		}
 
 		private Options copy(Consumer<EnumSet<Option>> processor) {
-			EnumSet<Option> options = EnumSet.noneOf(Option.class);
-			options.addAll(this.options);
+			EnumSet<Option> options = EnumSet.copyOf(this.options);
 			processor.accept(options);
 			return new Options(options);
 		}
@@ -281,7 +280,7 @@ public final class ConfigData {
 		 * profile specific sibling imports.
 		 * @since 2.4.5
 		 */
-		PROFILE_SPECIFIC;
+		PROFILE_SPECIFIC
 
 	}
 

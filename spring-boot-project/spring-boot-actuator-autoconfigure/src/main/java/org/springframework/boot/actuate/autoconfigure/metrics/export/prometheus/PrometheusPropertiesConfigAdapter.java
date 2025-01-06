@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.Properties;
 
-import io.micrometer.prometheus.HistogramFlavor;
-import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheusmetrics.PrometheusConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
@@ -52,13 +53,26 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 	}
 
 	@Override
-	public HistogramFlavor histogramFlavor() {
-		return get(PrometheusProperties::getHistogramFlavor, PrometheusConfig.super::histogramFlavor);
+	public Duration step() {
+		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
 	}
 
 	@Override
-	public Duration step() {
-		return get(PrometheusProperties::getStep, PrometheusConfig.super::step);
+	public Properties prometheusProperties() {
+		return get(this::fromPropertiesMap, PrometheusConfig.super::prometheusProperties);
+	}
+
+	private Properties fromPropertiesMap(PrometheusProperties prometheusProperties) {
+		Map<String, String> additionalProperties = prometheusProperties.getProperties();
+		if (additionalProperties.isEmpty()) {
+			return null;
+		}
+		Properties properties = PrometheusConfig.super.prometheusProperties();
+		if (properties == null) {
+			properties = new Properties();
+		}
+		properties.putAll(additionalProperties);
+		return properties;
 	}
 
 }

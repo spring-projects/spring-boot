@@ -23,6 +23,7 @@ import org.springframework.boot.ssl.pem.PemSslStoreBundle;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 3.1.0
  * @see PemSslStoreBundle
  */
@@ -31,12 +32,12 @@ public class PemSslBundleProperties extends SslBundleProperties {
 	/**
 	 * Keystore properties.
 	 */
-	private Store keystore = new Store();
+	private final Store keystore = new Store();
 
 	/**
 	 * Truststore properties.
 	 */
-	private Store truststore = new Store();
+	private final Store truststore = new Store();
 
 	public Store getKeystore() {
 		return this.keystore;
@@ -54,22 +55,27 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		/**
 		 * Type of the store to create, e.g. JKS.
 		 */
-		String type;
+		private String type;
 
 		/**
-		 * Location or content of the certificate in PEM format.
+		 * Location or content of the certificate or certificate chain in PEM format.
 		 */
-		String certificate;
+		private String certificate;
 
 		/**
 		 * Location or content of the private key in PEM format.
 		 */
-		String privateKey;
+		private String privateKey;
 
 		/**
 		 * Password used to decrypt an encrypted private key.
 		 */
-		String privateKeyPassword;
+		private String privateKeyPassword;
+
+		/**
+		 * Whether to verify that the private key matches the public key.
+		 */
+		private boolean verifyKeys;
 
 		public String getType() {
 			return this.type;
@@ -101,6 +107,14 @@ public class PemSslBundleProperties extends SslBundleProperties {
 
 		public void setPrivateKeyPassword(String privateKeyPassword) {
 			this.privateKeyPassword = privateKeyPassword;
+		}
+
+		public boolean isVerifyKeys() {
+			return this.verifyKeys;
+		}
+
+		public void setVerifyKeys(boolean verifyKeys) {
+			this.verifyKeys = verifyKeys;
 		}
 
 	}

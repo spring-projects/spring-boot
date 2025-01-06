@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,15 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MySqlJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
+	private static final String[] MYSQL_CONTAINER_NAMES = { "mysql", "bitnami/mysql" };
+
 	protected MySqlJdbcDockerComposeConnectionDetailsFactory() {
-		super("mysql");
+		super(MYSQL_CONTAINER_NAMES);
 	}
 
 	@Override

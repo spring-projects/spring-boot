@@ -156,13 +156,7 @@ public final class Bindable<T> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.bindRestrictions);
-		result = prime * result + ObjectUtils.nullSafeHashCode(this.bindMethod);
-		return result;
+		return ObjectUtils.nullSafeHash(this.type, this.annotations, this.bindRestrictions, this.bindMethod);
 	}
 
 	@Override
@@ -230,7 +224,7 @@ public final class Bindable<T> {
 	}
 
 	/**
-	 * Create an updated {@link Bindable} instance with a specifc bind method. To use
+	 * Create an updated {@link Bindable} instance with a specific bind method. To use
 	 * {@link BindMethod#VALUE_OBJECT value object binding}, the current instance must not
 	 * have an existing or supplied value.
 	 * @param bindMethod the method to use to bind the bindable

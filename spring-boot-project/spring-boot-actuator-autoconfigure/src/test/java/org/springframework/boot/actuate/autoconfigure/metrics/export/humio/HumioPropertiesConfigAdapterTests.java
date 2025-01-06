@@ -20,6 +20,8 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -27,7 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-class HumioPropertiesConfigAdapterTests {
+class HumioPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<HumioProperties, HumioPropertiesConfigAdapter> {
+
+	HumioPropertiesConfigAdapterTests() {
+		super(HumioPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenApiTokenIsSetAdapterApiTokenReturnsIt() {

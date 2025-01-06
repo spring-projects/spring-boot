@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
 class ClientHttpRequestFactoriesHttpComponentsTests
 		extends AbstractClientHttpRequestFactoriesTests<HttpComponentsClientHttpRequestFactory> {
 
@@ -39,7 +40,7 @@ class ClientHttpRequestFactoriesHttpComponentsTests
 
 	@Override
 	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
 	}
 
 	@Override
@@ -51,6 +52,16 @@ class ClientHttpRequestFactoriesHttpComponentsTests
 				"socketConfigResolver"))
 			.resolve(null);
 		return socketConfig.getSoTimeout().toMilliseconds();
+	}
+
+	@Override
+	protected boolean supportsSettingConnectTimeout() {
+		return true;
+	}
+
+	@Override
+	protected boolean supportsSettingReadTimeout() {
+		return false;
 	}
 
 }

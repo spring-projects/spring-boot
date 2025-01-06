@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.web.filter.ServerHttpObservationFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Tests for {@link WebMvcObservationAutoConfiguration}.
@@ -57,7 +54,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Tadaya Tsuyukubo
  * @author Madhura Bhave
  * @author Chanhyeong LEE
- * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 class WebMvcObservationAutoConfigurationTests {
@@ -99,15 +95,6 @@ class WebMvcObservationAutoConfigurationTests {
 					EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
 			assertThat(registration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
 		});
-	}
-
-	@Test
-	void filterRegistrationOrderCanBeOverridden() {
-		this.contextRunner.withPropertyValues("management.observations.http.server.filter.order=1000")
-			.run((context) -> {
-				FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
-				assertThat(registration.getOrder()).isEqualTo(1000);
-			});
 	}
 
 	@Test
@@ -179,18 +166,17 @@ class WebMvcObservationAutoConfigurationTests {
 			});
 	}
 
-	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) throws Exception {
+	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) {
 		return getInitializedMeterRegistry(context, "/test0", "/test1", "/test2");
 	}
 
-	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context, String... urls)
-			throws Exception {
+	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context, String... urls) {
 		assertThat(context).hasSingleBean(FilterRegistrationBean.class);
 		Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 		assertThat(filter).isInstanceOf(ServerHttpObservationFilter.class);
-		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(filter).build();
+		MockMvcTester mvc = MockMvcTester.from(context, (builder) -> builder.addFilters(filter).build());
 		for (String url : urls) {
-			mockMvc.perform(MockMvcRequestBuilders.get(url)).andExpect(status().isOk());
+			assertThat(mvc.get().uri(url)).hasStatusOk();
 		}
 		return context.getBean(MeterRegistry.class);
 	}

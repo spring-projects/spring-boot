@@ -29,7 +29,7 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatException;
 
 /**
  * Tests for {@link OnBeanCondition} when deduction of the bean's type fails
@@ -41,7 +41,7 @@ class OnBeanConditionTypeDeductionFailureTests {
 
 	@Test
 	void conditionalOnMissingBeanWithDeducedTypeThatIsPartiallyMissingFromClassPath() {
-		assertThatExceptionOfType(Exception.class)
+		assertThatException()
 			.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
 			.satisfies((ex) -> {
 				Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);

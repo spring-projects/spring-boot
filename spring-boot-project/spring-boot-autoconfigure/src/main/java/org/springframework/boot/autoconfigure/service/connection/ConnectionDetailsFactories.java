@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,11 +122,11 @@ public class ConnectionDetailsFactories {
 		@SuppressWarnings("unchecked")
 		private static <S, D extends ConnectionDetails> Registration<S, D> get(ConnectionDetailsFactory<S, D> factory) {
 			ResolvableType type = ResolvableType.forClass(ConnectionDetailsFactory.class, factory.getClass());
-			if (!type.hasUnresolvableGenerics()) {
-				Class<?>[] generics = type.resolveGenerics();
-				return new Registration<>((Class<S>) generics[0], (Class<D>) generics[1], factory);
-			}
-			return null;
+			Class<?>[] generics = type.resolveGenerics();
+			Class<S> sourceType = (Class<S>) generics[0];
+			Class<D> connectionDetailsType = (Class<D>) generics[1];
+			return (sourceType != null && connectionDetailsType != null)
+					? new Registration<>(sourceType, connectionDetailsType, factory) : null;
 		}
 
 	}

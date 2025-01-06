@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@ package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.logging.LogLevel;
 
 /**
@@ -39,14 +42,19 @@ public class DockerComposeProperties {
 	static final String NAME = "spring.docker.compose";
 
 	/**
-	 * Whether docker compose support is enabled.
+	 * Whether Docker Compose support is enabled.
 	 */
 	private boolean enabled = true;
 
 	/**
-	 * Path to a specific docker compose configuration file.
+	 * Arguments to pass to the Docker Compose command.
 	 */
-	private File file;
+	private final List<String> arguments = new ArrayList<>();
+
+	/**
+	 * Paths to the Docker Compose configuration files.
+	 */
+	private final List<File> file = new ArrayList<>();
 
 	/**
 	 * Docker compose lifecycle management.
@@ -85,12 +93,12 @@ public class DockerComposeProperties {
 		this.enabled = enabled;
 	}
 
-	public File getFile() {
-		return this.file;
+	public List<String> getArguments() {
+		return this.arguments;
 	}
 
-	public void setFile(File file) {
-		this.file = file;
+	public List<File> getFile() {
+		return this.file;
 	}
 
 	public LifecycleManagement getLifecycleManagement() {
@@ -139,7 +147,7 @@ public class DockerComposeProperties {
 	public static class Start {
 
 		/**
-		 * Command used to start docker compose.
+		 * Command used to start Docker Compose.
 		 */
 		private StartCommand command = StartCommand.UP;
 
@@ -147,6 +155,16 @@ public class DockerComposeProperties {
 		 * Log level for output.
 		 */
 		private LogLevel logLevel = LogLevel.INFO;
+
+		/**
+		 * Whether to skip executing the start command.
+		 */
+		private Skip skip = Skip.IF_RUNNING;
+
+		/**
+		 * Arguments to pass to the start command.
+		 */
+		private final List<String> arguments = new ArrayList<>();
 
 		public StartCommand getCommand() {
 			return this.command;
@@ -164,6 +182,55 @@ public class DockerComposeProperties {
 			this.logLevel = logLevel;
 		}
 
+		public Skip getSkip() {
+			return this.skip;
+		}
+
+		public void setSkip(Skip skip) {
+			this.skip = skip;
+		}
+
+		public List<String> getArguments() {
+			return this.arguments;
+		}
+
+		/**
+		 * Start command skip mode.
+		 */
+		public enum Skip {
+
+			/**
+			 * Never skip start.
+			 */
+			NEVER {
+				@Override
+				boolean shouldSkip(List<RunningService> runningServices) {
+					return false;
+				}
+			},
+			/**
+			 * Skip start if there are already services running.
+			 */
+			IF_RUNNING {
+				@Override
+				boolean shouldSkip(List<RunningService> runningServices) {
+					return !runningServices.isEmpty();
+				}
+
+				@Override
+				String getLogMessage() {
+					return "There are already Docker Compose services running, skipping startup";
+				}
+			};
+
+			abstract boolean shouldSkip(List<RunningService> runningServices);
+
+			String getLogMessage() {
+				return "";
+			}
+
+		}
+
 	}
 
 	/**
@@ -172,7 +239,7 @@ public class DockerComposeProperties {
 	public static class Stop {
 
 		/**
-		 * Command used to stop docker compose.
+		 * Command used to stop Docker Compose.
 		 */
 		private StopCommand command = StopCommand.STOP;
 
@@ -180,6 +247,11 @@ public class DockerComposeProperties {
 		 * Timeout for stopping Docker Compose. Use '0' for forced stop.
 		 */
 		private Duration timeout = Duration.ofSeconds(10);
+
+		/**
+		 * Arguments to pass to the stop command.
+		 */
+		private final List<String> arguments = new ArrayList<>();
 
 		public StopCommand getCommand() {
 			return this.command;
@@ -195,6 +267,10 @@ public class DockerComposeProperties {
 
 		public void setTimeout(Duration timeout) {
 			this.timeout = timeout;
+		}
+
+		public List<String> getArguments() {
+			return this.arguments;
 		}
 
 	}

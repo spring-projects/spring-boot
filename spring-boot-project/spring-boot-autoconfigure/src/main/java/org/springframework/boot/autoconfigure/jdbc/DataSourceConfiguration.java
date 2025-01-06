@@ -172,7 +172,6 @@ abstract class DataSourceConfiguration {
 				throws SQLException {
 			PoolDataSourceImpl dataSource = createDataSource(connectionDetails, PoolDataSourceImpl.class,
 					properties.getClassLoader());
-			dataSource.setValidateConnectionOnBorrow(true);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setConnectionPoolName(properties.getName());
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  * @since 1.4.0
  */
 public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomizer {
@@ -100,7 +101,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			return null;
 		}
 		if (this.print == MockMvcPrint.LOG_DEBUG) {
-			return new LoggingLinesWriter();
+			return (LoggingLinesWriter.isDebugEnabled()) ? new LoggingLinesWriter() : null;
 		}
 		return new SystemLinesWriter(this.print);
 	}
@@ -116,12 +117,8 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	private void addFilter(ConfigurableMockMvcBuilder<?> builder, AbstractFilterRegistrationBean<?> registration) {
 		Filter filter = registration.getFilter();
 		Collection<String> urls = registration.getUrlPatterns();
-		if (urls.isEmpty()) {
-			builder.addFilters(filter);
-		}
-		else {
-			builder.addFilter(filter, StringUtils.toStringArray(urls));
-		}
+		builder.addFilter(filter, registration.getFilterName(), registration.getInitParameters(),
+				registration.determineDispatcherTypes(), StringUtils.toStringArray(urls));
 	}
 
 	public void setAddFilters(boolean addFilters) {
@@ -177,7 +174,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				writer.write(((Printer) getPrinter()).getLines());
 			}
 
-			private static class Printer implements ResultValuePrinter {
+			private static final class Printer implements ResultValuePrinter {
 
 				private final List<String> lines = new ArrayList<>();
 
@@ -192,7 +189,12 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 					if (value != null && value.getClass().isArray()) {
 						value = CollectionUtils.arrayToList(value);
 					}
-					this.lines.add(String.format("%17s = %s", label, value));
+					try {
+						this.lines.add("%17s = %s".formatted(label, value));
+					}
+					catch (RuntimeException ex) {
+						this.lines.add("%17s = << Exception '%s' occurred while formatting >>".formatted(label, ex));
+					}
 				}
 
 				List<String> getLines() {
@@ -253,7 +255,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 		}
 
 		void clear() {
-			this.lines.get().clear();
+			this.lines.remove();
 		}
 
 	}
@@ -261,7 +263,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 	/**
 	 * {@link LinesWriter} to output results to the log.
 	 */
-	private static class LoggingLinesWriter implements LinesWriter {
+	private static final class LoggingLinesWriter implements LinesWriter {
 
 		private static final Log logger = LogFactory.getLog("org.springframework.test.web.servlet.result");
 
@@ -275,6 +277,10 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 				}
 				logger.debug("MvcResult details:\n" + stringWriter);
 			}
+		}
+
+		static boolean isDebugEnabled() {
+			return logger.isDebugEnabled();
 		}
 
 	}
@@ -318,7 +324,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			addAsRegistrationBean(beanFactory, Filter.class, new FilterRegistrationBeanAdapter());
 		}
 
-		private static class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
+		private static final class FilterRegistrationBeanAdapter implements RegistrationBeanAdapter<Filter> {
 
 			@Override
 			public RegistrationBean createRegistrationBean(String name, Filter source, int totalNumberOfSourceBeans) {

@@ -10,4 +10,7 @@
 	<suppress files="jquery-[0-9]\.[0-9]\.[0-9].js" checks="NoHttp" />
 	<suppress files="[\\/]spring-boot-project.setup" checks="NoHttp" />
 	<suppress files="DockerHostTests\.java" checks="NoHttp" />
+	<suppress files="cyclonedx\.json" checks="NoHttp" />
+	<suppress files="spdx\.json" checks="NoHttp" />
+	<suppress files="syft\.json" checks="NoHttp" />
 </suppressions>

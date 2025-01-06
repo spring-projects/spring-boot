@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.docker.type;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,18 +27,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 
 /**
- * Image archive manifest information.
+ * Image archive manifest information as provided by {@code manifest.json}.
  *
  * @author Scott Frederick
  * @since 2.7.10
  */
 public class ImageArchiveManifest extends MappedObject {
 
-	private final List<ManifestEntry> entries = new ArrayList<>();
+	private final List<ManifestEntry> entries;
 
 	protected ImageArchiveManifest(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		getNode().elements().forEachRemaining((element) -> this.entries.add(ManifestEntry.of(element)));
+		this.entries = childrenAt(null, ManifestEntry::new);
 	}
 
 	/**
@@ -75,10 +74,6 @@ public class ImageArchiveManifest extends MappedObject {
 		 */
 		public List<String> getLayers() {
 			return this.layers;
-		}
-
-		static ManifestEntry of(JsonNode node) {
-			return new ManifestEntry(node);
 		}
 
 		@SuppressWarnings("unchecked")

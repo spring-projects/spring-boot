@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -493,6 +494,21 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void subNameOfAdaptedNameWhenOffsetLessThanSizeShouldReturnSubName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("MY_LOGGING_LEVEL_ONE", '_');
+		assertThat(name.subName(1)).hasToString("logging.level.one");
+		assertThat(name.subName(2)).hasToString("level.one");
+	}
+
+	@Test
+	void subNameOfAdaptedNameWithValueProcessorWhenOffsetLessThanSizeShouldReturnSubName() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("MY_LOGGING_LEVEL_ONE", '_',
+				(value) -> value.toString().toLowerCase(Locale.ENGLISH));
+		assertThat(name.subName(1)).hasToString("logging.level.one");
+		assertThat(name.subName(2)).hasToString("level.one");
+	}
+
+	@Test
 	void subNameWhenOffsetZeroShouldReturnName() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo.bar.baz");
 		assertThat(name.subName(0)).isSameAs(name);
@@ -692,13 +708,20 @@ class ConfigurationPropertyNameTests {
 		assertThat(n2).isNotEqualTo(n1);
 	}
 
-	@Test
-	void equalsWhenAdaptedNameMatchesDueToRemovalOfTrailingCharacters() {
-		// gh-30317
+	@Test // gh-30317
+	void equalsWhenAdaptedNameMatchesDueToRemovalOfTrailingNonUniformCharacters() {
 		ConfigurationPropertyName name1 = ConfigurationPropertyName.of("example.demo");
 		ConfigurationPropertyName name2 = ConfigurationPropertyName.adapt("example.demo$$", '.');
 		assertThat(name1).isEqualTo(name2);
 		assertThat(name2).isEqualTo(name1);
+	}
+
+	@Test // gh-34804
+	void equalsSymmetricWhenNameMatchesDueToIgnoredTrailingDashes() {
+		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("example.demo");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName.of("example.demo--");
+		assertThat(n2).isEqualTo(n1);
+		assertThat(n1).isEqualTo(n2);
 	}
 
 	@Test

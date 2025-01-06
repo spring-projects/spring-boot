@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,6 @@ class WavefrontTracingAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(WavefrontAutoConfiguration.class, WavefrontTracingAutoConfiguration.class));
 
-	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
-		.withPropertyValues("management.tracing.enabled=false");
-
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
@@ -85,12 +82,25 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.tracingDisabledContextRunner.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
-			assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
-			assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
-			assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
-		});
+	void shouldNotSupplyBeansIfGlobalTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
+			.withUserConfiguration(WavefrontSenderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
+			});
+	}
+
+	@Test
+	void shouldNotSupplyBeansIfWavefrontTracingIsDisabled() {
+		this.contextRunner.withPropertyValues("management.wavefront.tracing.export.enabled=false")
+			.withUserConfiguration(WavefrontSenderConfiguration.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
+				assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
+			});
 	}
 
 	@Test
@@ -173,7 +183,7 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class CustomConfiguration {
+	private static final class CustomConfiguration {
 
 		@Bean
 		ApplicationTags customApplicationTags() {
@@ -203,7 +213,7 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class WavefrontSenderConfiguration {
+	private static final class WavefrontSenderConfiguration {
 
 		@Bean
 		WavefrontSender wavefrontSender() {
@@ -213,7 +223,7 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	private static class MeterRegistryConfiguration {
+	private static final class MeterRegistryConfiguration {
 
 		@Bean
 		MeterRegistry meterRegistry() {

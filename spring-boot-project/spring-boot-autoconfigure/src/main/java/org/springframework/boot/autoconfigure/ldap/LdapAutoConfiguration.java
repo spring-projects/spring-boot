@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,17 +47,24 @@ import org.springframework.ldap.core.support.LdapContextSource;
 public class LdapAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(LdapConnectionDetails.class)
+	PropertiesLdapConnectionDetails propertiesLdapConnectionDetails(LdapProperties properties,
+			Environment environment) {
+		return new PropertiesLdapConnectionDetails(properties, environment);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(LdapProperties properties, Environment environment,
+	public LdapContextSource ldapContextSource(LdapConnectionDetails connectionDetails, LdapProperties properties,
 			ObjectProvider<DirContextAuthenticationStrategy> dirContextAuthenticationStrategy) {
 		LdapContextSource source = new LdapContextSource();
 		dirContextAuthenticationStrategy.ifUnique(source::setAuthenticationStrategy);
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		propertyMapper.from(properties.getUsername()).to(source::setUserDn);
-		propertyMapper.from(properties.getPassword()).to(source::setPassword);
+		propertyMapper.from(connectionDetails.getUsername()).to(source::setUserDn);
+		propertyMapper.from(connectionDetails.getPassword()).to(source::setPassword);
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
-		propertyMapper.from(properties.getBase()).to(source::setBase);
-		propertyMapper.from(properties.determineUrls(environment)).to(source::setUrls);
+		propertyMapper.from(connectionDetails.getBase()).to(source::setBase);
+		propertyMapper.from(connectionDetails.getUrls()).to(source::setUrls);
 		propertyMapper.from(properties.getBaseEnvironment())
 			.to((baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
 		return source;

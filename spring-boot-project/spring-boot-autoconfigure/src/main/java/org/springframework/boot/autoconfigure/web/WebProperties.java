@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -251,8 +251,7 @@ public class WebProperties {
 					private boolean enabled;
 
 					/**
-					 * Comma-separated list of patterns to apply to the content Version
-					 * Strategy.
+					 * List of patterns to apply to the content Version Strategy.
 					 */
 					private String[] paths = new String[] { "/**" };
 
@@ -293,8 +292,7 @@ public class WebProperties {
 					private boolean enabled;
 
 					/**
-					 * Comma-separated list of patterns to apply to the fixed Version
-					 * Strategy.
+					 * List of patterns to apply to the fixed Version Strategy.
 					 */
 					private String[] paths = new String[] { "/**" };
 

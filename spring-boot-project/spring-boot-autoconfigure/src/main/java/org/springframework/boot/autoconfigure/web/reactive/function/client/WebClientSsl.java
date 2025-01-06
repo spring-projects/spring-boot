@@ -31,7 +31,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  * Typically used as follows: <pre class="code">
  * &#064;Bean
  * public MyBean myBean(WebClient.Builder webClientBuilder, WebClientSsl ssl) {
- *     WebClient webClient = webClientBuilder.apply(ssl.forBundle("mybundle")).build();
+ *     WebClient webClient = webClientBuilder.apply(ssl.fromBundle("mybundle")).build();
  *     return new MyBean(webClient);
  * }
  * </pre> NOTE: Apply SSL configuration will replace any previously

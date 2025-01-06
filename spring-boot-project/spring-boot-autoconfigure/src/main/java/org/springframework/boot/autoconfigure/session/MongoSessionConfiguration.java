@@ -25,6 +25,8 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.SessionRepositoryCustomizer;
@@ -47,6 +49,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
 class MongoSessionConfiguration {
 
 	@Bean
+	@Order(Ordered.HIGHEST_PRECEDENCE)
 	SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
 			ServerProperties serverProperties) {

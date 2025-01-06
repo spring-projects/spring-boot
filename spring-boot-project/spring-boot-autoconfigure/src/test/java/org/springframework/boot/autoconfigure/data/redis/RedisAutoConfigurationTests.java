@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import io.lettuce.core.resource.DefaultClientResources;
 import io.lettuce.core.tracing.Tracing;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
@@ -38,8 +40,10 @@ import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisNode;
@@ -123,6 +127,8 @@ class RedisAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isTrue();
+			assertThat(cf.getClientConfiguration().getClientOptions())
+				.hasValueSatisfying((options) -> assertThat(options.isAutoReconnect()).isFalse());
 		});
 	}
 
@@ -143,9 +149,9 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testOverrideUrlRedisConfiguration() {
 		this.contextRunner
-			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.password:xyz",
-					"spring.data.redis.port:1000", "spring.data.redis.ssl.enabled:false",
-					"spring.data.redis.url:rediss://user:password@example:33")
+			.withPropertyValues("spring.data.redis.host:foo", "spring.redis.data.user:alice",
+					"spring.data.redis.password:xyz", "spring.data.redis.port:1000",
+					"spring.data.redis.ssl.enabled:false", "spring.data.redis.url:rediss://user:password@example:33")
 			.run((context) -> {
 				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 				assertThat(cf.getHostName()).isEqualTo("example");
@@ -308,8 +314,13 @@ class RedisAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.sentinel.master:mymaster",
 					"spring.data.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
-			.run((context) -> assertThat(context.getBean(LettuceConnectionFactory.class).isRedisSentinelAware())
-				.isTrue());
+			.run((context) -> {
+				LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
+				assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
+				assertThat(connectionFactory.getSentinelConfiguration().getSentinels()).isNotNull()
+					.containsExactlyInAnyOrder(new RedisNode("[0:0:0:0:0:0:0:1]", 26379),
+							new RedisNode("[0:0:0:0:0:0:0:1]", 26380));
+			});
 	}
 
 	@Test
@@ -394,19 +405,19 @@ class RedisAutoConfigurationTests {
 
 	@Test
 	void testRedisConfigurationWithCluster() {
-		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380");
+		List<String> clusterNodes = Arrays.asList("127.0.0.1:27379", "127.0.0.1:27380", "[::1]:27381");
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.cluster.nodes[0]:" + clusterNodes.get(0),
-					"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1))
+					"spring.data.redis.cluster.nodes[1]:" + clusterNodes.get(1),
+					"spring.data.redis.cluster.nodes[2]:" + clusterNodes.get(2))
 			.run((context) -> {
 				RedisClusterConfiguration clusterConfiguration = context.getBean(LettuceConnectionFactory.class)
 					.getClusterConfiguration();
-				assertThat(clusterConfiguration.getClusterNodes()).hasSize(2);
-				assertThat(clusterConfiguration.getClusterNodes())
-					.extracting((node) -> node.getHost() + ":" + node.getPort())
-					.containsExactlyInAnyOrder("127.0.0.1:27379", "127.0.0.1:27380");
+				assertThat(clusterConfiguration.getClusterNodes()).hasSize(3);
+				assertThat(clusterConfiguration.getClusterNodes()).containsExactlyInAnyOrder(
+						new RedisNode("127.0.0.1", 27379), new RedisNode("127.0.0.1", 27380),
+						new RedisNode("[::1]", 27381));
 			});
-
 	}
 
 	@Test
@@ -582,6 +593,25 @@ class RedisAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void shouldUsePlatformThreadsByDefault() {
+		this.contextRunner.run((context) -> {
+			LettuceConnectionFactory factory = context.getBean(LettuceConnectionFactory.class);
+			assertThat(factory).extracting("executor").isNull();
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldUseVirtualThreadsIfEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			LettuceConnectionFactory factory = context.getBean(LettuceConnectionFactory.class);
+			assertThat(factory).extracting("executor")
+				.satisfies((executor) -> SimpleAsyncTaskExecutorAssert.assertThat((SimpleAsyncTaskExecutor) executor)
+					.usesVirtualThreads());
+		});
+	}
+
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(
 			Class<T> expectedType, Consumer<T> options) {
 		return (context) -> {
@@ -608,6 +638,11 @@ class RedisAutoConfigurationTests {
 		@Bean
 		LettuceClientConfigurationBuilderCustomizer customizer() {
 			return LettuceClientConfigurationBuilder::useSsl;
+		}
+
+		@Bean
+		LettuceClientOptionsBuilderCustomizer clientOptionsBuilderCustomizer() {
+			return (builder) -> builder.autoReconnect(false);
 		}
 
 	}

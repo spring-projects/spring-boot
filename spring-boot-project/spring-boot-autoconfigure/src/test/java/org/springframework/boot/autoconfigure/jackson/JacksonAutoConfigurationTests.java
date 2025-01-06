@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
 import com.fasterxml.jackson.databind.cfg.ConstructorDetector.SingleArgConstructor;
+import com.fasterxml.jackson.databind.cfg.EnumFeature;
+import com.fasterxml.jackson.databind.cfg.JsonNodeFeature;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -73,7 +76,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
@@ -88,6 +91,7 @@ import static org.mockito.Mockito.mock;
  * @author Johannes Edmeier
  * @author Grzegorz Poznachowski
  * @author Ralf Ueberfuhr
+ * @author Eddú Meléndez
  */
 class JacksonAutoConfigurationTests {
 
@@ -290,11 +294,33 @@ class JacksonAutoConfigurationTests {
 	}
 
 	@Test
+	void enableEnumFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.enum.write-enums-to-lowercase=true")
+			.run((context) -> {
+				ObjectMapper mapper = context.getBean(ObjectMapper.class);
+				assertThat(EnumFeature.WRITE_ENUMS_TO_LOWERCASE.enabledByDefault()).isFalse();
+				assertThat(mapper.getSerializationConfig().isEnabled(EnumFeature.WRITE_ENUMS_TO_LOWERCASE)).isTrue();
+			});
+	}
+
+	@Test
+	void disableJsonNodeFeature() {
+		this.contextRunner.withPropertyValues("spring.jackson.datatype.json-node.write-null-properties:false")
+			.run((context) -> {
+				ObjectMapper mapper = context.getBean(ObjectMapper.class);
+				assertThat(JsonNodeFeature.WRITE_NULL_PROPERTIES.enabledByDefault()).isTrue();
+				assertThat(mapper.getDeserializationConfig().isEnabled(JsonNodeFeature.WRITE_NULL_PROPERTIES))
+					.isFalse();
+			});
+	}
+
+	@Test
 	void moduleBeansAndWellKnownModulesAreRegisteredWithTheObjectMapperBuilder() {
 		this.contextRunner.withUserConfiguration(ModuleConfig.class).run((context) -> {
 			ObjectMapper objectMapper = context.getBean(Jackson2ObjectMapperBuilder.class).build();
 			assertThat(context.getBean(CustomModule.class).getOwners()).contains(objectMapper);
-			assertThat(objectMapper.canSerialize(Baz.class)).isTrue();
+			assertThat(((DefaultSerializerProvider) objectMapper.getSerializerProviderInstance())
+				.hasSerializerFor(Baz.class, null)).isTrue();
 		});
 	}
 
@@ -339,10 +365,10 @@ class JacksonAutoConfigurationTests {
 	void disableDefaultLeniency() {
 		this.contextRunner.withPropertyValues("spring.jackson.default-leniency:false").run((context) -> {
 			ObjectMapper mapper = context.getBean(ObjectMapper.class);
-			assertThatThrownBy(() -> mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class))
-				.isInstanceOf(InvalidFormatException.class)
-				.hasMessageContaining("expected format")
-				.hasMessageContaining("yyyyMMdd");
+			assertThatExceptionOfType(InvalidFormatException.class)
+				.isThrownBy(() -> mapper.readValue("{\"birthDate\": \"2010-12-30\"}", Person.class))
+				.withMessageContaining("expected format")
+				.withMessageContaining("yyyyMMdd");
 		});
 	}
 

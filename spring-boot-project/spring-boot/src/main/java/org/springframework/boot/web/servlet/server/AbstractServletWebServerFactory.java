@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,6 +178,11 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 		this.mimeMappings = new MimeMappings(mimeMappings);
 	}
 
+	@Override
+	public void addMimeMappings(MimeMappings mimeMappings) {
+		mimeMappings.forEach((mapping) -> this.mimeMappings.add(mapping.getExtension(), mapping.getMimeType()));
+	}
+
 	/**
 	 * Returns the document root which will be used by the web context to serve static
 	 * files.
@@ -345,6 +350,9 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 			map.from(cookie::getHttpOnly).to(config::setHttpOnly);
 			map.from(cookie::getSecure).to(config::setSecure);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(config::setMaxAge);
+			map.from(cookie::getPartitioned)
+				.as(Object::toString)
+				.to((partitioned) -> config.setAttribute("Partitioned", partitioned));
 		}
 
 		private Set<jakarta.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,15 +40,21 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
+import org.springframework.boot.testsupport.assertj.SimpleAsyncTaskExecutorAssert;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
@@ -102,11 +108,12 @@ import static org.mockito.Mockito.never;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class KafkaAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void consumerProperties() {
@@ -389,20 +396,6 @@ class KafkaAutoConfigurationTests {
 			});
 	}
 
-	@SuppressWarnings("deprecation")
-	@Deprecated(since = "3.1.0", forRemoval = true)
-	void streamsCacheMaxSizeBuffering() {
-		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
-			.withPropertyValues("spring.kafka.streams.cache-max-size-buffering=1KB")
-			.run((context) -> {
-				Properties configs = context
-					.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
-							KafkaStreamsConfiguration.class)
-					.asProperties();
-				assertThat(configs).containsEntry(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 1024);
-			});
-	}
-
 	@SuppressWarnings("unchecked")
 	@Test
 	void streamsApplicationIdUsesMainApplicationNameByDefault() {
@@ -451,6 +444,22 @@ class KafkaAutoConfigurationTests {
 	void retryTopicConfigurationWithExponentialBackOff() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.backoff.delay=100ms",
+				"spring.kafka.retry.topic.backoff.multiplier=2", "spring.kafka.retry.topic.backoff.max-delay=300ms")
+			.run((context) -> {
+				RetryTopicConfiguration configuration = context.getBean(RetryTopicConfiguration.class);
+				assertThat(configuration.getDestinationTopicProperties()).hasSize(5)
+					.extracting(DestinationTopic.Properties::delay, DestinationTopic.Properties::suffix)
+					.containsExactly(tuple(0L, ""), tuple(100L, "-retry-0"), tuple(200L, "-retry-1"),
+							tuple(300L, "-retry-2"), tuple(0L, "-dlt"));
+			});
+	}
+
+	@Test
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	void retryTopicConfigurationWithExponentialBackOffUsingDeprecatedProperties() {
+		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
 				"spring.kafka.retry.topic.attempts=5", "spring.kafka.retry.topic.delay=100ms",
 				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms")
 			.run((context) -> {
@@ -480,6 +489,18 @@ class KafkaAutoConfigurationTests {
 	void retryTopicConfigurationWithFixedBackOff() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.backoff.delay=2s")
+			.run(assertRetryTopicConfiguration(
+					(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
+						.extracting(DestinationTopic.Properties::delay)
+						.containsExactly(0L, 2000L, 0L)));
+	}
+
+	@Test
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	void retryTopicConfigurationWithFixedBackOffUsingDeprecatedProperties() {
+		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
 				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=2s")
 			.run(assertRetryTopicConfiguration(
 					(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
@@ -489,6 +510,18 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void retryTopicConfigurationWithNoBackOff() {
+		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
+				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
+				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.backoff.delay=0")
+			.run(assertRetryTopicConfiguration(
+					(configuration) -> assertThat(configuration.getDestinationTopicProperties()).hasSize(3)
+						.extracting(DestinationTopic.Properties::delay)
+						.containsExactly(0L, 0L, 0L)));
+	}
+
+	@Test
+	@Deprecated(since = "3.4.0", forRemoval = true)
+	void retryTopicConfigurationWithNoBackOffUsingDeprecatedProperties() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true",
 				"spring.kafka.retry.topic.attempts=4", "spring.kafka.retry.topic.delay=0")
@@ -570,6 +603,31 @@ class KafkaAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldUsePlatformThreadsByDefault() {
+		this.contextRunner.run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+				.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).isNotNull();
+			AsyncTaskExecutor listenerTaskExecutor = factory.getContainerProperties().getListenerTaskExecutor();
+			assertThat(listenerTaskExecutor).isNull();
+		});
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_21)
+	void shouldUseVirtualThreadsIfEnabled() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+				.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).isNotNull();
+			AsyncTaskExecutor listenerTaskExecutor = factory.getContainerProperties().getListenerTaskExecutor();
+			assertThat(listenerTaskExecutor).isInstanceOf(SimpleAsyncTaskExecutor.class);
+			SimpleAsyncTaskExecutorAssert.assertThat((SimpleAsyncTaskExecutor) listenerTaskExecutor)
+				.usesVirtualThreads();
+		});
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	void listenerProperties() {
@@ -586,7 +644,8 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
 					"spring.kafka.listener.immediate-stop=true", "spring.kafka.producer.transaction-id-prefix=foo",
 					"spring.kafka.jaas.login-module=foo", "spring.kafka.jaas.control-flag=REQUISITE",
-					"spring.kafka.jaas.options.useKeyTab=true", "spring.kafka.listener.async-acks=true")
+					"spring.kafka.jaas.options.useKeyTab=true", "spring.kafka.listener.async-acks=true",
+					"spring.kafka.template.observation-enabled=true", "spring.kafka.listener.observation-enabled=true")
 			.run((context) -> {
 				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
 				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
@@ -597,6 +656,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("producerFactory", producerFactory);
 				assertThat(kafkaTemplate.getDefaultTopic()).isEqualTo("testTopic");
 				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("transactionIdPrefix", "txOverride");
+				assertThat(kafkaTemplate).hasFieldOrPropertyWithValue("observationEnabled", true);
 				assertThat(kafkaListenerContainerFactory.getConsumerFactory()).isEqualTo(consumerFactory);
 				ContainerProperties containerProperties = kafkaListenerContainerFactory.getContainerProperties();
 				assertThat(containerProperties.getAckMode()).isEqualTo(AckMode.MANUAL);
@@ -613,6 +673,7 @@ class KafkaAutoConfigurationTests {
 				assertThat(containerProperties.isLogContainerConfig()).isTrue();
 				assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
 				assertThat(containerProperties.isStopImmediate()).isTrue();
+				assertThat(containerProperties.isObservationEnabled()).isTrue();
 				assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 				assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();
 				assertThat(kafkaListenerContainerFactory).hasFieldOrPropertyWithValue("autoStartup", true);
@@ -722,7 +783,7 @@ class KafkaAutoConfigurationTests {
 			assertThat(context).hasSingleBean(KafkaAwareTransactionManager.class);
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 				.getBean(ConcurrentKafkaListenerContainerFactory.class);
-			assertThat(factory.getContainerProperties().getTransactionManager())
+			assertThat(factory.getContainerProperties().getKafkaAwareTransactionManager())
 				.isSameAs(context.getBean(KafkaAwareTransactionManager.class));
 		});
 	}
@@ -737,7 +798,7 @@ class KafkaAutoConfigurationTests {
 			.run((context) -> {
 				ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
 					.getBean(ConcurrentKafkaListenerContainerFactory.class);
-				assertThat(factory.getContainerProperties().getTransactionManager())
+				assertThat(factory.getContainerProperties().getKafkaAwareTransactionManager())
 					.isSameAs(context.getBean("customTransactionManager"));
 			});
 	}

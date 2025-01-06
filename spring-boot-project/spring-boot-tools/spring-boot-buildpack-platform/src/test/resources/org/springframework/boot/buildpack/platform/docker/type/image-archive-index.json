@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 2,
+	"manifests": [
+		{
+			"mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+			"digest": "sha256:3bbe02431d8e5124ffe816ec27bf6508b50edd1d10218be1a03e799a186b9004",
+			"size": 529,
+			"annotations": {
+				"containerd.io/distribution.source.gcr.io": "paketo-buildpacks/adoptium",
+				"io.containerd.image.name": "gcr.io/paketo-buildpacks/adoptium:latest",
+				"org.opencontainers.image.ref.name": "latest"
+			}
+		}
+	]
+}
