@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.transaction;
 import org.springframework.boot.LazyInitializationExcludeFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -79,7 +80,7 @@ public class TransactionAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableTransactionManagement(proxyTargetClass = true)
-		@ConditionalOnProperty(name = "spring.aop.proxy-target-class", havingValue = "true", matchIfMissing = true)
+		@ConditionalOnBooleanProperty(name = "spring.aop.proxy-target-class", matchIfMissing = true)
 		public static class CglibAutoProxyConfiguration {
 
 		}

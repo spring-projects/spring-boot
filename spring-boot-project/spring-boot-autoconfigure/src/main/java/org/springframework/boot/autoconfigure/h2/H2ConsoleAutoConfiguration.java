@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import org.h2.server.web.JakartaWebServlet;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties.Settings;
@@ -52,7 +52,7 @@ import org.springframework.core.log.LogMessage;
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(JakartaWebServlet.class)
-@ConditionalOnProperty(prefix = "spring.h2.console", name = "enabled", havingValue = "true")
+@ConditionalOnBooleanProperty("spring.h2.console.enabled")
 @EnableConfigurationProperties(H2ConsoleProperties.class)
 public class H2ConsoleAutoConfiguration {
 

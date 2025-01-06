@@ -27,74 +27,23 @@ import org.springframework.core.env.Environment;
 
 /**
  * {@link Conditional @Conditional} that checks if the specified properties have a
- * specific value. By default the properties must be present in the {@link Environment}
- * and <strong>not</strong> equal to {@code false}. The {@link #havingValue()} and
+ * specific boolean value. By default the properties must be present in the
+ * {@link Environment} and equal to {@code true}. The {@link #havingValue()} and
  * {@link #matchIfMissing()} attributes allow further customizations.
- * <p>
- * The {@link #havingValue} attribute can be used to specify the value that the property
- * should have. The table below shows when a condition matches according to the property
- * value and the {@link #havingValue()} attribute:
- *
- * <table border="1">
- * <caption>Having values</caption>
- * <tr>
- * <th>Property Value</th>
- * <th>{@code havingValue=""}</th>
- * <th>{@code havingValue="true"}</th>
- * <th>{@code havingValue="false"}</th>
- * <th>{@code havingValue="foo"}</th>
- * </tr>
- * <tr>
- * <td>{@code "true"}</td>
- * <td>yes</td>
- * <td>yes</td>
- * <td>no</td>
- * <td>no</td>
- * </tr>
- * <tr>
- * <td>{@code "false"}</td>
- * <td>no</td>
- * <td>no</td>
- * <td>yes</td>
- * <td>no</td>
- * </tr>
- * <tr>
- * <td>{@code "foo"}</td>
- * <td>yes</td>
- * <td>no</td>
- * <td>no</td>
- * <td>yes</td>
- * </tr>
- * </table>
  * <p>
  * If the property is not contained in the {@link Environment} at all, the
  * {@link #matchIfMissing()} attribute is consulted. By default missing attributes do not
  * match.
- * <p>
- * This condition cannot be reliably used for matching collection properties. For example,
- * in the following configuration, the condition matches if {@code spring.example.values}
- * is present in the {@link Environment} but does not match if
- * {@code spring.example.values[0]} is present.
  *
- * <pre class="code">
- * &#064;ConditionalOnProperty(prefix = "spring", name = "example.values")
- * class ExampleAutoConfiguration {
- * }
- * </pre>
- *
- * It is better to use a custom condition for such cases.
- *
- * @author Maciej Walkowiak
- * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.1.0
- * @see ConditionalOnBooleanProperty
+ * @since 3.5.0
+ * @see ConditionalOnProperty
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @Conditional(OnPropertyCondition.class)
-public @interface ConditionalOnProperty {
+public @interface ConditionalOnBooleanProperty {
 
 	/**
 	 * Alias for {@link #name()}.
@@ -126,11 +75,11 @@ public @interface ConditionalOnProperty {
 	String[] name() default {};
 
 	/**
-	 * The string representation of the expected value for the properties. If not
-	 * specified, the property must <strong>not</strong> be equal to {@code false}.
+	 * The expected value for the properties. If not specified, the property must be equal
+	 * to {@code true}.
 	 * @return the expected value
 	 */
-	String havingValue() default "";
+	boolean havingValue() default true;
 
 	/**
 	 * Specify if the condition should match if the property is not set. Defaults to

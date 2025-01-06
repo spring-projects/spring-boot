@@ -23,9 +23,9 @@ import org.apache.activemq.ActiveMQXAConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +57,7 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnProperty(name = "spring.activemq.pool.enabled", havingValue = "false", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.activemq.pool.enabled", havingValue = false, matchIfMissing = true)
 	ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
 			ActiveMQConnectionDetails connectionDetails) {

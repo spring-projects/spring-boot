@@ -24,9 +24,9 @@ import io.r2dbc.spi.ConnectionFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcProperties.Pool;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -123,7 +123,7 @@ abstract class ConnectionFactoryConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(name = "spring.r2dbc.pool.enabled", havingValue = "false", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.r2dbc.pool.enabled", havingValue = false, matchIfMissing = true)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	static class GenericConfiguration {
 

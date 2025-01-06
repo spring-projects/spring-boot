@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
@@ -27,6 +28,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -47,8 +49,10 @@ class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
-			.stream(ConditionalOnProperty.class.getName())
+		MergedAnnotations annotations = metadata.getAnnotations();
+		List<AnnotationAttributes> allAnnotationAttributes = Stream
+			.concat(annotations.stream(ConditionalOnProperty.class.getName()),
+					annotations.stream(ConditionalOnBooleanProperty.class.getName()))
 			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
 			.map(MergedAnnotation::asAnnotationAttributes)
 			.toList();
@@ -87,21 +91,25 @@ class OnPropertyCondition extends SpringBootCondition {
 
 		private final String prefix;
 
-		private final String havingValue;
-
 		private final String[] names;
+
+		private final String havingValue;
 
 		private final boolean matchIfMissing;
 
 		Spec(AnnotationAttributes annotationAttributes) {
+			this.prefix = (!annotationAttributes.containsKey("prefix")) ? "" : getPrefix(annotationAttributes);
+			this.names = getNames(annotationAttributes);
+			this.havingValue = annotationAttributes.get("havingValue").toString();
+			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
+		}
+
+		private String getPrefix(AnnotationAttributes annotationAttributes) {
 			String prefix = annotationAttributes.getString("prefix").trim();
 			if (StringUtils.hasText(prefix) && !prefix.endsWith(".")) {
 				prefix = prefix + ".";
 			}
-			this.prefix = prefix;
-			this.havingValue = annotationAttributes.getString("havingValue");
-			this.names = getNames(annotationAttributes);
-			this.matchIfMissing = annotationAttributes.getBoolean("matchIfMissing");
+			return prefix;
 		}
 
 		private String[] getNames(Map<String, Object> annotationAttributes) {

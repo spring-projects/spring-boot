@@ -30,9 +30,9 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
@@ -224,7 +224,7 @@ public abstract class JpaBaseConfiguration {
 	@ConditionalOnClass(WebMvcConfigurer.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class, OpenEntityManagerInViewFilter.class })
 	@ConditionalOnMissingFilterBean(OpenEntityManagerInViewFilter.class)
-	@ConditionalOnProperty(name = "spring.jpa.open-in-view", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.jpa.open-in-view", matchIfMissing = true)
 	protected static class JpaWebConfiguration {
 
 		private static final Log logger = LogFactory.getLog(JpaWebConfiguration.class);

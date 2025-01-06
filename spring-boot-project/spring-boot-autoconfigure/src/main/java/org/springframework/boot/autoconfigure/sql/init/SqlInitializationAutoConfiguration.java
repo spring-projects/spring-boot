@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.sql.init;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration.SqlInitializationModeCondition;
@@ -36,7 +37,7 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(SqlInitializationProperties.class)
 @Import({ DatabaseInitializationDependencyConfigurer.class, R2dbcInitializationConfiguration.class,
 		DataSourceInitializationConfiguration.class })
-@ConditionalOnProperty(prefix = "spring.sql.init", name = "enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.sql.init.enabled", matchIfMissing = true)
 @Conditional(SqlInitializationModeCondition.class)
 public class SqlInitializationAutoConfiguration {
 

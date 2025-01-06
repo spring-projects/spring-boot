@@ -28,9 +28,9 @@ import org.apache.tomcat.jdbc.pool.DataSourceProxy;
 import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +43,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.jmx.enabled", matchIfMissing = true)
 class DataSourceJmxConfiguration {
 
 	private static final Log logger = LogFactory.getLog(DataSourceJmxConfiguration.class);
@@ -74,7 +74,7 @@ class DataSourceJmxConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty("spring.datasource.tomcat.jmx-enabled")
+	@ConditionalOnBooleanProperty("spring.datasource.tomcat.jmx-enabled")
 	@ConditionalOnClass(DataSourceProxy.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	static class TomcatDataSourceJmxConfiguration {
