@@ -394,7 +394,7 @@ bom {
 			releaseNotes("https://documentation.red-gate.com/flyway/release-notes-and-older-versions/release-notes-for-flyway-engine")
 		}
 	}
-	library("FreeMarker", "2.3.33") {
+	library("FreeMarker", "2.3.34") {
 		group("org.freemarker") {
 			modules = [
 				"freemarker"
