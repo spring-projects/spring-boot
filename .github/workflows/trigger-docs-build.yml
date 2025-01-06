@@ -1,7 +1,7 @@
 name: Trigger Docs Build
 on:
   push:
-    branches: main
+    branches: '3.4.x'
     paths: [ 'antora/*' ]
   workflow_dispatch:
     inputs:

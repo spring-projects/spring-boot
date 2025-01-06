@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - '3.4.x'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
