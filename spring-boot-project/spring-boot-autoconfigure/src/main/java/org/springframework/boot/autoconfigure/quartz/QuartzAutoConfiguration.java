@@ -97,7 +97,7 @@ public class QuartzAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
-	@ConditionalOnProperty(prefix = "spring.quartz", name = "job-store-type", havingValue = "jdbc")
+	@ConditionalOnProperty(name = "spring.quartz.job-store-type", havingValue = "jdbc")
 	@Import(DatabaseInitializationDependencyConfigurer.class)
 	protected static class JdbcStoreTypeConfiguration {
 

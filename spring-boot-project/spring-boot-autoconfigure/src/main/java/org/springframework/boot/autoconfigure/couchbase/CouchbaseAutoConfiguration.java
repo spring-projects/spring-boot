@@ -228,7 +228,7 @@ public class CouchbaseAutoConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.couchbase", name = "connection-string")
+		@ConditionalOnProperty("spring.couchbase.connection-string")
 		private static final class CouchbaseUrlCondition {
 
 		}

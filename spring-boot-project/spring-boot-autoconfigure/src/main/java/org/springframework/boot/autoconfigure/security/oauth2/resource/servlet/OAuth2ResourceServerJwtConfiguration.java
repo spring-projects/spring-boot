@@ -219,17 +219,17 @@ class OAuth2ResourceServerJwtConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authority-prefix")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authority-prefix")
 		static class OnAuthorityPrefix {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "principal-claim-name")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.principal-claim-name")
 		static class OnPrincipalClaimName {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.oauth2.resourceserver.jwt", name = "authorities-claim-name")
+		@ConditionalOnProperty("spring.security.oauth2.resourceserver.jwt.authorities-claim-name")
 		static class OnAuthoritiesClaimName {
 
 		}

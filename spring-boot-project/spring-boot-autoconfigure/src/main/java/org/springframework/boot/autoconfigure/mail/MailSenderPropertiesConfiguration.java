@@ -40,7 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "spring.mail", name = "host")
+@ConditionalOnProperty("spring.mail.host")
 class MailSenderPropertiesConfiguration {
 
 	@Bean

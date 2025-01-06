@@ -209,7 +209,7 @@ public class LiquibaseAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.liquibase", name = "url")
+		@ConditionalOnProperty("spring.liquibase.url")
 		private static final class LiquibaseUrlCondition {
 
 		}

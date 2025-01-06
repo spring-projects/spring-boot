@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNoOptOut;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.devtools.autoconfigure.DevToolsProperties.Restart;
@@ -134,8 +135,7 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "log-condition-evaluation-delta",
-				matchIfMissing = true)
+		@ConditionalOnProperty(name = "spring.devtools.restart.log-condition-evaluation-delta", matchIfMissing = true)
 		ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
 			return new ConditionEvaluationDeltaLoggingListener();
 		}

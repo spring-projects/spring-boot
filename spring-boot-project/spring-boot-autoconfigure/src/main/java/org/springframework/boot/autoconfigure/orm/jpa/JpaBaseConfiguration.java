@@ -224,7 +224,7 @@ public abstract class JpaBaseConfiguration {
 	@ConditionalOnClass(WebMvcConfigurer.class)
 	@ConditionalOnMissingBean({ OpenEntityManagerInViewInterceptor.class, OpenEntityManagerInViewFilter.class })
 	@ConditionalOnMissingFilterBean(OpenEntityManagerInViewFilter.class)
-	@ConditionalOnProperty(prefix = "spring.jpa", name = "open-in-view", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.jpa.open-in-view", havingValue = "true", matchIfMissing = true)
 	protected static class JpaWebConfiguration {
 
 		private static final Log logger = LogFactory.getLog(JpaWebConfiguration.class);

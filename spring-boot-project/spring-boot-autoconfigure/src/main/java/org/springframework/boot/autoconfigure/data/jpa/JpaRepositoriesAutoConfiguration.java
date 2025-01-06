@@ -104,13 +104,12 @@ public class JpaRepositoriesAutoConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode",
-				havingValue = "deferred")
+		@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "deferred")
 		static class DeferredBootstrapMode {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy")
+		@ConditionalOnProperty(name = "spring.data.jpa.repositories.bootstrap-mode", havingValue = "lazy")
 		static class LazyBootstrapMode {
 
 		}

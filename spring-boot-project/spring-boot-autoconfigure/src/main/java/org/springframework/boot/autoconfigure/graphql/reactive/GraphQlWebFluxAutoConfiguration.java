@@ -165,7 +165,7 @@ public class GraphQlWebFluxAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.graphql.websocket", name = "path")
+	@ConditionalOnProperty("spring.graphql.websocket.path")
 	public static class WebSocketConfiguration {
 
 		@Bean

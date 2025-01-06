@@ -46,8 +46,7 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 class ActiveMQConnectionFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.activemq.pool.enabled", havingValue = "false", matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
 		@Bean

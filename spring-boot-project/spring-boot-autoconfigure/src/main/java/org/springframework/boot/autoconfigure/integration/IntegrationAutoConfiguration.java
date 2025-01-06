@@ -347,12 +347,13 @@ public class IntegrationAutoConfiguration {
 					super(ConfigurationPhase.REGISTER_BEAN);
 				}
 
-				@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = "uri")
+				@ConditionalOnProperty("spring.integration.rsocket.client.uri")
 				static class WebSocketAddressConfigured {
 
 				}
 
-				@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = { "host", "port" })
+				@ConditionalOnProperty({ "spring.integration.rsocket.client.host",
+						"spring.integration.rsocket.client.port" })
 				static class TcpAddressConfigured {
 
 				}

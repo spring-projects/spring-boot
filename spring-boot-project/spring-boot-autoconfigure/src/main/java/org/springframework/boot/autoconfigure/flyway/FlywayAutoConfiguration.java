@@ -450,7 +450,7 @@ public class FlywayAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.flyway", name = "url")
+		@ConditionalOnProperty("spring.flyway.url")
 		private static final class FlywayUrlCondition {
 
 		}

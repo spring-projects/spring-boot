@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,8 +123,7 @@ abstract class ConnectionFactoryConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.r2dbc.pool", value = "enabled", havingValue = "false",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.r2dbc.pool.enabled", havingValue = "false", matchIfMissing = true)
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	static class GenericConfiguration {
 

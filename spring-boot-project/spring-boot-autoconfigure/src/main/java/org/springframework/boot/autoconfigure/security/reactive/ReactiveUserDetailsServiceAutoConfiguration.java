@@ -129,12 +129,12 @@ public class ReactiveUserDetailsServiceAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "name")
+		@ConditionalOnProperty("spring.security.user.name")
 		static final class NameConfigured {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.security.user", name = "password")
+		@ConditionalOnProperty("spring.security.user.password")
 		static final class PasswordConfigured {
 
 		}

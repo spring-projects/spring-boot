@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * @see AutoConfigureWebServiceClient
  */
 @AutoConfiguration(after = WebServiceTemplateAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.test.webservice.client", name = "register-web-service-template")
+@ConditionalOnProperty("spring.test.webservice.client.register-web-service-template")
 @ConditionalOnClass(WebServiceTemplate.class)
 @ConditionalOnBean(WebServiceTemplateBuilder.class)
 public class WebServiceClientTemplateAutoConfiguration {

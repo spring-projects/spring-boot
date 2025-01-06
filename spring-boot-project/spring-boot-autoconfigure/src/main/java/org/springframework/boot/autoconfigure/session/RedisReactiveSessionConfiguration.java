@@ -51,7 +51,7 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
 class RedisReactiveSessionConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "default",
+	@ConditionalOnProperty(name = "spring.session.redis.repository-type", havingValue = "default",
 			matchIfMissing = true)
 	@Import(RedisWebSessionConfiguration.class)
 	static class DefaultRedisSessionConfiguration {
@@ -73,7 +73,7 @@ class RedisReactiveSessionConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.session.redis", name = "repository-type", havingValue = "indexed")
+	@ConditionalOnProperty(name = "spring.session.redis.repository-type", havingValue = "indexed")
 	@Import(RedisIndexedWebSessionConfiguration.class)
 	static class IndexedRedisSessionConfiguration {
 

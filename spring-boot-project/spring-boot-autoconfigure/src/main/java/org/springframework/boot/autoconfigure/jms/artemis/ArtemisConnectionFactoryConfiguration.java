@@ -43,8 +43,7 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 class ArtemisConnectionFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.artemis.pool", name = "enabled", havingValue = "false",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.artemis.pool.enabled", havingValue = "false", matchIfMissing = true)
 	static class SimpleConnectionFactoryConfiguration {
 
 		@Bean(name = "jmsConnectionFactory")

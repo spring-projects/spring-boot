@@ -95,7 +95,7 @@ public class DataSourceAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.datasource", name = "type")
+		@ConditionalOnProperty("spring.datasource.type")
 		static class ExplicitType {
 
 		}

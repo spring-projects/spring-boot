@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,7 @@ public class HypermediaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = "com.fasterxml.jackson.databind.ObjectMapper")
-	@ConditionalOnProperty(prefix = "spring.hateoas", name = "use-hal-as-default-json-media-type",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.hateoas.use-hal-as-default-json-media-type", matchIfMissing = true)
 	HalConfiguration applicationJsonHalConfiguration() {
 		return new HalConfiguration().withMediaType(MediaType.APPLICATION_JSON);
 	}

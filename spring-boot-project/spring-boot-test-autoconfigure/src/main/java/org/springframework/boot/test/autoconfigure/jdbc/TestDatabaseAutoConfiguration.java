@@ -79,8 +79,7 @@ public class TestDatabaseAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "NON_TEST",
-			matchIfMissing = true)
+	@ConditionalOnProperty(name = "spring.test.database.replace", havingValue = "NON_TEST", matchIfMissing = true)
 	static EmbeddedDataSourceBeanFactoryPostProcessor nonTestEmbeddedDataSourceBeanFactoryPostProcessor(
 			Environment environment) {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor(environment, Replace.NON_TEST);
@@ -88,14 +87,14 @@ public class TestDatabaseAutoConfiguration {
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "ANY")
+	@ConditionalOnProperty(name = "spring.test.database.replace", havingValue = "ANY")
 	static EmbeddedDataSourceBeanFactoryPostProcessor embeddedDataSourceBeanFactoryPostProcessor(
 			Environment environment) {
 		return new EmbeddedDataSourceBeanFactoryPostProcessor(environment, Replace.ANY);
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.test.database", name = "replace", havingValue = "AUTO_CONFIGURED")
+	@ConditionalOnProperty(name = "spring.test.database.replace", havingValue = "AUTO_CONFIGURED")
 	@ConditionalOnMissingBean
 	public DataSource dataSource(Environment environment) {
 		return new EmbeddedDataSourceFactory(environment).getEmbeddedDatabase();

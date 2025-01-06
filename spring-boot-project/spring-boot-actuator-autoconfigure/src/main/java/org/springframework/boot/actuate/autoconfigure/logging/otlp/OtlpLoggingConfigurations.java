@@ -46,7 +46,7 @@ final class OtlpLoggingConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "endpoint")
+		@ConditionalOnProperty("management.otlp.logging.endpoint")
 		OtlpLoggingConnectionDetails otlpLoggingConnectionDetails(OtlpLoggingProperties properties) {
 			return new PropertiesOtlpLoggingConnectionDetails(properties);
 		}
@@ -81,8 +81,7 @@ final class OtlpLoggingConfigurations {
 	static class Exporters {
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "transport", havingValue = "http",
-				matchIfMissing = true)
+		@ConditionalOnProperty(name = "management.otlp.logging.transport", havingValue = "http", matchIfMissing = true)
 		OtlpHttpLogRecordExporter otlpHttpLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpLoggingConnectionDetails connectionDetails) {
 			OtlpHttpLogRecordExporterBuilder builder = OtlpHttpLogRecordExporter.builder()
@@ -95,7 +94,7 @@ final class OtlpLoggingConfigurations {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.otlp.logging", name = "transport", havingValue = "grpc")
+		@ConditionalOnProperty(name = "management.otlp.logging.transport", havingValue = "grpc")
 		OtlpGrpcLogRecordExporter otlpGrpcLogRecordExporter(OtlpLoggingProperties properties,
 				OtlpLoggingConnectionDetails connectionDetails) {
 			OtlpGrpcLogRecordExporterBuilder builder = OtlpGrpcLogRecordExporter.builder()
