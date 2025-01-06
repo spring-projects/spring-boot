@@ -1732,13 +1732,10 @@ bom {
 			releaseNotes("https://github.com/apache/pulsar-client-reactive/releases/tag/v{version}")
 		}
 	}
-	library("Quartz", "2.3.2") {
+	library("Quartz", "2.5.0") {
 		group("org.quartz-scheduler") {
 			modules = [
-				"quartz" {
-					exclude group: "com.mchange", module: "c3p0"
-					exclude group: "com.zaxxer", module: "*"
-				},
+				"quartz",
 				"quartz-jobs"
 			]
 		}
