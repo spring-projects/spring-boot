@@ -2474,7 +2474,7 @@ bom {
 			releaseNotes("https://github.com/undertow-io/undertow/releases/tag/{version}")
 		}
 	}
-	library("Versions Maven Plugin", "2.17.1") {
+	library("Versions Maven Plugin", "2.18.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"versions-maven-plugin"
