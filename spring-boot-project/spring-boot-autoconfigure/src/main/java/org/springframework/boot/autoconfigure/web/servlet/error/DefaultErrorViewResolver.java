@@ -81,11 +81,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	 * @since 2.4.0
 	 */
 	public DefaultErrorViewResolver(ApplicationContext applicationContext, Resources resources) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
-		Assert.notNull(resources, "Resources must not be null");
-		this.applicationContext = applicationContext;
-		this.resources = resources;
-		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
+		this(applicationContext, resources, new TemplateAvailabilityProviders(applicationContext));
 	}
 
 	DefaultErrorViewResolver(ApplicationContext applicationContext, Resources resourceProperties,
