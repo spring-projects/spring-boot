@@ -8,7 +8,7 @@ description = "Spring Boot Dependencies"
 bom {
 	effectiveBomArtifact()
 	upgrade {
-		policy = "same-major-version"
+		policy = "any"
 		gitHub {
 			issueLabels = ["type: dependency-upgrade"]
 		}
@@ -53,7 +53,7 @@ bom {
 			releaseNotes("https://github.com/eclipse-ee4j/angus-mail/releases/tag/{version}")
 		}
 	}
-	library("Artemis", "2.37.0") {
+	library("Artemis", "2.39.0") {
 		group("org.apache.activemq") {
 			imports = [
 				"artemis-bom"
