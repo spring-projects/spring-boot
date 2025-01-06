@@ -554,7 +554,7 @@ bom {
 			]
 		}
 	}
-	library("HikariCP", "5.1.0") {
+	library("HikariCP", "6.2.1") {
 		group("com.zaxxer") {
 			modules = [
 				"HikariCP"
