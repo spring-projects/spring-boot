@@ -1768,7 +1768,7 @@ bom {
 			releaseNotes("https://github.com/r2dbc/r2dbc-h2/releases/tag/v{version}")
 		}
 	}
-	library("R2DBC MariaDB", "1.2.2") {
+	library("R2DBC MariaDB", "1.3.0") {
 		group("org.mariadb") {
 			modules = [
 				"r2dbc-mariadb"
