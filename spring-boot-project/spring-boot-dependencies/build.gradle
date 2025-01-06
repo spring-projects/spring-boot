@@ -213,7 +213,7 @@ bom {
 			releaseNotes("https://commons.apache.org/proper/commons-codec/changes-report.html#a{version}")
 		}
 	}
-	library("Commons DBCP2", "2.12.0") {
+	library("Commons DBCP2", "2.13.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-dbcp2" {
