@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,8 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertThat(connectionDetails.getPassword()).isEqualTo("secret");
 		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://")
 			.endsWith("?ApplicationName=spring+boot");
-		checkApplicationName(connectionDetails, "spring boot");
+		assertThat(executeQuery(connectionDetails, "select current_setting('application_name')", String.class))
+			.isEqualTo("spring boot");
 	}
 
 	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
@@ -74,18 +75,12 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	private void checkDatabaseAccess(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
-		assertThat(queryForObject(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class))
+		assertThat(executeQuery(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class))
 			.isEqualTo(1);
 	}
 
-	private void checkApplicationName(JdbcConnectionDetails connectionDetails, String applicationName)
-			throws ClassNotFoundException {
-		assertThat(queryForObject(connectionDetails, "select current_setting('application_name')", String.class))
-			.isEqualTo(applicationName);
-	}
-
 	@SuppressWarnings("unchecked")
-	private <T> T queryForObject(JdbcConnectionDetails connectionDetails, String sql, Class<T> result)
+	private <T> T executeQuery(JdbcConnectionDetails connectionDetails, String sql, Class<T> result)
 			throws ClassNotFoundException {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,8 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 		ConnectionFactoryOptions options = connectionDetails.getConnectionFactoryOptions();
 		assertThat(options.getValue(Option.valueOf("applicationName"))).isEqualTo("spring boot");
-		checkApplicationName(connectionDetails, "spring boot");
+		assertThat(executeQuery(connectionDetails, "select current_setting('application_name')", String.class))
+			.isEqualTo("spring boot");
 	}
 
 	private void assertConnectionDetails(R2dbcConnectionDetails connectionDetails) {
@@ -80,17 +81,11 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	private void checkDatabaseAccess(R2dbcConnectionDetails connectionDetails) {
-		Integer result = queryForObject(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(),
-				Integer.class);
-		assertThat(result).isEqualTo(1);
+		assertThat(executeQuery(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class))
+			.isEqualTo(1);
 	}
 
-	private void checkApplicationName(R2dbcConnectionDetails connectionDetails, String applicationName) {
-		assertThat(queryForObject(connectionDetails, "select current_setting('application_name')", String.class))
-			.isEqualTo(applicationName);
-	}
-
-	private <T> T queryForObject(R2dbcConnectionDetails connectionDetails, String sql, Class<T> result) {
+	private <T> T executeQuery(R2dbcConnectionDetails connectionDetails, String sql, Class<T> result) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		return DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
 			.sql(sql)
