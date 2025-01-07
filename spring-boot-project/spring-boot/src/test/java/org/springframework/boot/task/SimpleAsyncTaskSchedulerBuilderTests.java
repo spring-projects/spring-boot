@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.concurrent.SimpleAsyncTaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +60,19 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	void virtualThreadsShouldApply() {
 		SimpleAsyncTaskScheduler scheduler = this.builder.virtualThreads(true).build();
 		assertThat(scheduler).extracting("virtualThreadDelegate").isNotNull();
+	}
+
+	@Test
+	void taskTerminationTimeoutShouldApply() {
+		SimpleAsyncTaskScheduler scheduler = this.builder.taskTerminationTimeout(Duration.ofSeconds(1)).build();
+		assertThat(scheduler).extracting("taskTerminationTimeout").isEqualTo(1000L);
+	}
+
+	@Test
+	void taskDecoratorShouldApply() {
+		TaskDecorator taskDecorator = mock(TaskDecorator.class);
+		SimpleAsyncTaskScheduler scheduler = this.builder.taskDecorator(taskDecorator).build();
+		assertThat(scheduler).extracting("taskDecorator").isSameAs(taskDecorator);
 	}
 
 	@Test
@@ -126,12 +140,6 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 			.build();
 		then(customizer1).should().customize(scheduler);
 		then(customizer2).should().customize(scheduler);
-	}
-
-	@Test
-	void taskTerminationTimeoutShouldApply() {
-		SimpleAsyncTaskScheduler scheduler = this.builder.taskTerminationTimeout(Duration.ofSeconds(1)).build();
-		assertThat(scheduler).extracting("taskTerminationTimeout").isEqualTo(1000L);
 	}
 
 }
