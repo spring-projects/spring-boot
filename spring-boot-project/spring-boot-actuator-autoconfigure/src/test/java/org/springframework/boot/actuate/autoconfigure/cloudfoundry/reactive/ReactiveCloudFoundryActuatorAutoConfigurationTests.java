@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -295,12 +295,21 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				Object interceptorSecurityService = ReflectionTestUtils.getField(interceptor,
 						"cloudFoundrySecurityService");
 				WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService, "webClient");
-				webClient.get()
+				doesNotFailWithSslException(() -> webClient.get()
 					.uri("https://self-signed.badssl.com/")
 					.retrieve()
 					.toBodilessEntity()
-					.block(Duration.ofSeconds(30));
+					.block(Duration.ofSeconds(30)));
 			});
+	}
+
+	private static void doesNotFailWithSslException(Runnable action) {
+		try {
+			action.run();
+		}
+		catch (RuntimeException ex) {
+			assertThat(findCause(ex, SSLException.class)).isNull();
+		}
 	}
 
 	@Test
@@ -338,6 +347,16 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 		}
 		throw new IllegalStateException(
 				"No operation found with request path " + requestPath + " from " + endpoint.getOperations());
+	}
+
+	private static <E extends Throwable> E findCause(Throwable failure, Class<E> type) {
+		while (failure != null) {
+			if (type.isInstance(failure)) {
+				return type.cast(failure);
+			}
+			failure = failure.getCause();
+		}
+		return null;
 	}
 
 	@Endpoint(id = "test")
