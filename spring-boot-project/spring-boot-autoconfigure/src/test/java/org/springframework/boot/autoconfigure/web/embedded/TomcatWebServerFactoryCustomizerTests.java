@@ -195,6 +195,13 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customMaxParameterCount() {
+		bind("server.tomcat.max-parameter-count=100");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxParameterCount()).isEqualTo(100));
+	}
+
+	@Test
 	void customMaxRequestHttpHeaderSizeIgnoredIfNegative() {
 		bind("server.max-http-request-header-size=-1");
 		customizeAndRunServer((server) -> assertThat(
