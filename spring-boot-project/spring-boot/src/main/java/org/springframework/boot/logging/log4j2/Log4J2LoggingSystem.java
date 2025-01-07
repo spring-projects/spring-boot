@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.apache.logging.log4j.core.net.ssl.SslConfigurationFactory;
 import org.apache.logging.log4j.core.util.AuthorizationProvider;
 import org.apache.logging.log4j.core.util.NameUtil;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
 
 import org.springframework.boot.context.properties.bind.BindResult;
@@ -213,6 +214,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
+		resetFallbackListenerStream(StatusLogger.getLogger());
 		Environment environment = initializationContext.getEnvironment();
 		if (environment != null) {
 			getLoggerContext().putObject(ENVIRONMENT_KEY, environment);
@@ -222,6 +224,21 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		loggerContext.getConfiguration().removeFilter(FILTER);
 		super.initialize(initializationContext, configLocation, logFile);
 		markAsInitialized(loggerContext);
+	}
+
+	/**
+	 * Reset the stream used by the fallback listener to the current system out. This
+	 * allows the fallback lister to work with any captured output streams in a similar
+	 * way to the {@code follow} attribute of the {@code literal Console} appender.
+	 * @param statusLogger the status logger to update
+	 */
+	private void resetFallbackListenerStream(StatusLogger statusLogger) {
+		try {
+			statusLogger.getFallbackListener().setStream(System.out);
+		}
+		catch (NoSuchMethodError ex) {
+			// Ignore for older versions of Log4J
+		}
 	}
 
 	@Override
