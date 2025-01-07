@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import io.r2dbc.spi.Option;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
@@ -60,21 +61,37 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		assertConnectionDetails(connectionDetails);
 	}
 
+	@DockerComposeTest(composeFile = "postgres-application-name-compose.yaml", image = TestImage.POSTGRESQL)
+	void runCreatesConnectionDetailsApplicationName(R2dbcConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+		ConnectionFactoryOptions options = connectionDetails.getConnectionFactoryOptions();
+		assertThat(options.getValue(Option.valueOf("applicationName"))).isEqualTo("spring boot");
+		assertThat(executeQuery(connectionDetails, "select current_setting('application_name')", String.class))
+			.isEqualTo("spring boot");
+	}
+
 	private void assertConnectionDetails(R2dbcConnectionDetails connectionDetails) {
-		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
-		assertThat(connectionFactoryOptions.toString()).contains("database=mydatabase", "driver=postgresql",
-				"password=REDACTED", "user=myuser");
-		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
+		ConnectionFactoryOptions options = connectionDetails.getConnectionFactoryOptions();
+		assertThat(options.getRequiredValue(ConnectionFactoryOptions.HOST)).isNotNull();
+		assertThat(options.getRequiredValue(ConnectionFactoryOptions.PORT)).isNotNull();
+		assertThat(options.getRequiredValue(ConnectionFactoryOptions.DATABASE)).isEqualTo("mydatabase");
+		assertThat(options.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("myuser");
+		assertThat(options.getRequiredValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
+		assertThat(options.getRequiredValue(ConnectionFactoryOptions.DRIVER)).isEqualTo("postgresql");
 	}
 
 	private void checkDatabaseAccess(R2dbcConnectionDetails connectionDetails) {
+		assertThat(executeQuery(connectionDetails, DatabaseDriver.POSTGRESQL.getValidationQuery(), Integer.class))
+			.isEqualTo(1);
+	}
+
+	private <T> T executeQuery(R2dbcConnectionDetails connectionDetails, String sql, Class<T> result) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
-		Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
-			.sql(DatabaseDriver.POSTGRESQL.getValidationQuery())
-			.map((row, metadata) -> row.get(0))
+		return DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
+			.sql(sql)
+			.mapValue(result)
 			.first()
 			.block(Duration.ofSeconds(30));
-		assertThat(result).isEqualTo(1);
 	}
 
 }

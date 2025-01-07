@@ -31,6 +31,7 @@ import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeServicesReadyEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -59,13 +60,15 @@ class DockerComposeServiceConnectionsApplicationListener
 	public void onApplicationEvent(DockerComposeServicesReadyEvent event) {
 		ApplicationContext applicationContext = event.getSource();
 		if (applicationContext instanceof BeanDefinitionRegistry registry) {
-			registerConnectionDetails(registry, event.getRunningServices());
+			Environment environment = applicationContext.getEnvironment();
+			registerConnectionDetails(registry, environment, event.getRunningServices());
 		}
 	}
 
-	private void registerConnectionDetails(BeanDefinitionRegistry registry, List<RunningService> runningServices) {
+	private void registerConnectionDetails(BeanDefinitionRegistry registry, Environment environment,
+			List<RunningService> runningServices) {
 		for (RunningService runningService : runningServices) {
-			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService);
+			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService, environment);
 			this.factories.getConnectionDetails(source, false).forEach((connectionDetailsType, connectionDetails) -> {
 				register(registry, runningService, connectionDetailsType, connectionDetails);
 				this.factories.getConnectionDetails(connectionDetails, false)
