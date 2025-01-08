@@ -170,7 +170,7 @@ public class WebMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(FormContentFilter.class)
-	@ConditionalOnBooleanProperty("spring.mvc.formcontent.filter.enabled")
+	@ConditionalOnBooleanProperty(name = "spring.mvc.formcontent.filter.enabled", matchIfMissing = true)
 	public OrderedFormContentFilter formContentFilter() {
 		return new OrderedFormContentFilter();
 	}
