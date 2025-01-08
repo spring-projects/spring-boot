@@ -205,7 +205,7 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
-	@ConditionalOnBooleanProperty(name = "spring.jmx.enabled", matchIfMissing = true)
+	@ConditionalOnBooleanProperty("spring.jmx.enabled")
 	protected static class IntegrationJmxConfiguration {
 
 		@Bean
