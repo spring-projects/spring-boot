@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ import org.springframework.util.StringUtils;
  * <li>Tomcat JDBC Pool ({@code org.apache.tomcat.jdbc.pool.DataSource})</li>
  * <li>Apache DBCP2 ({@code org.apache.commons.dbcp2.BasicDataSource})</li>
  * <li>Oracle UCP ({@code oracle.ucp.jdbc.PoolDataSourceImpl})</li>
+ * <li>C3P0 ({@code com.mchange.v2.c3p0.ComboPooledDataSource})</li>
  * </ul>
  * <p>
  * The following non-pooling {@link DataSource} implementations can be used when
