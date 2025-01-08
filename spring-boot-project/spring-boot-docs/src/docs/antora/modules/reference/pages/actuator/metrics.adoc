@@ -507,10 +507,10 @@ Finally, you can take full control by defining your own javadoc:io.micrometer.ne
 
 
 [[actuator.metrics.export.otlp]]
-=== OpenTelemetry
+=== OTLP
 
-By default, metrics are exported to {url-micrometer-docs-implementations}/otlp[OpenTelemetry] running on your local machine.
-You can provide the location of the https://opentelemetry.io/[OpenTelemetry metric endpoint] to use by using:
+By default, metrics are exported over the {url-micrometer-docs-implementations}/otlp[OpenTelemetry protocol (OTLP)] to a consumer running on your local machine.
+To export to another location, provide the location of the https://opentelemetry.io/[OTLP metrics endpoint] using configprop:management.otlp.metrics.export.url[]:
 
 [configprops,yaml]
 ----
@@ -520,6 +520,8 @@ management:
       export:
         url: "https://otlp.example.com:4318/v1/metrics"
 ----
+
+Custom headers, for example for authentication, can also be provided using configprop:management.otlp.metrics.export.headers.*[] properties.
 
 
 
