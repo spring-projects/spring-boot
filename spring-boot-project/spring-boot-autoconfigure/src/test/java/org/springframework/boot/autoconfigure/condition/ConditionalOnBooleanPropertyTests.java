@@ -151,7 +151,7 @@ class ConditionalOnBooleanPropertyTests {
 			.run();
 	}
 
-	static abstract class BeanConfiguration {
+	abstract static class BeanConfiguration {
 
 		@Bean
 		String foo() {
