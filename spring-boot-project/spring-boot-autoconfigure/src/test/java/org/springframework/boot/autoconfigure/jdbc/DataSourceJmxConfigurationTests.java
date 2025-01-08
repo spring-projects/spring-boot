@@ -149,7 +149,7 @@ class DataSourceJmxConfigurationTests {
 	@Test
 	void tomcatAutoConfiguredCanExposeMBeanPool() {
 		this.contextRunner
-			.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
+			.withPropertyValues("spring.jmx.enabled=true", "spring.datasource.type=" + DataSource.class.getName(),
 					"spring.datasource.tomcat.jmx-enabled=true")
 			.run((context) -> {
 				assertThat(context).hasBean("dataSourceMBean");
@@ -162,7 +162,7 @@ class DataSourceJmxConfigurationTests {
 	@Test
 	void tomcatProxiedCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceProxyConfiguration.class)
-			.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
+			.withPropertyValues("spring.jmx.enabled=true", "spring.datasource.type=" + DataSource.class.getName(),
 					"spring.datasource.tomcat.jmx-enabled=true")
 			.run((context) -> {
 				assertThat(context).hasBean("dataSourceMBean");
@@ -173,7 +173,7 @@ class DataSourceJmxConfigurationTests {
 	@Test
 	void tomcatDelegateCanExposeMBeanPool() {
 		this.contextRunner.withUserConfiguration(DataSourceDelegateConfiguration.class)
-			.withPropertyValues("spring.datasource.type=" + DataSource.class.getName(),
+			.withPropertyValues("spring.jmx.enabled=true", "spring.datasource.type=" + DataSource.class.getName(),
 					"spring.datasource.tomcat.jmx-enabled=true")
 			.run((context) -> {
 				assertThat(context).hasBean("dataSourceMBean");
