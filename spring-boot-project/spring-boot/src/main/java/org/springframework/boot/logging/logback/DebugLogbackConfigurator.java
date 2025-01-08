@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.logging.logback;
+
+import java.util.function.Supplier;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -38,10 +40,10 @@ class DebugLogbackConfigurator extends LogbackConfigurator {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
-	public void conversionRule(String conversionWord, Class<? extends Converter> converterClass) {
+	<T extends Converter<?>> void conversionRule(String conversionWord, Class<T> converterClass,
+			Supplier<T> converterSupplier) {
 		info("Adding conversion rule of type '" + converterClass.getName() + "' for word '" + conversionWord + "'");
-		super.conversionRule(conversionWord, converterClass);
+		super.conversionRule(conversionWord, converterClass, converterSupplier);
 	}
 
 	@Override
