@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,20 +88,20 @@ class BuildRequestTests {
 	@Test
 	void forJarFileWhenJarFileIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildRequest.forJarFile(null))
-			.withMessage("JarFile must not be null");
+			.withMessage("'jarFile' must not be null");
 	}
 
 	@Test
 	void forJarFileWhenJarFileIsMissingThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> BuildRequest.forJarFile(new File(this.tempDir, "missing.jar")))
-			.withMessage("JarFile must exist");
+			.withMessage("'jarFile' must exist");
 	}
 
 	@Test
 	void forJarFileWhenJarFileIsDirectoryThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildRequest.forJarFile(this.tempDir))
-			.withMessage("JarFile must be a file");
+			.withMessage("'jarFile' must be a file");
 	}
 
 	@Test
@@ -217,14 +217,14 @@ class BuildRequestTests {
 	void withEnvWhenKeyIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withEnv(null, "test"))
-			.withMessage("Name must not be empty");
+			.withMessage("'name' must not be empty");
 	}
 
 	@Test
 	void withEnvWhenValueIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withEnv("test", null))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
@@ -241,7 +241,7 @@ class BuildRequestTests {
 	void withBuildpacksWhenBuildpacksIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildpacks((List<BuildpackReference>) null))
-			.withMessage("Buildpacks must not be null");
+			.withMessage("'buildpacks' must not be null");
 	}
 
 	@Test
@@ -258,7 +258,7 @@ class BuildRequestTests {
 	void withBindingsWhenBindingsIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBindings((List<Binding>) null))
-			.withMessage("Bindings must not be null");
+			.withMessage("'bindings' must not be null");
 	}
 
 	@Test
@@ -283,7 +283,7 @@ class BuildRequestTests {
 	void withTagsWhenTagsIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withTags((List<ImageReference>) null))
-			.withMessage("Tags must not be null");
+			.withMessage("'tags' must not be null");
 	}
 
 	@Test
@@ -322,7 +322,7 @@ class BuildRequestTests {
 	void withBuildVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildCache(null))
-			.withMessage("BuildCache must not be null");
+			.withMessage("'buildCache' must not be null");
 	}
 
 	@Test
@@ -345,7 +345,7 @@ class BuildRequestTests {
 	void withLaunchVolumeCacheWhenCacheIsNullThrowsException() throws IOException {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withLaunchCache(null))
-			.withMessage("LaunchCache must not be null");
+			.withMessage("'launchCache' must not be null");
 	}
 
 	@Test

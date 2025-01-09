@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,8 @@ public final class Status {
 	 * @param description a description of the status
 	 */
 	public Status(String code, String description) {
-		Assert.notNull(code, "Code must not be null");
-		Assert.notNull(description, "Description must not be null");
+		Assert.notNull(code, "'code' must not be null");
+		Assert.notNull(description, "'description' must not be null");
 		this.code = code;
 		this.description = description;
 	}

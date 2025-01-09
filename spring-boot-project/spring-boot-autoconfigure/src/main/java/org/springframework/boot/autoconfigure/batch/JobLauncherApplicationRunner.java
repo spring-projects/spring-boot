@@ -102,9 +102,9 @@ public class JobLauncherApplicationRunner
 	 * when running a job
 	 */
 	public JobLauncherApplicationRunner(JobLauncher jobLauncher, JobExplorer jobExplorer, JobRepository jobRepository) {
-		Assert.notNull(jobLauncher, "JobLauncher must not be null");
-		Assert.notNull(jobExplorer, "JobExplorer must not be null");
-		Assert.notNull(jobRepository, "JobRepository must not be null");
+		Assert.notNull(jobLauncher, "'jobLauncher' must not be null");
+		Assert.notNull(jobExplorer, "'jobExplorer' must not be null");
+		Assert.notNull(jobRepository, "'jobRepository' must not be null");
 		this.jobLauncher = jobLauncher;
 		this.jobExplorer = jobExplorer;
 		this.jobRepository = jobRepository;

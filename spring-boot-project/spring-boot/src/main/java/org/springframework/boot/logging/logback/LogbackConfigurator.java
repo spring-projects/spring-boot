@@ -43,7 +43,7 @@ class LogbackConfigurator {
 	private final LoggerContext context;
 
 	LogbackConfigurator(LoggerContext context) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		this.context = context;
 	}
 
@@ -58,8 +58,8 @@ class LogbackConfigurator {
 	@SuppressWarnings("unchecked")
 	<T extends Converter<?>> void conversionRule(String conversionWord, Class<T> converterClass,
 			Supplier<T> converterSupplier) {
-		Assert.hasLength(conversionWord, "Conversion word must not be empty");
-		Assert.notNull(converterSupplier, "Converter supplier must not be null");
+		Assert.hasLength(conversionWord, "'conversionWord' must not be empty");
+		Assert.notNull(converterSupplier, "'converterSupplier' must not be null");
 		Map<String, Supplier<?>> registry = (Map<String, Supplier<?>>) this.context
 			.getObject(CoreConstants.PATTERN_RULE_REGISTRY_FOR_SUPPLIERS);
 		if (registry == null) {

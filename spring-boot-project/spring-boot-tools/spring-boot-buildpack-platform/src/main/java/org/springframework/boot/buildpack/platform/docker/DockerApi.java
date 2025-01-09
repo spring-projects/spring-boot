@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -219,8 +219,8 @@ public class DockerApi {
 		 */
 		public Image pull(ImageReference reference, ImagePlatform platform,
 				UpdateListener<PullImageUpdateEvent> listener, String registryAuth) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
-			Assert.notNull(listener, "Listener must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
+			Assert.notNull(listener, "'listener' must not be null");
 			URI createUri = (platform != null)
 					? buildUrl(PLATFORM_API_VERSION, "/images/create", "fromImage", reference, "platform", platform)
 					: buildUrl("/images/create", "fromImage", reference);
@@ -249,8 +249,8 @@ public class DockerApi {
 		 */
 		public void push(ImageReference reference, UpdateListener<PushImageUpdateEvent> listener, String registryAuth)
 				throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
-			Assert.notNull(listener, "Listener must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
+			Assert.notNull(listener, "'listener' must not be null");
 			URI pushUri = buildUrl("/images/" + reference + "/push");
 			ErrorCaptureUpdateListener errorListener = new ErrorCaptureUpdateListener();
 			listener.onStart();
@@ -274,8 +274,8 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public void load(ImageArchive archive, UpdateListener<LoadImageUpdateEvent> listener) throws IOException {
-			Assert.notNull(archive, "Archive must not be null");
-			Assert.notNull(listener, "Listener must not be null");
+			Assert.notNull(archive, "'archive' must not be null");
+			Assert.notNull(listener, "'listener' must not be null");
 			URI loadUri = buildUrl("/images/load");
 			LoadImageUpdateListener streamListener = new LoadImageUpdateListener(archive);
 			listener.onStart();
@@ -305,8 +305,8 @@ public class DockerApi {
 		 */
 		@Deprecated(since = "3.2.6", forRemoval = true)
 		public void exportLayerFiles(ImageReference reference, IOBiConsumer<String, Path> exports) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
-			Assert.notNull(exports, "Exports must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
+			Assert.notNull(exports, "'exports' must not be null");
 			exportLayers(reference, (name, archive) -> {
 				Path path = Files.createTempFile("docker-export-layer-files-", null);
 				try {
@@ -330,8 +330,8 @@ public class DockerApi {
 		 */
 		public void exportLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
-			Assert.notNull(exports, "Exports must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
+			Assert.notNull(exports, "'exports' must not be null");
 			URI uri = buildUrl("/images/" + reference + "/get");
 			try (Response response = http().get(uri)) {
 				try (ExportedImageTar exportedImageTar = new ExportedImageTar(reference, response.getContent())) {
@@ -347,7 +347,7 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public void remove(ImageReference reference, boolean force) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/images/" + reference, params);
 			http().delete(uri).close();
@@ -364,7 +364,7 @@ public class DockerApi {
 		}
 
 		private Image inspect(ApiVersion apiVersion, ImageReference reference) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
 			URI imageUri = buildUrl(apiVersion, "/images/" + reference + "/json");
 			try (Response response = http().get(imageUri)) {
 				return Image.of(response.getContent());
@@ -372,8 +372,8 @@ public class DockerApi {
 		}
 
 		public void tag(ImageReference sourceReference, ImageReference targetReference) throws IOException {
-			Assert.notNull(sourceReference, "SourceReference must not be null");
-			Assert.notNull(targetReference, "TargetReference must not be null");
+			Assert.notNull(sourceReference, "'sourceReference' must not be null");
+			Assert.notNull(targetReference, "'targetReference' must not be null");
 			String tag = targetReference.getTag();
 			String path = "/images/" + sourceReference + "/tag";
 			URI uri = (tag != null) ? buildUrl(path, "repo", targetReference.inTaglessForm(), "tag", tag)
@@ -402,8 +402,8 @@ public class DockerApi {
 		 */
 		public ContainerReference create(ContainerConfig config, ImagePlatform platform, ContainerContent... contents)
 				throws IOException {
-			Assert.notNull(config, "Config must not be null");
-			Assert.noNullElements(contents, "Contents must not contain null elements");
+			Assert.notNull(config, "'config' must not be null");
+			Assert.noNullElements(contents, "'contents' must not contain null elements");
 			ContainerReference containerReference = createContainer(config, platform);
 			for (ContainerContent content : contents) {
 				uploadContainerContent(containerReference, content);
@@ -432,7 +432,7 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public void start(ContainerReference reference) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
 			URI uri = buildUrl("/containers/" + reference + "/start");
 			http().post(uri).close();
 		}
@@ -444,8 +444,8 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public void logs(ContainerReference reference, UpdateListener<LogUpdateEvent> listener) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
-			Assert.notNull(listener, "Listener must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
+			Assert.notNull(listener, "'listener' must not be null");
 			Object[] params = { "stdout", "1", "stderr", "1", "follow", "1" };
 			URI uri = buildUrl("/containers/" + reference + "/logs", params);
 			listener.onStart();
@@ -466,7 +466,7 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public ContainerStatus wait(ContainerReference reference) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
 			URI uri = buildUrl("/containers/" + reference + "/wait");
 			try (Response response = http().post(uri)) {
 				return ContainerStatus.of(response.getContent());
@@ -480,7 +480,7 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public void remove(ContainerReference reference, boolean force) throws IOException {
-			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/containers/" + reference, params);
 			http().delete(uri).close();
@@ -503,7 +503,7 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public void delete(VolumeName name, boolean force) throws IOException {
-			Assert.notNull(name, "Name must not be null");
+			Assert.notNull(name, "'name' must not be null");
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/volumes/" + name, params);
 			http().delete(uri).close();

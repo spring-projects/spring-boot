@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,19 +31,19 @@ class LifecycleVersionTests {
 	@Test
 	void parseWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse(null))
-			.withMessage("Value must not be empty");
+			.withMessage("'value' must not be empty");
 	}
 
 	@Test
 	void parseWhenTooLongThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse("v1.2.3.4"))
-			.withMessage("Malformed version number '1.2.3.4'");
+			.withMessage("'value' [v1.2.3.4] must be a valid version number");
 	}
 
 	@Test
 	void parseWhenNonNumericThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LifecycleVersion.parse("v1.2.3a"))
-			.withMessage("Malformed version number '1.2.3a'");
+			.withMessage("'value' [v1.2.3a] must be a valid version number");
 	}
 
 	@Test

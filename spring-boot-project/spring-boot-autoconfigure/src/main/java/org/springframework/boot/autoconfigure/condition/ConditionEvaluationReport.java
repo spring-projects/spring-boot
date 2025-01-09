@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,9 +76,9 @@ public final class ConditionEvaluationReport {
 	 * @param outcome the condition outcome
 	 */
 	public void recordConditionEvaluation(String source, Condition condition, ConditionOutcome outcome) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(condition, "Condition must not be null");
-		Assert.notNull(outcome, "Outcome must not be null");
+		Assert.notNull(source, "'source' must not be null");
+		Assert.notNull(condition, "'condition' must not be null");
+		Assert.notNull(outcome, "'outcome' must not be null");
 		this.unconditionalClasses.remove(source);
 		this.outcomes.computeIfAbsent(source, (key) -> new ConditionAndOutcomes()).add(condition, outcome);
 		this.addedAncestorOutcomes = false;
@@ -89,7 +89,7 @@ public final class ConditionEvaluationReport {
 	 * @param exclusions the names of the excluded classes
 	 */
 	public void recordExclusions(Collection<String> exclusions) {
-		Assert.notNull(exclusions, "exclusions must not be null");
+		Assert.notNull(exclusions, "'exclusions' must not be null");
 		this.exclusions.addAll(exclusions);
 	}
 
@@ -99,7 +99,7 @@ public final class ConditionEvaluationReport {
 	 * evaluated
 	 */
 	public void recordEvaluationCandidates(List<String> evaluationCandidates) {
-		Assert.notNull(evaluationCandidates, "evaluationCandidates must not be null");
+		Assert.notNull(evaluationCandidates, "'evaluationCandidates' must not be null");
 		this.unconditionalClasses.addAll(evaluationCandidates);
 	}
 

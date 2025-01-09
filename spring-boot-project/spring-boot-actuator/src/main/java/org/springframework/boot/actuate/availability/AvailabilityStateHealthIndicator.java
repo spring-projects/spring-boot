@@ -55,9 +55,9 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 	public <S extends AvailabilityState> AvailabilityStateHealthIndicator(
 			ApplicationAvailability applicationAvailability, Class<S> stateType,
 			Consumer<StatusMappings<S>> statusMappings) {
-		Assert.notNull(applicationAvailability, "ApplicationAvailability must not be null");
-		Assert.notNull(stateType, "StateType must not be null");
-		Assert.notNull(statusMappings, "StatusMappings must not be null");
+		Assert.notNull(applicationAvailability, "'applicationAvailability' must not be null");
+		Assert.notNull(stateType, "'stateType' must not be null");
+		Assert.notNull(statusMappings, "'statusMappings' must not be null");
 		this.applicationAvailability = applicationAvailability;
 		this.stateType = stateType;
 		statusMappings.accept(this.statusMappings::put);

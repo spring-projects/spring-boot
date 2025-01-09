@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,14 +59,14 @@ class ClassPathFileChangeListenerTests {
 	void eventPublisherMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher))
-			.withMessageContaining("EventPublisher must not be null");
+			.withMessageContaining("'eventPublisher' must not be null");
 	}
 
 	@Test
 	void restartStrategyMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher))
-			.withMessageContaining("RestartStrategy must not be null");
+			.withMessageContaining("'restartStrategy' must not be null");
 	}
 
 	@Test

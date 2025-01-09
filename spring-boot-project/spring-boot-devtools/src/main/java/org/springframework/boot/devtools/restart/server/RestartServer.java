@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ public class RestartServer {
 	 * @param classLoader the application classloader
 	 */
 	public RestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter, ClassLoader classLoader) {
-		Assert.notNull(sourceDirectoryUrlFilter, "SourceDirectoryUrlFilter must not be null");
-		Assert.notNull(classLoader, "ClassLoader must not be null");
+		Assert.notNull(sourceDirectoryUrlFilter, "'sourceDirectoryUrlFilter' must not be null");
+		Assert.notNull(classLoader, "'classLoader' must not be null");
 		this.sourceDirectoryUrlFilter = sourceDirectoryUrlFilter;
 		this.classLoader = classLoader;
 	}

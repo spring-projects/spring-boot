@@ -126,8 +126,8 @@ public class TestDatabaseAutoConfiguration {
 			if (AotDetector.useGeneratedArtifacts()) {
 				return;
 			}
-			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, registry,
-					"Test Database Auto-configuration can only be used with a ConfigurableListableBeanFactory");
+			Assert.isTrue(registry instanceof ConfigurableListableBeanFactory,
+					"'registry' must be a ConfigurableListableBeanFactory");
 			process(registry, (ConfigurableListableBeanFactory) registry);
 		}
 

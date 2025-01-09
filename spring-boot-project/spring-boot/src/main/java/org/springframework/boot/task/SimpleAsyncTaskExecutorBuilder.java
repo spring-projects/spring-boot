@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @see #additionalCustomizers(SimpleAsyncTaskExecutorCustomizer...)
 	 */
 	public SimpleAsyncTaskExecutorBuilder customizers(SimpleAsyncTaskExecutorCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return customizers(Arrays.asList(customizers));
 	}
 
@@ -148,7 +148,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 */
 	public SimpleAsyncTaskExecutorBuilder customizers(
 			Iterable<? extends SimpleAsyncTaskExecutorCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix, this.concurrencyLimit,
 				this.taskDecorator, append(null, customizers), this.taskTerminationTimeout);
 	}
@@ -162,7 +162,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 * @see #customizers(SimpleAsyncTaskExecutorCustomizer...)
 	 */
 	public SimpleAsyncTaskExecutorBuilder additionalCustomizers(SimpleAsyncTaskExecutorCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
 
@@ -176,7 +176,7 @@ public class SimpleAsyncTaskExecutorBuilder {
 	 */
 	public SimpleAsyncTaskExecutorBuilder additionalCustomizers(
 			Iterable<? extends SimpleAsyncTaskExecutorCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return new SimpleAsyncTaskExecutorBuilder(this.virtualThreads, this.threadNamePrefix, this.concurrencyLimit,
 				this.taskDecorator, append(this.customizers, customizers), this.taskTerminationTimeout);
 	}

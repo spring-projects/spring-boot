@@ -47,7 +47,7 @@ class AvailabilityStateHealthIndicatorTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new AvailabilityStateHealthIndicator(null, LivenessState.class, (statusMappings) -> {
 			}))
-			.withMessage("ApplicationAvailability must not be null");
+			.withMessage("'applicationAvailability' must not be null");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class AvailabilityStateHealthIndicatorTests {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, null, (statusMappings) -> {
 				}))
-			.withMessage("StateType must not be null");
+			.withMessage("'stateType' must not be null");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class AvailabilityStateHealthIndicatorTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(
 					() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, LivenessState.class, null))
-			.withMessage("StatusMappings must not be null");
+			.withMessage("'statusMappings' must not be null");
 	}
 
 	@Test

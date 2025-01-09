@@ -129,9 +129,9 @@ public class Restarter {
 	 * @see #initialize(String[])
 	 */
 	protected Restarter(Thread thread, String[] args, boolean forceReferenceCleanup, RestartInitializer initializer) {
-		Assert.notNull(thread, "Thread must not be null");
-		Assert.notNull(args, "Args must not be null");
-		Assert.notNull(initializer, "Initializer must not be null");
+		Assert.notNull(thread, "'thread' must not be null");
+		Assert.notNull(args, "'args' must not be null");
+		Assert.notNull(initializer, "'initializer' must not be null");
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Creating new Restarter for thread " + thread);
 		}
@@ -208,7 +208,7 @@ public class Restarter {
 	 * @param urls the urls to add
 	 */
 	public void addUrls(Collection<URL> urls) {
-		Assert.notNull(urls, "Urls must not be null");
+		Assert.notNull(urls, "'urls' must not be null");
 		this.urls.addAll(urls);
 	}
 
@@ -217,7 +217,7 @@ public class Restarter {
 	 * @param classLoaderFiles the files to add
 	 */
 	public void addClassLoaderFiles(ClassLoaderFiles classLoaderFiles) {
-		Assert.notNull(classLoaderFiles, "ClassLoaderFiles must not be null");
+		Assert.notNull(classLoaderFiles, "'classLoaderFiles' must not be null");
 		this.classLoaderFiles.addAll(classLoaderFiles);
 	}
 

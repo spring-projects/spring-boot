@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,10 +106,10 @@ public final class VolumeName {
 	 */
 	public static <S> VolumeName basedOn(S source, Function<S, String> nameExtractor, String prefix, String suffix,
 			int digestLength) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(nameExtractor, "NameExtractor must not be null");
-		Assert.notNull(prefix, "Prefix must not be null");
-		Assert.notNull(suffix, "Suffix must not be null");
+		Assert.notNull(source, "'source' must not be null");
+		Assert.notNull(nameExtractor, "'nameExtractor' must not be null");
+		Assert.notNull(prefix, "'prefix' must not be null");
+		Assert.notNull(suffix, "'suffix' must not be null");
 		return of(prefix + getDigest(nameExtractor.apply(source), digestLength) + suffix);
 	}
 
@@ -125,7 +125,7 @@ public final class VolumeName {
 
 	private static String asHexString(byte[] digest, int digestLength) {
 		Assert.isTrue(digestLength <= digest.length,
-				() -> "DigestLength must be less than or equal to " + digest.length);
+				() -> "'digestLength' must be less than or equal to " + digest.length);
 		return HexFormat.of().formatHex(digest, 0, digestLength);
 	}
 
@@ -135,7 +135,7 @@ public final class VolumeName {
 	 * @return a new {@link VolumeName} instance
 	 */
 	public static VolumeName of(String value) {
-		Assert.notNull(value, "Value must not be null");
+		Assert.notNull(value, "'value' must not be null");
 		return new VolumeName(value);
 	}
 

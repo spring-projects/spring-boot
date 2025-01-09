@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,7 +192,7 @@ public final class Bindable<T> {
 	public Bindable<T> withExistingValue(T existingValue) {
 		Assert.isTrue(
 				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
-				() -> "ExistingValue must be an instance of " + this.type);
+				() -> "'existingValue' must be an instance of " + this.type);
 		Assert.state(this.bindMethod != BindMethod.VALUE_OBJECT,
 				() -> "An existing value cannot be provided when binding as a value object");
 		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
@@ -249,7 +249,7 @@ public final class Bindable<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Bindable<T> ofInstance(T instance) {
-		Assert.notNull(instance, "Instance must not be null");
+		Assert.notNull(instance, "'instance' must not be null");
 		Class<T> type = (Class<T>) instance.getClass();
 		return of(type).withExistingValue(instance);
 	}
@@ -262,7 +262,7 @@ public final class Bindable<T> {
 	 * @see #of(ResolvableType)
 	 */
 	public static <T> Bindable<T> of(Class<T> type) {
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		return of(ResolvableType.forClass(type));
 	}
 
@@ -306,7 +306,7 @@ public final class Bindable<T> {
 	 * @see #of(Class)
 	 */
 	public static <T> Bindable<T> of(ResolvableType type) {
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		ResolvableType boxedType = box(type);
 		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS, NO_BIND_RESTRICTIONS, null);
 	}

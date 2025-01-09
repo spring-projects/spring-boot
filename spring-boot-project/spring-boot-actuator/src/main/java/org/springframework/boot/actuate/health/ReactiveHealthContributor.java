@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
 public interface ReactiveHealthContributor {
 
 	static ReactiveHealthContributor adapt(HealthContributor healthContributor) {
-		Assert.notNull(healthContributor, "HealthContributor must not be null");
+		Assert.notNull(healthContributor, "'healthContributor' must not be null");
 		if (healthContributor instanceof HealthIndicator healthIndicator) {
 			return new HealthIndicatorReactiveAdapter(healthIndicator);
 		}

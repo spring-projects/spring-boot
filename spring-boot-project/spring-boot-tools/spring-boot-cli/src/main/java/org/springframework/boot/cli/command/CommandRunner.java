@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param commands the commands to add
 	 */
 	public void addCommands(Iterable<Command> commands) {
-		Assert.notNull(commands, "Commands must not be null");
+		Assert.notNull(commands, "'commands' must not be null");
 		for (Command command : commands) {
 			addCommand(command);
 		}
@@ -83,7 +83,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param command the command to add.
 	 */
 	public void addCommand(Command command) {
-		Assert.notNull(command, "Command must not be null");
+		Assert.notNull(command, "'command' must not be null");
 		this.commands.add(command);
 	}
 
@@ -95,7 +95,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @see #isOptionCommand(Command)
 	 */
 	public void setOptionCommands(Class<?>... commandClasses) {
-		Assert.notNull(commandClasses, "CommandClasses must not be null");
+		Assert.notNull(commandClasses, "'commandClasses' must not be null");
 		this.optionCommandClasses = commandClasses;
 	}
 
@@ -105,7 +105,7 @@ public class CommandRunner implements Iterable<Command> {
 	 * @param commandClasses the classes of hidden commands
 	 */
 	public void setHiddenCommands(Class<?>... commandClasses) {
-		Assert.notNull(commandClasses, "CommandClasses must not be null");
+		Assert.notNull(commandClasses, "'commandClasses' must not be null");
 		this.hiddenCommandClasses = commandClasses;
 	}
 

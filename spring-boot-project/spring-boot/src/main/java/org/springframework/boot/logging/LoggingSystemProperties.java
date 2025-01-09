@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class LoggingSystemProperties {
 	 */
 	public LoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
 			BiConsumer<String, String> setter) {
-		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(environment, "'environment' must not be null");
 		this.environment = environment;
 		this.defaultValueResolver = (defaultValueResolver != null) ? defaultValueResolver : (name) -> null;
 		this.setter = (setter != null) ? setter : systemPropertySetter;

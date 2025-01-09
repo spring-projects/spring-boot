@@ -121,7 +121,7 @@ public class Instantiator<T> {
 	 * @since 2.4.8
 	 */
 	public List<T> instantiate(ClassLoader classLoader, Collection<String> names) {
-		Assert.notNull(names, "Names must not be null");
+		Assert.notNull(names, "'names' must not be null");
 		return instantiate(names.stream().map((name) -> TypeSupplier.forName(classLoader, name)));
 	}
 
@@ -155,7 +155,7 @@ public class Instantiator<T> {
 	 * @since 3.4.0
 	 */
 	public T instantiateType(Class<?> type) {
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		return instantiate(TypeSupplier.forType(type));
 	}
 
@@ -166,7 +166,7 @@ public class Instantiator<T> {
 	 * @since 2.4.8
 	 */
 	public List<T> instantiateTypes(Collection<Class<?>> types) {
-		Assert.notNull(types, "Types must not be null");
+		Assert.notNull(types, "'types' must not be null");
 		return instantiate(types.stream().map(TypeSupplier::forType));
 	}
 

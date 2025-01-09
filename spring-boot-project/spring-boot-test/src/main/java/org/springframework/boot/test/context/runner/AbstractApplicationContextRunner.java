@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,8 +154,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	protected AbstractApplicationContextRunner(RunnerConfiguration<C> configuration,
 			Function<RunnerConfiguration<C>, SELF> instanceFactory) {
-		Assert.notNull(configuration, "RunnerConfiguration must not be null");
-		Assert.notNull(instanceFactory, "instanceFactory must not be null");
+		Assert.notNull(configuration, "'configuration' must not be null");
+		Assert.notNull(instanceFactory, "'instanceFactory' must not be null");
 		this.runnerConfiguration = configuration;
 		this.instanceFactory = instanceFactory;
 	}
@@ -190,7 +190,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @return a new instance with the updated initializers
 	 */
 	public SELF withInitializer(ApplicationContextInitializer<? super C> initializer) {
-		Assert.notNull(initializer, "Initializer must not be null");
+		Assert.notNull(initializer, "'initializer' must not be null");
 		return newInstance(this.runnerConfiguration.withInitializer(initializer));
 	}
 
@@ -332,7 +332,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @return a new instance with the updated configuration
 	 */
 	public SELF withConfiguration(Configurations configurations) {
-		Assert.notNull(configurations, "Configurations must not be null");
+		Assert.notNull(configurations, "'configurations' must not be null");
 		return newInstance(this.runnerConfiguration.withConfiguration(configurations));
 	}
 
@@ -559,7 +559,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 
 		private RunnerConfiguration<C> withInitializer(ApplicationContextInitializer<? super C> initializer) {
-			Assert.notNull(initializer, "Initializer must not be null");
+			Assert.notNull(initializer, "'initializer' must not be null");
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.initializers = add(config.initializers, initializer);
 			return config;
@@ -605,7 +605,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		}
 
 		private RunnerConfiguration<C> withConfiguration(Configurations configurations) {
-			Assert.notNull(configurations, "Configurations must not be null");
+			Assert.notNull(configurations, "'configurations' must not be null");
 			RunnerConfiguration<C> config = new RunnerConfiguration<>(this);
 			config.configurations = add(config.configurations, configurations);
 			return config;

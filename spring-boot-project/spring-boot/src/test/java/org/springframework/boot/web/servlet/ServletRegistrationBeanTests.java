@@ -142,28 +142,28 @@ class ServletRegistrationBeanTests {
 	@Test
 	void createServletMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
-			.withMessageContaining("Servlet must not be null");
+			.withMessageContaining("'servlet' must not be null");
 	}
 
 	@Test
 	void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlMappings(null))
-			.withMessageContaining("UrlMappings must not be null");
+			.withMessageContaining("'urlMappings' must not be null");
 	}
 
 	@Test
 	void createMappingMustNotBeNull() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
-			.withMessageContaining("UrlMappings must not be null");
+			.withMessageContaining("'urlMappings' must not be null");
 	}
 
 	@Test
 	void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlMappings((String[]) null))
-			.withMessageContaining("UrlMappings must not be null");
+			.withMessageContaining("'urlMappings' must not be null");
 	}
 
 	@Test

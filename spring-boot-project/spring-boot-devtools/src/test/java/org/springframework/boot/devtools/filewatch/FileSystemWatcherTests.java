@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,27 +64,27 @@ class FileSystemWatcherTests {
 	void pollIntervalMustBePositive() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(0), Duration.ofMillis(1)))
-			.withMessageContaining("PollInterval must be positive");
+			.withMessageContaining("'pollInterval' must be positive");
 	}
 
 	@Test
 	void quietPeriodMustBePositive() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(0)))
-			.withMessageContaining("QuietPeriod must be positive");
+			.withMessageContaining("'quietPeriod' must be positive");
 	}
 
 	@Test
 	void pollIntervalMustBeGreaterThanQuietPeriod() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(1)))
-			.withMessageContaining("PollInterval must be greater than QuietPeriod");
+			.withMessageContaining("'pollInterval' must be greater than QuietPeriod");
 	}
 
 	@Test
 	void listenerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addListener(null))
-			.withMessageContaining("FileChangeListener must not be null");
+			.withMessageContaining("'fileChangeListener' must not be null");
 	}
 
 	@Test
@@ -97,7 +97,7 @@ class FileSystemWatcherTests {
 	@Test
 	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(null))
-			.withMessageContaining("Directory must not be null");
+			.withMessageContaining("'directory' must not be null");
 	}
 
 	@Test
@@ -106,7 +106,7 @@ class FileSystemWatcherTests {
 		assertThat(file.createNewFile()).isTrue();
 		assertThat(file).isFile();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(file))
-			.withMessageContaining("Directory '" + file + "' must not be a file");
+			.withMessageContaining("'directory' [" + file + "] must not be a file");
 	}
 
 	@Test

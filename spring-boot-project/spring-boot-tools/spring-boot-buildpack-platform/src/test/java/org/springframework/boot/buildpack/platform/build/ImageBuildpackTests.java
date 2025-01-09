@@ -166,7 +166,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("docker://buildpack@0.0.1");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-			.withMessageContaining("Unable to parse image reference \"buildpack@0.0.1\"");
+			.withMessageContaining("'value' [buildpack@0.0.1] must be an image reference");
 	}
 
 	@Test

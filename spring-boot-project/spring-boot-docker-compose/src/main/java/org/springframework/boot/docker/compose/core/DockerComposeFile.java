@@ -129,9 +129,9 @@ public final class DockerComposeFile {
 	 * @return the Docker Compose file
 	 */
 	public static DockerComposeFile of(File file) {
-		Assert.notNull(file, "File must not be null");
-		Assert.isTrue(file.exists(), () -> "Docker Compose file '%s' does not exist".formatted(file));
-		Assert.isTrue(file.isFile(), () -> "Docker compose file '%s' is not a file".formatted(file));
+		Assert.notNull(file, "'file' must not be null");
+		Assert.isTrue(file.exists(), () -> "'file' [%s] must exist".formatted(file));
+		Assert.isTrue(file.isFile(), () -> "'file' [%s] must be a normal file".formatted(file));
 		return new DockerComposeFile(Collections.singletonList(file));
 	}
 
@@ -142,11 +142,11 @@ public final class DockerComposeFile {
 	 * @since 3.4.0
 	 */
 	public static DockerComposeFile of(Collection<? extends File> files) {
-		Assert.notNull(files, "Files must not be null");
+		Assert.notNull(files, "'files' must not be null");
 		for (File file : files) {
-			Assert.notNull(file, "File must not be null");
-			Assert.isTrue(file.exists(), () -> "Docker Compose file '%s' does not exist".formatted(file));
-			Assert.isTrue(file.isFile(), () -> "Docker compose file '%s' is not a file".formatted(file));
+			Assert.notNull(file, "'files' must not contain null elements");
+			Assert.isTrue(file.exists(), () -> "'files' content [%s] must exist".formatted(file));
+			Assert.isTrue(file.isFile(), () -> "'files' content [%s] must be a normal file".formatted(file));
 		}
 		return new DockerComposeFile(List.copyOf(files));
 	}

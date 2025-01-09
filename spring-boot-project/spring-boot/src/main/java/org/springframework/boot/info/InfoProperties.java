@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class InfoProperties implements Iterable<InfoProperties.Entry> {
 	 * @param entries the information to expose
 	 */
 	public InfoProperties(Properties entries) {
-		Assert.notNull(entries, "Entries must not be null");
+		Assert.notNull(entries, "'entries' must not be null");
 		this.entries = copy(entries);
 	}
 

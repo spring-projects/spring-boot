@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ public class EndpointMBean implements DynamicMBean {
 	private final Map<String, JmxOperation> operations;
 
 	EndpointMBean(JmxOperationResponseMapper responseMapper, ClassLoader classLoader, ExposableJmxEndpoint endpoint) {
-		Assert.notNull(responseMapper, "ResponseMapper must not be null");
-		Assert.notNull(endpoint, "Endpoint must not be null");
+		Assert.notNull(responseMapper, "'responseMapper' must not be null");
+		Assert.notNull(endpoint, "'endpoint' must not be null");
 		this.responseMapper = responseMapper;
 		this.classLoader = classLoader;
 		this.endpoint = endpoint;

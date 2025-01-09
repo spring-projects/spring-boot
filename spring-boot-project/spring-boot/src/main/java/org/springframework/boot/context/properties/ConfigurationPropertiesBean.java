@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ public final class ConfigurationPropertiesBean {
 	 * @return a map of all configuration properties beans keyed by the bean name
 	 */
 	public static Map<String, ConfigurationPropertiesBean> getAll(ApplicationContext applicationContext) {
-		Assert.notNull(applicationContext, "ApplicationContext must not be null");
+		Assert.notNull(applicationContext, "'applicationContext' must not be null");
 		if (applicationContext instanceof ConfigurableApplicationContext configurableContext) {
 			return getAll(configurableContext);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,13 +43,13 @@ class ClassLoaderFilesTests {
 	@Test
 	void addFileNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test
 	void addFileFileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile("test", null))
-			.withMessageContaining("File must not be null");
+			.withMessageContaining("'file' must not be null");
 	}
 
 	@Test
@@ -153,7 +153,7 @@ class ClassLoaderFilesTests {
 	@Test
 	void classLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFiles(null))
-			.withMessageContaining("ClassLoaderFiles must not be null");
+			.withMessageContaining("'classLoaderFiles' must not be null");
 	}
 
 	@Test

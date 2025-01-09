@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ public enum MockReset {
 	 * @return the configured settings
 	 */
 	public static MockSettings apply(MockReset reset, MockSettings settings) {
-		Assert.notNull(settings, "Settings must not be null");
+		Assert.notNull(settings, "'settings' must not be null");
 		if (reset != null && reset != NONE) {
 			settings.invocationListeners(new ResetInvocationListener(reset));
 		}

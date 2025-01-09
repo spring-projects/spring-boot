@@ -129,20 +129,20 @@ class DockerComposeFileTests {
 	@Test
 	void ofWhenFileIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DockerComposeFile.of((File) null))
-			.withMessage("File must not be null");
+			.withMessage("'file' must not be null");
 	}
 
 	@Test
 	void ofWhenFileDoesNotExistThrowsException() {
 		File file = new File(this.temp, "missing");
 		assertThatIllegalArgumentException().isThrownBy(() -> DockerComposeFile.of(file))
-			.withMessageEndingWith("does not exist");
+			.withMessageEndingWith("must exist");
 	}
 
 	@Test
 	void ofWhenFileIsNotFileThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DockerComposeFile.of(this.temp))
-			.withMessageEndingWith("is not a file");
+			.withMessageEndingWith("must be a normal file");
 	}
 
 	private DockerComposeFile createComposeFile(String name) throws IOException {

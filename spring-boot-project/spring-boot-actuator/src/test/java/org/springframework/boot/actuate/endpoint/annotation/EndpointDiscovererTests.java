@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
 					Collections.emptyList(), Collections.emptyList()))
-			.withMessageContaining("ApplicationContext must not be null");
+			.withMessageContaining("'applicationContext' must not be null");
 	}
 
 	@Test
@@ -84,7 +84,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null, Collections.emptyList(),
 					Collections.emptyList()))
-			.withMessageContaining("ParameterValueMapper must not be null");
+			.withMessageContaining("'parameterValueMapper' must not be null");
 	}
 
 	@Test
@@ -92,7 +92,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
 					mock(ParameterValueMapper.class), null, Collections.emptyList()))
-			.withMessageContaining("InvokerAdvisors must not be null");
+			.withMessageContaining("'invokerAdvisors' must not be null");
 	}
 
 	@Test
@@ -100,7 +100,7 @@ class EndpointDiscovererTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
 					mock(ParameterValueMapper.class), Collections.emptyList(), null))
-			.withMessageContaining("Filters must not be null");
+			.withMessageContaining("'endpointFilters' must not be null");
 	}
 
 	@Test

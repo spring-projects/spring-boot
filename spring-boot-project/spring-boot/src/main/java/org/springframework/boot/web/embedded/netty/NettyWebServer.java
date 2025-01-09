@@ -94,8 +94,8 @@ public class NettyWebServer implements WebServer {
 	 */
 	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
 			Shutdown shutdown, ReactorResourceFactory resourceFactory) {
-		Assert.notNull(httpServer, "HttpServer must not be null");
-		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
+		Assert.notNull(httpServer, "'httpServer' must not be null");
+		Assert.notNull(handlerAdapter, "'handlerAdapter' must not be null");
 		this.lifecycleTimeout = lifecycleTimeout;
 		this.handler = handlerAdapter;
 		this.httpServer = httpServer.channelGroup(new DefaultChannelGroup(new DefaultEventExecutor()));

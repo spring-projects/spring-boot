@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,13 +64,13 @@ public final class DockerConfiguration {
 	}
 
 	public DockerConfiguration withHost(String address, boolean secure, String certificatePath) {
-		Assert.notNull(address, "Address must not be null");
+		Assert.notNull(address, "'address' must not be null");
 		return new DockerConfiguration(DockerHostConfiguration.forAddress(address, secure, certificatePath),
 				this.builderAuthentication, this.publishAuthentication, this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withContext(String context) {
-		Assert.notNull(context, "Context must not be null");
+		Assert.notNull(context, "'context' must not be null");
 		return new DockerConfiguration(DockerHostConfiguration.forContext(context), this.builderAuthentication,
 				this.publishAuthentication, this.bindHostToBuilder);
 	}
@@ -88,22 +88,22 @@ public final class DockerConfiguration {
 
 	public DockerConfiguration withBuilderRegistryUserAuthentication(String username, String password, String url,
 			String email) {
-		Assert.notNull(username, "Username must not be null");
-		Assert.notNull(password, "Password must not be null");
+		Assert.notNull(username, "'username' must not be null");
+		Assert.notNull(password, "'password' must not be null");
 		return new DockerConfiguration(this.host, new DockerRegistryUserAuthentication(username, password, url, email),
 				this.publishAuthentication, this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withPublishRegistryTokenAuthentication(String token) {
-		Assert.notNull(token, "Token must not be null");
+		Assert.notNull(token, "'token' must not be null");
 		return new DockerConfiguration(this.host, this.builderAuthentication,
 				new DockerRegistryTokenAuthentication(token), this.bindHostToBuilder);
 	}
 
 	public DockerConfiguration withPublishRegistryUserAuthentication(String username, String password, String url,
 			String email) {
-		Assert.notNull(username, "Username must not be null");
-		Assert.notNull(password, "Password must not be null");
+		Assert.notNull(username, "'username' must not be null");
+		Assert.notNull(password, "'password' must not be null");
 		return new DockerConfiguration(this.host, this.builderAuthentication,
 				new DockerRegistryUserAuthentication(username, password, url, email), this.bindHostToBuilder);
 	}

@@ -208,7 +208,7 @@ class SpringApplicationTests {
 	@Test
 	void sourcesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication((Class<?>[]) null).run())
-			.withMessageContaining("PrimarySources must not be null");
+			.withMessageContaining("'primarySources' must not be null");
 	}
 
 	@Test

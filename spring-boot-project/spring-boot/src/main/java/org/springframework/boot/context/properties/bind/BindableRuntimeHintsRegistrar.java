@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
 	 */
 	public static BindableRuntimeHintsRegistrar forTypes(Iterable<Class<?>> types) {
-		Assert.notNull(types, "Types must not be null");
+		Assert.notNull(types, "'types' must not be null");
 		return forTypes(StreamSupport.stream(types.spliterator(), false).toArray(Class<?>[]::new));
 	}
 
@@ -128,7 +128,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 * @since 3.0.8
 	 */
 	public static BindableRuntimeHintsRegistrar forBindables(Iterable<Bindable<?>> bindables) {
-		Assert.notNull(bindables, "Bindables must not be null");
+		Assert.notNull(bindables, "'bindables' must not be null");
 		return forBindables(StreamSupport.stream(bindables.spliterator(), false).toArray(Bindable[]::new));
 	}
 

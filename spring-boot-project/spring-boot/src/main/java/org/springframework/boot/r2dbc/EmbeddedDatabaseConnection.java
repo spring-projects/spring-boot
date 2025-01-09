@@ -71,7 +71,7 @@ public enum EmbeddedDatabaseConnection {
 	 * @return the connection URL
 	 */
 	public String getUrl(String databaseName) {
-		Assert.hasText(databaseName, "DatabaseName must not be empty");
+		Assert.hasText(databaseName, "'databaseName' must not be empty");
 		return (this.url != null) ? String.format(this.url, databaseName) : null;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class JsonObjectDeserializerTests {
 	void nullSafeValueWhenClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test
@@ -165,7 +165,7 @@ class JsonObjectDeserializerTests {
 	@Test
 	void getRequiredNodeWhenTreeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(null, "test"))
-			.withMessageContaining("Tree must not be null");
+			.withMessageContaining("'tree' must not be null");
 	}
 
 	@Test

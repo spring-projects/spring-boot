@@ -86,8 +86,8 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @param urlMappings the URLs being mapped
 	 */
 	public ServletRegistrationBean(T servlet, boolean alwaysMapUrl, String... urlMappings) {
-		Assert.notNull(servlet, "Servlet must not be null");
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		Assert.notNull(servlet, "'servlet' must not be null");
+		Assert.notNull(urlMappings, "'urlMappings' must not be null");
 		this.servlet = servlet;
 		this.alwaysMapUrl = alwaysMapUrl;
 		this.urlMappings.addAll(Arrays.asList(urlMappings));
@@ -98,7 +98,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @param servlet the servlet
 	 */
 	public void setServlet(T servlet) {
-		Assert.notNull(servlet, "Servlet must not be null");
+		Assert.notNull(servlet, "'servlet' must not be null");
 		this.servlet = servlet;
 	}
 
@@ -117,7 +117,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @see #addUrlMappings(String...)
 	 */
 	public void setUrlMappings(Collection<String> urlMappings) {
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		Assert.notNull(urlMappings, "'urlMappings' must not be null");
 		this.urlMappings = new LinkedHashSet<>(urlMappings);
 	}
 
@@ -136,7 +136,7 @@ public class ServletRegistrationBean<T extends Servlet> extends DynamicRegistrat
 	 * @see #setUrlMappings(Collection)
 	 */
 	public void addUrlMappings(String... urlMappings) {
-		Assert.notNull(urlMappings, "UrlMappings must not be null");
+		Assert.notNull(urlMappings, "'urlMappings' must not be null");
 		this.urlMappings.addAll(Arrays.asList(urlMappings));
 	}
 

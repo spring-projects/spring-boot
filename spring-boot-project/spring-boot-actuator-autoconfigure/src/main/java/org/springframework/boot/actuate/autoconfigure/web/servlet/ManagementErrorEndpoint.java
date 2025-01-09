@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ public class ManagementErrorEndpoint {
 	private final ErrorProperties errorProperties;
 
 	public ManagementErrorEndpoint(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
-		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		Assert.notNull(errorProperties, "ErrorProperties must not be null");
+		Assert.notNull(errorAttributes, "'errorAttributes' must not be null");
+		Assert.notNull(errorProperties, "'errorProperties' must not be null");
 		this.errorAttributes = errorAttributes;
 		this.errorProperties = errorProperties;
 	}

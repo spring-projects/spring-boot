@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,16 +118,17 @@ public final class ApiVersion {
 	 * @throws IllegalArgumentException if the value could not be parsed
 	 */
 	public static ApiVersion parse(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		Matcher matcher = PATTERN.matcher(value);
-		Assert.isTrue(matcher.matches(), () -> "Malformed version number '" + value + "'");
+		Assert.isTrue(matcher.matches(),
+				() -> "'value' [%s] must contain a well formed version number".formatted(value));
 		try {
 			int major = Integer.parseInt(matcher.group(1));
 			int minor = Integer.parseInt(matcher.group(2));
 			return new ApiVersion(major, minor);
 		}
 		catch (NumberFormatException ex) {
-			throw new IllegalArgumentException("Malformed version number '" + value + "'", ex);
+			throw new IllegalArgumentException("'value' must contain a well formed version number [" + value + "]", ex);
 		}
 	}
 

@@ -68,7 +68,7 @@ public class DelegatingFilterProxyRegistrationBean extends AbstractFilterRegistr
 	public DelegatingFilterProxyRegistrationBean(String targetBeanName,
 			ServletRegistrationBean<?>... servletRegistrationBeans) {
 		super(servletRegistrationBeans);
-		Assert.hasLength(targetBeanName, "TargetBeanName must not be null or empty");
+		Assert.hasLength(targetBeanName, "'targetBeanName' must not be empty");
 		this.targetBeanName = targetBeanName;
 		setName(targetBeanName);
 	}

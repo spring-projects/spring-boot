@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,13 +40,13 @@ class Frame {
 	 * @param payload the text payload
 	 */
 	Frame(String payload) {
-		Assert.notNull(payload, "Payload must not be null");
+		Assert.notNull(payload, "'payload' must not be null");
 		this.type = Type.TEXT;
 		this.payload = payload.getBytes();
 	}
 
 	Frame(Type type) {
-		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(type, "'type' must not be null");
 		this.type = type;
 		this.payload = NO_BYTES;
 	}

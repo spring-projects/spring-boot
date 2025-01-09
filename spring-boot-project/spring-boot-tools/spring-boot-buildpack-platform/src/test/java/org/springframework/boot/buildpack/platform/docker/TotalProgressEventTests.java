@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ class TotalProgressEventTests {
 	@Test
 	void createWhenPercentLessThanZeroThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TotalProgressEvent(-1))
-			.withMessage("Percent must be in the range 0 to 100");
+			.withMessage("'percent' must be in the range 0 to 100");
 	}
 
 	@Test
 	void createWhenEventMoreThanOneHundredThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TotalProgressEvent(101))
-			.withMessage("Percent must be in the range 0 to 100");
+			.withMessage("'percent' must be in the range 0 to 100");
 	}
 
 }

@@ -274,7 +274,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	 * @since 2.6.0
 	 */
 	protected void loadConfiguration(String location, LogFile logFile, List<String> overrides) {
-		Assert.notNull(location, "Location must not be null");
+		Assert.notNull(location, "'location' must not be null");
 		try {
 			List<Configuration> configurations = new ArrayList<>();
 			LoggerContext context = getLoggerContext();

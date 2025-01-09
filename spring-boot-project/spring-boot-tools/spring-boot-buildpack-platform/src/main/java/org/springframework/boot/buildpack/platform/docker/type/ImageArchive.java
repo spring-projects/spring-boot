@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -289,7 +289,7 @@ public class ImageArchive implements TarArchive {
 		 * @param layer the layer to add
 		 */
 		public void withNewLayer(Layer layer) {
-			Assert.notNull(layer, "Layer must not be null");
+			Assert.notNull(layer, "'layer' must not be null");
 			this.newLayers.add(layer);
 		}
 
@@ -298,7 +298,7 @@ public class ImageArchive implements TarArchive {
 		 * @param createDate the create date
 		 */
 		public void withCreateDate(Instant createDate) {
-			Assert.notNull(createDate, "CreateDate must not be null");
+			Assert.notNull(createDate, "'createDate' must not be null");
 			this.createDate = createDate;
 		}
 
@@ -307,7 +307,7 @@ public class ImageArchive implements TarArchive {
 		 * @param tag the tag
 		 */
 		public void withTag(ImageReference tag) {
-			Assert.notNull(tag, "Tag must not be null");
+			Assert.notNull(tag, "'tag' must not be null");
 			this.tag = tag.inTaggedForm();
 		}
 

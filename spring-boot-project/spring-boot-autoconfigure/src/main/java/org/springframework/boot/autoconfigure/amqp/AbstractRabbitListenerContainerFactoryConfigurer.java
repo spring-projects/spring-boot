@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,9 +108,9 @@ public abstract class AbstractRabbitListenerContainerFactoryConfigurer<T extends
 
 	protected void configure(T factory, ConnectionFactory connectionFactory,
 			RabbitProperties.AmqpContainer configuration) {
-		Assert.notNull(factory, "Factory must not be null");
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
-		Assert.notNull(configuration, "Configuration must not be null");
+		Assert.notNull(factory, "'factory' must not be null");
+		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
+		Assert.notNull(configuration, "'configuration' must not be null");
 		factory.setConnectionFactory(connectionFactory);
 		if (this.messageConverter != null) {
 			factory.setMessageConverter(this.messageConverter);

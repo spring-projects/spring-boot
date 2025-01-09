@@ -81,7 +81,7 @@ final class BuildpackMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuildpackMetadata fromImage(Image image) throws IOException {
-		Assert.notNull(image, "Image must not be null");
+		Assert.notNull(image, "'image' must not be null");
 		return fromImageConfig(image.getConfig());
 	}
 
@@ -92,7 +92,7 @@ final class BuildpackMetadata extends MappedObject {
 	 * @throws IOException on IO error
 	 */
 	static BuildpackMetadata fromImageConfig(ImageConfig imageConfig) throws IOException {
-		Assert.notNull(imageConfig, "ImageConfig must not be null");
+		Assert.notNull(imageConfig, "'imageConfig' must not be null");
 		String json = imageConfig.getLabels().get(LABEL_NAME);
 		Assert.state(json != null, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
 				+ StringUtils.collectionToCommaDelimitedString(imageConfig.getLabels().keySet()) + "'");

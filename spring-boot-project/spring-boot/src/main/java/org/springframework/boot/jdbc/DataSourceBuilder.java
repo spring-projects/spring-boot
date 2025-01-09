@@ -105,7 +105,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	@SuppressWarnings("unchecked")
 	private DataSourceBuilder(T deriveFrom) {
-		Assert.notNull(deriveFrom, "DataSource must not be null");
+		Assert.notNull(deriveFrom, "'deriveFrom' must not be null");
 		this.classLoader = deriveFrom.getClass().getClassLoader();
 		this.type = (Class<T>) deriveFrom.getClass();
 		this.deriveFrom = deriveFrom;
