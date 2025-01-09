@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,16 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
+import org.slf4j.Marker;
 import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
@@ -69,6 +74,26 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 			throwableMembers.add("error.stack_trace", throwableProxyConverter::convert);
 		});
 		members.add("ecs.version", "8.11");
+		members.add("tags", ILoggingEvent::getMarkerList)
+			.whenNotNull()
+			.as(ElasticCommonSchemaStructuredLogFormatter::getMarkers)
+			.whenNotEmpty();
+	}
+
+	private static Set<String> getMarkers(List<Marker> markers) {
+		Set<String> result = new TreeSet<>();
+		addMarkers(result, markers.iterator());
+		return result;
+	}
+
+	private static void addMarkers(Set<String> result, Iterator<Marker> iterator) {
+		while (iterator.hasNext()) {
+			Marker marker = iterator.next();
+			result.add(marker.getName());
+			if (marker.hasReferences()) {
+				addMarkers(result, marker.iterator());
+			}
+		}
 	}
 
 }
