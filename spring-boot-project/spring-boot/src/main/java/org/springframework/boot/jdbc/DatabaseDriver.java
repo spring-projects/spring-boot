@@ -19,6 +19,7 @@ package org.springframework.boot.jdbc;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.util.Assert;
@@ -216,6 +217,19 @@ public enum DatabaseDriver {
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("ch", "clickhouse");
+		}
+
+	},
+
+	/**
+	 * AWS Advanced JDBC Wrapper.
+	 * @since 3.5.0
+	 */
+	AWS_JDBC_WRAPPER(null, "software.amazon.jdbc.Driver") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return List.of("aws-wrapper");
 		}
 
 	};
