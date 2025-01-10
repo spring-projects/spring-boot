@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author He Zean
  */
 class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
@@ -57,6 +58,16 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails)
 			throws ClassNotFoundException {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "postgres-bitnami-empty-password-compose.yaml",
+			image = TestImage.BITNAMI_POSTGRESQL)
+	void runWithBitnamiImageCreatesConnectionDetailsWithAllowEmptyPassword(JdbcConnectionDetails connectionDetails)
+			throws ClassNotFoundException {
+		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
+		assertThat(connectionDetails.getPassword()).isEmpty();
+		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
 		checkDatabaseAccess(connectionDetails);
 	}
 
