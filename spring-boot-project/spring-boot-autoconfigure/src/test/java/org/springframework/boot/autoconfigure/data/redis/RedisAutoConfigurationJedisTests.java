@@ -152,14 +152,14 @@ class RedisAutoConfigurationJedisTests {
 	@Test
 	void testRedisConfigurationWithPool() {
 		this.contextRunner
-			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.jedis.pool.min-idle:1",
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.jedis.pool.min-idle:0",
 					"spring.data.redis.jedis.pool.max-idle:4", "spring.data.redis.jedis.pool.max-active:16",
 					"spring.data.redis.jedis.pool.max-wait:2000",
 					"spring.data.redis.jedis.pool.time-between-eviction-runs:30000")
 			.run((context) -> {
 				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 				assertThat(cf.getHostName()).isEqualTo("foo");
-				assertThat(cf.getPoolConfig().getMinIdle()).isOne();
+				assertThat(cf.getPoolConfig().getMinIdle()).isZero();
 				assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
 				assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
 				assertThat(cf.getPoolConfig().getMaxWaitDuration()).isEqualTo(Duration.ofSeconds(2));
