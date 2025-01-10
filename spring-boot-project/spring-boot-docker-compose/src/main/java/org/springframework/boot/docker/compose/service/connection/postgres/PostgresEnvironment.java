@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -67,8 +68,9 @@ class PostgresEnvironment {
 			return null;
 		}
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
-		Assert.state(StringUtils.hasLength(password), "PostgreSQL password must be provided");
-		return password;
+		boolean allowEmpty = env.containsKey("ALLOW_EMPTY_PASSWORD");
+		Assert.state(allowEmpty || StringUtils.hasLength(password), "PostgreSQL password must be provided");
+		return Objects.requireNonNullElse(password, "");
 	}
 
 	private boolean isUsingTrustHostAuthMethod(Map<String, String> env) {

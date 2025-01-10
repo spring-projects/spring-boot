@@ -94,6 +94,12 @@ class PostgresEnvironmentTests {
 	}
 
 	@Test
+	void getPasswordWhenHasNoPasswordAndAllowEmptyPassword() {
+		PostgresEnvironment environment = new PostgresEnvironment(Map.of("ALLOW_EMPTY_PASSWORD", "yes"));
+		assertThat(environment.getPassword()).isEmpty();
+	}
+
+	@Test
 	void getDatabaseWhenNoPostgresDbOrPostgresUser() {
 		PostgresEnvironment environment = new PostgresEnvironment(Map.of("POSTGRES_PASSWORD", "secret"));
 		assertThat(environment.getDatabase()).isEqualTo("postgres");

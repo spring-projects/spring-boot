@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author He Zean
  */
 class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
@@ -60,6 +61,17 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
 	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "postgres-bitnami-empty-password-compose.yaml",
+			image = TestImage.BITNAMI_POSTGRESQL)
+	void runWithBitnamiImageCreatesConnectionDetailsWithAllowEmptyPassword(R2dbcConnectionDetails connectionDetails) {
+		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
+		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("myuser");
+		assertThat(connectionFactoryOptions.getValue(ConnectionFactoryOptions.PASSWORD)).isNull();
+		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.DATABASE))
+			.isEqualTo("mydatabase");
 		checkDatabaseAccess(connectionDetails);
 	}
 
