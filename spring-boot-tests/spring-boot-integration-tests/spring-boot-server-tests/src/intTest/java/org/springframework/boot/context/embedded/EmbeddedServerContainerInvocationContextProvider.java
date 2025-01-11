@@ -44,6 +44,7 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 import org.junit.platform.commons.util.ReflectionUtils;
 
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileSystemUtils;
@@ -195,8 +196,12 @@ class EmbeddedServerContainerInvocationContextProvider
 				}
 
 				@Override
+				@SuppressWarnings("removal")
 				public void handleError(ClientHttpResponse response) throws IOException {
+				}
 
+				@Override
+				public void handleError(URI url, HttpMethod method, ClientHttpResponse response) throws IOException {
 				}
 
 			});
