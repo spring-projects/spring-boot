@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
@@ -176,7 +176,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private final Path path;
 
-		private final PathResource resource;
+		private final FileSystemResource resource;
 
 		private final Origin origin;
 
@@ -186,7 +186,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private PropertyFile(Path path, Set<Option> options) {
 			this.path = path;
-			this.resource = new PathResource(path);
+			this.resource = new FileSystemResource(path);
 			this.origin = new TextResourceOrigin(this.resource, START_OF_FILE);
 			this.autoTrimTrailingNewLine = options.contains(Option.AUTO_TRIM_TRAILING_NEW_LINE);
 			this.cachedContent = options.contains(Option.ALWAYS_READ) ? null
