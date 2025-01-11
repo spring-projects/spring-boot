@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -83,7 +84,7 @@ class StructuredLogFormatterFactoryTests {
 
 	@Test
 	void getUsingClassNameWhenHasGenericMismatch() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.factory.get(DifferentFormatter.class.getName()))
+		assertThatIllegalStateException().isThrownBy(() -> this.factory.get(DifferentFormatter.class.getName()))
 			.withMessage("Type argument of org.springframework.boot.logging.structured."
 					+ "StructuredLogFormatterFactoryTests$DifferentFormatter "
 					+ "must be org.springframework.boot.logging.structured."

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ final class BuildpackLayersMetadata extends MappedObject {
 	static BuildpackLayersMetadata fromImageConfig(ImageConfig imageConfig) throws IOException {
 		Assert.notNull(imageConfig, "ImageConfig must not be null");
 		String json = imageConfig.getLabels().get(LABEL_NAME);
-		Assert.notNull(json, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
+		Assert.state(json != null, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
 				+ StringUtils.collectionToCommaDelimitedString(imageConfig.getLabels().keySet()) + "'");
 		return fromJson(json);
 	}

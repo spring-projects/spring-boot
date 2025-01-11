@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@ public class StructuredLogFormatterFactory<E> {
 	private void checkTypeArgument(Object formatter) {
 		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(formatter.getClass(),
 				StructuredLogFormatter.class);
-		Assert.isTrue(this.logEventType.equals(typeArgument),
+		Assert.state(this.logEventType.equals(typeArgument),
 				() -> "Type argument of %s must be %s but was %s".formatted(formatter.getClass().getName(),
 						this.logEventType.getName(), (typeArgument != null) ? typeArgument.getName() : "null"));
 

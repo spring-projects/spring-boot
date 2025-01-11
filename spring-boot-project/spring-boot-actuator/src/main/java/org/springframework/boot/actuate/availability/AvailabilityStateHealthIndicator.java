@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 		if (!this.statusMappings.containsKey(null) && Enum.class.isAssignableFrom(stateType)) {
 			EnumSet elements = EnumSet.allOf((Class) stateType);
 			for (Object element : elements) {
-				Assert.isTrue(this.statusMappings.containsKey(element),
+				Assert.state(this.statusMappings.containsKey(element),
 						() -> "StatusMappings does not include " + element);
 			}
 		}

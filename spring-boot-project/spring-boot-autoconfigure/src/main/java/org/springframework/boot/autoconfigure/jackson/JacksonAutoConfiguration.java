@@ -292,7 +292,7 @@ public class JacksonAutoConfiguration {
 				// Find the field (this way we automatically support new constants
 				// that may be added by Jackson in the future)
 				Field field = findPropertyNamingStrategyField(fieldName);
-				Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found");
+				Assert.state(field != null, () -> "Constant named '" + fieldName + "' not found");
 				try {
 					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
 				}

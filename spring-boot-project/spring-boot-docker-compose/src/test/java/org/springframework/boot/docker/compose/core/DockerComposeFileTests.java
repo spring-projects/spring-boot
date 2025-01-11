@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link DockerComposeFile}.
@@ -104,7 +105,7 @@ class DockerComposeFileTests {
 	@Test
 	void findWhenWorkingDirectoryIsNotDirectoryThrowsException() throws Exception {
 		File file = createTempFile("iamafile");
-		assertThatIllegalArgumentException().isThrownBy(() -> DockerComposeFile.find(file))
+		assertThatIllegalStateException().isThrownBy(() -> DockerComposeFile.find(file))
 			.withMessageEndingWith("is not a directory");
 	}
 

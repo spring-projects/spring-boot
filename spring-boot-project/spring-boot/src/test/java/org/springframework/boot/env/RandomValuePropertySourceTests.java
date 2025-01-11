@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 
@@ -76,7 +76,7 @@ class RandomValuePropertySourceTests {
 
 	@Test
 	void intRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int[4,4]"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.int[4,4]"))
 			.withMessage("Lower bound must be less than upper bound.");
 	}
 
@@ -95,13 +95,13 @@ class RandomValuePropertySourceTests {
 
 	@Test
 	void intMaxZero() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(0)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.int(0)"))
 			.withMessage("Bound must be positive.");
 	}
 
 	@Test
 	void intNegativeBound() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(-5)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.int(-5)"))
 			.withMessage("Bound must be positive.");
 	}
 
@@ -119,7 +119,7 @@ class RandomValuePropertySourceTests {
 
 	@Test
 	void longRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long[4,4]"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.long[4,4]"))
 			.withMessage("Lower bound must be less than upper bound.");
 	}
 
@@ -138,13 +138,13 @@ class RandomValuePropertySourceTests {
 
 	@Test
 	void longMaxZero() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(0)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.long(0)"))
 			.withMessage("Bound must be positive.");
 	}
 
 	@Test
 	void longNegativeBound() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(-5)"))
+		assertThatIllegalStateException().isThrownBy(() -> this.source.getProperty("random.long(-5)"))
 			.withMessage("Bound must be positive.");
 	}
 

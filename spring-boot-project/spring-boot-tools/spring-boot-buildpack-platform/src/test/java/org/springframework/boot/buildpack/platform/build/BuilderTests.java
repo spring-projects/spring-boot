@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -517,7 +517,7 @@ class BuilderTests {
 		Builder builder = new Builder(BuildLog.to(out), docker, null);
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack@1.2.3");
 		BuildRequest request = getTestRequest().withBuildpacks(reference);
-		assertThatIllegalArgumentException().isThrownBy(() -> builder.build(request))
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
 			.withMessageContaining("'urn:cnb:builder:example/buildpack@1.2.3'")
 			.withMessageContaining("not found in builder");
 	}

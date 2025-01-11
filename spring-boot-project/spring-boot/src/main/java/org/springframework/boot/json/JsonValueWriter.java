@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,7 +184,7 @@ class JsonValueWriter {
 
 	<E> void writeElement(E element) {
 		ActiveSeries activeSeries = this.activeSeries.peek();
-		Assert.notNull(activeSeries, "No series has been started");
+		Assert.state(activeSeries != null, "No series has been started");
 		this.path = activeSeries.updatePath(this.path);
 		activeSeries.incrementIndexAndAddCommaIfRequired();
 		write(element);
@@ -223,7 +223,7 @@ class JsonValueWriter {
 		if (!isFilteredPath()) {
 			String processedName = processName(name.toString());
 			ActiveSeries activeSeries = this.activeSeries.peek();
-			Assert.notNull(activeSeries, "No series has been started");
+			Assert.state(activeSeries != null, "No series has been started");
 			activeSeries.incrementIndexAndAddCommaIfRequired();
 			Assert.state(activeSeries.addName(processedName),
 					() -> "The name '" + processedName + "' has already been written");

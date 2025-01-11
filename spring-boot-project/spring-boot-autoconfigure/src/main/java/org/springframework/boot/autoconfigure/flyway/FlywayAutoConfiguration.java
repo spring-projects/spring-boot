@@ -583,7 +583,7 @@ public class FlywayAutoConfiguration {
 		Extension(FluentConfiguration configuration, Class<E> type, String name) {
 			this.extension = SingletonSupplier.of(() -> {
 				E extension = configuration.getPluginRegister().getPlugin(type);
-				Assert.notNull(extension, () -> "Flyway %s extension missing".formatted(name));
+				Assert.state(extension != null, () -> "Flyway %s extension missing".formatted(name));
 				return extension;
 			});
 		}

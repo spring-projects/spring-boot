@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -264,7 +264,7 @@ public enum PeriodStyle {
 		}
 
 		private int intValue(Period value) {
-			Assert.notNull(this.intValue, () -> "intValue cannot be extracted from " + name());
+			Assert.state(this.intValue != null, () -> "intValue cannot be extracted from " + name());
 			return this.intValue.apply(value);
 		}
 

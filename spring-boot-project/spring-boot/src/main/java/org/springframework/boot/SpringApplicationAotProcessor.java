@@ -65,7 +65,7 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 
 	public static void main(String[] args) throws Exception {
 		int requiredArgs = 6;
-		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + SpringApplicationAotProcessor.class.getName()
+		Assert.state(args.length >= requiredArgs, () -> "Usage: " + SpringApplicationAotProcessor.class.getName()
 				+ " <applicationMainClass> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
 		Class<?> application = Class.forName(args[0]);
 		Settings settings = Settings.builder()
@@ -110,7 +110,7 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 			}
 			catch (AbandonedRunException ex) {
 				ApplicationContext context = ex.getApplicationContext();
-				Assert.isInstanceOf(GenericApplicationContext.class, context,
+				Assert.state(context instanceof GenericApplicationContext,
 						() -> "AOT processing requires a GenericApplicationContext but got a "
 								+ context.getClass().getName());
 				return (GenericApplicationContext) context;

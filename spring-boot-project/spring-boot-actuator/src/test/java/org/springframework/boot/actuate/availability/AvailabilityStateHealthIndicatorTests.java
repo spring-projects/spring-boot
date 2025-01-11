@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.availability.LivenessState;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -67,7 +68,7 @@ class AvailabilityStateHealthIndicatorTests {
 
 	@Test
 	void createWhenStatusMappingDoesNotCoverAllEnumsThrowsException() {
-		assertThatIllegalArgumentException()
+		assertThatIllegalStateException()
 			.isThrownBy(() -> new AvailabilityStateHealthIndicator(this.applicationAvailability, LivenessState.class,
 					(statusMappings) -> statusMappings.add(LivenessState.CORRECT, Status.UP)))
 			.withMessage("StatusMappings does not include BROKEN");

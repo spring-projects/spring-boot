@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,11 +195,11 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 			String[] tokens = StringUtils.commaDelimitedListToStringArray(value);
 			T min = parse.apply(tokens[0]);
 			if (tokens.length == 1) {
-				Assert.isTrue(min.compareTo(zero) > 0, "Bound must be positive.");
+				Assert.state(min.compareTo(zero) > 0, "Bound must be positive.");
 				return new Range<>(value, zero, min);
 			}
 			T max = parse.apply(tokens[1]);
-			Assert.isTrue(min.compareTo(max) < 0, "Lower bound must be less than upper bound.");
+			Assert.state(min.compareTo(max) < 0, "Lower bound must be less than upper bound.");
 			return new Range<>(value, min, max);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -170,7 +171,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	protected AnnotationAttributes getAttributes(AnnotationMetadata metadata) {
 		String name = getAnnotationClass().getName();
 		AnnotationAttributes attributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(name, true));
-		Assert.notNull(attributes, () -> "No auto-configuration attributes found. Is " + metadata.getClassName()
+		Assert.state(attributes != null, () -> "No auto-configuration attributes found. Is " + metadata.getClassName()
 				+ " annotated with " + ClassUtils.getShortName(name) + "?");
 		return attributes;
 	}
@@ -195,7 +196,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		ImportCandidates importCandidates = ImportCandidates.load(this.autoConfigurationAnnotation,
 				getBeanClassLoader());
 		List<String> configurations = importCandidates.getCandidates();
-		Assert.notEmpty(configurations,
+		Assert.state(!CollectionUtils.isEmpty(configurations),
 				"No auto configuration classes found in " + "META-INF/spring/"
 						+ this.autoConfigurationAnnotation.getName() + ".imports. If you "
 						+ "are using a custom packaging, make sure that file is correct.");

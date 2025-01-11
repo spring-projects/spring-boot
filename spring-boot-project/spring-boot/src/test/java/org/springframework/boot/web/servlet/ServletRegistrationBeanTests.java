@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,8 +135,8 @@ class ServletRegistrationBeanTests {
 	@Test
 	void setServletMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
-		assertThatIllegalArgumentException().isThrownBy(() -> bean.onStartup(this.servletContext))
-			.withMessageContaining("Servlet must not be null");
+		assertThatIllegalStateException().isThrownBy(() -> bean.onStartup(this.servletContext))
+			.withMessageContaining("Unable to return description for null servlet");
 	}
 
 	@Test

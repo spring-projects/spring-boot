@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -410,7 +410,7 @@ public class SpringApplication {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			// Load the sources
 			Set<Object> sources = getAllSources();
-			Assert.notEmpty(sources, "Sources must not be empty");
+			Assert.state(!ObjectUtils.isEmpty(sources), "No sources defined");
 			load(context, sources.toArray(new Object[0]));
 		}
 		listeners.contextLoaded(context);
@@ -608,7 +608,7 @@ public class SpringApplication {
 		for (ApplicationContextInitializer initializer : getInitializers()) {
 			Class<?> requiredType = GenericTypeResolver.resolveTypeArgument(initializer.getClass(),
 					ApplicationContextInitializer.class);
-			Assert.isInstanceOf(requiredType, context, "Unable to call initializer.");
+			Assert.state(requiredType.isInstance(context), "Unable to call initializer");
 			initializer.initialize(context);
 		}
 	}

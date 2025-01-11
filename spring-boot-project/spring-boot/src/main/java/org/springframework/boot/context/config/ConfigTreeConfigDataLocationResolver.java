@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationR
 	}
 
 	private List<ConfigTreeConfigDataResource> resolve(String location) throws IOException {
-		Assert.isTrue(location.endsWith("/"),
+		Assert.state(location.endsWith("/"),
 				() -> String.format("Config tree location '%s' must end with '/'", location));
 		if (!this.resourceLoader.isPattern(location)) {
 			return Collections.singletonList(new ConfigTreeConfigDataResource(location));

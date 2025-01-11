@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,7 +220,7 @@ public class InitCommand extends OptionParsingCommand {
 
 		protected ProjectGenerationRequest createProjectGenerationRequest(OptionSet options) {
 			List<?> nonOptionArguments = new ArrayList<Object>(options.nonOptionArguments());
-			Assert.isTrue(nonOptionArguments.size() <= 1, "Only the target location may be specified");
+			Assert.state(nonOptionArguments.size() <= 1, "Only the target location may be specified");
 			ProjectGenerationRequest request = new ProjectGenerationRequest();
 			request.setServiceUrl(options.valueOf(this.target));
 			if (options.has(this.bootVersion)) {

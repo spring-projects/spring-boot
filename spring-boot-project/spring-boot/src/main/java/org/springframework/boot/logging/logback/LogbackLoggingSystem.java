@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -409,7 +409,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = getLoggerFactory();
-		Assert.isInstanceOf(LoggerContext.class, factory,
+		Assert.state(factory instanceof LoggerContext,
 				() -> String.format(
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "

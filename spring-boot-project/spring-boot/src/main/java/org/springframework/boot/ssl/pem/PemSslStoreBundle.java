@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.function.SingletonSupplier;
 
@@ -89,7 +90,7 @@ public class PemSslStoreBundle implements SslStoreBundle {
 		}
 		try {
 			List<X509Certificate> certificates = pemSslStore.certificates();
-			Assert.notEmpty(certificates, "Certificates must not be empty");
+			Assert.state(!ObjectUtils.isEmpty(certificates), "Certificates must not be empty");
 			String alias = (pemSslStore.alias() != null) ? pemSslStore.alias() : DEFAULT_ALIAS;
 			KeyStore store = createKeyStore(pemSslStore.type());
 			PrivateKey privateKey = pemSslStore.privateKey();
