@@ -157,9 +157,8 @@ public class TestRestTemplate {
 		Assert.notNull(builder, "Builder must not be null");
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
+			builder = builder.redirects(Redirects.FOLLOW_WHEN_POSSIBLE);
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder.redirects(HttpClientOption.ENABLE_REDIRECTS.isPresent(httpClientOptions)
-						? Redirects.FOLLOW : Redirects.DONT_FOLLOW);
 				builder = builder.requestFactoryBuilder(
 						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
