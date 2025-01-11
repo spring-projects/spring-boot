@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -285,10 +285,10 @@ class HttpMessageConvertersAutoConfigurationTests {
 		RuntimeHints hints = new RuntimeHints();
 		new HttpMessageConvertersAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(Encoding.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "getCharset")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setCharset")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce")).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "getCharset").invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setCharset").invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "isForce").invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "setForce").invoke()).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(Encoding.class, "shouldForce")).rejects(hints);
 	}
 
