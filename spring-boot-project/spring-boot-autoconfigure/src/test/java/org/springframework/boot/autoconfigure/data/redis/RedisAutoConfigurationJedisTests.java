@@ -152,15 +152,16 @@ class RedisAutoConfigurationJedisTests {
 	@Test
 	void testRedisConfigurationWithPool() {
 		this.contextRunner
-			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.jedis.pool.min-idle:0",
+			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.jedis.pool.min-idle:1",
 					"spring.data.redis.jedis.pool.max-idle:4", "spring.data.redis.jedis.pool.max-active:16",
 					"spring.data.redis.jedis.pool.max-wait:2000",
 					"spring.data.redis.jedis.pool.time-between-eviction-runs:30000")
+			.withUserConfiguration(JedisDisableStartupConfiguration.class)
 			.run((context) -> {
 				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 				assertThat(cf.getHostName()).isEqualTo("foo");
 				assertThat(cf.getPoolConfig()).satisfies((poolConfig) -> {
-					assertThat(poolConfig.getMinIdle()).isEqualTo(0);
+					assertThat(poolConfig.getMinIdle()).isOne();
 					assertThat(poolConfig.getMaxIdle()).isEqualTo(4);
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
 					assertThat(poolConfig.getMaxWaitDuration()).isEqualTo(Duration.ofSeconds(2));
@@ -358,6 +359,27 @@ class RedisAutoConfigurationJedisTests {
 				connectionFactory = jedisConnectionFactory;
 			}
 			return bean;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JedisDisableStartupConfiguration {
+
+		@Bean
+		static BeanPostProcessor jedisDisableStartup() {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessBeforeInitialization(Object bean, String beanName) {
+					if (bean instanceof JedisConnectionFactory jedisConnectionFactory) {
+						jedisConnectionFactory.setEarlyStartup(false);
+						jedisConnectionFactory.setAutoStartup(false);
+					}
+					return bean;
+				}
+
+			};
 		}
 
 	}
