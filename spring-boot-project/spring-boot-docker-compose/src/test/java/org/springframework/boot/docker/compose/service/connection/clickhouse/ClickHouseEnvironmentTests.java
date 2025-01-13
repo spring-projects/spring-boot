@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,10 +50,9 @@ class ClickHouseEnvironmentTests {
 	}
 
 	@Test
-	void getPasswordWhenHasNoPasswordAndAllowEmptyPasswordIsFalse() {
-		assertThatIllegalStateException()
-			.isThrownBy(() -> new ClickHouseEnvironment(Map.of("ALLOW_EMPTY_PASSWORD", "false")))
-			.withMessage("No ClickHouse password found");
+	void getPasswordWhenHasNoPasswordAndAllowEmptyPasswordIsYes() {
+		ClickHouseEnvironment environment = new ClickHouseEnvironment(Map.of("ALLOW_EMPTY_PASSWORD", "yes"));
+		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test
