@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,17 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author He Zean
  */
 class PostgresEnvironment {
+
+	private static final String[] USERNAME_KEYS = new String[] { "POSTGRES_USER", "POSTGRES_USERNAME",
+			"POSTGRESQL_USER", "POSTGRESQL_USERNAME" };
+
+	private static final String DEFAULT_USERNAME = "postgres";
+
+	private static final String[] DATABASE_KEYS = new String[] { "POSTGRES_DB", "POSTGRES_DATABASE",
+			"POSTGRESQL_DATABASE" };
 
 	private final String username;
 
@@ -38,15 +47,33 @@ class PostgresEnvironment {
 	private final String database;
 
 	PostgresEnvironment(Map<String, String> env) {
-		this.username = env.getOrDefault("POSTGRES_USER", env.getOrDefault("POSTGRESQL_USER", "postgres"));
+		this.username = extractUsername(env);
 		this.password = extractPassword(env);
-		this.database = env.getOrDefault("POSTGRES_DB", env.getOrDefault("POSTGRESQL_DB", this.username));
+		this.database = extractDatabase(env);
+	}
+
+	private String extractUsername(Map<String, String> env) {
+		for (String key : USERNAME_KEYS) {
+			if (env.containsKey(key)) {
+				return env.get(key);
+			}
+		}
+		return DEFAULT_USERNAME;
 	}
 
 	private String extractPassword(Map<String, String> env) {
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
 		Assert.state(StringUtils.hasLength(password), "PostgreSQL password must be provided");
 		return password;
+	}
+
+	private String extractDatabase(Map<String, String> env) {
+		for (String key : DATABASE_KEYS) {
+			if (env.containsKey(key)) {
+				return env.get(key);
+			}
+		}
+		return this.username;
 	}
 
 	String getUsername() {

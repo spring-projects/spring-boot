@@ -33,13 +33,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "postgres-compose.yaml", image = TestImage.POSTGRESQL)
-	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
-	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails)
+			throws ClassNotFoundException {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {

@@ -37,11 +37,13 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "postgres-compose.yaml", image = TestImage.POSTGRESQL)
 	void runCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
 	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	private void assertConnectionDetails(R2dbcConnectionDetails connectionDetails) {
