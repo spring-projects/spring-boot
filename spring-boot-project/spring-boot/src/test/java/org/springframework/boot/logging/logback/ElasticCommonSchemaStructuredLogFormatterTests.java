@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 package org.springframework.boot.logging.logback;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import org.springframework.mock.env.MockEnvironment;
 
@@ -90,6 +93,28 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 					.formatted()
 					.replace("\n", "\\n")
 					.replace("\r", "\\r"));
+	}
+
+	@Test
+	void shouldFormatMarkersAsTags() {
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Collections.emptyMap());
+		Marker parent = MarkerFactory.getDetachedMarker("parent");
+		parent.add(MarkerFactory.getDetachedMarker("child"));
+		Marker parent1 = MarkerFactory.getDetachedMarker("parent1");
+		parent1.add(MarkerFactory.getDetachedMarker("child1"));
+		Marker grandparent = MarkerFactory.getMarker("grandparent");
+		grandparent.add(parent);
+		grandparent.add(parent1);
+		event.addMarker(grandparent);
+		String json = this.formatter.format(event);
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(
+				map("@timestamp", "2024-07-02T08:49:53Z", "log.level", "INFO", "process.pid", 1, "process.thread.name",
+						"main", "service.name", "name", "service.version", "1.0.0", "service.environment", "test",
+						"service.node.name", "node-1", "log.logger", "org.example.Test", "message", "message",
+						"ecs.version", "8.11", "tags", List.of("child", "child1", "grandparent", "parent", "parent1")));
 	}
 
 }
