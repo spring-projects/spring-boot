@@ -43,6 +43,7 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "postgres-compose.yaml", image = TestImage.POSTGRESQL)
 	void runCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	@DockerComposeTest(composeFile = "postgres-with-trust-host-auth-method-compose.yaml", image = TestImage.POSTGRESQL)
@@ -59,6 +60,7 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
 	void runWithBitnamiImageCreatesConnectionDetails(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	@DockerComposeTest(composeFile = "postgres-application-name-compose.yaml", image = TestImage.POSTGRESQL)
