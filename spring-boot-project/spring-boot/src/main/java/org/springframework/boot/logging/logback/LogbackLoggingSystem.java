@@ -36,6 +36,7 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
+import ch.qos.logback.core.status.OnErrorConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusUtil;
 import ch.qos.logback.core.util.StatusListenerConfigHelper;
@@ -233,6 +234,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			boolean debug = Boolean.getBoolean("logback.debug");
 			if (debug) {
 				StatusListenerConfigHelper.addOnConsoleListenerInstance(loggerContext, new OnConsoleStatusListener());
+			}
+			else {
+				addOnErrorConsoleStatusListener(loggerContext);
 			}
 			Environment environment = initializationContext.getEnvironment();
 			// Apply system properties directly in case the same JVM runs multiple apps
@@ -484,6 +488,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		finally {
 			turboFilters.remove(SUPPRESS_ALL_FILTER);
+		}
+	}
+
+	private void addOnErrorConsoleStatusListener(LoggerContext context) {
+		FilteringStatusListener listener = new FilteringStatusListener(new OnErrorConsoleStatusListener(),
+				Status.ERROR);
+		listener.setContext(context);
+		boolean effectivelyAdded = context.getStatusManager().add(listener);
+		if (effectivelyAdded) {
+			listener.start();
 		}
 	}
 
