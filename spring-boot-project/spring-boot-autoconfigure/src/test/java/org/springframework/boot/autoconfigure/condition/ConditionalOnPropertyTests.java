@@ -21,11 +21,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -293,12 +295,13 @@ class ConditionalOnPropertyTests {
 	}
 
 	private String getConditionEvaluationReport() {
-		ConditionEvaluationReport report = ConditionEvaluationReport.get(this.context.getBeanFactory());
-		StringBuilder builder = new StringBuilder();
-		report.getConditionAndOutcomesBySource()
+		return ConditionEvaluationReport.get(this.context.getBeanFactory())
+			.getConditionAndOutcomesBySource()
 			.values()
-			.forEach((outcomes) -> outcomes.forEach((outcome) -> builder.append(outcome.toString()).append('\n')));
-		return builder.toString();
+			.stream()
+			.flatMap(ConditionAndOutcomes::stream)
+			.map(Object::toString)
+			.collect(Collectors.joining("\n"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

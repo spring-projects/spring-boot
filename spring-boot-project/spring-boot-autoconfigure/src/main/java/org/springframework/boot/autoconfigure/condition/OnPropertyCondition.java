@@ -28,7 +28,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -51,15 +50,14 @@ class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		MergedAnnotations annotations = metadata.getAnnotations();
-		List<MergedAnnotation<Annotation>> allAnnotations = Stream
-			.concat(annotations.stream(ConditionalOnProperty.class.getName()),
-					annotations.stream(ConditionalOnBooleanProperty.class.getName()))
+		List<MergedAnnotation<Annotation>> annotations = Stream
+			.concat(metadata.getAnnotations().stream(ConditionalOnProperty.class.getName()),
+					metadata.getAnnotations().stream(ConditionalOnBooleanProperty.class.getName()))
 			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
 			.toList();
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
-		for (MergedAnnotation<Annotation> annotation : allAnnotations) {
+		for (MergedAnnotation<Annotation> annotation : annotations) {
 			ConditionOutcome outcome = determineOutcome(annotation, context.getEnvironment());
 			(outcome.isMatch() ? match : noMatch).add(outcome.getConditionMessage());
 		}
