@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package org.springframework.boot.info;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.boot.info.ProcessInfo.MemoryInfo.MemoryUsageInfo;
 import org.springframework.boot.info.ProcessInfo.VirtualThreadsInfo;
-import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,22 +59,22 @@ class ProcessInfoTests {
 	}
 
 	@Test
-	void virtualThreadsInfoIsNullWhenMXBeanIsNotAccessible() {
-		if (ClassUtils.isPresent("jdk.management.VirtualThreadSchedulerMXBean", null)) {
-			ProcessInfo processInfo = new ProcessInfo();
+	@EnabledForJreRange(min = JRE.JAVA_24)
+	void virtualThreadsInfoIfAvailable() {
+		ProcessInfo processInfo = new ProcessInfo();
+		VirtualThreadsInfo virtualThreadsInfo = processInfo.getVirtualThreads();
+		assertThat(virtualThreadsInfo).isNotNull();
+		assertThat(virtualThreadsInfo.getMounted()).isGreaterThanOrEqualTo(0);
+		assertThat(virtualThreadsInfo.getQueued()).isGreaterThanOrEqualTo(0);
+		assertThat(virtualThreadsInfo.getParallelism()).isGreaterThan(0);
+		assertThat(virtualThreadsInfo.getPoolSize()).isGreaterThanOrEqualTo(0);
+	}
 
-			VirtualThreadsInfo virtualThreadsInfo = processInfo.getVirtualThreads();
-
-			assertThat(virtualThreadsInfo).isNotNull();
-			assertThat(virtualThreadsInfo.getMounted()).isGreaterThanOrEqualTo(0);
-			assertThat(virtualThreadsInfo.getQueued()).isGreaterThanOrEqualTo(0);
-			assertThat(virtualThreadsInfo.getParallelism()).isGreaterThan(0);
-			assertThat(virtualThreadsInfo.getPoolSize()).isGreaterThan(0);
-		} else {
-			ProcessInfo processInfo = new ProcessInfo();
-
-			assertThat(processInfo.getVirtualThreads()).isNull();
-		}
+	@Test
+	@EnabledForJreRange(max = JRE.JAVA_23)
+	void virtualThreadsInfoIfNotAvailable() {
+		ProcessInfo processInfo = new ProcessInfo();
+		assertThat(processInfo.getVirtualThreads()).isNull();
 	}
 
 }

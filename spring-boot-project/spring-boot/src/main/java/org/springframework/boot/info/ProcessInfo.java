@@ -19,6 +19,7 @@ package org.springframework.boot.info;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import java.lang.management.PlatformManagedObject;
 
 /**
  * Information about the process of the application.
@@ -75,23 +76,25 @@ public class ProcessInfo {
 
 	/**
 	 * Virtual threads information for the process. These values provide details about the
-	 * current state of virtual threads, including the number of mounted threads, queued threads,
-	 * the parallelism level, and the thread pool size.
-	 * @return an instance of {@link VirtualThreadsInfo} containing information about virtual threads,
-	 * or {@code null} if the VirtualThreadSchedulerMXBean is not available.
+	 * current state of virtual threads, including the number of mounted threads, queued
+	 * threads, the parallelism level, and the thread pool size.
+	 * @return an instance of {@link VirtualThreadsInfo} containing information about
+	 * virtual threads, or {@code null} if the VirtualThreadSchedulerMXBean is not
+	 * available.
 	 * @since 3.5.0
 	 */
+	@SuppressWarnings("unchecked")
 	public VirtualThreadsInfo getVirtualThreads() {
 		try {
-			Class mxBeanClass = Class.forName("jdk.management.VirtualThreadSchedulerMXBean");
+			Class<PlatformManagedObject> mxBeanClass = (Class<PlatformManagedObject>) Class
+				.forName("jdk.management.VirtualThreadSchedulerMXBean");
 			Object bean = ManagementFactory.getPlatformMXBean(mxBeanClass);
-			return new VirtualThreadsInfo(
-					(Integer) mxBeanClass.getMethod("getMountedVirtualThreadCount").invoke(bean),
+			return new VirtualThreadsInfo((Integer) mxBeanClass.getMethod("getMountedVirtualThreadCount").invoke(bean),
 					(Long) mxBeanClass.getMethod("getQueuedVirtualThreadCount").invoke(bean),
 					(Integer) mxBeanClass.getMethod("getParallelism").invoke(bean),
-					(Integer) mxBeanClass.getMethod("getPoolSize").invoke(bean)
-			);
-		} catch (ReflectiveOperationException e) {
+					(Integer) mxBeanClass.getMethod("getPoolSize").invoke(bean));
+		}
+		catch (ReflectiveOperationException ex) {
 			return null;
 		}
 	}
