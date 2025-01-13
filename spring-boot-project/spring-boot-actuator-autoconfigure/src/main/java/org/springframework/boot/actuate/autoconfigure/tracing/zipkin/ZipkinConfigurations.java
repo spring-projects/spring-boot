@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,37 +52,60 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Moritz Halbritter
  * @author Stefan Bratanov
+ * @author Wick Dynex
  */
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ UrlConnectionSenderConfiguration.class, WebClientSenderConfiguration.class,
-			RestTemplateSenderConfiguration.class, HttpClientSenderConfiguration.class })
+	@Import({ HttpClientSenderConfiguration.class, WebClientSenderConfiguration.class,
+			RestTemplateSenderConfiguration.class, UrlConnectionSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(URLConnectionSender.class)
+	@ConditionalOnClass(HttpClient.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
-	static class UrlConnectionSenderConfiguration {
+	static class HttpClientSenderConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(BytesMessageSender.class)
-		URLConnectionSender urlConnectionSender(ZipkinProperties properties, Encoding encoding,
+		ZipkinHttpClientSender httpClientSender(ZipkinProperties properties, Encoding encoding,
+				ObjectProvider<ZipkinHttpClientBuilderCustomizer> customizers,
 				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
 				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
 			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
 				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
 			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
 				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
-			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
-			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
-			builder.readTimeout((int) properties.getReadTimeout().toMillis());
-			builder.endpointSupplierFactory(endpointSupplierFactory);
-			builder.endpoint(connectionDetails.getSpanEndpoint());
-			builder.encoding(encoding);
-			return builder.build();
+			Builder httpClientBuilder = HttpClient.newBuilder().connectTimeout(properties.getConnectTimeout());
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
+			return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
+					httpClientBuilder.build(), properties.getReadTimeout());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(WebClient.class)
+	@EnableConfigurationProperties(ZipkinProperties.class)
+	static class WebClientSenderConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean(BytesMessageSender.class)
+		@SuppressWarnings({ "deprecation", "removal" })
+		ZipkinWebClientSender webClientSender(ZipkinProperties properties, Encoding encoding,
+				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
+				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
+				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
+			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
+				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
+			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
+				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
+			WebClient.Builder builder = WebClient.builder();
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			return new ZipkinWebClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
+					builder.build(), properties.getConnectTimeout().plus(properties.getReadTimeout()));
 		}
 
 	}
@@ -126,48 +149,26 @@ class ZipkinConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(WebClient.class)
+	@ConditionalOnClass(URLConnectionSender.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
-	static class WebClientSenderConfiguration {
+	static class UrlConnectionSenderConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(BytesMessageSender.class)
-		@SuppressWarnings({ "deprecation", "removal" })
-		ZipkinWebClientSender webClientSender(ZipkinProperties properties, Encoding encoding,
-				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
+		URLConnectionSender urlConnectionSender(ZipkinProperties properties, Encoding encoding,
 				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
 				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
 			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
 				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
 			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
 				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
-			WebClient.Builder builder = WebClient.builder();
-			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			return new ZipkinWebClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
-					builder.build(), properties.getConnectTimeout().plus(properties.getReadTimeout()));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(HttpClient.class)
-	@EnableConfigurationProperties(ZipkinProperties.class)
-	static class HttpClientSenderConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(BytesMessageSender.class)
-		ZipkinHttpClientSender httpClientSender(ZipkinProperties properties, Encoding encoding,
-				ObjectProvider<ZipkinHttpClientBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
-				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
-				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
-			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
-				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
-			Builder httpClientBuilder = HttpClient.newBuilder().connectTimeout(properties.getConnectTimeout());
-			customizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
-			return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
-					httpClientBuilder.build(), properties.getReadTimeout());
+			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
+			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
+			builder.readTimeout((int) properties.getReadTimeout().toMillis());
+			builder.endpointSupplierFactory(endpointSupplierFactory);
+			builder.endpoint(connectionDetails.getSpanEndpoint());
+			builder.encoding(encoding);
+			return builder.build();
 		}
 
 	}

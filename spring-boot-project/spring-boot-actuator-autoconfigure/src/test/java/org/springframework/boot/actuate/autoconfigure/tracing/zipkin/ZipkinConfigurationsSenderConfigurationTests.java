@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
 import java.io.IOException;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +32,7 @@ import zipkin2.reporter.HttpEndpointSupplier;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.SenderConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConfigurations.UrlConnectionSenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -39,6 +41,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +52,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link SenderConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Wick Dynex
  */
 @SuppressWarnings({ "deprecation", "removal" })
 class ZipkinConfigurationsSenderConfigurationTests {
@@ -63,34 +67,33 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
 	@Test
-	void shouldSupplyBeans() {
+	void shouldSupplyDefaultHttpClientSenderBeans() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BytesMessageSender.class);
-			assertThat(context).hasSingleBean(URLConnectionSender.class);
+			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
 			assertThat(context).doesNotHaveBean(ZipkinRestTemplateSender.class);
+			assertThat(context).doesNotHaveBean(ZipkinWebClientSenderTests.class);
+			assertThat(context).doesNotHaveBean(URLConnectionSender.class);
 		});
 	}
 
 	@Test
-	void shouldUseHttpClientIfUrlSenderIsNotAvailable() {
-		this.contextRunner.withUserConfiguration(HttpClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection", "org.springframework.web.client",
-					"org.springframework.web.reactive.function.client"))
+	void shouldUseUrlSenderIfHttpSenderIsNotAvailable() {
+		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class, RestTemplate.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
-				assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
-				then(context.getBean(ZipkinHttpClientBuilderCustomizer.class)).should()
-					.customize(ArgumentMatchers.any());
+				assertThat(context).hasSingleBean(URLConnectionSender.class);
 			});
 	}
 
 	@Test
-	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndUrlSenderIsNotAvailable() {
+	void shouldPreferWebClientSenderIfWebApplicationIsReactiveAndHttpClientSenderIsNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 				then(context.getBean(ZipkinWebClientBuilderCustomizer.class)).should()
@@ -99,55 +102,55 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void shouldPreferWebClientSenderIfWebApplicationIsServletAndUrlSenderIsNotAvailable() {
+	void shouldPreferWebClientSenderIfWebApplicationIsServletAndHttpClientSenderIsNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 			});
 	}
 
 	@Test
-	void shouldPreferWebClientInNonWebApplicationAndUrlConnectionSenderIsNotAvailable() {
+	void shouldPreferWebClientInNonWebApplicationAndHttpClientSenderIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class, WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader("zipkin2.reporter.urlconnection"))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinWebClientSender.class);
 			});
 	}
 
 	@Test
-	void willUseRestTemplateInNonWebApplicationIfUrlConnectionSenderAndWebClientAreNotAvailable() {
+	void willUseRestTemplateInNonWebApplicationIfSenderAndWebClientAreNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(HttpClient.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 			});
 	}
 
 	@Test
-	void willUseRestTemplateInServletWebApplicationIfUrlConnectionSenderAndWebClientNotAvailable() {
+	void willUseRestTemplateInServletWebApplicationIfHttpClientSenderAndWebClientNotAvailable() {
 		this.servletContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 			});
 	}
 
 	@Test
-	void willUseRestTemplateInReactiveWebApplicationIfUrlConnectionSenderAndWebClientAreNotAvailable() {
+	void willUseRestTemplateInReactiveWebApplicationIfHttpClientSenderAndWebClientAreNotAvailable() {
 		this.reactiveContextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.run((context) -> {
-				assertThat(context).doesNotHaveBean(URLConnectionSender.class);
+				assertThat(context).doesNotHaveBean(ZipkinHttpClientSender.class);
 				assertThat(context).hasSingleBean(BytesMessageSender.class);
 				assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 			});
@@ -158,7 +161,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		this.reactiveContextRunner.run((context) -> {
 			assertThat(context).doesNotHaveBean(ZipkinWebClientSender.class);
 			assertThat(context).hasSingleBean(BytesMessageSender.class);
-			assertThat(context).hasSingleBean(URLConnectionSender.class);
+			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
 		});
 	}
 
@@ -177,7 +180,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			this.reactiveContextRunner
 				.withPropertyValues("management.zipkin.tracing.endpoint=" + mockWebServer.url("/"))
 				.withUserConfiguration(RestTemplateConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+				.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 				.run((context) -> {
 					assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
 					ZipkinRestTemplateSender sender = context.getBean(ZipkinRestTemplateSender.class);
@@ -192,6 +195,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@Test
 	void shouldUseCustomHttpEndpointSupplierFactory() {
 		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class, RestTemplate.class))
 			.run((context) -> assertThat(context.getBean(URLConnectionSender.class))
 				.extracting("delegate.endpointSupplier")
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
@@ -201,7 +205,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@SuppressWarnings("resource")
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenReactive() {
 		this.reactiveContextRunner.withUserConfiguration(WebClientConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ZipkinWebClientSender.class)).extracting("endpointSupplier")
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
@@ -211,7 +215,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	@SuppressWarnings("resource")
 	void shouldUseCustomHttpEndpointSupplierFactoryWhenRestTemplate() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
-			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+			.withClassLoader(new FilteredClassLoader(HttpClient.class, WebClient.class))
 			.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ZipkinRestTemplateSender.class)).extracting("endpointSupplier")
 				.isInstanceOf(CustomHttpEndpointSupplier.class));
