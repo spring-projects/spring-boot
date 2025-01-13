@@ -153,7 +153,7 @@ public class ConditionOutcome {
 	 * @param outcome the outcome to inverse
 	 * @return the inverse of the condition outcome
 	 * @since 1.3.0
-	 * @deprecated since 3.5.0 for removal in 3.6.0 in favor of
+	 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
 	 * {@link #ConditionOutcome(boolean, ConditionMessage)}
 	 */
 	@Deprecated(since = "3.5.0", forRemoval = true)
