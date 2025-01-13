@@ -27,7 +27,7 @@ import ch.qos.logback.core.status.StatusListener;
  *
  * @author Dmytro Nosan
  */
-final class FilteringStatusListener extends ContextAwareBase implements StatusListener, LifeCycle {
+class FilteringStatusListener extends ContextAwareBase implements StatusListener, LifeCycle {
 
 	private final StatusListener delegate;
 
