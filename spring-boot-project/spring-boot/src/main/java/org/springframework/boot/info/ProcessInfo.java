@@ -111,6 +111,12 @@ public class ProcessInfo {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T> T invokeMethod(Class<?> mxbeanClass, Object mxbean, String name) throws ReflectiveOperationException {
+		Method method = mxbeanClass.getMethod(name);
+		return (T) method.invoke(mxbean);
+	}
+
 	public long getPid() {
 		return this.pid;
 	}
@@ -121,12 +127,6 @@ public class ProcessInfo {
 
 	public String getOwner() {
 		return this.owner;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T invokeMethod(Class<?> mxbeanClass, Object mxbean, String name) throws ReflectiveOperationException {
-		Method method = mxbeanClass.getMethod(name);
-		return (T) method.invoke(mxbean);
 	}
 
 	/**

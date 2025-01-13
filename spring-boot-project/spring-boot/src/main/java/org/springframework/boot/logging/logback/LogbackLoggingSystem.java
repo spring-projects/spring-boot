@@ -495,8 +495,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		FilteringStatusListener listener = new FilteringStatusListener(new OnErrorConsoleStatusListener(),
 				Status.ERROR);
 		listener.setContext(context);
-		boolean effectivelyAdded = context.getStatusManager().add(listener);
-		if (effectivelyAdded) {
+		if (context.getStatusManager().add(listener)) {
 			listener.start();
 		}
 	}

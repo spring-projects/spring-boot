@@ -678,10 +678,12 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(statusListener).hasFieldOrPropertyWithValue("levelThreshold", Status.ERROR);
 		assertThat(statusListener).extracting("delegate").isInstanceOf(OnErrorConsoleStatusListener.class);
 		AppenderBase<ILoggingEvent> appender = new AppenderBase<>() {
+
 			@Override
 			protected void append(ILoggingEvent eventObject) {
 				throw new IllegalStateException("Fail to append");
 			}
+
 		};
 		this.logger.addAppender(appender);
 		appender.setContext(loggerContext);
