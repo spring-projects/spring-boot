@@ -16,10 +16,14 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcomes;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -29,6 +33,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ConditionalOnBooleanProperty @ConditionalOnBooleanProperty}.
@@ -144,6 +149,49 @@ class ConditionalOnBooleanPropertyTests {
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
+	@Test
+	void nameOrValueMustBeSpecified() {
+		assertThatIllegalStateException().isThrownBy(() -> load(NoNameOrValueAttribute.class, "some.property"))
+			.satisfies(causeMessageContaining(
+					"The name or value attribute of @ConditionalOnBooleanProperty must be specified"));
+	}
+
+	@Test
+	void nameAndValueMustNotBeSpecified() {
+		assertThatIllegalStateException().isThrownBy(() -> load(NameAndValueAttribute.class, "some.property"))
+			.satisfies(causeMessageContaining(
+					"The name and value attributes of @ConditionalOnBooleanProperty are exclusive"));
+	}
+
+	@Test
+	void conditionReportWhenMatched() {
+		load(Defaults.class, "test=true");
+		assertThat(this.context.containsBean("foo")).isTrue();
+		assertThat(getConditionEvaluationReport()).contains("@ConditionalOnBooleanProperty (test=true) matched");
+	}
+
+	@Test
+	void conditionReportWhenDoesNotMatch() {
+		load(Defaults.class, "test=false");
+		assertThat(this.context.containsBean("foo")).isFalse();
+		assertThat(getConditionEvaluationReport())
+			.contains("@ConditionalOnBooleanProperty (test=true) found different value in property 'test'");
+	}
+
+	private <T extends Exception> Consumer<T> causeMessageContaining(String message) {
+		return (ex) -> assertThat(ex.getCause()).hasMessageContaining(message);
+	}
+
+	private String getConditionEvaluationReport() {
+		return ConditionEvaluationReport.get(this.context.getBeanFactory())
+			.getConditionAndOutcomesBySource()
+			.values()
+			.stream()
+			.flatMap(ConditionAndOutcomes::stream)
+			.map(Object::toString)
+			.collect(Collectors.joining("\n"));
+	}
+
 	private void load(Class<?> config, String... environment) {
 		TestPropertyValues.of(environment).applyTo(this.environment);
 		this.context = new SpringApplicationBuilder(config).environment(this.environment)
@@ -193,6 +241,28 @@ class ConditionalOnBooleanPropertyTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBooleanProperty(prefix = "foo", name = "test")
 	static class WithPrefix extends BeanConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBooleanProperty
+	static class NoNameOrValueAttribute {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBooleanProperty(value = "x", name = "y")
+	static class NameAndValueAttribute {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
 
 	}
 
