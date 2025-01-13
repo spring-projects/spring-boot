@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.PlatformManagedObject;
+import java.lang.reflect.Method;
+
+import org.springframework.util.ClassUtils;
 
 /**
  * Information about the process of the application.
@@ -29,6 +32,11 @@ import java.lang.management.PlatformManagedObject;
  * @since 3.3.0
  */
 public class ProcessInfo {
+
+	private static final String VIRTUAL_THREAD_SCHEDULER_CLASS = "jdk.management.VirtualThreadSchedulerMXBean";
+
+	private static final boolean VIRTUAL_THREAD_SCHEDULER_CLASS_PRESENT = ClassUtils
+		.isPresent(VIRTUAL_THREAD_SCHEDULER_CLASS, null);
 
 	private static final Runtime runtime = Runtime.getRuntime();
 
@@ -85,14 +93,18 @@ public class ProcessInfo {
 	 */
 	@SuppressWarnings("unchecked")
 	public VirtualThreadsInfo getVirtualThreads() {
+		if (!VIRTUAL_THREAD_SCHEDULER_CLASS_PRESENT) {
+			return null;
+		}
 		try {
-			Class<PlatformManagedObject> mxBeanClass = (Class<PlatformManagedObject>) Class
-				.forName("jdk.management.VirtualThreadSchedulerMXBean");
-			Object bean = ManagementFactory.getPlatformMXBean(mxBeanClass);
-			return new VirtualThreadsInfo((Integer) mxBeanClass.getMethod("getMountedVirtualThreadCount").invoke(bean),
-					(Long) mxBeanClass.getMethod("getQueuedVirtualThreadCount").invoke(bean),
-					(Integer) mxBeanClass.getMethod("getParallelism").invoke(bean),
-					(Integer) mxBeanClass.getMethod("getPoolSize").invoke(bean));
+			Class<PlatformManagedObject> mxbeanClass = (Class<PlatformManagedObject>) ClassUtils
+				.forName(VIRTUAL_THREAD_SCHEDULER_CLASS, null);
+			PlatformManagedObject mxbean = ManagementFactory.getPlatformMXBean(mxbeanClass);
+			int mountedVirtualThreadCount = invokeMethod(mxbeanClass, mxbean, "getMountedVirtualThreadCount");
+			long queuedVirtualThreadCount = invokeMethod(mxbeanClass, mxbean, "getQueuedVirtualThreadCount");
+			int parallelism = invokeMethod(mxbeanClass, mxbean, "getParallelism");
+			int poolSize = invokeMethod(mxbeanClass, mxbean, "getPoolSize");
+			return new VirtualThreadsInfo(mountedVirtualThreadCount, queuedVirtualThreadCount, parallelism, poolSize);
 		}
 		catch (ReflectiveOperationException ex) {
 			return null;
@@ -111,6 +123,12 @@ public class ProcessInfo {
 		return this.owner;
 	}
 
+	@SuppressWarnings("unchecked")
+	private <T> T invokeMethod(Class<?> mxbeanClass, Object mxbean, String name) throws ReflectiveOperationException {
+		Method method = mxbeanClass.getMethod(name);
+		return (T) method.invoke(mxbean);
+	}
+
 	/**
 	 * Virtual threads information.
 	 *
@@ -126,7 +144,7 @@ public class ProcessInfo {
 
 		private final int poolSize;
 
-		public VirtualThreadsInfo(int mounted, long queued, int parallelism, int poolSize) {
+		VirtualThreadsInfo(int mounted, long queued, int parallelism, int poolSize) {
 			this.mounted = mounted;
 			this.queued = queued;
 			this.parallelism = parallelism;
