@@ -106,18 +106,14 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 	@Test
 	void shouldFormatMarkersAsTags() {
 		MutableLogEvent event = createEvent();
-
 		Marker parent = MarkerManager.getMarker("parent");
 		parent.addParents(MarkerManager.getMarker("grandparent"));
-
 		Marker parent1 = MarkerManager.getMarker("parent1");
 		parent1.addParents(MarkerManager.getMarker("grandparent1"));
-
 		Marker grandchild = MarkerManager.getMarker("grandchild");
 		grandchild.addParents(parent);
 		grandchild.addParents(parent1);
 		event.setMarker(grandchild);
-
 		String json = this.formatter.format(event);
 		assertThat(json).endsWith("\n");
 		Map<String, Object> deserialized = deserialize(json);
