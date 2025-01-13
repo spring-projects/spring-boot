@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 package org.springframework.boot.actuate.info;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.info.ProcessInfoContributor.ProcessInfoContributorRuntimeHints;
 import org.springframework.boot.info.ProcessInfo;
@@ -30,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ProcessInfoContributor}.
  *
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  */
 class ProcessInfoContributorTests {
 
@@ -50,6 +54,16 @@ class ProcessInfoContributorTests {
 			.onType(ProcessInfo.class)
 			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
 			.accepts(runtimeHints);
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_24)
+	void shouldRegisterRuntimeHintsForVirtualThreadSchedulerMXBean() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new ProcessInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TypeReference.of("jdk.management.VirtualThreadSchedulerMXBean"))
+			.withMemberCategories(MemberCategory.INVOKE_PUBLIC_METHODS)).accepts(runtimeHints);
 	}
 
 }
