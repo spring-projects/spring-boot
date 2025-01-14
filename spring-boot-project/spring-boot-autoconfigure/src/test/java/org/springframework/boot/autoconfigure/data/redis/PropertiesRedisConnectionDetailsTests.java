@@ -103,6 +103,17 @@ class PropertiesRedisConnectionDetailsTests {
 		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("example.com");
 		assertThat(standalone.getPort()).isEqualTo(1234);
+		assertThat(standalone.getDatabase()).isEqualTo(9999);
+	}
+
+	@Test
+	void standaloneIsConfiguredFromUrlWithoutDatabase() {
+		this.properties.setUrl("redis://example.com:1234");
+		this.properties.setDatabase(5);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
+		assertThat(standalone.getHost()).isEqualTo("example.com");
+		assertThat(standalone.getPort()).isEqualTo(1234);
 		assertThat(standalone.getDatabase()).isEqualTo(5);
 	}
 

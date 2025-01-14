@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisConnectionConfigur
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
@@ -59,7 +60,8 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		if (this.properties.getUrl() != null) {
 			ConnectionInfo connectionInfo = ConnectionInfo.of(this.properties.getUrl());
 			return Standalone.of(connectionInfo.getUri().getHost(), connectionInfo.getUri().getPort(),
-					this.properties.getDatabase());
+					(connectionInfo.getDatabase() != null) ? connectionInfo.getDatabase()
+							: this.properties.getDatabase());
 		}
 		return Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
 	}
