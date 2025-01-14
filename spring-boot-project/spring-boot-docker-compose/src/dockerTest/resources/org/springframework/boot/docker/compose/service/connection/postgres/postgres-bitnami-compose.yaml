@@ -4,6 +4,6 @@ services:
     ports:
       - '5432'
     environment:
-      - 'POSTGRESQL_USER=myuser'
-      - 'POSTGRESQL_DB=mydatabase'
+      - 'POSTGRESQL_USERNAME=myuser'
+      - 'POSTGRESQL_DATABASE=mydatabase'
       - 'POSTGRESQL_PASSWORD=secret'
