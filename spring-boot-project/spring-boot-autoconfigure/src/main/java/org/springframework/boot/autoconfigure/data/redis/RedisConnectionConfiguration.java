@@ -33,6 +33,7 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Base Redis connection configuration.
@@ -45,6 +46,7 @@ import org.springframework.util.ClassUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 abstract class RedisConnectionConfiguration {
 
@@ -189,11 +191,14 @@ abstract class RedisConnectionConfiguration {
 
 		private final String password;
 
-		private ConnectionInfo(URI uri, boolean useSsl, String username, String password) {
+		private final int database;
+
+		private ConnectionInfo(URI uri, boolean useSsl, String username, String password, int database) {
 			this.uri = uri;
 			this.useSsl = useSsl;
 			this.username = username;
 			this.password = password;
+			this.database = database;
 		}
 
 		URI getUri() {
@@ -210,6 +215,10 @@ abstract class RedisConnectionConfiguration {
 
 		String getPassword() {
 			return this.password;
+		}
+
+		int getDatabase() {
+			return this.database;
 		}
 
 		static ConnectionInfo of(String url) {
@@ -233,7 +242,14 @@ abstract class RedisConnectionConfiguration {
 						password = candidate;
 					}
 				}
-				return new ConnectionInfo(uri, useSsl, username, password);
+				int database = 0;
+				if (StringUtils.hasText(uri.getPath())) {
+					String[] pathSplit = uri.getPath().split("/", 2);
+					if (pathSplit.length > 1 && !pathSplit[1].isEmpty()) {
+						database = Integer.parseInt(pathSplit[1]);
+					}
+				}
+				return new ConnectionInfo(uri, useSsl, username, password, database);
 			}
 			catch (URISyntaxException ex) {
 				throw new RedisUrlSyntaxException(url, ex);
