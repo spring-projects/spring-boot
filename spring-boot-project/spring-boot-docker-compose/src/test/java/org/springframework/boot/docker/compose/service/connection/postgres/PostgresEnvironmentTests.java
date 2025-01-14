@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Phillip Webb
  * @author Scott Frederick
  * @author Sidmar Theodoro
+ * @author He Zean
  */
 class PostgresEnvironmentTests {
 
@@ -64,6 +65,13 @@ class PostgresEnvironmentTests {
 	void getUsernameWhenHasPostgresqlUser() {
 		PostgresEnvironment environment = new PostgresEnvironment(
 				Map.of("POSTGRESQL_USER", "me", "POSTGRESQL_PASSWORD", "secret"));
+		assertThat(environment.getUsername()).isEqualTo("me");
+	}
+
+	@Test
+	void getUsernameWhenHasPostgresqlUsername() {
+		PostgresEnvironment environment = new PostgresEnvironment(
+				Map.of("POSTGRESQL_USERNAME", "me", "POSTGRESQL_PASSWORD", "secret"));
 		assertThat(environment.getUsername()).isEqualTo("me");
 	}
 
@@ -112,6 +120,13 @@ class PostgresEnvironmentTests {
 	}
 
 	@Test
+	void getDatabaseWhenNoPostgresqlDatabaseAndPostgresqlUsername() {
+		PostgresEnvironment environment = new PostgresEnvironment(
+				Map.of("POSTGRESQL_USERNAME", "me", "POSTGRESQL_PASSWORD", "secret"));
+		assertThat(environment.getDatabase()).isEqualTo("me");
+	}
+
+	@Test
 	void getDatabaseWhenHasPostgresDb() {
 		PostgresEnvironment environment = new PostgresEnvironment(
 				Map.of("POSTGRES_DB", "db", "POSTGRES_PASSWORD", "secret"));
@@ -122,6 +137,13 @@ class PostgresEnvironmentTests {
 	void getDatabaseWhenHasPostgresqlDb() {
 		PostgresEnvironment environment = new PostgresEnvironment(
 				Map.of("POSTGRESQL_DB", "db", "POSTGRESQL_PASSWORD", "secret"));
+		assertThat(environment.getDatabase()).isEqualTo("db");
+	}
+
+	@Test
+	void getDatabaseWhenHasPostgresqlDatabase() {
+		PostgresEnvironment environment = new PostgresEnvironment(
+				Map.of("POSTGRESQL_DATABASE", "db", "POSTGRESQL_PASSWORD", "secret"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 
