@@ -309,7 +309,7 @@ class StandardConfigDataLocationResolverTests {
 		this.environment.setActiveProfiles("dev-테스트_123");
 		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
 		assertThatNoException()
-				.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
 	}
 
 	@Test
@@ -368,8 +368,7 @@ class StandardConfigDataLocationResolverTests {
 		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
-			.withMessageStartingWith(
-					"Invalid profile 'dev*test': must contain only letters or digits or '-' or '_'");
+			.withMessageStartingWith("Invalid profile 'dev*test': must contain only letters or digits or '-' or '_'");
 	}
 
 	private String filePath(String... components) {

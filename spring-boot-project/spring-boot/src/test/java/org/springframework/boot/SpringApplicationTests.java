@@ -258,8 +258,7 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setEnvironment(environment);
 		this.context = application.run();
-		assertThat(output)
-			.contains("No active profile set, falling back to 2 default profiles: \"p0\", \"default\"");
+		assertThat(output).contains("No active profile set, falling back to 2 default profiles: \"p0\", \"default\"");
 	}
 
 	@Test
