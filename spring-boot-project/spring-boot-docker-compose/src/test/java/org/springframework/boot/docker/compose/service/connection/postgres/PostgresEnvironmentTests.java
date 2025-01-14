@@ -68,13 +68,6 @@ class PostgresEnvironmentTests {
 	}
 
 	@Test
-	void getUsernameWhenHasPostgresUsername() {
-		PostgresEnvironment environment = new PostgresEnvironment(
-				Map.of("POSTGRES_USERNAME", "me", "POSTGRESQL_PASSWORD", "secret"));
-		assertThat(environment.getUsername()).isEqualTo("me");
-	}
-
-	@Test
 	void getUsernameWhenHasPostgresqlUsername() {
 		PostgresEnvironment environment = new PostgresEnvironment(
 				Map.of("POSTGRESQL_USERNAME", "me", "POSTGRESQL_PASSWORD", "secret"));
@@ -134,9 +127,9 @@ class PostgresEnvironmentTests {
 	}
 
 	@Test
-	void getDatabaseWhenHasPostgresDatabase() {
+	void getDatabaseWhenHasPostgresqlDb() {
 		PostgresEnvironment environment = new PostgresEnvironment(
-				Map.of("POSTGRES_DATABASE", "db", "POSTGRESQL_PASSWORD", "secret"));
+				Map.of("POSTGRESQL_DB", "db", "POSTGRESQL_PASSWORD", "secret"));
 		assertThat(environment.getDatabase()).isEqualTo("db");
 	}
 

@@ -32,12 +32,12 @@ import org.springframework.util.StringUtils;
  */
 class PostgresEnvironment {
 
-	private static final String[] USERNAME_KEYS = new String[] { "POSTGRES_USER", "POSTGRES_USERNAME",
-			"POSTGRESQL_USER", "POSTGRESQL_USERNAME" };
+	private static final String[] USERNAME_KEYS = new String[] { "POSTGRES_USER", "POSTGRESQL_USER",
+			"POSTGRESQL_USERNAME" };
 
 	private static final String DEFAULT_USERNAME = "postgres";
 
-	private static final String[] DATABASE_KEYS = new String[] { "POSTGRES_DB", "POSTGRES_DATABASE",
+	private static final String[] DATABASE_KEYS = new String[] { "POSTGRES_DB", "POSTGRESQL_DB",
 			"POSTGRESQL_DATABASE" };
 
 	private final String username;
@@ -47,33 +47,24 @@ class PostgresEnvironment {
 	private final String database;
 
 	PostgresEnvironment(Map<String, String> env) {
-		this.username = extractUsername(env);
+		this.username = extract(env, USERNAME_KEYS, DEFAULT_USERNAME);
 		this.password = extractPassword(env);
-		this.database = extractDatabase(env);
+		this.database = extract(env, DATABASE_KEYS, this.username);
 	}
 
-	private String extractUsername(Map<String, String> env) {
-		for (String key : USERNAME_KEYS) {
+	private String extract(Map<String, String> env, String[] keys, String defaultValue) {
+		for (String key : keys) {
 			if (env.containsKey(key)) {
 				return env.get(key);
 			}
 		}
-		return DEFAULT_USERNAME;
+		return defaultValue;
 	}
 
 	private String extractPassword(Map<String, String> env) {
 		String password = env.getOrDefault("POSTGRES_PASSWORD", env.get("POSTGRESQL_PASSWORD"));
 		Assert.state(StringUtils.hasLength(password), "PostgreSQL password must be provided");
 		return password;
-	}
-
-	private String extractDatabase(Map<String, String> env) {
-		for (String key : DATABASE_KEYS) {
-			if (env.containsKey(key)) {
-				return env.get(key);
-			}
-		}
-		return this.username;
 	}
 
 	String getUsername() {
