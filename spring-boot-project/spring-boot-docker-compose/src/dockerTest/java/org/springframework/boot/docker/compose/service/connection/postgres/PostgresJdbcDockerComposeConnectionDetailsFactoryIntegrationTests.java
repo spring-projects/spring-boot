@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 
 	@DockerComposeTest(composeFile = "postgres-compose.yaml", image = TestImage.POSTGRESQL)
-	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+	void runCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) throws ClassNotFoundException {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	@DockerComposeTest(composeFile = "postgres-with-trust-host-auth-method-compose.yaml", image = TestImage.POSTGRESQL)
@@ -53,8 +54,10 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@DockerComposeTest(composeFile = "postgres-bitnami-compose.yaml", image = TestImage.BITNAMI_POSTGRESQL)
-	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails) {
+	void runWithBitnamiImageCreatesConnectionDetails(JdbcConnectionDetails connectionDetails)
+			throws ClassNotFoundException {
 		assertConnectionDetails(connectionDetails);
+		checkDatabaseAccess(connectionDetails);
 	}
 
 	private void assertConnectionDetails(JdbcConnectionDetails connectionDetails) {
