@@ -23,10 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -393,21 +390,6 @@ class DockerApiTests {
 		}
 
 		@Test
-		@SuppressWarnings("removal")
-		void exportLayersWhenReferenceIsNullThrowsException() {
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(null, (name, archive) -> {
-			})).withMessage("'reference' must not be null");
-		}
-
-		@Test
-		@SuppressWarnings("removal")
-		void exportLayersWhenExportsIsNullThrowsException() {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(reference, null))
-				.withMessage("'exports' must not be null");
-		}
-
-		@Test
 		void exportLayersExportsLayerTars() throws Exception {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
 			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
@@ -461,29 +443,6 @@ class DockerApiTests {
 				.containsExactly("/cnb/order.toml");
 			assertThat(contents.get("762e198f655bc2580ef3e56b538810fd2b9981bd707f8a44c70344b58f9aee68.tar"))
 				.containsExactly("/cnb/stack.toml");
-		}
-
-		@Test
-		@SuppressWarnings("removal")
-		void exportLayerFilesDeletesTempFiles() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
-			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
-			List<Path> layerFilePaths = new ArrayList<>();
-			this.api.exportLayerFiles(reference, (name, path) -> layerFilePaths.add(path));
-			layerFilePaths.forEach((path) -> assertThat(path.toFile()).doesNotExist());
-		}
-
-		@Test
-		@SuppressWarnings("removal")
-		void exportLayersWithNoManifestThrowsException() throws Exception {
-			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
-			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-no-manifest.tar"));
-			String expectedMessage = "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
-				.formatted(reference);
-			assertThatIllegalStateException().isThrownBy(() -> this.api.exportLayerFiles(reference, (name, archive) -> {
-			})).withMessageContaining(expectedMessage);
 		}
 
 		@Test

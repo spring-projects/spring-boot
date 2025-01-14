@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,20 +39,14 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void getProgressDetailsReturnsProgressDetails() {
 		ProgressUpdateEvent event = createEvent();
-		assertThat(event.getProgressDetail().getCurrent()).isOne();
-		assertThat(event.getProgressDetail().getTotal()).isEqualTo(2);
 		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void getProgressDetailsReturnsProgressDetailsForLongNumbers() {
 		ProgressUpdateEvent event = createEvent("status", new ProgressDetail(4000000000L, 8000000000L), "progress");
-		assertThat(event.getProgressDetail().getCurrent()).isEqualTo(Integer.MAX_VALUE);
-		assertThat(event.getProgressDetail().getTotal()).isEqualTo(Integer.MAX_VALUE);
 		assertThat(event.getProgressDetail().asPercentage()).isEqualTo(50);
 	}
 
@@ -60,27 +54,6 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 	void getProgressReturnsProgress() {
 		ProgressUpdateEvent event = createEvent();
 		assertThat(event.getProgress()).isEqualTo("progress");
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void progressDetailIsEmptyWhenCurrentIsNullReturnsTrue() {
-		ProgressDetail detail = new ProgressDetail(null, 2L);
-		assertThat(ProgressDetail.isEmpty(detail)).isTrue();
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void progressDetailIsEmptyWhenTotalIsNullReturnsTrue() {
-		ProgressDetail detail = new ProgressDetail(1L, null);
-		assertThat(ProgressDetail.isEmpty(detail)).isTrue();
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void progressDetailIsEmptyWhenTotalAndCurrentAreNotNullReturnsFalse() {
-		ProgressDetail detail = new ProgressDetail(1L, 2L);
-		assertThat(ProgressDetail.isEmpty(detail)).isFalse();
 	}
 
 	protected E createEvent() {

@@ -40,12 +40,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * Configurations for Zipkin. Those are imported by {@link ZipkinAutoConfiguration}.
@@ -57,8 +54,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ HttpClientSenderConfiguration.class, WebClientSenderConfiguration.class,
-			RestTemplateSenderConfiguration.class, UrlConnectionSenderConfiguration.class })
+	@Import({ HttpClientSenderConfiguration.class, UrlConnectionSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
@@ -82,68 +78,6 @@ class ZipkinConfigurations {
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
 			return new ZipkinHttpClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
 					httpClientBuilder.build(), properties.getReadTimeout());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(WebClient.class)
-	@EnableConfigurationProperties(ZipkinProperties.class)
-	static class WebClientSenderConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(BytesMessageSender.class)
-		@SuppressWarnings({ "deprecation", "removal" })
-		ZipkinWebClientSender webClientSender(ZipkinProperties properties, Encoding encoding,
-				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
-				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
-				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
-			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
-				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
-			WebClient.Builder builder = WebClient.builder();
-			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
-			return new ZipkinWebClientSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
-					builder.build(), properties.getConnectTimeout().plus(properties.getReadTimeout()));
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(RestTemplate.class)
-	@EnableConfigurationProperties(ZipkinProperties.class)
-	static class RestTemplateSenderConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(BytesMessageSender.class)
-		@SuppressWarnings({ "deprecation", "removal" })
-		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties, Encoding encoding,
-				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers,
-				ObjectProvider<ZipkinConnectionDetails> connectionDetailsProvider,
-				ObjectProvider<HttpEndpointSupplier.Factory> endpointSupplierFactoryProvider) {
-			ZipkinConnectionDetails connectionDetails = connectionDetailsProvider
-				.getIfAvailable(() -> new PropertiesZipkinConnectionDetails(properties));
-			HttpEndpointSupplier.Factory endpointSupplierFactory = endpointSupplierFactoryProvider
-				.getIfAvailable(HttpEndpointSuppliers::constantFactory);
-			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
-				.setConnectTimeout(properties.getConnectTimeout())
-				.setReadTimeout(properties.getReadTimeout());
-			restTemplateBuilder = applyCustomizers(restTemplateBuilder, customizers);
-			return new ZipkinRestTemplateSender(encoding, endpointSupplierFactory, connectionDetails.getSpanEndpoint(),
-					restTemplateBuilder.build());
-		}
-
-		@SuppressWarnings({ "deprecation", "removal" })
-		private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
-				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
-			Iterable<ZipkinRestTemplateBuilderCustomizer> orderedCustomizers = () -> customizers.orderedStream()
-				.iterator();
-			RestTemplateBuilder currentBuilder = restTemplateBuilder;
-			for (ZipkinRestTemplateBuilderCustomizer customizer : orderedCustomizers) {
-				currentBuilder = customizer.customize(currentBuilder);
-			}
-			return currentBuilder;
 		}
 
 	}

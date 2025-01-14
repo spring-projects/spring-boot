@@ -45,17 +45,6 @@ public class SessionsEndpoint {
 	/**
 	 * Create a new {@link SessionsEndpoint} instance.
 	 * @param sessionRepository the session repository
-	 * @deprecated since 3.3.0 for removal in 3.5.0 in favor of
-	 * {@link #SessionsEndpoint(SessionRepository, FindByIndexNameSessionRepository)}
-	 */
-	@Deprecated(since = "3.3.0", forRemoval = true)
-	public SessionsEndpoint(FindByIndexNameSessionRepository<? extends Session> sessionRepository) {
-		this(sessionRepository, sessionRepository);
-	}
-
-	/**
-	 * Create a new {@link SessionsEndpoint} instance.
-	 * @param sessionRepository the session repository
 	 * @param indexedSessionRepository the indexed session repository
 	 * @since 3.3.0
 	 */

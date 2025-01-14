@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,10 +154,8 @@ public abstract class BootJar extends Jar implements BootArchive {
 				jarmodeToolsLocation);
 	}
 
-	@SuppressWarnings("removal")
 	private boolean isIncludeJarmodeTools() {
-		return Boolean.TRUE.equals(this.getIncludeTools().get())
-				&& Boolean.TRUE.equals(this.layered.getIncludeLayerTools().get());
+		return Boolean.TRUE.equals(this.getIncludeTools().get());
 	}
 
 	@Override

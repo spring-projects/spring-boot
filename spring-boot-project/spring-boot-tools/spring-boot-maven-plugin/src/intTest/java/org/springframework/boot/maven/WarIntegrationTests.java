@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,19 +181,6 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
 				.hasEntryWithNameStartingWith("WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId())
 				.doesNotHaveEntryWithName("WEB-INF/layers.idx");
-		});
-	}
-
-	@TestTemplate
-	void whenWarIsRepackagedWithTheLayersEnabledAndLayerToolsExcluded(MavenBuild mavenBuild) {
-		mavenBuild.project("war-layered-no-layer-tools").execute((project) -> {
-			File repackaged = new File(project, "war/target/war-layered-0.0.1.BUILD-SNAPSHOT.war");
-			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("WEB-INF/classes/")
-				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-release")
-				.hasEntryWithNameStartingWith("WEB-INF/lib/jar-snapshot")
-				.hasEntryWithNameStartingWith("WEB-INF/layers.idx")
-				.doesNotHaveEntryWithNameStartingWith(
-						"WEB-INF/lib/" + JarModeLibrary.TOOLS.getCoordinates().getArtifactId());
 		});
 	}
 

@@ -38,7 +38,6 @@ import org.springframework.util.Assert;
  * @deprecated since 3.4.0 for removal in 3.6.0 in favor of
  * {@link org.springframework.test.context.bean.override.mockito.MockReset}
  */
-
 @Deprecated(since = "3.4.0", forRemoval = true)
 public enum MockReset {
 

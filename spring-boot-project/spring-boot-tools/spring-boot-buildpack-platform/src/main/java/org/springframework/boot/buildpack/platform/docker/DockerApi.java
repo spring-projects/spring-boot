@@ -17,11 +17,8 @@
 package org.springframework.boot.buildpack.platform.docker;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -291,34 +288,6 @@ public class DockerApi {
 			finally {
 				listener.onFinish();
 			}
-		}
-
-		/**
-		 * Export the layers of an image as paths to layer tar files.
-		 * @param reference the reference to export
-		 * @param exports a consumer to receive the layer tar file paths (file can only be
-		 * accessed during the callback)
-		 * @throws IOException on IO error
-		 * @since 2.7.10
-		 * @deprecated since 3.2.6 for removal in 3.5.0 in favor of
-		 * {@link #exportLayers(ImageReference, IOBiConsumer)}
-		 */
-		@Deprecated(since = "3.2.6", forRemoval = true)
-		public void exportLayerFiles(ImageReference reference, IOBiConsumer<String, Path> exports) throws IOException {
-			Assert.notNull(reference, "'reference' must not be null");
-			Assert.notNull(exports, "'exports' must not be null");
-			exportLayers(reference, (name, archive) -> {
-				Path path = Files.createTempFile("docker-export-layer-files-", null);
-				try {
-					try (OutputStream out = Files.newOutputStream(path)) {
-						archive.writeTo(out);
-						exports.accept(name, path);
-					}
-				}
-				finally {
-					Files.delete(path);
-				}
-			});
 		}
 
 		/**
