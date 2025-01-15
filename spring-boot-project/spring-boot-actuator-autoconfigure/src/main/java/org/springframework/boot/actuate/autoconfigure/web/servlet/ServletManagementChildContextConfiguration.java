@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,22 +85,20 @@ class ServletManagementChildContextConfiguration {
 
 	@Bean
 	@ConditionalOnClass(name = "io.undertow.Undertow")
-	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(
-			ManagementServerProperties managementServerProperties) {
-		return new UndertowAccessLogCustomizer(managementServerProperties);
+	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer(ManagementServerProperties properties) {
+		return new UndertowAccessLogCustomizer(properties);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
-	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(
-			ManagementServerProperties managementServerProperties) {
-		return new TomcatAccessLogCustomizer(managementServerProperties);
+	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer(ManagementServerProperties properties) {
+		return new TomcatAccessLogCustomizer(properties);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
-	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
-		return new JettyAccessLogCustomizer(managementServerProperties);
+	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties properties) {
+		return new JettyAccessLogCustomizer(properties);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -149,18 +147,18 @@ class ServletManagementChildContextConfiguration {
 
 	abstract static class AccessLogCustomizer implements Ordered {
 
-		protected final ManagementServerProperties managementServerProperties;
+		private final ManagementServerProperties properties;
 
-		AccessLogCustomizer(ManagementServerProperties managementServerProperties) {
-			this.managementServerProperties = managementServerProperties;
+		AccessLogCustomizer(ManagementServerProperties properties) {
+			this.properties = properties;
 		}
 
 		protected String customizePrefix(String prefix) {
 			prefix = (prefix != null) ? prefix : "";
-			if (prefix.startsWith(this.managementServerProperties.getAccesslog().getPrefix())) {
+			if (prefix.startsWith(this.properties.getAccesslog().getPrefix())) {
 				return prefix;
 			}
-			return this.managementServerProperties.getAccesslog().getPrefix() + prefix;
+			return this.properties.getAccesslog().getPrefix() + prefix;
 		}
 
 		@Override
@@ -173,8 +171,8 @@ class ServletManagementChildContextConfiguration {
 	static class TomcatAccessLogCustomizer extends AccessLogCustomizer
 			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
-		TomcatAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
-			super(managementServerProperties);
+		TomcatAccessLogCustomizer(ManagementServerProperties properties) {
+			super(properties);
 		}
 
 		@Override
@@ -183,7 +181,6 @@ class ServletManagementChildContextConfiguration {
 			if (accessLogValve == null) {
 				return;
 			}
-
 			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
 		}
 
@@ -201,8 +198,8 @@ class ServletManagementChildContextConfiguration {
 	static class UndertowAccessLogCustomizer extends AccessLogCustomizer
 			implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
-		UndertowAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
-			super(managementServerProperties);
+		UndertowAccessLogCustomizer(ManagementServerProperties properties) {
+			super(properties);
 		}
 
 		@Override
@@ -215,8 +212,8 @@ class ServletManagementChildContextConfiguration {
 	static class JettyAccessLogCustomizer extends AccessLogCustomizer
 			implements WebServerFactoryCustomizer<JettyServletWebServerFactory> {
 
-		JettyAccessLogCustomizer(ManagementServerProperties managementServerProperties) {
-			super(managementServerProperties);
+		JettyAccessLogCustomizer(ManagementServerProperties properties) {
+			super(properties);
 		}
 
 		@Override

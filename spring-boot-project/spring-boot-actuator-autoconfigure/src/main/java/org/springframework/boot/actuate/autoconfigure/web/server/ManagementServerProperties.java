@@ -126,8 +126,7 @@ public class ManagementServerProperties {
 	public static class Accesslog {
 
 		/**
-		 * Enable management access logs prefix customization
-		 * management.server.accesslog.prefix.
+		 * Management log file name prefix.
 		 */
 		private String prefix = "management_";
 
