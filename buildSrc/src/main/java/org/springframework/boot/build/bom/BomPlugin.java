@@ -269,13 +269,8 @@ public class BomPlugin implements Plugin<Project> {
 
 		private Node findChild(Node parent, String name) {
 			for (Object child : parent.children()) {
-				if (child instanceof Node node) {
-					if ((node.name() instanceof QName qname) && name.equals(qname.getLocalPart())) {
-						return node;
-					}
-					if (name.equals(node.name())) {
-						return node;
-					}
+				if (isNodeWithName(child, name)) {
+					return (Node) child;
 				}
 			}
 			return null;
