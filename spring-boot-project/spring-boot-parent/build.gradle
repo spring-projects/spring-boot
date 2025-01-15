@@ -28,7 +28,7 @@ bom {
 	library("AWS Advanced JDBC Wrapper", "2.5.4") {
 		group("software.amazon.jdbc") {
 			modules = [
-					"aws-advanced-jdbc-wrapper"
+				"aws-advanced-jdbc-wrapper"
 			]
 		}
 	}
