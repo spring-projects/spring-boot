@@ -32,7 +32,7 @@ import org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListe
 import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
 
 @Configuration(proxyBeanMethods = false)
-@Profile("smoketest.pulsar.reactive")
+@Profile("smoketest-pulsar-reactive")
 class ReactiveAppConfig {
 
 	private static final Log logger = LogFactory.getLog(ReactiveAppConfig.class);
