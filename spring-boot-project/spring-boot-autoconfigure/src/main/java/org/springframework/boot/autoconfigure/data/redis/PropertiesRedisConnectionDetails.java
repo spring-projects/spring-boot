@@ -39,7 +39,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	@Override
 	public String getUsername() {
 		if (this.properties.getUrl() != null) {
-			ConnectionInfo connectionInfo = RedisConnectionConfiguration.parseUrl(this.properties.getUrl());
+			ConnectionInfo connectionInfo = ConnectionInfo.of(this.properties.getUrl());
 			return connectionInfo.getUsername();
 		}
 		return this.properties.getUsername();
@@ -48,7 +48,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	@Override
 	public String getPassword() {
 		if (this.properties.getUrl() != null) {
-			ConnectionInfo connectionInfo = RedisConnectionConfiguration.parseUrl(this.properties.getUrl());
+			ConnectionInfo connectionInfo = ConnectionInfo.of(this.properties.getUrl());
 			return connectionInfo.getPassword();
 		}
 		return this.properties.getPassword();
@@ -57,7 +57,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	@Override
 	public Standalone getStandalone() {
 		if (this.properties.getUrl() != null) {
-			ConnectionInfo connectionInfo = RedisConnectionConfiguration.parseUrl(this.properties.getUrl());
+			ConnectionInfo connectionInfo = ConnectionInfo.of(this.properties.getUrl());
 			return Standalone.of(connectionInfo.getUri().getHost(), connectionInfo.getUri().getPort(),
 					this.properties.getDatabase());
 		}
