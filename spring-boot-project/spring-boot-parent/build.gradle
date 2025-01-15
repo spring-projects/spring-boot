@@ -25,6 +25,13 @@ bom {
 			]
 		}
 	}
+	library("AWS Advanced JDBC Wrapper", "2.5.4") {
+		group("software.amazon.jdbc") {
+			modules = [
+				"aws-advanced-jdbc-wrapper"
+			]
+		}
+	}
 	library("C3P0", "0.9.5.5") {
 		group("com.mchange") {
 			modules = [

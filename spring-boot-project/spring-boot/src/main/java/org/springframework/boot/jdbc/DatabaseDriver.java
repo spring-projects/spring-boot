@@ -218,6 +218,19 @@ public enum DatabaseDriver {
 			return Arrays.asList("ch", "clickhouse");
 		}
 
+	},
+
+	/**
+	 * AWS Advanced JDBC Wrapper.
+	 * @since 3.5.0
+	 */
+	AWS_WRAPPER(null, "software.amazon.jdbc.Driver") {
+
+		@Override
+		protected Collection<String> getUrlPrefixes() {
+			return Collections.singleton("aws-wrapper");
+		}
+
 	};
 
 	private final String productName;

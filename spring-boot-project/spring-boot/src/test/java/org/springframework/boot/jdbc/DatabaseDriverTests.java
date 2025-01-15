@@ -121,6 +121,8 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:clickhouse://localhost:3306/sample"))
 			.isEqualTo(DatabaseDriver.CLICKHOUSE);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:ch://localhost:3306/sample")).isEqualTo(DatabaseDriver.CLICKHOUSE);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:aws-wrapper:postgresql://127.0.0.1:5432/sample"))
+			.isEqualTo(DatabaseDriver.AWS_WRAPPER);
 	}
 
 }
