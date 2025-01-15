@@ -69,7 +69,7 @@ class SamplePulsarApplicationTests {
 
 	@Nested
 	@SpringBootTest
-	@ActiveProfiles("smoketest.pulsar.imperative")
+	@ActiveProfiles("smoketest-pulsar-imperative")
 	class ImperativePulsarApplication extends PulsarApplication {
 
 		ImperativePulsarApplication() {
@@ -80,7 +80,7 @@ class SamplePulsarApplicationTests {
 
 	@Nested
 	@SpringBootTest
-	@ActiveProfiles("smoketest.pulsar.reactive")
+	@ActiveProfiles("smoketest-pulsar-reactive")
 	class ReactivePulsarApplication extends PulsarApplication {
 
 		ReactivePulsarApplication() {

@@ -29,7 +29,7 @@ import org.springframework.pulsar.core.PulsarTopic;
 import org.springframework.pulsar.core.PulsarTopicBuilder;
 
 @Configuration(proxyBeanMethods = false)
-@Profile("smoketest.pulsar.imperative")
+@Profile("smoketest-pulsar-imperative")
 class ImperativeAppConfig {
 
 	private static final Log logger = LogFactory.getLog(ImperativeAppConfig.class);
