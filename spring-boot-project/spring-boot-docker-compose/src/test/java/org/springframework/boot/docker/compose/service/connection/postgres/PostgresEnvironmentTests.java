@@ -39,7 +39,7 @@ class PostgresEnvironmentTests {
 	@Test
 	void createWhenNoPostgresPasswordThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new PostgresEnvironment(Collections.emptyMap()))
-			.withMessage("PostgreSQL password must be provided");
+			.withMessage("No PostgreSQL password found");
 	}
 
 	@Test

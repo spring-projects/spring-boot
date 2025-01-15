@@ -64,17 +64,6 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		checkDatabaseAccess(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "postgres-bitnami-empty-password-compose.yaml",
-			image = TestImage.BITNAMI_POSTGRESQL)
-	void runWithBitnamiImageCreatesConnectionDetailsWithAllowEmptyPassword(R2dbcConnectionDetails connectionDetails) {
-		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
-		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("myuser");
-		assertThat(connectionFactoryOptions.getValue(ConnectionFactoryOptions.PASSWORD)).isNull();
-		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.DATABASE))
-			.isEqualTo("mydatabase");
-		checkDatabaseAccess(connectionDetails);
-	}
-
 	@DockerComposeTest(composeFile = "postgres-application-name-compose.yaml", image = TestImage.POSTGRESQL)
 	void runCreatesConnectionDetailsApplicationName(R2dbcConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);

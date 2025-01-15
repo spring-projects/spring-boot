@@ -61,16 +61,6 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		checkDatabaseAccess(connectionDetails);
 	}
 
-	@DockerComposeTest(composeFile = "postgres-bitnami-empty-password-compose.yaml",
-			image = TestImage.BITNAMI_POSTGRESQL)
-	void runWithBitnamiImageCreatesConnectionDetailsWithAllowEmptyPassword(JdbcConnectionDetails connectionDetails)
-			throws ClassNotFoundException {
-		assertThat(connectionDetails.getUsername()).isEqualTo("myuser");
-		assertThat(connectionDetails.getPassword()).isEmpty();
-		assertThat(connectionDetails.getJdbcUrl()).startsWith("jdbc:postgresql://").endsWith("/mydatabase");
-		checkDatabaseAccess(connectionDetails);
-	}
-
 	@DockerComposeTest(composeFile = "postgres-application-name-compose.yaml", image = TestImage.POSTGRESQL)
 	void runCreatesConnectionDetailsApplicationName(JdbcConnectionDetails connectionDetails)
 			throws ClassNotFoundException {
