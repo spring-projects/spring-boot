@@ -138,7 +138,8 @@ Providing as much type information as possible in javadoc:org.springframework.co
 The javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnProperty[format=annotation] annotation lets configuration be included based on a Spring Environment property.
 Use the `prefix` and `name` attributes to specify the property that should be checked.
 By default, any property that exists and is not equal to `false` is matched.
-You can also create more advanced checks by using the `havingValue` and `matchIfMissing` attributes.
+There is also a dedicated javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty[format=annotation] annotation specifically made for boolean properties.
+With both annotations you can also create more advanced checks by using the `havingValue` and `matchIfMissing` attributes.
 
 If multiple names are given in the `name` attribute, all of the properties have to pass the test for the condition to match.
 
