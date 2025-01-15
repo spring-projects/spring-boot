@@ -1190,6 +1190,22 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
 
+[[features.external-config.typesafe-configuration-properties.conversion.base64]]
+==== Converting Base64 Data
+
+Spring Boot supports resolving binary data that have been Base64 encoded.
+If you expose a `Resource` property, the base64 encoded text can be provided as the value with a `base64:` prefix, as shown in the following example:
+
+[configprops%novalidate,yaml]
+----
+my:
+  property: base64:SGVsbG8gV29ybGQ=
+----
+
+NOTE: The `Resource` property can also be used to provide the path to the resource, making it more versatile.
+
+
+
 [[features.external-config.typesafe-configuration-properties.validation]]
 === @ConfigurationProperties Validation
 
