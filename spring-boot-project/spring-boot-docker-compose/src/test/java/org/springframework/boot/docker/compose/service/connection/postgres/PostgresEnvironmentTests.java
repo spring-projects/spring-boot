@@ -39,7 +39,7 @@ class PostgresEnvironmentTests {
 	@Test
 	void createWhenNoPostgresPasswordThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new PostgresEnvironment(Collections.emptyMap()))
-			.withMessage("PostgreSQL password must be provided");
+			.withMessage("No PostgreSQL password found");
 	}
 
 	@Test
@@ -91,6 +91,12 @@ class PostgresEnvironmentTests {
 	void getPasswordWhenHasTrustHostAuthMethod() {
 		PostgresEnvironment environment = new PostgresEnvironment(Map.of("POSTGRES_HOST_AUTH_METHOD", "trust"));
 		assertThat(environment.getPassword()).isNull();
+	}
+
+	@Test
+	void getPasswordWhenHasNoPasswordAndAllowEmptyPassword() {
+		PostgresEnvironment environment = new PostgresEnvironment(Map.of("ALLOW_EMPTY_PASSWORD", "yes"));
+		assertThat(environment.getPassword()).isEmpty();
 	}
 
 	@Test
