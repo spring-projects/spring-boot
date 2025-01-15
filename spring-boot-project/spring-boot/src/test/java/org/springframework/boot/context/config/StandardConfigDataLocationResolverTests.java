@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Sijun Yang
  */
 class StandardConfigDataLocationResolverTests {
 
@@ -254,8 +255,8 @@ class StandardConfigDataLocationResolverTests {
 	@Test
 	void resolveProfileSpecificReturnsProfileSpecificFiles() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
-		Profiles profiles = mock(Profiles.class);
-		given(profiles.iterator()).willReturn(Collections.singletonList("dev").iterator());
+		this.environment.setActiveProfiles("dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
 		List<StandardConfigDataResource> locations = this.resolver.resolveProfileSpecific(this.context, location,
 				profiles);
 		assertThat(locations).hasSize(1);
@@ -291,6 +292,83 @@ class StandardConfigDataLocationResolverTests {
 	void resolveWhenOptionalAndExtensionIsUnknownShouldNotFail() {
 		ConfigDataLocation location = ConfigDataLocation.of("optional:file:dummy.some-unknown-extension");
 		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileIsValidShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-test_123");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWithNonAsciiCharactersShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-테스트_123");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWithAdditionalValidProfilesShouldNotThrowException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-test");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, List.of("prod-test", "stage-test"));
+		assertThatNoException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles));
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileStartsWithSymbolThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("-dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile '-dev': must not start with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileStartsWithUnderscoreThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("_dev");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile '_dev': must not start with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileEndsWithSymbolThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev-");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev-': must not end with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileEndsWithUnderscoreThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev_");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev_': must not end with '-' or '_'");
+	}
+
+	@Test
+	void resolveProfileSpecificWhenProfileContainsInvalidCharactersThrowsException() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
+		this.environment.setActiveProfiles("dev*test");
+		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
+			.withMessageStartingWith("Invalid profile 'dev*test': must contain only letters or digits or '-' or '_'");
 	}
 
 	private String filePath(String... components) {

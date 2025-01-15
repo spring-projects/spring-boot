@@ -165,6 +165,7 @@ import static org.mockito.Mockito.spy;
  * @author Moritz Halbritter
  * @author Tadaya Tsuyukubo
  * @author Yanming Zhou
+ * @author Sijun Yang
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -252,13 +253,12 @@ class SpringApplicationTests {
 	@Test
 	void logsActiveProfilesWithoutProfileAndMultipleDefaults(CapturedOutput output) {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setDefaultProfiles("p0,p1", "default");
+		environment.setDefaultProfiles("p0", "default");
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setEnvironment(environment);
 		this.context = application.run();
-		assertThat(output)
-			.contains("No active profile set, falling back to 2 default profiles: \"p0,p1\", \"default\"");
+		assertThat(output).contains("No active profile set, falling back to 2 default profiles: \"p0\", \"default\"");
 	}
 
 	@Test
@@ -273,9 +273,9 @@ class SpringApplicationTests {
 	void logsActiveProfilesWithMultipleProfiles(CapturedOutput output) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setAdditionalProfiles("p1,p2", "p3");
+		application.setAdditionalProfiles("p1", "p2");
 		application.run();
-		assertThat(output).contains("The following 2 profiles are active: \"p1,p2\", \"p3\"");
+		assertThat(output).contains("The following 2 profiles are active: \"p1\", \"p2\"");
 	}
 
 	@Test
