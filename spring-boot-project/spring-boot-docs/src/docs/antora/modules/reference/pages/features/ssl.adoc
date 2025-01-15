@@ -43,6 +43,12 @@ When used to secure a client-side connection, a `truststore` is typically config
                 password: "secret"
 ----
 
+[TIP]
+====
+Rather than the location to a file, the xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.conversion.base64[Base64 encoded content] of the file can be provided.
+If you chose this options, the value should start with `base64:`.
+====
+
 See javadoc:org.springframework.boot.autoconfigure.ssl.JksSslBundleProperties[] for the full set of supported properties.
 
 NOTE: If you're using environment variables to configure the bundle, the name of the bundle is xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding.maps-from-environment-variables[always converted to lowercase].
@@ -84,6 +90,9 @@ When used to secure a client-side connection, a `truststore` is typically config
 
 [TIP]
 ====
+Rather than the location to a file, the xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.conversion.base64[Base64 encoded content] of the file can be provided.
+If you chose this options, the value should start with `base64:`.
+
 PEM content can be used directly for both the `certificate` and `private-key` properties.
 If the property values contain `BEGIN` and `END` markers then they will be treated as PEM content rather than a resource location.
 
