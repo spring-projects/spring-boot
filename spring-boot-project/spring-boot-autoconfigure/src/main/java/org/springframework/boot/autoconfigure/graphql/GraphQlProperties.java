@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 
 /**
  * {@link ConfigurationProperties Properties} for Spring GraphQL.
@@ -85,6 +86,11 @@ public class GraphQlProperties {
 		 */
 		private String[] fileExtensions = new String[] { ".graphqls", ".gqls" };
 
+		/**
+		 * Locations of additional, individual schema files to parse.
+		 */
+		private Resource[] additionalFiles = new Resource[0];
+
 		private final Inspection inspection = new Inspection();
 
 		private final Introspection introspection = new Introspection();
@@ -105,6 +111,14 @@ public class GraphQlProperties {
 
 		public void setFileExtensions(String[] fileExtensions) {
 			this.fileExtensions = fileExtensions;
+		}
+
+		public Resource[] getAdditionalFiles() {
+			return this.additionalFiles;
+		}
+
+		public void setAdditionalFiles(Resource[] additionalFiles) {
+			this.additionalFiles = additionalFiles;
 		}
 
 		private String[] appendSlashIfNecessary(String[] locations) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,6 +101,19 @@ class GraphQlAutoConfigurationTests {
 	@Test
 	void shouldScanLocationsWithCustomExtension() {
 		this.contextRunner.withPropertyValues("spring.graphql.schema.file-extensions:.graphqls,.custom")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(GraphQlSource.class);
+				GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
+				GraphQLSchema schema = graphQlSource.schema();
+				assertThat(schema.getObjectType("Book")).isNotNull();
+				assertThat(schema.getObjectType("Person")).isNotNull();
+			});
+	}
+
+	@Test
+	void shouldConfigureAdditionalSchemaFiles() {
+		this.contextRunner
+			.withPropertyValues("spring.graphql.schema.additional-files=classpath:graphql/types/person.custom")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(GraphQlSource.class);
 				GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
