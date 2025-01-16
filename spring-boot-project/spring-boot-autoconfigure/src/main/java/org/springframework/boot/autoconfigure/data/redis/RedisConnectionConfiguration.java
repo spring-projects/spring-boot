@@ -191,9 +191,9 @@ abstract class RedisConnectionConfiguration {
 
 		private final String password;
 
-		private final Integer database;
+		private final int database;
 
-		private ConnectionInfo(URI uri, boolean useSsl, String username, String password, Integer database) {
+		private ConnectionInfo(URI uri, boolean useSsl, String username, String password, int database) {
 			this.uri = uri;
 			this.useSsl = useSsl;
 			this.username = username;
@@ -217,7 +217,7 @@ abstract class RedisConnectionConfiguration {
 			return this.password;
 		}
 
-		Integer getDatabase() {
+		int getDatabase() {
 			return this.database;
 		}
 
@@ -242,7 +242,7 @@ abstract class RedisConnectionConfiguration {
 						password = candidate;
 					}
 				}
-				Integer database = null;
+				int database = 0;
 				if (StringUtils.hasText(uri.getPath())) {
 					String[] pathSplit = uri.getPath().split("/", 2);
 					if (pathSplit.length > 1 && !pathSplit[1].isEmpty()) {
