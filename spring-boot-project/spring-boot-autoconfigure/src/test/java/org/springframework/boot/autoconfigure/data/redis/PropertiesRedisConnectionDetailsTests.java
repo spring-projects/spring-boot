@@ -144,9 +144,22 @@ class PropertiesRedisConnectionDetailsTests {
 		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setSentinel(sentinel);
+		this.properties.setDatabase(5);
 		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
 		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
+		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(5);
+	}
+
+	@Test
+	void sentinelDatabaseIsConfiguredFromUrl() {
+		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
+		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
+		this.properties.setSentinel(sentinel);
+		this.properties.setUrl("redis://example.com:1234/9999");
+		this.properties.setDatabase(5);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(9999);
 	}
 
 }

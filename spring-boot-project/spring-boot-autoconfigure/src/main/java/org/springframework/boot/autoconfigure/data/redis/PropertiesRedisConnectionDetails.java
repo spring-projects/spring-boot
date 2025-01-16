@@ -77,7 +77,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
 			@Override
 			public int getDatabase() {
-				return PropertiesRedisConnectionDetails.this.properties.getDatabase();
+				return getStandalone().getDatabase();
 			}
 
 			@Override
