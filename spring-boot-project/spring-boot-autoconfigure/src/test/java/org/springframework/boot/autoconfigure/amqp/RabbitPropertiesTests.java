@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.listener.DirectMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Stephane Nicoll
  * @author Rafael Carvalho
  * @author Scott Frederick
+ * @author Yanming Zhou
  */
 class RabbitPropertiesTests {
 
@@ -379,6 +381,13 @@ class RabbitPropertiesTests {
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
 			.isThrownBy(this.properties::determineAddresses)
 			.withMessageContaining("spring.rabbitmq.host");
+	}
+
+	@Test
+	void isSafeForCopyProperties() {
+		this.properties.setHost("my-rmq-host.net");
+		RabbitProperties target = new RabbitProperties();
+		BeanUtils.copyProperties(this.properties, target);
 	}
 
 }
