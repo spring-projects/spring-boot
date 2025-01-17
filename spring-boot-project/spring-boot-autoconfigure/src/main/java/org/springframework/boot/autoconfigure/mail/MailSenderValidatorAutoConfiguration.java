@@ -20,7 +20,7 @@ import jakarta.mail.MessagingException;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -33,7 +33,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @since 1.3.0
  */
 @AutoConfiguration(after = MailSenderAutoConfiguration.class)
-@ConditionalOnProperty("spring.mail.test-connection")
+@ConditionalOnBooleanProperty("spring.mail.test-connection")
 @ConditionalOnSingleCandidate(JavaMailSenderImpl.class)
 public class MailSenderValidatorAutoConfiguration {
 
