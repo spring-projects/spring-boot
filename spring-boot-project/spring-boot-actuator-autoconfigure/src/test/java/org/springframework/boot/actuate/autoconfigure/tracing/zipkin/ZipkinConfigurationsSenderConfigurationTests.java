@@ -78,9 +78,12 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	void shouldUseCustomHttpEndpointSupplierFactory() {
 		this.contextRunner.withUserConfiguration(CustomHttpEndpointSupplierFactoryConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(HttpClient.class))
-			.run((context) -> assertThat(context.getBean(URLConnectionSender.class))
-				.extracting("delegate.endpointSupplier")
-				.isInstanceOf(CustomHttpEndpointSupplier.class));
+			.run((context) -> {
+				URLConnectionSender urlConnectionSender = context.getBean(URLConnectionSender.class);
+				assertThat(urlConnectionSender)
+					.extracting("delegate.endpointSupplier")
+					.isInstanceOf(CustomHttpEndpointSupplier.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
