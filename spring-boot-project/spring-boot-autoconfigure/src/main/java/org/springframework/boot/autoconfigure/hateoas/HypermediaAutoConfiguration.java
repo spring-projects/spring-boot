@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -60,7 +60,7 @@ public class HypermediaAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnClass(name = "com.fasterxml.jackson.databind.ObjectMapper")
-	@ConditionalOnProperty(name = "spring.hateoas.use-hal-as-default-json-media-type", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.hateoas.use-hal-as-default-json-media-type", matchIfMissing = true)
 	HalConfiguration applicationJsonHalConfiguration() {
 		return new HalConfiguration().withMediaType(MediaType.APPLICATION_JSON);
 	}
