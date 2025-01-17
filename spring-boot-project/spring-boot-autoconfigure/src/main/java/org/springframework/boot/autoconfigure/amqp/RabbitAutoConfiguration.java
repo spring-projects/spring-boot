@@ -176,7 +176,7 @@ public class RabbitAutoConfiguration {
 	@ConditionalOnClass(RabbitMessagingTemplate.class)
 	@ConditionalOnMissingBean(RabbitMessagingTemplate.class)
 	@Import(RabbitTemplateConfiguration.class)
-	protected static class MessagingTemplateConfiguration {
+	protected static class RabbitMessagingTemplateConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(RabbitTemplate.class)
