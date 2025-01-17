@@ -80,8 +80,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
 				URLConnectionSender urlConnectionSender = context.getBean(URLConnectionSender.class);
-				assertThat(urlConnectionSender)
-					.extracting("delegate.endpointSupplier")
+				assertThat(urlConnectionSender).extracting("delegate.endpointSupplier")
 					.isInstanceOf(CustomHttpEndpointSupplier.class);
 			});
 	}
