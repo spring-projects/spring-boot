@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ public class DeployedPlugin implements Plugin<Project> {
 	public static final String GENERATE_POM_TASK_NAME = "generatePomFileForMavenPublication";
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void apply(Project project) {
 		project.getPlugins().apply(MavenPublishPlugin.class);
 		project.getPlugins().apply(MavenRepositoryPlugin.class);

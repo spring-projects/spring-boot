@@ -29,15 +29,14 @@ class Asciidoc {
 		this.content = new StringBuilder();
 	}
 
-	Asciidoc appendWithHardLineBreaks(Object... items) {
+	void appendWithHardLineBreaks(Object... items) {
 		for (Object item : items) {
 			appendln("`+", item, "+` +");
 		}
-		return this;
 	}
 
-	Asciidoc appendln(Object... items) {
-		return append(items).newLine();
+	void appendln(Object... items) {
+		append(items).newLine();
 	}
 
 	Asciidoc append(Object... items) {
@@ -47,8 +46,8 @@ class Asciidoc {
 		return this;
 	}
 
-	Asciidoc newLine() {
-		return append(System.lineSeparator());
+	void newLine() {
+		append(System.lineSeparator());
 	}
 
 	@Override

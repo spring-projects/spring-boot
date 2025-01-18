@@ -616,9 +616,9 @@ public class BomExtension {
 
 	public static final class GitHub {
 
-		private String organization;
+		private final String organization;
 
-		private String repository;
+		private final String repository;
 
 		private final List<String> issueLabels;
 
