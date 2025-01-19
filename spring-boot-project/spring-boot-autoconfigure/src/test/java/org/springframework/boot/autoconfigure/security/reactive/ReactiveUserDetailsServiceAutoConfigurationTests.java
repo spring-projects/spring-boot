@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.reactive;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -52,11 +54,35 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author HaiTao Zhang
+ * @author Lasse Wulff
  */
 class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class));
+
+	@Test
+	void shouldSupplyUserDetailsServiceInReactiveApp() {
+		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class)
+			.with(AuthenticationExclude.reactiveApp())
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveUserDetailsService.class));
+	}
+
+	@Test
+	void shouldNotSupplyUserDetailsServiceInServletApp() {
+		new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class))
+			.with(AuthenticationExclude.servletApp())
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class));
+	}
+
+	@Test
+	void shouldNotSupplyUserDetailsServiceInNonWebApp() {
+		new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class))
+			.with(AuthenticationExclude.noWebApp())
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class));
+	}
 
 	@Test
 	void configuresADefaultUser() {
@@ -72,7 +98,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void userDetailsServiceWhenRSocketConfigured() {
-		new ApplicationContextRunner()
+		this.contextRunner
 			.withClassLoader(
 					new FilteredClassLoader(ClientRegistrationRepository.class, ReactiveOpaqueTokenIntrospector.class))
 			.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
@@ -98,7 +124,7 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 	void doesNotConfigureDefaultUserIfAuthenticationManagerAvailable() {
 		this.contextRunner.withUserConfiguration(AuthenticationManagerConfig.class, TestSecurityConfiguration.class)
 			.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class))
-			.run((context) -> assertThat(context).getBean(ReactiveUserDetailsService.class).isNull());
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveUserDetailsService.class));
 	}
 
 	@Test
@@ -173,6 +199,25 @@ class ReactiveUserDetailsServiceAutoConfigurationTests {
 				String password = userDetailsService.findByUsername("user").block(Duration.ofSeconds(30)).getPassword();
 				assertThat(password).isEqualTo(expectedPassword);
 			}));
+	}
+
+	private static final class AuthenticationExclude {
+
+		private static final FilteredClassLoader filteredClassLoader = new FilteredClassLoader(
+				ClientRegistrationRepository.class, ReactiveOpaqueTokenIntrospector.class);
+
+		static Function<WebApplicationContextRunner, WebApplicationContextRunner> servletApp() {
+			return (contextRunner) -> contextRunner.withClassLoader(filteredClassLoader);
+		}
+
+		static Function<ReactiveWebApplicationContextRunner, ReactiveWebApplicationContextRunner> reactiveApp() {
+			return (contextRunner) -> contextRunner.withClassLoader(filteredClassLoader);
+		}
+
+		static Function<ApplicationContextRunner, ApplicationContextRunner> noWebApp() {
+			return (contextRunner) -> contextRunner.withClassLoader(filteredClassLoader);
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
