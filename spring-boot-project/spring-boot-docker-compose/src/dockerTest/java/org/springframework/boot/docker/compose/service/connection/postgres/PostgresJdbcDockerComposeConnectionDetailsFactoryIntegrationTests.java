@@ -84,7 +84,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T executeQuery(JdbcConnectionDetails connectionDetails, String sql, Class<T> result)
+	private <T> T executeQuery(JdbcConnectionDetails connectionDetails, String sql, Class<T> resultClass)
 			throws ClassNotFoundException {
 		SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
 		dataSource.setUrl(connectionDetails.getJdbcUrl());
@@ -92,7 +92,7 @@ class PostgresJdbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 		dataSource.setPassword(connectionDetails.getPassword());
 		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
 				getClass().getClassLoader()));
-		return new JdbcTemplate(dataSource).queryForObject(sql, result);
+		return new JdbcTemplate(dataSource).queryForObject(sql, resultClass);
 	}
 
 }
