@@ -117,10 +117,12 @@ class OnPropertyCondition extends SpringBootCondition {
 		private String[] getNames(AnnotationAttributes annotationAttributes) {
 			String[] value = (String[]) annotationAttributes.get("value");
 			String[] name = (String[]) annotationAttributes.get("name");
-			Assert.state(value.length > 0 || name.length > 0, "The name or value attribute of @%s must be specified"
-				.formatted(ClassUtils.getShortName(this.annotationType)));
-			Assert.state(value.length == 0 || name.length == 0, "The name and value attributes of @%s are exclusive"
-				.formatted(ClassUtils.getShortName(this.annotationType)));
+			Assert.state(value.length > 0 || name.length > 0,
+					() -> "The name or value attribute of @%s must be specified"
+						.formatted(ClassUtils.getShortName(this.annotationType)));
+			Assert.state(value.length == 0 || name.length == 0,
+					() -> "The name and value attributes of @%s are exclusive"
+						.formatted(ClassUtils.getShortName(this.annotationType)));
 			return (value.length > 0) ? value : name;
 		}
 
