@@ -47,13 +47,13 @@ class DebugLogbackConfigurator extends LogbackConfigurator {
 	}
 
 	@Override
-	public void appender(String name, Appender<?> appender) {
+	void appender(String name, Appender<?> appender) {
 		info("Adding appender '" + appender + "' named '" + name + "'");
 		super.appender(name, appender);
 	}
 
 	@Override
-	public void logger(String name, Level level, boolean additive, Appender<ILoggingEvent> appender) {
+	void logger(String name, Level level, boolean additive, Appender<ILoggingEvent> appender) {
 		info("Configuring logger '" + name + "' with level '" + level + "'. Additive: " + additive);
 		if (appender != null) {
 			info("Adding appender '" + appender + "' to logger '" + name + "'");
@@ -62,7 +62,7 @@ class DebugLogbackConfigurator extends LogbackConfigurator {
 	}
 
 	@Override
-	public void start(LifeCycle lifeCycle) {
+	void start(LifeCycle lifeCycle) {
 		info("Starting '" + lifeCycle + "'");
 		super.start(lifeCycle);
 	}

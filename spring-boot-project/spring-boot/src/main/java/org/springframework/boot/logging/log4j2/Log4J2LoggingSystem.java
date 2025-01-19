@@ -228,8 +228,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	/**
 	 * Reset the stream used by the fallback listener to the current system out. This
-	 * allows the fallback lister to work with any captured output streams in a similar
-	 * way to the {@code follow} attribute of the {@code literal Console} appender.
+	 * allows the fallback listener to work with any captured output streams in a similar
+	 * way to the {@code follow} attribute of the {@code Console} appender.
 	 * @param statusLogger the status logger to update
 	 */
 	private void resetFallbackListenerStream(StatusLogger statusLogger) {

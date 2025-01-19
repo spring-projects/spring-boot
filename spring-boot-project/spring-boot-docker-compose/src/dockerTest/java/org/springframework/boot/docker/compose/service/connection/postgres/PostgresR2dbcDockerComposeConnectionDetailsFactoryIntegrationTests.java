@@ -88,11 +88,11 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests {
 			.isEqualTo(1);
 	}
 
-	private <T> T executeQuery(R2dbcConnectionDetails connectionDetails, String sql, Class<T> result) {
+	private <T> T executeQuery(R2dbcConnectionDetails connectionDetails, String sql, Class<T> resultClass) {
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		return DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
 			.sql(sql)
-			.mapValue(result)
+			.mapValue(resultClass)
 			.first()
 			.block(Duration.ofSeconds(30));
 	}

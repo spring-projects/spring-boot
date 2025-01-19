@@ -77,7 +77,7 @@ public @interface AutoConfigureTestDatabase {
 		 * databases:
 		 * <ul>
 		 * <li>Any bean definition that includes {@link ContainerImageMetadata} (including
-		 * {@code @ServiceConnection} annotated Testcontainer databases, and connections
+		 * {@code @ServiceConnection} annotated Testcontainers databases, and connections
 		 * created using Docker Compose)</li>
 		 * <li>Any connection configured using a {@code spring.datasource.url} backed by a
 		 * {@link DynamicPropertySource @DynamicPropertySource}</li>

@@ -52,7 +52,7 @@ class FilteringStatusListenerTests {
 
 	@Test
 	void shouldStartUnderlyingStatusListener() {
-		FilteringStatusListener listener = createListener(Status.INFO);
+		FilteringStatusListener listener = createListener();
 		assertThat(this.delegate.isStarted()).isFalse();
 		listener.start();
 		assertThat(this.delegate.isStarted()).isTrue();
