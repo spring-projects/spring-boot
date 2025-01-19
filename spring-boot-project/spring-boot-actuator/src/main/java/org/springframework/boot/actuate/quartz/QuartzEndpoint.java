@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.quartz;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
@@ -212,6 +213,26 @@ public class QuartzEndpoint {
 		return null;
 	}
 
+	/**
+	 * Triggers (execute it now) a Quartz job by its group and job name.
+	 * @param groupName the name of the job's group
+	 * @param jobName the name of the job
+	 * @return a description of the triggered job or {@code null} if the job does not
+	 * exist
+	 * @throws SchedulerException if there is an error triggering the job
+	 * @since 3.5.0
+	 */
+	public QuartzJobTriggerDescriptor triggerQuartzJob(String groupName, String jobName) throws SchedulerException {
+		JobKey jobKey = JobKey.jobKey(jobName, groupName);
+		JobDetail jobDetail = this.scheduler.getJobDetail(jobKey);
+		if (jobDetail == null) {
+			return null;
+		}
+		this.scheduler.triggerJob(jobKey);
+		return new QuartzJobTriggerDescriptor(jobDetail.getKey().getGroup(), jobDetail.getKey().getName(),
+				jobDetail.getJobClass().getName(), Instant.now());
+	}
+
 	private static List<Map<String, Object>> extractTriggersSummary(List<? extends Trigger> triggers) {
 		List<Trigger> triggersToSort = new ArrayList<>(triggers);
 		triggersToSort.sort(TRIGGER_COMPARATOR);
@@ -383,6 +404,44 @@ public class QuartzEndpoint {
 
 		public String getClassName() {
 			return this.className;
+		}
+
+	}
+
+	/**
+	 * Description of a triggered on demand {@link Job Quartz Job}.
+	 */
+	public static final class QuartzJobTriggerDescriptor {
+
+		private final String group;
+
+		private final String name;
+
+		private final String className;
+
+		private final Instant triggerTime;
+
+		private QuartzJobTriggerDescriptor(String group, String name, String className, Instant triggerTime) {
+			this.group = group;
+			this.name = name;
+			this.className = className;
+			this.triggerTime = triggerTime;
+		}
+
+		public String getGroup() {
+			return this.group;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public String getClassName() {
+			return this.className;
+		}
+
+		public Instant getTriggerTime() {
+			return this.triggerTime;
 		}
 
 	}
