@@ -194,7 +194,7 @@ public class GsonProperties {
 	 * {@link com.google.gson.Strictness} that was introduced in Gson 2.11. To maximize
 	 * backwards compatibility, the Gson enum is not used directly.
 	 *
-	 * @since 3.4.1
+	 * @since 3.4.2
 	 */
 	public enum Strictness {
 
