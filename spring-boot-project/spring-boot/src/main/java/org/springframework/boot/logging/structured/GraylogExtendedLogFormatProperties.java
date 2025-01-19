@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,12 @@ import org.springframework.util.StringUtils;
  */
 public record GraylogExtendedLogFormatProperties(String host, Service service) {
 
-	static final GraylogExtendedLogFormatProperties NONE = new GraylogExtendedLogFormatProperties(null, Service.NONE);
+	static final GraylogExtendedLogFormatProperties NONE = new GraylogExtendedLogFormatProperties(null, null);
+
+	public GraylogExtendedLogFormatProperties(String host, Service service) {
+		this.host = host;
+		this.service = (service != null) ? service : Service.NONE;
+	}
 
 	GraylogExtendedLogFormatProperties withDefaults(Environment environment) {
 		String name = withFallbackProperty(environment, this.host, "spring.application.name");

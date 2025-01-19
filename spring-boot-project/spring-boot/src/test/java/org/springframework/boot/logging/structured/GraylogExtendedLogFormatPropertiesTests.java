@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,32 @@ class GraylogExtendedLogFormatPropertiesTests {
 	void getBindsFromEnvironment() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.gelf.host", "spring");
+		environment.setProperty("logging.structured.gelf.service.version", "1.2.3");
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service("1.2.3")));
+	}
+
+	@Test
+	void getBindsFromEnvironmentWhenHostIsPresentAndServiceIsMissing() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.structured.gelf.host", "spring");
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service(null)));
+	}
+
+	@Test
+	void getBindsFromEnvironmentWhenHostIsPresentAndServiceIsMissingUsesApplicationVersion() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.structured.gelf.host", "spring");
+		environment.setProperty("spring.application.version", "1.2.3");
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service("1.2.3")));
+	}
+
+	@Test
+	void getBindsFromEnvironmentWhenVersionIsPresentAndHostIsMissingUsesApplicationName() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.application.name", "spring");
 		environment.setProperty("logging.structured.gelf.service.version", "1.2.3");
 		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
 		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service("1.2.3")));
