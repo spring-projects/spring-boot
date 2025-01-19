@@ -46,7 +46,7 @@ class GraylogExtendedLogFormatPropertiesTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.gelf.host", "spring");
 		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
-		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", Service.NONE));
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service(null)));
 	}
 
 	@Test
@@ -54,6 +54,15 @@ class GraylogExtendedLogFormatPropertiesTests {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.gelf.host", "spring");
 		environment.setProperty("spring.application.version", "1.2.3");
+		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
+		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service("1.2.3")));
+	}
+
+	@Test
+	void getBindsFromEnvironmentWhenVersionIsPresentAndHostIsMissingUsesApplicationName() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.application.name", "spring");
+		environment.setProperty("logging.structured.gelf.service.version", "1.2.3");
 		GraylogExtendedLogFormatProperties properties = GraylogExtendedLogFormatProperties.get(environment);
 		assertThat(properties).isEqualTo(new GraylogExtendedLogFormatProperties("spring", new Service("1.2.3")));
 	}

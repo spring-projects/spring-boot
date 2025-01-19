@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  */
 public record GraylogExtendedLogFormatProperties(String host, Service service) {
 
-	static final GraylogExtendedLogFormatProperties NONE = new GraylogExtendedLogFormatProperties(null, Service.NONE);
+	static final GraylogExtendedLogFormatProperties NONE = new GraylogExtendedLogFormatProperties(null, null);
 
 	public GraylogExtendedLogFormatProperties(String host, Service service) {
 		this.host = host;
