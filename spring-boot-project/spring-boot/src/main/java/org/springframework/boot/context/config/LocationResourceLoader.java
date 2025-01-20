@@ -74,7 +74,7 @@ class LocationResourceLoader {
 	Resource getResource(String location) {
 		validateNonPattern(location);
 		location = StringUtils.cleanPath(location);
-		if (!ResourceUtils.isUrl(location)) {
+		if (!ResourceUtils.isUrl(location) && !location.contains(":")) {
 			location = ResourceUtils.FILE_URL_PREFIX + location;
 		}
 		return this.resourceLoader.getResource(location);
