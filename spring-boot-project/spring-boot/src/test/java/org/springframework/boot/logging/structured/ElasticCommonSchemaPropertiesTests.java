@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,12 @@ package org.springframework.boot.logging.structured;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties.ElasticCommonSchemaPropertiesRuntimeHints;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties.Service;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -75,6 +80,26 @@ class ElasticCommonSchemaPropertiesTests {
 		assertThat(writer.writeToString(properties))
 			.isEqualTo("{\"service.name\":\"spring\",\"service.version\":\"1.2.3\","
 					+ "\"service.environment\":\"prod\",\"service.node.name\":\"boot\"}");
+	}
+
+	@Test
+	void shouldRegisterRuntimeHints() throws Exception {
+		RuntimeHints hints = new RuntimeHints();
+		new ElasticCommonSchemaPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(ElasticCommonSchemaProperties.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onConstructor(ElasticCommonSchemaProperties.class.getConstructor(Service.class))
+			.invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(Service.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onConstructor(Service.class.getConstructor(String.class, String.class, String.class, String.class))
+			.invoke()).accepts(hints);
+	}
+
+	@Test
+	void elasticCommonSchemaPropertiesRuntimeHintsIsRegistered() {
+		assertThat(AotServices.factories().load(RuntimeHintsRegistrar.class))
+			.anyMatch(ElasticCommonSchemaPropertiesRuntimeHints.class::isInstance);
 	}
 
 }

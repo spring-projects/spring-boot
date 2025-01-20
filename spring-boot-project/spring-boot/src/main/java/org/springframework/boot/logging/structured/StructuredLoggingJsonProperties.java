@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.logging.structured;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
 
@@ -40,6 +41,14 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		return Binder.get(environment)
 			.bind("logging.structured.json", StructuredLoggingJsonProperties.class)
 			.orElse(null);
+	}
+
+	static class StructuredLoggingJsonPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+
+		StructuredLoggingJsonPropertiesRuntimeHints() {
+			super(StructuredLoggingJsonProperties.class);
+		}
+
 	}
 
 }

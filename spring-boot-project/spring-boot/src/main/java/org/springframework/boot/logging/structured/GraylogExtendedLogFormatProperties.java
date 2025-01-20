@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.core.env.Environment;
@@ -87,6 +88,14 @@ public record GraylogExtendedLogFormatProperties(String host, Service service) {
 
 		void jsonMembers(JsonWriter.Members<?> members) {
 			members.add("_service_version", this::version).whenHasLength();
+		}
+
+	}
+
+	static class GraylogExtendedLogFormatPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+
+		GraylogExtendedLogFormatPropertiesRuntimeHints() {
+			super(GraylogExtendedLogFormatProperties.class);
 		}
 
 	}
