@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.io.Closeable;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmCompilationMetrics;
@@ -25,12 +27,21 @@ import io.micrometer.core.instrument.binder.jvm.JvmInfoMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for JVM metrics.
@@ -43,6 +54,8 @@ import org.springframework.context.annotation.Bean;
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
 public class JvmMetricsAutoConfiguration {
+
+	private static final String VIRTUAL_THREAD_METRICS_CLASS = "io.micrometer.java21.instrument.binder.jdk.VirtualThreadMetrics";
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -84,6 +97,64 @@ public class JvmMetricsAutoConfiguration {
 	@ConditionalOnMissingBean
 	public JvmCompilationMetrics jvmCompilationMetrics() {
 		return new JvmCompilationMetrics();
+	}
+
+	@Bean
+	@ConditionalOnClass(name = VIRTUAL_THREAD_METRICS_CLASS)
+	@ConditionalOnMissingBean(type = VIRTUAL_THREAD_METRICS_CLASS)
+	@ImportRuntimeHints(VirtualThreadMetricsRuntimeHintsRegistrar.class)
+	VirtualThreadMetricsFactoryBean virtualThreadMetrics() {
+		return new VirtualThreadMetricsFactoryBean();
+	}
+
+	static final class VirtualThreadMetricsFactoryBean
+			implements FactoryBean<Object>, BeanClassLoaderAware, DisposableBean {
+
+		private ClassLoader classLoader;
+
+		private Class<?> instanceType;
+
+		private Object instance;
+
+		@Override
+		public void setBeanClassLoader(ClassLoader classLoader) {
+			this.classLoader = classLoader;
+		}
+
+		@Override
+		public Object getObject() {
+			if (this.instance == null) {
+				this.instance = BeanUtils.instantiateClass(getObjectType());
+			}
+			return this.instance;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			if (this.instanceType == null) {
+				this.instanceType = ClassUtils.resolveClassName(VIRTUAL_THREAD_METRICS_CLASS, this.classLoader);
+			}
+			return this.instanceType;
+		}
+
+		@Override
+		public void destroy() throws Exception {
+			if (this.instance instanceof Closeable closeable) {
+				closeable.close();
+			}
+		}
+
+	}
+
+	static final class VirtualThreadMetricsRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, VIRTUAL_THREAD_METRICS_CLASS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+		}
+
 	}
 
 }
