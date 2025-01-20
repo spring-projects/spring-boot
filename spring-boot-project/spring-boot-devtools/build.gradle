@@ -47,6 +47,7 @@ dependencies {
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-orm")
 	optional("org.springframework:spring-web")
+	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.data:spring-data-redis")
