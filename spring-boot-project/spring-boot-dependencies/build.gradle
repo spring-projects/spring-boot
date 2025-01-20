@@ -2492,17 +2492,17 @@ bom {
 			]
 		}
 	}
-	library("WebJars Locator Lite", "1.0.1") {
-		group("org.webjars") {
-			modules = [
-				"webjars-locator-lite"
-			]
-		}
-	}
 	library("WebJars Locator Core", "0.59") {
 		group("org.webjars") {
 			modules = [
 				"webjars-locator-core"
+			]
+		}
+	}
+	library("WebJars Locator Lite", "1.0.1") {
+		group("org.webjars") {
+			modules = [
+				"webjars-locator-lite"
 			]
 		}
 	}

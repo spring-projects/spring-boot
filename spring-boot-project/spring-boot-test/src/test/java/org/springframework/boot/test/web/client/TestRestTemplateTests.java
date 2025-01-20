@@ -155,7 +155,7 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void httpComponentsAreBuildConsideringSettingsInRestTemplateBuilder() {
+	void httpComponentsAreBuiltConsideringSettingsInRestTemplateBuilder() {
 		RestTemplateBuilder builder = new RestTemplateBuilder()
 			.requestFactoryBuilder(ClientHttpRequestFactoryBuilder.httpComponents());
 		assertThat(getRequestConfig((RestTemplateBuilder) null).isRedirectsEnabled()).isFalse();
@@ -209,9 +209,8 @@ class TestRestTemplateTests {
 		return factory.createRequestConfig();
 	}
 
-	private HttpClient getJdkHttpClient(TestRestTemplate templateWithRedirects) {
-		JdkClientHttpRequestFactory requestFactory = (JdkClientHttpRequestFactory) templateWithRedirects
-			.getRestTemplate()
+	private HttpClient getJdkHttpClient(TestRestTemplate template) {
+		JdkClientHttpRequestFactory requestFactory = (JdkClientHttpRequestFactory) template.getRestTemplate()
 			.getRequestFactory();
 		return (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
 	}

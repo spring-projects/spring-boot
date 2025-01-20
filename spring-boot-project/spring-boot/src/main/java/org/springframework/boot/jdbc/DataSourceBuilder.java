@@ -61,7 +61,7 @@ import org.springframework.util.StringUtils;
  * <li>Apache DBCP2 ({@code org.apache.commons.dbcp2.BasicDataSource})</li>
  * <li>Oracle UCP ({@code oracle.ucp.jdbc.PoolDataSourceImpl})</li>
  * <li>C3P0 ({@code com.mchange.v2.c3p0.ComboPooledDataSource})</li>
- * <li>Vibur {@code org.vibur.dbcp.ViburDBCPDataSource}</li>
+ * <li>Vibur ({@code org.vibur.dbcp.ViburDBCPDataSource})</li>
  * </ul>
  * <p>
  * The following non-pooling {@link DataSource} implementations can be used when
