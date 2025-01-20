@@ -124,10 +124,14 @@ class GraphQlAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldBackOffWithCustomGraphQlSource() {
+	void shouldUseCustomGraphQlSource() {
 		this.contextRunner.withUserConfiguration(CustomGraphQlSourceConfiguration.class).run((context) -> {
 			assertThat(context).getBeanNames(GraphQlSource.class).containsOnly("customGraphQlSource");
-			assertThat(context).hasSingleBean(GraphQlProperties.class);
+			assertThat(context).hasSingleBean(GraphQlProperties.class)
+				.hasSingleBean(BatchLoaderRegistry.class)
+				.hasSingleBean(ExecutionGraphQlService.class)
+				.hasSingleBean(AnnotatedControllerConfigurer.class)
+				.hasSingleBean(EncodingCursorStrategy.class);
 		});
 	}
 
