@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   run-system-tests:
     name: 'Java ${{ matrix.java.version}}'
