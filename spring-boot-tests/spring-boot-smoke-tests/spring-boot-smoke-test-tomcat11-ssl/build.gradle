@@ -1,0 +1,21 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Tomcat 11 SSL smoke test"
+
+configurations.all {
+	resolutionStrategy.eachDependency {
+		if (it.requested.group == 'org.apache.tomcat' || it.requested.group == 'org.apache.tomcat.embed') {
+			it.useVersion '11.0.0'
+		}
+	}
+}
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.apache.httpcomponents.client5:httpclient5")
+}
