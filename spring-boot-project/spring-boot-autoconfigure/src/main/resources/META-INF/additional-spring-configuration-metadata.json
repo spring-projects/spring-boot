@@ -2768,6 +2768,12 @@
       "defaultValue": ".html"
     },
     {
+      "name": "spring.validation.adapt-constraint-violations",
+      "type": "java.lang.Boolean",
+      "description": "Whether to adapt ConstraintViolations to MethodValidationResult.",
+      "defaultValue": false
+    },
+    {
       "name": "spring.webflux.hiddenmethod.filter.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
