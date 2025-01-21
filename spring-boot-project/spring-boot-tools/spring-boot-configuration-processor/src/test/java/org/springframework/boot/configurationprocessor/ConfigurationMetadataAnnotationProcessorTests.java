@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemIgnore;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.deprecation.Dbcp2Configuration;
@@ -38,6 +39,7 @@ import org.springframework.boot.configurationsample.simple.DescriptionProperties
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
+import org.springframework.boot.configurationsample.simple.IgnoredProperties;
 import org.springframework.boot.configurationsample.simple.InnerClassWithPrivateConstructor;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleArrayProperties;
@@ -568,6 +570,26 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.withDescription("description without space after asterisk"));
 		assertThat(metadata).has(Metadata.withProperty("record.descriptions.some-byte", Byte.class)
 			.withDescription("last description in Javadoc"));
+	}
+
+	@Test
+	void shouldIgnoreProperties() {
+		String additionalMetadata = """
+				{
+					"ignored": {
+						"properties": [
+							{
+								"name": "ignored.prop3"
+							}
+						]
+					}
+				}
+				""";
+		ConfigurationMetadata metadata = compile(additionalMetadata, IgnoredProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("ignored.prop1", String.class));
+		assertThat(metadata).has(Metadata.withProperty("ignored.prop2", String.class));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("ignored.prop3", String.class));
+		assertThat(metadata.getIgnored()).containsExactly(ItemIgnore.forProperty("ignored.prop3"));
 	}
 
 }

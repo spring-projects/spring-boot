@@ -2,7 +2,7 @@
 = Metadata Format
 
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
-They use a JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
+They use a JSON format with items categorized under either "`groups`" or "`properties`", additional values hints categorized under "hints", and ignored items under "`ignored`" as shown in the following example:
 
 [source,json]
 ----
@@ -63,7 +63,15 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 			}
 		]
 	}
-]}
+	...
+],"ignored": {
+	"properties": [
+		{
+			"name": "server.ignored"
+		}
+		...
+	]
+}}
 ----
 
 Each "`property`" is a configuration item that the user specifies with a given value.
@@ -82,8 +90,11 @@ For example, the `server.port` and `server.address` properties are part of the `
 NOTE: It is not required that every "`property`" has a "`group`".
 Some properties might exist in their own right.
 
-Finally, "`hints`" are additional information used to assist the user in configuring a given property.
+The "`hints`" are additional information used to assist the user in configuring a given property.
 For example, when a developer is configuring the configprop:spring.jpa.hibernate.ddl-auto[] property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
+
+Finally, "`ignored`" are items which have been deliberately ignored.
+The content of this section usually comes from the xref:specification:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[additional metadata].
 
 
 
@@ -290,6 +301,36 @@ The JSON object contained in the `providers` attribute of each `hint` element ca
 | Any additional parameter that the provider supports (check the documentation of the provider for more details).
 |===
 
+
+
+[[appendix.configuration-metadata.format.ignored]]
+== Ignored Attributes
+
+The `ignored` object can contain the attributes shown in the following table:
+
+[cols="1,1,4"]
+|===
+| Name | Type | Purpose
+
+| `properties`
+| IgnoredProperty[]
+| A list of ignored properties as defined by the IgnoredProperty object (described in the next table). Each entry defines the name of the ignored property.
+
+|===
+
+The JSON object contained in the `properties` attribute of each `ignored` element can contain the attributes described in the following table:
+
+[cols="1,1,4"]
+|===
+| Name | Type | Purpose
+
+| `name`
+| String
+| The full name of the property to ignore.
+Names are in lower-case period-separated form (such as `spring.mvc.servlet.path`).
+This attribute is mandatory.
+
+|===
 
 
 [[appendix.configuration-metadata.format.repeated-items]]

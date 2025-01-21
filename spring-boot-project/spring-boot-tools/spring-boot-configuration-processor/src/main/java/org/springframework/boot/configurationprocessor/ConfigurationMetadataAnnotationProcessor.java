@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import javax.tools.Diagnostic.Kind;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.InvalidConfigurationMetadataException;
 import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
+import org.springframework.boot.configurationprocessor.metadata.ItemIgnore;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 
 /**
@@ -372,11 +373,18 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	protected ConfigurationMetadata writeMetadata() throws Exception {
 		ConfigurationMetadata metadata = this.metadataCollector.getMetadata();
 		metadata = mergeAdditionalMetadata(metadata);
+		removeIgnored(metadata);
 		if (!metadata.getItems().isEmpty()) {
 			this.metadataStore.writeMetadata(metadata);
 			return metadata;
 		}
 		return null;
+	}
+
+	private void removeIgnored(ConfigurationMetadata metadata) {
+		for (ItemIgnore itemIgnore : metadata.getIgnored()) {
+			metadata.removeMetadata(itemIgnore.getType(), itemIgnore.getName());
+		}
 	}
 
 	private ConfigurationMetadata mergeAdditionalMetadata(ConfigurationMetadata metadata) {
