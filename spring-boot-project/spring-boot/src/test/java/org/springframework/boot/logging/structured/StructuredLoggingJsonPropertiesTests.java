@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,12 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StructuredLoggingJsonPropertiesRuntimeHints;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +55,23 @@ class StructuredLoggingJsonPropertiesTests {
 	void getWhenNoBoundPropertiesReturnsNull() {
 		MockEnvironment environment = new MockEnvironment();
 		StructuredLoggingJsonProperties.get(environment);
+	}
+
+	@Test
+	void shouldRegisterRuntimeHints() throws Exception {
+		RuntimeHints hints = new RuntimeHints();
+		new StructuredLoggingJsonPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onType(StructuredLoggingJsonProperties.class)).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onConstructor(StructuredLoggingJsonProperties.class.getDeclaredConstructor(Set.class, Set.class, Map.class,
+					Map.class, Class.class))
+			.invoke()).accepts(hints);
+	}
+
+	@Test
+	void structuredLoggingJsonPropertiesRuntimeHintsRuntimeHintsIsRegistered() {
+		assertThat(AotServices.factories().load(RuntimeHintsRegistrar.class))
+			.anyMatch(StructuredLoggingJsonPropertiesRuntimeHints.class::isInstance);
 	}
 
 	static class TestCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
