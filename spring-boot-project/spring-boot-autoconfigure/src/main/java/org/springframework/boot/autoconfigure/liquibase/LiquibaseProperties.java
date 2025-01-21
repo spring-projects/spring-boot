@@ -154,6 +154,16 @@ public class LiquibaseProperties {
 	 */
 	private UiService uiService;
 
+	/**
+	 * Whether to send product usage data and analytics to Liquibase.
+	 */
+	private Boolean analyticsEnabled;
+
+	/**
+	 * Liquibase Pro license key.
+	 */
+	private String licenseKey;
+
 	public String getChangeLog() {
 		return this.changeLog;
 	}
@@ -329,6 +339,22 @@ public class LiquibaseProperties {
 
 	public void setUiService(UiService uiService) {
 		this.uiService = uiService;
+	}
+
+	public Boolean getAnalyticsEnabled() {
+		return this.analyticsEnabled;
+	}
+
+	public void setAnalyticsEnabled(Boolean analyticsEnabled) {
+		this.analyticsEnabled = analyticsEnabled;
+	}
+
+	public String getLicenseKey() {
+		return this.licenseKey;
+	}
+
+	public void setLicenseKey(String licenseKey) {
+		this.licenseKey = licenseKey;
 	}
 
 	/**

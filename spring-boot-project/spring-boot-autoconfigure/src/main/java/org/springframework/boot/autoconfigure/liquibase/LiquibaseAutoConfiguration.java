@@ -134,6 +134,12 @@ public class LiquibaseAutoConfiguration {
 			if (properties.getUiService() != null) {
 				liquibase.setUiService(UIServiceEnum.valueOf(properties.getUiService().name()));
 			}
+			if (properties.getAnalyticsEnabled() != null) {
+				liquibase.setAnalyticsEnabled(properties.getAnalyticsEnabled());
+			}
+			if (properties.getLicenseKey() != null) {
+				liquibase.setLicenseKey(properties.getLicenseKey());
+			}
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(liquibase));
 			return liquibase;
 		}
