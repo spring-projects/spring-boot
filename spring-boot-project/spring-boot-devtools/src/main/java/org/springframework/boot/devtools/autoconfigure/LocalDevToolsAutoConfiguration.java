@@ -134,7 +134,8 @@ public class LocalDevToolsAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnBooleanProperty(name = "spring.devtools.restart.log-condition-evaluation-delta", matchIfMissing = true)
+		@ConditionalOnBooleanProperty(name = "spring.devtools.restart.log-condition-evaluation-delta",
+				matchIfMissing = true)
 		ConditionEvaluationDeltaLoggingListener conditionEvaluationDeltaLoggingListener() {
 			return new ConditionEvaluationDeltaLoggingListener();
 		}
