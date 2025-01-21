@@ -166,7 +166,7 @@ bom {
 			releaseNotes("https://github.com/cache2k/cache2k/releases/tag/v{version}")
 		}
 	}
-	library("Caffeine", "3.1.8") {
+	library("Caffeine", "3.2.0") {
 		group("com.github.ben-manes.caffeine") {
 			modules = [
 				"caffeine",
