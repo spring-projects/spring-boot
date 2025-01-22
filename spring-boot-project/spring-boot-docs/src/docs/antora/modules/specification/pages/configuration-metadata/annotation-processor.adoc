@@ -98,14 +98,21 @@ Consider the following example:
 include-code::MyServerProperties[]
 
 This exposes three properties where `my.server.name` has no default and `my.server.ip` and `my.server.port` defaults to `"127.0.0.1"` and `9797` respectively.
-The Javadoc on fields is used to populate the `description` attribute. For instance, the description of `my.server.ip` is "IP address to listen to.".
+The Javadoc on fields is used to populate the `description` attribute.
+For instance, the description of `my.server.ip` is "IP address to listen to.".
+The `description` attribute can only be populated when the type is available as source code that is being compiled.
+It will not be populated when the type is only available as a compiled class from a dependency.
+For such cases, xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[manual metadata] should be provided.
 
 NOTE: You should only use plain text with javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] field Javadoc, since they are not processed before being added to the JSON.
 
 If you use javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] with record class then record components' descriptions should be provided via class-level Javadoc tag `@param` (there are no explicit instance fields in record classes to put regular field-level Javadocs on).
 
 The annotation processor applies a number of heuristics to extract the default value from the source model.
-Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
+Default values can only be extracted when the type is available as source code that is being compiled.
+They will not be extracted when the type is only available as a compiled class from a dependency.
+Furthermore, default values have to be provided statically.
+In particular, do not refer to a constant defined in another class.
 Also, the annotation processor cannot auto-detect default values for ``Collections``s.
 
 For cases where the default value could not be detected, xref:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[manual metadata] should be provided.
