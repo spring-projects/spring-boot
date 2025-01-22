@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 2.3.0
  */
-@ConfigurationProperties(prefix = "spring.lifecycle")
+@ConfigurationProperties("spring.lifecycle")
 public class LifecycleProperties {
 
 	/**

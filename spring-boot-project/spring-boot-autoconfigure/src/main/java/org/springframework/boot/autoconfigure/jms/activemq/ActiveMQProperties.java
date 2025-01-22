@@ -34,7 +34,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Eddú Meléndez
  * @since 3.1.0
  */
-@ConfigurationProperties(prefix = "spring.activemq")
+@ConfigurationProperties("spring.activemq")
 public class ActiveMQProperties {
 
 	private static final String DEFAULT_EMBEDDED_BROKER_URL = "vm://localhost?broker.persistent=false";

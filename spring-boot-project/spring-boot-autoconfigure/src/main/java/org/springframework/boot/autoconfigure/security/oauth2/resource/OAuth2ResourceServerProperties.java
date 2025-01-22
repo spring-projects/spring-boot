@@ -37,7 +37,7 @@ import org.springframework.util.StreamUtils;
  * @author Yan Kardziyaka
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
+@ConfigurationProperties("spring.security.oauth2.resourceserver")
 public class OAuth2ResourceServerProperties {
 
 	private final Jwt jwt = new Jwt();

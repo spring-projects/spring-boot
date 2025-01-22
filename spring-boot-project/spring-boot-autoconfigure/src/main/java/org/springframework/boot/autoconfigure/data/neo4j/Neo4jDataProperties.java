@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Michael J. Simons
  * @since 2.4.0
  */
-@ConfigurationProperties(prefix = "spring.data.neo4j")
+@ConfigurationProperties("spring.data.neo4j")
 public class Neo4jDataProperties {
 
 	/**

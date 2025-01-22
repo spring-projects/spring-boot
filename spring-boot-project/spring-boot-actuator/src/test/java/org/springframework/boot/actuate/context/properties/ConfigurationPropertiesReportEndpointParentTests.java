@@ -111,7 +111,7 @@ class ConfigurationPropertiesReportEndpointParentTests {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "other")
+		@ConfigurationProperties("other")
 		OtherProperties otherProperties() {
 			return new OtherProperties();
 		}
@@ -122,7 +122,7 @@ class ConfigurationPropertiesReportEndpointParentTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class TestProperties {
 
 		private String myTestProperty = "654321";

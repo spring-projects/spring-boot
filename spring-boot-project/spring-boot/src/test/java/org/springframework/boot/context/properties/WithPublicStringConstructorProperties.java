@@ -22,7 +22,7 @@ package org.springframework.boot.context.properties;
  *
  * @author Madhura Bhave
  */
-@ConfigurationProperties(prefix = "test")
+@ConfigurationProperties("test")
 public class WithPublicStringConstructorProperties {
 
 	private String a;

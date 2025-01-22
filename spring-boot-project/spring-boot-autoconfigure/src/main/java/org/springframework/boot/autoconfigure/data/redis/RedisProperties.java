@@ -34,7 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Yanming Zhou
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.data.redis")
+@ConfigurationProperties("spring.data.redis")
 public class RedisProperties {
 
 	/**

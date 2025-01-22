@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.data.couchbase")
+@ConfigurationProperties("spring.data.couchbase")
 public class CouchbaseDataProperties {
 
 	/**

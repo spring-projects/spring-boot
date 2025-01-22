@@ -21,7 +21,7 @@ import lombok.Data;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties(prefix = "config")
+@ConfigurationProperties("config")
 @SuppressWarnings("unused")
 public class LombokInnerClassWithGetterProperties {
 

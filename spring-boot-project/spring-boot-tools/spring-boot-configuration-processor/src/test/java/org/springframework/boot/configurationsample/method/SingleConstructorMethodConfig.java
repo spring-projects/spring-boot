@@ -27,7 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @SuppressWarnings("unused")
 public class SingleConstructorMethodConfig {
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	public Foo foo() {
 		return new Foo(new Object());
 	}

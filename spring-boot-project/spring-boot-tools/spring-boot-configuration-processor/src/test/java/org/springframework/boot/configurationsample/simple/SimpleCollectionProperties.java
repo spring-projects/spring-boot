@@ -30,7 +30,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "collection")
+@ConfigurationProperties("collection")
 public class SimpleCollectionProperties {
 
 	private Map<Integer, String> integersToNames;

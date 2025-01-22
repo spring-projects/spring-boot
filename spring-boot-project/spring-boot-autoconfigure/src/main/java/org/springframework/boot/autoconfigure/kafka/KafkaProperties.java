@@ -62,7 +62,7 @@ import org.springframework.util.unit.DataSize;
  * @author Scott Frederick
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.kafka")
+@ConfigurationProperties("spring.kafka")
 public class KafkaProperties {
 
 	/**

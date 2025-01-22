@@ -30,7 +30,7 @@ import org.springframework.util.unit.DataSize;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "management.health.diskspace")
+@ConfigurationProperties("management.health.diskspace")
 public class DiskSpaceHealthIndicatorProperties {
 
 	/**

@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.devtools")
+@ConfigurationProperties("spring.devtools")
 public class DevToolsProperties {
 
 	private final Restart restart = new Restart();

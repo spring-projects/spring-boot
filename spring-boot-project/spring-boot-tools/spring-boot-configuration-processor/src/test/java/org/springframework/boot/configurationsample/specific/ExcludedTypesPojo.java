@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "excluded")
+@ConfigurationProperties("excluded")
 public class ExcludedTypesPojo {
 
 	private String name;

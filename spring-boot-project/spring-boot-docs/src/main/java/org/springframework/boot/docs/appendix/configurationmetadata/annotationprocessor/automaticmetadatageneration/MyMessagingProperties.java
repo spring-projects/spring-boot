@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "my.messaging")
+@ConfigurationProperties("my.messaging")
 public class MyMessagingProperties {
 
 	private List<String> addresses = new ArrayList<>(Arrays.asList("a", "b"));

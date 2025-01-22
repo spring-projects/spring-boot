@@ -34,7 +34,7 @@ import org.springframework.orm.jpa.vendor.Database;
  * @author Madhura Bhave
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.jpa")
+@ConfigurationProperties("spring.jpa")
 public class JpaProperties {
 
 	/**

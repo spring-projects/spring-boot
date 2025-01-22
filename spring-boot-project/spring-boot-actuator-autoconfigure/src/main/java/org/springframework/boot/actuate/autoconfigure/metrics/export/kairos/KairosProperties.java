@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.kairos.metrics.export")
+@ConfigurationProperties("management.kairos.metrics.export")
 public class KairosProperties extends StepRegistryProperties {
 
 	/**

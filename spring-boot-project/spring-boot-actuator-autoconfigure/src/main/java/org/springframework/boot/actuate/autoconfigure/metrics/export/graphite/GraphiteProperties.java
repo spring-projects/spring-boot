@@ -32,7 +32,7 @@ import org.springframework.util.ObjectUtils;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.graphite.metrics.export")
+@ConfigurationProperties("management.graphite.metrics.export")
 public class GraphiteProperties {
 
 	/**

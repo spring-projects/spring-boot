@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.3.0
  */
-@ConfigurationProperties(prefix = "management.stackdriver.metrics.export")
+@ConfigurationProperties("management.stackdriver.metrics.export")
 public class StackdriverProperties extends StepRegistryProperties {
 
 	/**

@@ -25,7 +25,7 @@ import org.springframework.util.unit.DataSize;
  * @author Brian Clozel
  * @since 2.2.1
  */
-@ConfigurationProperties(prefix = "spring.codec")
+@ConfigurationProperties("spring.codec")
 public class CodecProperties {
 
 	/**

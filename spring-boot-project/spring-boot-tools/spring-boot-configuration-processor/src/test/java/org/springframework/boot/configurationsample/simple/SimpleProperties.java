@@ -26,7 +26,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "simple")
+@ConfigurationProperties("simple")
 public class SimpleProperties {
 
 	/**

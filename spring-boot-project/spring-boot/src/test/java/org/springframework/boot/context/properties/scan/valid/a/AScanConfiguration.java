@@ -28,19 +28,19 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  */
 public class AScanConfiguration {
 
-	@ConfigurationProperties(prefix = "a")
+	@ConfigurationProperties("a")
 	static class AProperties {
 
 	}
 
 	@Profile("test")
-	@ConfigurationProperties(prefix = "profile")
+	@ConfigurationProperties("profile")
 	static class MyProfileProperties {
 
 	}
 
 	@Conditional(TestResourceCondition.class)
-	@ConfigurationProperties(prefix = "resource")
+	@ConfigurationProperties("resource")
 	static class MyResourceProperties {
 
 	}

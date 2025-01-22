@@ -40,7 +40,7 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Chris Bono
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.flyway")
+@ConfigurationProperties("spring.flyway")
 public class FlywayProperties {
 
 	/**

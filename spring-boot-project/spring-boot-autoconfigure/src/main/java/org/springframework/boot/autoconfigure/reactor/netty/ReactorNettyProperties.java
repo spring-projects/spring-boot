@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Moritz Halbritter
  * @since 2.7.9
  */
-@ConfigurationProperties(prefix = "spring.reactor.netty")
+@ConfigurationProperties("spring.reactor.netty")
 public class ReactorNettyProperties {
 
 	/**

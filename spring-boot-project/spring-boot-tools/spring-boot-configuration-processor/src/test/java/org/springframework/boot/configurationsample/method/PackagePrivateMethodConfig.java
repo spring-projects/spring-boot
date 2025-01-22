@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class PackagePrivateMethodConfig {
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	Foo foo() {
 		return new Foo();
 	}

@@ -28,7 +28,7 @@ public class BScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "b.first")
+	@ConfigurationProperties("b.first")
 	public static class BFirstProperties implements BProperties {
 
 		private final String name;
@@ -43,7 +43,7 @@ public class BScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "b.second")
+	@ConfigurationProperties("b.second")
 	public static class BSecondProperties implements BProperties {
 
 		private int number;

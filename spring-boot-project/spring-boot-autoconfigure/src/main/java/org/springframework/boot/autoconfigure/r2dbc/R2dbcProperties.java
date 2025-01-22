@@ -34,7 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Rodolpho S. Couto
  * @since 2.3.0
  */
-@ConfigurationProperties(prefix = "spring.r2dbc")
+@ConfigurationProperties("spring.r2dbc")
 public class R2dbcProperties {
 
 	/**

@@ -30,7 +30,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Jonas Keßler
  */
 @Data
-@ConfigurationProperties(prefix = "accesslevel.overwrite.data")
+@ConfigurationProperties("accesslevel.overwrite.data")
 @SuppressWarnings("unused")
 public class LombokAccessLevelOverwriteDataProperties {
 

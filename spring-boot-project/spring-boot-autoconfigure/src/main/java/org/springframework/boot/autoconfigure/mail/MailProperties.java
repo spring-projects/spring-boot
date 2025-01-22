@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Eddú Meléndez
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.mail")
+@ConfigurationProperties("spring.mail")
 public class MailProperties {
 
 	private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;

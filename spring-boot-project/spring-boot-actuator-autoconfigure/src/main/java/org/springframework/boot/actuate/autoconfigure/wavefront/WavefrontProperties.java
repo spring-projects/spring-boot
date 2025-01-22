@@ -39,7 +39,7 @@ import org.springframework.util.unit.DataSize;
  * @author Glenn Oppegard
  * @since 3.0.0
  */
-@ConfigurationProperties(prefix = "management.wavefront")
+@ConfigurationProperties("management.wavefront")
 public class WavefrontProperties {
 
 	/**

@@ -33,7 +33,7 @@ import org.springframework.web.cors.CorsConfiguration;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.endpoints.web.cors")
+@ConfigurationProperties("management.endpoints.web.cors")
 public class CorsEndpointProperties {
 
 	/**

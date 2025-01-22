@@ -67,7 +67,7 @@ public class WebTestClientAutoConfiguration {
 	}
 
 	@Bean
-	@ConfigurationProperties(prefix = "spring.test.webtestclient")
+	@ConfigurationProperties("spring.test.webtestclient")
 	public SpringBootWebTestClientBuilderCustomizer springBootWebTestClientBuilderCustomizer(
 			ObjectProvider<CodecCustomizer> codecCustomizers) {
 		return new SpringBootWebTestClientBuilderCustomizer(codecCustomizers.orderedStream().toList());

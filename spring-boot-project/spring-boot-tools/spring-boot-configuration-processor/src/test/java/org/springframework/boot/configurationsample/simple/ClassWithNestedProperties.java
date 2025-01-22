@@ -39,7 +39,7 @@ public class ClassWithNestedProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "nestedChildProps")
+	@ConfigurationProperties("nestedChildProps")
 	public static class NestedChildClass extends NestedParentClass {
 
 		private int childClassProperty = 20;

@@ -29,7 +29,7 @@ import org.springframework.boot.convert.DurationUnit;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.jdbc")
+@ConfigurationProperties("spring.jdbc")
 public class JdbcProperties {
 
 	private final Template template = new Template();

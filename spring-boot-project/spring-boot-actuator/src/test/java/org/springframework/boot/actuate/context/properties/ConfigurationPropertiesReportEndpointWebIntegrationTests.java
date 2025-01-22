@@ -116,13 +116,13 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "com.foo")
+		@ConfigurationProperties("com.foo")
 		Foo fooDotCom() {
 			return new Foo();
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "com.bar")
+		@ConfigurationProperties("com.bar")
 		Bar barDotCom() {
 			return new Bar();
 		}

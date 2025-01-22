@@ -19,7 +19,7 @@ package smoketest.propertyvalidation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-@ConfigurationProperties(prefix = "sample")
+@ConfigurationProperties("sample")
 @Validated
 public class SampleProperties {
 

@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Vedran Pavic
  * @since 1.0.0
  */
-@ConfigurationProperties(prefix = "spring.jms")
+@ConfigurationProperties("spring.jms")
 public class JmsProperties {
 
 	/**

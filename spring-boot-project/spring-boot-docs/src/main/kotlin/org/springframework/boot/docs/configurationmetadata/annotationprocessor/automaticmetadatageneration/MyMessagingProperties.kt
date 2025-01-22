@@ -19,7 +19,7 @@ package org.springframework.boot.docs.configurationmetadata.annotationprocessor.
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.util.Arrays
 
-@ConfigurationProperties(prefix = "my.messaging")
+@ConfigurationProperties("my.messaging")
 class MyMessagingProperties(
 
 	val addresses: List<String> = ArrayList(Arrays.asList("a", "b")),

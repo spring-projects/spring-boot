@@ -28,7 +28,7 @@ import org.springframework.util.MimeType;
  * @author Moritz Halbritter
  * @since 3.3.0
  */
-@ConfigurationProperties(prefix = "management.endpoint.sbom")
+@ConfigurationProperties("management.endpoint.sbom")
 public class SbomProperties {
 
 	/**

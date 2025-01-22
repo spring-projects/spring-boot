@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.humio.metrics.export")
+@ConfigurationProperties("management.humio.metrics.export")
 public class HumioProperties extends StepRegistryProperties {
 
 	/**

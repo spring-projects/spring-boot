@@ -27,7 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class Dbcp2Configuration {
 
-	@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
+	@ConfigurationProperties("spring.datasource.dbcp2")
 	BasicDataSource basicDataSource() {
 		return new BasicDataSource();
 	}

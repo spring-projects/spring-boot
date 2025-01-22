@@ -34,7 +34,7 @@ import org.springframework.util.unit.DataSize;
  * @author Kazuki Shimizu
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.thymeleaf")
+@ConfigurationProperties("spring.thymeleaf")
 public class ThymeleafProperties {
 
 	private static final Charset DEFAULT_ENCODING = StandardCharsets.UTF_8;
