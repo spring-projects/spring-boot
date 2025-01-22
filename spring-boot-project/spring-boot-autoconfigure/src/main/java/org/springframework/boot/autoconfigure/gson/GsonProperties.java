@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Ivan Golovko
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.gson")
+@ConfigurationProperties("spring.gson")
 public class GsonProperties {
 
 	/**

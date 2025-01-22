@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.endpoints.web")
+@ConfigurationProperties("management.endpoints.web")
 public class WebEndpointProperties {
 
 	private final Exposure exposure = new Exposure();

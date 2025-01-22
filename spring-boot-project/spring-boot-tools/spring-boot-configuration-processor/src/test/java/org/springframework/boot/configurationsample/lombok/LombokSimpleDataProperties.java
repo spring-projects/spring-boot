@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Stephane Nicoll
  */
 @Data
-@ConfigurationProperties(prefix = "data")
+@ConfigurationProperties("data")
 @SuppressWarnings("unused")
 public class LombokSimpleDataProperties {
 

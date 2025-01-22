@@ -163,13 +163,13 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 	static class BaseConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo.primary")
+		@ConfigurationProperties("foo.primary")
 		Foo primaryFoo() {
 			return new Foo();
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo.secondary")
+		@ConfigurationProperties("foo.secondary")
 		Foo secondaryFoo() {
 			return new Foo();
 		}
@@ -190,7 +190,7 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "only.bar")
+	@ConfigurationProperties("only.bar")
 	public static class Bar {
 
 		private String name = "123456";

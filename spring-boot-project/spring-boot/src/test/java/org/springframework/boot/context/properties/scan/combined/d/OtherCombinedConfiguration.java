@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OtherCombinedConfiguration {
 
 	@RestController
-	@ConfigurationProperties(prefix = "c")
+	@ConfigurationProperties("c")
 	static class MyControllerProperties {
 
 	}

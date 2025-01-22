@@ -32,7 +32,7 @@ import org.springframework.util.Assert;
  * @author Ryon Day
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.cache")
+@ConfigurationProperties("spring.cache")
 public class CacheProperties {
 
 	/**

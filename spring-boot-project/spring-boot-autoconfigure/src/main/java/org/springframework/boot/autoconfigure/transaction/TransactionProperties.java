@@ -31,7 +31,7 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
  * @author Phillip Webb
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.transaction")
+@ConfigurationProperties("spring.transaction")
 public class TransactionProperties implements TransactionManagerCustomizer<AbstractPlatformTransactionManager> {
 
 	/**

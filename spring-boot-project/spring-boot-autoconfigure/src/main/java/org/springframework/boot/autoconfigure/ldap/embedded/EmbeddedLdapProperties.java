@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
  * @author Mathieu Ouellet
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.ldap.embedded")
+@ConfigurationProperties("spring.ldap.embedded")
 public class EmbeddedLdapProperties {
 
 	/**

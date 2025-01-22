@@ -27,7 +27,7 @@ import org.springframework.boot.configurationsample.NestedConfigurationProperty;
  * @author Stephane Nicoll
  */
 @Data
-@ConfigurationProperties(prefix = "config")
+@ConfigurationProperties("config")
 @SuppressWarnings("unused")
 public class LombokInnerClassProperties {
 

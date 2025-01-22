@@ -18,7 +18,7 @@ package org.springframework.boot.docs.appendix.configurationmetadata.annotationp
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "my.server")
+@ConfigurationProperties("my.server")
 public class MyServerProperties {
 
 	private String name;

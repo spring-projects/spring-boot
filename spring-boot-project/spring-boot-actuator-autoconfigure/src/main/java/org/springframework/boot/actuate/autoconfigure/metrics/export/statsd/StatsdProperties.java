@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.statsd.metrics.export")
+@ConfigurationProperties("management.statsd.metrics.export")
 public class StatsdProperties {
 
 	/**

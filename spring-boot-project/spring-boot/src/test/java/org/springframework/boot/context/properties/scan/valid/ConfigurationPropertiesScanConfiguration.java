@@ -41,12 +41,12 @@ public class ConfigurationPropertiesScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	static class FooProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "bar")
+	@ConfigurationProperties("bar")
 	static class BarProperties {
 
 		BarProperties(String foo) {
@@ -54,7 +54,7 @@ public class ConfigurationPropertiesScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "bing")
+	@ConfigurationProperties("bing")
 	static class BingProperties {
 
 		BingProperties() {

@@ -35,7 +35,7 @@ import org.springframework.core.io.Resource;
  * @author Misagh Moayyed
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.messages")
+@ConfigurationProperties("spring.messages")
 public class MessageSourceProperties {
 
 	/**

@@ -216,7 +216,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	static class DataSourceConfig {
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.datasource.test")
+		@ConfigurationProperties("spring.datasource.test")
 		DataSource testDataSource() {
 			return DataSourceBuilder.create()
 				.type(org.apache.tomcat.jdbc.pool.DataSource.class)

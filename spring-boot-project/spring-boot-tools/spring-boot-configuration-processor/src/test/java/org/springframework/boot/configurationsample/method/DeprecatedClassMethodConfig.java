@@ -27,7 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 @Deprecated
 public class DeprecatedClassMethodConfig {
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	public Foo foo() {
 		return new Foo();
 	}

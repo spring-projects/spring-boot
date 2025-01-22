@@ -34,7 +34,7 @@ import org.springframework.web.cors.CorsConfiguration;
  * @author Brian Clozel
  * @since 2.7.0
  */
-@ConfigurationProperties(prefix = "spring.graphql.cors")
+@ConfigurationProperties("spring.graphql.cors")
 public class GraphQlCorsProperties {
 
 	/**

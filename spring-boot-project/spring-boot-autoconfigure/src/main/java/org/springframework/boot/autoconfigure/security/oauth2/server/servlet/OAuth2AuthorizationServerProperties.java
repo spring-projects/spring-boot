@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Steve Riesenberg
  * @since 3.1.0
  */
-@ConfigurationProperties(prefix = "spring.security.oauth2.authorizationserver")
+@ConfigurationProperties("spring.security.oauth2.authorizationserver")
 public class OAuth2AuthorizationServerProperties implements InitializingBean {
 
 	/**

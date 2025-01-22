@@ -23,7 +23,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Phillip Webb
  */
-@ConfigurationProperties(prefix = "config")
+@ConfigurationProperties("config")
 public class InnerClassWithPrivateConstructor {
 
 	private Nested nested = new Nested("whatever");

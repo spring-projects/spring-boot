@@ -20,7 +20,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 public class ChildPropertiesConfig {
 
-	@ConfigurationProperties(prefix = "inheritance")
+	@ConfigurationProperties("inheritance")
 	public ChildProperties childConfig() {
 		return new ChildProperties();
 	}

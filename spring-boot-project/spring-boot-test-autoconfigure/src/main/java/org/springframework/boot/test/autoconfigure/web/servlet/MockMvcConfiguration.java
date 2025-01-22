@@ -60,7 +60,7 @@ class MockMvcConfiguration {
 	}
 
 	@Bean
-	@ConfigurationProperties(prefix = "spring.test.mockmvc")
+	@ConfigurationProperties("spring.test.mockmvc")
 	SpringBootMockMvcBuilderCustomizer springBootMockMvcBuilderCustomizer() {
 		return new SpringBootMockMvcBuilderCustomizer(this.context);
 	}

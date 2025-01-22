@@ -23,7 +23,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "builder")
+@ConfigurationProperties("builder")
 public class BuilderPojo {
 
 	private String name;

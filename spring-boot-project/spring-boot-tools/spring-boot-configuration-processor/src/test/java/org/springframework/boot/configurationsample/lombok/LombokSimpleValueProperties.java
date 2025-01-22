@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @author Mark Jeffrey
  */
 @Value
-@ConfigurationProperties(prefix = "value")
+@ConfigurationProperties("value")
 @SuppressWarnings("unused")
 public class LombokSimpleValueProperties {
 

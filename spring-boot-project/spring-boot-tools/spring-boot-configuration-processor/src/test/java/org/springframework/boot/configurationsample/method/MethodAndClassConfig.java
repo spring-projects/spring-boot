@@ -36,7 +36,7 @@ public class MethodAndClassConfig {
 		this.value = value;
 	}
 
-	@ConfigurationProperties(prefix = "conflict")
+	@ConfigurationProperties("conflict")
 	public Foo foo() {
 		return new Foo();
 	}

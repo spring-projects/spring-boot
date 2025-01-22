@@ -51,13 +51,13 @@ class KotlinConfigurationPropertiesBeanRegistrarTests {
 		assertThat(beanDefinition.getAttribute(BindMethod::class.java.name)).isEqualTo(BindMethod.JAVA_BEAN)
 	}
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	class FooProperties
 
-	@ConfigurationProperties(prefix = "bar")
+	@ConfigurationProperties("bar")
 	class BarProperties(val name: String?, val counter: Int = 42)
 
-	@ConfigurationProperties(prefix = "bing")
+	@ConfigurationProperties("bing")
 	class BingProperties {
 
 		constructor()

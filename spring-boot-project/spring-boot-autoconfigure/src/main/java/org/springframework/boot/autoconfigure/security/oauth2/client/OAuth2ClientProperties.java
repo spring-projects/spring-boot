@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.security.oauth2.client")
+@ConfigurationProperties("spring.security.oauth2.client")
 public class OAuth2ClientProperties implements InitializingBean {
 
 	/**

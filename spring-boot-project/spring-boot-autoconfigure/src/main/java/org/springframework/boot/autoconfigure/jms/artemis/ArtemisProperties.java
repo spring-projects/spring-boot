@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  * @author Justin Bertram
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.artemis")
+@ConfigurationProperties("spring.artemis")
 public class ArtemisProperties {
 
 	/**

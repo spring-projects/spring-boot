@@ -59,7 +59,7 @@ class ProtocolResolverApplicationContextInitializerIntegrationTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	static class TestProperties {
 
 		Resource resource;

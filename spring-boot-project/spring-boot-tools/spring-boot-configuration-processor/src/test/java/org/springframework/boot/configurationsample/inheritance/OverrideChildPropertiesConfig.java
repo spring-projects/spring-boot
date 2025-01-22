@@ -20,7 +20,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 public class OverrideChildPropertiesConfig {
 
-	@ConfigurationProperties(prefix = "inheritance")
+	@ConfigurationProperties("inheritance")
 	public OverrideChildProperties overrideChildProperties() {
 		return new OverrideChildProperties();
 	}

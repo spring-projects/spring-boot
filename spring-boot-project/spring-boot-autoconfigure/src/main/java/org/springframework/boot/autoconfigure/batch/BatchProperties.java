@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Isolation;
  * @author Mukul Kumar Chaundhyan
  * @since 1.2.0
  */
-@ConfigurationProperties(prefix = "spring.batch")
+@ConfigurationProperties("spring.batch")
 public class BatchProperties {
 
 	private final Job job = new Job();

@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.appoptics.metrics.export")
+@ConfigurationProperties("management.appoptics.metrics.export")
 public class AppOpticsProperties extends StepRegistryProperties {
 
 	/**

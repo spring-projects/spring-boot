@@ -141,24 +141,24 @@ class ConfigurationPropertiesBeanRegistrarTests {
 		};
 	}
 
-	@ConfigurationProperties(prefix = "beancp")
+	@ConfigurationProperties("beancp")
 	static class BeanConfigurationProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "beancp")
+	@ConfigurationProperties("beancp")
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	static class ScopedBeanConfigurationProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "beancp")
+	@ConfigurationProperties("beancp")
 	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	static class ProxyScopedBeanConfigurationProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "beancp")
+	@ConfigurationProperties("beancp")
 	@Primary
 	static class PrimaryConfigurationProperties {
 

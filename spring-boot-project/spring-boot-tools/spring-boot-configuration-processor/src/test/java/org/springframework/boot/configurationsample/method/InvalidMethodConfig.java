@@ -23,7 +23,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "something")
+@ConfigurationProperties("something")
 public class InvalidMethodConfig {
 
 	private String name;
@@ -36,7 +36,7 @@ public class InvalidMethodConfig {
 		this.name = name;
 	}
 
-	@ConfigurationProperties(prefix = "invalid")
+	@ConfigurationProperties("invalid")
 	InvalidMethodConfig foo() {
 		return new InvalidMethodConfig();
 	}

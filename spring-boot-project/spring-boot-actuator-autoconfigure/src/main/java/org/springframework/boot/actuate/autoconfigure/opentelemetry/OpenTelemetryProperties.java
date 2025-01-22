@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Moritz Halbritter
  * @since 3.2.0
  */
-@ConfigurationProperties(prefix = "management.opentelemetry")
+@ConfigurationProperties("management.opentelemetry")
 public class OpenTelemetryProperties {
 
 	/**

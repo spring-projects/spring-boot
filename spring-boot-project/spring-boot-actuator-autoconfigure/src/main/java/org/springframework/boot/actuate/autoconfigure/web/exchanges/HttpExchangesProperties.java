@@ -32,7 +32,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.httpexchanges")
+@ConfigurationProperties("management.httpexchanges")
 public class HttpExchangesProperties {
 
 	private final Recording recording = new Recording();

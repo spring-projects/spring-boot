@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class InnerClassRootConfig {
 
-	@ConfigurationProperties(prefix = "config")
+	@ConfigurationProperties("config")
 	public static class Config {
 
 		private String name;

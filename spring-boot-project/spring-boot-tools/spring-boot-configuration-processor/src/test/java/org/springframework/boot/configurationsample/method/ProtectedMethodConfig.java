@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 public class ProtectedMethodConfig {
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	protected Foo foo() {
 		return new Foo();
 	}
