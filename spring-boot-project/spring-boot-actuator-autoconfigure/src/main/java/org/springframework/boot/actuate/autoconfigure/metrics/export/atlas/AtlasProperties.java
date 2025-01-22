@@ -28,7 +28,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.atlas.metrics.export")
+@ConfigurationProperties("management.atlas.metrics.export")
 public class AtlasProperties {
 
 	/**

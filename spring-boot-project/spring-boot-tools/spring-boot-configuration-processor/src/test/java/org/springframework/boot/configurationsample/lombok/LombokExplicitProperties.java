@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "explicit")
+@ConfigurationProperties("explicit")
 public class LombokExplicitProperties {
 
 	@Getter

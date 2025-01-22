@@ -180,7 +180,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	static class PossibleConstructorBindingPropertiesBeanMethodConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "bean-method")
+		@ConfigurationProperties("bean-method")
 		PossibleConstructorBindingProperties possibleConstructorBindingProperties() {
 			return new PossibleConstructorBindingProperties("alpha");
 		}

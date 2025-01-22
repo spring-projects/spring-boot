@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Moritz Halbritter
  * @since 3.1.0
  */
-@ConfigurationProperties(prefix = "spring.ssl")
+@ConfigurationProperties("spring.ssl")
 public class SslProperties {
 
 	/**

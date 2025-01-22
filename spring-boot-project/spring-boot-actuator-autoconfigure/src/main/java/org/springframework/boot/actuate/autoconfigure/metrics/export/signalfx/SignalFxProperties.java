@@ -30,7 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.signalfx.metrics.export")
+@ConfigurationProperties("management.signalfx.metrics.export")
 public class SignalFxProperties extends StepRegistryProperties {
 
 	/**

@@ -27,7 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Jonatan Ivanov
  * @since 3.4.0
  */
-@ConfigurationProperties(prefix = "management.health.ssl")
+@ConfigurationProperties("management.health.ssl")
 public class SslHealthIndicatorProperties {
 
 	/**

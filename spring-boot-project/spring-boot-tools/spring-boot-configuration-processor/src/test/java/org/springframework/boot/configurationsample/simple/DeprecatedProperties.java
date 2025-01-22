@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  * @deprecated deprecated
  */
 @Deprecated
-@ConfigurationProperties(prefix = "deprecated")
+@ConfigurationProperties("deprecated")
 public class DeprecatedProperties {
 
 	private String name;

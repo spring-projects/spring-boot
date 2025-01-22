@@ -32,7 +32,7 @@ import org.springframework.boot.sql.init.DatabaseInitializationMode;
  * @author Artem Bilan
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.integration")
+@ConfigurationProperties("spring.integration")
 public class IntegrationProperties {
 
 	private final Channel channel = new Channel();

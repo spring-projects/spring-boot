@@ -27,7 +27,7 @@ import org.springframework.session.SaveMode;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.session.jdbc")
+@ConfigurationProperties("spring.session.jdbc")
 public class JdbcSessionProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"

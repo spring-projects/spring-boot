@@ -25,7 +25,7 @@ import org.springframework.jmx.support.RegistrationPolicy;
  * @author Scott Frederick
  * @since 2.7.0
  */
-@ConfigurationProperties(prefix = "spring.jmx")
+@ConfigurationProperties("spring.jmx")
 public class JmxProperties {
 
 	/**

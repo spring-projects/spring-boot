@@ -26,7 +26,7 @@ import org.springframework.session.SaveMode;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.session.hazelcast")
+@ConfigurationProperties("spring.session.hazelcast")
 public class HazelcastSessionProperties {
 
 	/**

@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Brian Clozel
  * @since 3.2.0
  */
-@ConfigurationProperties(prefix = "spring.reactor")
+@ConfigurationProperties("spring.reactor")
 public class ReactorProperties {
 
 	/**

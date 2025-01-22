@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "my.props")
+@ConfigurationProperties("my.props")
 public class MyMapsProperties {
 
 	private final Map<String, String> values = new HashMap<>();

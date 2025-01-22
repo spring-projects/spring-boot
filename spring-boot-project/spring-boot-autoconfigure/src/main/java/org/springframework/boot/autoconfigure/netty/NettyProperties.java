@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Brian Clozel
  * @since 2.5.0
  */
-@ConfigurationProperties(prefix = "spring.netty")
+@ConfigurationProperties("spring.netty")
 public class NettyProperties {
 
 	/**

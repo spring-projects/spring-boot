@@ -89,13 +89,13 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "first")
+		@ConfigurationProperties("first")
 		Foo foo() {
 			return new Foo();
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "other")
+		@ConfigurationProperties("other")
 		Foo other() {
 			return new Foo();
 		}
@@ -112,7 +112,7 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "other")
+		@ConfigurationProperties("other")
 		Bar bar() {
 			return new Bar();
 		}
@@ -133,7 +133,7 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	public static class Bar {
 
 		private String name = "654321";

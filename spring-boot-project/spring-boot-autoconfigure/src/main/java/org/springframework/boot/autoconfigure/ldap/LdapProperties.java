@@ -31,7 +31,7 @@ import org.springframework.util.ObjectUtils;
  * @author Eddú Meléndez
  * @since 1.5.0
  */
-@ConfigurationProperties(prefix = "spring.ldap")
+@ConfigurationProperties("spring.ldap")
 public class LdapProperties {
 
 	private static final int DEFAULT_PORT = 389;

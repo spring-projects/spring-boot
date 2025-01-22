@@ -30,7 +30,7 @@ import org.springframework.util.MimeType;
  * @author Dave Syer
  * @since 1.2.2
  */
-@ConfigurationProperties(prefix = "spring.mustache")
+@ConfigurationProperties("spring.mustache")
 public class MustacheProperties {
 
 	private static final MimeType DEFAULT_CONTENT_TYPE = MimeType.valueOf("text/html");

@@ -23,7 +23,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "config")
+@ConfigurationProperties("config")
 public class InvalidAccessorProperties {
 
 	private String name;

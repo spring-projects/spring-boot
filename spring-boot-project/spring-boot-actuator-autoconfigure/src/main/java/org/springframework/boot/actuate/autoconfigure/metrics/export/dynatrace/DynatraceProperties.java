@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Georg Pirklbauer
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.dynatrace.metrics.export")
+@ConfigurationProperties("management.dynatrace.metrics.export")
 public class DynatraceProperties extends StepRegistryProperties {
 
 	private final V1 v1 = new V1();

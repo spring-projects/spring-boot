@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "spring.webflux")
+@ConfigurationProperties("spring.webflux")
 public class WebFluxProperties {
 
 	/**

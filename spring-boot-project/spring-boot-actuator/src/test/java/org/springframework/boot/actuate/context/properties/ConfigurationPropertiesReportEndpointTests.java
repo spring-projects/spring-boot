@@ -457,7 +457,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "test")
+	@ConfigurationProperties("test")
 	public static class TestProperties {
 
 		private String dbPassword = "123456";
@@ -524,7 +524,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "immutable")
+	@ConfigurationProperties("immutable")
 	public static class ImmutableProperties {
 
 		private final String dbPassword;
@@ -574,7 +574,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "multiconstructor")
+	@ConfigurationProperties("multiconstructor")
 	public static class MultiConstructorProperties {
 
 		private final String name;
@@ -613,7 +613,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "autowired")
+	@ConfigurationProperties("autowired")
 	public static class AutowiredProperties {
 
 		private final String name;

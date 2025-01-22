@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Julio Gomez
  * @since 2.4.0
  */
-@ConfigurationProperties(prefix = "management.health.db")
+@ConfigurationProperties("management.health.db")
 public class DataSourceHealthIndicatorProperties {
 
 	/**

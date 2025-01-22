@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 public class CombinedConfiguration {
 
 	@Component
-	@ConfigurationProperties(prefix = "b")
+	@ConfigurationProperties("b")
 	static class MyProperties {
 
 	}

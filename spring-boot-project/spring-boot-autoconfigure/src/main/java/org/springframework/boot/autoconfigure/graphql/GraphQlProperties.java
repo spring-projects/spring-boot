@@ -28,7 +28,7 @@ import org.springframework.core.io.Resource;
  * @author Brian Clozel
  * @since 2.7.0
  */
-@ConfigurationProperties(prefix = "spring.graphql")
+@ConfigurationProperties("spring.graphql")
 public class GraphQlProperties {
 
 	/**

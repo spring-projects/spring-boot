@@ -32,7 +32,7 @@ import org.springframework.util.unit.DataSize;
  * @author Chris Bono
  * @since 2.6.0
  */
-@ConfigurationProperties(prefix = "spring.webflux.multipart")
+@ConfigurationProperties("spring.webflux.multipart")
 public class ReactiveMultipartProperties {
 
 	/**

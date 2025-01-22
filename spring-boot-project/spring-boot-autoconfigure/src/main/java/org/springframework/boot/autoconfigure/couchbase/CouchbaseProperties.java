@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * @author Scott Frederick
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.couchbase")
+@ConfigurationProperties("spring.couchbase")
 public class CouchbaseProperties {
 
 	/**

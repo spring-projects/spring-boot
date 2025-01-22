@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties(prefix = "sample")
+@ConfigurationProperties("sample")
 public final class SampleConfigurationProperties {
 
 	@NotNull

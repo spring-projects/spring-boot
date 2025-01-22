@@ -23,7 +23,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "simple.type")
+@ConfigurationProperties("simple.type")
 public class SimpleTypeProperties {
 
 	private String myString;

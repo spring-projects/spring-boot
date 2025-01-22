@@ -31,7 +31,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  */
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "simple")
+@ConfigurationProperties("simple")
 @SuppressWarnings("unused")
 public class LombokSimpleProperties {
 

@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@ConfigurationProperties(prefix = "spring.freemarker")
+@ConfigurationProperties("spring.freemarker")
 public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties {
 
 	public static final String DEFAULT_TEMPLATE_LOADER_PATH = "classpath:/templates/";

@@ -25,7 +25,7 @@ import org.springframework.boot.configurationsample.NestedConfigurationProperty;
  *
  * @author Madhura Bhave
  */
-@ConfigurationProperties(prefix = "config")
+@ConfigurationProperties("config")
 public class InnerClassHierarchicalProperties {
 
 	private Foo foo;

@@ -36,7 +36,7 @@ import org.springframework.session.web.http.SessionRepositoryFilter;
  * @author Vedran Pavic
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.session")
+@ConfigurationProperties("spring.session")
 public class SessionProperties {
 
 	/**

@@ -34,7 +34,7 @@ import org.springframework.core.io.Resource;
  * @author Scott Frederick
  * @since 1.3.0
  */
-@ConfigurationProperties(prefix = "spring.cassandra")
+@ConfigurationProperties("spring.cassandra")
 public class CassandraProperties {
 
 	/**

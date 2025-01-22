@@ -26,7 +26,7 @@ import org.springframework.validation.annotation.Validated;
  * @author Madhura Bhave
  */
 @Validated
-@ConfigurationProperties(prefix = "validated")
+@ConfigurationProperties("validated")
 public class ValidatedConstructorBindingProperties {
 
 	private final String name;

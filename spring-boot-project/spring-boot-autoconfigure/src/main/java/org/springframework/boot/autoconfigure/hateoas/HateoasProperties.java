@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 1.2.1
  */
-@ConfigurationProperties(prefix = "spring.hateoas")
+@ConfigurationProperties("spring.hateoas")
 public class HateoasProperties {
 
 	/**

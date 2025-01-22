@@ -23,7 +23,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties(prefix = "hierarchical")
+@ConfigurationProperties("hierarchical")
 public class HierarchicalProperties extends HierarchicalPropertiesParent {
 
 	private String third = "three";

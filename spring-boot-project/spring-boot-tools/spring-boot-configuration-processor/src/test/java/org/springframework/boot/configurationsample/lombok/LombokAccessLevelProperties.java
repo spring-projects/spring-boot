@@ -27,7 +27,7 @@ import org.springframework.boot.configurationsample.ConfigurationProperties;
  *
  * @author Jonas Keßler
  */
-@ConfigurationProperties(prefix = "accesslevel")
+@ConfigurationProperties("accesslevel")
 public class LombokAccessLevelProperties {
 
 	@Getter(AccessLevel.PUBLIC)
