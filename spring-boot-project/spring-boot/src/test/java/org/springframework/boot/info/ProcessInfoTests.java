@@ -47,13 +47,13 @@ class ProcessInfoTests {
 	void memoryInfoIsAvailable() {
 		ProcessInfo processInfo = new ProcessInfo();
 		MemoryUsageInfo heapUsageInfo = processInfo.getMemory().getHeap();
-		MemoryUsageInfo nonHeapUsageInfo = processInfo.getMemory().getNonHeap();
 		assertThat(heapUsageInfo.getInit()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getMax());
 		assertThat(heapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getCommitted());
 		assertThat(heapUsageInfo.getCommitted()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getMax());
 		assertThat(heapUsageInfo.getMax()).isPositive();
+		MemoryUsageInfo nonHeapUsageInfo = processInfo.getMemory().getNonHeap();
 		assertThat(nonHeapUsageInfo.getInit()).isPositive();
-		assertThat(nonHeapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(heapUsageInfo.getCommitted());
+		assertThat(nonHeapUsageInfo.getUsed()).isPositive().isLessThanOrEqualTo(nonHeapUsageInfo.getCommitted());
 		assertThat(nonHeapUsageInfo.getCommitted()).isPositive();
 		assertThat(nonHeapUsageInfo.getMax()).isEqualTo(-1);
 	}
