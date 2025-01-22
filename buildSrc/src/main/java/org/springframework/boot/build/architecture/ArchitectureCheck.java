@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,8 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Role;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -149,7 +151,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		DescribedPredicate<JavaClass> notOfASafeType = DescribedPredicate
 			.not(Predicates.assignableTo("org.springframework.beans.factory.ObjectProvider")
 				.or(Predicates.assignableTo("org.springframework.context.ApplicationContext"))
-				.or(Predicates.assignableTo("org.springframework.core.env.Environment")));
+				.or(Predicates.assignableTo("org.springframework.core.env.Environment")
+					.or(annotatedWithRoleInfrastructure())));
 		return new ArchCondition<>("not have parameters that will cause eager initialization") {
 
 			@Override
@@ -162,6 +165,18 @@ public abstract class ArchitectureCheck extends DefaultTask {
 							parameter.getDescription() + " will cause eager initialization as it is "
 									+ notAnnotatedWithLazy.getDescription() + " and is "
 									+ notOfASafeType.getDescription())));
+			}
+
+		};
+	}
+
+	private DescribedPredicate<JavaClass> annotatedWithRoleInfrastructure() {
+		return new DescribedPredicate<>("annotated with @Role(BeanDefinition.ROLE_INFRASTRUCTURE") {
+
+			@Override
+			public boolean test(JavaClass candidate) {
+				Role role = candidate.getAnnotationOfType(Role.class);
+				return (role != null) && (role.value() == BeanDefinition.ROLE_INFRASTRUCTURE);
 			}
 
 		};
