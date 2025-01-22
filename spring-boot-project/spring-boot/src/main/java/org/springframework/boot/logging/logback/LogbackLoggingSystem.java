@@ -38,6 +38,7 @@ import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.OnErrorConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.status.StatusListener;
 import ch.qos.logback.core.status.StatusUtil;
 import ch.qos.logback.core.util.StatusListenerConfigHelper;
 import ch.qos.logback.core.util.StatusPrinter2;
@@ -220,6 +221,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
 		if (configuredUsingAotGeneratedArtifacts) {
+			addOnErrorConsoleStatusListenerIfNecessary(loggerContext);
 			reportConfigurationErrorsIfNecessary(loggerContext);
 		}
 		return configuredUsingAotGeneratedArtifacts;
@@ -235,9 +237,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			if (debug) {
 				StatusListenerConfigHelper.addOnConsoleListenerInstance(loggerContext, new OnConsoleStatusListener());
 			}
-			else {
-				addOnErrorConsoleStatusListener(loggerContext);
-			}
+			addOnErrorConsoleStatusListenerIfNecessary(loggerContext);
 			Environment environment = initializationContext.getEnvironment();
 			// Apply system properties directly in case the same JVM runs multiple apps
 			new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment),
@@ -264,6 +264,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			try {
 				Resource resource = ApplicationResourceLoader.get().getResource(location);
 				configureByResourceUrl(initializationContext, loggerContext, resource.getURL());
+				addOnErrorConsoleStatusListenerIfNecessary(loggerContext);
 			}
 			catch (Exception ex) {
 				throw new IllegalStateException("Could not initialize Logback logging from " + location, ex);
@@ -286,7 +287,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			}
 		}
 		if (errors.isEmpty()) {
-			if (!StatusUtil.contextHasStatusListener(loggerContext)) {
+			if (shouldPrintErrors(loggerContext)) {
 				this.statusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 			}
 			return;
@@ -295,6 +296,14 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 				String.format("Logback configuration error detected: %n%s", errors));
 		suppressedExceptions.forEach(ex::addSuppressed);
 		throw ex;
+	}
+
+	private static boolean shouldPrintErrors(LoggerContext loggerContext) {
+		if (!StatusUtil.contextHasStatusListener(loggerContext)) {
+			return true;
+		}
+		List<StatusListener> listeners = loggerContext.getStatusManager().getCopyOfStatusListenerList();
+		return listeners.stream().allMatch((listener) -> listener instanceof FilteringStatusListener);
 	}
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
@@ -491,7 +500,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 	}
 
-	private void addOnErrorConsoleStatusListener(LoggerContext context) {
+	private void addOnErrorConsoleStatusListenerIfNecessary(LoggerContext context) {
+		if (StatusUtil.contextHasStatusListener(context)) {
+			return;
+		}
 		FilteringStatusListener listener = new FilteringStatusListener(new OnErrorConsoleStatusListener(),
 				Status.ERROR);
 		listener.setContext(context);
