@@ -216,6 +216,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> putInitializationContextObjects(loggerContext, initializationContext));
+		addOnErrorConsoleStatusListener(loggerContext);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
@@ -261,6 +262,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			if (initializationContext != null) {
 				applySystemProperties(initializationContext.getEnvironment(), logFile);
 			}
+			addOnErrorConsoleStatusListener(loggerContext);
 			try {
 				Resource resource = ApplicationResourceLoader.get().getResource(location);
 				configureByResourceUrl(initializationContext, loggerContext, resource.getURL());
@@ -493,7 +495,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void addOnErrorConsoleStatusListener(LoggerContext context) {
 		FilteringStatusListener listener = new FilteringStatusListener(new OnErrorConsoleStatusListener(),
-				Status.ERROR);
+				Status.WARN);
 		listener.setContext(context);
 		if (context.getStatusManager().add(listener)) {
 			listener.start();
