@@ -71,14 +71,13 @@ public class ValidationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(search = SearchStrategy.CURRENT)
 	public static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
-			ObjectProvider<Validator> validator, ObjectProvider<MethodValidationExcludeFilter> excludeFilters,
-			ObjectProvider<ValidationProperties> validationProperties) {
+			ValidationProperties validationProperties, ObjectProvider<Validator> validator,
+			ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {
 		FilteredMethodValidationPostProcessor processor = new FilteredMethodValidationPostProcessor(
 				excludeFilters.orderedStream());
 		boolean proxyTargetClass = environment.getProperty("spring.aop.proxy-target-class", Boolean.class, true);
 		processor.setProxyTargetClass(proxyTargetClass);
-		processor
-			.setAdaptConstraintViolations(validationProperties.getObject().getMethod().isAdaptConstraintViolations());
+		processor.setAdaptConstraintViolations(validationProperties.getMethod().isAdaptConstraintViolations());
 		processor.setValidatorProvider(validator);
 		return processor;
 	}
