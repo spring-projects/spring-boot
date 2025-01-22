@@ -59,7 +59,7 @@ public class MongoProperties {
 	/**
 	 * Mongo server port. Cannot be set with URI.
 	 */
-	private Integer port = null;
+	private Integer port;
 
 	/**
 	 * Additional server hosts. Cannot be set with URI or if 'host' is not specified.

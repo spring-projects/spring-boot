@@ -99,7 +99,7 @@ public class WebProperties {
 		 */
 		private boolean addMappings = true;
 
-		private boolean customized = false;
+		private boolean customized;
 
 		private final Chain chain = new Chain();
 
@@ -149,7 +149,7 @@ public class WebProperties {
 		 */
 		public static class Chain {
 
-			boolean customized = false;
+			private boolean customized;
 
 			/**
 			 * Whether to enable the Spring Resource Handling chain. By default, disabled
@@ -167,7 +167,7 @@ public class WebProperties {
 			 * brotli). Checks for a resource name with the '.gz' or '.br' file
 			 * extensions.
 			 */
-			private boolean compressed = false;
+			private boolean compressed;
 
 			private final Strategy strategy = new Strategy();
 
@@ -243,7 +243,7 @@ public class WebProperties {
 				 */
 				public static class Content {
 
-					private boolean customized = false;
+					private boolean customized;
 
 					/**
 					 * Whether to enable the content Version Strategy.
@@ -284,7 +284,7 @@ public class WebProperties {
 				 */
 				public static class Fixed {
 
-					private boolean customized = false;
+					private boolean customized;
 
 					/**
 					 * Whether to enable the fixed Version Strategy.
@@ -343,7 +343,7 @@ public class WebProperties {
 		 */
 		public static class Cache {
 
-			private boolean customized = false;
+			private boolean customized;
 
 			/**
 			 * Cache period for the resources served by the resource handler. If a
@@ -395,7 +395,7 @@ public class WebProperties {
 			 */
 			public static class Cachecontrol {
 
-				private boolean customized = false;
+				private boolean customized;
 
 				/**
 				 * Maximum time the response should be cached, in seconds if no duration

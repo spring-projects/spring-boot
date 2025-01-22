@@ -56,7 +56,7 @@ class ApplicationProperties {
 	/**
 	 * Whether initialization should be performed lazily.
 	 */
-	private boolean lazyInitialization = false;
+	private boolean lazyInitialization;
 
 	/**
 	 * Whether to log information about the application when it starts.

@@ -264,7 +264,7 @@ public class ServerProperties {
 		/**
 		 * Whether to register the default Servlet with the container.
 		 */
-		private boolean registerDefaultServlet = false;
+		private boolean registerDefaultServlet;
 
 		@NestedConfigurationProperty
 		private final Encoding encoding = new Encoding();
@@ -691,7 +691,7 @@ public class ServerProperties {
 			/**
 			 * Enable access log.
 			 */
-			private boolean enabled = false;
+			private boolean enabled;
 
 			/**
 			 * Whether logging of the request will only be enabled if
@@ -742,7 +742,7 @@ public class ServerProperties {
 			 * Whether to check for log file existence so it can be recreated if an
 			 * external process has renamed it.
 			 */
-			private boolean checkExists = false;
+			private boolean checkExists;
 
 			/**
 			 * Whether to enable access log rotation.
@@ -753,7 +753,7 @@ public class ServerProperties {
 			 * Whether to defer inclusion of the date stamp in the file name until rotate
 			 * time.
 			 */
-			private boolean renameOnRotate = false;
+			private boolean renameOnRotate;
 
 			/**
 			 * Number of days to retain the access log files before they are removed.
@@ -768,13 +768,13 @@ public class ServerProperties {
 			/**
 			 * Whether to use IPv6 canonical representation format as defined by RFC 5952.
 			 */
-			private boolean ipv6Canonical = false;
+			private boolean ipv6Canonical;
 
 			/**
 			 * Set request attributes for the IP address, Hostname, protocol, and port
 			 * used for the request.
 			 */
-			private boolean requestAttributesEnabled = false;
+			private boolean requestAttributesEnabled;
 
 			/**
 			 * Whether to buffer output such that it is flushed only periodically.
@@ -1226,7 +1226,7 @@ public class ServerProperties {
 			/**
 			 * Enable access log.
 			 */
-			private boolean enabled = false;
+			private boolean enabled;
 
 			/**
 			 * Log format.
@@ -1593,7 +1593,7 @@ public class ServerProperties {
 		 * application that requires it. Has no effect when server.undertow.decode-slash
 		 * is set.
 		 */
-		private boolean allowEncodedSlash = false;
+		private boolean allowEncodedSlash;
 
 		/**
 		 * Whether encoded slash characters (%2F) should be decoded. Decoding can cause
@@ -1629,7 +1629,7 @@ public class ServerProperties {
 		/**
 		 * Whether to preserve the path of a request when it is forwarded.
 		 */
-		private boolean preservePathOnForward = false;
+		private boolean preservePathOnForward;
 
 		private final Accesslog accesslog = new Accesslog();
 
@@ -1775,7 +1775,7 @@ public class ServerProperties {
 			/**
 			 * Whether to enable the access log.
 			 */
-			private boolean enabled = false;
+			private boolean enabled;
 
 			/**
 			 * Format pattern for access logs.
