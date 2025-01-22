@@ -268,7 +268,7 @@
     },
     {
       "name": "logging.structured.json.customizer",
-      "type": "java.lang.String",
+      "type": "java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>",
       "description": "The fully qualified class name of a StructuredLoggingJsonMembersCustomizer"
     },
     {
