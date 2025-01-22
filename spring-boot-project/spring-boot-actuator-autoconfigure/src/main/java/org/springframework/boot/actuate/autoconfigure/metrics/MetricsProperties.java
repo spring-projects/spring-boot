@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -202,7 +200,7 @@ public class MetricsProperties {
 			/**
 			 * List of paths to report disk metrics for.
 			 */
-			private List<File> paths = new ArrayList<>(Collections.singletonList(new File(".")));
+			private List<File> paths = List.of(new File("."));
 
 			public List<File> getPaths() {
 				return this.paths;

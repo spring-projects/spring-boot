@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.exchanges;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.boot.actuate.web.exchanges.Include;
@@ -53,7 +52,7 @@ public class HttpExchangesProperties {
 		 * (excluding Authorization and Cookie), response headers (excluding Set-Cookie),
 		 * and time taken.
 		 */
-		private Set<Include> include = new HashSet<>(Include.defaultIncludes());
+		private Set<Include> include = Include.defaultIncludes();
 
 		public Set<Include> getInclude() {
 			return this.include;

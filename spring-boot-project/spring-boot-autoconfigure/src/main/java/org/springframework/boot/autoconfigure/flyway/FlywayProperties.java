@@ -22,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,7 @@ public class FlywayProperties {
 	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
 	 * use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<>(Collections.singletonList("classpath:db/migration"));
+	private List<String> locations = List.of("classpath:db/migration");
 
 	/**
 	 * Encoding of SQL migrations.
@@ -157,7 +156,7 @@ public class FlywayProperties {
 	/**
 	 * File name suffix for SQL migrations.
 	 */
-	private List<String> sqlMigrationSuffixes = new ArrayList<>(Collections.singleton(".sql"));
+	private List<String> sqlMigrationSuffixes = List.of(".sql");
 
 	/**
 	 * File name separator for SQL migrations.
