@@ -16,14 +16,18 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Role;
 
 /**
- * Configuration properties for validation.
+ * {@link ConfigurationProperties @ConfigurationProperties} for validation.
  *
  * @author Yanming Zhou
+ * @author Andy Wilkinson
  * @since 3.5.0
  */
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 @ConfigurationProperties(prefix = "spring.validation")
 public class ValidationProperties {
 
