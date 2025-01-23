@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
@@ -36,7 +37,7 @@ class JsonConverter {
 
 	private static final ItemMetadataComparator ITEM_COMPARATOR = new ItemMetadataComparator();
 
-	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
+	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws JSONException {
 		JSONArray jsonArray = new JSONArray();
 		List<ItemMetadata> items = metadata.getItems()
 			.stream()
@@ -51,7 +52,7 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
+	JSONArray toJsonArray(Collection<ItemHint> hints) throws JSONException {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemHint hint : hints) {
 			jsonArray.put(toJsonObject(hint));
@@ -59,7 +60,7 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	JSONObject toJsonObject(ItemMetadata item) throws Exception {
+	JSONObject toJsonObject(ItemMetadata item) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", item.getName());
 		jsonObject.putOpt("type", item.getType());
@@ -73,25 +74,30 @@ class JsonConverter {
 		ItemDeprecation deprecation = item.getDeprecation();
 		if (deprecation != null) {
 			jsonObject.put("deprecated", true); // backward compatibility
-			JSONObject deprecationJsonObject = new JSONObject();
-			if (deprecation.getLevel() != null) {
-				deprecationJsonObject.put("level", deprecation.getLevel());
-			}
-			if (deprecation.getReason() != null) {
-				deprecationJsonObject.put("reason", deprecation.getReason());
-			}
-			if (deprecation.getReplacement() != null) {
-				deprecationJsonObject.put("replacement", deprecation.getReplacement());
-			}
-			if (deprecation.getSince() != null) {
-				deprecationJsonObject.put("since", deprecation.getSince());
-			}
+			JSONObject deprecationJsonObject = getDeprecationJsonObject(deprecation);
 			jsonObject.put("deprecation", deprecationJsonObject);
 		}
 		return jsonObject;
 	}
 
-	private JSONObject toJsonObject(ItemHint hint) throws Exception {
+	private static JSONObject getDeprecationJsonObject(ItemDeprecation deprecation) throws JSONException {
+		JSONObject deprecationJsonObject = new JSONObject();
+		if (deprecation.getLevel() != null) {
+			deprecationJsonObject.put("level", deprecation.getLevel());
+		}
+		if (deprecation.getReason() != null) {
+			deprecationJsonObject.put("reason", deprecation.getReason());
+		}
+		if (deprecation.getReplacement() != null) {
+			deprecationJsonObject.put("replacement", deprecation.getReplacement());
+		}
+		if (deprecation.getSince() != null) {
+			deprecationJsonObject.put("since", deprecation.getSince());
+		}
+		return deprecationJsonObject;
+	}
+
+	private JSONObject toJsonObject(ItemHint hint) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", hint.getName());
 		if (!hint.getValues().isEmpty()) {
@@ -103,7 +109,7 @@ class JsonConverter {
 		return jsonObject;
 	}
 
-	private JSONArray getItemHintValues(ItemHint hint) throws Exception {
+	private JSONArray getItemHintValues(ItemHint hint) throws JSONException {
 		JSONArray values = new JSONArray();
 		for (ItemHint.ValueHint value : hint.getValues()) {
 			values.put(getItemHintValue(value));
@@ -111,14 +117,14 @@ class JsonConverter {
 		return values;
 	}
 
-	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws Exception {
+	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws JSONException {
 		JSONObject result = new JSONObject();
 		putHintValue(result, value.getValue());
 		result.putOpt("description", value.getDescription());
 		return result;
 	}
 
-	private JSONArray getItemHintProviders(ItemHint hint) throws Exception {
+	private JSONArray getItemHintProviders(ItemHint hint) throws JSONException {
 		JSONArray providers = new JSONArray();
 		for (ItemHint.ValueProvider provider : hint.getProviders()) {
 			providers.put(getItemHintProvider(provider));
@@ -126,7 +132,7 @@ class JsonConverter {
 		return providers;
 	}
 
-	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws Exception {
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws JSONException {
 		JSONObject result = new JSONObject();
 		result.put("name", provider.getName());
 		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
@@ -139,12 +145,12 @@ class JsonConverter {
 		return result;
 	}
 
-	private void putHintValue(JSONObject jsonObject, Object value) throws Exception {
+	private void putHintValue(JSONObject jsonObject, Object value) throws JSONException {
 		Object hintValue = extractItemValue(value);
 		jsonObject.put("value", hintValue);
 	}
 
-	private void putDefaultValue(JSONObject jsonObject, Object value) throws Exception {
+	private void putDefaultValue(JSONObject jsonObject, Object value) throws JSONException {
 		Object defaultValue = extractItemValue(value);
 		jsonObject.put("defaultValue", defaultValue);
 	}
