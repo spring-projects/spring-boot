@@ -34,6 +34,7 @@ import com.tngtech.archunit.core.domain.JavaCall;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClass.Predicates;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
@@ -94,6 +95,7 @@ final class ArchitectureRules {
 		rules.add(enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
 		rules.add(classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		rules.add(methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
+		rules.add(conditionsShouldNotBePublic());
 		return List.copyOf(rules);
 	}
 
@@ -288,6 +290,20 @@ final class ArchitectureRules {
 			addViolation(events, item, configurationPropertiesAnnotation.getDescription()
 					+ " should specify implicit 'value' attribute other than explicit 'prefix' attribute");
 		}
+	}
+
+	private static ArchRule conditionsShouldNotBePublic() {
+		String springBootCondition = "org.springframework.boot.autoconfigure.condition.SpringBootCondition";
+		return ArchRuleDefinition.noClasses()
+			.that()
+			.areAssignableTo(springBootCondition)
+			.and()
+			.doNotHaveModifier(JavaModifier.ABSTRACT)
+			.and()
+			.areNotAnnotatedWith(Deprecated.class)
+			.should()
+			.bePublic()
+			.allowEmptyShould(true);
 	}
 
 	private static boolean containsOnlySingleType(JavaType[] types, JavaType type) {

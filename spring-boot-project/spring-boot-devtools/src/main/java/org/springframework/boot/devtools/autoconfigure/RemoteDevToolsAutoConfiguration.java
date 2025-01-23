@@ -45,7 +45,6 @@ import org.springframework.boot.devtools.restart.server.HttpRestartServer;
 import org.springframework.boot.devtools.restart.server.HttpRestartServerHandler;
 import org.springframework.boot.devtools.restart.server.SourceDirectoryUrlFilter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.log.LogMessage;
@@ -61,7 +60,7 @@ import org.springframework.http.server.ServerHttpRequest;
  * @since 1.3.0
  */
 @AutoConfiguration(after = SecurityAutoConfiguration.class)
-@Conditional(OnEnabledDevToolsCondition.class)
+@ConditionalOnEnabledDevTools
 @ConditionalOnProperty("spring.devtools.remote.secret")
 @ConditionalOnClass({ Filter.class, ServerHttpRequest.class })
 @Import(RemoteDevtoolsSecurityConfiguration.class)

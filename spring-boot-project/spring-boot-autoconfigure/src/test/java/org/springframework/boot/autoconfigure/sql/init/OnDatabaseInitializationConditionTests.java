@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeWithPropertyNoSetMatches() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode");
 		ConditionOutcome outcome = condition
 			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.another", "noise")), null);
 		assertThat(outcome.isMatch()).isTrue();
@@ -44,7 +44,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeWithPropertySetToAlwaysMatches() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode");
 		ConditionOutcome outcome = condition
 			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=always")), null);
 		assertThat(outcome.isMatch()).isTrue();
@@ -52,7 +52,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeWithPropertySetToEmbeddedMatches() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode");
 		ConditionOutcome outcome = condition
 			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=embedded")), null);
 		assertThat(outcome.isMatch()).isTrue();
@@ -60,7 +60,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeWithPropertySetToNeverDoesNotMatch() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode");
 		ConditionOutcome outcome = condition
 			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=never")), null);
 		assertThat(outcome.isMatch()).isFalse();
@@ -68,7 +68,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeWithPropertySetToEmptyStringIsIgnored() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode");
 		ConditionOutcome outcome = condition
 			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode")), null);
 		assertThat(outcome.isMatch()).isTrue();
@@ -76,7 +76,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeWithMultiplePropertiesUsesFirstSet() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode",
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode",
 				"test.schema-mode", "test.init-schema-mode");
 		ConditionOutcome outcome = condition
 			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-schema-mode=embedded")), null);
@@ -86,7 +86,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeHasDedicatedDescription() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode");
 		ConditionOutcome outcome = condition
 			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=embedded")), null);
 		assertThat(outcome.getMessage()).isEqualTo("TestDatabase Initialization test.init-mode is EMBEDDED");
@@ -94,7 +94,7 @@ class OnDatabaseInitializationConditionTests {
 
 	@Test
 	void getMatchOutcomeHasWhenPropertyIsNotSetHasDefaultDescription() {
-		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
+		OnDatabaseInitializationCondition condition = new OnTestDatabaseInitializationCondition("test.init-mode");
 		ConditionOutcome outcome = condition.getMatchOutcome(mockConditionContext(TestPropertyValues.empty()), null);
 		assertThat(outcome.getMessage()).isEqualTo("TestDatabase Initialization default value is EMBEDDED");
 	}
@@ -105,6 +105,14 @@ class OnDatabaseInitializationConditionTests {
 		ConditionContext conditionContext = mock(ConditionContext.class);
 		given(conditionContext.getEnvironment()).willReturn(environment);
 		return conditionContext;
+	}
+
+	static class OnTestDatabaseInitializationCondition extends OnDatabaseInitializationCondition {
+
+		OnTestDatabaseInitializationCondition(String... properties) {
+			super("Test", properties);
+		}
+
 	}
 
 }
