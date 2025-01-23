@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -62,7 +61,7 @@ public class OAuth2ResourceServerProperties {
 		/**
 		 * JSON Web Algorithms used for verifying the digital signatures.
 		 */
-		private List<String> jwsAlgorithms = Arrays.asList("RS256");
+		private List<String> jwsAlgorithms = new ArrayList<>(List.of("RS256"));
 
 		/**
 		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0

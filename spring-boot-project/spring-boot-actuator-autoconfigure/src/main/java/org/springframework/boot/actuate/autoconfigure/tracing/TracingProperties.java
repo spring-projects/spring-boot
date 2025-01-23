@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,12 +199,12 @@ public class TracingProperties {
 		/**
 		 * Tracing context propagation types produced by the application.
 		 */
-		private List<PropagationType> produce = List.of(PropagationType.W3C);
+		private List<PropagationType> produce = new ArrayList<>(List.of(PropagationType.W3C));
 
 		/**
 		 * Tracing context propagation types consumed by the application.
 		 */
-		private List<PropagationType> consume = List.of(PropagationType.values());
+		private List<PropagationType> consume = new ArrayList<>(List.of(PropagationType.values()));
 
 		public void setType(List<PropagationType> type) {
 			this.type = type;

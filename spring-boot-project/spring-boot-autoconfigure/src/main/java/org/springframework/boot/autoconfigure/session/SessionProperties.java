@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.session;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -88,7 +87,7 @@ public class SessionProperties {
 		 * Session repository filter dispatcher types.
 		 */
 		private Set<DispatcherType> filterDispatcherTypes = new HashSet<>(
-				Arrays.asList(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
+				Set.of(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST));
 
 		public int getFilterOrder() {
 			return this.filterOrder;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.quartz;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +154,7 @@ public class QuartzProperties {
 		/**
 		 * Prefixes for single-line comments in SQL initialization scripts.
 		 */
-		private List<String> commentPrefix = new ArrayList<>(Arrays.asList("#", "--"));
+		private List<String> commentPrefix = new ArrayList<>(List.of("#", "--"));
 
 		public String getSchema() {
 			return this.schema;
