@@ -53,7 +53,7 @@ public class H2ConsoleProperties {
 		this.path = path;
 	}
 
-	public boolean getEnabled() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
