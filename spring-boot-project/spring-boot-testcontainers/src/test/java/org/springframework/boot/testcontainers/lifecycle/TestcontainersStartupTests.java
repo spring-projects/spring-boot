@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,13 @@
 package org.springframework.boot.testcontainers.lifecycle;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.mock.env.MockEnvironment;
@@ -40,6 +43,16 @@ class TestcontainersStartupTests {
 	private final AtomicInteger counter = new AtomicInteger();
 
 	@Test
+	void startSingleStartsOnlyOnce() {
+		TestStartable startable = new TestStartable();
+		assertThat(startable.startCount).isZero();
+		TestcontainersStartup.start(startable);
+		assertThat(startable.startCount).isOne();
+		TestcontainersStartup.start(startable);
+		assertThat(startable.startCount).isOne();
+	}
+
+	@Test
 	void startWhenSquentialStartsSequentially() {
 		List<TestStartable> startables = createTestStartables(100);
 		TestcontainersStartup.SEQUENTIAL.start(startables);
@@ -50,10 +63,67 @@ class TestcontainersStartupTests {
 	}
 
 	@Test
+	void startWhenSquentialStartsOnlyOnce() {
+		List<TestStartable> startables = createTestStartables(10);
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(startables.get(i).getStartCount()).isZero();
+		}
+		TestcontainersStartup.SEQUENTIAL.start(startables);
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(startables.get(i).getStartCount()).isOne();
+		}
+		TestcontainersStartup.SEQUENTIAL.start(startables);
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(startables.get(i).getStartCount()).isOne();
+		}
+	}
+
+	@Test
 	void startWhenParallelStartsInParallel() {
 		List<TestStartable> startables = createTestStartables(100);
 		TestcontainersStartup.PARALLEL.start(startables);
 		assertThat(startables.stream().map(TestStartable::getThreadName)).hasSizeGreaterThan(1);
+	}
+
+	@Test
+	void startWhenParallelStartsOnlyOnce() {
+		List<TestStartable> startables = createTestStartables(10);
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(startables.get(i).getStartCount()).isZero();
+		}
+		TestcontainersStartup.PARALLEL.start(startables);
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(startables.get(i).getStartCount()).isOne();
+		}
+		TestcontainersStartup.PARALLEL.start(startables);
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(startables.get(i).getStartCount()).isOne();
+		}
+	}
+
+	@Test
+	void startWhenParallelStartsDependenciesOnlyOnce() {
+		List<TestStartable> dependencies = createTestStartables(10);
+		TestStartable first = new TestStartable(dependencies);
+		TestStartable second = new TestStartable(dependencies);
+		List<TestStartable> startables = List.of(first, second);
+		assertThat(first.getStartCount()).isZero();
+		assertThat(second.getStartCount()).isZero();
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(dependencies.get(i).getStartCount()).isZero();
+		}
+		TestcontainersStartup.PARALLEL.start(startables);
+		assertThat(first.getStartCount()).isOne();
+		assertThat(second.getStartCount()).isOne();
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(dependencies.get(i).getStartCount()).isOne();
+		}
+		TestcontainersStartup.PARALLEL.start(startables);
+		assertThat(first.getStartCount()).isOne();
+		assertThat(second.getStartCount()).isOne();
+		for (int i = 0; i < startables.size(); i++) {
+			assertThat(dependencies.get(i).getStartCount()).isOne();
+		}
 	}
 
 	@Test
@@ -93,20 +163,43 @@ class TestcontainersStartupTests {
 		return testStartables;
 	}
 
-	private final class TestStartable implements Startable {
+	private class TestStartable extends GenericContainer<TestStartable> {
+
+		private int startCount;
 
 		private int index;
 
 		private String threadName;
 
+		TestStartable() {
+			super("test");
+		}
+
+		TestStartable(Collection<TestStartable> startables) {
+			super("test");
+			this.dependencies.addAll(startables);
+		}
+
+		@Override
+		public Set<Startable> getDependencies() {
+			return this.dependencies;
+		}
+
 		@Override
 		public void start() {
+			this.startCount++;
 			this.index = TestcontainersStartupTests.this.counter.getAndIncrement();
 			this.threadName = Thread.currentThread().getName();
 		}
 
 		@Override
 		public void stop() {
+			this.startCount--;
+		}
+
+		@Override
+		public boolean isRunning() {
+			return this.startCount > 0;
 		}
 
 		int getIndex() {
@@ -115,6 +208,10 @@ class TestcontainersStartupTests {
 
 		String getThreadName() {
 			return this.threadName;
+		}
+
+		int getStartCount() {
+			return this.startCount;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class ImagePlatform {
 	private final String variant;
 
 	ImagePlatform(String os, String architecture, String variant) {
-		Assert.hasText(os, "OS must not be empty");
+		Assert.hasText(os, "'os' must not be empty");
 		this.os = os;
 		this.architecture = architecture;
 		this.variant = variant;
@@ -78,14 +78,14 @@ public class ImagePlatform {
 	 * @return an {@link ImagePlatform} instance
 	 */
 	public static ImagePlatform of(String value) {
-		Assert.hasText(value, "Value must not be empty");
+		Assert.hasText(value, "'value' must not be empty");
 		String[] split = value.split("/+");
 		return switch (split.length) {
 			case 1 -> new ImagePlatform(split[0], null, null);
 			case 2 -> new ImagePlatform(split[0], split[1], null);
 			case 3 -> new ImagePlatform(split[0], split[1], split[2]);
 			default -> throw new IllegalArgumentException(
-					"ImagePlatform value '" + value + "' must be in the form of os[/architecture[/variant]]");
+					"'value' [" + value + "] must be in the form 'os[/architecture[/variant]]'");
 		};
 	}
 

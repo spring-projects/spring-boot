@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public interface ContextConsumer<C extends ApplicationContext> {
 	 * @since 2.6.0
 	 */
 	default ContextConsumer<C> andThen(ContextConsumer<? super C> after) {
-		Assert.notNull(after, "After must not be null");
+		Assert.notNull(after, "'after' must not be null");
 		return (context) -> {
 			accept(context);
 			after.accept(context);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,8 +94,8 @@ public class NettyWebServer implements WebServer {
 	 */
 	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
 			Shutdown shutdown, ReactorResourceFactory resourceFactory) {
-		Assert.notNull(httpServer, "HttpServer must not be null");
-		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
+		Assert.notNull(httpServer, "'httpServer' must not be null");
+		Assert.notNull(handlerAdapter, "'handlerAdapter' must not be null");
 		this.lifecycleTimeout = lifecycleTimeout;
 		this.handler = handlerAdapter;
 		this.httpServer = httpServer.channelGroup(new DefaultChannelGroup(new DefaultEventExecutor()));
@@ -162,7 +162,7 @@ public class NettyWebServer implements WebServer {
 		}
 		if (this.resourceFactory != null) {
 			LoopResources resources = this.resourceFactory.getLoopResources();
-			Assert.notNull(resources, "No LoopResources: is ReactorResourceFactory not initialized yet?");
+			Assert.state(resources != null, "No LoopResources: is ReactorResourceFactory not initialized yet?");
 			server = server.runOn(resources);
 		}
 		if (this.lifecycleTimeout != null) {

@@ -25,7 +25,7 @@ jobs:
           gradle-cache-read-only: false
           publish: true
       - name: Stage Release
-        uses: spring-io/artifactory-deploy-action@26bbe925a75f4f863e1e529e85be2d0093cac116 # v0.0.1
+        uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
         with:
           build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', steps.build-and-publish.outputs.version) || format('spring-boot-{0}', steps.build-and-publish.outputs.version) }}
           folder: 'deployment-repository'
@@ -78,7 +78,7 @@ jobs:
     runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
     steps:
       - name: Set up JFrog CLI
-        uses: jfrog/setup-jfrog-cli@9fe0f98bd45b19e6e931d457f4e98f8f84461fb5 # v4.4.1
+        uses: jfrog/setup-jfrog-cli@f748a0599171a192a2668afee8d0497f7c1069df # v4.5.6
         env:
           JF_ENV_SPRING: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_JF_ARTIFACTORY_SPRING || secrets.JF_ARTIFACTORY_SPRING }}
       - name: Promote open source build

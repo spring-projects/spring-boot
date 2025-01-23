@@ -570,18 +570,15 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		factory.setHttp2(http2);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
-				new HttpClientTransportOverHTTP2(new HTTP2Client()));
-		client.start();
-		try {
+
+		try (org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
+				new HttpClientTransportOverHTTP2(new HTTP2Client()))) {
+			client.start();
 			ContentResponse response = client.POST("http://localhost:" + this.webServer.getPort())
 				.body(new StringRequestContent("text/plain", "Hello World"))
 				.send();
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 			assertThat(response.getContentAsString()).isEqualTo("Hello World");
-		}
-		finally {
-			client.stop();
 		}
 	}
 

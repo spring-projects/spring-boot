@@ -61,8 +61,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private String name;
 
 	/**
-	 * Fully qualified name of the connection pool implementation to use. By default, it
-	 * is auto-detected from the classpath.
+	 * Fully qualified name of the DataSource implementation to use. By default, a
+	 * connection pool implementation is auto-detected from the classpath.
 	 */
 	private Class<? extends DataSource> type;
 

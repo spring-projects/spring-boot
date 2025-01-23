@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	 * @param name the name of the registration
 	 */
 	public void setName(String name) {
-		Assert.hasLength(name, "Name must not be empty");
+		Assert.hasLength(name, "'name' must not be empty");
 		this.name = name;
 	}
 
@@ -87,7 +87,7 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	 * @see #addInitParameter
 	 */
 	public void setInitParameters(Map<String, String> initParameters) {
-		Assert.notNull(initParameters, "InitParameters must not be null");
+		Assert.notNull(initParameters, "'initParameters' must not be null");
 		this.initParameters = new LinkedHashMap<>(initParameters);
 	}
 
@@ -105,7 +105,7 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	 * @param value the init-parameter value
 	 */
 	public void addInitParameter(String name, String value) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		this.initParameters.put(name, value);
 	}
 

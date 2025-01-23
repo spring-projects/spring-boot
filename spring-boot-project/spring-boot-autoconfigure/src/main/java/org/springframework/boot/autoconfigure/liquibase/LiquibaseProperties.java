@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,12 +164,22 @@ public class LiquibaseProperties {
 	 */
 	private UiService uiService;
 
+	/**
+	 * Whether to send product usage data and analytics to Liquibase.
+	 */
+	private Boolean analyticsEnabled;
+
+	/**
+	 * Liquibase Pro license key.
+	 */
+	private String licenseKey;
+
 	public String getChangeLog() {
 		return this.changeLog;
 	}
 
 	public void setChangeLog(String changeLog) {
-		Assert.notNull(changeLog, "ChangeLog must not be null");
+		Assert.notNull(changeLog, "'changeLog' must not be null");
 		this.changeLog = changeLog;
 	}
 
@@ -355,6 +365,22 @@ public class LiquibaseProperties {
 
 	public void setUiService(UiService uiService) {
 		this.uiService = uiService;
+	}
+
+	public Boolean getAnalyticsEnabled() {
+		return this.analyticsEnabled;
+	}
+
+	public void setAnalyticsEnabled(Boolean analyticsEnabled) {
+		this.analyticsEnabled = analyticsEnabled;
+	}
+
+	public String getLicenseKey() {
+		return this.licenseKey;
+	}
+
+	public void setLicenseKey(String licenseKey) {
+		this.licenseKey = licenseKey;
 	}
 
 	/**

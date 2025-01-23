@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class ClickHouseEnvironment {
 	}
 
 	private String extractPassword(Map<String, String> env) {
-		boolean allowEmpty = Boolean.parseBoolean(env.getOrDefault("ALLOW_EMPTY_PASSWORD", Boolean.FALSE.toString()));
+		boolean allowEmpty = env.containsKey("ALLOW_EMPTY_PASSWORD");
 		String password = env.get("CLICKHOUSE_PASSWORD");
 		Assert.state(StringUtils.hasLength(password) || allowEmpty, "No ClickHouse password found");
 		return (password != null) ? password : "";

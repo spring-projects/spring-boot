@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,18 @@ class PropertiesRedisConnectionDetailsTests {
 		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
 		assertThat(standalone.getHost()).isEqualTo("example.com");
 		assertThat(standalone.getPort()).isEqualTo(1234);
-		assertThat(standalone.getDatabase()).isEqualTo(5);
+		assertThat(standalone.getDatabase()).isEqualTo(9999);
+	}
+
+	@Test
+	void standaloneIsConfiguredFromUrlWithoutDatabase() {
+		this.properties.setUrl("redis://example.com:1234");
+		this.properties.setDatabase(5);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		RedisConnectionDetails.Standalone standalone = connectionDetails.getStandalone();
+		assertThat(standalone.getHost()).isEqualTo("example.com");
+		assertThat(standalone.getPort()).isEqualTo(1234);
+		assertThat(standalone.getDatabase()).isEqualTo(0);
 	}
 
 	@Test
@@ -133,9 +144,22 @@ class PropertiesRedisConnectionDetailsTests {
 		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
 		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
 		this.properties.setSentinel(sentinel);
+		this.properties.setDatabase(5);
 		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
 		assertThat(connectionDetails.getSentinel().getNodes()).containsExactly(new Node("localhost", 1111),
 				new Node("127.0.0.1", 2222), new Node("[::1]", 3333));
+		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(5);
+	}
+
+	@Test
+	void sentinelDatabaseIsConfiguredFromUrl() {
+		RedisProperties.Sentinel sentinel = new RedisProperties.Sentinel();
+		sentinel.setNodes(List.of("localhost:1111", "127.0.0.1:2222", "[::1]:3333"));
+		this.properties.setSentinel(sentinel);
+		this.properties.setUrl("redis://example.com:1234/9999");
+		this.properties.setDatabase(5);
+		PropertiesRedisConnectionDetails connectionDetails = new PropertiesRedisConnectionDetails(this.properties);
+		assertThat(connectionDetails.getSentinel().getDatabase()).isEqualTo(9999);
 	}
 
 }

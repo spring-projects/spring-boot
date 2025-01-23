@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBindException;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -51,6 +56,7 @@ import static org.mockito.Mockito.mock;
  * @author Marten Deinum
  * @author Stephane Nicoll
  * @author Shraddha Yeole
+ * @author Phillip Webb
  */
 class H2ConsoleAutoConfigurationTests {
 
@@ -163,6 +169,22 @@ class H2ConsoleAutoConfigurationTests {
 			.run((context) -> assertThat(context.isRunning()).isTrue());
 	}
 
+	@Test
+	@ExtendWith(OutputCaptureExtension.class)
+	void dataSourceIsNotInitializedEarly(CapturedOutput output) {
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+			.withConfiguration(AutoConfigurations.of(H2ConsoleAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(EarlyInitializationConfiguration.class)
+			.withPropertyValues("spring.h2.console.enabled=true", "server.port=0")
+			.run((context) -> {
+				try (Connection connection = context.getBean(DataSource.class).getConnection()) {
+					assertThat(output).contains("H2 console available at '/h2-console'. Database available at '"
+							+ connection.getMetaData().getURL() + "'");
+				}
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class FailingDataSourceConfiguration {
 
@@ -202,6 +224,17 @@ class H2ConsoleAutoConfigurationTests {
 			});
 
 			return dataSource;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EarlyInitializationConfiguration {
+
+		@Bean
+		DataSource dataSource(ConfigurableApplicationContext applicationContext) {
+			assertThat(applicationContext.getBeanFactory().isConfigurationFrozen()).isTrue();
+			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build();
 		}
 
 	}

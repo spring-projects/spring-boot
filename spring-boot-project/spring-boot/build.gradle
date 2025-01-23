@@ -96,9 +96,13 @@ dependencies {
 		exclude group: "org.eclipse.jetty", module: "jetty-servlet"
 		exclude group: "jakarta.mail", module: "jakarta.mail-api"
 	}
+	optional("org.vibur:vibur-dbcp")
 	optional("org.yaml:snakeyaml")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
+	optional("software.amazon.jdbc:aws-advanced-jdbc-wrapper") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.springframework:spring-core-test")
@@ -106,7 +110,6 @@ dependencies {
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
 	testImplementation("com.mysql:mysql-connector-j")
-	testImplementation("com.squareup.okhttp3:okhttp")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")

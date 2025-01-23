@@ -10,8 +10,8 @@ This section answers questions that arise from using messaging with Spring Boot.
 == Disable Transacted JMS Session
 
 If your JMS broker does not support transacted sessions, you have to disable the support of transactions altogether.
-If you create your own `JmsListenerContainerFactory`, there is nothing to do, since, by default it cannot be transacted.
-If you want to use the `DefaultJmsListenerContainerFactoryConfigurer` to reuse Spring Boot's default, you can disable transacted sessions, as follows:
+If you create your own javadoc:org.springframework.jms.config.JmsListenerContainerFactory[], there is nothing to do, since, by default it cannot be transacted.
+If you want to use the javadoc:org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer[] to reuse Spring Boot's default, you can disable transacted sessions, as follows:
 
 include-code::MyJmsConfiguration[]
 

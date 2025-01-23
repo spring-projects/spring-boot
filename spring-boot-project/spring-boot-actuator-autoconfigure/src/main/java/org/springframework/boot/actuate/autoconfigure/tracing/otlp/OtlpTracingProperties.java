@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for exporting traces using OTLP.
  *
  * @author Jonatan Ivanov
- * @since 3.1.0
+ * @since 3.4.0
  */
 @ConfigurationProperties("management.otlp.tracing")
 public class OtlpTracingProperties {

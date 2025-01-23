@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@
 package org.springframework.boot.docker.compose.service.connection.postgres;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import io.r2dbc.spi.Option;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionSource;
 import org.springframework.boot.docker.compose.service.connection.r2dbc.ConnectionFactoryOptionsBuilder;
+import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link R2dbcConnectionDetails}
@@ -44,7 +47,7 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactory
 
 	@Override
 	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new PostgresDbR2dbcDockerComposeConnectionDetails(source.getRunningService());
+		return new PostgresDbR2dbcDockerComposeConnectionDetails(source.getRunningService(), source.getEnvironment());
 	}
 
 	/**
@@ -53,21 +56,41 @@ class PostgresR2dbcDockerComposeConnectionDetailsFactory
 	static class PostgresDbR2dbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements R2dbcConnectionDetails {
 
+		private static final Option<String> APPLICATION_NAME = Option.valueOf("applicationName");
+
 		private static final ConnectionFactoryOptionsBuilder connectionFactoryOptionsBuilder = new ConnectionFactoryOptionsBuilder(
 				"postgresql", 5432);
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
-		PostgresDbR2dbcDockerComposeConnectionDetails(RunningService service) {
+		PostgresDbR2dbcDockerComposeConnectionDetails(RunningService service, Environment environment) {
 			super(service);
-			PostgresEnvironment environment = new PostgresEnvironment(service.env());
-			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, environment.getDatabase(),
-					environment.getUsername(), environment.getPassword());
+			this.connectionFactoryOptions = getConnectionFactoryOptions(service, environment);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
 			return this.connectionFactoryOptions;
+		}
+
+		private static ConnectionFactoryOptions getConnectionFactoryOptions(RunningService service,
+				Environment environment) {
+			PostgresEnvironment env = new PostgresEnvironment(service.env());
+			ConnectionFactoryOptions connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service,
+					env.getDatabase(), env.getUsername(), env.getPassword());
+			return addApplicationNameIfNecessary(connectionFactoryOptions, environment);
+		}
+
+		private static ConnectionFactoryOptions addApplicationNameIfNecessary(
+				ConnectionFactoryOptions connectionFactoryOptions, Environment environment) {
+			if (connectionFactoryOptions.hasOption(APPLICATION_NAME)) {
+				return connectionFactoryOptions;
+			}
+			String applicationName = environment.getProperty("spring.application.name");
+			if (!StringUtils.hasText(applicationName)) {
+				return connectionFactoryOptions;
+			}
+			return connectionFactoryOptions.mutate().option(APPLICATION_NAME, applicationName).build();
 		}
 
 	}

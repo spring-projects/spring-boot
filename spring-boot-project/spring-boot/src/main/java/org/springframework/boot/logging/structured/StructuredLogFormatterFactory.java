@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.boot.util.Instantiator.FailureHandler;
-import org.springframework.boot.util.LambdaSafe;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -82,8 +81,8 @@ public class StructuredLogFormatterFactory<E> {
 		this.logEventType = logEventType;
 		this.instantiator = new Instantiator<>(Object.class, (allAvailableParameters) -> {
 			allAvailableParameters.add(Environment.class, environment);
-			allAvailableParameters.add(StructureLoggingJsonMembersCustomizer.class,
-					(type) -> getStructureLoggingJsonMembersCustomizer(environment));
+			allAvailableParameters.add(StructuredLoggingJsonMembersCustomizer.class,
+					(type) -> getStructuredLoggingJsonMembersCustomizer(environment));
 			if (availableParameters != null) {
 				availableParameters.accept(allAvailableParameters);
 			}
@@ -92,27 +91,28 @@ public class StructuredLogFormatterFactory<E> {
 		commonFormatters.accept(this.commonFormatters);
 	}
 
-	StructureLoggingJsonMembersCustomizer<?> getStructureLoggingJsonMembersCustomizer(Environment environment) {
-		List<StructureLoggingJsonMembersCustomizer<?>> customizers = new ArrayList<>();
+	StructuredLoggingJsonMembersCustomizer<?> getStructuredLoggingJsonMembersCustomizer(Environment environment) {
+		List<StructuredLoggingJsonMembersCustomizer<?>> customizers = new ArrayList<>();
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		if (properties != null) {
 			customizers.add(new StructuredLoggingJsonPropertiesJsonMembersCustomizer(this.instantiator, properties));
 		}
-		customizers.addAll(loadStructureLoggingJsonMembersCustomizers());
+		customizers.addAll(loadStructuredLoggingJsonMembersCustomizers());
 		return (members) -> invokeCustomizers(customizers, members);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private List<StructureLoggingJsonMembersCustomizer<?>> loadStructureLoggingJsonMembersCustomizers() {
-		return (List) this.factoriesLoader.load(StructureLoggingJsonMembersCustomizer.class,
+	private List<StructuredLoggingJsonMembersCustomizer<?>> loadStructuredLoggingJsonMembersCustomizers() {
+		return (List) this.factoriesLoader.load(StructuredLoggingJsonMembersCustomizer.class,
 				ArgumentResolver.from(this.instantiator::getArg));
 	}
 
-	@SuppressWarnings("unchecked")
-	private void invokeCustomizers(List<StructureLoggingJsonMembersCustomizer<?>> customizers,
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void invokeCustomizers(List<StructuredLoggingJsonMembersCustomizer<?>> customizers,
 			Members<Object> members) {
-		LambdaSafe.callbacks(StructureLoggingJsonMembersCustomizer.class, customizers, members)
-			.invoke((customizer) -> customizer.customize(members));
+		for (StructuredLoggingJsonMembersCustomizer<?> customizer : customizers) {
+			((StructuredLoggingJsonMembersCustomizer) customizer).customize(members);
+		}
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class StructuredLogFormatterFactory<E> {
 	private void checkTypeArgument(Object formatter) {
 		Class<?> typeArgument = GenericTypeResolver.resolveTypeArgument(formatter.getClass(),
 				StructuredLogFormatter.class);
-		Assert.isTrue(this.logEventType.equals(typeArgument),
+		Assert.state(this.logEventType.equals(typeArgument),
 				() -> "Type argument of %s must be %s but was %s".formatted(formatter.getClass().getName(),
 						this.logEventType.getName(), (typeArgument != null) ? typeArgument.getName() : "null"));
 

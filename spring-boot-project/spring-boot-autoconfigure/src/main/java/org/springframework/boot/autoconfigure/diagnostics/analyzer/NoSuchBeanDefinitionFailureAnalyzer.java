@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,8 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 	private final ConditionEvaluationReport report;
 
 	NoSuchBeanDefinitionFailureAnalyzer(BeanFactory beanFactory) {
-		Assert.isInstanceOf(ConfigurableListableBeanFactory.class, beanFactory);
+		Assert.isTrue(beanFactory instanceof ConfigurableListableBeanFactory,
+				"'beanFactory' must be a ConfigurableListableBeanFactory");
 		this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
 		this.metadataReaderFactory = new CachingMetadataReaderFactory(this.beanFactory.getBeanClassLoader());
 		// Get early as won't be accessible once context has failed to start

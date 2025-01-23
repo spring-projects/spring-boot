@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,13 @@ public class SimpleFormatter extends Formatter {
 	public String format(LogRecord record) {
 		Date date = new Date(record.getMillis());
 		String source = record.getLoggerName();
+		String loggerName = record.getLoggerName();
+		String level = record.getLevel().getLocalizedName();
 		String message = formatMessage(record);
 		String throwable = getThrowable(record);
 		String thread = getThreadName();
-		return String.format(this.format, date, source, record.getLoggerName(), record.getLevel().getLocalizedName(),
-				message, throwable, thread, this.pid);
+		String pid = this.pid;
+		return String.format(this.format, date, source, loggerName, level, message, throwable, thread, pid);
 	}
 
 	private String getThrowable(LogRecord record) {

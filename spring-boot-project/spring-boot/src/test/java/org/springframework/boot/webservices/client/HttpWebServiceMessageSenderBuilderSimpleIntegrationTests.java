@@ -33,9 +33,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * available
  *
  * @author Stephane Nicoll
+ * @deprecated since 3.4.0 for removal in 3.6.0
  */
 @ClassPathExclusions({ "httpclient5-*.jar", "jetty-client-*.jar", "reactor-netty-http-*.jar" })
 @SuppressWarnings("removal")
+@Deprecated(since = "3.4.0", forRemoval = true)
 class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();

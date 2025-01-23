@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ import org.apache.pulsar.client.api.interceptor.ProducerInterceptor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.thread.Threading;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.context.annotation.Bean;
@@ -87,7 +87,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
-	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "false")
+	@ConditionalOnBooleanProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = false)
 	DefaultPulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
 			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider,
 			ObjectProvider<PulsarTopicBuilder> topicBuilderProvider) {
@@ -101,7 +101,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarProducerFactory.class)
-	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty(name = "spring.pulsar.producer.cache.enabled", matchIfMissing = true)
 	CachingPulsarProducerFactory<?> cachingPulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver,
 			ObjectProvider<ProducerBuilderCustomizer<?>> customizersProvider,
 			ObjectProvider<PulsarTopicBuilder> topicBuilderProvider) {
@@ -161,7 +161,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(PulsarAwareTransactionManager.class)
-	@ConditionalOnProperty(prefix = "spring.pulsar.transaction", name = "enabled")
+	@ConditionalOnBooleanProperty("spring.pulsar.transaction.enabled")
 	public PulsarTransactionManager pulsarTransactionManager(PulsarClient pulsarClient) {
 		return new PulsarTransactionManager(pulsarClient);
 	}

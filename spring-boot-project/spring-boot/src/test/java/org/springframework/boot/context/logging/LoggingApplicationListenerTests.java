@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,13 +168,13 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	@ClassPathExclusions("janino-*.jar")
-	void tryingToUseJaninoWhenItIsNotOnTheClasspathFailsGracefully(CapturedOutput output) {
-		addPropertiesToEnvironment(this.context, "logging.config=classpath:logback-janino.xml");
+	void throwableFromInitializeResultsInGracefulFailure(CapturedOutput output) {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, BrokenInitializationLoggingSystem.class.getName());
+		multicastEvent(this.listener,
+				new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
-		assertThat(output)
-			.contains("Logging system failed to initialize using configuration from 'classpath:logback-janino.xml'");
+		assertThat(output).contains("Deliberately broken");
 	}
 
 	@Test
@@ -708,6 +708,38 @@ class LoggingApplicationListenerTests {
 		@Override
 		public void cleanUp() {
 			this.cleanedUp = true;
+		}
+
+	}
+
+	static final class BrokenInitializationLoggingSystem extends LoggingSystem {
+
+		BrokenInitializationLoggingSystem(ClassLoader classLoader) {
+
+		}
+
+		@Override
+		public void beforeInitialize() {
+		}
+
+		@Override
+		public void initialize(LoggingInitializationContext initializationContext, String configLocation,
+				LogFile logFile) {
+			throw new Error("Deliberately broken");
+		}
+
+		@Override
+		public void setLogLevel(String loggerName, LogLevel level) {
+		}
+
+		@Override
+		public List<LoggerConfiguration> getLoggerConfigurations() {
+			return null;
+		}
+
+		@Override
+		public LoggerConfiguration getLoggerConfiguration(String loggerName) {
+			return null;
 		}
 
 	}

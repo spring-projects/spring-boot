@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,13 +78,13 @@ class StaticResourceRequestTests {
 	@Test
 	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
-			.withMessageContaining("Locations must not be null");
+			.withMessageContaining("'locations' must not be null");
 	}
 
 	@Test
 	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
-			.withMessageContaining("Locations must not be null");
+			.withMessageContaining("'locations' must not be null");
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {

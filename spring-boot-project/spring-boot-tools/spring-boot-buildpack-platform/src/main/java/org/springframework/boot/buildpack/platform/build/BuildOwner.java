@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ class BuildOwner implements Owner {
 	 * @throws IllegalStateException if the env does not contain the correct CNB variables
 	 */
 	static BuildOwner fromEnv(Map<String, String> env) {
-		Assert.notNull(env, "Env must not be null");
+		Assert.notNull(env, "'env' must not be null");
 		return new BuildOwner(env);
 	}
 

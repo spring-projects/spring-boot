@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   ci:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'

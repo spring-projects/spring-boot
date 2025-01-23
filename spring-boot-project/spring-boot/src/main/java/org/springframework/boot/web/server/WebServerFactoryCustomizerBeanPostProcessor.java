@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public class WebServerFactoryCustomizerBeanPostProcessor implements BeanPostProc
 
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
-		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory,
-				"WebServerCustomizerBeanPostProcessor can only be used with a ListableBeanFactory");
+		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory, "'beanFactory' must be a ListableBeanFactory");
 		this.beanFactory = (ListableBeanFactory) beanFactory;
 	}
 

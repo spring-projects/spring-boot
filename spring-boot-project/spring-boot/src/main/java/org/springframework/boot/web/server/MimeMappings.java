@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * value
 	 */
 	public MimeMappings(Map<String, String> mappings) {
-		Assert.notNull(mappings, "Mappings must not be null");
+		Assert.notNull(mappings, "'mappings' must not be null");
 		this.map = new LinkedHashMap<>();
 		mappings.forEach(this::add);
 	}
@@ -81,7 +81,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @param mutable if the new object should be mutable.
 	 */
 	MimeMappings(MimeMappings mappings, boolean mutable) {
-		Assert.notNull(mappings, "Mappings must not be null");
+		Assert.notNull(mappings, "'mappings' must not be null");
 		this.map = (mutable ? new LinkedHashMap<>(mappings.map) : Collections.unmodifiableMap(mappings.map));
 	}
 
@@ -92,8 +92,8 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @return any previous mapping or {@code null}
 	 */
 	public String add(String extension, String mimeType) {
-		Assert.notNull(extension, "Extension must not be null");
-		Assert.notNull(mimeType, "MimeType must not be null");
+		Assert.notNull(extension, "'extension' must not be null");
+		Assert.notNull(mimeType, "'mimeType' must not be null");
 		Mapping previous = this.map.put(extension.toLowerCase(Locale.ENGLISH), new Mapping(extension, mimeType));
 		return (previous != null) ? previous.getMimeType() : null;
 	}
@@ -104,7 +104,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @return the removed mime mapping or {@code null} if no item was removed
 	 */
 	public String remove(String extension) {
-		Assert.notNull(extension, "Extension must not be null");
+		Assert.notNull(extension, "'extension' must not be null");
 		Mapping previous = this.map.remove(extension.toLowerCase(Locale.ENGLISH));
 		return (previous != null) ? previous.getMimeType() : null;
 	}
@@ -115,7 +115,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @return a mime mapping or {@code null}
 	 */
 	public String get(String extension) {
-		Assert.notNull(extension, "Extension must not be null");
+		Assert.notNull(extension, "'extension' must not be null");
 		Mapping mapping = this.map.get(extension.toLowerCase(Locale.ENGLISH));
 		return (mapping != null) ? mapping.getMimeType() : null;
 	}
@@ -163,7 +163,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @return an unmodifiable view of the specified mappings.
 	 */
 	public static MimeMappings unmodifiableMappings(MimeMappings mappings) {
-		Assert.notNull(mappings, "Mappings must not be null");
+		Assert.notNull(mappings, "'mappings' must not be null");
 		return new MimeMappings(mappings, false);
 	}
 
@@ -175,7 +175,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 	 * @since 3.0.0
 	 */
 	public static MimeMappings lazyCopy(MimeMappings mappings) {
-		Assert.notNull(mappings, "Mappings must not be null");
+		Assert.notNull(mappings, "'mappings' must not be null");
 		return new LazyMimeMappingsCopy(mappings);
 	}
 
@@ -189,8 +189,8 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		private final String mimeType;
 
 		public Mapping(String extension, String mimeType) {
-			Assert.notNull(extension, "Extension must not be null");
-			Assert.notNull(mimeType, "MimeType must not be null");
+			Assert.notNull(extension, "'extension' must not be null");
+			Assert.notNull(mimeType, "'mimeType' must not be null");
 			this.extension = extension;
 			this.mimeType = mimeType;
 		}
@@ -294,7 +294,7 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		@Override
 		public String get(String extension) {
-			Assert.notNull(extension, "Extension must not be null");
+			Assert.notNull(extension, "'extension' must not be null");
 			extension = extension.toLowerCase(Locale.ENGLISH);
 			Map<String, Mapping> loaded = this.loaded;
 			if (loaded != null) {

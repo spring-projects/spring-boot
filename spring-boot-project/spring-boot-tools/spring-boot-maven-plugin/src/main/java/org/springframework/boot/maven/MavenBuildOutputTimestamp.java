@@ -21,7 +21,6 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 
 import org.springframework.util.StringUtils;
 
@@ -86,10 +85,7 @@ class MavenBuildOutputTimestamp {
 			return null;
 		}
 		try {
-			Instant instant = OffsetDateTime.parse(this.timestamp)
-				.withOffsetSameInstant(ZoneOffset.UTC)
-				.truncatedTo(ChronoUnit.SECONDS)
-				.toInstant();
+			Instant instant = OffsetDateTime.parse(this.timestamp).withOffsetSameInstant(ZoneOffset.UTC).toInstant();
 			if (instant.isBefore(DATE_MIN) || instant.isAfter(DATE_MAX)) {
 				throw new IllegalArgumentException(
 						String.format("'%s' is not within the valid range %s to %s", instant, DATE_MIN, DATE_MAX));

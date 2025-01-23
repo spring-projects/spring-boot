@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ public class WebServiceTemplateBuilder {
 	 * @see HttpWebServiceMessageSenderBuilder
 	 */
 	public WebServiceTemplateBuilder httpMessageSenderFactory(WebServiceMessageSenderFactory messageSenderFactory) {
-		Assert.notNull(this.messageSenders, "HttpWebServiceMessageSenderBuilder must not be null");
+		Assert.notNull(messageSenderFactory, "'messageSenderFactory' must not be null");
 		return new WebServiceTemplateBuilder(messageSenderFactory, this.detectHttpMessageSender, this.interceptors,
 				this.internalCustomizers, this.customizers, this.messageSenders, this.marshaller, this.unmarshaller,
 				this.destinationProvider, this.transformerFactoryClass, this.messageFactory);
@@ -152,7 +152,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #detectHttpMessageSender(boolean)
 	 */
 	public WebServiceTemplateBuilder messageSenders(WebServiceMessageSender... messageSenders) {
-		Assert.notNull(messageSenders, "MessageSenders must not be null");
+		Assert.notNull(messageSenders, "'messageSenders' must not be null");
 		return messageSenders(Arrays.asList(messageSenders));
 	}
 
@@ -168,7 +168,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #detectHttpMessageSender(boolean)
 	 */
 	public WebServiceTemplateBuilder messageSenders(Collection<? extends WebServiceMessageSender> messageSenders) {
-		Assert.notNull(messageSenders, "MessageSenders must not be null");
+		Assert.notNull(messageSenders, "'messageSenders' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers, this.customizers, this.messageSenders.set(messageSenders),
 				this.marshaller, this.unmarshaller, this.destinationProvider, this.transformerFactoryClass,
@@ -183,7 +183,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #messageSenders(WebServiceMessageSender...)
 	 */
 	public WebServiceTemplateBuilder additionalMessageSenders(WebServiceMessageSender... messageSenders) {
-		Assert.notNull(messageSenders, "MessageSenders must not be null");
+		Assert.notNull(messageSenders, "'messageSenders' must not be null");
 		return additionalMessageSenders(Arrays.asList(messageSenders));
 	}
 
@@ -196,7 +196,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder additionalMessageSenders(
 			Collection<? extends WebServiceMessageSender> messageSenders) {
-		Assert.notNull(messageSenders, "MessageSenders must not be null");
+		Assert.notNull(messageSenders, "'messageSenders' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers, this.customizers, this.messageSenders.add(messageSenders),
 				this.marshaller, this.unmarshaller, this.destinationProvider, this.transformerFactoryClass,
@@ -212,7 +212,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #additionalInterceptors(ClientInterceptor...)
 	 */
 	public WebServiceTemplateBuilder interceptors(ClientInterceptor... interceptors) {
-		Assert.notNull(interceptors, "Interceptors must not be null");
+		Assert.notNull(interceptors, "'interceptors' must not be null");
 		return interceptors(Arrays.asList(interceptors));
 	}
 
@@ -225,7 +225,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #additionalInterceptors(Collection)
 	 */
 	public WebServiceTemplateBuilder interceptors(Collection<? extends ClientInterceptor> interceptors) {
-		Assert.notNull(interceptors, "Interceptors must not be null");
+		Assert.notNull(interceptors, "'interceptors' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				append(Collections.<ClientInterceptor>emptySet(), interceptors), this.internalCustomizers,
 				this.customizers, this.messageSenders, this.marshaller, this.unmarshaller, this.destinationProvider,
@@ -240,7 +240,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #interceptors(ClientInterceptor...)
 	 */
 	public WebServiceTemplateBuilder additionalInterceptors(ClientInterceptor... interceptors) {
-		Assert.notNull(interceptors, "Interceptors must not be null");
+		Assert.notNull(interceptors, "'interceptors' must not be null");
 		return additionalInterceptors(Arrays.asList(interceptors));
 	}
 
@@ -252,7 +252,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #interceptors(Collection)
 	 */
 	public WebServiceTemplateBuilder additionalInterceptors(Collection<? extends ClientInterceptor> interceptors) {
-		Assert.notNull(interceptors, "Interceptors must not be null");
+		Assert.notNull(interceptors, "'interceptors' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				append(this.interceptors, interceptors), this.internalCustomizers, this.customizers,
 				this.messageSenders, this.marshaller, this.unmarshaller, this.destinationProvider,
@@ -269,7 +269,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #additionalCustomizers(WebServiceTemplateCustomizer...)
 	 */
 	public WebServiceTemplateBuilder customizers(WebServiceTemplateCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return customizers(Arrays.asList(customizers));
 	}
 
@@ -283,7 +283,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #additionalCustomizers(Collection)
 	 */
 	public WebServiceTemplateBuilder customizers(Collection<? extends WebServiceTemplateCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers,
 				append(Collections.<WebServiceTemplateCustomizer>emptySet(), customizers), this.messageSenders,
@@ -300,7 +300,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #customizers(WebServiceTemplateCustomizer...)
 	 */
 	public WebServiceTemplateBuilder additionalCustomizers(WebServiceTemplateCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return additionalCustomizers(Arrays.asList(customizers));
 	}
 
@@ -314,7 +314,7 @@ public class WebServiceTemplateBuilder {
 	 */
 	public WebServiceTemplateBuilder additionalCustomizers(
 			Collection<? extends WebServiceTemplateCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
+		Assert.notNull(customizers, "'customizers' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers, append(this.customizers, customizers), this.messageSenders,
 				this.marshaller, this.unmarshaller, this.destinationProvider, this.transformerFactoryClass,
@@ -358,7 +358,7 @@ public class WebServiceTemplateBuilder {
 	 * @see WebServiceTemplate#setMessageFactory(WebServiceMessageFactory)
 	 */
 	public WebServiceTemplateBuilder setWebServiceMessageFactory(WebServiceMessageFactory messageFactory) {
-		Assert.notNull(messageFactory, "MessageFactory must not be null");
+		Assert.notNull(messageFactory, "'messageFactory' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers, this.customizers, this.messageSenders, this.marshaller,
 				this.unmarshaller, this.destinationProvider, this.transformerFactoryClass, messageFactory);
@@ -425,7 +425,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #setDestinationProvider(DestinationProvider)
 	 */
 	public WebServiceTemplateBuilder setDefaultUri(String defaultUri) {
-		Assert.hasText(defaultUri, "DefaultUri must not be empty");
+		Assert.hasText(defaultUri, "'defaultUri' must not be empty");
 		return setDestinationProvider(() -> URI.create(defaultUri));
 	}
 
@@ -438,7 +438,7 @@ public class WebServiceTemplateBuilder {
 	 * @see WebServiceTemplate#setDestinationProvider(DestinationProvider)
 	 */
 	public WebServiceTemplateBuilder setDestinationProvider(DestinationProvider destinationProvider) {
-		Assert.notNull(destinationProvider, "DestinationProvider must not be null");
+		Assert.notNull(destinationProvider, "'destinationProvider' must not be null");
 		return new WebServiceTemplateBuilder(this.httpMessageSenderFactory, this.detectHttpMessageSender,
 				this.interceptors, this.internalCustomizers, this.customizers, this.messageSenders, this.marshaller,
 				this.unmarshaller, destinationProvider, this.transformerFactoryClass, this.messageFactory);
@@ -465,7 +465,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #configure(WebServiceTemplate)
 	 */
 	public <T extends WebServiceTemplate> T build(Class<T> webServiceTemplateClass) {
-		Assert.notNull(webServiceTemplateClass, "WebServiceTemplateClass must not be null");
+		Assert.notNull(webServiceTemplateClass, "'webServiceTemplateClass' must not be null");
 		return configure(BeanUtils.instantiateClass(webServiceTemplateClass));
 	}
 
@@ -478,7 +478,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #build(Class)
 	 */
 	public <T extends WebServiceTemplate> T configure(T webServiceTemplate) {
-		Assert.notNull(webServiceTemplate, "WebServiceTemplate must not be null");
+		Assert.notNull(webServiceTemplate, "'webServiceTemplate' must not be null");
 		configureMessageSenders(webServiceTemplate);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		applyCustomizers(webServiceTemplate, this.internalCustomizers);

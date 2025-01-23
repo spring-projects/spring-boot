@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,18 @@ import java.util.stream.Stream;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggerContextListener;
+import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import ch.qos.logback.core.status.OnConsoleStatusListener;
+import ch.qos.logback.core.status.OnErrorConsoleStatusListener;
+import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.status.StatusListener;
 import ch.qos.logback.core.util.DynamicClassLoadingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -649,10 +655,41 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			assertThat(output).contains("LevelChangePropagator")
 				.contains("SizeAndTimeBasedFileNamingAndTriggeringPolicy")
 				.contains("DebugLogbackConfigurator");
+			LoggerContext loggerContext = this.logger.getLoggerContext();
+			List<StatusListener> statusListeners = loggerContext.getStatusManager().getCopyOfStatusListenerList();
+			assertThat(statusListeners).hasSize(1);
+			StatusListener statusListener = statusListeners.get(0);
+			assertThat(statusListener).isInstanceOf(OnConsoleStatusListener.class);
 		}
 		finally {
 			System.clearProperty("logback.debug");
 		}
+	}
+
+	@Test
+	void logbackErrorStatusListenerShouldBeRegistered(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, null, getLogFile(tmpDir() + "/tmp.log", null));
+		LoggerContext loggerContext = this.logger.getLoggerContext();
+		List<StatusListener> statusListeners = loggerContext.getStatusManager().getCopyOfStatusListenerList();
+		assertThat(statusListeners).hasSize(1);
+		StatusListener statusListener = statusListeners.get(0);
+		assertThat(statusListener).isInstanceOf(FilteringStatusListener.class);
+		assertThat(statusListener).hasFieldOrPropertyWithValue("levelThreshold", Status.ERROR);
+		assertThat(statusListener).extracting("delegate").isInstanceOf(OnErrorConsoleStatusListener.class);
+		AppenderBase<ILoggingEvent> appender = new AppenderBase<>() {
+
+			@Override
+			protected void append(ILoggingEvent eventObject) {
+				throw new IllegalStateException("Fail to append");
+			}
+
+		};
+		this.logger.addAppender(appender);
+		appender.setContext(loggerContext);
+		appender.start();
+		this.logger.info("Hello world");
+		assertThat(output).contains("Fail to append").contains("Hello world");
 	}
 
 	@Test

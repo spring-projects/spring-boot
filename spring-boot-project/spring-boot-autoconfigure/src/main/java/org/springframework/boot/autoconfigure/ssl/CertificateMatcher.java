@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,10 +50,10 @@ class CertificateMatcher {
 	private final byte[] generatedSignature;
 
 	CertificateMatcher(PrivateKey privateKey) {
-		Assert.notNull(privateKey, "Private key must not be null");
+		Assert.notNull(privateKey, "'privateKey' must not be null");
 		this.privateKey = privateKey;
 		this.signature = createSignature(privateKey);
-		Assert.notNull(this.signature, "Failed to create signature");
+		Assert.state(this.signature != null, "Failed to create signature");
 		this.generatedSignature = sign(this.signature, privateKey);
 	}
 

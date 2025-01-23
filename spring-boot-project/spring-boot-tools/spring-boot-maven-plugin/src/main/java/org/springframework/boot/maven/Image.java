@@ -257,7 +257,7 @@ public class Image {
 		if (StringUtils.hasText(this.runImage)) {
 			request = request.withRunImage(ImageReference.of(this.runImage));
 		}
-		if (this.env != null && !this.env.isEmpty()) {
+		if (!CollectionUtils.isEmpty(this.env)) {
 			request = request.withEnv(this.env);
 		}
 		if (this.cleanCache != null) {
@@ -298,7 +298,7 @@ public class Image {
 		if (this.securityOptions != null) {
 			request = request.withSecurityOptions(this.securityOptions);
 		}
-		if (this.imagePlatform != null) {
+		if (StringUtils.hasText(this.imagePlatform)) {
 			request = request.withImagePlatform(this.imagePlatform);
 		}
 		return request;

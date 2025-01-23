@@ -101,3 +101,7 @@ dependencies {
 	testImplementation("org.springframework.pulsar:spring-pulsar")
 	testImplementation("org.testcontainers:junit-jupiter")
 }
+
+dockerTest {
+	jvmArgs += "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED"
+}

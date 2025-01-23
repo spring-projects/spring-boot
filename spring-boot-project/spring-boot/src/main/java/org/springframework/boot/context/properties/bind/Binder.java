@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,9 +184,9 @@ public class Binder {
 	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
 			List<ConversionService> conversionServices, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
-		Assert.notNull(sources, "Sources must not be null");
+		Assert.notNull(sources, "'sources' must not be null");
 		for (ConfigurationPropertySource source : sources) {
-			Assert.notNull(source, "Sources must not contain null elements");
+			Assert.notNull(source, "'sources' must not contain null elements");
 		}
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
@@ -332,8 +332,8 @@ public class Binder {
 	}
 
 	private <T> T bind(ConfigurationPropertyName name, Bindable<T> target, BindHandler handler, boolean create) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(target, "Target must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(target, "'target' must not be null");
 		handler = (handler != null) ? handler : this.defaultBindHandler;
 		Context context = new Context();
 		return bind(name, target, handler, context, false, create);

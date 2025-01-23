@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,8 +90,8 @@ public interface SslManagerBundle {
 	 * @return a new {@link SslManagerBundle} instance
 	 */
 	static SslManagerBundle of(KeyManagerFactory keyManagerFactory, TrustManagerFactory trustManagerFactory) {
-		Assert.notNull(keyManagerFactory, "KeyManagerFactory must not be null");
-		Assert.notNull(trustManagerFactory, "TrustManagerFactory must not be null");
+		Assert.notNull(keyManagerFactory, "'keyManagerFactory' must not be null");
+		Assert.notNull(trustManagerFactory, "'trustManagerFactory' must not be null");
 		return new SslManagerBundle() {
 
 			@Override

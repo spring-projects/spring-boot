@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,13 +32,13 @@ class StatusTests {
 	@Test
 	void createWhenCodeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Status(null, ""))
-			.withMessage("Code must not be null");
+			.withMessage("'code' must not be null");
 	}
 
 	@Test
 	void createWhenDescriptionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Status("code", null))
-			.withMessage("Description must not be null");
+			.withMessage("'description' must not be null");
 	}
 
 	@Test

@@ -65,7 +65,6 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.kairos.KairosMetri
 org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic.NewRelicMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusSimpleclientMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver.StackdriverMetricsExportAutoConfiguration
@@ -105,6 +104,7 @@ org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSec
 org.springframework.boot.actuate.autoconfigure.session.SessionsEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.startup.StartupEndpointAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.ssl.SslHealthContributorAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.ssl.SslObservabilityAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration
@@ -112,7 +112,6 @@ org.springframework.boot.actuate.autoconfigure.tracing.NoopTracerAutoConfigurati
 org.springframework.boot.actuate.autoconfigure.tracing.OpenTelemetryTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.otlp.OtlpTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusExemplarsAutoConfiguration
-org.springframework.boot.actuate.autoconfigure.tracing.prometheus.PrometheusSimpleclientExemplarsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.wavefront.WavefrontTracingAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration

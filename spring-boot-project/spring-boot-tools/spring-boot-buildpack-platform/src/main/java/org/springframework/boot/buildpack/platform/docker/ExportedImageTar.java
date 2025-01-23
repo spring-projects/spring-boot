@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -126,7 +127,8 @@ class ExportedImageTar implements Closeable {
 					entry = tar.getNextEntry();
 				}
 				Assert.state(index != null || manifest != null,
-						"Exported image '%s' does not contain 'index.json' or 'manifest.json'".formatted(reference));
+						() -> "Exported image '%s' does not contain 'index.json' or 'manifest.json'"
+							.formatted(reference));
 				return (index != null) ? new IndexLayerArchiveFactory(tarFile, index)
 						: new ManifestLayerArchiveFactory(tarFile, manifest);
 			}
@@ -142,23 +144,40 @@ class ExportedImageTar implements Closeable {
 		private final Map<String, String> layerMediaTypes;
 
 		IndexLayerArchiveFactory(Path tarFile, ImageArchiveIndex index) throws IOException {
-			Set<String> manifestDigests = getDigests(index, this::isManifest);
-			List<ManifestList> manifestLists = getManifestLists(tarFile, getDigests(index, this::isManifestList));
+			this(tarFile, withNestedIndexes(tarFile, index));
+		}
+
+		IndexLayerArchiveFactory(Path tarFile, List<ImageArchiveIndex> indexes) throws IOException {
+			Set<String> manifestDigests = getDigests(indexes, this::isManifest);
+			Set<String> manifestListDigests = getDigests(indexes, IndexLayerArchiveFactory::isManifestList);
+			List<ManifestList> manifestLists = getManifestLists(tarFile, manifestListDigests);
 			List<Manifest> manifests = getManifests(tarFile, manifestDigests, manifestLists);
 			this.layerMediaTypes = manifests.stream()
 				.flatMap((manifest) -> manifest.getLayers().stream())
-				.collect(Collectors.toMap(this::getEntryName, BlobReference::getMediaType));
+				.collect(Collectors.toMap(IndexLayerArchiveFactory::getEntryName, BlobReference::getMediaType));
 		}
 
-		private Set<String> getDigests(ImageArchiveIndex index, Predicate<BlobReference> predicate) {
-			return index.getManifests()
-				.stream()
+		private static List<ImageArchiveIndex> withNestedIndexes(Path tarFile, ImageArchiveIndex index)
+				throws IOException {
+			Set<String> indexDigests = getDigests(Stream.of(index), IndexLayerArchiveFactory::isIndex);
+			List<ImageArchiveIndex> indexes = new ArrayList<>();
+			indexes.add(index);
+			indexes.addAll(getDigestMatches(tarFile, indexDigests, ImageArchiveIndex::of));
+			return indexes;
+		}
+
+		private static Set<String> getDigests(List<ImageArchiveIndex> indexes, Predicate<BlobReference> predicate) {
+			return getDigests(indexes.stream(), predicate);
+		}
+
+		private static Set<String> getDigests(Stream<ImageArchiveIndex> indexes, Predicate<BlobReference> predicate) {
+			return indexes.flatMap((index) -> index.getManifests().stream())
 				.filter(predicate)
 				.map(BlobReference::getDigest)
 				.collect(Collectors.toUnmodifiableSet());
 		}
 
-		private List<ManifestList> getManifestLists(Path tarFile, Set<String> digests) throws IOException {
+		private static List<ManifestList> getManifestLists(Path tarFile, Set<String> digests) throws IOException {
 			return getDigestMatches(tarFile, digests, ManifestList::of);
 		}
 
@@ -173,12 +192,14 @@ class ExportedImageTar implements Closeable {
 			return getDigestMatches(tarFile, digests, Manifest::of);
 		}
 
-		private <T> List<T> getDigestMatches(Path tarFile, Set<String> digests,
+		private static <T> List<T> getDigestMatches(Path tarFile, Set<String> digests,
 				ThrowingFunction<InputStream, T> factory) throws IOException {
 			if (digests.isEmpty()) {
 				return Collections.emptyList();
 			}
-			Set<String> names = digests.stream().map(this::getEntryName).collect(Collectors.toUnmodifiableSet());
+			Set<String> names = digests.stream()
+				.map(IndexLayerArchiveFactory::getEntryName)
+				.collect(Collectors.toUnmodifiableSet());
 			List<T> result = new ArrayList<>();
 			try (TarArchiveInputStream tar = openTar(tarFile)) {
 				TarArchiveEntry entry = tar.getNextEntry();
@@ -197,19 +218,23 @@ class ExportedImageTar implements Closeable {
 					|| isJsonWithPrefix(reference.getMediaType(), "application/vnd.docker.distribution.manifest.v");
 		}
 
-		private boolean isManifestList(BlobReference reference) {
+		private static boolean isIndex(BlobReference reference) {
+			return isJsonWithPrefix(reference.getMediaType(), "application/vnd.oci.image.index.v");
+		}
+
+		private static boolean isManifestList(BlobReference reference) {
 			return isJsonWithPrefix(reference.getMediaType(), "application/vnd.docker.distribution.manifest.list.v");
 		}
 
-		private boolean isJsonWithPrefix(String mediaType, String prefix) {
+		private static boolean isJsonWithPrefix(String mediaType, String prefix) {
 			return mediaType.startsWith(prefix) && mediaType.endsWith("+json");
 		}
 
-		private String getEntryName(BlobReference reference) {
+		private static String getEntryName(BlobReference reference) {
 			return getEntryName(reference.getDigest());
 		}
 
-		private String getEntryName(String digest) {
+		private static String getEntryName(String digest) {
 			return "blobs/" + digest.replace(':', '/');
 		}
 
@@ -223,10 +248,10 @@ class ExportedImageTar implements Closeable {
 		}
 
 		private Compression getCompression(String mediaType) {
-			if (mediaType.endsWith(".tar.gzip")) {
+			if (mediaType.endsWith(".tar.gzip") || mediaType.endsWith(".tar+gzip")) {
 				return Compression.GZIP;
 			}
-			if (mediaType.endsWith(".tar.zstd")) {
+			if (mediaType.endsWith(".tar.zstd") || mediaType.endsWith(".tar+zstd")) {
 				return Compression.ZSTD;
 			}
 			return Compression.NONE;

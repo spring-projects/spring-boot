@@ -102,6 +102,8 @@ class PulsarContainerFactoryCustomizersTests {
 
 	/**
 	 * Test customizer that will match all {@link PulsarListenerContainerFactory}.
+	 *
+	 * @param <T> the container factory type
 	 */
 	static class TestCustomizer<T extends PulsarContainerFactory<?, ?>> implements PulsarContainerFactoryCustomizer<T> {
 

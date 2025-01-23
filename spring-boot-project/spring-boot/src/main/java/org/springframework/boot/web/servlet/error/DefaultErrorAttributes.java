@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.RequestDispatcher;
@@ -28,6 +27,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.boot.web.error.Error;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.core.Ordered;
@@ -36,7 +36,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.method.MethodValidationResult;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -52,8 +51,8 @@ import org.springframework.web.servlet.ModelAndView;
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
  * <li>message - The exception message (if configured)</li>
- * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} or
- * {@link MethodValidationResult} exception (if configured)</li>
+ * <li>errors - Any validation errors wrapped in {@link Error}, derived from a
+ * {@link BindingResult} or {@link MethodValidationResult} exception (if configured)</li>
  * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
  * </ul>
@@ -65,6 +64,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Scott Frederick
  * @author Moritz Halbritter
  * @author Yanming Zhou
+ * @author Yongjun Hong
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -141,16 +141,27 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		BindingResult bindingResult = extractBindingResult(error);
 		if (bindingResult != null) {
 			addMessageAndErrorsFromBindingResult(errorAttributes, bindingResult);
+			return;
 		}
-		else {
-			MethodValidationResult methodValidationResult = extractMethodValidationResult(error);
-			if (methodValidationResult != null) {
-				addMessageAndErrorsFromMethodValidationResult(errorAttributes, methodValidationResult);
-			}
-			else {
-				addExceptionErrorMessage(errorAttributes, webRequest, error);
-			}
+		MethodValidationResult methodValidationResult = extractMethodValidationResult(error);
+		if (methodValidationResult != null) {
+			addMessageAndErrorsFromMethodValidationResult(errorAttributes, methodValidationResult);
+			return;
 		}
+		addExceptionErrorMessage(errorAttributes, webRequest, error);
+	}
+
+	private void addMessageAndErrorsFromBindingResult(Map<String, Object> errorAttributes, BindingResult result) {
+		errorAttributes.put("message", "Validation failed for object='%s'. Error count: %s"
+			.formatted(result.getObjectName(), result.getAllErrors().size()));
+		errorAttributes.put("errors", Error.wrap(result.getAllErrors()));
+	}
+
+	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
+			MethodValidationResult result) {
+		errorAttributes.put("message", "Validation failed for method='%s'. Error count: %s"
+			.formatted(result.getMethod(), result.getAllErrors().size()));
+		errorAttributes.put("errors", Error.wrap(result.getAllErrors()));
 	}
 
 	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
@@ -180,27 +191,6 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 			return error.getMessage();
 		}
 		return "No message available";
-	}
-
-	private void addMessageAndErrorsFromBindingResult(Map<String, Object> errorAttributes, BindingResult result) {
-		addMessageAndErrorsForValidationFailure(errorAttributes, "object='" + result.getObjectName() + "'",
-				result.getAllErrors());
-	}
-
-	private void addMessageAndErrorsFromMethodValidationResult(Map<String, Object> errorAttributes,
-			MethodValidationResult result) {
-		List<ObjectError> errors = result.getAllErrors()
-			.stream()
-			.filter(ObjectError.class::isInstance)
-			.map(ObjectError.class::cast)
-			.toList();
-		addMessageAndErrorsForValidationFailure(errorAttributes, "method='" + result.getMethod() + "'", errors);
-	}
-
-	private void addMessageAndErrorsForValidationFailure(Map<String, Object> errorAttributes, String validated,
-			List<ObjectError> errors) {
-		errorAttributes.put("message", "Validation failed for " + validated + ". Error count: " + errors.size());
-		errorAttributes.put("errors", errors);
 	}
 
 	private BindingResult extractBindingResult(Throwable error) {

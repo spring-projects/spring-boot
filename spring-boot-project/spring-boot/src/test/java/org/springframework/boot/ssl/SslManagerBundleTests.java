@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,13 +63,13 @@ class SslManagerBundleTests {
 	@Test
 	void ofWhenKeyManagerFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SslManagerBundle.of(null, this.trustManagerFactory))
-			.withMessage("KeyManagerFactory must not be null");
+			.withMessage("'keyManagerFactory' must not be null");
 	}
 
 	@Test
 	void ofWhenTrustManagerFactoryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SslManagerBundle.of(this.keyManagerFactory, null))
-			.withMessage("TrustManagerFactory must not be null");
+			.withMessage("'trustManagerFactory' must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	 */
 	public JksSslStoreBundle(JksSslStoreDetails keyStoreDetails, JksSslStoreDetails trustStoreDetails,
 			ResourceLoader resourceLoader) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
+		Assert.notNull(resourceLoader, "'resourceLoader' must not be null");
 		this.keyStoreDetails = keyStoreDetails;
 		this.resourceLoader = resourceLoader;
 		this.keyStore = SingletonSupplier.of(() -> createKeyStore("key", keyStoreDetails));

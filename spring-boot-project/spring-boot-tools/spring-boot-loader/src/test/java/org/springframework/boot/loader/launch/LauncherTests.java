@@ -63,6 +63,7 @@ class LauncherTests {
 			System.setProperty("jarmode", "test");
 			new TestLauncher().launch(new String[] { "boot" });
 			assertThat(out).contains("running in test jar mode [boot]");
+			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("0");
 		}
 
 		@Test
@@ -70,6 +71,25 @@ class LauncherTests {
 			System.setProperty("jarmode", "idontexist");
 			new TestLauncher().launch(new String[] { "boot" });
 			assertThat(out).contains("Unsupported jarmode 'idontexist'");
+			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("1");
+		}
+
+		@Test
+		void launchWhenJarModeRunFailsWithErrorExceptionPrintsSimpleMessage(CapturedOutput out) throws Exception {
+			System.setProperty("jarmode", "test");
+			new TestLauncher().launch(new String[] { "error" });
+			assertThat(out).contains("running in test jar mode [error]");
+			assertThat(out).contains("Error: error message");
+			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("1");
+		}
+
+		@Test
+		void launchWhenJarModeRunFailsWithErrorExceptionPrintsStackTrace(CapturedOutput out) throws Exception {
+			System.setProperty("jarmode", "test");
+			new TestLauncher().launch(new String[] { "fail" });
+			assertThat(out).contains("running in test jar mode [fail]");
+			assertThat(out).contains("java.lang.IllegalStateException: bad");
+			assertThat(System.getProperty(JarModeRunner.SUPPRESSED_SYSTEM_EXIT_CODE)).isEqualTo("1");
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class LogFile {
 	 * @param path a reference to the logging path to use if {@code file} is not specified
 	 */
 	LogFile(String file, String path) {
-		Assert.isTrue(StringUtils.hasLength(file) || StringUtils.hasLength(path), "File or Path must not be empty");
+		Assert.isTrue(StringUtils.hasLength(file) || StringUtils.hasLength(path), "'file' or 'path' must not be empty");
 		this.file = file;
 		this.path = path;
 	}

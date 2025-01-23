@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,13 +116,13 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	@Override
 	public void setErrorPages(Set<? extends ErrorPage> errorPages) {
-		Assert.notNull(errorPages, "ErrorPages must not be null");
+		Assert.notNull(errorPages, "'errorPages' must not be null");
 		this.errorPages = new LinkedHashSet<>(errorPages);
 	}
 
 	@Override
 	public void addErrorPages(ErrorPage... errorPages) {
-		Assert.notNull(errorPages, "ErrorPages must not be null");
+		Assert.notNull(errorPages, "'errorPages' must not be null");
 		this.errorPages.addAll(Arrays.asList(errorPages));
 	}
 

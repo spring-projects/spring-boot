@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,14 +90,14 @@ public class Builder {
 	}
 
 	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
-		Assert.notNull(log, "Log must not be null");
+		Assert.notNull(log, "'log' must not be null");
 		this.log = log;
 		this.docker = docker;
 		this.dockerConfiguration = dockerConfiguration;
 	}
 
 	public void build(BuildRequest request) throws DockerEngineException, IOException {
-		Assert.notNull(request, "Request must not be null");
+		Assert.notNull(request, "'request' must not be null");
 		this.log.start(request);
 		validateBindings(request.getBindings());
 		String domain = request.getBuilder().getDomain();
@@ -230,8 +230,8 @@ public class Builder {
 		}
 
 		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
-			Assert.notNull(type, "Type must not be null");
-			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(type, "'type' must not be null");
+			Assert.notNull(reference, "'reference' must not be null");
 			Assert.state(this.authHeader == null || reference.getDomain().equals(this.domain),
 					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
 							StringUtils.capitalize(type.getDescription()), reference, this.domain));

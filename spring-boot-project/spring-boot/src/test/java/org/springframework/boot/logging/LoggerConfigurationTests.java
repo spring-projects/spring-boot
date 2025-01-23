@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,27 +36,27 @@ class LoggerConfigurationTests {
 	@Test
 	void createWithLogLevelWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LoggerConfiguration(null, null, LogLevel.DEBUG))
-			.withMessage("Name must not be null");
+			.withMessage("'name' must not be null");
 	}
 
 	@Test
 	void createWithLogLevelWhenEffectiveLevelIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LoggerConfiguration("test", null, (LogLevel) null))
-			.withMessage("EffectiveLevel must not be null");
+			.withMessage("'effectiveLevel' must not be null");
 	}
 
 	@Test
 	void createWithLevelConfigurationWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration(null, null, LevelConfiguration.of(LogLevel.DEBUG)))
-			.withMessage("Name must not be null");
+			.withMessage("'name' must not be null");
 	}
 
 	@Test
 	void createWithLevelConfigurationWhenInheritedLevelConfigurationIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new LoggerConfiguration("test", null, (LevelConfiguration) null))
-			.withMessage("InheritedLevelConfiguration must not be null");
+			.withMessage("'inheritedLevelConfiguration' must not be null");
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class LoggerConfigurationTests {
 		@Test
 		void ofWhenLogLevelIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> LevelConfiguration.of(null))
-				.withMessage("LogLevel must not be null");
+				.withMessage("'logLevel' must not be null");
 		}
 
 		@Test
@@ -130,13 +130,13 @@ class LoggerConfigurationTests {
 		@Test
 		void ofCustomWhenNameIsNullThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> LevelConfiguration.ofCustom(null))
-				.withMessage("Name must not be empty");
+				.withMessage("'name' must not be empty");
 		}
 
 		@Test
 		void ofCustomWhenNameIsEmptyThrowsException() {
 			assertThatIllegalArgumentException().isThrownBy(() -> LevelConfiguration.ofCustom(""))
-				.withMessage("Name must not be empty");
+				.withMessage("'name' must not be empty");
 		}
 
 		@Test

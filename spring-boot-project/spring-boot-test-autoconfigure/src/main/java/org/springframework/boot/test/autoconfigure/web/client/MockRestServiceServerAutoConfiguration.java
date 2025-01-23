@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.test.web.client.MockServerRestClientCustomizer;
 import org.springframework.boot.test.web.client.MockServerRestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +47,7 @@ import org.springframework.web.client.RestTemplate;
  * @see AutoConfigureMockRestServiceServer
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "spring.test.webclient.mockrestserviceserver", name = "enabled")
+@ConditionalOnBooleanProperty("spring.test.webclient.mockrestserviceserver.enabled")
 public class MockRestServiceServerAutoConfiguration {
 
 	@Bean

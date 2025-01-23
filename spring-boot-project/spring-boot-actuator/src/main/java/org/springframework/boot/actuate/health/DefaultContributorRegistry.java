@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 	}
 
 	DefaultContributorRegistry(Map<String, C> contributors, Function<String, String> nameFactory) {
-		Assert.notNull(contributors, "Contributors must not be null");
-		Assert.notNull(nameFactory, "NameFactory must not be null");
+		Assert.notNull(contributors, "'contributors' must not be null");
+		Assert.notNull(nameFactory, "'nameFactory' must not be null");
 		this.nameFactory = nameFactory;
 		Map<String, C> namedContributors = new LinkedHashMap<>();
 		contributors.forEach((name, contributor) -> namedContributors.put(nameFactory.apply(name), contributor));
@@ -60,8 +60,8 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 
 	@Override
 	public void registerContributor(String name, C contributor) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(contributor, "Contributor must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(contributor, "'contributor' must not be null");
 		String adaptedName = this.nameFactory.apply(name);
 		synchronized (this.monitor) {
 			Assert.state(!this.contributors.containsKey(adaptedName),
@@ -74,7 +74,7 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 
 	@Override
 	public C unregisterContributor(String name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		String adaptedName = this.nameFactory.apply(name);
 		synchronized (this.monitor) {
 			C unregistered = this.contributors.get(adaptedName);

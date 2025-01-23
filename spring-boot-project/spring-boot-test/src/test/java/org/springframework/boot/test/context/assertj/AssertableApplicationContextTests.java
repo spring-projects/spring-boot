@@ -33,6 +33,7 @@ import static org.mockito.Mockito.withSettings;
 class AssertableApplicationContextTests {
 
 	@Test
+	@SuppressWarnings("resource")
 	void getShouldReturnProxy() {
 		AssertableApplicationContext context = AssertableApplicationContext
 			.get(() -> mock(ConfigurableApplicationContext.class));
@@ -41,12 +42,13 @@ class AssertableApplicationContextTests {
 
 	@Test
 	void getWhenHasAdditionalInterfaceShouldReturnProxy() {
-		AssertableApplicationContext context = AssertableApplicationContext.get(
+		try (AssertableApplicationContext context = AssertableApplicationContext.get(
 				() -> mock(ConfigurableApplicationContext.class,
 						withSettings().extraInterfaces(AdditionalContextInterface.class)),
-				AdditionalContextInterface.class);
-		assertThat(context).isInstanceOf(ConfigurableApplicationContext.class)
-			.isInstanceOf(AdditionalContextInterface.class);
+				AdditionalContextInterface.class)) {
+			assertThat(context).isInstanceOf(ConfigurableApplicationContext.class)
+				.isInstanceOf(AdditionalContextInterface.class);
+		}
 	}
 
 }

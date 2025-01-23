@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
+import ch.qos.logback.core.status.OnErrorConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusUtil;
 import ch.qos.logback.core.util.StatusListenerConfigHelper;
@@ -234,6 +235,9 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			if (debug) {
 				StatusListenerConfigHelper.addOnConsoleListenerInstance(loggerContext, new OnConsoleStatusListener());
 			}
+			else {
+				addOnErrorConsoleStatusListener(loggerContext);
+			}
 			Environment environment = initializationContext.getEnvironment();
 			// Apply system properties directly in case the same JVM runs multiple apps
 			new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment),
@@ -409,7 +413,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = getLoggerFactory();
-		Assert.isInstanceOf(LoggerContext.class, factory,
+		Assert.state(factory instanceof LoggerContext,
 				() -> String.format(
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "
@@ -484,6 +488,15 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		finally {
 			turboFilters.remove(SUPPRESS_ALL_FILTER);
+		}
+	}
+
+	private void addOnErrorConsoleStatusListener(LoggerContext context) {
+		FilteringStatusListener listener = new FilteringStatusListener(new OnErrorConsoleStatusListener(),
+				Status.ERROR);
+		listener.setContext(context);
+		if (context.getStatusManager().add(listener)) {
+			listener.start();
 		}
 	}
 

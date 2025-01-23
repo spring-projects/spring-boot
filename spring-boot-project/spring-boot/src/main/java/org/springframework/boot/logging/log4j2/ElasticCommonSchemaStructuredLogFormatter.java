@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
@@ -28,8 +31,8 @@ import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
-import org.springframework.boot.logging.structured.StructureLoggingJsonMembersCustomizer;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ObjectUtils;
 
@@ -43,7 +46,7 @@ import org.springframework.util.ObjectUtils;
 class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
 	ElasticCommonSchemaStructuredLogFormatter(Environment environment,
-			StructureLoggingJsonMembersCustomizer<?> customizer) {
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		super((members) -> jsonMembers(environment, members), customizer);
 	}
 
@@ -66,11 +69,30 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 			thrownProxyMembers.add("error.message", ThrowableProxy::getMessage);
 			thrownProxyMembers.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
 		});
+		members.add("tags", LogEvent::getMarker)
+			.whenNotNull()
+			.as(ElasticCommonSchemaStructuredLogFormatter::getMarkers)
+			.whenNotEmpty();
 		members.add("ecs.version", "8.11");
 	}
 
 	private static java.time.Instant asTimestamp(Instant instant) {
 		return java.time.Instant.ofEpochMilli(instant.getEpochMillisecond()).plusNanos(instant.getNanoOfMillisecond());
+	}
+
+	private static Set<String> getMarkers(Marker marker) {
+		Set<String> result = new TreeSet<>();
+		addMarkers(result, marker);
+		return result;
+	}
+
+	private static void addMarkers(Set<String> result, Marker marker) {
+		result.add(marker.getName());
+		if (marker.hasParents()) {
+			for (Marker parent : marker.getParents()) {
+				addMarkers(result, parent);
+			}
+		}
 	}
 
 }

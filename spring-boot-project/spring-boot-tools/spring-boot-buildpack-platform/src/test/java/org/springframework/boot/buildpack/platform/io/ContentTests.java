@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ContentTests {
 
 	@Test
-	void ofWhenStreamIsNullThrowsException() {
+	void ofWhenSupplierIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Content.of(1, (IOSupplier<InputStream>) null))
-			.withMessage("Supplier must not be null");
+			.withMessage("'supplier' must not be null");
 	}
 
 	@Test
@@ -51,7 +51,7 @@ class ContentTests {
 	@Test
 	void ofWhenStringIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Content.of((String) null))
-			.withMessage("String must not be null");
+			.withMessage("'string' must not be null");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class ContentTests {
 	@Test
 	void ofWhenBytesIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Content.of((byte[]) null))
-			.withMessage("Bytes must not be null");
+			.withMessage("'bytes' must not be null");
 	}
 
 	@Test

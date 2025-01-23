@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ class PrometheusPushGatewayManagerTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(null, this.registry, this.scheduler, this.pushRate,
 					"job", this.groupingKey, null))
-			.withMessage("PushGateway must not be null");
+			.withMessage("'pushGateway' must not be null");
 	}
 
 	@Test
@@ -84,7 +84,7 @@ class PrometheusPushGatewayManagerTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, null, this.scheduler, this.pushRate,
 					"job", this.groupingKey, null))
-			.withMessage("Registry must not be null");
+			.withMessage("'registry' must not be null");
 	}
 
 	@Test
@@ -92,7 +92,7 @@ class PrometheusPushGatewayManagerTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry, null, this.pushRate,
 					"job", this.groupingKey, null))
-			.withMessage("Scheduler must not be null");
+			.withMessage("'scheduler' must not be null");
 	}
 
 	@Test
@@ -100,7 +100,7 @@ class PrometheusPushGatewayManagerTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, null,
 					"job", this.groupingKey, null))
-			.withMessage("PushRate must not be null");
+			.withMessage("'pushRate' must not be null");
 	}
 
 	@Test
@@ -108,7 +108,7 @@ class PrometheusPushGatewayManagerTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler,
 					this.pushRate, "", this.groupingKey, null))
-			.withMessage("Job must not be empty");
+			.withMessage("'job' must not be empty");
 	}
 
 	@Test

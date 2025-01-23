@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ class ImageReferenceTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ImageReference
 				.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
-			.withMessageContaining("Unable to parse image reference");
+			.withMessageContaining("must be an image reference");
 	}
 
 	@Test
@@ -197,7 +197,7 @@ class ImageReferenceTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ImageReference
 				.of("europe-west1-docker.pkg.dev/aaaaaa-bbbbb-123456/docker-registry/bootBuildImage:0.0.1"))
-			.withMessageContaining("Unable to parse image reference");
+			.withMessageContaining("must be an image reference");
 	}
 
 	@Test
@@ -205,7 +205,7 @@ class ImageReferenceTests {
 	void ofWhenIsVeryLongAndHasIllegalCharacter() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageReference
 			.of("docker.io/library/this-image-has-a-long-name-with-an-invalid-tag-which-is-at-danger-of-catastrophic-backtracking:1.0.0+1234"))
-			.withMessageContaining("Unable to parse image reference");
+			.withMessageContaining("must be an image reference");
 	}
 
 	@Test
@@ -248,7 +248,7 @@ class ImageReferenceTests {
 	@Test
 	void randomWherePrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageReference.random(null))
-			.withMessage("Prefix must not be null");
+			.withMessage("'prefix' must not be null");
 	}
 
 	@Test

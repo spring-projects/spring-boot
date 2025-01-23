@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.jackson;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -69,7 +71,7 @@ class JsonObjectDeserializerTests {
 	void nullSafeValueWhenClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test
@@ -145,6 +147,14 @@ class JsonObjectDeserializerTests {
 	}
 
 	@Test
+	void nullSafeValueWithMapperShouldTransformValue() {
+		JsonNode node = mock(JsonNode.class);
+		given(node.textValue()).willReturn("2023-12-01");
+		LocalDate result = this.testDeserializer.testNullSafeValue(node, String.class, LocalDate::parse);
+		assertThat(result).isEqualTo(LocalDate.of(2023, 12, 1));
+	}
+
+	@Test
 	void nullSafeValueWhenClassIsUnknownShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), InputStream.class))
@@ -155,7 +165,7 @@ class JsonObjectDeserializerTests {
 	@Test
 	void getRequiredNodeWhenTreeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(null, "test"))
-			.withMessageContaining("Tree must not be null");
+			.withMessageContaining("'tree' must not be null");
 	}
 
 	@Test
@@ -187,6 +197,10 @@ class JsonObjectDeserializerTests {
 		protected T deserializeObject(JsonParser jsonParser, DeserializationContext context, ObjectCodec codec,
 				JsonNode tree) {
 			return null;
+		}
+
+		<D, R> R testNullSafeValue(JsonNode jsonNode, Class<D> type, Function<D, R> mapper) {
+			return nullSafeValue(jsonNode, type, mapper);
 		}
 
 		<D> D testNullSafeValue(JsonNode jsonNode, Class<D> type) {

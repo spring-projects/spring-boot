@@ -22,12 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.env.ConfigurablePropertyResolver;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link ConfigurationPropertySourcesPropertyResolver}.
@@ -111,6 +114,30 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		environment.getPropertySources().addFirst(propertySource);
 		assertThat(environment.getProperty("v2")).isEqualTo("1");
 		assertThat(environment.getProperty("v2", Integer.class)).isOne();
+	}
+
+	@Test
+	void throwsInvalidConfigurationPropertyValueExceptionWhenGetPropertyAsTypeFailsToConvert() {
+		ResolverEnvironment environment = new ResolverEnvironment();
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.withProperty("v1", "one");
+		propertySource.withProperty("v2", "${v1}");
+		environment.getPropertySources().addFirst(propertySource);
+		assertThat(environment.getProperty("v2")).isEqualTo("one");
+		assertThatExceptionOfType(ConversionFailedException.class)
+			.isThrownBy(() -> environment.getProperty("v2", Integer.class))
+			.satisfies((ex) -> {
+				assertThat(ex.getValue()).isEqualTo("one");
+				assertThat(ex.getSourceType()).isEqualTo(TypeDescriptor.valueOf(String.class));
+				assertThat(ex.getTargetType()).isEqualTo(TypeDescriptor.valueOf(Integer.class));
+			})
+			.havingCause()
+			.satisfies((ex) -> {
+				InvalidConfigurationPropertyValueException invalidValueEx = (InvalidConfigurationPropertyValueException) ex;
+				assertThat(invalidValueEx.getName()).isEqualTo("v2");
+				assertThat(invalidValueEx.getValue()).isEqualTo("one");
+				assertThat(ex).cause().isInstanceOf(NumberFormatException.class);
+			});
 	}
 
 	private CountingMockPropertySource createMockPropertySource(StandardEnvironment environment, boolean attach) {

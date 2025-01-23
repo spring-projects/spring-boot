@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class ConnectionFactoryOptionsBuilderTests {
 	@Test
 	void createWhenDriverProtocolIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new JdbcUrlBuilder(null, 123))
-			.withMessage("DriverProtocol must not be null");
+			.withMessage("'driverProtocol' must not be null");
 	}
 
 	@Test
@@ -81,14 +81,14 @@ class ConnectionFactoryOptionsBuilderTests {
 	@Test
 	void buildWhenServiceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.build(null, "mydb", "user", "pass"))
-			.withMessage("Service must not be null");
+			.withMessage("'service' must not be null");
 	}
 
 	@Test
 	void buildWhenDatabaseIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.build(mockService(456), null, "user", "pass"))
-			.withMessage("Database must not be null");
+			.withMessage("'database' must not be null");
 	}
 
 	private RunningService mockService(int mappedPort) {

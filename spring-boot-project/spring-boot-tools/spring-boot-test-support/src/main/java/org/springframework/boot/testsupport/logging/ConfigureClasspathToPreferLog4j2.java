@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 @Target(ElementType.TYPE)
 @Documented
 @ClassPathExclusions("log4j-to-slf4j-*.jar")
-@ClassPathOverrides({ "org.apache.logging.log4j:log4j-core:2.19.0",
-		"org.apache.logging.log4j:log4j-slf4j-impl:2.19.0" })
+@ClassPathOverrides({ "org.apache.logging.log4j:log4j-core:2.24.3",
+		"org.apache.logging.log4j:log4j-slf4j-impl:2.24.3" })
 public @interface ConfigureClasspathToPreferLog4j2 {
 
 }

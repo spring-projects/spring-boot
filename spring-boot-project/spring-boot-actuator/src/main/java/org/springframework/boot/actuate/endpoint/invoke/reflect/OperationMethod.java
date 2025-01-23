@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ public class OperationMethod {
 	 * @param operationType the operation type
 	 */
 	public OperationMethod(Method method, OperationType operationType) {
-		Assert.notNull(method, "Method must not be null");
-		Assert.notNull(operationType, "OperationType must not be null");
+		Assert.notNull(method, "'method' must not be null");
+		Assert.notNull(operationType, "'operationType' must not be null");
 		this.method = method;
 		this.operationType = operationType;
 		this.operationParameters = new OperationMethodParameters(method, DEFAULT_PARAMETER_NAME_DISCOVERER);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,14 +64,14 @@ class ApplicationContextAssertProviderTests {
 	void getWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class, this.mockContextSupplier))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test
 	void getWhenTypeIsClassShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class, this.mockContextSupplier))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class ApplicationContextAssertProviderTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContextClass.class,
 					ApplicationContext.class, this.mockContextSupplier))
-			.withMessageContaining("Type must be an interface");
+			.withMessageContaining("'type' must be an interface");
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class ApplicationContextAssertProviderTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class, null,
 					this.mockContextSupplier))
-			.withMessageContaining("ContextType must not be null");
+			.withMessageContaining("'contextType' must not be null");
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class ApplicationContextAssertProviderTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
 					StaticApplicationContext.class, this.mockContextSupplier))
-			.withMessageContaining("ContextType must be an interface");
+			.withMessageContaining("'contextType' must be an interface");
 	}
 
 	@Test

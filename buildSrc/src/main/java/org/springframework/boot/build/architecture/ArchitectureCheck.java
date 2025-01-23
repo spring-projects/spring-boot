@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,8 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Role;
 import org.springframework.util.ResourceUtils;
 
 /**
@@ -94,7 +96,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldCallURLEncoderWithStringEncoding(), noClassesShouldCallURLDecoderWithStringEncoding(),
 				noClassesShouldLoadResourcesUsingResourceUtils(), noClassesShouldCallStringToUpperCaseWithoutLocale(),
 				noClassesShouldCallStringToLowerCaseWithoutLocale(),
-				conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType());
+				conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType(),
+				enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
 		getRules().addAll(getProhibitObjectsRequireNonNull()
 			.map((prohibit) -> prohibit ? noClassesShouldCallObjectsRequireNonNull() : Collections.emptyList()));
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
@@ -148,7 +151,8 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		DescribedPredicate<JavaClass> notOfASafeType = DescribedPredicate
 			.not(Predicates.assignableTo("org.springframework.beans.factory.ObjectProvider")
 				.or(Predicates.assignableTo("org.springframework.context.ApplicationContext"))
-				.or(Predicates.assignableTo("org.springframework.core.env.Environment")));
+				.or(Predicates.assignableTo("org.springframework.core.env.Environment")
+					.or(annotatedWithRoleInfrastructure())));
 		return new ArchCondition<>("not have parameters that will cause eager initialization") {
 
 			@Override
@@ -161,6 +165,18 @@ public abstract class ArchitectureCheck extends DefaultTask {
 							parameter.getDescription() + " will cause eager initialization as it is "
 									+ notAnnotatedWithLazy.getDescription() + " and is "
 									+ notOfASafeType.getDescription())));
+			}
+
+		};
+	}
+
+	private DescribedPredicate<JavaClass> annotatedWithRoleInfrastructure() {
+		return new DescribedPredicate<>("annotated with @Role(BeanDefinition.ROLE_INFRASTRUCTURE") {
+
+			@Override
+			public boolean test(JavaClass candidate) {
+				Role role = candidate.getAnnotationOfType(Role.class);
+				return (role != null) && (role.value() == BeanDefinition.ROLE_INFRASTRUCTURE);
 			}
 
 		};
@@ -291,6 +307,35 @@ public abstract class ArchitectureCheck extends DefaultTask {
 						if (types.length == 1 && item.getReturnType().equals(types[0])) {
 							events.add(SimpleConditionEvent.violated(item, conditional.getDescription()
 									+ " should not specify only a value that is the same as the method's return type"));
+						}
+					});
+				}
+			}
+
+		};
+	}
+
+	private ArchRule enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areAnnotatedWith("org.junit.jupiter.params.provider.EnumSource")
+			.should(notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType())
+			.allowEmptyShould(true);
+	}
+
+	private ArchCondition<? super JavaMethod> notSpecifyOnlyATypeThatIsTheSameAsTheMethodParameterType() {
+		return new ArchCondition<>("not specify only a type that is the same as the method's parameter type") {
+
+			@Override
+			public void check(JavaMethod item, ConditionEvents events) {
+				JavaAnnotation<JavaMethod> conditional = item
+					.getAnnotationOfType("org.junit.jupiter.params.provider.EnumSource");
+				Map<String, Object> properties = conditional.getProperties();
+				if (properties.size() == 1 && item.getParameterTypes().size() == 1) {
+					conditional.get("value").ifPresent((value) -> {
+						if (value.equals(item.getParameterTypes().get(0))) {
+							events.add(SimpleConditionEvent.violated(item, conditional.getDescription()
+									+ " should not specify only a value that is the same as the method's parameter type"));
 						}
 					});
 				}

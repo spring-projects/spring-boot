@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class IndexedLayers implements Layers {
 				this.layers.put(line.substring(3, line.length() - 2), contents);
 			}
 			else if (line.startsWith("  - ")) {
-				Assert.notNull(contents, "Contents must not be null. Check if the index file is malformed!");
+				Assert.state(contents != null, "Contents must not be null. Check if the index file is malformed!");
 				contents.add(line.substring(5, line.length() - 1));
 			}
 			else {

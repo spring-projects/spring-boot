@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,8 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	@Override
 	public int get(int containerPort) {
 		Integer hostPort = this.portMappings.get(containerPort);
-		Assert.state(hostPort != null, "No host port mapping found for container port %s".formatted(containerPort));
+		Assert.state(hostPort != null,
+				() -> "No host port mapping found for container port %s".formatted(containerPort));
 		return hostPort;
 	}
 

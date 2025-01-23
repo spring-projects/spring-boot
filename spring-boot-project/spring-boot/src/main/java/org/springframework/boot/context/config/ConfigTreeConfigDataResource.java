@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@ public class ConfigTreeConfigDataResource extends ConfigDataResource {
 	private final Path path;
 
 	ConfigTreeConfigDataResource(String path) {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		this.path = Paths.get(path).toAbsolutePath();
 	}
 
 	ConfigTreeConfigDataResource(Path path) {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		this.path = path.toAbsolutePath();
 	}
 

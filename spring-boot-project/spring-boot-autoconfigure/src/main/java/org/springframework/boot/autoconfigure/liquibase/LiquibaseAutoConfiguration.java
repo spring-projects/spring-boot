@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -74,7 +75,7 @@ import org.springframework.util.StringUtils;
  */
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
 @ConditionalOnClass({ SpringLiquibase.class, DatabaseChange.class })
-@ConditionalOnProperty(prefix = "spring.liquibase", name = "enabled", matchIfMissing = true)
+@ConditionalOnBooleanProperty(name = "spring.liquibase.enabled", matchIfMissing = true)
 @Conditional(LiquibaseDataSourceCondition.class)
 @Import(DatabaseInitializationDependencyConfigurer.class)
 @ImportRuntimeHints(LiquibaseAutoConfigurationRuntimeHints.class)
@@ -134,6 +135,12 @@ public class LiquibaseAutoConfiguration {
 			}
 			if (properties.getUiService() != null) {
 				liquibase.setUiService(UIServiceEnum.valueOf(properties.getUiService().name()));
+			}
+			if (properties.getAnalyticsEnabled() != null) {
+				liquibase.setAnalyticsEnabled(properties.getAnalyticsEnabled());
+			}
+			if (properties.getLicenseKey() != null) {
+				liquibase.setLicenseKey(properties.getLicenseKey());
 			}
 			customizers.orderedStream().forEach((customizer) -> customizer.customize(liquibase));
 			return liquibase;
@@ -211,7 +218,7 @@ public class LiquibaseAutoConfiguration {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.liquibase", name = "url")
+		@ConditionalOnProperty("spring.liquibase.url")
 		private static final class LiquibaseUrlCondition {
 
 		}

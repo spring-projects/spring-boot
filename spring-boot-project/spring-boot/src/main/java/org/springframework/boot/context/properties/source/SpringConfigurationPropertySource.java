@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,8 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * @param mappers the property mappers
 	 */
 	SpringConfigurationPropertySource(PropertySource<?> propertySource, PropertyMapper... mappers) {
-		Assert.notNull(propertySource, "PropertySource must not be null");
-		Assert.isTrue(mappers.length > 0, "Mappers must contain at least one item");
+		Assert.notNull(propertySource, "'propertySource' must not be null");
+		Assert.isTrue(mappers.length > 0, "'mappers' must contain at least one item");
 		this.propertySource = propertySource;
 		this.mappers = mappers;
 	}
@@ -144,7 +144,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	 * {@link SpringIterableConfigurationPropertySource} instance
 	 */
 	static SpringConfigurationPropertySource from(PropertySource<?> source) {
-		Assert.notNull(source, "Source must not be null");
+		Assert.notNull(source, "'source' must not be null");
 		PropertyMapper[] mappers = getPropertyMappers(source);
 		if (isFullEnumerable(source)) {
 			return new SpringIterableConfigurationPropertySource((EnumerablePropertySource<?>) source, mappers);

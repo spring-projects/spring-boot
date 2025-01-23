@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -539,6 +539,24 @@ class LiquibaseAutoConfigurationTests {
 	void whenCustomizerBeanIsDefinedThenItIsConfiguredOnSpringLiquibase() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomizerConfiguration.class)
 			.run(assertLiquibase((liquibase) -> assertThat(liquibase.getCustomizer()).isNotNull()));
+	}
+
+	@Test
+	void whenAnalyticsEnabledIsFalseThenSpringLiquibaseHasAnalyticsDisabled() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.analytics-enabled=false")
+			.run((context) -> assertThat(context.getBean(SpringLiquibase.class))
+				.extracting(SpringLiquibase::getAnalyticsEnabled)
+				.isEqualTo(Boolean.FALSE));
+	}
+
+	@Test
+	void whenLicenseKeyIsSetThenSpringLiquibaseHasLicenseKey() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.liquibase.license-key=a1b2c3d4")
+			.run((context) -> assertThat(context.getBean(SpringLiquibase.class))
+				.extracting(SpringLiquibase::getLicenseKey)
+				.isEqualTo("a1b2c3d4"));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {

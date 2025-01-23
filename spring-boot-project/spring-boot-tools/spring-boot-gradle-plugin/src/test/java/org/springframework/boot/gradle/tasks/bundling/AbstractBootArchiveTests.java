@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		projectDir.mkdirs();
 		this.project = GradleProjectBuilder.builder().withProjectDir(projectDir).build();
 		this.project.setDescription("Test project for " + this.taskClass.getSimpleName());
-		this.task = configure(this.project.getTasks().create("testArchive", this.taskClass));
+		this.task = this.project.getTasks().register("testArchive", this.taskClass, this::configure).get();
 	}
 
 	@Test
@@ -624,14 +624,6 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		executeTask();
 		List<String> entryNames = getEntryNames(this.task.getArchiveFile().get().getAsFile());
 		assertThat(entryNames).isNotEmpty().contains(this.libPath + JarModeLibrary.TOOLS.getName());
-	}
-
-	@Test
-	@SuppressWarnings("removal")
-	void whenArchiveIsLayeredAndIncludeLayerToolsIsFalseThenLayerToolsAreNotAddedToTheJar() throws IOException {
-		List<String> entryNames = getEntryNames(
-				createLayeredJar((configuration) -> configuration.getIncludeLayerTools().set(false)));
-		assertThat(entryNames).isNotEmpty().doesNotContain(this.libPath + JarModeLibrary.TOOLS.getName());
 	}
 
 	@Test

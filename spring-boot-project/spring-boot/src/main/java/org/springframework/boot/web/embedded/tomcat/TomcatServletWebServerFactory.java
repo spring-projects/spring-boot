@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -540,7 +540,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param patterns the jar patterns to skip when scanning for TLDs etc
 	 */
 	public void setTldSkipPatterns(Collection<String> patterns) {
-		Assert.notNull(patterns, "Patterns must not be null");
+		Assert.notNull(patterns, "'patterns' must not be null");
 		this.tldSkipPatterns = new LinkedHashSet<>(patterns);
 	}
 
@@ -550,7 +550,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param patterns the additional jar patterns to skip when scanning for TLDs etc
 	 */
 	public void addTldSkipPatterns(String... patterns) {
-		Assert.notNull(patterns, "Patterns must not be null");
+		Assert.notNull(patterns, "'patterns' must not be null");
 		this.tldSkipPatterns.addAll(Arrays.asList(patterns));
 	}
 
@@ -560,7 +560,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @see Connector#Connector(String)
 	 */
 	public void setProtocol(String protocol) {
-		Assert.hasLength(protocol, "Protocol must not be empty");
+		Assert.hasLength(protocol, "'protocol' must not be empty");
 		this.protocol = protocol;
 	}
 
@@ -570,7 +570,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param engineValves the valves to set
 	 */
 	public void setEngineValves(Collection<? extends Valve> engineValves) {
-		Assert.notNull(engineValves, "Valves must not be null");
+		Assert.notNull(engineValves, "'engineValves' must not be null");
 		this.engineValves = new ArrayList<>(engineValves);
 	}
 
@@ -585,7 +585,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	@Override
 	public void addEngineValves(Valve... engineValves) {
-		Assert.notNull(engineValves, "Valves must not be null");
+		Assert.notNull(engineValves, "'engineValves' must not be null");
 		this.engineValves.addAll(Arrays.asList(engineValves));
 	}
 
@@ -595,7 +595,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param contextValves the valves to set
 	 */
 	public void setContextValves(Collection<? extends Valve> contextValves) {
-		Assert.notNull(contextValves, "Valves must not be null");
+		Assert.notNull(contextValves, "'contextValves' must not be null");
 		this.contextValves = new ArrayList<>(contextValves);
 	}
 
@@ -614,7 +614,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param contextValves the valves to add
 	 */
 	public void addContextValves(Valve... contextValves) {
-		Assert.notNull(contextValves, "Valves must not be null");
+		Assert.notNull(contextValves, "'contextValves' must not be null");
 		this.contextValves.addAll(Arrays.asList(contextValves));
 	}
 
@@ -624,7 +624,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param contextLifecycleListeners the listeners to set
 	 */
 	public void setContextLifecycleListeners(Collection<? extends LifecycleListener> contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
+		Assert.notNull(contextLifecycleListeners, "'contextLifecycleListeners' must not be null");
 		this.contextLifecycleListeners = new ArrayList<>(contextLifecycleListeners);
 	}
 
@@ -642,7 +642,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param contextLifecycleListeners the listeners to add
 	 */
 	public void addContextLifecycleListeners(LifecycleListener... contextLifecycleListeners) {
-		Assert.notNull(contextLifecycleListeners, "ContextLifecycleListeners must not be null");
+		Assert.notNull(contextLifecycleListeners, "'contextLifecycleListeners' must not be null");
 		this.contextLifecycleListeners.addAll(Arrays.asList(contextLifecycleListeners));
 	}
 
@@ -652,7 +652,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param tomcatContextCustomizers the customizers to set
 	 */
 	public void setTomcatContextCustomizers(Collection<? extends TomcatContextCustomizer> tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
+		Assert.notNull(tomcatContextCustomizers, "'tomcatContextCustomizers' must not be null");
 		this.tomcatContextCustomizers = new LinkedHashSet<>(tomcatContextCustomizers);
 	}
 
@@ -667,7 +667,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	@Override
 	public void addContextCustomizers(TomcatContextCustomizer... tomcatContextCustomizers) {
-		Assert.notNull(tomcatContextCustomizers, "TomcatContextCustomizers must not be null");
+		Assert.notNull(tomcatContextCustomizers, "'tomcatContextCustomizers' must not be null");
 		this.tomcatContextCustomizers.addAll(Arrays.asList(tomcatContextCustomizers));
 	}
 
@@ -678,13 +678,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	public void setTomcatConnectorCustomizers(
 			Collection<? extends TomcatConnectorCustomizer> tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
+		Assert.notNull(tomcatConnectorCustomizers, "'tomcatConnectorCustomizers' must not be null");
 		this.tomcatConnectorCustomizers = new LinkedHashSet<>(tomcatConnectorCustomizers);
 	}
 
 	@Override
 	public void addConnectorCustomizers(TomcatConnectorCustomizer... tomcatConnectorCustomizers) {
-		Assert.notNull(tomcatConnectorCustomizers, "TomcatConnectorCustomizers must not be null");
+		Assert.notNull(tomcatConnectorCustomizers, "'tomcatConnectorCustomizers' must not be null");
 		this.tomcatConnectorCustomizers.addAll(Arrays.asList(tomcatConnectorCustomizers));
 	}
 
@@ -705,7 +705,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	public void setTomcatProtocolHandlerCustomizers(
 			Collection<? extends TomcatProtocolHandlerCustomizer<?>> tomcatProtocolHandlerCustomizer) {
-		Assert.notNull(tomcatProtocolHandlerCustomizer, "TomcatProtocolHandlerCustomizers must not be null");
+		Assert.notNull(tomcatProtocolHandlerCustomizer, "'tomcatProtocolHandlerCustomizer' must not be null");
 		this.tomcatProtocolHandlerCustomizers = new LinkedHashSet<>(tomcatProtocolHandlerCustomizer);
 	}
 
@@ -717,7 +717,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	@Override
 	public void addProtocolHandlerCustomizers(TomcatProtocolHandlerCustomizer<?>... tomcatProtocolHandlerCustomizers) {
-		Assert.notNull(tomcatProtocolHandlerCustomizers, "TomcatProtocolHandlerCustomizers must not be null");
+		Assert.notNull(tomcatProtocolHandlerCustomizers, "'tomcatProtocolHandlerCustomizers' must not be null");
 		this.tomcatProtocolHandlerCustomizers.addAll(Arrays.asList(tomcatProtocolHandlerCustomizers));
 	}
 
@@ -739,7 +739,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @param connectors the connectors to add
 	 */
 	public void addAdditionalTomcatConnectors(Connector... connectors) {
-		Assert.notNull(connectors, "Connectors must not be null");
+		Assert.notNull(connectors, "'connectors' must not be null");
 		this.additionalTomcatConnectors.addAll(Arrays.asList(connectors));
 	}
 

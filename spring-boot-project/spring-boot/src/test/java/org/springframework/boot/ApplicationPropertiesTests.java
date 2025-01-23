@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,11 +52,11 @@ class ApplicationPropertiesTests {
 		RuntimeHints hints = new RuntimeHints();
 		new ApplicationPropertiesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.reflection().onType(ApplicationProperties.class)).accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setBannerMode"))
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setBannerMode").invoke())
 			.accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "getSources"))
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "getSources").invoke())
 			.accepts(hints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setSources"))
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "setSources").invoke())
 			.accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(ApplicationProperties.class, "getBannerMode"))
 			.rejects(hints);

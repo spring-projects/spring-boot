@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.Members;
@@ -87,6 +88,14 @@ public record ElasticCommonSchemaProperties(Service service) {
 			String name = withFallbackProperty(environment, this.name, "spring.application.name");
 			String version = withFallbackProperty(environment, this.version, "spring.application.version");
 			return new Service(name, version, this.environment, this.nodeName);
+		}
+
+	}
+
+	static class ElasticCommonSchemaPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+
+		ElasticCommonSchemaPropertiesRuntimeHints() {
+			super(ElasticCommonSchemaProperties.class);
 		}
 
 	}

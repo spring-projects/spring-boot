@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,6 +165,7 @@ import static org.mockito.Mockito.spy;
  * @author Moritz Halbritter
  * @author Tadaya Tsuyukubo
  * @author Yanming Zhou
+ * @author Sijun Yang
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -208,13 +209,13 @@ class SpringApplicationTests {
 	@Test
 	void sourcesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication((Class<?>[]) null).run())
-			.withMessageContaining("PrimarySources must not be null");
+			.withMessageContaining("'primarySources' must not be null");
 	}
 
 	@Test
 	void sourcesMustNotBeEmpty() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new SpringApplication().run())
-			.withMessageContaining("Sources must not be empty");
+		assertThatIllegalStateException().isThrownBy(() -> new SpringApplication().run())
+			.withMessageContaining("No sources defined");
 	}
 
 	@Test
@@ -252,13 +253,12 @@ class SpringApplicationTests {
 	@Test
 	void logsActiveProfilesWithoutProfileAndMultipleDefaults(CapturedOutput output) {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setDefaultProfiles("p0,p1", "default");
+		environment.setDefaultProfiles("p0", "default");
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setEnvironment(environment);
 		this.context = application.run();
-		assertThat(output)
-			.contains("No active profile set, falling back to 2 default profiles: \"p0,p1\", \"default\"");
+		assertThat(output).contains("No active profile set, falling back to 2 default profiles: \"p0\", \"default\"");
 	}
 
 	@Test
@@ -273,9 +273,9 @@ class SpringApplicationTests {
 	void logsActiveProfilesWithMultipleProfiles(CapturedOutput output) {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setAdditionalProfiles("p1,p2", "p3");
+		application.setAdditionalProfiles("p1", "p2");
 		application.run();
-		assertThat(output).contains("The following 2 profiles are active: \"p1,p2\", \"p3\"");
+		assertThat(output).contains("The following 2 profiles are active: \"p1\", \"p2\"");
 	}
 
 	@Test

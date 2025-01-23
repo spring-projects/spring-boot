@@ -29,7 +29,7 @@ It implies the following restrictions:
 
 * The classpath is fixed and fully defined at build time
 * The beans defined in your application cannot change at runtime, meaning:
-- The Spring `@Profile` annotation and profile-specific configuration xref:how-to:aot.adoc#howto.aot.conditions[have limitations].
-- Properties that change if a bean is created are not supported (for example, `@ConditionalOnProperty` and `.enable` properties).
+- The Spring javadoc:org.springframework.context.annotation.Profile[format=annotation] annotation and profile-specific configuration xref:how-to:aot.adoc#howto.aot.conditions[have limitations].
+- Properties that change if a bean is created are not supported (for example, javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnProperty[format=annotation] and `.enabled` properties).
 
 To learn more about ahead-of-time processing, please see the xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[] section.

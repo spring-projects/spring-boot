@@ -19,7 +19,9 @@ ext['slf4j.version'] = '1.7.20'
 // end::custom-version[]
 
 repositories {
-	maven { url 'repository' }
+	maven {
+		url = 'repository'
+	}
 }
 
 task slf4jVersion {

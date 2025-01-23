@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,14 @@ class NamedContributorsMapAdapterTests {
 	void createWhenMapIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(null, Function.identity()))
-			.withMessage("Map must not be null");
+			.withMessage("'map' must not be null");
 	}
 
 	@Test
 	void createWhenValueAdapterIsNullThrowsException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.emptyMap(), null))
-			.withMessage("ValueAdapter must not be null");
+			.withMessage("'valueAdapter' must not be null");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class NamedContributorsMapAdapterTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap("test", null),
 					Function.identity()))
-			.withMessage("Map must not contain null values");
+			.withMessage("'map' must not contain null values");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class NamedContributorsMapAdapterTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap(null, "test"),
 					Function.identity()))
-			.withMessage("Map must not contain null keys");
+			.withMessage("'map' must not contain null keys");
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class NamedContributorsMapAdapterTests {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap("test/key", "test"),
 					Function.identity()))
-			.withMessage("Map keys must not contain a '/'");
+			.withMessage("'map' keys must not contain a '/'");
 	}
 
 	@Test

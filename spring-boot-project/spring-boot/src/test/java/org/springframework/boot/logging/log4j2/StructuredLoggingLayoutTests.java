@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link StructuredLogLayout}.
@@ -93,14 +94,14 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldCheckTypeArgument() {
-		assertThatIllegalArgumentException().isThrownBy(
+		assertThatIllegalStateException().isThrownBy(
 				() -> newBuilder().setFormat(CustomLog4j2StructuredLoggingFormatterWrongType.class.getName()).build())
 			.withMessageContaining("must be org.apache.logging.log4j.core.LogEvent but was java.lang.String");
 	}
 
 	@Test
 	void shouldCheckTypeArgumentWithRawType() {
-		assertThatIllegalArgumentException()
+		assertThatIllegalStateException()
 			.isThrownBy(
 					() -> newBuilder().setFormat(CustomLog4j2StructuredLoggingFormatterRawType.class.getName()).build())
 			.withMessageContaining("must be org.apache.logging.log4j.core.LogEvent but was null");

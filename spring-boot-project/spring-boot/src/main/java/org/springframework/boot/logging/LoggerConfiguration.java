@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public final class LoggerConfiguration {
 	 * @param effectiveLevel the effective level of the logger
 	 */
 	public LoggerConfiguration(String name, LogLevel configuredLevel, LogLevel effectiveLevel) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(effectiveLevel, "EffectiveLevel must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(effectiveLevel, "'effectiveLevel' must not be null");
 		this.name = name;
 		this.levelConfiguration = (configuredLevel != null) ? LevelConfiguration.of(configuredLevel) : null;
 		this.inheritedLevelConfiguration = LevelConfiguration.of(effectiveLevel);
@@ -59,8 +59,8 @@ public final class LoggerConfiguration {
 	 */
 	public LoggerConfiguration(String name, LevelConfiguration levelConfiguration,
 			LevelConfiguration inheritedLevelConfiguration) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(inheritedLevelConfiguration, "InheritedLevelConfiguration must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(inheritedLevelConfiguration, "'inheritedLevelConfiguration' must not be null");
 		this.name = name;
 		this.levelConfiguration = levelConfiguration;
 		this.inheritedLevelConfiguration = inheritedLevelConfiguration;
@@ -190,7 +190,7 @@ public final class LoggerConfiguration {
 		 * @throws IllegalStateException if this is a {@link #isCustom() custom} level
 		 */
 		public LogLevel getLevel() {
-			Assert.state(this.logLevel != null, "Unable to provide LogLevel for '" + this.name + "'");
+			Assert.state(this.logLevel != null, () -> "Unable to provide LogLevel for '" + this.name + "'");
 			return this.logLevel;
 		}
 
@@ -230,7 +230,7 @@ public final class LoggerConfiguration {
 		 * @return a new {@link LevelConfiguration} instance
 		 */
 		public static LevelConfiguration of(LogLevel logLevel) {
-			Assert.notNull(logLevel, "LogLevel must not be null");
+			Assert.notNull(logLevel, "'logLevel' must not be null");
 			return new LevelConfiguration(logLevel.name(), logLevel);
 		}
 
@@ -240,7 +240,7 @@ public final class LoggerConfiguration {
 		 * @return a new {@link LevelConfiguration} instance
 		 */
 		public static LevelConfiguration ofCustom(String name) {
-			Assert.hasText(name, "Name must not be empty");
+			Assert.hasText(name, "'name' must not be empty");
 			return new LevelConfiguration(name, null);
 		}
 

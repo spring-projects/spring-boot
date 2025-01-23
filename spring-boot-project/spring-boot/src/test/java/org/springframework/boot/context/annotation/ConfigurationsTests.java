@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
@@ -45,7 +47,7 @@ class ConfigurationsTests {
 	@Test
 	void createWhenClassesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestConfigurations((Collection<Class<?>>) null))
-			.withMessageContaining("Classes must not be null");
+			.withMessageContaining("'classes' must not be null");
 	}
 
 	@Test
@@ -87,6 +89,18 @@ class ConfigurationsTests {
 				OutputStream.class, String.class);
 	}
 
+	@Test
+	void getBeanNameWhenNoFunctionReturnsNull() {
+		Configurations configurations = new TestConfigurations(Short.class);
+		assertThat(configurations.getBeanName(Short.class)).isNull();
+	}
+
+	@Test
+	void getBeanNameWhenFunctionReturnsBeanName() {
+		Configurations configurations = new TestConfigurations(Sorter.instance, List.of(Short.class), Class::getName);
+		assertThat(configurations.getBeanName(Short.class)).isEqualTo(Short.class.getName());
+	}
+
 	@Order(Ordered.HIGHEST_PRECEDENCE)
 	static class TestConfigurations extends Configurations {
 
@@ -95,7 +109,12 @@ class ConfigurationsTests {
 		}
 
 		TestConfigurations(UnaryOperator<Collection<Class<?>>> sorter, Class<?>... classes) {
-			super(sorter, Arrays.asList(classes));
+			this(sorter, Arrays.asList(classes), null);
+		}
+
+		TestConfigurations(UnaryOperator<Collection<Class<?>>> sorter, Collection<Class<?>> classes,
+				Function<Class<?>, String> beanNameGenerator) {
+			super(sorter, classes, beanNameGenerator);
 		}
 
 		TestConfigurations(Collection<Class<?>> classes) {
@@ -117,7 +136,7 @@ class ConfigurationsTests {
 		}
 
 		protected TestSortedConfigurations(Collection<Class<?>> classes) {
-			super(Sorter.instance, classes);
+			super(Sorter.instance, classes, null);
 		}
 
 		@Override

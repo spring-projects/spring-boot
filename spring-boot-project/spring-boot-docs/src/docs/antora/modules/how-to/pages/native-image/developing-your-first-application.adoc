@@ -34,7 +34,8 @@ The resulting image doesn't contain a JVM, instead the native image is compiled 
 This leads to smaller images.
 
 NOTE: The CNB builder used for the images is `paketobuildpacks/builder-jammy-java-tiny:latest`.
-It has small footprint and reduced attack surface, but you can also use `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-full:latest` to have more tools available in the image if required.
+It has a small footprint and reduced attack surface. It does not include a shell and contains a reduced set of system libraries.
+Use `paketobuildpacks/builder-jammy-base:latest` or `paketobuildpacks/builder-jammy-full:latest` to have more tools available in the image if required.
 
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public interface ReactorNettyHttpClientMapper {
 	 * @since 3.1.1
 	 */
 	static ReactorNettyHttpClientMapper of(Collection<ReactorNettyHttpClientMapper> mappers) {
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		return of(mappers.toArray(ReactorNettyHttpClientMapper[]::new));
 	}
 
@@ -59,7 +59,7 @@ public interface ReactorNettyHttpClientMapper {
 	 * @since 3.1.1
 	 */
 	static ReactorNettyHttpClientMapper of(ReactorNettyHttpClientMapper... mappers) {
-		Assert.notNull(mappers, "Mappers must not be null");
+		Assert.notNull(mappers, "'mappers' must not be null");
 		return (httpClient) -> {
 			for (ReactorNettyHttpClientMapper mapper : mappers) {
 				httpClient = mapper.configure(httpClient);

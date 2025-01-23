@@ -43,7 +43,7 @@ public class SslAutoConfiguration {
 	private final SslProperties sslProperties;
 
 	SslAutoConfiguration(ResourceLoader resourceLoader, SslProperties sslProperties) {
-		this.resourceLoader = ApplicationResourceLoader.get(resourceLoader);
+		this.resourceLoader = ApplicationResourceLoader.get(resourceLoader, true);
 		this.sslProperties = sslProperties;
 	}
 

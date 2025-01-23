@@ -99,6 +99,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		return super.loadClass(name);
 	}
 
+	@SuppressWarnings("resource")
 	static ModifiedClassPathClassLoader get(Class<?> testClass, Method testMethod, List<Object> arguments) {
 		Set<AnnotatedElement> candidates = new LinkedHashSet<>();
 		candidates.add(testClass);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public final class PropertiesSslBundle implements SslBundle {
 		if (properties.isVerifyKeys()) {
 			CertificateMatcher certificateMatcher = new CertificateMatcher(pemSslStore.privateKey());
 			Assert.state(certificateMatcher.matchesAny(pemSslStore.certificates()),
-					"Private key in %s matches none of the certificates in the chain".formatted(propertyName));
+					() -> "Private key in %s matches none of the certificates in the chain".formatted(propertyName));
 		}
 		return pemSslStore;
 	}

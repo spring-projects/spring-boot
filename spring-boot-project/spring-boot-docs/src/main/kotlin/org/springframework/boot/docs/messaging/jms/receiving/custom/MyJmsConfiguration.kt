@@ -30,7 +30,7 @@ class MyJmsConfiguration {
 	fun myFactory(configurer: DefaultJmsListenerContainerFactoryConfigurer,
 				  connectionFactory: ConnectionFactory): DefaultJmsListenerContainerFactory {
 		val factory = DefaultJmsListenerContainerFactory()
-		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrap(connectionFactory))
+		configurer.configure(factory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory))
 		factory.setMessageConverter(MyMessageConverter())
 		return factory
 	}

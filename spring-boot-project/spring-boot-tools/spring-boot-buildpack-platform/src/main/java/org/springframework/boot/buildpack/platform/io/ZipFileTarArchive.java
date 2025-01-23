@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,8 @@ public class ZipFileTarArchive implements TarArchive {
 	 * @param owner the owner of the tar entries
 	 */
 	public ZipFileTarArchive(File zip, Owner owner) {
-		Assert.notNull(zip, "Zip must not be null");
-		Assert.notNull(owner, "Owner must not be null");
+		Assert.notNull(zip, "'zip' must not be null");
+		Assert.notNull(owner, "'owner' must not be null");
 		assertArchiveHasEntries(zip);
 		this.zip = zip;
 		this.owner = owner;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,24 +40,25 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 	private final Map<String, C> map;
 
 	NamedContributorsMapAdapter(Map<String, V> map, Function<V, ? extends C> valueAdapter) {
-		Assert.notNull(map, "Map must not be null");
-		Assert.notNull(valueAdapter, "ValueAdapter must not be null");
-		map.keySet().forEach(this::validateKey);
-		this.map = Collections.unmodifiableMap(map.entrySet()
-			.stream()
-			.collect(LinkedHashMap::new,
-					(result, entry) -> result.put(entry.getKey(), adapt(entry.getValue(), valueAdapter)), Map::putAll));
+		Assert.notNull(map, "'map' must not be null");
+		Assert.notNull(valueAdapter, "'valueAdapter' must not be null");
+		map.keySet().forEach(this::validateMapKey);
+		this.map = Collections.unmodifiableMap(map.entrySet().stream().collect(LinkedHashMap::new, (result, entry) -> {
+			String key = entry.getKey();
+			C value = adaptMapValue(entry.getValue(), valueAdapter);
+			result.put(key, value);
+		}, Map::putAll));
 
 	}
 
-	private void validateKey(String value) {
-		Assert.notNull(value, "Map must not contain null keys");
-		Assert.isTrue(!value.contains("/"), "Map keys must not contain a '/'");
+	private void validateMapKey(String value) {
+		Assert.notNull(value, "'map' must not contain null keys");
+		Assert.isTrue(!value.contains("/"), "'map' keys must not contain a '/'");
 	}
 
-	private C adapt(V value, Function<V, ? extends C> valueAdapter) {
+	private C adaptMapValue(V value, Function<V, ? extends C> valueAdapter) {
 		C contributor = (value != null) ? valueAdapter.apply(value) : null;
-		Assert.notNull(contributor, "Map must not contain null values");
+		Assert.notNull(contributor, "'map' must not contain null values");
 		return contributor;
 	}
 

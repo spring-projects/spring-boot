@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public final class StaticResourceRequest {
 	 * @return the configured {@link ServerWebExchangeMatcher}
 	 */
 	public StaticResourceServerWebExchange at(Set<StaticResourceLocation> locations) {
-		Assert.notNull(locations, "Locations must not be null");
+		Assert.notNull(locations, "'locations' must not be null");
 		return new StaticResourceServerWebExchange(new LinkedHashSet<>(locations));
 	}
 
@@ -115,7 +115,7 @@ public final class StaticResourceRequest {
 		 * @return a new {@link StaticResourceServerWebExchange}
 		 */
 		public StaticResourceServerWebExchange excluding(Set<StaticResourceLocation> locations) {
-			Assert.notNull(locations, "Locations must not be null");
+			Assert.notNull(locations, "'locations' must not be null");
 			Set<StaticResourceLocation> subset = new LinkedHashSet<>(this.locations);
 			subset.removeAll(locations);
 			return new StaticResourceServerWebExchange(subset);

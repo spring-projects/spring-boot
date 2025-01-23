@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -598,7 +598,7 @@ public class FlywayProperties {
 	}
 
 	@Deprecated(since = "3.4.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18")
+	@DeprecatedConfigurationProperty(since = "3.4.0", reason = "Deprecated in Flyway 10.18 and removed in Flyway 11.0")
 	public boolean isCleanOnValidationError() {
 		return this.cleanOnValidationError;
 	}

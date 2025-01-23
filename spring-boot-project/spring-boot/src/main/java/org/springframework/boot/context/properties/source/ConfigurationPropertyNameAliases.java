@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,15 +50,15 @@ public final class ConfigurationPropertyNameAliases implements Iterable<Configur
 	}
 
 	public void addAliases(String name, String... aliases) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(aliases, "Aliases must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(aliases, "'aliases' must not be null");
 		addAliases(ConfigurationPropertyName.of(name),
 				Arrays.stream(aliases).map(ConfigurationPropertyName::of).toArray(ConfigurationPropertyName[]::new));
 	}
 
 	public void addAliases(ConfigurationPropertyName name, ConfigurationPropertyName... aliases) {
-		Assert.notNull(name, "Name must not be null");
-		Assert.notNull(aliases, "Aliases must not be null");
+		Assert.notNull(name, "'name' must not be null");
+		Assert.notNull(aliases, "'aliases' must not be null");
 		this.aliases.addAll(name, Arrays.asList(aliases));
 	}
 

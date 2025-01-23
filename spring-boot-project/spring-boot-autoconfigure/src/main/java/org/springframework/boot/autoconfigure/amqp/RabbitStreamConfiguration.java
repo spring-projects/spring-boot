@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
-	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
+	@ConditionalOnProperty(name = "spring.rabbitmq.listener.type", havingValue = "stream")
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
 			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizer,
 			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
@@ -90,7 +90,7 @@ class RabbitStreamConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RabbitStreamOperations.class)
-	@ConditionalOnProperty(prefix = "spring.rabbitmq.stream", name = "name")
+	@ConditionalOnProperty(name = "spring.rabbitmq.stream.name")
 	RabbitStreamTemplate rabbitStreamTemplate(Environment rabbitStreamEnvironment, RabbitProperties properties,
 			RabbitStreamTemplateConfigurer configurer) {
 		RabbitStreamTemplate template = new RabbitStreamTemplate(rabbitStreamEnvironment,

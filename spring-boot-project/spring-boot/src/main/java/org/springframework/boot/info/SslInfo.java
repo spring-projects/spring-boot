@@ -22,6 +22,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.function.Function;
 import javax.security.auth.x500.X500Principal;
 
 import org.springframework.boot.info.SslInfo.CertificateValidityInfo.Status;
+import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.util.ObjectUtils;
@@ -41,6 +43,7 @@ import org.springframework.util.ObjectUtils;
  * Information about the certificates that the application uses.
  *
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  * @since 3.4.0
  */
 public class SslInfo {
@@ -49,16 +52,53 @@ public class SslInfo {
 
 	private final Duration certificateValidityWarningThreshold;
 
+	private final Clock clock;
+
+	/**
+	 * Creates a new instance.
+	 * @param sslBundles the {@link SslBundles} to extract the info from
+	 * @param certificateValidityWarningThreshold the certificate validity warning
+	 * threshold
+	 */
 	public SslInfo(SslBundles sslBundles, Duration certificateValidityWarningThreshold) {
-		this.sslBundles = sslBundles;
-		this.certificateValidityWarningThreshold = certificateValidityWarningThreshold;
+		this(sslBundles, certificateValidityWarningThreshold, Clock.systemDefaultZone());
 	}
 
+	/**
+	 * Creates a new instance.
+	 * @param sslBundles the {@link SslBundles} to extract the info from
+	 * @param certificateValidityWarningThreshold the certificate validity warning
+	 * threshold
+	 * @param clock the {@link Clock} to use
+	 * @since 3.5.0
+	 */
+	public SslInfo(SslBundles sslBundles, Duration certificateValidityWarningThreshold, Clock clock) {
+		this.sslBundles = sslBundles;
+		this.certificateValidityWarningThreshold = certificateValidityWarningThreshold;
+		this.clock = clock;
+	}
+
+	/**
+	 * Returns information on all SSL bundles.
+	 * @return information on all SSL bundles
+	 */
 	public List<BundleInfo> getBundles() {
 		return this.sslBundles.getBundleNames()
 			.stream()
 			.map((name) -> new BundleInfo(name, this.sslBundles.getBundle(name)))
 			.toList();
+	}
+
+	/**
+	 * Returns an SSL bundle by name.
+	 * @param name the name of the SSL bundle
+	 * @return the {@link BundleInfo} for the given SSL bundle
+	 * @throws NoSuchSslBundleException if a bundle with the provided name does not exist
+	 * @since 3.5.0
+	 */
+	public BundleInfo getBundle(String name) {
+		SslBundle bundle = this.sslBundles.getBundle(name);
+		return new BundleInfo(name, bundle);
 	}
 
 	/**
@@ -195,7 +235,7 @@ public class SslInfo {
 		}
 
 		private boolean isExpiringSoon(X509Certificate certificate, Duration threshold) {
-			Instant shouldBeValidAt = Instant.now().plus(threshold);
+			Instant shouldBeValidAt = Instant.now(SslInfo.this.clock).plus(threshold);
 			Instant expiresAt = certificate.getNotAfter().toInstant();
 			return shouldBeValidAt.isAfter(expiresAt);
 		}

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.Access;
 import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.mock.env.MockEnvironment;
 
@@ -34,6 +35,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class PropertiesEndpointAccessResolverTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
+
+	PropertiesEndpointAccessResolverTests() {
+		ConfigurationPropertySources.attach(this.environment);
+	}
 
 	@Test
 	void whenNoPropertiesAreConfiguredThenAccessForReturnsEndpointsDefaultAccess() {
@@ -50,6 +55,13 @@ class PropertiesEndpointAccessResolverTests {
 	void whenAccessForEndpointIsConfiguredThenAccessForReturnsIt() {
 		this.environment.withProperty("management.endpoint.test.access", Access.UNRESTRICTED.name());
 		assertThat(accessResolver().accessFor(EndpointId.of("test"), Access.READ_ONLY)).isEqualTo(Access.UNRESTRICTED);
+	}
+
+	@Test
+	void whenAccessForEndpointWithCamelCaseIdIsConfiguredThenAccessForReturnsIt() {
+		this.environment.withProperty("management.endpoint.alpha-bravo.access", Access.UNRESTRICTED.name());
+		assertThat(accessResolver().accessFor(EndpointId.of("alphaBravo"), Access.READ_ONLY))
+			.isEqualTo(Access.UNRESTRICTED);
 	}
 
 	@Test
@@ -81,6 +93,13 @@ class PropertiesEndpointAccessResolverTests {
 	void whenEndpointIsEnabledAccessForReturnsUnrestricted() {
 		this.environment.withProperty("management.endpoint.test.enabled", "true");
 		assertThat(accessResolver().accessFor(EndpointId.of("test"), Access.READ_ONLY)).isEqualTo(Access.UNRESTRICTED);
+	}
+
+	@Test
+	void whenEndpointWithCamelCaseIdIsEnabledAccessForReturnsUnrestricted() {
+		this.environment.withProperty("management.endpoint.alpha-bravo.enabled", "true");
+		assertThat(accessResolver().accessFor(EndpointId.of("alphaBravo"), Access.READ_ONLY))
+			.isEqualTo(Access.UNRESTRICTED);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ class FrameTests {
 	@Test
 	void payloadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Frame((String) null))
-			.withMessageContaining("Payload must not be null");
+			.withMessageContaining("'payload' must not be null");
 	}
 
 	@Test
 	void typeMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Frame((Frame.Type) null))
-			.withMessageContaining("Type must not be null");
+			.withMessageContaining("'type' must not be null");
 	}
 
 	@Test

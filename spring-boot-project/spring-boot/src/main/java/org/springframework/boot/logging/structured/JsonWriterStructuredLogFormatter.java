@@ -42,18 +42,18 @@ public abstract class JsonWriterStructuredLogFormatter<E> implements StructuredL
 	 * @param customizer an optional customizer to apply
 	 */
 	protected JsonWriterStructuredLogFormatter(Consumer<Members<E>> members,
-			StructureLoggingJsonMembersCustomizer<?> customizer) {
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		this(JsonWriter.of(customized(members, customizer)).withNewLineAtEnd());
 	}
 
 	private static <E> Consumer<Members<E>> customized(Consumer<Members<E>> members,
-			StructureLoggingJsonMembersCustomizer<?> customizer) {
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
 		return (customizer != null) ? members.andThen(customizeWith(customizer)) : members;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <E> Consumer<Members<E>> customizeWith(StructureLoggingJsonMembersCustomizer<?> customizer) {
-		return (members) -> LambdaSafe.callback(StructureLoggingJsonMembersCustomizer.class, customizer, members)
+	private static <E> Consumer<Members<E>> customizeWith(StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		return (members) -> LambdaSafe.callback(StructuredLoggingJsonMembersCustomizer.class, customizer, members)
 			.invoke((instance) -> instance.customize(members));
 	}
 

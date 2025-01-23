@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public interface HealthEndpointGroups {
 	 * @since 2.6.0
 	 */
 	default HealthEndpointGroup get(AdditionalHealthEndpointPath path) {
-		Assert.notNull(path, "Path must not be null");
+		Assert.notNull(path, "'path' must not be null");
 		for (String name : getNames()) {
 			HealthEndpointGroup group = get(name);
 			if (path.equals(group.getAdditionalPath())) {
@@ -76,7 +76,7 @@ public interface HealthEndpointGroups {
 	 * @since 2.6.0
 	 */
 	default Set<HealthEndpointGroup> getAllWithAdditionalPath(WebServerNamespace namespace) {
-		Assert.notNull(namespace, "Namespace must not be null");
+		Assert.notNull(namespace, "'namespace' must not be null");
 		Set<HealthEndpointGroup> filteredGroups = new LinkedHashSet<>();
 		getNames().stream()
 			.map(this::get)
@@ -92,8 +92,8 @@ public interface HealthEndpointGroups {
 	 * @return a new {@link HealthEndpointGroups} instance
 	 */
 	static HealthEndpointGroups of(HealthEndpointGroup primary, Map<String, HealthEndpointGroup> additional) {
-		Assert.notNull(primary, "Primary must not be null");
-		Assert.notNull(additional, "Additional must not be null");
+		Assert.notNull(primary, "'primary' must not be null");
+		Assert.notNull(additional, "'additional' must not be null");
 		return new HealthEndpointGroups() {
 
 			@Override

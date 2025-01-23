@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -204,7 +205,7 @@ public class IntegrationAutoConfiguration {
 	@ConditionalOnClass(EnableIntegrationMBeanExport.class)
 	@ConditionalOnMissingBean(value = IntegrationMBeanExporter.class, search = SearchStrategy.CURRENT)
 	@ConditionalOnBean(MBeanServer.class)
-	@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
+	@ConditionalOnBooleanProperty("spring.jmx.enabled")
 	protected static class IntegrationJmxConfiguration {
 
 		@Bean
@@ -347,12 +348,13 @@ public class IntegrationAutoConfiguration {
 					super(ConfigurationPhase.REGISTER_BEAN);
 				}
 
-				@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = "uri")
+				@ConditionalOnProperty("spring.integration.rsocket.client.uri")
 				static class WebSocketAddressConfigured {
 
 				}
 
-				@ConditionalOnProperty(prefix = "spring.integration.rsocket.client", name = { "host", "port" })
+				@ConditionalOnProperty({ "spring.integration.rsocket.client.host",
+						"spring.integration.rsocket.client.port" })
 				static class TcpAddressConfigured {
 
 				}

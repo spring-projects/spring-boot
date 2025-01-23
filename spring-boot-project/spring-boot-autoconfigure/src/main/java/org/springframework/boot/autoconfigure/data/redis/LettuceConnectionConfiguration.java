@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
+import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
@@ -163,10 +164,33 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			if (lettuce.getShutdownTimeout() != null && !lettuce.getShutdownTimeout().isZero()) {
 				builder.shutdownTimeout(getProperties().getLettuce().getShutdownTimeout());
 			}
+			String readFrom = lettuce.getReadFrom();
+			if (readFrom != null) {
+				builder.readFrom(getReadFrom(readFrom));
+			}
 		}
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
 		}
+	}
+
+	private ReadFrom getReadFrom(String readFrom) {
+		int index = readFrom.indexOf(':');
+		if (index == -1) {
+			return ReadFrom.valueOf(getCanonicalReadFromName(readFrom));
+		}
+		String name = getCanonicalReadFromName(readFrom.substring(0, index));
+		String value = readFrom.substring(index + 1);
+		return ReadFrom.valueOf(name + ":" + value);
+	}
+
+	private String getCanonicalReadFromName(String name) {
+		StringBuilder canonicalName = new StringBuilder(name.length());
+		name.chars()
+			.filter(Character::isLetterOrDigit)
+			.map(Character::toLowerCase)
+			.forEach((c) -> canonicalName.append((char) c));
+		return canonicalName.toString();
 	}
 
 	private ClientOptions createClientOptions(

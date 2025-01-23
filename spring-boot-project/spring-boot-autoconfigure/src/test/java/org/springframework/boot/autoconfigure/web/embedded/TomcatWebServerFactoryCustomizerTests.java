@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,6 +192,13 @@ class TomcatWebServerFactoryCustomizerTests {
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
 					.getMaxHttpRequestHeaderSize())
 			.isEqualTo(DataSize.ofMegabytes(10).toBytes()));
+	}
+
+	@Test
+	void customMaxParameterCount() {
+		bind("server.tomcat.max-parameter-count=100");
+		customizeAndRunServer(
+				(server) -> assertThat(server.getTomcat().getConnector().getMaxParameterCount()).isEqualTo(100));
 	}
 
 	@Test

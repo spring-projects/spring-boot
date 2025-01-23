@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection;
 
 import org.springframework.boot.docker.compose.core.RunningService;
+import org.springframework.core.env.Environment;
 
 /**
  * Passed to {@link DockerComposeConnectionDetailsFactory} to provide details of the
@@ -32,12 +33,16 @@ public final class DockerComposeConnectionSource {
 
 	private final RunningService runningService;
 
+	private final Environment environment;
+
 	/**
 	 * Create a new {@link DockerComposeConnectionSource} instance.
 	 * @param runningService the running Docker Compose service
+	 * @param environment environment in which the current application is running
 	 */
-	DockerComposeConnectionSource(RunningService runningService) {
+	DockerComposeConnectionSource(RunningService runningService, Environment environment) {
 		this.runningService = runningService;
+		this.environment = environment;
 	}
 
 	/**
@@ -46,6 +51,15 @@ public final class DockerComposeConnectionSource {
 	 */
 	public RunningService getRunningService() {
 		return this.runningService;
+	}
+
+	/**
+	 * Environment in which the current application is running.
+	 * @return the environment
+	 * @since 3.5.0
+	 */
+	public Environment getEnvironment() {
+		return this.environment;
 	}
 
 }

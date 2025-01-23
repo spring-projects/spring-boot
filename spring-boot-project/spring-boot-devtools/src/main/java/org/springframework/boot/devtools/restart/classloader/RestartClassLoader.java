@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,8 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	 */
 	public RestartClassLoader(ClassLoader parent, URL[] urls, ClassLoaderFileRepository updatedFiles) {
 		super(urls, parent);
-		Assert.notNull(parent, "Parent must not be null");
-		Assert.notNull(updatedFiles, "UpdatedFiles must not be null");
+		Assert.notNull(parent, "'parent' must not be null");
+		Assert.notNull(updatedFiles, "'updatedFiles' must not be null");
 		this.updatedFiles = updatedFiles;
 	}
 
@@ -167,7 +167,7 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 	}
 
 	/**
-	 * Compound {@link Enumeration} that adds an additional item to the front.
+	 * Compound {@link Enumeration} that adds an item to the front.
 	 */
 	private static class CompoundEnumeration<E> implements Enumeration<E> {
 

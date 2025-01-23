@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.apache.logging.log4j.core.impl.JdkMapAdapterStringMap;
 import org.apache.logging.log4j.core.impl.MutableLogEvent;
 import org.apache.logging.log4j.message.MapMessage;
@@ -98,6 +101,27 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
 				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
 				"org.example.Test", "message", expectedMessage, "ecs.version", "8.11"));
+	}
+
+	@Test
+	void shouldFormatMarkersAsTags() {
+		MutableLogEvent event = createEvent();
+		Marker parent = MarkerManager.getMarker("parent");
+		parent.addParents(MarkerManager.getMarker("grandparent"));
+		Marker parent1 = MarkerManager.getMarker("parent1");
+		parent1.addParents(MarkerManager.getMarker("grandparent1"));
+		Marker grandchild = MarkerManager.getMarker("grandchild");
+		grandchild.addParents(parent);
+		grandchild.addParents(parent1);
+		event.setMarker(grandchild);
+		String json = this.formatter.format(event);
+		assertThat(json).endsWith("\n");
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsExactlyInAnyOrderEntriesOf(map("@timestamp", "2024-07-02T08:49:53Z",
+				"log.level", "INFO", "process.pid", 1, "process.thread.name", "main", "service.name", "name",
+				"service.version", "1.0.0", "service.environment", "test", "service.node.name", "node-1", "log.logger",
+				"org.example.Test", "message", "message", "ecs.version", "8.11", "tags",
+				List.of("grandchild", "grandparent", "grandparent1", "parent", "parent1")));
 	}
 
 }

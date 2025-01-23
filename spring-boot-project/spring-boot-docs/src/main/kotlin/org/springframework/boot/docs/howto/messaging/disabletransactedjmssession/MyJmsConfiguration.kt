@@ -31,7 +31,7 @@ class MyJmsConfiguration {
 	fun jmsListenerContainerFactory(connectionFactory: ConnectionFactory?,
 			configurer: DefaultJmsListenerContainerFactoryConfigurer): DefaultJmsListenerContainerFactory {
 		val listenerFactory = DefaultJmsListenerContainerFactory()
-		configurer.configure(listenerFactory, ConnectionFactoryUnwrapper.unwrap(connectionFactory))
+		configurer.configure(listenerFactory, ConnectionFactoryUnwrapper.unwrapCaching(connectionFactory))
 		listenerFactory.setTransactionManager(null)
 		listenerFactory.setSessionTransacted(false)
 		return listenerFactory

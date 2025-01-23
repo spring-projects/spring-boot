@@ -235,6 +235,9 @@ publishing.publications.withType(MavenPublication) {
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ServicesResourceTransformer')
 											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ManifestResourceTransformer') {
 												delegate.mainClass('${start-class}')
+												manifestEntries {
+													delegate.'Multi-Release'('true')
+												}
 											}
 										}
 									}

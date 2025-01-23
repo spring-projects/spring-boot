@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +55,9 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 	public <S extends AvailabilityState> AvailabilityStateHealthIndicator(
 			ApplicationAvailability applicationAvailability, Class<S> stateType,
 			Consumer<StatusMappings<S>> statusMappings) {
-		Assert.notNull(applicationAvailability, "ApplicationAvailability must not be null");
-		Assert.notNull(stateType, "StateType must not be null");
-		Assert.notNull(statusMappings, "StatusMappings must not be null");
+		Assert.notNull(applicationAvailability, "'applicationAvailability' must not be null");
+		Assert.notNull(stateType, "'stateType' must not be null");
+		Assert.notNull(statusMappings, "'statusMappings' must not be null");
 		this.applicationAvailability = applicationAvailability;
 		this.stateType = stateType;
 		statusMappings.accept(this.statusMappings::put);
@@ -69,7 +69,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 		if (!this.statusMappings.containsKey(null) && Enum.class.isAssignableFrom(stateType)) {
 			EnumSet elements = EnumSet.allOf((Class) stateType);
 			for (Object element : elements) {
-				Assert.isTrue(this.statusMappings.containsKey(element),
+				Assert.state(this.statusMappings.containsKey(element),
 						() -> "StatusMappings does not include " + element);
 			}
 		}

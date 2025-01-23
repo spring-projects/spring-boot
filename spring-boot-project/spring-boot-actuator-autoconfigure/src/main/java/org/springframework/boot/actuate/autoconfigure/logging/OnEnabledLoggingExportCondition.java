@@ -42,12 +42,13 @@ class OnEnabledLoggingExportCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String loggingExporter = getExporterName(metadata);
 		if (StringUtils.hasLength(loggingExporter)) {
+			String formattedExporterProperty = EXPORTER_PROPERTY.formatted(loggingExporter);
 			Boolean exporterLoggingEnabled = context.getEnvironment()
-				.getProperty(EXPORTER_PROPERTY.formatted(loggingExporter), Boolean.class);
+				.getProperty(formattedExporterProperty, Boolean.class);
 			if (exporterLoggingEnabled != null) {
 				return new ConditionOutcome(exporterLoggingEnabled,
 						ConditionMessage.forCondition(ConditionalOnEnabledLoggingExport.class)
-							.because(EXPORTER_PROPERTY.formatted(loggingExporter) + " is " + exporterLoggingEnabled));
+							.because(formattedExporterProperty + " is " + exporterLoggingEnabled));
 			}
 		}
 		Boolean globalLoggingEnabled = context.getEnvironment().getProperty(GLOBAL_PROPERTY, Boolean.class);

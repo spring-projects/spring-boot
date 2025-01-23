@@ -127,6 +127,8 @@ public class AntoraAsciidocAttributes {
 		addDependencyVersion(attributes, "jackson-annotations", "com.fasterxml.jackson.core:jackson-annotations");
 		addDependencyVersion(attributes, "jackson-core", "com.fasterxml.jackson.core:jackson-core");
 		addDependencyVersion(attributes, "jackson-databind", "com.fasterxml.jackson.core:jackson-databind");
+		addDependencyVersion(attributes, "jackson-dataformat-xml",
+				"com.fasterxml.jackson.dataformat:jackson-dataformat-xml");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-commons");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-couchbase");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-cassandra");
@@ -139,6 +141,28 @@ public class AntoraAsciidocAttributes {
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-redis");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-rest", "spring-data-rest-core");
 		addSpringDataDependencyVersion(attributes, internal, "spring-data-ldap");
+		addTestcontainersDependencyVersion(attributes, internal, "activemq");
+		addTestcontainersDependencyVersion(attributes, internal, "cassandra");
+		addTestcontainersDependencyVersion(attributes, internal, "clickhouse");
+		addTestcontainersDependencyVersion(attributes, internal, "couchbase");
+		addTestcontainersDependencyVersion(attributes, internal, "elasticsearch");
+		addTestcontainersDependencyVersion(attributes, internal, "grafana");
+		addTestcontainersDependencyVersion(attributes, internal, "jdbc");
+		addTestcontainersDependencyVersion(attributes, internal, "kafka");
+		addTestcontainersDependencyVersion(attributes, internal, "mariadb");
+		addTestcontainersDependencyVersion(attributes, internal, "mongodb");
+		addTestcontainersDependencyVersion(attributes, internal, "mssqlserver");
+		addTestcontainersDependencyVersion(attributes, internal, "mysql");
+		addTestcontainersDependencyVersion(attributes, internal, "neo4j");
+		addTestcontainersDependencyVersion(attributes, internal, "oracle-xe");
+		addTestcontainersDependencyVersion(attributes, internal, "oracle-free");
+		addTestcontainersDependencyVersion(attributes, internal, "postgresql");
+		addTestcontainersDependencyVersion(attributes, internal, "pulsar");
+		addTestcontainersDependencyVersion(attributes, internal, "rabbitmq");
+		addTestcontainersDependencyVersion(attributes, internal, "redpanda");
+		addTestcontainersDependencyVersion(attributes, internal, "r2dbc");
+		addDependencyVersion(attributes, "pulsar-client-reactive-api", "org.apache.pulsar:pulsar-client-reactive-api");
+		addDependencyVersion(attributes, "pulsar-client-api", "org.apache.pulsar:pulsar-client-api");
 	}
 
 	private void addSpringDataDependencyVersion(Map<String, String> attributes, Map<String, String> internal,
@@ -155,6 +179,11 @@ public class AntoraAsciidocAttributes {
 		String antoraVersion = version.endsWith(DASH_SNAPSHOT) ? majorMinor + DASH_SNAPSHOT : majorMinor;
 		internal.put("antoraversion-" + name, antoraVersion);
 		internal.put("dotxversion-" + name, majorMinor + ".x");
+	}
+
+	private void addTestcontainersDependencyVersion(Map<String, String> attributes, Map<String, String> internal,
+			String artifactId) {
+		addDependencyVersion(attributes, "testcontainers-" + artifactId, "org.testcontainers:" + artifactId);
 	}
 
 	private void addDependencyVersion(Map<String, String> attributes, String name, String groupAndArtifactId) {
@@ -175,25 +204,36 @@ public class AntoraAsciidocAttributes {
 	}
 
 	private void addUrlJava(Map<String, String> attributes) {
-		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api/");
-		attributes.put("javadoc-location-java", "{url-javase-javadoc}");
-		attributes.put("javadoc-location-javax.management", "{url-javase-javadoc}");
-		attributes.put("javadoc-location-javax.xml", "{url-javase-javadoc}");
+		attributes.put("url-javase-javadoc", "https://docs.oracle.com/en/java/javase/17/docs/api");
+		attributes.put("javadoc-location-java-beans", "{url-javase-javadoc}/java.desktop");
+		attributes.put("javadoc-location-java-lang", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-net", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-io", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-nio", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-security", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-sql", "{url-javase-javadoc}/java.sql");
+		attributes.put("javadoc-location-java-time", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-java-util", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-javax-management", "{url-javase-javadoc}/java.management");
+		attributes.put("javadoc-location-javax-net", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-javax-sql", "{url-javase-javadoc}/java.sql");
+		attributes.put("javadoc-location-javax-security", "{url-javase-javadoc}/java.base");
+		attributes.put("javadoc-location-javax-xml", "{url-javase-javadoc}/java.xml");
 	}
 
 	private void addUrlLibraryLinkAttributes(Map<String, String> attributes) {
 		Map<String, String> packageAttributes = new LinkedHashMap<>();
 		this.libraries.forEach((library) -> {
-			String prefix = "url-" + library.getLinkRootName() + "-";
-			library.getLinks().forEach((name, link) -> {
-				String linkName = prefix + name;
+			library.getLinks().forEach((name, links) -> links.forEach((link) -> {
+				String linkRootName = (link.rootName() != null) ? link.rootName() : library.getLinkRootName();
+				String linkName = "url-" + linkRootName + "-" + name;
 				attributes.put(linkName, link.url(library));
 				link.packages()
 					.stream()
 					.map(this::packageAttributeName)
 					.forEach((packageAttributeName) -> packageAttributes.put(packageAttributeName,
 							"{" + linkName + "}"));
-			});
+			}));
 		});
 		attributes.putAll(packageAttributes);
 	}

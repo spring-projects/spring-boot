@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class FileWatcher implements Closeable {
 	 * actions
 	 */
 	FileWatcher(Duration quietPeriod) {
-		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
+		Assert.notNull(quietPeriod, "'quietPeriod' must not be null");
 		this.quietPeriod = quietPeriod;
 	}
 
@@ -75,8 +75,8 @@ class FileWatcher implements Closeable {
 	 * @param action the action to take when changes are detected
 	 */
 	void watch(Set<Path> paths, Runnable action) {
-		Assert.notNull(paths, "Paths must not be null");
-		Assert.notNull(action, "Action must not be null");
+		Assert.notNull(paths, "'paths' must not be null");
+		Assert.notNull(action, "'action' must not be null");
 		if (paths.isEmpty()) {
 			return;
 		}
@@ -86,12 +86,24 @@ class FileWatcher implements Closeable {
 					this.thread = new WatcherThread();
 					this.thread.start();
 				}
-				this.thread.register(new Registration(paths, action));
+				Set<Path> actualPaths = new HashSet<>();
+				for (Path path : paths) {
+					actualPaths.add(resolveSymlinkIfNecessary(path));
+				}
+				this.thread.register(new Registration(actualPaths, action));
 			}
 			catch (IOException ex) {
 				throw new UncheckedIOException("Failed to register paths for watching: " + paths, ex);
 			}
 		}
+	}
+
+	private static Path resolveSymlinkIfNecessary(Path path) throws IOException {
+		if (Files.isSymbolicLink(path)) {
+			Path target = Files.readSymbolicLink(path);
+			return resolveSymlinkIfNecessary(target);
+		}
+		return path;
 	}
 
 	@Override

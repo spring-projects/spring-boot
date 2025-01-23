@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,7 @@ public class InspectedContent implements Content {
 	 * @throws IOException on IO error
 	 */
 	public static InspectedContent of(InputStream inputStream, Inspector... inspectors) throws IOException {
-		Assert.notNull(inputStream, "InputStream must not be null");
+		Assert.notNull(inputStream, "'inputStream' must not be null");
 		return of((outputStream) -> FileCopyUtils.copy(inputStream, outputStream), inspectors);
 	}
 
@@ -88,7 +88,7 @@ public class InspectedContent implements Content {
 	 * @throws IOException on IO error
 	 */
 	public static InspectedContent of(Content content, Inspector... inspectors) throws IOException {
-		Assert.notNull(content, "Content must not be null");
+		Assert.notNull(content, "'content' must not be null");
 		return of(content::writeTo, inspectors);
 	}
 
@@ -101,7 +101,7 @@ public class InspectedContent implements Content {
 	 * @throws IOException on IO error
 	 */
 	public static InspectedContent of(IOConsumer<OutputStream> writer, Inspector... inspectors) throws IOException {
-		Assert.notNull(writer, "Writer must not be null");
+		Assert.notNull(writer, "'writer' must not be null");
 		InspectingOutputStream outputStream = new InspectingOutputStream(inspectors);
 		try (outputStream) {
 			writer.accept(outputStream);

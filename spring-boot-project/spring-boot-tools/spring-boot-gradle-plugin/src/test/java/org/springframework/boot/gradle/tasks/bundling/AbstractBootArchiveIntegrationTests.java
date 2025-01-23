@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -316,18 +316,6 @@ abstract class AbstractBootArchiveIntegrationTests {
 			.task(":" + this.taskName)
 			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.scriptProperty("layerEnablement", "enabled = true")
-			.build(this.taskName)
-			.task(":" + this.taskName)
-			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-	}
-
-	@TestTemplate
-	void notUpToDateWhenBuiltWithLayerToolsAndThenWithoutLayerTools() {
-		assertThat(this.gradleBuild.scriptProperty("layerTools", "")
-			.build(this.taskName)
-			.task(":" + this.taskName)
-			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.scriptProperty("layerTools", "includeLayerTools = false")
 			.build(this.taskName)
 			.task(":" + this.taskName)
 			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

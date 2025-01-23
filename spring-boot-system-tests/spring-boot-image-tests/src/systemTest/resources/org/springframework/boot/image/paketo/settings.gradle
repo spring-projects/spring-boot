@@ -3,7 +3,9 @@ pluginManagement {
 	repositories {
 		exclusiveContent {
 			forRepository {
-				maven { url '{systemTestMavenRepository}' }
+				maven {
+					url = '{systemTestMavenRepository}'
+				}
 			}
 			filter {
 				includeGroup "org.springframework.boot"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.TaskProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -134,50 +135,54 @@ public class BomExtension {
 		this.project.getTasks()
 			.matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
 			.all((task) -> {
-				Sync syncBom = this.project.getTasks().create("syncBom", Sync.class);
-				syncBom.dependsOn(task);
 				File generatedBomDir = this.project.getLayout()
 					.getBuildDirectory()
 					.dir("generated/bom")
 					.get()
 					.getAsFile();
-				syncBom.setDestinationDir(generatedBomDir);
-				syncBom.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
-				try {
-					String settingsXmlContent = FileCopyUtils
-						.copyToString(new InputStreamReader(
-								getClass().getClassLoader().getResourceAsStream("effective-bom-settings.xml"),
-								StandardCharsets.UTF_8))
-						.replace("localRepositoryPath",
-								this.project.getLayout()
-									.getBuildDirectory()
-									.dir("local-m2-repository")
-									.get()
-									.getAsFile()
-									.getAbsolutePath());
-					syncBom.from(this.project.getResources().getText().fromString(settingsXmlContent),
+				TaskProvider<Sync> syncBom = this.project.getTasks().register("syncBom", Sync.class, (sync) -> {
+					sync.dependsOn(task);
+					sync.setDestinationDir(generatedBomDir);
+					sync.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
+					sync.from(this.project.getResources().getText().fromString(loadSettingsXml()),
 							(settingsXml) -> settingsXml.rename((name) -> "settings.xml"));
-				}
-				catch (IOException ex) {
-					throw new GradleException("Failed to prepare settings.xml", ex);
-				}
-				MavenExec generateEffectiveBom = this.project.getTasks()
-					.create("generateEffectiveBom", MavenExec.class);
-				generateEffectiveBom.getProjectDir().set(generatedBomDir);
+				});
 				File effectiveBom = this.project.getLayout()
 					.getBuildDirectory()
 					.file("generated/effective-bom/" + this.project.getName() + "-effective-bom.xml")
 					.get()
 					.getAsFile();
-				generateEffectiveBom.args("--settings", "settings.xml", "help:effective-pom",
-						"-Doutput=" + effectiveBom);
-				generateEffectiveBom.dependsOn(syncBom);
-				generateEffectiveBom.getOutputs().file(effectiveBom);
-				generateEffectiveBom.doLast(new StripUnrepeatableOutputAction(effectiveBom));
+				TaskProvider<MavenExec> generateEffectiveBom = this.project.getTasks()
+					.register("generateEffectiveBom", MavenExec.class, (maven) -> {
+						maven.getProjectDir().set(generatedBomDir);
+						maven.args("--settings", "settings.xml", "help:effective-pom", "-Doutput=" + effectiveBom);
+						maven.dependsOn(syncBom);
+						maven.getOutputs().file(effectiveBom);
+						maven.doLast(new StripUnrepeatableOutputAction(effectiveBom));
+					});
 				this.project.getArtifacts()
 					.add(effectiveBomConfiguration.getName(), effectiveBom,
 							(artifact) -> artifact.builtBy(generateEffectiveBom));
 			});
+	}
+
+	private String loadSettingsXml() {
+		try {
+			return FileCopyUtils
+				.copyToString(new InputStreamReader(
+						getClass().getClassLoader().getResourceAsStream("effective-bom-settings.xml"),
+						StandardCharsets.UTF_8))
+				.replace("localRepositoryPath",
+						this.project.getLayout()
+							.getBuildDirectory()
+							.dir("local-m2-repository")
+							.get()
+							.getAsFile()
+							.getAbsolutePath());
+		}
+		catch (IOException ex) {
+			throw new GradleException("Failed to prepare settings.xml", ex);
+		}
 	}
 
 	private String createDependencyNotation(String groupId, String artifactId, DependencyVersion version) {
@@ -256,7 +261,7 @@ public class BomExtension {
 
 		private String linkRootName;
 
-		private final Map<String, Link> links = new HashMap<>();
+		private final Map<String, List<Link>> links = new HashMap<>();
 
 		@Inject
 		public LibraryHandler(Project project, String version) {
@@ -458,7 +463,7 @@ public class BomExtension {
 
 	public static class LinksHandler {
 
-		private final Map<String, Link> links = new HashMap<>();
+		private final Map<String, List<Link>> links = new HashMap<>();
 
 		public void site(String linkTemplate) {
 			site(asFactory(linkTemplate));
@@ -500,6 +505,10 @@ public class BomExtension {
 			add("javadoc", linkFactory, packages);
 		}
 
+		public void javadoc(String rootName, Function<LibraryVersion, String> linkFactory, String... packages) {
+			add(rootName, "javadoc", linkFactory, packages);
+		}
+
 		public void releaseNotes(String linkTemplate) {
 			releaseNotes(asFactory(linkTemplate));
 		}
@@ -517,7 +526,13 @@ public class BomExtension {
 		}
 
 		public void add(String name, Function<LibraryVersion, String> linkFactory, String[] packages) {
-			this.links.put(name, new Link(linkFactory, (packages != null) ? List.of(packages) : null));
+			add(null, name, linkFactory, packages);
+		}
+
+		private void add(String rootName, String name, Function<LibraryVersion, String> linkFactory,
+				String[] packages) {
+			Link link = new Link(rootName, linkFactory, (packages != null) ? List.of(packages) : null);
+			this.links.computeIfAbsent(name, (key) -> new ArrayList<>()).add(link);
 		}
 
 		private Function<LibraryVersion, String> asFactory(String linkTemplate) {
@@ -601,9 +616,9 @@ public class BomExtension {
 
 	public static final class GitHub {
 
-		private String organization;
+		private final String organization;
 
-		private String repository;
+		private final String repository;
 
 		private final List<String> issueLabels;
 

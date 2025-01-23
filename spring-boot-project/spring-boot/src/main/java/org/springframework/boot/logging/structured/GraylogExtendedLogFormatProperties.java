@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.core.env.Environment;
@@ -32,7 +33,12 @@ import org.springframework.util.StringUtils;
  */
 public record GraylogExtendedLogFormatProperties(String host, Service service) {
 
-	static final GraylogExtendedLogFormatProperties NONE = new GraylogExtendedLogFormatProperties(null, Service.NONE);
+	static final GraylogExtendedLogFormatProperties NONE = new GraylogExtendedLogFormatProperties(null, null);
+
+	public GraylogExtendedLogFormatProperties(String host, Service service) {
+		this.host = host;
+		this.service = (service != null) ? service : Service.NONE;
+	}
 
 	GraylogExtendedLogFormatProperties withDefaults(Environment environment) {
 		String name = withFallbackProperty(environment, this.host, "spring.application.name");
@@ -82,6 +88,14 @@ public record GraylogExtendedLogFormatProperties(String host, Service service) {
 
 		void jsonMembers(JsonWriter.Members<?> members) {
 			members.add("_service_version", this::version).whenHasLength();
+		}
+
+	}
+
+	static class GraylogExtendedLogFormatPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+
+		GraylogExtendedLogFormatPropertiesRuntimeHints() {
+			super(GraylogExtendedLogFormatProperties.class);
 		}
 
 	}

@@ -43,7 +43,7 @@ The `native` profile configures the following:
 
 [WARNING]
 ====
-The use of the raw classpath means that native image does not know about the generated `MANIFEST`.
+The use of the raw classpath means that native image does not know about the generated `MANIFEST.MF`.
 If you need to read the content of the manifest in a native image, for instance to get the implementation version of your application, configure the `classesDirectory` option to use the regular jar.
 ====
 

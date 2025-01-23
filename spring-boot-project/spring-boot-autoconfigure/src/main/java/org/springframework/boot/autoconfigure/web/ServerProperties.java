@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -513,13 +513,11 @@ public class ServerProperties {
 		 */
 		private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(8);
 
-		public DataSize getMaxHttpFormPostSize() {
-			return this.maxHttpFormPostSize;
-		}
-
-		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
-			this.maxHttpFormPostSize = maxHttpFormPostSize;
-		}
+		/**
+		 * Maximum number of parameters (GET plus POST) that will be automatically parsed
+		 * by the container. A value of less than 0 means no limit.
+		 */
+		private int maxParameterCount = 10000;
 
 		public Accesslog getAccesslog() {
 			return this.accesslog;
@@ -667,6 +665,22 @@ public class ServerProperties {
 
 		public void setMaxHttpResponseHeaderSize(DataSize maxHttpResponseHeaderSize) {
 			this.maxHttpResponseHeaderSize = maxHttpResponseHeaderSize;
+		}
+
+		public DataSize getMaxHttpFormPostSize() {
+			return this.maxHttpFormPostSize;
+		}
+
+		public void setMaxHttpFormPostSize(DataSize maxHttpFormPostSize) {
+			this.maxHttpFormPostSize = maxHttpFormPostSize;
+		}
+
+		public int getMaxParameterCount() {
+			return this.maxParameterCount;
+		}
+
+		public void setMaxParameterCount(int maxParameterCount) {
+			this.maxParameterCount = maxParameterCount;
 		}
 
 		/**

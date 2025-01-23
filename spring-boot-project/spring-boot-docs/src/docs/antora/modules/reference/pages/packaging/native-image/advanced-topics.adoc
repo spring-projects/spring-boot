@@ -7,7 +7,7 @@
 == Nested Configuration Properties
 
 Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
-Nested configuration properties which are not inner classes, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
+Nested configuration properties which are not inner classes, however, *must* be annotated with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation], otherwise they won't be detected and will not be bindable.
 
 include-code::MyProperties[]
 
@@ -16,18 +16,18 @@ where `Nested` is:
 include-code::Nested[]
 
 The example above produces configuration properties for `my.properties.name` and `my.properties.nested.number`.
-Without the `@NestedConfigurationProperty` annotation on the `nested` field, the `my.properties.nested.number` property would not be bindable in a native image.
+Without the javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation] annotation on the `nested` field, the `my.properties.nested.number` property would not be bindable in a native image.
 You can also annotate the getter method.
 
-When using constructor binding, you have to annotate the field with `@NestedConfigurationProperty`:
+When using constructor binding, you have to annotate the field with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation]:
 
 include-code::MyPropertiesCtor[]
 
-When using records, you have to annotate the parameter with `@NestedConfigurationProperty`:
+When using records, you have to annotate the parameter with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation]:
 
 include-code::MyPropertiesRecord[]
 
-When using Kotlin, you need to annotate the parameter of a data class with `@NestedConfigurationProperty`:
+When using Kotlin, you need to annotate the parameter of a data class with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation]:
 
 include-code::MyPropertiesKotlin[]
 
@@ -158,24 +158,24 @@ For further reading, please see {url-graal-docs-native-image}/metadata/Automatic
 [[packaging.native-image.advanced.custom-hints]]
 == Custom Hints
 
-If you need to provide your own hints for reflection, resources, serialization, proxy usage and so on, you can use the `RuntimeHintsRegistrar` API.
-Create a class that implements the `RuntimeHintsRegistrar` interface, and then make appropriate calls to the provided `RuntimeHints` instance:
+If you need to provide your own hints for reflection, resources, serialization, proxy usage and so on, you can use the javadoc:org.springframework.aot.hint.RuntimeHintsRegistrar[] API.
+Create a class that implements the javadoc:org.springframework.aot.hint.RuntimeHintsRegistrar[] interface, and then make appropriate calls to the provided javadoc:org.springframework.aot.hint.RuntimeHints[] instance:
 
 include-code::MyRuntimeHints[]
 
-You can then use `@ImportRuntimeHints` on any `@Configuration` class (for example your `@SpringBootApplication` annotated application class) to activate those hints.
+You can then use javadoc:org.springframework.context.annotation.ImportRuntimeHints[format=annotation] on any javadoc:org.springframework.context.annotation.Configuration[format=annotation] class (for example your javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotated application class) to activate those hints.
 
 If you have classes which need binding (mostly needed when serializing or deserializing JSON), you can use {url-spring-framework-docs}/core/aot.html#aot.hints.register-reflection-for-binding[`@RegisterReflectionForBinding`] on any bean.
-Most of the hints are automatically inferred, for example when accepting or returning data from a `@RestController` method.
-But when you work with `WebClient`, `RestClient` or `RestTemplate` directly, you might need to use `@RegisterReflectionForBinding`.
+Most of the hints are automatically inferred, for example when accepting or returning data from a javadoc:org.springframework.web.bind.annotation.RestController[format=annotation] method.
+But when you work with javadoc:org.springframework.web.reactive.function.client.WebClient[], javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.client.RestTemplate[] directly, you might need to use javadoc:org.springframework.aot.hint.annotation.RegisterReflectionForBinding[format=annotation].
 
 
 
 [[packaging.native-image.advanced.custom-hints.testing]]
 === Testing Custom Hints
 
-The `RuntimeHintsPredicates` API can be used to test your hints.
-The API provides methods that build a `Predicate` that can be used to test a `RuntimeHints` instance.
+The javadoc:org.springframework.aot.hint.predicate.RuntimeHintsPredicates[] API can be used to test your hints.
+The API provides methods that build a javadoc:java.util.function.Predicate[] that can be used to test a javadoc:org.springframework.aot.hint.RuntimeHints[] instance.
 
 If you're using AssertJ, your test would look like this:
 

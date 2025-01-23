@@ -13,7 +13,7 @@ See the {url-spring-framework-docs}/rsocket.html#rsocket-spring[RSocket section]
 [[messaging.rsocket.strategies-auto-configuration]]
 == RSocket Strategies Auto-configuration
 
-Spring Boot auto-configures an `RSocketStrategies` bean that provides all the required infrastructure for encoding and decoding RSocket payloads.
+Spring Boot auto-configures an javadoc:org.springframework.messaging.rsocket.RSocketStrategies[] bean that provides all the required infrastructure for encoding and decoding RSocket payloads.
 By default, the auto-configuration will try to configure the following (in order):
 
 . https://cbor.io/[CBOR] codecs with Jackson
@@ -22,8 +22,8 @@ By default, the auto-configuration will try to configure the following (in order
 The `spring-boot-starter-rsocket` starter provides both dependencies.
 See the xref:features/json.adoc#features.json.jackson[Jackson support section] to know more about customization possibilities.
 
-Developers can customize the `RSocketStrategies` component by creating beans that implement the `RSocketStrategiesCustomizer` interface.
-Note that their `@Order` is important, as it determines the order of codecs.
+Developers can customize the javadoc:org.springframework.messaging.rsocket.RSocketStrategies[] component by creating beans that implement the javadoc:org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer[] interface.
+Note that their javadoc:org.springframework.core.annotation.Order[format=annotation] is important, as it determines the order of codecs.
 
 
 
@@ -36,7 +36,7 @@ The required dependencies are provided by the `spring-boot-starter-rsocket`.
 Spring Boot allows exposing RSocket over WebSocket from a WebFlux server, or standing up an independent RSocket server.
 This depends on the type of application and its configuration.
 
-For WebFlux application (that is of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the Web Server only if the following properties match:
+For WebFlux application (that is of type javadoc:org.springframework.boot.WebApplicationType#REACTIVE[]), the RSocket server will be plugged into the Web Server only if the following properties match:
 
 [configprops,yaml]
 ----
@@ -67,20 +67,20 @@ spring:
 
 Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
 
-This means that Spring Boot will create a `RSocketMessageHandler` bean that will handle RSocket requests to your application.
+This means that Spring Boot will create a javadoc:org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler[] bean that will handle RSocket requests to your application.
 
 
 
 [[messaging.rsocket.requester]]
 == Calling RSocket Services with RSocketRequester
 
-Once the `RSocket` channel is established between server and client, any party can send or receive requests to the other.
+Once the javadoc:io.rsocket.RSocket[] channel is established between server and client, any party can send or receive requests to the other.
 
-As a server, you can get injected with an `RSocketRequester` instance on any handler method of an RSocket `@Controller`.
+As a server, you can get injected with an javadoc:org.springframework.messaging.rsocket.RSocketRequester[] instance on any handler method of an RSocket javadoc:org.springframework.stereotype.Controller[format=annotation].
 As a client, you need to configure and establish an RSocket connection first.
-Spring Boot auto-configures an `RSocketRequester.Builder` for such cases with the expected codecs and applies any `RSocketConnectorConfigurer` bean.
+Spring Boot auto-configures an javadoc:org.springframework.messaging.rsocket.RSocketRequester$Builder[] for such cases with the expected codecs and applies any javadoc:org.springframework.messaging.rsocket.RSocketConnectorConfigurer[] bean.
 
-The `RSocketRequester.Builder` instance is a prototype bean, meaning each injection point will provide you with a new instance .
+The javadoc:org.springframework.messaging.rsocket.RSocketRequester$Builder[] instance is a prototype bean, meaning each injection point will provide you with a new instance .
 This is done on purpose since this builder is stateful and you should not create requesters with different setups using the same instance.
 
 The following code shows a typical example:

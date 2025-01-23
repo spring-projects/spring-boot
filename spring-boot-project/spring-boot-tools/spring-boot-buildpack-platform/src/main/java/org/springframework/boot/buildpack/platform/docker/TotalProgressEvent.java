@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class TotalProgressEvent {
 	 * @param percent the progress as a percentage
 	 */
 	public TotalProgressEvent(int percent) {
-		Assert.isTrue(percent >= 0 && percent <= 100, "Percent must be in the range 0 to 100");
+		Assert.isTrue(percent >= 0 && percent <= 100, "'percent' must be in the range 0 to 100");
 		this.percent = percent;
 	}
 

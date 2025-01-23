@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.boot.testcontainers.lifecycle.TestcontainersStartup;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.ResolvableType;
@@ -91,7 +92,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	 * @since 3.4.0
 	 */
 	protected ContainerConnectionDetailsFactory(List<String> connectionNames, String... requiredClassNames) {
-		Assert.notEmpty(connectionNames, "ConnectionNames must contain at least one name");
+		Assert.notEmpty(connectionNames, "'connectionNames' must not be empty");
 		this.connectionNames = connectionNames;
 		this.requiredClassNames = requiredClassNames;
 	}
@@ -170,7 +171,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 		 * @param source the source {@link ContainerConnectionSource}
 		 */
 		protected ContainerConnectionDetails(ContainerConnectionSource<C> source) {
-			Assert.notNull(source, "Source must not be null");
+			Assert.notNull(source, "'source' must not be null");
 			this.source = source;
 		}
 
@@ -188,7 +189,7 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			Assert.state(this.container != null,
 					"Container cannot be obtained before the connection details bean has been initialized");
 			if (this.container instanceof Startable startable) {
-				startable.start();
+				TestcontainersStartup.start(startable);
 			}
 			return this.container;
 		}

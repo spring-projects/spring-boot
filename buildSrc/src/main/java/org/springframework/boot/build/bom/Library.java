@@ -68,7 +68,7 @@ public class Library {
 
 	private final String linkRootName;
 
-	private final Map<String, Link> links;
+	private final Map<String, List<Link>> links;
 
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
@@ -89,7 +89,7 @@ public class Library {
 	 */
 	public Library(String name, String calendarName, LibraryVersion version, List<Group> groups,
 			List<ProhibitedVersion> prohibitedVersions, boolean considerSnapshots, VersionAlignment versionAlignment,
-			String alignsWithBom, String linkRootName, Map<String, Link> links) {
+			String alignsWithBom, String linkRootName, Map<String, List<Link>> links) {
 		this.name = name;
 		this.calendarName = (calendarName != null) ? calendarName : name;
 		this.version = version;
@@ -101,7 +101,7 @@ public class Library {
 		this.versionAlignment = versionAlignment;
 		this.alignsWithBom = alignsWithBom;
 		this.linkRootName = (linkRootName != null) ? linkRootName : generateLinkRootName(name);
-		this.links = Collections.unmodifiableMap(new TreeMap<>(links));
+		this.links = (links != null) ? Collections.unmodifiableMap(new TreeMap<>(links)) : Collections.emptyMap();
 	}
 
 	private static String generateLinkRootName(String name) {
@@ -148,17 +148,32 @@ public class Library {
 		return this.alignsWithBom;
 	}
 
-	public Map<String, Link> getLinks() {
+	public Map<String, List<Link>> getLinks() {
 		return this.links;
 	}
 
 	public String getLinkUrl(String name) {
-		Link link = getLink(name);
-		return (link != null) ? link.url(this) : null;
+		List<Link> links = getLinks(name);
+		if (links == null || links.isEmpty()) {
+			return null;
+		}
+		if (links.size() > 1) {
+			throw new IllegalStateException("Expected a single '%s' link for %s".formatted(name, getName()));
+		}
+		return links.get(0).url(this);
 	}
 
-	public Link getLink(String name) {
+	public List<Link> getLinks(String name) {
 		return this.links.get(name);
+	}
+
+	public String getNameAndVersion() {
+		return getName() + " " + getVersion();
+	}
+
+	public Library withVersion(LibraryVersion version) {
+		return new Library(this.name, this.calendarName, version, this.groups, this.prohibitedVersions,
+				this.considerSnapshots, this.versionAlignment, this.alignsWithBom, this.linkRootName, this.links);
 	}
 
 	/**
@@ -524,7 +539,7 @@ public class Library {
 
 	}
 
-	public record Link(Function<LibraryVersion, String> factory, List<String> packages) {
+	public record Link(String rootName, Function<LibraryVersion, String> factory, List<String> packages) {
 
 		private static final Pattern PACKAGE_EXPAND = Pattern.compile("^(.*)\\[(.*)\\]$");
 

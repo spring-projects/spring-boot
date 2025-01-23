@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,8 +113,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 * @param connectionFactory the {@link ConnectionFactory} to use
 	 */
 	public void configure(DefaultJmsListenerContainerFactory factory, ConnectionFactory connectionFactory) {
-		Assert.notNull(factory, "Factory must not be null");
-		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
+		Assert.notNull(factory, "'factory' must not be null");
+		Assert.notNull(connectionFactory, "'connectionFactory' must not be null");
 		JmsProperties.Listener listenerProperties = this.jmsProperties.getListener();
 		Session sessionProperties = listenerProperties.getSession();
 		factory.setConnectionFactory(connectionFactory);

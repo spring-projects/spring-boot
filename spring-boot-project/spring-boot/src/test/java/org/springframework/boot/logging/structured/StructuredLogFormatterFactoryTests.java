@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.ValueProcessor;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
@@ -30,6 +31,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -82,7 +84,7 @@ class StructuredLogFormatterFactoryTests {
 
 	@Test
 	void getUsingClassNameWhenHasGenericMismatch() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.factory.get(DifferentFormatter.class.getName()))
+		assertThatIllegalStateException().isThrownBy(() -> this.factory.get(DifferentFormatter.class.getName()))
 			.withMessage("Type argument of org.springframework.boot.logging.structured."
 					+ "StructuredLogFormatterFactoryTests$DifferentFormatter "
 					+ "must be org.springframework.boot.logging.structured."
@@ -104,16 +106,47 @@ class StructuredLogFormatterFactoryTests {
 	}
 
 	@Test
-	void getInjectCustomizers() {
+	void getInjectStringMembersCustomizer() {
 		this.environment.setProperty("logging.structured.json.rename.spring", "test");
 		SpringFactoriesLoader factoriesLoader = mock(SpringFactoriesLoader.class);
-		StructureLoggingJsonMembersCustomizer<?> customizer = (members) -> members
-			.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
-		given(factoriesLoader.load(any(), any(ArgumentResolver.class))).willReturn(List.of(customizer));
+		given(factoriesLoader.load(any(), any(ArgumentResolver.class)))
+			.willReturn(List.of(new StringMembersStructuredLoggingJsonMembersCustomizer()));
 		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(factoriesLoader,
 				LogEvent.class, this.environment, this::addAvailableParameters, this::addCommonFormatters);
-		CutomizedFormatter formatter = (CutomizedFormatter) factory.get(CutomizedFormatter.class.getName());
+		CustomizedFormatter formatter = (CustomizedFormatter) factory.get(CustomizedFormatter.class.getName());
 		assertThat(formatter.format(new LogEvent())).contains("\"test\":\"BOOT\"");
+	}
+
+	@Test
+	void getInjectObjectMembersCustomizer() {
+		this.environment.setProperty("logging.structured.json.rename.spring", "test");
+		SpringFactoriesLoader factoriesLoader = mock(SpringFactoriesLoader.class);
+		given(factoriesLoader.load(any(), any(ArgumentResolver.class)))
+			.willReturn(List.of(new ObjectMembersStructuredLoggingJsonMembersCustomizer()));
+		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(factoriesLoader,
+				LogEvent.class, this.environment, this::addAvailableParameters, this::addCommonFormatters);
+		CustomizedFormatter formatter = (CustomizedFormatter) factory.get(CustomizedFormatter.class.getName());
+		assertThat(formatter.format(new LogEvent())).contains("\"test\":\"BOOT\"");
+	}
+
+	static class StringMembersStructuredLoggingJsonMembersCustomizer
+			implements StructuredLoggingJsonMembersCustomizer<String> {
+
+		@Override
+		public void customize(Members<String> members) {
+			members.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+		}
+
+	}
+
+	static class ObjectMembersStructuredLoggingJsonMembersCustomizer
+			implements StructuredLoggingJsonMembersCustomizer<Object> {
+
+		@Override
+		public void customize(Members<Object> members) {
+			members.applyingValueProcessor(ValueProcessor.of(String.class, String::toUpperCase));
+		}
+
 	}
 
 	static class LogEvent {
@@ -167,9 +200,9 @@ class StructuredLogFormatterFactoryTests {
 
 	}
 
-	static class CutomizedFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
+	static class CustomizedFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-		CutomizedFormatter(StructureLoggingJsonMembersCustomizer<?> customizer) {
+		CustomizedFormatter(StructuredLoggingJsonMembersCustomizer<?> customizer) {
 			super((members) -> members.add("spring", "boot"), customizer);
 		}
 

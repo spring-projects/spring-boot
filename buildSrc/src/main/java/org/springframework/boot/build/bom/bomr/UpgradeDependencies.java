@@ -118,7 +118,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		System.out.println("Applying upgrades...");
 		System.out.println("");
 		for (Upgrade upgrade : upgrades) {
-			System.out.println(upgrade.getLibrary().getName() + " " + upgrade.getVersion());
+			System.out.println(upgrade.to().getNameAndVersion());
 			Issue existingUpgradeIssue = findExistingUpgradeIssue(existingUpgradeIssues, upgrade);
 			try {
 				Path modified = this.upgradeApplicator.apply(upgrade);
@@ -207,7 +207,7 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	}
 
 	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
-		String toMatch = "Upgrade to " + upgrade.getLibrary().getName();
+		String toMatch = "Upgrade to " + upgrade.toRelease().getName();
 		for (Issue existingUpgradeIssue : existingUpgradeIssues) {
 			String title = existingUpgradeIssue.getTitle();
 			int lastSpaceIndex = title.lastIndexOf(' ');
@@ -285,10 +285,21 @@ public abstract class UpgradeDependencies extends DefaultTask {
 		return libraryPredicate.test(library.getName());
 	}
 
-	protected abstract String issueTitle(Upgrade upgrade);
-
 	protected abstract String commitMessage(Upgrade upgrade, int issueNumber);
 
-	protected abstract String issueBody(Upgrade upgrade, Issue existingUpgrade);
+	protected String issueTitle(Upgrade upgrade) {
+		return "Upgrade to " + upgrade.toRelease().getNameAndVersion();
+	}
+
+	protected String issueBody(Upgrade upgrade, Issue existingUpgrade) {
+		String description = upgrade.toRelease().getNameAndVersion();
+		String releaseNotesLink = upgrade.toRelease().getLinkUrl("releaseNotes");
+		String body = (releaseNotesLink != null) ? "Upgrade to [%s](%s).".formatted(description, releaseNotesLink)
+				: "Upgrade to %s.".formatted(description);
+		if (existingUpgrade != null) {
+			body += "\n\nSupersedes #" + existingUpgrade.getNumber();
+		}
+		return body;
+	}
 
 }

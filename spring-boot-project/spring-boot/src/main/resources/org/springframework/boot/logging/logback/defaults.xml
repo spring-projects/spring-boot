@@ -5,9 +5,9 @@ Default logback configuration provided for import
 -->
 
 <included>
-	<conversionRule conversionWord="applicationName" class="org.springframework.boot.logging.logback.ApplicationNameConverter" />
-	<conversionRule conversionWord="clr" class="org.springframework.boot.logging.logback.ColorConverter" />
-	<conversionRule conversionWord="correlationId" class="org.springframework.boot.logging.logback.CorrelationIdConverter" />
+	<conversionRule conversionWord="applicationName" class="org.springframework.boot.logging.logback.ApplicationNameConverter"/>
+	<conversionRule conversionWord="clr" class="org.springframework.boot.logging.logback.ColorConverter"/>
+	<conversionRule conversionWord="correlationId" class="org.springframework.boot.logging.logback.CorrelationIdConverter"/>
 	<conversionRule conversionWord="esb" class="org.springframework.boot.logging.logback.EnclosedInSquareBracketsConverter" />
 	<conversionRule conversionWord="wex" class="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
 	<conversionRule conversionWord="wEx" class="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />

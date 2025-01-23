@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ class ReactiveCloudFoundrySecurityService {
 
 	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl,
 			boolean skipSslValidation) {
-		Assert.notNull(webClientBuilder, "WebClient must not be null");
-		Assert.notNull(cloudControllerUrl, "CloudControllerUrl must not be null");
+		Assert.notNull(webClientBuilder, "'webClientBuilder' must not be null");
+		Assert.notNull(cloudControllerUrl, "'cloudControllerUrl' must not be null");
 		if (skipSslValidation) {
 			webClientBuilder.clientConnector(buildTrustAllSslConnector());
 		}

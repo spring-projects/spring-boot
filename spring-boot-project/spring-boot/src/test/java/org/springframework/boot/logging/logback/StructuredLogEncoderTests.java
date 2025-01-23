@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link StructuredLogEncoder}.
@@ -113,7 +114,7 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldCheckTypeArgument() {
-		assertThatIllegalArgumentException().isThrownBy(() -> {
+		assertThatIllegalStateException().isThrownBy(() -> {
 			this.encoder.setFormat(CustomLogbackStructuredLoggingFormatterWrongType.class.getName());
 			this.encoder.start();
 		}).withMessageContaining("must be ch.qos.logback.classic.spi.ILoggingEvent but was java.lang.String");
@@ -121,7 +122,7 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 
 	@Test
 	void shouldCheckTypeArgumentWithRawType() {
-		assertThatIllegalArgumentException().isThrownBy(() -> {
+		assertThatIllegalStateException().isThrownBy(() -> {
 			this.encoder.setFormat(CustomLogbackStructuredLoggingFormatterRawType.class.getName());
 			this.encoder.start();
 		}).withMessageContaining("must be ch.qos.logback.classic.spi.ILoggingEvent but was null");
@@ -133,8 +134,8 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 			this.encoder.setFormat("does-not-exist");
 			this.encoder.start();
 		})
-			.withMessageContaining(
-					"Unknown format 'does-not-exist'. Values can be a valid fully-qualified class name or one of the common formats: [ecs, gelf, logstash]");
+			.withMessageContaining("Unknown format 'does-not-exist'. Values can be a valid fully-qualified "
+					+ "class name or one of the common formats: [ecs, gelf, logstash]");
 	}
 
 	private String encode(LoggingEvent event) {
