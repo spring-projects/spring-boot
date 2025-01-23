@@ -151,7 +151,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 			}
 			map.from(ssl::isValidateServerCertificate)
 				.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
-			map.from(ssl::getVerifyHostname).to(factory::setEnableHostnameVerification);
+			map.from(ssl::isVerifyHostname).to(factory::setEnableHostnameVerification);
 		}
 		map.from(this.rabbitProperties::getConnectionTimeout)
 			.whenNonNull()
