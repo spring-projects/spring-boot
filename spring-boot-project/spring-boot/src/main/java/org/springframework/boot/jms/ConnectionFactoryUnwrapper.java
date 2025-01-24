@@ -34,7 +34,7 @@ public final class ConnectionFactoryUnwrapper {
 	}
 
 	/**
-	 * Return the native {@link ConnectionFactory} by unwrapping ot from a
+	 * Return the native {@link ConnectionFactory} by unwrapping from a
 	 * {@link CachingConnectionFactory}. Return the given {@link ConnectionFactory} if no
 	 * {@link CachingConnectionFactory} wrapper has been detected.
 	 * @param connectionFactory a connection factory

@@ -30,7 +30,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 
 /**
- * Imports idiomatic Testcontainer declaration classes into the Spring
+ * Imports idiomatic Testcontainers declaration classes into the Spring
  * {@link ApplicationContext}. The following elements will be considered from the imported
  * classes:
  * <ul>

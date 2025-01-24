@@ -377,7 +377,7 @@ NOTE: Using a javadoc:org.springframework.boot.testcontainers.service.connection
 
 
 [[features.dev-services.testcontainers.at-development-time.importing-container-declarations]]
-==== Importing Testcontainer Declaration Classes
+==== Importing Testcontainers Declaration Classes
 
 A common pattern when using Testcontainers is to declare javadoc:org.testcontainers.containers.Container[] instances as static fields.
 Often these fields are defined directly on the test class.
@@ -402,7 +402,7 @@ You can also add javadoc:org.springframework.test.context.DynamicPropertySource[
 
 When using devtools, you can annotate beans and bean methods with javadoc:org.springframework.boot.devtools.restart.RestartScope[format=annotation].
 Such beans won't be recreated when the devtools restart the application.
-This is especially useful for Testcontainer javadoc:org.testcontainers.containers.Container[] beans, as they keep their state despite the application restart.
+This is especially useful for javadoc:org.testcontainers.containers.Container[] beans, as they keep their state despite the application restart.
 
 include-code::MyContainersConfiguration[]
 
