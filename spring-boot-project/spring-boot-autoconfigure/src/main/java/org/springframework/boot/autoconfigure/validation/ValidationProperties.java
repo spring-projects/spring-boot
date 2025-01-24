@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Role;
  * @since 3.5.0
  */
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-@ConfigurationProperties(prefix = "spring.validation")
+@ConfigurationProperties("spring.validation")
 public class ValidationProperties {
 
 	private Method method = new Method();
