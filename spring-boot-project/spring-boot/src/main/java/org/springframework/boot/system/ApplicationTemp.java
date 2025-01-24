@@ -147,8 +147,7 @@ public class ApplicationTemp {
 			update(digest, home.getDir());
 			update(digest, System.getProperty("user.dir"));
 			if (!NativeDetector.inNativeImage()) {
-				String javaHome = System.getProperty("java.home");
-				update(digest, javaHome);
+				update(digest, System.getProperty("java.home"));
 			}
 			update(digest, System.getProperty("java.class.path"));
 			update(digest, System.getProperty("sun.java.command"));
