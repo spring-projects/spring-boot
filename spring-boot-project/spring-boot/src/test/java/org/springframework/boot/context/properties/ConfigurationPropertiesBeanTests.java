@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -363,12 +363,12 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Component("annotatedComponent")
-	@ConfigurationProperties(prefix = "prefix")
+	@ConfigurationProperties("prefix")
 	static class AnnotatedComponent {
 
 	}
 
-	@ConfigurationProperties(prefix = "prefix")
+	@ConfigurationProperties("prefix")
 	static class AnnotatedBean {
 
 	}
@@ -402,7 +402,7 @@ class ConfigurationPropertiesBeanTests {
 	static class NonAnnotatedBeanConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "prefix")
+		@ConfigurationProperties("prefix")
 		NonAnnotatedBean nonAnnotatedBean() {
 			return new NonAnnotatedBean();
 		}
@@ -434,7 +434,7 @@ class ConfigurationPropertiesBeanTests {
 	static class AnnotatedBeanConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "factory")
+		@ConfigurationProperties("factory")
 		AnnotatedBean annotatedBean() {
 			return new AnnotatedBean();
 		}

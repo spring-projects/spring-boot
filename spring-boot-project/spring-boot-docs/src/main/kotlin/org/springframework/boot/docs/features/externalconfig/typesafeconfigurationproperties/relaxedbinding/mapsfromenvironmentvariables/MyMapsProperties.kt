@@ -2,7 +2,7 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-@ConfigurationProperties(prefix = "my.props")
+@ConfigurationProperties("my.props")
 class MyMapsProperties {
 
 	val values: Map<String, String> = HashMap()

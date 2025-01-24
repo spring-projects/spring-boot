@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,12 @@ public class ConfigurationPropertiesScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "foo")
+	@ConfigurationProperties("foo")
 	static class FooProperties {
 
 	}
 
-	@ConfigurationProperties(prefix = "bar")
+	@ConfigurationProperties("bar")
 	static class BarProperties {
 
 		BarProperties(String foo) {
@@ -54,7 +54,7 @@ public class ConfigurationPropertiesScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "bing")
+	@ConfigurationProperties("bing")
 	static class BingProperties {
 
 		BingProperties() {

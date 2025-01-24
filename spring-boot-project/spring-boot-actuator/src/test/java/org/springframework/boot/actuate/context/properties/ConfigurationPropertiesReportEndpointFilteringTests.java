@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,13 +163,13 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 	static class BaseConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo.primary")
+		@ConfigurationProperties("foo.primary")
 		Foo primaryFoo() {
 			return new Foo();
 		}
 
 		@Bean
-		@ConfigurationProperties(prefix = "foo.secondary")
+		@ConfigurationProperties("foo.secondary")
 		Foo secondaryFoo() {
 			return new Foo();
 		}
@@ -190,7 +190,7 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "only.bar")
+	@ConfigurationProperties("only.bar")
 	public static class Bar {
 
 		private String name = "123456";

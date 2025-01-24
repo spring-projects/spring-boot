@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration
 class MyDataSourceConfiguration {
 
 	@Bean
-	@ConfigurationProperties(prefix = "app.datasource")
+	@ConfigurationProperties("app.datasource")
 	fun dataSource(): SomeDataSource {
 		return SomeDataSource()
 	}

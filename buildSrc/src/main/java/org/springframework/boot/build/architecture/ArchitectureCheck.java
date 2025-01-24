@@ -39,6 +39,7 @@ import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
+import com.tngtech.archunit.core.domain.properties.HasAnnotations;
 import com.tngtech.archunit.core.domain.properties.HasName;
 import com.tngtech.archunit.core.domain.properties.HasOwner.Predicates.With;
 import com.tngtech.archunit.core.domain.properties.HasParameterTypes;
@@ -97,7 +98,9 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldLoadResourcesUsingResourceUtils(), noClassesShouldCallStringToUpperCaseWithoutLocale(),
 				noClassesShouldCallStringToLowerCaseWithoutLocale(),
 				conditionalOnMissingBeanShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodReturnType(),
-				enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType());
+				enumSourceShouldNotSpecifyOnlyATypeThatIsTheSameAsMethodParameterType(),
+				classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute(),
+				methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute());
 		getRules().addAll(getProhibitObjectsRequireNonNull()
 			.map((prohibit) -> prohibit ? noClassesShouldCallObjectsRequireNonNull() : Collections.emptyList()));
 		getRuleDescriptions().set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).toList()));
@@ -338,6 +341,39 @@ public abstract class ArchitectureCheck extends DefaultTask {
 									+ " should not specify only a value that is the same as the method's parameter type"));
 						}
 					});
+				}
+			}
+
+		};
+	}
+
+	private ArchRule classLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute() {
+		return ArchRuleDefinition.classes()
+			.that()
+			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties")
+			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties())
+			.allowEmptyShould(true);
+	}
+
+	private ArchRule methodLevelConfigurationPropertiesShouldNotSpecifyOnlyPrefixAttribute() {
+		return ArchRuleDefinition.methods()
+			.that()
+			.areAnnotatedWith("org.springframework.boot.context.properties.ConfigurationProperties")
+			.should(notSpecifyOnlyPrefixAttributeOfConfigurationProperties())
+			.allowEmptyShould(true);
+	}
+
+	private ArchCondition<? super HasAnnotations<?>> notSpecifyOnlyPrefixAttributeOfConfigurationProperties() {
+		return new ArchCondition<>("not specify only prefix attribute of @ConfigurationProperties") {
+
+			@Override
+			public void check(HasAnnotations<?> item, ConditionEvents events) {
+				JavaAnnotation<?> configurationProperties = item
+					.getAnnotationOfType("org.springframework.boot.context.properties.ConfigurationProperties");
+				Map<String, Object> properties = configurationProperties.getProperties();
+				if (properties.size() == 1 && properties.containsKey("prefix")) {
+					events.add(SimpleConditionEvent.violated(item, configurationProperties.getDescription()
+							+ " should specify implicit 'value' attribute other than explicit 'prefix' attribute"));
 				}
 			}
 

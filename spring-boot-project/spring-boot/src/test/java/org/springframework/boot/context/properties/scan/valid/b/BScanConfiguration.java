@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class BScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "b.first")
+	@ConfigurationProperties("b.first")
 	public static class BFirstProperties implements BProperties {
 
 		private final String name;
@@ -43,7 +43,7 @@ public class BScanConfiguration {
 
 	}
 
-	@ConfigurationProperties(prefix = "b.second")
+	@ConfigurationProperties("b.second")
 	public static class BSecondProperties implements BProperties {
 
 		private int number;

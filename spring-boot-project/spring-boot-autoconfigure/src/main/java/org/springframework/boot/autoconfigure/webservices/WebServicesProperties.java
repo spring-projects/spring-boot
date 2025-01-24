@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@ConfigurationProperties(prefix = "spring.webservices")
+@ConfigurationProperties("spring.webservices")
 public class WebServicesProperties {
 
 	/**

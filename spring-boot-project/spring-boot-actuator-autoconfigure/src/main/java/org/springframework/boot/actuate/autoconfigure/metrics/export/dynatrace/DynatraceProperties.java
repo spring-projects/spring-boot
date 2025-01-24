@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Georg Pirklbauer
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.dynatrace.metrics.export")
+@ConfigurationProperties("management.dynatrace.metrics.export")
 public class DynatraceProperties extends StepRegistryProperties {
 
 	private final V1 v1 = new V1();
