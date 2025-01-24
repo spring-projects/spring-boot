@@ -575,17 +575,6 @@ public class RabbitProperties {
 			this.validateServerCertificate = validateServerCertificate;
 		}
 
-		/**
-		 * Returns verifyHostname.
-		 * @return verifyHostname
-		 * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
-		 * {@link #isVerifyHostname()}
-		 */
-		@Deprecated(since = "3.5.0", forRemoval = true)
-		public boolean getVerifyHostname() {
-			return this.verifyHostname;
-		}
-
 		public boolean isVerifyHostname() {
 			return this.verifyHostname;
 		}
