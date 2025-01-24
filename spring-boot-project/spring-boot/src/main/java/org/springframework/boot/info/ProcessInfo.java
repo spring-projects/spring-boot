@@ -151,7 +151,7 @@ public class ProcessInfo {
 			this.poolSize = poolSize;
 		}
 
-		public long getMounted() {
+		public int getMounted() {
 			return this.mounted;
 		}
 
