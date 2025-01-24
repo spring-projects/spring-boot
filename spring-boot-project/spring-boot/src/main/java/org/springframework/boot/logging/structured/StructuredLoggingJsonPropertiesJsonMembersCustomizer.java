@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.util.CollectionUtils;
  * {@link StructuredLoggingJsonProperties}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements StructuredLoggingJsonMembersCustomizer<Object> {
 
@@ -49,10 +50,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 		if (!CollectionUtils.isEmpty(add)) {
 			add.forEach(members::add);
 		}
-		Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer = this.properties.customizer();
-		if (customizer != null) {
-			createAndApplyCustomizer(members, customizer);
-		}
+		this.properties.allCustomizers(this.instantiator).forEach((customizer) -> customizer.customize(members));
 	}
 
 	String renameJsonMembers(MemberPath path, String existingName) {
@@ -67,13 +65,6 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 		boolean excluded = !CollectionUtils.isEmpty(this.properties.exclude())
 				&& this.properties.exclude().contains(path.toUnescapedString());
 		return (!included || excluded);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void createAndApplyCustomizer(Members<Object> members,
-			Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizerClass) {
-		((StructuredLoggingJsonMembersCustomizer) this.instantiator.instantiateType(customizerClass))
-			.customize(members);
 	}
 
 }

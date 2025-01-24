@@ -272,6 +272,11 @@
       "description": "The fully qualified class name of a StructuredLoggingJsonMembersCustomizer"
     },
     {
+      "name": "logging.structured.json.customizers",
+      "type": "java.util.Set<java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>>",
+      "description": "The fully qualified class names of a StructuredLoggingJsonMembersCustomizer"
+    },
+    {
       "name": "logging.structured.json.exclude",
       "type": "java.util.Set<java.lang.String>",
       "description": "Member paths that should be excluded from structured logging JSON"

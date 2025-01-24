@@ -16,10 +16,11 @@
 
 package org.springframework.boot.logging.structured;
 
-import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
@@ -32,6 +33,8 @@ import org.springframework.core.env.Environment;
  * {@link StructuredLoggingJsonPropertiesJsonMembersCustomizer}.
  *
  * @author Dmytro Nosan
+ * @author Yanming Zhou
+ * @author Phillip Webb
  */
 class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcessor
 		implements BeanFactoryInitializationAotProcessor {
@@ -41,27 +44,28 @@ class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcesso
 	@Override
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		Environment environment = beanFactory.getBean(ENVIRONMENT_BEAN_NAME, Environment.class);
-		return Optional.ofNullable(StructuredLoggingJsonProperties.get(environment))
-			.map(StructuredLoggingJsonProperties::customizer)
-			.map(AotContribution::new)
-			.orElse(null);
+		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
+		return (properties != null) ? AotContribution.get(properties.allCustomizers()) : null;
 	}
 
 	private static final class AotContribution implements BeanFactoryInitializationAotContribution {
 
-		private final Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer;
+		private final Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers;
 
-		private AotContribution(Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer) {
-			this.customizer = customizer;
+		private AotContribution(Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers) {
+			this.customizers = customizers;
 		}
 
 		@Override
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
-			generationContext.getRuntimeHints()
-				.reflection()
-				.registerType(this.customizer, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+			ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
+			this.customizers.forEach((customizer) -> reflection.registerType(customizer,
+					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+		}
+
+		static AotContribution get(Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers) {
+			return (!customizers.isEmpty()) ? new AotContribution(customizers) : null;
 		}
 
 	}
