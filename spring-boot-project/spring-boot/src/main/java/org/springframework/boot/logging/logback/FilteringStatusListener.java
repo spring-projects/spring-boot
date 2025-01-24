@@ -35,7 +35,7 @@ class FilteringStatusListener extends ContextAwareBase implements StatusListener
 
 	/**
 	 * Creates a new {@link FilteringStatusListener}.
-	 * @param delegate the {@link StatusListener} delegate to
+	 * @param delegate the {@link StatusListener} to delegate to
 	 * @param levelThreshold the minimum log level accepted for delegation
 	 */
 	FilteringStatusListener(StatusListener delegate, int levelThreshold) {

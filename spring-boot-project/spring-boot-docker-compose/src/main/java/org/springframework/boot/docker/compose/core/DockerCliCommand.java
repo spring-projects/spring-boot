@@ -276,7 +276,7 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	record ComposeVersion(int major, int minor) {
 
-		public static final ComposeVersion UNKNOWN = new ComposeVersion(0, 0);
+		static final ComposeVersion UNKNOWN = new ComposeVersion(0, 0);
 
 		boolean isLessThan(int major, int minor) {
 			return major() < major || major() == major && minor() < minor;
