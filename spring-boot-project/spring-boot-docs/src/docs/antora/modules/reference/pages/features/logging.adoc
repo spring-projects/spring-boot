@@ -641,7 +641,8 @@ logging:
         corpname: mycorp
 ----
 
-TIP: For more advanced customizations, you can write your own class that implements the javadoc:org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer[] interface and declare it using the configprop:logging.structured.json.customizer[] property.
+TIP: For more advanced customizations, you can use the javadoc:org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer[] interface.
+You can reference a single implementation using the configprop:logging.structured.json.customizer[] property, or use configprop:logging.structured.json.customizers[] if you have more than one.
 You can also declare implementations by listing them in a `META-INF/spring.factories` file.
 
 

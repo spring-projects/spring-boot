@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	@Test
 	void customizeWhenHasExcludeFiltersMember() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Set.of("a"), Collections.emptyMap(), Collections.emptyMap(), null);
+				Set.of("a"), Collections.emptyMap(), Collections.emptyMap(), null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).doesNotContain("a").contains("b");
@@ -57,7 +57,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	@Test
 	void customizeWhenHasIncludeFiltersOtherMembers() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("a"),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null);
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("a")
@@ -69,7 +69,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	@Test
 	void customizeWhenHasIncludeAndExcludeFiltersMembers() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Set.of("a", "b"), Set.of("b"),
-				Collections.emptyMap(), Collections.emptyMap(), null);
+				Collections.emptyMap(), Collections.emptyMap(), null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("a")
@@ -81,7 +81,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	@Test
 	void customizeWhenHasRenameRenamesMember() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Map.of("a", "z"), Collections.emptyMap(), null);
+				Collections.emptySet(), Map.of("a", "z"), Collections.emptyMap(), null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("\"z\":\"a\"");
@@ -90,7 +90,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 	@Test
 	void customizeWhenHasAddAddsMemeber() {
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Map.of("z", "z"), null);
+				Collections.emptySet(), Collections.emptyMap(), Map.of("z", "z"), null, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("\"z\":\"z\"");
@@ -103,7 +103,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 			.applyingNameProcessor(NameProcessor.of(String::toUpperCase));
 		given(((Instantiator) this.instantiator).instantiateType(TestCustomizer.class)).willReturn(uppercaseCustomizer);
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), Set.of(TestCustomizer.class));
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), TestCustomizer.class, null);
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("\"A\":\"a\"");
@@ -111,12 +111,25 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizerTests {
 
 	@Test
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void multipleCustomizers() {
+	void customizeWhenHasCustomizersCustomizesMember() {
 		given(((Instantiator) this.instantiator).instantiateType(FooCustomizer.class)).willReturn(new FooCustomizer());
 		given(((Instantiator) this.instantiator).instantiateType(BarCustomizer.class)).willReturn(new BarCustomizer());
 		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
-				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), null,
 				Set.of(FooCustomizer.class, BarCustomizer.class));
+		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
+				this.instantiator, properties);
+		assertThat(writeSampleJson(customizer)).contains("\"foo\":\"foo\"").contains("\"bar\":\"bar\"");
+	}
+
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	void customizeWhenHasCustomizerAndCustomizersCustomizesMember() {
+		given(((Instantiator) this.instantiator).instantiateType(FooCustomizer.class)).willReturn(new FooCustomizer());
+		given(((Instantiator) this.instantiator).instantiateType(BarCustomizer.class)).willReturn(new BarCustomizer());
+		StructuredLoggingJsonProperties properties = new StructuredLoggingJsonProperties(Collections.emptySet(),
+				Collections.emptySet(), Collections.emptyMap(), Collections.emptyMap(), FooCustomizer.class,
+				Set.of(BarCustomizer.class));
 		StructuredLoggingJsonPropertiesJsonMembersCustomizer customizer = new StructuredLoggingJsonPropertiesJsonMembersCustomizer(
 				this.instantiator, properties);
 		assertThat(writeSampleJson(customizer)).contains("\"foo\":\"foo\"").contains("\"bar\":\"bar\"");
