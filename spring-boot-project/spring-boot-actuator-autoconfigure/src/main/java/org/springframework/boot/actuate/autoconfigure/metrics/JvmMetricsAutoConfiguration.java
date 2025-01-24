@@ -16,9 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.io.Closeable;
-
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmCompilationMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
@@ -31,9 +30,6 @@ import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanClassLoaderAware;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -103,47 +99,9 @@ public class JvmMetricsAutoConfiguration {
 	@ConditionalOnClass(name = VIRTUAL_THREAD_METRICS_CLASS)
 	@ConditionalOnMissingBean(type = VIRTUAL_THREAD_METRICS_CLASS)
 	@ImportRuntimeHints(VirtualThreadMetricsRuntimeHintsRegistrar.class)
-	VirtualThreadMetricsFactoryBean virtualThreadMetrics() {
-		return new VirtualThreadMetricsFactoryBean();
-	}
-
-	static final class VirtualThreadMetricsFactoryBean
-			implements FactoryBean<Object>, BeanClassLoaderAware, DisposableBean {
-
-		private ClassLoader classLoader;
-
-		private Class<?> instanceType;
-
-		private Object instance;
-
-		@Override
-		public void setBeanClassLoader(ClassLoader classLoader) {
-			this.classLoader = classLoader;
-		}
-
-		@Override
-		public Object getObject() {
-			if (this.instance == null) {
-				this.instance = BeanUtils.instantiateClass(getObjectType());
-			}
-			return this.instance;
-		}
-
-		@Override
-		public Class<?> getObjectType() {
-			if (this.instanceType == null) {
-				this.instanceType = ClassUtils.resolveClassName(VIRTUAL_THREAD_METRICS_CLASS, this.classLoader);
-			}
-			return this.instanceType;
-		}
-
-		@Override
-		public void destroy() throws Exception {
-			if (this.instance instanceof Closeable closeable) {
-				closeable.close();
-			}
-		}
-
+	MeterBinder virtualThreadMetrics() throws ClassNotFoundException {
+		Class<?> clazz = ClassUtils.forName(VIRTUAL_THREAD_METRICS_CLASS, getClass().getClassLoader());
+		return (MeterBinder) BeanUtils.instantiateClass(clazz);
 	}
 
 	static final class VirtualThreadMetricsRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
