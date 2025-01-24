@@ -35,6 +35,9 @@ WARNING: By default, the database is detected and initialized by using the stand
 These scripts drop existing tables, deleting all triggers on every restart.
 It is also possible to provide a custom script by setting the configprop:spring.quartz.jdbc.schema[] property.
 
+WARNING: SQL Server and Azure SQL databases may not use this mechanism because the script requires the specification of the database name directly.
+Make a copy of the script and edit it, before using configprop:spring.quartz.jdbc.schema[] to direct Spring to use it.
+
 To have Quartz use a javadoc:javax.sql.DataSource[] other than the application's main javadoc:javax.sql.DataSource[], declare a javadoc:javax.sql.DataSource[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.quartz.QuartzDataSource[format=annotation].
 Doing so ensures that the Quartz-specific javadoc:javax.sql.DataSource[] is used by both the javadoc:org.springframework.scheduling.quartz.SchedulerFactoryBean[] and for schema initialization.
 Similarly, to have Quartz use a javadoc:org.springframework.transaction.TransactionManager[] other than the application's main javadoc:org.springframework.transaction.TransactionManager[] declare a javadoc:org.springframework.transaction.TransactionManager[] bean, annotating its javadoc:org.springframework.context.annotation.Bean[format=annotation] method with javadoc:org.springframework.boot.autoconfigure.quartz.QuartzTransactionManager[format=annotation].
