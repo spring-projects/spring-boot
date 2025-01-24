@@ -736,6 +736,7 @@ The following JVM metrics are provided:
 * Various memory and buffer pool details
 * Statistics related to garbage collection
 * Thread utilization
+* https://docs.micrometer.io/micrometer/reference/reference/jvm.html#_java_21_metrics[Virtual threads statistics] (for this, `io.micrometer:micrometer-java21` has to be on the classpath)
 * The number of classes loaded and unloaded
 * JVM version information
 * JIT compilation time
