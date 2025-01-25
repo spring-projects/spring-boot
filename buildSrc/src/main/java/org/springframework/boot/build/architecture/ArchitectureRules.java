@@ -127,9 +127,9 @@ final class ArchitectureRules {
 			.stream()
 			.filter(notAnnotatedWithLazy)
 			.filter((parameter) -> notOfASafeType.test(parameter.getRawType()))
-			.forEach((parameter) -> events.add(SimpleConditionEvent.violated(parameter,
+			.forEach((parameter) -> addViolation(events, parameter,
 					parameter.getDescription() + " will cause eager initialization as it is "
-							+ notAnnotatedWithLazy.getDescription() + " and is " + notOfASafeType.getDescription())));
+							+ notAnnotatedWithLazy.getDescription() + " and is " + notOfASafeType.getDescription()));
 	}
 
 	private static DescribedPredicate<JavaClass> notAnnotatedWithRoleInfrastructure() {
@@ -154,7 +154,7 @@ final class ArchitectureRules {
 
 	private static void onlyInjectEnvironment(JavaMethod item, ConditionEvents events) {
 		if (item.getParameters().stream().anyMatch(ArchitectureRules::isNotEnvironment)) {
-			events.add(SimpleConditionEvent.violated(item, item.getDescription() + " should only inject Environment"));
+			addViolation(events, item, item.getDescription() + " should only inject Environment");
 		}
 	}
 
@@ -222,8 +222,8 @@ final class ArchitectureRules {
 			if (!properties.containsKey("type") && !properties.containsKey("name")) {
 				conditionalAnnotation.get("value").ifPresent((value) -> {
 					if (containsOnlySingleType((JavaType[]) value, item.getReturnType())) {
-						events.add(SimpleConditionEvent.violated(item, conditionalAnnotation.getDescription()
-								+ " should not specify only a value that is the same as the method's return type"));
+						addViolation(events, item, conditionalAnnotation.getDescription()
+								+ " should not specify only a value that is the same as the method's return type");
 					}
 				});
 			}
@@ -251,8 +251,8 @@ final class ArchitectureRules {
 		if (properties.size() == 1 && item.getParameterTypes().size() == 1) {
 			enumSourceAnnotation.get("value").ifPresent((value) -> {
 				if (value.equals(item.getParameterTypes().get(0))) {
-					events.add(SimpleConditionEvent.violated(item, enumSourceAnnotation.getDescription()
-							+ " should not specify only a value that is the same as the method's parameter type"));
+					addViolation(events, item, enumSourceAnnotation.getDescription()
+							+ " should not specify only a value that is the same as the method's parameter type");
 				}
 			});
 		}
@@ -285,8 +285,8 @@ final class ArchitectureRules {
 			.getAnnotationOfType("org.springframework.boot.context.properties.ConfigurationProperties");
 		Map<String, Object> properties = configurationPropertiesAnnotation.getProperties();
 		if (properties.size() == 1 && properties.containsKey("prefix")) {
-			events.add(SimpleConditionEvent.violated(item, configurationPropertiesAnnotation.getDescription()
-					+ " should specify implicit 'value' attribute other than explicit 'prefix' attribute"));
+			addViolation(events, item, configurationPropertiesAnnotation.getDescription()
+					+ " should specify implicit 'value' attribute other than explicit 'prefix' attribute");
 		}
 	}
 
@@ -352,6 +352,10 @@ final class ArchitectureRules {
 			}
 
 		};
+	}
+
+	private static void addViolation(ConditionEvents events, Object correspondingObject, String message) {
+		events.add(SimpleConditionEvent.violated(correspondingObject, message));
 	}
 
 	private static String shouldUse(String string) {
