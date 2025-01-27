@@ -86,7 +86,7 @@ These features are described in several enums (in Jackson) that map onto propert
 | `spring.jackson.deserialization.<feature_name>`
 | `true`, `false`
 
-| `com.fasterxml.jackson.core.JsonGenerator.Feature`
+| javadoc:com.fasterxml.jackson.core.JsonGenerator$Feature[]
 | `spring.jackson.generator.<feature_name>`
 | `true`, `false`
 
@@ -94,7 +94,7 @@ These features are described in several enums (in Jackson) that map onto propert
 | `spring.jackson.mapper.<feature_name>`
 | `true`, `false`
 
-| `com.fasterxml.jackson.core.JsonParser.Feature`
+| javadoc:com.fasterxml.jackson.core.JsonParser$Feature[]
 | `spring.jackson.parser.<feature_name>`
 | `true`, `false`
 
@@ -102,7 +102,7 @@ These features are described in several enums (in Jackson) that map onto propert
 | `spring.jackson.serialization.<feature_name>`
 | `true`, `false`
 
-| `com.fasterxml.jackson.annotation.JsonInclude.Include`
+| javadoc:com.fasterxml.jackson.annotation.JsonInclude$Include[]
 | configprop:spring.jackson.default-property-inclusion[]
 | `always`, `non_null`, `non_absent`, `non_default`, `non_empty`
 |===
