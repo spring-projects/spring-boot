@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +31,6 @@ import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Base Redis connection configuration.
@@ -152,12 +149,16 @@ abstract class RedisConnectionConfiguration {
 		return this.properties;
 	}
 
-	protected SslBundles getSslBundles() {
+	protected final SslBundles getSslBundles() {
 		return this.sslBundles;
 	}
 
-	protected boolean isSslEnabled() {
+	protected final boolean isSslEnabled() {
 		return getProperties().getSsl().isEnabled();
+	}
+
+	protected final boolean urlUsesSsl() {
+		return RedisUrl.of(this.properties.getUrl()).useSsl();
 	}
 
 	protected boolean isPoolEnabled(Pool pool) {
@@ -173,89 +174,8 @@ abstract class RedisConnectionConfiguration {
 		return nodes;
 	}
 
-	protected final boolean urlUsesSsl() {
-		return ConnectionInfo.of(this.properties.getUrl()).isUseSsl();
-	}
-
 	protected final RedisConnectionDetails getConnectionDetails() {
 		return this.connectionDetails;
-	}
-
-	static final class ConnectionInfo {
-
-		private final URI uri;
-
-		private final boolean useSsl;
-
-		private final String username;
-
-		private final String password;
-
-		private final int database;
-
-		private ConnectionInfo(URI uri, boolean useSsl, String username, String password, int database) {
-			this.uri = uri;
-			this.useSsl = useSsl;
-			this.username = username;
-			this.password = password;
-			this.database = database;
-		}
-
-		URI getUri() {
-			return this.uri;
-		}
-
-		boolean isUseSsl() {
-			return this.useSsl;
-		}
-
-		String getUsername() {
-			return this.username;
-		}
-
-		String getPassword() {
-			return this.password;
-		}
-
-		int getDatabase() {
-			return this.database;
-		}
-
-		static ConnectionInfo of(String url) {
-			try {
-				URI uri = new URI(url);
-				String scheme = uri.getScheme();
-				if (!"redis".equals(scheme) && !"rediss".equals(scheme)) {
-					throw new RedisUrlSyntaxException(url);
-				}
-				boolean useSsl = ("rediss".equals(scheme));
-				String username = null;
-				String password = null;
-				if (uri.getUserInfo() != null) {
-					String candidate = uri.getUserInfo();
-					int index = candidate.indexOf(':');
-					if (index >= 0) {
-						username = candidate.substring(0, index);
-						password = candidate.substring(index + 1);
-					}
-					else {
-						password = candidate;
-					}
-				}
-				int database = 0;
-				if (StringUtils.hasText(uri.getPath())) {
-					String[] pathSplit = uri.getPath().split("/", 2);
-					if (pathSplit.length > 1 && !pathSplit[1].isEmpty()) {
-						database = Integer.parseInt(pathSplit[1]);
-					}
-				}
-				return new ConnectionInfo(uri, useSsl, username, password, database);
-			}
-			catch (URISyntaxException ex) {
-				throw new RedisUrlSyntaxException(url, ex);
-			}
-		}
-
 	}
 
 }

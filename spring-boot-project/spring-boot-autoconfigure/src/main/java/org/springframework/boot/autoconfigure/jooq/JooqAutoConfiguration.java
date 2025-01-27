@@ -22,13 +22,13 @@ import java.io.InputStream;
 import javax.sql.DataSource;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import org.jooq.ConnectionProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListenerProvider;
@@ -40,6 +40,8 @@ import org.jooq.impl.DefaultDSLContext;
 import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -138,25 +140,33 @@ public class JooqAutoConfiguration {
 		}
 	}
 
+	/**
+	 * Load {@link Settings} with <a href=
+	 * "https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#jaxb-unmarshaller">
+	 * XML External Entity Prevention</a>.
+	 */
 	private static final class JaxbSettingsLoader {
 
 		private Settings load(InputStream inputStream) {
 			try {
-				// See
-				// https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html#jaxb-unmarshaller
-				SAXParserFactory spf = SAXParserFactory.newInstance();
-				spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-				spf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-				spf.setNamespaceAware(true);
-				spf.setXIncludeAware(false);
-				Source xmlSource = new SAXSource(spf.newSAXParser().getXMLReader(), new InputSource(inputStream));
-				JAXBContext jc = JAXBContext.newInstance(Settings.class);
-				Unmarshaller um = jc.createUnmarshaller();
-				return um.unmarshal(xmlSource, Settings.class).getValue();
+				SAXParser parser = createParserFactory().newSAXParser();
+				Source source = new SAXSource(parser.getXMLReader(), new InputSource(inputStream));
+				JAXBContext context = JAXBContext.newInstance(Settings.class);
+				return context.createUnmarshaller().unmarshal(source, Settings.class).getValue();
 			}
 			catch (ParserConfigurationException | JAXBException | SAXException ex) {
 				throw new IllegalStateException("Failed to unmarshal settings", ex);
 			}
+		}
+
+		private SAXParserFactory createParserFactory()
+				throws ParserConfigurationException, SAXNotRecognizedException, SAXNotSupportedException {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+			factory.setNamespaceAware(true);
+			factory.setXIncludeAware(false);
+			return factory;
 		}
 
 	}

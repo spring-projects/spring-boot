@@ -100,8 +100,9 @@ public class JvmMetricsAutoConfiguration {
 	@ConditionalOnMissingBean(type = VIRTUAL_THREAD_METRICS_CLASS)
 	@ImportRuntimeHints(VirtualThreadMetricsRuntimeHintsRegistrar.class)
 	MeterBinder virtualThreadMetrics() throws ClassNotFoundException {
-		Class<?> clazz = ClassUtils.forName(VIRTUAL_THREAD_METRICS_CLASS, getClass().getClassLoader());
-		return (MeterBinder) BeanUtils.instantiateClass(clazz);
+		Class<?> virtualThreadMetricsClass = ClassUtils.forName(VIRTUAL_THREAD_METRICS_CLASS,
+				getClass().getClassLoader());
+		return (MeterBinder) BeanUtils.instantiateClass(virtualThreadMetricsClass);
 	}
 
 	static final class VirtualThreadMetricsRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
