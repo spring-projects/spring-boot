@@ -285,7 +285,7 @@ If you run `gradle dependencies` again, you see that there are now a number of a
 == Writing the Code
 
 To finish our application, we need to create a single Java file.
-By default, Maven and Gradle compile sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
+By default, Maven and Gradle compile sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/com/example/MyApplication.java` to contain the following code:
 
 [chomp_package_replacement=com.example]
 include-code::MyApplication[]
