@@ -22,6 +22,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.status.OnPrintStreamStatusListenerBase;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusListener;
+import ch.qos.logback.core.status.StatusManager;
 
 /**
  * {@link StatusListener} used to print appropriate status messages to {@link System#out}
@@ -36,6 +37,10 @@ final class SystemStatusListener extends OnPrintStreamStatusListenerBase {
 
 	private SystemStatusListener(boolean debug) {
 		this.debug = debug;
+		setResetResistant(false);
+		if (!this.debug) {
+			setRetrospective(0);
+		}
 	}
 
 	@Override
@@ -57,9 +62,20 @@ final class SystemStatusListener extends OnPrintStreamStatusListenerBase {
 	static void addTo(LoggerContext loggerContext, boolean debug) {
 		SystemStatusListener listener = new SystemStatusListener(debug);
 		listener.setContext(loggerContext);
-		if (loggerContext.getStatusManager().add(listener)) {
+		StatusManager sm = loggerContext.getStatusManager();
+		if (!sm.getCopyOfStatusListenerList().contains(listener) && sm.add(listener)) {
 			listener.start();
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return (obj != null) && (obj.getClass() == getClass());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 
 }

@@ -36,11 +36,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleStructuredLoggingApplicationTests {
 
 	@AfterEach
-	void reset() {
+	void reset(CapturedOutput output) {
 		LoggingSystem.get(getClass().getClassLoader()).cleanUp();
 		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
 			System.getProperties().remove(property.getEnvironmentVariableName());
 		}
+		assertThat(output).doesNotContain("-INFO in ch.qos.logback.classic.LoggerContext");
 	}
 
 	@Test

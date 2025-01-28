@@ -40,6 +40,10 @@ import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import ch.qos.logback.core.status.ErrorStatus;
+import ch.qos.logback.core.status.InfoStatus;
+import ch.qos.logback.core.status.StatusManager;
+import ch.qos.logback.core.status.WarnStatus;
 import ch.qos.logback.core.util.DynamicClassLoadingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -645,13 +649,20 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		System.setProperty("logback.debug", "true");
 		try {
 			this.loggingSystem.beforeInitialize();
+			LoggerContext loggerContext = this.logger.getLoggerContext();
+			StatusManager statusManager = loggerContext.getStatusManager();
+			statusManager.add(new InfoStatus("INFO STATUS MESSAGE", getClass()));
+			statusManager.add(new WarnStatus("WARN STATUS MESSAGE", getClass()));
+			statusManager.add(new ErrorStatus("ERROR STATUS MESSAGE", getClass()));
 			File file = new File(tmpDir(), "logback-test.log");
 			LogFile logFile = getLogFile(file.getPath(), null);
 			initialize(this.initializationContext, null, logFile);
 			assertThat(output).contains("LevelChangePropagator")
 				.contains("SizeAndTimeBasedFileNamingAndTriggeringPolicy")
-				.contains("DebugLogbackConfigurator");
-			LoggerContext loggerContext = this.logger.getLoggerContext();
+				.contains("DebugLogbackConfigurator")
+				.contains("INFO STATUS MESSAGE")
+				.contains("WARN STATUS MESSAGE")
+				.contains("ERROR STATUS MESSAGE");
 			assertThat(loggerContext.getStatusManager().getCopyOfStatusListenerList()).allSatisfy((listener) -> {
 				assertThat(listener).isInstanceOf(SystemStatusListener.class);
 				assertThat(listener).hasFieldOrPropertyWithValue("debug", true);
@@ -663,7 +674,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void logbackErrorStatusListenerShouldBeRegistered(CapturedOutput output) {
+	void logbackSystemStatusListenerShouldBeRegistered(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, getLogFile(tmpDir() + "/tmp.log", null));
 		LoggerContext loggerContext = this.logger.getLoggerContext();
@@ -680,7 +691,41 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void logbackErrorStatusListenerShouldBeRegisteredWhenUsingCustomLogbackXml(CapturedOutput output) {
+	void logbackSystemStatusListenerShouldBeRegisteredOnlyOnce() {
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, null, getLogFile(tmpDir() + "/tmp.log", null));
+		LoggerContext loggerContext = this.logger.getLoggerContext();
+		SystemStatusListener.addTo(loggerContext);
+		SystemStatusListener.addTo(loggerContext, true);
+		assertThat(loggerContext.getStatusManager().getCopyOfStatusListenerList()).satisfiesOnlyOnce((listener) -> {
+			assertThat(listener).isInstanceOf(SystemStatusListener.class);
+			assertThat(listener).hasFieldOrPropertyWithValue("debug", false);
+		});
+	}
+
+	@Test
+	void logbackSystemStatusListenerShouldBeRegisteredAndIgnoreAnyRetrospectiveStatusesIfDebugDisabled(
+			CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		LoggerContext loggerContext = this.logger.getLoggerContext();
+		StatusManager statusManager = loggerContext.getStatusManager();
+		statusManager.add(new InfoStatus("INFO STATUS MESSAGE", getClass()));
+		statusManager.add(new WarnStatus("WARN STATUS MESSAGE", getClass()));
+		statusManager.add(new ErrorStatus("ERROR STATUS MESSAGE", getClass()));
+		initialize(this.initializationContext, null, getLogFile(tmpDir() + "/tmp.log", null));
+		assertThat(statusManager.getCopyOfStatusListenerList()).allSatisfy((listener) -> {
+			assertThat(listener).isInstanceOf(SystemStatusListener.class);
+			assertThat(listener).hasFieldOrPropertyWithValue("debug", false);
+		});
+		this.logger.info("Hello world");
+		assertThat(output).doesNotContain("INFO STATUS MESSAGE")
+			.doesNotContain("WARN STATUS MESSAGE")
+			.doesNotContain("ERROR STATUS MESSAGE")
+			.contains("Hello world");
+	}
+
+	@Test
+	void logbackSystemStatusListenerShouldBeRegisteredWhenUsingCustomLogbackXml(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, "classpath:logback-include-defaults.xml", null);
 		LoggerContext loggerContext = this.logger.getLoggerContext();
