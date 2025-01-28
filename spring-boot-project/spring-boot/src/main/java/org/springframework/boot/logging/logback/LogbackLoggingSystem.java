@@ -35,11 +35,8 @@ import ch.qos.logback.classic.spi.TurboFilterList;
 import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
-import ch.qos.logback.core.status.OnConsoleStatusListener;
-import ch.qos.logback.core.status.OnErrorConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusUtil;
-import ch.qos.logback.core.util.StatusListenerConfigHelper;
 import ch.qos.logback.core.util.StatusPrinter2;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -216,6 +213,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> putInitializationContextObjects(loggerContext, initializationContext));
+		SystemStatusListener.addTo(loggerContext);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
@@ -230,21 +228,16 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		withLoggingSuppressed(() -> {
-			putInitializationContextObjects(loggerContext, initializationContext);
 			boolean debug = Boolean.getBoolean("logback.debug");
-			if (debug) {
-				StatusListenerConfigHelper.addOnConsoleListenerInstance(loggerContext, new OnConsoleStatusListener());
-			}
-			else {
-				addOnErrorConsoleStatusListener(loggerContext);
-			}
+			putInitializationContextObjects(loggerContext, initializationContext);
+			SystemStatusListener.addTo(loggerContext, debug);
 			Environment environment = initializationContext.getEnvironment();
 			// Apply system properties directly in case the same JVM runs multiple apps
 			new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment),
 					loggerContext::putProperty)
 				.apply(logFile);
-			LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(loggerContext)
-					: new LogbackConfigurator(loggerContext);
+			LogbackConfigurator configurator = (!debug) ? new LogbackConfigurator(loggerContext)
+					: new DebugLogbackConfigurator(loggerContext);
 			new DefaultLogbackConfiguration(logFile).apply(configurator);
 			loggerContext.setPackagingDataEnabled(true);
 			loggerContext.start();
@@ -261,6 +254,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 			if (initializationContext != null) {
 				applySystemProperties(initializationContext.getEnvironment(), logFile);
 			}
+			SystemStatusListener.addTo(loggerContext);
 			try {
 				Resource resource = ApplicationResourceLoader.get().getResource(location);
 				configureByResourceUrl(initializationContext, loggerContext, resource.getURL());
@@ -488,15 +482,6 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		finally {
 			turboFilters.remove(SUPPRESS_ALL_FILTER);
-		}
-	}
-
-	private void addOnErrorConsoleStatusListener(LoggerContext context) {
-		FilteringStatusListener listener = new FilteringStatusListener(new OnErrorConsoleStatusListener(),
-				Status.ERROR);
-		listener.setContext(context);
-		if (context.getStatusManager().add(listener)) {
-			listener.start();
 		}
 	}
 

@@ -71,4 +71,11 @@ class SampleStructuredLoggingApplicationTests {
 		assertThat(output).contains("The name 'test' has already been written");
 	}
 
+	@Test
+	void shouldCaptureCustomizerErrorWhenUsingCustomLogbackFile(CapturedOutput output) {
+		SampleStructuredLoggingApplication
+			.main(new String[] { "--spring.profiles.active=on-error-custom-logback-file" });
+		assertThat(output).contains("The name 'test' has already been written");
+	}
+
 }
