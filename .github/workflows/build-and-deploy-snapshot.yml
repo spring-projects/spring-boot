@@ -2,7 +2,7 @@ name: Build and Deploy Snapshot
 on:
   push:
     branches:
-      - main
+      - 4.0.x
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 jobs:
@@ -27,7 +27,7 @@ jobs:
       - name: Deploy
         uses: spring-io/artifactory-deploy-action@dc1913008c0599f0c4b1fdafb6ff3c502b3565ea # v0.0.2
         with:
-          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '3.5.x') || format('spring-boot-{0}', '3.5.x') }}
+          build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '4.0.x') || format('spring-boot-{0}', '4.0.x') }}
           folder: 'deployment-repository'
           password: ${{ vars.COMMERCIAL && secrets.COMMERCIAL_ARTIFACTORY_PASSWORD || secrets.ARTIFACTORY_PASSWORD }}
           project: ${{ vars.COMMERCIAL && 'spring' }}
@@ -46,17 +46,6 @@ jobs:
           webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
     outputs:
       version: ${{ steps.build-and-publish.outputs.version }}
-  trigger-docs-build:
-    name: Trigger Docs Build
-    needs: build-and-deploy-snapshot
-    permissions:
-      actions: write
-    runs-on: ${{ vars.UBUNTU_SMALL || 'ubuntu-latest' }}
-    steps:
-      - name: Run Deploy Docs Workflow
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run deploy-docs.yml --repo spring-projects/spring-boot -r docs-build -f build-refname=${{ github.ref_name }} -f build-version=${{ needs.build-and-deploy-snapshot.outputs.version }}
   verify:
     name: Verify
     needs: build-and-deploy-snapshot
