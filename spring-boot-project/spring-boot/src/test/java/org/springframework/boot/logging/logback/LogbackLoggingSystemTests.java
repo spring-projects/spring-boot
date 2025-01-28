@@ -42,6 +42,7 @@ import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.InfoStatus;
+import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.StatusManager;
 import ch.qos.logback.core.status.WarnStatus;
 import ch.qos.logback.core.util.DynamicClassLoadingException;
@@ -671,6 +672,18 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		finally {
 			System.clearProperty("logback.debug");
 		}
+	}
+
+	@Test
+	void logbackSystemStatusListenerShouldBeRegisteredWhenCustomLogbackXmlHasStatusListener(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, "classpath:logback-include-status-listener.xml", null);
+		LoggerContext loggerContext = this.logger.getLoggerContext();
+		assertThat(loggerContext.getStatusManager().getCopyOfStatusListenerList()).hasSize(2)
+			.allSatisfy((listener) -> assertThat(listener).isInstanceOf(OnConsoleStatusListener.class))
+			.anySatisfy((listener) -> assertThat(listener).isInstanceOf(SystemStatusListener.class));
+		this.logger.info("Hello world");
+		assertThat(output).contains("Hello world");
 	}
 
 	@Test
