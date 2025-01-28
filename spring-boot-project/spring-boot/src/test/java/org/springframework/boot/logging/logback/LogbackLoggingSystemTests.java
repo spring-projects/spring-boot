@@ -704,8 +704,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void logbackSystemStatusListenerShouldBeRegisteredAndIgnoreAnyRetrospectiveStatusesIfDebugDisabled(
-			CapturedOutput output) {
+	void logbackSystemStatusListenerShouldBeRegisteredAndFilterStatusByLevelIfDebugDisabled(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		LoggerContext loggerContext = this.logger.getLoggerContext();
 		StatusManager statusManager = loggerContext.getStatusManager();
@@ -718,10 +717,10 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			assertThat(listener).hasFieldOrPropertyWithValue("debug", false);
 		});
 		this.logger.info("Hello world");
-		assertThat(output).doesNotContain("INFO STATUS MESSAGE")
-			.doesNotContain("WARN STATUS MESSAGE")
-			.doesNotContain("ERROR STATUS MESSAGE")
-			.contains("Hello world");
+		assertThat(output).doesNotContain("INFO STATUS MESSAGE");
+		assertThat(output).contains("WARN STATUS MESSAGE");
+		assertThat(output).contains("ERROR STATUS MESSAGE");
+		assertThat(output).contains("Hello world");
 	}
 
 	@Test

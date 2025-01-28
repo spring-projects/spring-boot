@@ -17,37 +17,71 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.PrintStream;
+import java.util.List;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.status.OnPrintStreamStatusListenerBase;
+import ch.qos.logback.core.BasicStatusManager;
+import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusListener;
 import ch.qos.logback.core.status.StatusManager;
+import ch.qos.logback.core.util.StatusPrinter2;
 
 /**
  * {@link StatusListener} used to print appropriate status messages to {@link System#out}
- * or {@link System#err}.
+ * or {@link System#err}. Note that this class extends {@link OnConsoleStatusListener} so
+ * that {@link BasicStatusManager#add(StatusListener)} does not add the same listener
+ * twice. It also implement a version of retrospectivePrint that can filter status
+ * messages by level.
  *
  * @author Dmytro Nosan
  * @author Phillip Webb
  */
-final class SystemStatusListener extends OnPrintStreamStatusListenerBase {
+final class SystemStatusListener extends OnConsoleStatusListener {
+
+	static final long RETROSPECTIVE_THRESHOLD = 300;
+
+	private static final StatusPrinter2 PRINTER = new StatusPrinter2();
 
 	private final boolean debug;
 
 	private SystemStatusListener(boolean debug) {
 		this.debug = debug;
 		setResetResistant(false);
-		if (!this.debug) {
-			setRetrospective(0);
+		setRetrospective(0);
+	}
+
+	@Override
+	public void start() {
+		super.start();
+		retrospectivePrint();
+	}
+
+	private void retrospectivePrint() {
+		if (this.context == null) {
+			return;
 		}
+		long now = System.currentTimeMillis();
+		List<Status> statusList = this.context.getStatusManager().getCopyOfStatusList();
+		statusList.stream().filter((status) -> isPrintable(status, now)).forEach(this::print);
+	}
+
+	private void print(Status status) {
+		StringBuilder sb = new StringBuilder();
+		PRINTER.buildStr(sb, "", status);
+		getPrintStream().print(sb);
 	}
 
 	@Override
 	public void addStatusEvent(Status status) {
-		if (this.debug || status.getLevel() >= Status.WARN) {
+		if (isPrintable(status, 0)) {
 			super.addStatusEvent(status);
 		}
+	}
+
+	private boolean isPrintable(Status status, long now) {
+		boolean timstampInRange = (now == 0 || (now - status.getTimestamp()) < RETROSPECTIVE_THRESHOLD);
+		return timstampInRange && (this.debug || status.getLevel() >= Status.WARN);
 	}
 
 	@Override
@@ -62,8 +96,8 @@ final class SystemStatusListener extends OnPrintStreamStatusListenerBase {
 	static void addTo(LoggerContext loggerContext, boolean debug) {
 		SystemStatusListener listener = new SystemStatusListener(debug);
 		listener.setContext(loggerContext);
-		StatusManager sm = loggerContext.getStatusManager();
-		if (!sm.getCopyOfStatusListenerList().contains(listener) && sm.add(listener)) {
+		StatusManager statusManager = loggerContext.getStatusManager();
+		if (statusManager.add(listener)) {
 			listener.start();
 		}
 	}
