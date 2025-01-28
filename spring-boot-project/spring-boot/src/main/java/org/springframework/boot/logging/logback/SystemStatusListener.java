@@ -24,14 +24,13 @@ import ch.qos.logback.core.BasicStatusManager;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusListener;
-import ch.qos.logback.core.status.StatusManager;
-import ch.qos.logback.core.util.StatusPrinter2;
+import ch.qos.logback.core.util.StatusListenerConfigHelper;
 
 /**
  * {@link StatusListener} used to print appropriate status messages to {@link System#out}
  * or {@link System#err}. Note that this class extends {@link OnConsoleStatusListener} so
  * that {@link BasicStatusManager#add(StatusListener)} does not add the same listener
- * twice. It also implement a version of retrospectivePrint that can filter status
+ * twice. It also implements a version of retrospectivePrint that can filter status
  * messages by level.
  *
  * @author Dmytro Nosan
@@ -40,8 +39,6 @@ import ch.qos.logback.core.util.StatusPrinter2;
 final class SystemStatusListener extends OnConsoleStatusListener {
 
 	static final long RETROSPECTIVE_THRESHOLD = 300;
-
-	private static final StatusPrinter2 PRINTER = new StatusPrinter2();
 
 	private final boolean debug;
 
@@ -63,25 +60,16 @@ final class SystemStatusListener extends OnConsoleStatusListener {
 		}
 		long now = System.currentTimeMillis();
 		List<Status> statusList = this.context.getStatusManager().getCopyOfStatusList();
-		statusList.stream().filter((status) -> isPrintable(status, now)).forEach(this::print);
-	}
-
-	private void print(Status status) {
-		StringBuilder sb = new StringBuilder();
-		PRINTER.buildStr(sb, "", status);
-		getPrintStream().print(sb);
+		statusList.stream()
+			.filter((status) -> getElapsedTime(status, now) < RETROSPECTIVE_THRESHOLD)
+			.forEach(this::addStatusEvent);
 	}
 
 	@Override
 	public void addStatusEvent(Status status) {
-		if (isPrintable(status, 0)) {
+		if (this.debug || status.getLevel() >= Status.WARN) {
 			super.addStatusEvent(status);
 		}
-	}
-
-	private boolean isPrintable(Status status, long now) {
-		boolean timstampInRange = (now == 0 || (now - status.getTimestamp()) < RETROSPECTIVE_THRESHOLD);
-		return timstampInRange && (this.debug || status.getLevel() >= Status.WARN);
 	}
 
 	@Override
@@ -89,27 +77,16 @@ final class SystemStatusListener extends OnConsoleStatusListener {
 		return (!this.debug) ? System.err : System.out;
 	}
 
+	private static long getElapsedTime(Status status, long now) {
+		return now - status.getTimestamp();
+	}
+
 	static void addTo(LoggerContext loggerContext) {
 		addTo(loggerContext, false);
 	}
 
 	static void addTo(LoggerContext loggerContext, boolean debug) {
-		SystemStatusListener listener = new SystemStatusListener(debug);
-		listener.setContext(loggerContext);
-		StatusManager statusManager = loggerContext.getStatusManager();
-		if (statusManager.add(listener)) {
-			listener.start();
-		}
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return (obj != null) && (obj.getClass() == getClass());
-	}
-
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
+		StatusListenerConfigHelper.addOnConsoleListenerInstance(loggerContext, new SystemStatusListener(debug));
 	}
 
 }
