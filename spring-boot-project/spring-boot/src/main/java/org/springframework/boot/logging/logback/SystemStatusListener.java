@@ -38,7 +38,7 @@ import ch.qos.logback.core.util.StatusListenerConfigHelper;
  */
 final class SystemStatusListener extends OnConsoleStatusListener {
 
-	static final long RETROSPECTIVE_THRESHOLD = 300;
+	private static final long RETROSPECTIVE_THRESHOLD = 300;
 
 	private final boolean debug;
 
