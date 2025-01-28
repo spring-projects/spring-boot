@@ -100,7 +100,7 @@ class FileWatcher implements Closeable {
 
 	private static Path resolveSymlinkIfNecessary(Path path) throws IOException {
 		if (Files.isSymbolicLink(path)) {
-			Path target = Files.readSymbolicLink(path);
+			Path target = path.resolveSibling(Files.readSymbolicLink(path));
 			return resolveSymlinkIfNecessary(target);
 		}
 		return path;

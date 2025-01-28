@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.util.FileSystemUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -40,6 +42,7 @@ import static org.assertj.core.api.Assertions.fail;
  * Tests for {@link FileWatcher}.
  *
  * @author Moritz Halbritter
+ * @author Brian Clozel
  */
 class FileWatcherTests {
 
@@ -189,6 +192,74 @@ class FileWatcherTests {
 			Files.deleteIfExists(file);
 			Files.deleteIfExists(watchedDirectory);
 		}
+	}
+
+	/*
+	 * Replicating a letsencrypt folder structure like:
+	 * "/folder/live/certname/privkey.pem -> ../../archive/certname/privkey32.pem"
+	 */
+	@Test
+	void shouldFollowRelativePathSymlinks(@TempDir Path tempDir) throws Exception {
+		Path folder = tempDir.resolve("folder");
+		Path live = folder.resolve("live").resolve("certname");
+		Path archive = folder.resolve("archive").resolve("certname");
+		Path link = live.resolve("privkey.pem");
+		Path targetFile = archive.resolve("privkey32.pem");
+		Files.createDirectories(live);
+		Files.createDirectories(archive);
+		Files.createFile(targetFile);
+		Path relativePath = Path.of("../../archive/certname/privkey32.pem");
+		Files.createSymbolicLink(link, relativePath);
+		try {
+			WaitingCallback callback = new WaitingCallback();
+			this.fileWatcher.watch(Set.of(link), callback);
+			Files.writeString(targetFile, "Some content");
+			callback.expectChanges();
+		}
+		finally {
+			FileSystemUtils.deleteRecursively(folder);
+		}
+	}
+
+	/*
+	 * Replicating a k8s configmap folder structure like:
+	 * "secret.txt -> ..data/secret.txt",
+	 * "..data/ -> ..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f/",
+	 * "..a72e81ff-f0e1-41d8-a19b-068d3d1d4e2f/secret.txt"
+	 *
+	 * After a secret update, this will look like: "secret.txt -> ..data/secret.txt",
+	 * "..data/ -> ..bba2a61f-ce04-4c35-93aa-e455110d4487/",
+	 * "..bba2a61f-ce04-4c35-93aa-e455110d4487/secret.txt"
+	 */
+	@Test
+	void shouldTriggerOnConfigMapUpdates(@TempDir Path tempDir) throws Exception {
+		Path configMap1 = createConfigMap(tempDir, "secret.txt");
+		Path configMap2 = createConfigMap(tempDir, "secret.txt");
+		Path data = tempDir.resolve("..data");
+		Files.createSymbolicLink(data, configMap1);
+		Path secretFile = tempDir.resolve("secret.txt");
+		Files.createSymbolicLink(secretFile, data.resolve("secret.txt"));
+		try {
+			WaitingCallback callback = new WaitingCallback();
+			this.fileWatcher.watch(Set.of(secretFile), callback);
+			Files.delete(data);
+			Files.createSymbolicLink(data, configMap2);
+			FileSystemUtils.deleteRecursively(configMap1);
+			callback.expectChanges();
+		}
+		finally {
+			FileSystemUtils.deleteRecursively(configMap2);
+			Files.delete(data);
+			Files.delete(secretFile);
+		}
+	}
+
+	Path createConfigMap(Path parentDir, String secretFileName) throws IOException {
+		Path configMapFolder = parentDir.resolve(".." + UUID.randomUUID());
+		Files.createDirectory(configMapFolder);
+		Path secret = configMapFolder.resolve(secretFileName);
+		Files.createFile(secret);
+		return configMapFolder;
 	}
 
 	private static final class WaitingCallback implements Runnable {
