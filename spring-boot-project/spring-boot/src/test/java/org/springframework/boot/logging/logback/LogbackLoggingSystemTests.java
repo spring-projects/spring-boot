@@ -40,9 +40,6 @@ import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
-import ch.qos.logback.core.status.OnConsoleStatusListener;
-import ch.qos.logback.core.status.OnErrorConsoleStatusListener;
-import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.util.DynamicClassLoadingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -655,8 +652,10 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				.contains("SizeAndTimeBasedFileNamingAndTriggeringPolicy")
 				.contains("DebugLogbackConfigurator");
 			LoggerContext loggerContext = this.logger.getLoggerContext();
-			assertThat(loggerContext.getStatusManager().getCopyOfStatusListenerList())
-				.allSatisfy((listener) -> assertThat(listener).isInstanceOf(OnConsoleStatusListener.class));
+			assertThat(loggerContext.getStatusManager().getCopyOfStatusListenerList()).allSatisfy((listener) -> {
+				assertThat(listener).isInstanceOf(SystemStatusListener.class);
+				assertThat(listener).hasFieldOrPropertyWithValue("debug", true);
+			});
 		}
 		finally {
 			System.clearProperty("logback.debug");
@@ -669,9 +668,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(this.initializationContext, null, getLogFile(tmpDir() + "/tmp.log", null));
 		LoggerContext loggerContext = this.logger.getLoggerContext();
 		assertThat(loggerContext.getStatusManager().getCopyOfStatusListenerList()).allSatisfy((listener) -> {
-			assertThat(listener).isInstanceOf(FilteringStatusListener.class);
-			assertThat(listener).hasFieldOrPropertyWithValue("levelThreshold", Status.WARN);
-			assertThat(listener).extracting("delegate").isInstanceOf(OnErrorConsoleStatusListener.class);
+			assertThat(listener).isInstanceOf(SystemStatusListener.class);
+			assertThat(listener).hasFieldOrPropertyWithValue("debug", false);
 		});
 		AlwaysFailAppender appender = new AlwaysFailAppender();
 		appender.setContext(loggerContext);
@@ -687,9 +685,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(this.initializationContext, "classpath:logback-include-defaults.xml", null);
 		LoggerContext loggerContext = this.logger.getLoggerContext();
 		assertThat(loggerContext.getStatusManager().getCopyOfStatusListenerList()).allSatisfy((listener) -> {
-			assertThat(listener).isInstanceOf(FilteringStatusListener.class);
-			assertThat(listener).hasFieldOrPropertyWithValue("levelThreshold", Status.WARN);
-			assertThat(listener).extracting("delegate").isInstanceOf(OnErrorConsoleStatusListener.class);
+			assertThat(listener).isInstanceOf(SystemStatusListener.class);
+			assertThat(listener).hasFieldOrPropertyWithValue("debug", false);
 		});
 		AlwaysFailAppender appender = new AlwaysFailAppender();
 		appender.setContext(loggerContext);
