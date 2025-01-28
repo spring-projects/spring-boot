@@ -17,7 +17,6 @@ Spring Boot Actuator provides dependency management and auto-configuration for {
 - xref:actuator/metrics.adoc#actuator.metrics.export.newrelic[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.otlp[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.prometheus[]
-- xref:actuator/metrics.adoc#actuator.metrics.export.signalfx[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.simple[] (in-memory)
 - xref:actuator/metrics.adoc#actuator.metrics.export.stackdriver[]
 - xref:actuator/metrics.adoc#actuator.metrics.export.statsd[]
@@ -570,34 +569,6 @@ This manages the pushing of metrics to a Prometheus Pushgateway.
 
 You can tune the javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] by using properties under `management.prometheus.metrics.export.pushgateway`.
 For advanced configuration, you can also provide your own javadoc:org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager[] bean.
-
-
-
-[[actuator.metrics.export.signalfx]]
-=== SignalFx
-
-SignalFx registry periodically pushes metrics to {url-micrometer-docs-implementations}/signalFx[SignalFx].
-To export metrics to https://www.signalfx.com[SignalFx], you must provide your access token:
-
-[configprops,yaml]
-----
-management:
-  signalfx:
-    metrics:
-      export:
-        access-token: "YOUR_ACCESS_TOKEN"
-----
-
-You can also change the interval at which metrics are sent to SignalFx:
-
-[configprops,yaml]
-----
-management:
-  signalfx:
-    metrics:
-      export:
-        step: "30s"
-----
 
 
 
