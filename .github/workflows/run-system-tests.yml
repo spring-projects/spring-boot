@@ -2,7 +2,7 @@ name: Run System Tests
 on:
   push:
     branches:
-      - 4.0.x
+      - 4.0.x-restructure
 jobs:
   run-system-tests:
     name: 'Java ${{ matrix.java.version}}'
