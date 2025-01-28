@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ class FileWatcher implements Closeable {
 
 	private static Path resolveSymlinkIfNecessary(Path path) throws IOException {
 		if (Files.isSymbolicLink(path)) {
-			Path target = Files.readSymbolicLink(path);
+			Path target = path.resolveSibling(Files.readSymbolicLink(path));
 			return resolveSymlinkIfNecessary(target);
 		}
 		return path;
