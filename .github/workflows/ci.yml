@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - 4.0.x
 jobs:
   ci:
     name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
