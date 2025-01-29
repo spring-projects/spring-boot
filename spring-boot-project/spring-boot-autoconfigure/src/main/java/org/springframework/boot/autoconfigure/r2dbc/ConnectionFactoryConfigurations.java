@@ -108,6 +108,7 @@ abstract class ConnectionFactoryConfigurations {
 				map.from(pool.getMaxIdleTime()).to(builder::maxIdleTime);
 				map.from(pool.getMaxLifeTime()).to(builder::maxLifeTime);
 				map.from(pool.getMaxAcquireTime()).to(builder::maxAcquireTime);
+				map.from(pool.getAcquireRetry()).to(builder::acquireRetry);
 				map.from(pool.getMaxCreateConnectionTime()).to(builder::maxCreateConnectionTime);
 				map.from(pool.getInitialSize()).to(builder::initialSize);
 				map.from(pool.getMaxSize()).to(builder::maxSize);
