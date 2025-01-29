@@ -45,7 +45,7 @@ class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcesso
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		Environment environment = beanFactory.getBean(ENVIRONMENT_BEAN_NAME, Environment.class);
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
-		return (properties != null) ? AotContribution.get(properties.allCustomizers()) : null;
+		return (properties != null) ? AotContribution.get(properties.customizer()) : null;
 	}
 
 	private static final class AotContribution implements BeanFactoryInitializationAotContribution {

@@ -642,7 +642,7 @@ logging:
 ----
 
 TIP: For more advanced customizations, you can use the javadoc:org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer[] interface.
-You can reference a single implementation using the configprop:logging.structured.json.customizer[] property, or use configprop:logging.structured.json.customizers[] if you have more than one.
+You can reference a one or more implementations using the configprop:logging.structured.json.customizer[] property.
 You can also declare implementations by listing them in a `META-INF/spring.factories` file.
 
 

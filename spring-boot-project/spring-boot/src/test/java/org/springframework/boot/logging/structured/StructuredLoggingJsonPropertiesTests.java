@@ -48,7 +48,7 @@ class StructuredLoggingJsonPropertiesTests {
 		environment.setProperty("logging.structured.json.customizer", TestCustomizer.class.getName());
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		assertThat(properties).isEqualTo(new StructuredLoggingJsonProperties(Set.of("a", "b"), Set.of("c", "d"),
-				Map.of("e", "f"), Map.of("g", "h"), TestCustomizer.class, null));
+				Map.of("e", "f"), Map.of("g", "h"), Set.of(TestCustomizer.class)));
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class StructuredLoggingJsonPropertiesTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(StructuredLoggingJsonProperties.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onConstructor(StructuredLoggingJsonProperties.class.getDeclaredConstructor(Set.class, Set.class, Map.class,
-					Map.class, Class.class, Set.class))
+					Map.class, Set.class))
 			.invoke()).accepts(hints);
 	}
 

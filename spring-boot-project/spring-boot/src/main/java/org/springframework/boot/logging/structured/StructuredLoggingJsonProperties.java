@@ -18,7 +18,7 @@ package org.springframework.boot.logging.structured;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +26,6 @@ import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegi
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Properties that can be used to customize structured logging JSON.
@@ -35,42 +34,21 @@ import org.springframework.util.CollectionUtils;
  * @param exclude the paths that should be excluded. An empty set excludes nothing
  * @param rename a map of path to replacement names
  * @param add a map of additional elements {@link StructuredLoggingJsonMembersCustomizer}
- * @param customizer the fully qualified name of a
- * {@link StructuredLoggingJsonMembersCustomizer} implementation
- * @param customizers the fully qualified names of
+ * @param customizer the fully qualified names of
  * {@link StructuredLoggingJsonMembersCustomizer} implementations
  * @author Phillip Webb
  * @author Yanming Zhou
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer,
-		Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers) {
+		Map<String, String> add, Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 
-	Collection<StructuredLoggingJsonMembersCustomizer<Object>> allCustomizers(Instantiator<?> instantiator) {
-		return allCustomizers().stream().map((customizer) -> instantiateCustomizer(instantiator, customizer)).toList();
+	StructuredLoggingJsonProperties {
+		customizer = (customizer != null) ? customizer : Collections.emptySet();
 	}
 
-	Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> allCustomizers() {
-		return merge(customizer(), customizers());
-	}
-
-	private <T> Set<T> merge(T element, Set<T> elements) {
-		if (CollectionUtils.isEmpty(elements)) {
-			return (element != null) ? Set.of(element) : Collections.emptySet();
-		}
-		if (element == null) {
-			return elements;
-		}
-		Set<T> result = new LinkedHashSet<>(elements.size() + 1);
-		result.add(element);
-		result.addAll(elements);
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	private StructuredLoggingJsonMembersCustomizer<Object> instantiateCustomizer(Instantiator<?> instantiator,
-			Class<? extends StructuredLoggingJsonMembersCustomizer<?>> customizer) {
-		return (StructuredLoggingJsonMembersCustomizer<Object>) instantiator.instantiateType(customizer);
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	Collection<StructuredLoggingJsonMembersCustomizer<Object>> customizers(Instantiator<?> instantiator) {
+		return (List) customizer().stream().map(instantiator::instantiateType).toList();
 	}
 
 	static StructuredLoggingJsonProperties get(Environment environment) {

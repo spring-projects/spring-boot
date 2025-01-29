@@ -50,7 +50,7 @@ class StructuredLoggingJsonPropertiesJsonMembersCustomizer implements Structured
 		if (!CollectionUtils.isEmpty(add)) {
 			add.forEach(members::add);
 		}
-		this.properties.allCustomizers(this.instantiator).forEach((customizer) -> customizer.customize(members));
+		this.properties.customizers(this.instantiator).forEach((customizer) -> customizer.customize(members));
 	}
 
 	String renameJsonMembers(MemberPath path, String existingName) {
