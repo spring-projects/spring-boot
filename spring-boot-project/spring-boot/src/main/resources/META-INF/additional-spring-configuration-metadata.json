@@ -267,7 +267,7 @@
       "description": "Additional members that should be added to structured logging JSON"
     },
     {
-      "name": "logging.structured.json.customizers",
+      "name": "logging.structured.json.customizer",
       "type": "java.util.Set<java.lang.Class<? extends org.springframework.boot.logging.structured.StructuredLoggingJsonMembersCustomizer<?>>>",
       "description": "Fully qualified class names of StructuredLoggingJsonMembersCustomizer implementations"
     },
