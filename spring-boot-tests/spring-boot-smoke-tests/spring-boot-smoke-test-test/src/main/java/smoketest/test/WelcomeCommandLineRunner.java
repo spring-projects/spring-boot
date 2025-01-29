@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 public class WelcomeCommandLineRunner implements CommandLineRunner {
 
 	@Override
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		System.out.println("***** WELCOME TO THE DEMO *****");
 	}
 

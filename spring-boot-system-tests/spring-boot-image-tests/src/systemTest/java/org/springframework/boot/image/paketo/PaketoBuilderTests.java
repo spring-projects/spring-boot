@@ -53,9 +53,9 @@ import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Integration tests for the Paketo builder and buildpacks.
- *
+ * <p>
  * See
- * https://paketo.io/docs/buildpacks/language-family-buildpacks/java/#additional-metadata
+ * <a href="https://paketo.io/docs/buildpacks/language-family-buildpacks/java/#additional-metadata">How to Build Java Apps with Paketo Buildpacks</a>
  *
  * @author Scott Frederick
  */

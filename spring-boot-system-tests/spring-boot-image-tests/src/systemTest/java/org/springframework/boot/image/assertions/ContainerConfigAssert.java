@@ -121,7 +121,7 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 
 	/**
 	 * Asserts for the JSON content in the {@code io.buildpacks.lifecycle.metadata} label.
-	 *
+	 * <p>
 	 * See <a href=
 	 * "https://github.com/buildpacks/spec/blob/main/platform.md#iobuildpackslifecyclemetadata-json">the
 	 * spec</a>
