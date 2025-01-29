@@ -33,8 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SignalFxMetricsExportAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @deprecated since 3.5.0 for removal in 3.7.0
  */
 @SuppressWarnings("removal")
+@Deprecated(since = "3.5.0", forRemoval = true)
 class SignalFxMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

@@ -26,8 +26,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SignalFxPropertiesConfigAdapter}.
  *
  * @author Mirko Sobeck
+ * @deprecated since 3.5.0 for removal in 3.7.0
  */
 @SuppressWarnings("removal")
+@Deprecated(since = "3.5.0", forRemoval = true)
 class SignalFxPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<SignalFxProperties, SignalFxPropertiesConfigAdapter> {
 
