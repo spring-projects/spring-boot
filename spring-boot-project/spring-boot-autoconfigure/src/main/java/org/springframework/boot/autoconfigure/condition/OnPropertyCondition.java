@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.condition;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -28,6 +29,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotationPredicates;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -50,11 +52,8 @@ class OnPropertyCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-		List<MergedAnnotation<Annotation>> annotations = Stream
-			.concat(metadata.getAnnotations().stream(ConditionalOnProperty.class.getName()),
-					metadata.getAnnotations().stream(ConditionalOnBooleanProperty.class.getName()))
-			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
-			.toList();
+		MergedAnnotations mergedAnnotations = metadata.getAnnotations();
+		List<MergedAnnotation<Annotation>> annotations = stream(mergedAnnotations).toList();
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
 		for (MergedAnnotation<Annotation> annotation : annotations) {
@@ -65,6 +64,34 @@ class OnPropertyCondition extends SpringBootCondition {
 			return ConditionOutcome.noMatch(ConditionMessage.of(noMatch));
 		}
 		return ConditionOutcome.match(ConditionMessage.of(match));
+	}
+
+	private Stream<MergedAnnotation<Annotation>> stream(MergedAnnotations mergedAnnotations) {
+		return Stream.concat(stream(mergedAnnotations, ConditionalOnProperty.class, ConditionalOnProperties.class),
+				stream(mergedAnnotations, ConditionalOnBooleanProperty.class, ConditionalOnBooleanProperties.class));
+	}
+
+	private Stream<MergedAnnotation<Annotation>> stream(MergedAnnotations mergedAnnotations,
+			Class<? extends Annotation> type, Class<? extends Annotation> containerType) {
+		return Stream.concat(stream(mergedAnnotations, type), streamRepeated(mergedAnnotations, type, containerType));
+	}
+
+	private Stream<MergedAnnotation<Annotation>> streamRepeated(MergedAnnotations mergedAnnotations,
+			Class<? extends Annotation> type, Class<? extends Annotation> containerType) {
+		return stream(mergedAnnotations, containerType).flatMap((container) -> streamRepeated(container, type));
+	}
+
+	@SuppressWarnings("unchecked")
+	private Stream<MergedAnnotation<Annotation>> streamRepeated(MergedAnnotation<Annotation> container,
+			Class<? extends Annotation> type) {
+		MergedAnnotation<? extends Annotation>[] repeated = container.getAnnotationArray(MergedAnnotation.VALUE, type);
+		return Arrays.stream((MergedAnnotation<Annotation>[]) repeated);
+	}
+
+	private Stream<MergedAnnotation<Annotation>> stream(MergedAnnotations annotations,
+			Class<? extends Annotation> containerType) {
+		return annotations.stream(containerType.getName())
+			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes));
 	}
 
 	private ConditionOutcome determineOutcome(MergedAnnotation<Annotation> annotation, PropertyResolver resolver) {

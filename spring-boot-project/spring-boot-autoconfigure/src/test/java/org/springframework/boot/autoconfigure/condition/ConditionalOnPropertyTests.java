@@ -274,17 +274,33 @@ class ConditionalOnPropertyTests {
 	}
 
 	@Test
-	void conditionReportWhenMatched() {
+	void multiplePropertiesConditionReportWhenMatched() {
 		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1", "property2=value2");
 		assertThat(this.context.containsBean("foo")).isTrue();
 		assertThat(getConditionEvaluationReport()).contains("@ConditionalOnProperty ([property1,property2]) matched");
 	}
 
 	@Test
-	void conditionReportWhenDoesNotMatch() {
+	void multiplePropertiesConditionReportWhenDoesNotMatch() {
 		load(MultiplePropertiesRequiredConfiguration.class, "property1=value1");
 		assertThat(getConditionEvaluationReport())
 			.contains("@ConditionalOnProperty ([property1,property2]) did not find property 'property2'");
+	}
+
+	@Test
+	void repeatablePropertiesConditionReportWhenMatched() {
+		load(RepeatablePropertiesRequiredConfiguration.class, "property1=value1", "property2=value2");
+		assertThat(this.context.containsBean("foo")).isTrue();
+		String report = getConditionEvaluationReport();
+		assertThat(report).contains("@ConditionalOnProperty (property1) matched");
+		assertThat(report).contains("@ConditionalOnProperty (property2) matched");
+	}
+
+	@Test
+	void repeatablePropertiesConditionReportWhenDoesNotMatch() {
+		load(RepeatablePropertiesRequiredConfiguration.class, "property1=value1");
+		assertThat(getConditionEvaluationReport())
+			.contains("@ConditionalOnProperty (property2) did not find property 'property2'");
 	}
 
 	private void load(Class<?> config, String... environment) {
@@ -307,6 +323,18 @@ class ConditionalOnPropertyTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(name = { "property1", "property2" })
 	static class MultiplePropertiesRequiredConfiguration {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty("property1")
+	@ConditionalOnProperty("property2")
+	static class RepeatablePropertiesRequiredConfiguration {
 
 		@Bean
 		String foo() {

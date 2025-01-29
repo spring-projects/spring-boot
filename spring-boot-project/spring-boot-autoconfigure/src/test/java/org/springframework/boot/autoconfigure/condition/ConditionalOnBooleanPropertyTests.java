@@ -178,6 +178,22 @@ class ConditionalOnBooleanPropertyTests {
 			.contains("@ConditionalOnBooleanProperty (test=true) found different value in property 'test'");
 	}
 
+	@Test
+	void repeatablePropertiesConditionReportWhenMatched() {
+		load(RepeatablePropertiesRequiredConfiguration.class, "property1=true", "property2=true");
+		assertThat(this.context.containsBean("foo")).isTrue();
+		String report = getConditionEvaluationReport();
+		assertThat(report).contains("@ConditionalOnBooleanProperty (property1=true) matched");
+		assertThat(report).contains("@ConditionalOnBooleanProperty (property2=true) matched");
+	}
+
+	@Test
+	void repeatablePropertiesConditionReportWhenDoesNotMatch() {
+		load(RepeatablePropertiesRequiredConfiguration.class, "property1=true");
+		assertThat(getConditionEvaluationReport())
+			.contains("@ConditionalOnBooleanProperty (property2=true) did not find property 'property2'");
+	}
+
 	private <T extends Exception> Consumer<T> causeMessageContaining(String message) {
 		return (ex) -> assertThat(ex.getCause()).hasMessageContaining(message);
 	}
@@ -258,6 +274,18 @@ class ConditionalOnBooleanPropertyTests {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBooleanProperty(value = "x", name = "y")
 	static class NameAndValueAttribute {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBooleanProperty("property1")
+	@ConditionalOnBooleanProperty("property2")
+	static class RepeatablePropertiesRequiredConfiguration {
 
 		@Bean
 		String foo() {
