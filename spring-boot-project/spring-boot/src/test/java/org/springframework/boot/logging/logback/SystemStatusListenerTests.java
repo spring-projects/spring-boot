@@ -16,10 +16,10 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.BasicStatusManager;
 import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.Status;
@@ -28,17 +28,12 @@ import ch.qos.logback.core.status.StatusManager;
 import ch.qos.logback.core.status.WarnStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link SystemStatusListener}.
@@ -51,13 +46,12 @@ class SystemStatusListenerTests {
 
 	private static final String TEST_MESSAGE = "testtesttest";
 
-	private final StatusManager statusManager = mock(StatusManager.class);
+	private final StatusManager statusManager = new BasicStatusManager();
 
-	private final LoggerContext loggerContext = mock(LoggerContext.class);
+	private final LoggerContext loggerContext = new LoggerContext();
 
 	SystemStatusListenerTests() {
-		given(this.loggerContext.getStatusManager()).willReturn(this.statusManager);
-		given(this.statusManager.add(any(StatusListener.class))).willReturn(true);
+		this.loggerContext.setStatusManager(this.statusManager);
 	}
 
 	@Test
@@ -104,8 +98,9 @@ class SystemStatusListenerTests {
 
 	@Test
 	void shouldRetrospectivePrintStatusOnStartAndDebugIsDisabled(CapturedOutput output) {
-		given(this.statusManager.getCopyOfStatusList()).willReturn(List.of(new ErrorStatus(TEST_MESSAGE, null),
-				new WarnStatus(TEST_MESSAGE, null), new InfoStatus(TEST_MESSAGE, null)));
+		this.statusManager.add(new ErrorStatus(TEST_MESSAGE, null));
+		this.statusManager.add(new WarnStatus(TEST_MESSAGE, null));
+		this.statusManager.add(new InfoStatus(TEST_MESSAGE, null));
 		addStatus(false, () -> new InfoStatus(TEST_MESSAGE, null));
 		assertThat(output.getErr()).contains("WARN " + TEST_MESSAGE);
 		assertThat(output.getErr()).contains("ERROR " + TEST_MESSAGE);
@@ -115,8 +110,9 @@ class SystemStatusListenerTests {
 
 	@Test
 	void shouldRetrospectivePrintStatusOnStartAndDebugIsEnabled(CapturedOutput output) {
-		given(this.statusManager.getCopyOfStatusList()).willReturn(List.of(new ErrorStatus(TEST_MESSAGE, null),
-				new WarnStatus(TEST_MESSAGE, null), new InfoStatus(TEST_MESSAGE, null)));
+		this.statusManager.add(new ErrorStatus(TEST_MESSAGE, null));
+		this.statusManager.add(new WarnStatus(TEST_MESSAGE, null));
+		this.statusManager.add(new InfoStatus(TEST_MESSAGE, null));
 		addStatus(true, () -> new InfoStatus(TEST_MESSAGE, null));
 		assertThat(output.getErr()).isEmpty();
 		assertThat(output.getOut()).contains("WARN " + TEST_MESSAGE);
@@ -128,7 +124,7 @@ class SystemStatusListenerTests {
 	void shouldNotRetrospectivePrintWhenStatusIsOutdated(CapturedOutput output) {
 		ErrorStatus outdatedStatus = new ErrorStatus(TEST_MESSAGE, null);
 		ReflectionTestUtils.setField(outdatedStatus, "timestamp", System.currentTimeMillis() - 300);
-		given(this.statusManager.getCopyOfStatusList()).willReturn(List.of(outdatedStatus));
+		this.statusManager.add(outdatedStatus);
 		addStatus(false, () -> new InfoStatus(TEST_MESSAGE, null));
 		assertThat(output.getOut()).isEmpty();
 		assertThat(output.getErr()).isEmpty();
@@ -136,10 +132,9 @@ class SystemStatusListenerTests {
 
 	private void addStatus(boolean debug, Supplier<Status> statusFactory) {
 		SystemStatusListener.addTo(this.loggerContext, debug);
-		ArgumentCaptor<StatusListener> listener = ArgumentCaptor.forClass(StatusListener.class);
-		then(this.statusManager).should().add(listener.capture());
-		assertThat(listener.getValue()).extracting("context").isSameAs(this.loggerContext);
-		listener.getValue().addStatusEvent(statusFactory.get());
+		StatusListener listener = this.statusManager.getCopyOfStatusListenerList().get(0);
+		assertThat(listener).extracting("context").isSameAs(this.loggerContext);
+		listener.addStatusEvent(statusFactory.get());
 	}
 
 }
