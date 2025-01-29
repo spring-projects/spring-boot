@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -31,6 +32,7 @@ import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,6 +50,15 @@ import static org.mockito.Mockito.mock;
 class SystemStatusListenerTests {
 
 	private static final String TEST_MESSAGE = "testtesttest";
+
+	private final StatusManager statusManager = mock(StatusManager.class);
+
+	private final LoggerContext loggerContext = mock(LoggerContext.class);
+
+	SystemStatusListenerTests() {
+		given(this.loggerContext.getStatusManager()).willReturn(this.statusManager);
+		given(this.statusManager.add(any(StatusListener.class))).willReturn(true);
+	}
 
 	@Test
 	void addStatusWithInfoLevelWhenNoDebugDoesNotPrint(CapturedOutput output) {
@@ -91,15 +102,43 @@ class SystemStatusListenerTests {
 		assertThat(output.getErr()).doesNotContain(TEST_MESSAGE);
 	}
 
+	@Test
+	void shouldRetrospectivePrintStatusOnStartAndDebugIsDisabled(CapturedOutput output) {
+		given(this.statusManager.getCopyOfStatusList()).willReturn(List.of(new ErrorStatus(TEST_MESSAGE, null),
+				new WarnStatus(TEST_MESSAGE, null), new InfoStatus(TEST_MESSAGE, null)));
+		addStatus(false, () -> new InfoStatus(TEST_MESSAGE, null));
+		assertThat(output.getErr()).contains("WARN " + TEST_MESSAGE);
+		assertThat(output.getErr()).contains("ERROR " + TEST_MESSAGE);
+		assertThat(output.getErr()).doesNotContain("INFO");
+		assertThat(output.getOut()).isEmpty();
+	}
+
+	@Test
+	void shouldRetrospectivePrintStatusOnStartAndDebugIsEnabled(CapturedOutput output) {
+		given(this.statusManager.getCopyOfStatusList()).willReturn(List.of(new ErrorStatus(TEST_MESSAGE, null),
+				new WarnStatus(TEST_MESSAGE, null), new InfoStatus(TEST_MESSAGE, null)));
+		addStatus(true, () -> new InfoStatus(TEST_MESSAGE, null));
+		assertThat(output.getErr()).isEmpty();
+		assertThat(output.getOut()).contains("WARN " + TEST_MESSAGE);
+		assertThat(output.getOut()).contains("ERROR " + TEST_MESSAGE);
+		assertThat(output.getOut()).contains("INFO " + TEST_MESSAGE);
+	}
+
+	@Test
+	void shouldNotRetrospectivePrintWhenStatusIsOutdated(CapturedOutput output) {
+		ErrorStatus outdatedStatus = new ErrorStatus(TEST_MESSAGE, null);
+		ReflectionTestUtils.setField(outdatedStatus, "timestamp", System.currentTimeMillis() - 300);
+		given(this.statusManager.getCopyOfStatusList()).willReturn(List.of(outdatedStatus));
+		addStatus(false, () -> new InfoStatus(TEST_MESSAGE, null));
+		assertThat(output.getOut()).isEmpty();
+		assertThat(output.getErr()).isEmpty();
+	}
+
 	private void addStatus(boolean debug, Supplier<Status> statusFactory) {
-		StatusManager statusManager = mock(StatusManager.class);
-		given(statusManager.add(any(StatusListener.class))).willReturn(true);
-		LoggerContext loggerContext = mock(LoggerContext.class);
-		given(loggerContext.getStatusManager()).willReturn(statusManager);
-		SystemStatusListener.addTo(loggerContext, debug);
+		SystemStatusListener.addTo(this.loggerContext, debug);
 		ArgumentCaptor<StatusListener> listener = ArgumentCaptor.forClass(StatusListener.class);
-		then(statusManager).should().add(listener.capture());
-		assertThat(listener.getValue()).extracting("context").isSameAs(loggerContext);
+		then(this.statusManager).should().add(listener.capture());
+		assertThat(listener.getValue()).extracting("context").isSameAs(this.loggerContext);
 		listener.getValue().addStatusEvent(statusFactory.get());
 	}
 
