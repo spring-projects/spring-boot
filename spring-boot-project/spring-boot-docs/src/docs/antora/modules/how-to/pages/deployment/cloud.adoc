@@ -124,7 +124,22 @@ Because this shutdown processing happens in parallel (and due to the nature of d
 
 You can configure a sleep execution in a preStop handler to avoid requests being routed to a pod that has already begun shutting down.
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
-The preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
+
+If you're using Kubernetes 1.32 or up, the preStop handler can be configured by using the PodSpec in the pod's configuration file as follows:
+
+[source,yaml]
+----
+spec:
+  containers:
+  - name: "example-container"
+    image: "example-image"
+    lifecycle:
+      preStop:
+        sleep:
+          seconds: 10
+----
+
+If you're not on Kubernetes 1.32 yet, you can use an `exec` command to invoke `sleep`.
 
 [source,yaml]
 ----
@@ -137,6 +152,8 @@ spec:
         exec:
           command: ["sh", "-c", "sleep 10"]
 ----
+
+NOTE: The container needs to have a shell for this to work.
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and xref:reference:web/graceful-shutdown.adoc[graceful shutdown] will begin, allowing any remaining in-flight requests to complete.
 
