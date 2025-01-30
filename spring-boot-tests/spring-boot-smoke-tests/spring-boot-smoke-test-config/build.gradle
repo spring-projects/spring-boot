@@ -1,0 +1,14 @@
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Config smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}
+
+tasks.named("test", Test) {
+	environment "SMOKE_TEST_CONFIG_ENV", "from-env.key1=value1"
+}

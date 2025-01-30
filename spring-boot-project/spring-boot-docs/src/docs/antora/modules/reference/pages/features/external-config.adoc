@@ -354,11 +354,39 @@ spring:
 
 
 
+[[features.external-config.files.env-variables]]
+=== Using Environment Variables
+
+When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
+You can either use environment variables for such purpose, or you can use xref:reference:features/external-config.adoc#features.external-config.files.configtree[configuration trees].
+
+You can even store whole configurations in properties or yaml format in (multiline) environment variables and load them using the `env:` prefix.
+Assume there's an environment variable called `MY_CONFIGURATION` with this content:
+
+[source,properties]
+----
+my.name=Service1
+my.cluster=Cluster1
+----
+
+Using the `env:` prefix it is possible to import all properties from this variable:
+
+[configprops,yaml]
+----
+spring:
+  config:
+    import: "env:MY_CONFIGURATION"
+----
+
+TIP: This feature also supports xref:reference:features/external-config.adoc#features.external-config.files.importing-extensionless[specifying the extension].
+The default extension is `.properties`.
+
+
+
 [[features.external-config.files.configtree]]
 === Using Configuration Trees
 
-When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
-It is not uncommon to use environment variables for such purposes, but this can have drawbacks, especially if the value is supposed to be kept secret.
+Storing config values in environment variables has drawbacks, especially if the value is supposed to be kept secret.
 
 As an alternative to environment variables, many cloud platforms now allow you to map configuration into mounted data volumes.
 For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap[`ConfigMaps`] and https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod[`Secrets`].
