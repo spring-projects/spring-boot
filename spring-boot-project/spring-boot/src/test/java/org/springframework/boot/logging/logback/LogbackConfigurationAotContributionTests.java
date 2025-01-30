@@ -308,10 +308,7 @@ class LogbackConfigurationAotContributionTests {
 
 	public static class BaseImplementation implements Contract {
 
-		private Details details;
-
 		public void setDetails(Details details) {
-			this.details = details;
 		}
 
 		public static final class Details {
