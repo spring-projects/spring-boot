@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ import org.springframework.aot.hint.JavaSerializationHint;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.SerializationHints;
+import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
@@ -115,15 +116,18 @@ class LogbackConfigurationAotContributionTests {
 		Model model = new Model();
 		model.getSubModels().add(component);
 		TestGenerationContext generationContext = applyContribution(model);
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(SizeAndTimeBasedRollingPolicy.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(FileAppender.class))
-			.accepts(generationContext.getRuntimeHints());
-		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(FileSize.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(FileSize.class)).accepts(runtimeHints);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(
 				TimeBasedFileNamingAndTriggeringPolicy.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
+		assertThat(runtimeHints).satisfies(hasValidTypeName(SizeAndTimeBasedRollingPolicy.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(FileSize.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(FileAppender.class));
 	}
 
 	@Test
@@ -133,12 +137,14 @@ class LogbackConfigurationAotContributionTests {
 		Model model = new Model();
 		model.getSubModels().add(implicit);
 		TestGenerationContext generationContext = applyContribution(model);
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(PatternLayoutEncoder.class))
-			.accepts(generationContext.getRuntimeHints());
-		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Layout.class))
-			.accepts(generationContext.getRuntimeHints());
-		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Charset.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Layout.class)).accepts(runtimeHints);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Charset.class)).accepts(runtimeHints);
+		assertThat(runtimeHints).satisfies(hasValidTypeName(PatternLayoutEncoder.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(Layout.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(Charset.class));
 	}
 
 	@Test
@@ -152,6 +158,8 @@ class LogbackConfigurationAotContributionTests {
 		TestGenerationContext generationContext = applyContribution(model);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(SizeAndTimeBasedRollingPolicy.class))
 			.accepts(generationContext.getRuntimeHints());
+		assertThat(generationContext.getRuntimeHints())
+			.satisfies(hasValidTypeName(SizeAndTimeBasedRollingPolicy.class));
 	}
 
 	@Test
@@ -162,10 +170,12 @@ class LogbackConfigurationAotContributionTests {
 		component.setClassName(Outer.class.getName());
 		component.getSubModels().add(implementation);
 		TestGenerationContext generationContext = applyContribution(component);
-		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Outer.class))
-			.accepts(generationContext.getRuntimeHints());
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Outer.class)).accepts(runtimeHints);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
+		assertThat(runtimeHints).satisfies(hasValidTypeName(Outer.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(Implementation.class));
 	}
 
 	@Test
@@ -176,10 +186,16 @@ class LogbackConfigurationAotContributionTests {
 		component.setClassName(OuterWithDefaultClass.class.getName());
 		component.getSubModels().add(contract);
 		TestGenerationContext generationContext = applyContribution(component);
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(OuterWithDefaultClass.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(BaseImplementation.Details.class))
+			.accepts(runtimeHints);
+		assertThat(runtimeHints).satisfies(hasValidTypeName(OuterWithDefaultClass.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(Implementation.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(BaseImplementation.Details.class));
 	}
 
 	@Test
@@ -187,8 +203,11 @@ class LogbackConfigurationAotContributionTests {
 		ComponentModel component = new ComponentModel();
 		component.setClassName(ArrayParameters.class.getName());
 		TestGenerationContext generationContext = applyContribution(component);
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(InetSocketAddress.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
+		assertThat(runtimeHints).satisfies(hasValidTypeName(InetSocketAddress.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(ArrayParameters.class));
 	}
 
 	@Test
@@ -197,10 +216,12 @@ class LogbackConfigurationAotContributionTests {
 		component.setClassName("${VARIABLE_CLASS_NAME}");
 		TestGenerationContext generationContext = applyContribution(component,
 				(context) -> context.putProperty("VARIABLE_CLASS_NAME", Outer.class.getName()));
-		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Outer.class))
-			.accepts(generationContext.getRuntimeHints());
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Outer.class)).accepts(runtimeHints);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
-			.accepts(generationContext.getRuntimeHints());
+			.accepts(runtimeHints);
+		assertThat(runtimeHints).satisfies(hasValidTypeName(Outer.class));
+		assertThat(runtimeHints).satisfies(hasValidTypeName(Implementation.class));
 	}
 
 	private Predicate<RuntimeHints> invokePublicConstructorsOf(String name) {
@@ -214,6 +235,12 @@ class LogbackConfigurationAotContributionTests {
 			.onType(TypeReference.of(type))
 			.withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INTROSPECT_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_METHODS);
+	}
+
+	private Consumer<RuntimeHints> hasValidTypeName(Class<?> type) {
+		return (runtimeHints) -> assertThat(runtimeHints.reflection().getTypeHint(type)).extracting(TypeHint::getType)
+			.extracting(TypeReference::getName)
+			.isEqualTo(type.getName());
 	}
 
 	private Properties load(InputStreamSource source) {
@@ -279,7 +306,18 @@ class LogbackConfigurationAotContributionTests {
 
 	}
 
-	public static class Implementation implements Contract {
+	public static class BaseImplementation implements Contract {
+
+		public void setDetails(Details details) {
+		}
+
+		public static final class Details {
+
+		}
+
+	}
+
+	public static class Implementation extends BaseImplementation {
 
 	}
 
