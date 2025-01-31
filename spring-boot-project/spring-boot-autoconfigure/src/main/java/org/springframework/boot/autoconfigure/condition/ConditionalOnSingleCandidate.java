@@ -54,8 +54,8 @@ public @interface ConditionalOnSingleCandidate {
 	/**
 	 * The class type of bean that should be checked. The condition matches if a bean of
 	 * the class specified is contained in the {@link BeanFactory} and a primary candidate
-	 * exists in case of multiple instances. Beans that are not autowire candidates or
-	 * that are not default candidates or that are fallback candidates are ignored.
+	 * exists in case of multiple instances. Beans that are not autowire candidates, that
+	 * are not default candidates, or that are fallback candidates are ignored.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
 	 * {@link #type()}, but it may be used instead of {@link #type()}.
@@ -71,7 +71,7 @@ public @interface ConditionalOnSingleCandidate {
 	 * The class type name of bean that should be checked. The condition matches if a bean
 	 * of the class specified is contained in the {@link BeanFactory} and a primary
 	 * candidate exists in case of multiple instances. Beans that are not autowire
-	 * candidates or that are not default candidates or that are fallback candidates are
+	 * candidates, that are not default candidates, or that are fallback candidates are
 	 * ignored.
 	 * <p>
 	 * This attribute may <strong>not</strong> be used in conjunction with
