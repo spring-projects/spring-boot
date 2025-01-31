@@ -182,7 +182,7 @@ public class StandardConfigDataLocationResolver
 				return;
 			}
 			throw new IllegalStateException(
-					String.format("Invalid profile '%s': must contain only letters or digits or '-' or '_'", profile));
+					String.format("Invalid profile '%s': must contain only letters, digits, '-', or '_'", profile));
 		});
 	}
 

@@ -33,11 +33,11 @@ public final class ItemIgnore implements Comparable<ItemIgnore> {
 	private final String name;
 
 	private ItemIgnore(ItemType type, String name) {
-		if (name == null) {
-			throw new IllegalArgumentException("'name' must not be null");
-		}
 		if (type == null) {
 			throw new IllegalArgumentException("'type' must not be null");
+		}
+		if (name == null) {
+			throw new IllegalArgumentException("'name' must not be null");
 		}
 		this.type = type;
 		this.name = name;

@@ -322,7 +322,7 @@ class StandardConfigDataLocationResolverTests {
 	}
 
 	@Test
-	void resolveProfileSpecificWhenProfileStartsWithSymbolThrowsException() {
+	void resolveProfileSpecificWhenProfileStartsWithDashThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
 		this.environment.setActiveProfiles("-dev");
 		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
@@ -342,7 +342,7 @@ class StandardConfigDataLocationResolverTests {
 	}
 
 	@Test
-	void resolveProfileSpecificWhenProfileEndsWithSymbolThrowsException() {
+	void resolveProfileSpecificWhenProfileEndsWithDashThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
 		this.environment.setActiveProfiles("dev-");
 		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
@@ -368,7 +368,7 @@ class StandardConfigDataLocationResolverTests {
 		Profiles profiles = new Profiles(this.environment, this.environmentBinder, Collections.emptyList());
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.resolver.resolveProfileSpecific(this.context, location, profiles))
-			.withMessageStartingWith("Invalid profile 'dev*test': must contain only letters or digits or '-' or '_'");
+			.withMessageStartingWith("Invalid profile 'dev*test': must contain only letters, digits, '-', or '_'");
 	}
 
 	private String filePath(String... components) {

@@ -92,8 +92,9 @@ public class JsonMarshaller {
 		}
 		JSONObject ignored = object.optJSONObject("ignored");
 		if (ignored != null) {
-			checkAllowedKeys(ignored, path.resolve("ignored"), "properties");
-			addIgnoredProperties(metadata, ignored, path.resolve("ignored"));
+			JsonPath ignoredPath = path.resolve("ignored");
+			checkAllowedKeys(ignored, ignoredPath, "properties");
+			addIgnoredProperties(metadata, ignored, ignoredPath);
 		}
 		return metadata;
 	}
