@@ -17,16 +17,6 @@ subprojects {
 	repositories {
 		mavenCentral()
 		spring.mavenRepositories()
-		if (version.contains('-')) {
-			maven {
-				url = "https://repo.spring.io/milestone"
-			}
-		}
-		if (version.endsWith('-SNAPSHOT')) {
-			maven {
-				url = "https://repo.spring.io/snapshot"
-			}
-		}
 	}
 
 	configurations.all {
