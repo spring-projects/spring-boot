@@ -37,7 +37,7 @@ Because javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation
 Spring Boot also provides javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] base classes that provide useful alternatives to the standard Jackson versions when serializing objects.
 See javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] in the API documentation for details.
 
-The example above can be rewritten to use javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] / javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] as follows:
+The example above can be rewritten to use javadoc:org.springframework.boot.jackson.JsonObjectSerializer[] and javadoc:org.springframework.boot.jackson.JsonObjectDeserializer[] as follows:
 
 include-code::object/MyJsonComponent[]
 
