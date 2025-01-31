@@ -2,7 +2,7 @@
 = Running Your Application
 
 One of the biggest advantages of packaging your application as a jar and using an embedded HTTP server is that you can run your application as you would any other.
-The sample applies to debugging Spring Boot applications.
+The same applies to debugging Spring Boot applications.
 You do not need any special IDE plugins or extensions.
 
 NOTE: The options below are best suited for running an application locally for development.
