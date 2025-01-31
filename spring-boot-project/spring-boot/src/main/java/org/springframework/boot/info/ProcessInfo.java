@@ -88,7 +88,7 @@ public class ProcessInfo {
 	 * threads, the parallelism level, and the thread pool size.
 	 * @return an instance of {@link VirtualThreadsInfo} containing information about
 	 * virtual threads, or {@code null} if the VirtualThreadSchedulerMXBean is not
-	 * available.
+	 * available
 	 * @since 3.5.0
 	 */
 	@SuppressWarnings("unchecked")
