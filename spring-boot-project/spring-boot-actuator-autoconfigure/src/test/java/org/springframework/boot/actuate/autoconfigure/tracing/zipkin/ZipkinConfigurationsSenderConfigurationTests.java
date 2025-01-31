@@ -47,7 +47,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		.withConfiguration(AutoConfigurations.of(DefaultEncodingConfiguration.class, SenderConfiguration.class));
 
 	@Test
-	void shouldSupplyDefaultHttpClientSenderBeans() {
+	void shouldSupplyDefaultHttpClientSenderBean() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(BytesMessageSender.class);
 			assertThat(context).hasSingleBean(ZipkinHttpClientSender.class);
@@ -56,7 +56,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void shouldUseUrlSenderIfHttpSenderIsNotAvailable() {
+	void shouldUseUrlConnectionSenderIfHttpClientIsNotAvailable() {
 		this.contextRunner.withUserConfiguration(UrlConnectionSenderConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(HttpClient.class))
 			.run((context) -> {
@@ -83,16 +83,6 @@ class ZipkinConfigurationsSenderConfigurationTests {
 				assertThat(urlConnectionSender).extracting("delegate.endpointSupplier")
 					.isInstanceOf(CustomHttpEndpointSupplier.class);
 			});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	private static final class HttpClientConfiguration {
-
-		@Bean
-		ZipkinHttpClientBuilderCustomizer httpClientBuilderCustomizer() {
-			return mock(ZipkinHttpClientBuilderCustomizer.class);
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -348,7 +348,7 @@ class JsonMarshallerTests {
 	}
 
 	@Test
-	void shouldCheckIgnoreFields() {
+	void shouldCheckIgnoredFields() {
 		String json = """
 				{
 					"ignored": {
@@ -362,7 +362,7 @@ class JsonMarshallerTests {
 	}
 
 	@Test
-	void shouldCheckIgnorePropertiesFields() {
+	void shouldCheckIgnoredPropertiesFields() {
 		String json = """
 				{
 					"ignored": {

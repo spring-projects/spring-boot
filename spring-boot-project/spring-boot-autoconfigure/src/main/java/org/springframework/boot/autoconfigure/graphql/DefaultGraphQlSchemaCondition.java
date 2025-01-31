@@ -84,10 +84,10 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 		else {
 			messages.add((message.didNotFind("GraphQlSourceBuilderCustomizer").atAll()));
 		}
-		String[] graphqlSourceBeans = beanFactory.getBeanNamesForType(GraphQlSource.class, false, false);
-		if (graphqlSourceBeans.length != 0) {
+		String[] graphQlSourceBeanNames = beanFactory.getBeanNamesForType(GraphQlSource.class, false, false);
+		if (graphQlSourceBeanNames.length != 0) {
 			match = true;
-			messages.add(message.found("graphqlSource").items(Arrays.asList(graphqlSourceBeans)));
+			messages.add(message.found("GraphQlSource").items(Arrays.asList(graphQlSourceBeanNames)));
 		}
 		else {
 			messages.add((message.didNotFind("GraphQlSource").atAll()));

@@ -2,7 +2,7 @@
 = Metadata Format
 
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
-They use a JSON format with items categorized under either "`groups`" or "`properties`", additional values hints categorized under "hints", and ignored items under "`ignored`" as shown in the following example:
+They use a JSON format with items categorized under either "`groups`" or "`properties`", additional values hints categorized under "`hints`", and ignored items under "`ignored`" as shown in the following example:
 
 [source,json]
 ----
@@ -93,7 +93,7 @@ Some properties might exist in their own right.
 The "`hints`" are additional information used to assist the user in configuring a given property.
 For example, when a developer is configuring the configprop:spring.jpa.hibernate.ddl-auto[] property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
 
-Finally, "`ignored`" are items which have been deliberately ignored.
+Finally, "`ignored`" is for items which have been deliberately ignored.
 The content of this section usually comes from the xref:specification:configuration-metadata/annotation-processor.adoc#appendix.configuration-metadata.annotation-processor.adding-additional-metadata[additional metadata].
 
 
@@ -313,8 +313,8 @@ The `ignored` object can contain the attributes shown in the following table:
 | Name | Type | Purpose
 
 | `properties`
-| IgnoredProperty[]
-| A list of ignored properties as defined by the IgnoredProperty object (described in the next table). Each entry defines the name of the ignored property.
+| ItemIgnore[]
+| A list of ignored properties as defined by the ItemIgnore object (described in the next table). Each entry defines the name of the ignored property.
 
 |===
 

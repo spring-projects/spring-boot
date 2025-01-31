@@ -69,7 +69,7 @@ class StructuredLoggingJsonPropertiesTests {
 	}
 
 	@Test
-	void structuredLoggingJsonPropertiesRuntimeHintsRuntimeHintsIsRegistered() {
+	void structuredLoggingJsonPropertiesRuntimeHintsIsRegistered() {
 		assertThat(AotServices.factories().load(RuntimeHintsRegistrar.class))
 			.anyMatch(StructuredLoggingJsonPropertiesRuntimeHints.class::isInstance);
 	}
