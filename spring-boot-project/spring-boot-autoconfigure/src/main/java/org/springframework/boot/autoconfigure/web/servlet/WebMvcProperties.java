@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -317,6 +319,12 @@ public class WebMvcProperties {
 		 */
 		private String parameterName;
 
+		/**
+		 * The default content types to be used when no specific content type is
+		 * requested.
+		 */
+		private List<MediaType> defaultContentTypes = new ArrayList<>();
+
 		public boolean isFavorParameter() {
 			return this.favorParameter;
 		}
@@ -339,6 +347,14 @@ public class WebMvcProperties {
 
 		public void setParameterName(String parameterName) {
 			this.parameterName = parameterName;
+		}
+
+		public List<MediaType> getDefaultContentTypes() {
+			return this.defaultContentTypes;
+		}
+
+		public void setDefaultContentTypes(List<MediaType> defaultContentTypes) {
+			this.defaultContentTypes = defaultContentTypes;
 		}
 
 	}
