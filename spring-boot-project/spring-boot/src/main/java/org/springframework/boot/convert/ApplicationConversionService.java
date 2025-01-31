@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -290,13 +291,30 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * @since 2.2.0
 	 */
 	public static void addBeans(FormatterRegistry registry, ListableBeanFactory beanFactory) {
+		addBeans(registry, beanFactory, null);
+	}
+
+	/**
+	 * Add {@link Printer}, {@link Parser}, {@link Formatter}, {@link Converter},
+	 * {@link ConverterFactory}, {@link GenericConverter}, and beans from the specified
+	 * bean factory.
+	 * @param registry the service to register beans with
+	 * @param beanFactory the bean factory to get the beans from
+	 * @param qualifier the qualifier required on the beans or {@code null}
+	 * @return the beans that were added
+	 * @since 3.5.0
+	 */
+	public static Map<String, Object> addBeans(FormatterRegistry registry, ListableBeanFactory beanFactory,
+			String qualifier) {
 		ConfigurableListableBeanFactory configurableBeanFactory = getConfigurableListableBeanFactory(beanFactory);
-		getBeans(beanFactory).forEach((beanName, bean) -> {
+		Map<String, Object> beans = getBeans(beanFactory, qualifier);
+		beans.forEach((beanName, bean) -> {
 			BeanDefinition beanDefinition = (configurableBeanFactory != null)
 					? configurableBeanFactory.getMergedBeanDefinition(beanName) : null;
 			ResolvableType type = (beanDefinition != null) ? beanDefinition.getResolvableType() : null;
 			addBean(registry, bean, type);
 		});
+		return beans;
 	}
 
 	private static ConfigurableListableBeanFactory getConfigurableListableBeanFactory(ListableBeanFactory beanFactory) {
@@ -309,19 +327,20 @@ public class ApplicationConversionService extends FormattingConversionService {
 		return null;
 	}
 
-	private static Map<String, Object> getBeans(ListableBeanFactory beanFactory) {
+	private static Map<String, Object> getBeans(ListableBeanFactory beanFactory, String qualifier) {
 		Map<String, Object> beans = new LinkedHashMap<>();
-		beans.putAll(getBeans(beanFactory, Printer.class));
-		beans.putAll(getBeans(beanFactory, Parser.class));
-		beans.putAll(getBeans(beanFactory, Formatter.class));
-		beans.putAll(getBeans(beanFactory, Converter.class));
-		beans.putAll(getBeans(beanFactory, ConverterFactory.class));
-		beans.putAll(getBeans(beanFactory, GenericConverter.class));
+		beans.putAll(getBeans(beanFactory, Printer.class, qualifier));
+		beans.putAll(getBeans(beanFactory, Parser.class, qualifier));
+		beans.putAll(getBeans(beanFactory, Formatter.class, qualifier));
+		beans.putAll(getBeans(beanFactory, Converter.class, qualifier));
+		beans.putAll(getBeans(beanFactory, ConverterFactory.class, qualifier));
+		beans.putAll(getBeans(beanFactory, GenericConverter.class, qualifier));
 		return beans;
 	}
 
-	private static <T> Map<String, T> getBeans(ListableBeanFactory beanFactory, Class<T> type) {
-		return beanFactory.getBeansOfType(type);
+	private static <T> Map<String, T> getBeans(ListableBeanFactory beanFactory, Class<T> type, String qualifier) {
+		return (!StringUtils.hasLength(qualifier)) ? beanFactory.getBeansOfType(type)
+				: BeanFactoryAnnotationUtils.qualifiedBeansOfType(beanFactory, type, qualifier);
 	}
 
 	static void addBean(FormatterRegistry registry, Object bean, ResolvableType beanType) {
