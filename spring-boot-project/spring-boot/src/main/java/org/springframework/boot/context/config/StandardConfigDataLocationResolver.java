@@ -26,7 +26,6 @@ import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -67,8 +66,6 @@ public class StandardConfigDataLocationResolver
 	static final String[] DEFAULT_CONFIG_NAMES = { "application" };
 
 	private static final Pattern URL_PREFIX = Pattern.compile("^([a-zA-Z][a-zA-Z0-9*]*?:)(.*$)");
-
-	private static final Pattern EXTENSION_HINT_PATTERN = Pattern.compile("^(.*)\\[(\\.\\w+)](?!\\[)$");
 
 	private static final String NO_PROFILE = null;
 
@@ -238,17 +235,16 @@ public class StandardConfigDataLocationResolver
 
 	private Set<StandardConfigDataReference> getReferencesForFile(ConfigDataLocation configDataLocation, String file,
 			String profile) {
-		Matcher extensionHintMatcher = EXTENSION_HINT_PATTERN.matcher(file);
-		boolean extensionHintLocation = extensionHintMatcher.matches();
-		if (extensionHintLocation) {
-			file = extensionHintMatcher.group(1) + extensionHintMatcher.group(2);
+		FileExtensionHint fileExtensionHint = FileExtensionHint.from(file);
+		if (fileExtensionHint.isPresent()) {
+			file = FileExtensionHint.removeFrom(file) + fileExtensionHint;
 		}
 		for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
-			String extension = getLoadableFileExtension(propertySourceLoader, file);
-			if (extension != null) {
-				String root = file.substring(0, file.length() - extension.length() - 1);
+			String fileExtension = getLoadableFileExtension(propertySourceLoader, file);
+			if (fileExtension != null) {
+				String root = file.substring(0, file.length() - fileExtension.length() - 1);
 				StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation, null, root,
-						profile, (!extensionHintLocation) ? extension : null, propertySourceLoader);
+						profile, (!fileExtensionHint.isPresent()) ? fileExtension : null, propertySourceLoader);
 				return Collections.singleton(reference);
 			}
 		}

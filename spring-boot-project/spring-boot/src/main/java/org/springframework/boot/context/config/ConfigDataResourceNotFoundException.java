@@ -116,7 +116,7 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 	 * @param pathToCheck the path to check
 	 */
 	public static void throwIfDoesNotExist(ConfigDataResource resource, Path pathToCheck) {
-		throwIfDoesNotExist(resource, Files.exists(pathToCheck));
+		throwIfNot(resource, Files.exists(pathToCheck));
 	}
 
 	/**
@@ -126,7 +126,7 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 	 * @param fileToCheck the file to check
 	 */
 	public static void throwIfDoesNotExist(ConfigDataResource resource, File fileToCheck) {
-		throwIfDoesNotExist(resource, fileToCheck.exists());
+		throwIfNot(resource, fileToCheck.exists());
 	}
 
 	/**
@@ -136,11 +136,11 @@ public class ConfigDataResourceNotFoundException extends ConfigDataNotFoundExcep
 	 * @param resourceToCheck the resource to check
 	 */
 	public static void throwIfDoesNotExist(ConfigDataResource resource, Resource resourceToCheck) {
-		throwIfDoesNotExist(resource, resourceToCheck.exists());
+		throwIfNot(resource, resourceToCheck.exists());
 	}
 
-	private static void throwIfDoesNotExist(ConfigDataResource resource, boolean exists) {
-		if (!exists) {
+	private static void throwIfNot(ConfigDataResource resource, boolean check) {
+		if (!check) {
 			throw new ConfigDataResourceNotFoundException(resource);
 		}
 	}

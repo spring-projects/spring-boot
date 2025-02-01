@@ -31,28 +31,28 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link EnvConfigDataLoader}.
+ * Tests for {@link SystemEnvironmentConfigDataLoader}.
  *
  * @author Moritz Halbritter
  */
-class EnvConfigDataLoaderTests {
+class SystemEnvironmentConfigDataLoaderTests {
 
 	private ConfigDataLoaderContext context;
 
-	private Map<String, String> envVariables;
+	private Map<String, String> environment;
 
-	private EnvConfigDataLoader loader;
+	private SystemEnvironmentConfigDataLoader loader;
 
 	@BeforeEach
 	void setUp() {
 		this.context = mock(ConfigDataLoaderContext.class);
-		this.envVariables = new HashMap<>();
-		this.loader = new EnvConfigDataLoader(this.envVariables::get);
+		this.environment = new HashMap<>();
+		this.loader = new SystemEnvironmentConfigDataLoader();
 	}
 
 	@Test
-	void shouldLoadFromVariable() throws IOException {
-		this.envVariables.put("VAR1", "key1=value1");
+	void loadLoadsConfigData() throws IOException {
+		this.environment.put("VAR1", "key1=value1");
 		ConfigData data = this.loader.load(this.context, createResource("VAR1"));
 		assertThat(data.getPropertySources()).hasSize(1);
 		PropertySource<?> propertySource = data.getPropertySources().get(0);
@@ -60,15 +60,16 @@ class EnvConfigDataLoaderTests {
 	}
 
 	@Test
-	void shouldFailIfVariableIsNotSet() {
+	void loadWhenNoContentThrowsException() {
 		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
 			.isThrownBy(() -> this.loader.load(this.context, createResource("VAR1")))
-			.withMessage("Config data resource 'env variable [VAR1]' cannot be found");
+			.withMessage("Config data resource 'system envionement variable [VAR1] content "
+					+ "loaded using PropertiesPropertySourceLoader' cannot be found");
 	}
 
-	private static EnvConfigDataResource createResource(String variableName) {
-		return new EnvConfigDataResource(ConfigDataLocation.of("env:" + variableName), variableName,
-				new PropertiesPropertySourceLoader());
+	private SystemEnvironmentConfigDataResource createResource(String variableName) {
+		return new SystemEnvironmentConfigDataResource(variableName, new PropertiesPropertySourceLoader(),
+				this.environment::get);
 	}
 
 }

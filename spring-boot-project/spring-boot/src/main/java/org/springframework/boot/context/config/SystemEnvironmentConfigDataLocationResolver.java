@@ -19,8 +19,6 @@ package org.springframework.boot.context.config;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -29,27 +27,28 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * {@link ConfigDataLocationResolver} to resolve {@code env:} locations.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
-class EnvConfigDataLocationResolver implements ConfigDataLocationResolver<EnvConfigDataResource> {
+class SystemEnvironmentConfigDataLocationResolver
+		implements ConfigDataLocationResolver<SystemEnvironmentConfigDataResource> {
 
 	private static final String PREFIX = "env:";
-
-	private static final Pattern EXTENSION_HINT_PATTERN = Pattern.compile("^(.*)\\[(\\.\\w+)](?!\\[)$");
 
 	private static final String DEFAULT_EXTENSION = ".properties";
 
 	private final List<PropertySourceLoader> loaders;
 
-	private final Function<String, String> readEnvVariable;
+	private final Function<String, String> environment;
 
-	EnvConfigDataLocationResolver() {
+	SystemEnvironmentConfigDataLocationResolver() {
 		this.loaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class, getClass().getClassLoader());
-		this.readEnvVariable = System::getenv;
+		this.environment = System::getenv;
 	}
 
-	EnvConfigDataLocationResolver(List<PropertySourceLoader> loaders, Function<String, String> readEnvVariable) {
+	SystemEnvironmentConfigDataLocationResolver(List<PropertySourceLoader> loaders,
+			Function<String, String> environment) {
 		this.loaders = loaders;
-		this.readEnvVariable = readEnvVariable;
+		this.environment = environment;
 	}
 
 	@Override
@@ -58,15 +57,15 @@ class EnvConfigDataLocationResolver implements ConfigDataLocationResolver<EnvCon
 	}
 
 	@Override
-	public List<EnvConfigDataResource> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location)
+	public List<SystemEnvironmentConfigDataResource> resolve(ConfigDataLocationResolverContext context,
+			ConfigDataLocation location)
 			throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
 		String value = location.getNonPrefixedValue(PREFIX);
-		Matcher matcher = EXTENSION_HINT_PATTERN.matcher(value);
-		String extension = getExtension(matcher);
-		String variableName = getVariableName(matcher, value);
-		PropertySourceLoader loader = getLoader(extension);
+		FileExtensionHint fileExtensionHint = FileExtensionHint.from(value);
+		String variableName = FileExtensionHint.removeFrom(value);
+		PropertySourceLoader loader = getLoader(fileExtensionHint.orElse(DEFAULT_EXTENSION));
 		if (hasEnvVariable(variableName)) {
-			return List.of(new EnvConfigDataResource(location, variableName, loader));
+			return List.of(new SystemEnvironmentConfigDataResource(variableName, loader, this.environment));
 		}
 		if (location.isOptional()) {
 			return Collections.emptyList();
@@ -76,12 +75,7 @@ class EnvConfigDataLocationResolver implements ConfigDataLocationResolver<EnvCon
 	}
 
 	private PropertySourceLoader getLoader(String extension) {
-		if (extension == null) {
-			extension = DEFAULT_EXTENSION;
-		}
-		if (extension.startsWith(".")) {
-			extension = extension.substring(1);
-		}
+		extension = (!extension.startsWith(".")) ? extension : extension.substring(1);
 		for (PropertySourceLoader loader : this.loaders) {
 			for (String supportedExtension : loader.getFileExtensions()) {
 				if (supportedExtension.equalsIgnoreCase(extension)) {
@@ -94,21 +88,7 @@ class EnvConfigDataLocationResolver implements ConfigDataLocationResolver<EnvCon
 	}
 
 	private boolean hasEnvVariable(String variableName) {
-		return this.readEnvVariable.apply(variableName) != null;
-	}
-
-	private String getVariableName(Matcher matcher, String value) {
-		if (matcher.matches()) {
-			return matcher.group(1);
-		}
-		return value;
-	}
-
-	private String getExtension(Matcher matcher) {
-		if (matcher.matches()) {
-			return matcher.group(2);
-		}
-		return null;
+		return this.environment.apply(variableName) != null;
 	}
 
 }
