@@ -79,14 +79,14 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((SimpleAsyncTaskSchedulerCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.customizers((Set<SimpleAsyncTaskSchedulerCustomizer>) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
@@ -121,14 +121,14 @@ class SimpleAsyncTaskSchedulerBuilderTests {
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((SimpleAsyncTaskSchedulerCustomizer[]) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> this.builder.additionalCustomizers((Set<SimpleAsyncTaskSchedulerCustomizer>) null))
-			.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("'customizers' must not be null");
 	}
 
 	@Test

@@ -182,7 +182,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		P packager = createPackager();
 		assertThatIllegalArgumentException().isThrownBy(() -> execute(packager, null))
-			.withMessageContaining("Libraries must not be null");
+			.withMessageContaining("'libraries' must not be null");
 	}
 
 	@Test

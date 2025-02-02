@@ -132,7 +132,7 @@ public interface SslManagerBundle {
 	 * @since 3.5.0
 	 */
 	static SslManagerBundle from(TrustManagerFactory trustManagerFactory) {
-		Assert.notNull(trustManagerFactory, "TrustManagerFactory must not be null");
+		Assert.notNull(trustManagerFactory, "'trustManagerFactory' must not be null");
 		KeyManagerFactory defaultKeyManagerFactory = createDefaultKeyManagerFactory();
 		return of(defaultKeyManagerFactory, trustManagerFactory);
 	}
@@ -145,7 +145,7 @@ public interface SslManagerBundle {
 	 * @since 3.5.0
 	 */
 	static SslManagerBundle from(TrustManager... trustManagers) {
-		Assert.notNull(trustManagers, "TrustManagers must not be null");
+		Assert.notNull(trustManagers, "'trustManagers' must not be null");
 		KeyManagerFactory defaultKeyManagerFactory = createDefaultKeyManagerFactory();
 		TrustManagerFactory defaultTrustManagerFactory = createDefaultTrustManagerFactory();
 		return of(defaultKeyManagerFactory, FixedTrustManagerFactory.of(defaultTrustManagerFactory, trustManagers));

@@ -81,7 +81,7 @@ public final class DockerConfiguration {
 	}
 
 	public DockerConfiguration withBuilderRegistryTokenAuthentication(String token) {
-		Assert.notNull(token, "Token must not be null");
+		Assert.notNull(token, "'token' must not be null");
 		return new DockerConfiguration(this.host, new DockerRegistryTokenAuthentication(token),
 				this.publishAuthentication, this.bindHostToBuilder);
 	}

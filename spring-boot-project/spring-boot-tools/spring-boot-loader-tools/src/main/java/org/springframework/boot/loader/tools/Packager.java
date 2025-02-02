@@ -107,9 +107,9 @@ public abstract class Packager {
 	 * @param source the source archive file to package
 	 */
 	protected Packager(File source) {
-		Assert.notNull(source, "Source file must not be null");
+		Assert.notNull(source, "'source' file must not be null");
 		Assert.isTrue(source.exists() && source.isFile(),
-				() -> "Source must refer to an existing file, got " + source.getAbsolutePath());
+				() -> "'source' must refer to an existing file, got " + source.getAbsolutePath());
 		this.source = source.getAbsoluteFile();
 	}
 
@@ -163,7 +163,7 @@ public abstract class Packager {
 	 * @param layers the jar layers
 	 */
 	public void setLayers(Layers layers) {
-		Assert.notNull(layers, "Layers must not be null");
+		Assert.notNull(layers, "'layers' must not be null");
 		this.layers = layers;
 		this.layersIndex = new LayersIndex(layers);
 	}
@@ -204,7 +204,7 @@ public abstract class Packager {
 
 	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer,
 			boolean ensureReproducibleBuild) throws IOException {
-		Assert.notNull(libraries, "Libraries must not be null");
+		Assert.notNull(libraries, "'libraries' must not be null");
 		write(sourceJar, writer, new PackagedLibraries(libraries, ensureReproducibleBuild));
 	}
 

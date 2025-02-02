@@ -47,8 +47,8 @@ public class IncludeExcludeContentSelector<T> implements ContentSelector<T> {
 
 	public <S> IncludeExcludeContentSelector(Layer layer, List<S> includes, List<S> excludes,
 			Function<S, ContentFilter<T>> filterFactory) {
-		Assert.notNull(layer, "Layer must not be null");
-		Assert.notNull(filterFactory, "FilterFactory must not be null");
+		Assert.notNull(layer, "'layer' must not be null");
+		Assert.notNull(filterFactory, "'filterFactory' must not be null");
 		this.layer = layer;
 		this.includes = (includes != null) ? adapt(includes, filterFactory) : Collections.emptyList();
 		this.excludes = (excludes != null) ? adapt(excludes, filterFactory) : Collections.emptyList();

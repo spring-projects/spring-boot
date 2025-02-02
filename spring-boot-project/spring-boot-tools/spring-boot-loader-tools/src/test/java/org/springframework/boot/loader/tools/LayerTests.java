@@ -31,12 +31,12 @@ class LayerTests {
 
 	@Test
 	void createWhenNameIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Layer(null)).withMessage("Name must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer(null)).withMessage("'name' must not be empty");
 	}
 
 	@Test
 	void createWhenNameIsEmptyThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("")).withMessage("Name must not be empty");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("")).withMessage("'name' must not be empty");
 	}
 
 	@Test

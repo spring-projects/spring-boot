@@ -34,7 +34,7 @@ public class ApplicationContentFilter implements ContentFilter<String> {
 	private final String pattern;
 
 	public ApplicationContentFilter(String pattern) {
-		Assert.hasText(pattern, "Pattern must not be empty");
+		Assert.hasText(pattern, "'pattern' must not be empty");
 		this.pattern = pattern;
 	}
 
