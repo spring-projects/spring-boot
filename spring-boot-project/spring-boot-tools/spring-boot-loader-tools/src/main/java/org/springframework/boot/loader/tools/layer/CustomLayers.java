@@ -44,10 +44,10 @@ public class CustomLayers implements Layers {
 
 	public CustomLayers(List<Layer> layers, List<ContentSelector<String>> applicationSelectors,
 			List<ContentSelector<Library>> librarySelectors) {
-		Assert.notNull(layers, "Layers must not be null");
-		Assert.notNull(applicationSelectors, "ApplicationSelectors must not be null");
+		Assert.notNull(layers, "'layers' must not be null");
+		Assert.notNull(applicationSelectors, "'applicationSelectors' must not be null");
 		validateSelectorLayers(applicationSelectors, layers);
-		Assert.notNull(librarySelectors, "LibrarySelectors must not be null");
+		Assert.notNull(librarySelectors, "'librarySelectors' must not be null");
 		validateSelectorLayers(librarySelectors, layers);
 		this.layers = new ArrayList<>(layers);
 		this.applicationSelectors = new ArrayList<>(applicationSelectors);

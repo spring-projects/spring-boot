@@ -30,7 +30,7 @@ public final class MockOrigin implements Origin {
 	private final Origin parent;
 
 	private MockOrigin(String value, Origin parent) {
-		Assert.notNull(value, "Value must not be null");
+		Assert.notNull(value, "'value' must not be null");
 		this.value = value;
 		this.parent = parent;
 	}

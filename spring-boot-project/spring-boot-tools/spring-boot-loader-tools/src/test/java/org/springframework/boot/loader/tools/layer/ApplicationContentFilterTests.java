@@ -33,13 +33,13 @@ class ApplicationContentFilterTests {
 	@Test
 	void createWhenPatternIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ApplicationContentFilter(null))
-			.withMessage("Pattern must not be empty");
+			.withMessage("'pattern' must not be empty");
 	}
 
 	@Test
 	void createWhenPatternIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ApplicationContentFilter(""))
-			.withMessage("Pattern must not be empty");
+			.withMessage("'pattern' must not be empty");
 	}
 
 	@Test

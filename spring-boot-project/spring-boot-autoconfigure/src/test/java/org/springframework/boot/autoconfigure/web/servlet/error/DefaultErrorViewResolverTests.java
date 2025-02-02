@@ -83,14 +83,14 @@ class DefaultErrorViewResolverTests {
 	@Test
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultErrorViewResolver(null, new Resources()))
-			.withMessageContaining("ApplicationContext must not be null");
+			.withMessageContaining("'applicationContext' must not be null");
 	}
 
 	@Test
 	void createWhenResourcePropertiesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), (Resources) null))
-			.withMessageContaining("Resources must not be null");
+			.withMessageContaining("'resources' must not be null");
 	}
 
 	@Test
