@@ -37,7 +37,7 @@ public class MongoHealthIndicator extends AbstractHealthIndicator {
 
 	public MongoHealthIndicator(MongoTemplate mongoTemplate) {
 		super("MongoDB health check failed");
-		Assert.notNull(mongoTemplate, "MongoTemplate must not be null");
+		Assert.notNull(mongoTemplate, "'mongoTemplate' must not be null");
 		this.mongoTemplate = mongoTemplate;
 	}
 

@@ -273,7 +273,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return {@code true} if this name is an ancestor
 	 */
 	public boolean isParentOf(ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		if (getNumberOfElements() != name.getNumberOfElements() - 1) {
 			return false;
 		}
@@ -287,7 +287,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	 * @return {@code true} if this name is an ancestor
 	 */
 	public boolean isAncestorOf(ConfigurationPropertyName name) {
-		Assert.notNull(name, "Name must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		if (getNumberOfElements() >= name.getNumberOfElements()) {
 			return false;
 		}
@@ -612,7 +612,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 
 	private static Elements elementsOf(CharSequence name, boolean returnNullIfInvalid, int parserCapacity) {
 		if (name == null) {
-			Assert.isTrue(returnNullIfInvalid, "Name must not be null");
+			Assert.isTrue(returnNullIfInvalid, "'name' must not be null");
 			return null;
 		}
 		if (name.isEmpty()) {

@@ -133,7 +133,7 @@ class GraylogExtendedLogFormatStructuredLogFormatter extends JsonWriterStructure
 	}
 
 	private static void createAdditionalField(String name, Object value, BiConsumer<Object, Object> pairs) {
-		Assert.notNull(name, "fieldName must not be null");
+		Assert.notNull(name, "'name' must not be null");
 		if (!FIELD_NAME_VALID_PATTERN.matcher(name).matches()) {
 			logger.warn(LogMessage.format("'%s' is not a valid field name according to GELF standard", name));
 			return;

@@ -38,13 +38,13 @@ class LibraryContentFilterTests {
 	@Test
 	void createWhenCoordinatesPatternIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LibraryContentFilter(null))
-			.withMessage("CoordinatesPattern must not be empty");
+			.withMessage("'coordinatesPattern' must not be empty");
 	}
 
 	@Test
 	void createWhenCoordinatesPatternIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LibraryContentFilter(""))
-			.withMessage("CoordinatesPattern must not be empty");
+			.withMessage("'coordinatesPattern' must not be empty");
 	}
 
 	@Test

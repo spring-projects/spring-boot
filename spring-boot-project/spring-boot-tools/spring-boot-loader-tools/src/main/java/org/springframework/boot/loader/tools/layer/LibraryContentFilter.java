@@ -36,7 +36,7 @@ public class LibraryContentFilter implements ContentFilter<Library> {
 	private final Pattern pattern;
 
 	public LibraryContentFilter(String coordinatesPattern) {
-		Assert.hasText(coordinatesPattern, "CoordinatesPattern must not be empty");
+		Assert.hasText(coordinatesPattern, "'coordinatesPattern' must not be empty");
 		StringBuilder regex = new StringBuilder();
 		for (int i = 0; i < coordinatesPattern.length(); i++) {
 			char c = coordinatesPattern.charAt(i);

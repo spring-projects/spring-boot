@@ -57,7 +57,7 @@ class SessionAutoConfigurationEarlyInitializationIntegrationTests {
 
 		@Bean
 		MapSessionRepository mapSessionRepository(ConfigurableApplicationContext context) {
-			Assert.isTrue(context.getBeanFactory().isConfigurationFrozen(), "Context should be frozen");
+			Assert.isTrue(context.getBeanFactory().isConfigurationFrozen(), "'context' should be frozen");
 			return new MapSessionRepository(new LinkedHashMap<>());
 		}
 

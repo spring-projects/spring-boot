@@ -42,7 +42,7 @@ class ConfigurationPropertyNameTests {
 	@Test
 	void ofNameShouldNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ConfigurationPropertyName.of(null))
-			.withMessageContaining("Name must not be null");
+			.withMessageContaining("'name' must not be null");
 	}
 
 	@Test

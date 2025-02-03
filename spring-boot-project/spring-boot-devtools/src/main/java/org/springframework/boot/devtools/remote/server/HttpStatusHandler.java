@@ -47,7 +47,7 @@ public class HttpStatusHandler implements Handler {
 	 * @param status the status
 	 */
 	public HttpStatusHandler(HttpStatus status) {
-		Assert.notNull(status, "Status must not be null");
+		Assert.notNull(status, "'status' must not be null");
 		this.status = status;
 	}
 

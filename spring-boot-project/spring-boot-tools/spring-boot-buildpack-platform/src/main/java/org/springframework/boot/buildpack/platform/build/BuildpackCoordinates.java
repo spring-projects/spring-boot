@@ -42,7 +42,7 @@ final class BuildpackCoordinates {
 	private final String version;
 
 	private BuildpackCoordinates(String id, String version) {
-		Assert.hasText(id, "ID must not be empty");
+		Assert.hasText(id, "'id' must not be empty");
 		this.id = id;
 		this.version = version;
 	}
@@ -123,7 +123,7 @@ final class BuildpackCoordinates {
 	 * @return a new {@link BuildpackCoordinates} instance
 	 */
 	static BuildpackCoordinates fromBuildpackMetadata(BuildpackMetadata buildpackMetadata) {
-		Assert.notNull(buildpackMetadata, "BuildpackMetadata must not be null");
+		Assert.notNull(buildpackMetadata, "'buildpackMetadata' must not be null");
 		return new BuildpackCoordinates(buildpackMetadata.getId(), buildpackMetadata.getVersion());
 	}
 

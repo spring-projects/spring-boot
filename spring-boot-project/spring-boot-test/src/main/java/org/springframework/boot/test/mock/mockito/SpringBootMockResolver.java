@@ -44,7 +44,7 @@ public class SpringBootMockResolver implements MockResolver {
 
 	@SuppressWarnings("unchecked")
 	private static <T> T getUltimateTargetObject(Object candidate) {
-		Assert.notNull(candidate, "Candidate must not be null");
+		Assert.notNull(candidate, "'candidate' must not be null");
 		try {
 			if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised advised) {
 				TargetSource targetSource = advised.getTargetSource();
