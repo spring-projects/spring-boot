@@ -1,5 +1,5 @@
 /*
- * Copyright 2024-2024 the original author or authors.
+ * Copyright 2024-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class UpgradeTests {
 	void createToRelease() {
 		Library from = new Library("Test", null, new LibraryVersion(DependencyVersion.parse("1.0.0")), null, null,
 				false, null, null, null, null);
-		Upgrade upgrade = new Upgrade(from, DependencyVersion.parse("1.0.1"));
+		Upgrade upgrade = new Upgrade(from, from.withVersion(new LibraryVersion(DependencyVersion.parse("1.0.1"))));
 		assertThat(upgrade.from().getNameAndVersion()).isEqualTo("Test 1.0.0");
 		assertThat(upgrade.to().getNameAndVersion()).isEqualTo("Test 1.0.1");
 		assertThat(upgrade.toRelease().getNameAndVersion()).isEqualTo("Test 1.0.1");
@@ -45,7 +45,9 @@ class UpgradeTests {
 	void createToSnapshot() {
 		Library from = new Library("Test", null, new LibraryVersion(DependencyVersion.parse("1.0.0")), null, null,
 				false, null, null, null, null);
-		Upgrade upgrade = new Upgrade(from, DependencyVersion.parse("1.0.1-SNAPSHOT"));
+		Upgrade upgrade = new Upgrade(from,
+				from.withVersion(new LibraryVersion(DependencyVersion.parse("1.0.1-SNAPSHOT"))),
+				from.withVersion(new LibraryVersion(DependencyVersion.parse("1.0.1"))));
 		assertThat(upgrade.from().getNameAndVersion()).isEqualTo("Test 1.0.0");
 		assertThat(upgrade.to().getNameAndVersion()).isEqualTo("Test 1.0.1-SNAPSHOT");
 		assertThat(upgrade.toRelease().getNameAndVersion()).isEqualTo("Test 1.0.1");

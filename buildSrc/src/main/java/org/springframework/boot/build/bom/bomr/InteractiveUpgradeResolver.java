@@ -71,7 +71,7 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 		}
 		VersionOption defaultOption = new VersionOption(library.getVersion().getVersion());
 		VersionOption selected = selectOption(defaultOption, library, versionOptions);
-		return (selected.equals(defaultOption)) ? null : new Upgrade(library, selected.getVersion());
+		return (selected.equals(defaultOption)) ? null : selected.upgrade(library);
 	}
 
 	private VersionOption selectOption(VersionOption defaultOption, Library library,

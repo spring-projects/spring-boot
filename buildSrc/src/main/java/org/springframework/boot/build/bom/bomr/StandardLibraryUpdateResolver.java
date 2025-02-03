@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.function.BiPredicate;
+import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +46,12 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 
 	private final VersionResolver versionResolver;
 
-	private final BiPredicate<Library, DependencyVersion> predicate;
+	private final BiFunction<Library, DependencyVersion, VersionOption> versionOptionResolver;
 
 	StandardLibraryUpdateResolver(VersionResolver versionResolver,
-			List<BiPredicate<Library, DependencyVersion>> predicates) {
+			BiFunction<Library, DependencyVersion, VersionOption> versionOptionResolver) {
 		this.versionResolver = versionResolver;
-		this.predicate = (library, dependencyVersion) -> predicates.stream()
-			.allMatch((predicate) -> predicate.test(library, dependencyVersion));
+		this.versionOptionResolver = versionOptionResolver;
 	}
 
 	@Override
@@ -111,14 +110,18 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 						getLaterVersionsForModule(group.getId(), plugin, library));
 			}
 		}
-		return moduleVersions.values()
-			.stream()
-			.flatMap(SortedSet::stream)
-			.distinct()
-			.filter((dependencyVersion) -> this.predicate.test(library, dependencyVersion))
-			.map((version) -> (VersionOption) new VersionOption.ResolvedVersionOption(version,
-					getMissingModules(moduleVersions, version)))
-			.toList();
+		List<VersionOption> versionOptions = new ArrayList<>();
+		moduleVersions.values().stream().flatMap(SortedSet::stream).distinct().forEach((dependencyVersion) -> {
+			VersionOption versionOption = this.versionOptionResolver.apply(library, dependencyVersion);
+			if (versionOption != null) {
+				List<String> missingModules = getMissingModules(moduleVersions, dependencyVersion);
+				if (!missingModules.isEmpty()) {
+					versionOption = new VersionOption.ResolvedVersionOption(versionOption.getVersion(), missingModules);
+				}
+				versionOptions.add(versionOption);
+			}
+		});
+		return versionOptions;
 	}
 
 	private List<String> getMissingModules(Map<String, SortedSet<DependencyVersion>> moduleVersions,
