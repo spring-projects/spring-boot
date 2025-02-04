@@ -11,5 +11,6 @@
 			<!-- {spring.mavenRepositories} -->
 		</chain>
 	</resolvers>
+    <credentials host="${env.COMMERCIAL_RELEASE_REPO_URL}" username="${env.COMMERCIAL_REPO_USERNAME}" passwd="${env.COMMERCIAL_REPO_PASSWORD}"/>
+    <credentials host="${env.COMMERCIAL_SNAPSHOT_REPO_URL}" username="${env.COMMERCIAL_REPO_USERNAME}" passwd="${env.COMMERCIAL_REPO_PASSWORD}"/>
 </ivysettings>
-	
