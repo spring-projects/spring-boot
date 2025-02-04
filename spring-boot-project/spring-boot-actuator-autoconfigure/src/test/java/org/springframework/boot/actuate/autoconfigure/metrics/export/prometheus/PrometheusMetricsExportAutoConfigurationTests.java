@@ -187,6 +187,14 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void withPushGatewayDisabled() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
+			.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=false")
+			.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(PrometheusPushGatewayManager.class));
+	}
+
+	@Test
 	void withPushGatewayNoBasicAuth() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 			.withPropertyValues("management.prometheus.metrics.export.pushgateway.enabled=true")
