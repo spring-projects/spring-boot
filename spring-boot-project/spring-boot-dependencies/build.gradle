@@ -465,7 +465,7 @@ bom {
 			site("https://groovy-lang.org")
 		}
 	}
-	library("Gson", "2.11.0") {
+	library("Gson", "2.12.1") {
 		group("com.google.code.gson") {
 			modules = [
 				"gson"
