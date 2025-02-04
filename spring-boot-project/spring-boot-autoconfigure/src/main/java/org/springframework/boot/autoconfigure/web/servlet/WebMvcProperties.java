@@ -309,18 +309,18 @@ public class WebMvcProperties {
 		private boolean favorParameter = false;
 
 		/**
+		 * Query parameter name to use when "favor-parameter" is enabled.
+		 */
+		private String parameterName;
+
+		/**
 		 * Map file extensions to media types for content negotiation. For instance, yml
 		 * to text/yaml.
 		 */
 		private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
 
 		/**
-		 * Query parameter name to use when "favor-parameter" is enabled.
-		 */
-		private String parameterName;
-
-		/**
-		 * The default content types to be used when no specific content type is
+		 * List of default content types to be used when no specific content type is
 		 * requested.
 		 */
 		private List<MediaType> defaultContentTypes = new ArrayList<>();
@@ -333,20 +333,20 @@ public class WebMvcProperties {
 			this.favorParameter = favorParameter;
 		}
 
-		public Map<String, MediaType> getMediaTypes() {
-			return this.mediaTypes;
-		}
-
-		public void setMediaTypes(Map<String, MediaType> mediaTypes) {
-			this.mediaTypes = mediaTypes;
-		}
-
 		public String getParameterName() {
 			return this.parameterName;
 		}
 
 		public void setParameterName(String parameterName) {
 			this.parameterName = parameterName;
+		}
+
+		public Map<String, MediaType> getMediaTypes() {
+			return this.mediaTypes;
+		}
+
+		public void setMediaTypes(Map<String, MediaType> mediaTypes) {
+			this.mediaTypes = mediaTypes;
 		}
 
 		public List<MediaType> getDefaultContentTypes() {

@@ -580,7 +580,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void defaultContentTypes() {
+	void customDefaultContentTypes() {
 		this.contextRunner
 			.withPropertyValues("spring.mvc.contentnegotiation.default-content-types:application/json,application/xml")
 			.run((context) -> {
