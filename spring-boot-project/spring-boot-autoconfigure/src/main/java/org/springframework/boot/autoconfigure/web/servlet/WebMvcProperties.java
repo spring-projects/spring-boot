@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -307,15 +309,21 @@ public class WebMvcProperties {
 		private boolean favorParameter = false;
 
 		/**
+		 * Query parameter name to use when "favor-parameter" is enabled.
+		 */
+		private String parameterName;
+
+		/**
 		 * Map file extensions to media types for content negotiation. For instance, yml
 		 * to text/yaml.
 		 */
 		private Map<String, MediaType> mediaTypes = new LinkedHashMap<>();
 
 		/**
-		 * Query parameter name to use when "favor-parameter" is enabled.
+		 * List of default content types to be used when no specific content type is
+		 * requested.
 		 */
-		private String parameterName;
+		private List<MediaType> defaultContentTypes = new ArrayList<>();
 
 		public boolean isFavorParameter() {
 			return this.favorParameter;
@@ -323,6 +331,14 @@ public class WebMvcProperties {
 
 		public void setFavorParameter(boolean favorParameter) {
 			this.favorParameter = favorParameter;
+		}
+
+		public String getParameterName() {
+			return this.parameterName;
+		}
+
+		public void setParameterName(String parameterName) {
+			this.parameterName = parameterName;
 		}
 
 		public Map<String, MediaType> getMediaTypes() {
@@ -333,12 +349,12 @@ public class WebMvcProperties {
 			this.mediaTypes = mediaTypes;
 		}
 
-		public String getParameterName() {
-			return this.parameterName;
+		public List<MediaType> getDefaultContentTypes() {
+			return this.defaultContentTypes;
 		}
 
-		public void setParameterName(String parameterName) {
-			this.parameterName = parameterName;
+		public void setDefaultContentTypes(List<MediaType> defaultContentTypes) {
+			this.defaultContentTypes = defaultContentTypes;
 		}
 
 	}

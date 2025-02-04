@@ -76,6 +76,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.DefaultMessageCodesResolver;
 import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
@@ -271,8 +272,12 @@ public class WebMvcAutoConfiguration {
 			if (contentnegotiation.getParameterName() != null) {
 				configurer.parameterName(contentnegotiation.getParameterName());
 			}
-			Map<String, MediaType> mediaTypes = this.mvcProperties.getContentnegotiation().getMediaTypes();
+			Map<String, MediaType> mediaTypes = contentnegotiation.getMediaTypes();
 			mediaTypes.forEach(configurer::mediaType);
+			List<MediaType> defaultContentTypes = contentnegotiation.getDefaultContentTypes();
+			if (!CollectionUtils.isEmpty(defaultContentTypes)) {
+				configurer.defaultContentType(defaultContentTypes.toArray(new MediaType[0]));
+			}
 		}
 
 		@Bean
