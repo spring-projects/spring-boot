@@ -598,7 +598,7 @@ bom {
 			]
 		}
 	}
-	library("HttpClient5", "5.4.1") {
+	library("HttpClient5", "5.4.2") {
 		group("org.apache.httpcomponents.client5") {
 			modules = [
 				"httpclient5",
