@@ -119,9 +119,8 @@ public class RepositoryTransformersExtension {
 			.toList());
 		Function<MavenArtifactRepository, Boolean> bySnapshots = (repository) -> repository.getName()
 			.contains("snapshot");
-		Function<MavenArtifactRepository, String> byName = null;
+		Function<MavenArtifactRepository, String> byName = MavenArtifactRepository::getName;
 		Collections.sort(springRepositories, Comparator.comparing(bySnapshots).thenComparing(byName));
-		System.err.println(">>>> " + springRepositories);
 		return springRepositories;
 	}
 
