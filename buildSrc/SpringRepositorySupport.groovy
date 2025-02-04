@@ -100,29 +100,29 @@ class SpringRepositoriesExtension {
 	}
 
 	private void addRepositories(action) {
-		addCommercialRepository("release", "/spring-enterprise-maven-prod-local", action)
+		addCommercialRepository("release", false, "/spring-enterprise-maven-prod-local", action)
 		if (this.version.contains("-")) {
-			addOssRepository("milestone", "/milestone", action)
+			addOssRepository("milestone", false, "/milestone", action)
 		}
 		if (this.version.endsWith("-SNAPSHOT")) {
-			addCommercialRepository("snapshot", "/spring-enterprise-maven-dev-local", action)
-			addOssRepository("snapshot", "/snapshot", action)
+			addCommercialRepository("snapshot", true, "/spring-enterprise-maven-dev-local", action)
+			addOssRepository("snapshot", true, "/snapshot", action)
 		}
 	}
 
-	private void addOssRepository(id, path, action) {
+	private void addOssRepository(id, snapshot, path, action) {
 		def name = "spring-oss-" + id
 		def url = "https://repo.spring.io" + path
-		addRepository(name, url, action)
+		addRepository(name, snapshot, url, action)
 	}
 
-	private void addCommercialRepository(id, path, action) {
+	private void addCommercialRepository(id, snapshot, path, action) {
 		if (!"commercial".equalsIgnoreCase(this.buildType)) return
 		def name = "spring-commercial-" + id
 		def url = fromEnv("COMMERCIAL_%SREPO_URL", id, "https://usw1.packages.broadcom.com" + path)
 		def username = fromEnv("COMMERCIAL_%SREPO_USERNAME", id)
 		def password = fromEnv("COMMERCIAL_%SREPO_PASSWORD", id)
-		addRepository(name, url, { maven ->
+		addRepository(name, snapshot, url, { maven ->
 			maven.credentials { credentials ->
 				credentials.setUsername(username)
 				credentials.setPassword(password)
@@ -131,10 +131,17 @@ class SpringRepositoriesExtension {
 		})
 	}
 
-	private void addRepository(name, url, action) {
+	private void addRepository(name, snapshot, url, action) {
 		this.repositories.maven { maven ->
 			maven.setName(name)
 			maven.setUrl(url)
+			maven.content { content ->
+				if (snapshot) {
+					content.snapshotsOnly()
+				} else {
+					content.releasesOnly()
+				}
+			}
 			action(maven)
 		}
 	}
