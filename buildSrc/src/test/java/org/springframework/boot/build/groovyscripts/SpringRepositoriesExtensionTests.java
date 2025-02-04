@@ -31,6 +31,7 @@ import groovy.lang.GroovyClassLoader;
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
+import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
 import org.gradle.api.artifacts.repositories.PasswordCredentials;
 import org.gradle.api.artifacts.repositories.RepositoryContentDescriptor;
 import org.junit.jupiter.api.AfterAll;
@@ -73,6 +74,8 @@ class SpringRepositoriesExtensionTests {
 
 	private final List<PasswordCredentials> credentials = new ArrayList<>();
 
+	private final List<MavenRepositoryContentDescriptor> mavenContent = new ArrayList<>();
+
 	@Test
 	void mavenRepositoriesWhenNotCommercialSnapshot() {
 		SpringRepositoriesExtension extension = createExtension("0.0.0-SNAPSHOT", "oss");
@@ -80,8 +83,10 @@ class SpringRepositoriesExtensionTests {
 		assertThat(this.repositories).hasSize(2);
 		verify(this.repositories.get(0)).setName("spring-oss-milestone");
 		verify(this.repositories.get(0)).setUrl("https://repo.spring.io/milestone");
+		verify(this.mavenContent.get(0)).releasesOnly();
 		verify(this.repositories.get(1)).setName("spring-oss-snapshot");
 		verify(this.repositories.get(1)).setUrl("https://repo.spring.io/snapshot");
+		verify(this.mavenContent.get(1)).snapshotsOnly();
 	}
 
 	@Test
@@ -92,12 +97,16 @@ class SpringRepositoriesExtensionTests {
 		verify(this.repositories.get(0)).setName("spring-commercial-release");
 		verify(this.repositories.get(0))
 			.setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-prod-local");
+		verify(this.mavenContent.get(0)).releasesOnly();
 		verify(this.repositories.get(1)).setName("spring-oss-milestone");
 		verify(this.repositories.get(1)).setUrl("https://repo.spring.io/milestone");
+		verify(this.mavenContent.get(1)).releasesOnly();
 		verify(this.repositories.get(2)).setName("spring-commercial-snapshot");
 		verify(this.repositories.get(2)).setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-dev-local");
+		verify(this.mavenContent.get(2)).snapshotsOnly();
 		verify(this.repositories.get(3)).setName("spring-oss-snapshot");
 		verify(this.repositories.get(3)).setUrl("https://repo.spring.io/snapshot");
+		verify(this.mavenContent.get(3)).snapshotsOnly();
 	}
 
 	@Test
@@ -107,6 +116,7 @@ class SpringRepositoriesExtensionTests {
 		assertThat(this.repositories).hasSize(1);
 		verify(this.repositories.get(0)).setName("spring-oss-milestone");
 		verify(this.repositories.get(0)).setUrl("https://repo.spring.io/milestone");
+		verify(this.mavenContent.get(0)).releasesOnly();
 	}
 
 	@Test
@@ -117,8 +127,10 @@ class SpringRepositoriesExtensionTests {
 		verify(this.repositories.get(0)).setName("spring-commercial-release");
 		verify(this.repositories.get(0))
 			.setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-prod-local");
+		verify(this.mavenContent.get(0)).releasesOnly();
 		verify(this.repositories.get(1)).setName("spring-oss-milestone");
 		verify(this.repositories.get(1)).setUrl("https://repo.spring.io/milestone");
+		verify(this.mavenContent.get(1)).releasesOnly();
 	}
 
 	@Test
@@ -136,6 +148,7 @@ class SpringRepositoriesExtensionTests {
 		verify(this.repositories.get(0)).setName("spring-commercial-release");
 		verify(this.repositories.get(0))
 			.setUrl("https://usw1.packages.broadcom.com/spring-enterprise-maven-prod-local");
+		verify(this.mavenContent.get(0)).releasesOnly();
 	}
 
 	@Test
@@ -217,6 +230,7 @@ class SpringRepositoriesExtensionTests {
 		MavenArtifactRepository repository = mock(MavenArtifactRepository.class);
 		willAnswer(this::contentAction).given(repository).content(any(Action.class));
 		willAnswer(this::credentialsAction).given(repository).credentials(any(Action.class));
+		willAnswer(this::mavenContentAction).given(repository).mavenContent(any(Action.class));
 		Closure<MavenArtifactRepository> closure = invocation.getArgument(0);
 		closure.call(repository);
 		this.repositories.add(repository);
@@ -236,6 +250,14 @@ class SpringRepositoriesExtensionTests {
 		Action<PasswordCredentials> action = invocation.getArgument(0);
 		action.execute(credentials);
 		this.credentials.add(credentials);
+		return null;
+	}
+
+	private Object mavenContentAction(InvocationOnMock invocation) {
+		MavenRepositoryContentDescriptor mavenContent = mock(MavenRepositoryContentDescriptor.class);
+		Action<MavenRepositoryContentDescriptor> action = invocation.getArgument(0);
+		action.execute(mavenContent);
+		this.mavenContent.add(mavenContent);
 		return null;
 	}
 

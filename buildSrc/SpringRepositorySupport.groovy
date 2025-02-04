@@ -135,11 +135,11 @@ class SpringRepositoriesExtension {
 		this.repositories.maven { maven ->
 			maven.setName(name)
 			maven.setUrl(url)
-			maven.content { content ->
+			maven.mavenContent { mavenContent ->
 				if (snapshot) {
-					content.snapshotsOnly()
+					mavenContent.snapshotsOnly()
 				} else {
-					content.releasesOnly()
+					mavenContent.releasesOnly()
 				}
 			}
 			action(maven)
