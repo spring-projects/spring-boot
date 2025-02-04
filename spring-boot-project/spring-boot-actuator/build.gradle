@@ -39,9 +39,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-prometheus")
 	optional("io.micrometer:micrometer-registry-prometheus-simpleclient")
 	optional("io.prometheus:prometheus-metrics-exposition-formats")
-	optional("io.prometheus:simpleclient_pushgateway") {
-		exclude(group: "javax.xml.bind", module: "jaxb-api")
-	}
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.undertow:undertow-servlet")

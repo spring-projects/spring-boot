@@ -54,9 +54,6 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 	}
-	optional("io.prometheus:simpleclient_pushgateway") {
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
 	optional("io.micrometer:micrometer-registry-signalfx")
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.micrometer:micrometer-registry-wavefront")
@@ -65,6 +62,7 @@ dependencies {
 	optional("io.opentelemetry:opentelemetry-exporter-zipkin")
 	optional("io.opentelemetry:opentelemetry-exporter-otlp")
 	optional("io.projectreactor.netty:reactor-netty-http")
+	optional("io.prometheus:prometheus-metrics-exporter-pushgateway")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-proxy")
 	optional("io.r2dbc:r2dbc-spi")

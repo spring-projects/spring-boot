@@ -551,16 +551,13 @@ Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exe
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
 
-NOTE: The Prometheus Pushgateway only works with the deprecated Prometheus simpleclient for now, until the Prometheus 1.x client adds support for it.
-To switch to the simpleclient, remove `io.micrometer:micrometer-registry-prometheus` from your project and add `io.micrometer:micrometer-registry-prometheus-simpleclient` instead.
-
 To enable Prometheus Pushgateway support, add the following dependency to your project:
 
 [source,xml]
 ----
 <dependency>
 	<groupId>io.prometheus</groupId>
-	<artifactId>simpleclient_pushgateway</artifactId>
+	<artifactId>io.prometheus:prometheus-metrics-exporter-pushgateway</artifactId>
 </dependency>
 ----
 

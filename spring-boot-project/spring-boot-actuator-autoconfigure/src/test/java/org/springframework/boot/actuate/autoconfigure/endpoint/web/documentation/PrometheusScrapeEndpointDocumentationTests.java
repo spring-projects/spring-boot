@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Properties;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
-import io.prometheus.client.exporter.common.TextFormat;
+import io.prometheus.metrics.expositionformats.OpenMetricsTextFormatWriter;
 import io.prometheus.metrics.model.registry.PrometheusRegistry;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +50,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 
 	@Test
 	void prometheusOpenmetrics() {
-		assertThat(this.mvc.get().uri("/actuator/prometheus").accept(TextFormat.CONTENT_TYPE_OPENMETRICS_100))
+		assertThat(this.mvc.get().uri("/actuator/prometheus").accept(OpenMetricsTextFormatWriter.CONTENT_TYPE))
 			.satisfies((result) -> {
 				assertThat(result).hasStatusOk()
 					.headers()

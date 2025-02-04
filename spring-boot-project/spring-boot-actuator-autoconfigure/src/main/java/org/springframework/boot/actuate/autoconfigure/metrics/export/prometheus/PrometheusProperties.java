@@ -104,9 +104,14 @@ public class PrometheusProperties {
 		private Boolean enabled = false;
 
 		/**
-		 * Base URL for the Pushgateway.
+		 * Address (host:port) for the Pushgateway.
 		 */
-		private String baseUrl = "http://localhost:9091";
+		private String address = "localhost:9091";
+
+		/**
+		 * The scheme to use when pushing metrics.
+		 */
+		private Scheme scheme = Scheme.HTTP;
 
 		/**
 		 * Login user of the Prometheus Pushgateway.
@@ -117,6 +122,16 @@ public class PrometheusProperties {
 		 * Login password of the Prometheus Pushgateway.
 		 */
 		private String password;
+
+		/**
+		 * The token to use for authentication with the Prometheus Pushgateway.
+		 */
+		private String token;
+
+		/**
+		 * The format to use when pushing metrics.
+		 */
+		private Format format = Format.PROTOBUF;
 
 		/**
 		 * Frequency with which to push metrics.
@@ -146,12 +161,12 @@ public class PrometheusProperties {
 			this.enabled = enabled;
 		}
 
-		public String getBaseUrl() {
-			return this.baseUrl;
+		public String getAddress() {
+			return this.address;
 		}
 
-		public void setBaseUrl(String baseUrl) {
-			this.baseUrl = baseUrl;
+		public void setAddress(String address) {
+			this.address = address;
 		}
 
 		public String getUsername() {
@@ -200,6 +215,58 @@ public class PrometheusProperties {
 
 		public void setShutdownOperation(ShutdownOperation shutdownOperation) {
 			this.shutdownOperation = shutdownOperation;
+		}
+
+		public Scheme getScheme() {
+			return this.scheme;
+		}
+
+		public void setScheme(Scheme scheme) {
+			this.scheme = scheme;
+		}
+
+		public String getToken() {
+			return this.token;
+		}
+
+		public void setToken(String token) {
+			this.token = token;
+		}
+
+		public Format getFormat() {
+			return this.format;
+		}
+
+		public void setFormat(Format format) {
+			this.format = format;
+		}
+
+		public enum Format {
+
+			/**
+			 * Push metrics in text format.
+			 */
+			TEXT,
+
+			/**
+			 * Push metrics in protobuf format.
+			 */
+			PROTOBUF
+
+		}
+
+		public enum Scheme {
+
+			/**
+			 * Use HTTP to push metrics.
+			 */
+			HTTP,
+
+			/**
+			 * Use HTTPS to push metrics.
+			 */
+			HTTPS
+
 		}
 
 	}
