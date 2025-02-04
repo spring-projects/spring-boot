@@ -17,7 +17,12 @@
 package org.springframework.boot.build;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -96,17 +101,32 @@ public class RepositoryTransformersExtension {
 	private String transform(String line, BiFunction<MavenArtifactRepository, String, String> generator) {
 		StringBuilder result = new StringBuilder();
 		String indent = getIndent(line);
-		this.project.getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
-			String name = repository.getName();
-			if (name.startsWith("spring-")) {
-				String fragment = generator.apply(repository, indent);
-				if (fragment != null) {
-					result.append(!result.isEmpty() ? "\n" : "");
-					result.append(fragment);
-				}
+		getSpringRepositories().forEach((repository) -> {
+			String fragment = generator.apply(repository, indent);
+			if (fragment != null) {
+				result.append(!result.isEmpty() ? "\n" : "");
+				result.append(fragment);
 			}
 		});
 		return result.toString();
+	}
+
+	private List<MavenArtifactRepository> getSpringRepositories() {
+		List<MavenArtifactRepository> springRepositories = new ArrayList<>(this.project.getRepositories()
+			.withType(MavenArtifactRepository.class)
+			.stream()
+			.filter(this::isSpringReposirory)
+			.toList());
+		Function<MavenArtifactRepository, Boolean> bySnapshots = (repository) -> repository.getName()
+			.contains("snapshot");
+		Function<MavenArtifactRepository, String> byName = null;
+		Collections.sort(springRepositories, Comparator.comparing(bySnapshots).thenComparing(byName));
+		System.err.println(">>>> " + springRepositories);
+		return springRepositories;
+	}
+
+	private boolean isSpringReposirory(MavenArtifactRepository repository) {
+		return (repository.getName().startsWith("spring-"));
 	}
 
 	private String getIndent(String line) {
