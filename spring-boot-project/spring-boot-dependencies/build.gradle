@@ -842,7 +842,7 @@ bom {
 				.formatted(version.major(), version.minor()), "jakarta.websocket")
 		}
 	}
-	library("Jakarta WS RS", "3.1.0") {
+	library("Jakarta WS RS", "4.0.0") {
 		group("jakarta.ws.rs") {
 			modules = [
 				"jakarta.ws.rs-api"
