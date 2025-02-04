@@ -49,6 +49,13 @@ public interface ConfigurableTomcatWebServerFactory extends ConfigurableWebServe
 	void setBackgroundProcessorDelay(int delay);
 
 	/**
+	 * Set whether the factory should disable Tomcat's MBean registry prior to creating
+	 * the server.
+	 * @param disableMBeanRegistry whether to disable the MBean registry
+	 */
+	void setDisableMBeanRegistry(boolean disableMBeanRegistry);
+
+	/**
 	 * Add {@link Valve}s that should be applied to the Tomcat {@link Engine}.
 	 * @param engineValves the valves to add
 	 */

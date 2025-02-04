@@ -262,6 +262,11 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		this.backgroundProcessorDelay = delay;
 	}
 
+	@Override
+	public void setDisableMBeanRegistry(boolean disableMBeanRegistry) {
+		this.disableMBeanRegistry = disableMBeanRegistry;
+	}
+
 	/**
 	 * Set {@link TomcatContextCustomizer}s that should be applied to the Tomcat
 	 * {@link Context}. Calling this method will replace any existing customizers.
@@ -460,16 +465,6 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	public void setProtocol(String protocol) {
 		Assert.hasLength(protocol, "'protocol' must not be empty");
 		this.protocol = protocol;
-	}
-
-	/**
-	 * Set whether the factory should disable Tomcat's MBean registry prior to creating
-	 * the server.
-	 * @param disableMBeanRegistry whether to disable the MBean registry
-	 * @since 2.2.0
-	 */
-	public void setDisableMBeanRegistry(boolean disableMBeanRegistry) {
-		this.disableMBeanRegistry = disableMBeanRegistry;
 	}
 
 }
