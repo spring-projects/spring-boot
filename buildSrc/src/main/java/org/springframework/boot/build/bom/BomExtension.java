@@ -59,6 +59,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import org.springframework.boot.build.DeployedPlugin;
+import org.springframework.boot.build.RepositoryTransformersExtension;
 import org.springframework.boot.build.bom.Library.Exclusion;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.LibraryVersion;
@@ -132,6 +133,8 @@ public class BomExtension {
 
 	public void effectiveBomArtifact() {
 		Configuration effectiveBomConfiguration = this.project.getConfigurations().create("effectiveBom");
+		RepositoryTransformersExtension repositoryTransformers = this.project.getExtensions()
+			.getByType(RepositoryTransformersExtension.class);
 		this.project.getTasks()
 			.matching((task) -> task.getName().equals(DeployedPlugin.GENERATE_POM_TASK_NAME))
 			.all((task) -> {
@@ -144,8 +147,10 @@ public class BomExtension {
 					sync.dependsOn(task);
 					sync.setDestinationDir(generatedBomDir);
 					sync.from(((GenerateMavenPom) task).getDestination(), (pom) -> pom.rename((name) -> "pom.xml"));
-					sync.from(this.project.getResources().getText().fromString(loadSettingsXml()),
-							(settingsXml) -> settingsXml.rename((name) -> "settings.xml"));
+					sync.from(this.project.getResources().getText().fromString(loadSettingsXml()), (settingsXml) -> {
+						settingsXml.rename((name) -> "settings.xml");
+						settingsXml.filter(repositoryTransformers.mavenSettings());
+					});
 				});
 				File effectiveBom = this.project.getLayout()
 					.getBuildDirectory()
