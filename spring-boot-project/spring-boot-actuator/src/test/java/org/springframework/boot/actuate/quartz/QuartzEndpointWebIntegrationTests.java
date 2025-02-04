@@ -43,7 +43,6 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
-import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
@@ -64,10 +63,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 class QuartzEndpointWebIntegrationTests {
-
-	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
-
-	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	private static final JobDetail jobOne = JobBuilder.newJob(Job.class)
 		.withIdentity("jobOne", "samples")
@@ -261,49 +256,6 @@ class QuartzEndpointWebIntegrationTests {
 		client.post()
 			.uri("/actuator/quartz/jobs/samples/jobOne")
 			.contentType(MediaType.APPLICATION_JSON)
-			.accept(MediaType.APPLICATION_JSON)
-			.bodyValue(Map.of("state", "running"))
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("group")
-			.isEqualTo("samples")
-			.jsonPath("name")
-			.isEqualTo("jobOne")
-			.jsonPath("className")
-			.isEqualTo("org.quartz.Job")
-			.jsonPath("triggerTime")
-			.isNotEmpty();
-	}
-
-	@WebEndpointTest
-	void quartzTriggerJobV2(WebTestClient client) {
-		client.post()
-			.uri("/actuator/quartz/jobs/samples/jobOne")
-			.contentType(MediaType.parseMediaType(V2_JSON))
-			.accept(MediaType.APPLICATION_JSON)
-			.bodyValue(Map.of("state", "running"))
-			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectBody()
-			.jsonPath("group")
-			.isEqualTo("samples")
-			.jsonPath("name")
-			.isEqualTo("jobOne")
-			.jsonPath("className")
-			.isEqualTo("org.quartz.Job")
-			.jsonPath("triggerTime")
-			.isNotEmpty();
-	}
-
-	@WebEndpointTest
-	void quartzTriggerJobV3(WebTestClient client) {
-		client.post()
-			.uri("/actuator/quartz/jobs/samples/jobOne")
-			.contentType(MediaType.parseMediaType(V3_JSON))
-			.accept(MediaType.APPLICATION_JSON)
 			.bodyValue(Map.of("state", "running"))
 			.exchange()
 			.expectStatus()
@@ -334,8 +286,7 @@ class QuartzEndpointWebIntegrationTests {
 	void quartzTriggerJobWithUnknownState(WebTestClient client) {
 		client.post()
 			.uri("/actuator/quartz/jobs/samples/jobOne")
-			.contentType(MediaType.parseMediaType(V3_JSON))
-			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
 			.bodyValue(Map.of("state", "unknown"))
 			.exchange()
 			.expectStatus()

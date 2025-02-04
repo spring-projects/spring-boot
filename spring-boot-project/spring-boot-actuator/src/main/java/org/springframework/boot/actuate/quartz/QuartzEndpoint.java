@@ -223,7 +223,10 @@ public class QuartzEndpoint {
 	 * @since 3.5.0
 	 */
 	public QuartzJobTriggerDescriptor triggerQuartzJob(String groupName, String jobName) throws SchedulerException {
-		JobKey jobKey = JobKey.jobKey(jobName, groupName);
+		return triggerQuartzJob(JobKey.jobKey(jobName, groupName));
+	}
+
+	private QuartzJobTriggerDescriptor triggerQuartzJob(JobKey jobKey) throws SchedulerException {
 		JobDetail jobDetail = this.scheduler.getJobDetail(jobKey);
 		if (jobDetail == null) {
 			return null;

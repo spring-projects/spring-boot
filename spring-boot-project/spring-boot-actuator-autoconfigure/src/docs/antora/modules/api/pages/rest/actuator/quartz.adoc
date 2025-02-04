@@ -156,6 +156,7 @@ The following table describes the structure of the response:
 include::partial$rest/actuator/quartz/job-details/response-fields.adoc[]
 
 
+
 [[quartz.trigger-job]]
 == Trigger Quartz Job On Demand
 
@@ -168,6 +169,7 @@ The preceding example demonstrates how to trigger a job that belongs to the `sam
 The response will look similar to the following:
 
 include::partial$rest/actuator/quartz/trigger-job/http-response.adoc[]
+
 
 
 [[quartz.trigger-job.request-structure]]
@@ -188,6 +190,7 @@ The following table describes the structure of the response:
 
 [cols="2,1,3"]
 include::partial$rest/actuator/quartz/trigger-job/response-fields.adoc[]
+
 
 
 [[quartz.trigger]]
