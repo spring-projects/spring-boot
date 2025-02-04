@@ -16,6 +16,9 @@
 
 package org.springframework.boot.build;
 
+import java.net.URI;
+import java.util.function.BiFunction;
+
 import javax.inject.Inject;
 
 import org.gradle.api.Project;
@@ -29,9 +32,9 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
  */
 public class RepositoryTransformersExtension {
 
-	private static final String MARKER = "{spring.mavenRepositories}";
+	private static final String REPOSITORIES_MARKER = "{spring.mavenRepositories}";
 
-	private static final String MARKER_PLUGIN = "{spring.mavenPluginRepositories}";
+	private static final String PLUGIN_REPOSITORIES_MARKER = "{spring.mavenPluginRepositories}";
 
 	private final Project project;
 
@@ -45,18 +48,12 @@ public class RepositoryTransformersExtension {
 	}
 
 	private String transformAnt(String line) {
-		if (line.contains(MARKER)) {
-			StringBuilder result = new StringBuilder();
-			String indent = getIndent(line);
-			this.project.getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
+		if (line.contains(REPOSITORIES_MARKER)) {
+			return transform(line, (repository, indent) -> {
 				String name = repository.getName();
-				if (name.startsWith("spring-")) {
-					result.append(!result.isEmpty() ? "\n" : "");
-					result.append("%s<ibiblio name=\"%s\" m2compatible=\"true\" root=\"%s\" />".formatted(indent, name,
-							repository.getUrl()));
-				}
+				URI url = repository.getUrl();
+				return "%s<ibiblio name=\"%s\" m2compatible=\"true\" root=\"%s\" />".formatted(indent, name, url);
 			});
-			return result.toString();
 		}
 		return line;
 	}
@@ -66,26 +63,17 @@ public class RepositoryTransformersExtension {
 	}
 
 	private String transformMavenSettings(String line) {
-		if (line.contains(MARKER)) {
-			return transformMarker(line, false);
+		if (line.contains(REPOSITORIES_MARKER)) {
+			return transformMavenRepositories(line, false);
 		}
-		if (line.contains(MARKER_PLUGIN)) {
-			return transformMarker(line, true);
+		if (line.contains(PLUGIN_REPOSITORIES_MARKER)) {
+			return transformMavenRepositories(line, true);
 		}
 		return line;
 	}
 
-	private String transformMarker(String line, boolean pluginRepository) {
-		StringBuilder result = new StringBuilder();
-		String indent = getIndent(line);
-		this.project.getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
-			String name = repository.getName();
-			if (name.startsWith("spring-")) {
-				result.append(!result.isEmpty() ? "\n" : "");
-				result.append(mavenRepositoryXml(indent, repository, pluginRepository));
-			}
-		});
-		return result.toString();
+	private String transformMavenRepositories(String line, boolean pluginRepository) {
+		return transform(line, (repository, indent) -> mavenRepositoryXml(indent, repository, pluginRepository));
 	}
 
 	private String mavenRepositoryXml(String indent, MavenArtifactRepository repository, boolean pluginRepository) {
@@ -103,6 +91,22 @@ public class RepositoryTransformersExtension {
 		xml.append("%s\t</snapshots>%n".formatted(indent));
 		xml.append("%s</%s>".formatted(indent, rootTag));
 		return xml.toString();
+	}
+
+	private String transform(String line, BiFunction<MavenArtifactRepository, String, String> generator) {
+		StringBuilder result = new StringBuilder();
+		String indent = getIndent(line);
+		this.project.getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
+			String name = repository.getName();
+			if (name.startsWith("spring-")) {
+				String fragment = generator.apply(repository, indent);
+				if (fragment != null) {
+					result.append(!result.isEmpty() ? "\n" : "");
+					result.append(fragment);
+				}
+			}
+		});
+		return result.toString();
 	}
 
 	private String getIndent(String line) {
