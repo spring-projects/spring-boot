@@ -30,6 +30,8 @@ jobs:
               name: Linux
             java:
               version: 17
+          - os:
+              name: ${{ github.repository == 'spring-projects/spring-boot-commercial' && 'Windows' }}
     steps:
       - name: Prepare Windows runner
         if: ${{ runner.os == 'Windows' }}
