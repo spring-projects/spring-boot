@@ -809,7 +809,7 @@ bom {
 	}
 	library("Jakarta Validation", "3.0.2") {
 		prohibit {
-			versionRange "[3.1.0-M1,3.1.0]"
+			versionRange "[3.1.0-M1,3.2.0]"
 			because "it's part of Jakarta EE 11"
 		}
 		group("jakarta.validation") {
