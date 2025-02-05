@@ -29,9 +29,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.server.servlet.ServletWebServerConfiguration;
+import org.springframework.boot.autoconfigure.web.server.undertow.UndertowServerProperties;
 import org.springframework.boot.autoconfigure.web.server.undertow.UndertowWebServerConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.undertow.UndertowDeploymentInfoCustomizer;
 import org.springframework.boot.web.server.servlet.undertow.UndertowServletWebServerFactory;
@@ -50,6 +51,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @ConditionalOnClass({ ServletRequest.class, Undertow.class, SslClientAuthMode.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
+@EnableConfigurationProperties(UndertowServerProperties.class)
 @Import({ UndertowWebServerConfiguration.class, ServletWebServerConfiguration.class })
 public class UndertowServletWebServerAutoConfiguration {
 
@@ -66,8 +68,8 @@ public class UndertowServletWebServerAutoConfiguration {
 
 	@Bean
 	UndertowServletWebServerFactoryCustomizer undertowServletWebServerFactoryCustomizer(
-			ServerProperties serverProperties) {
-		return new UndertowServletWebServerFactoryCustomizer(serverProperties);
+			UndertowServerProperties undertowProperties) {
+		return new UndertowServletWebServerFactoryCustomizer(undertowProperties);
 	}
 
 	@Configuration(proxyBeanMethods = false)

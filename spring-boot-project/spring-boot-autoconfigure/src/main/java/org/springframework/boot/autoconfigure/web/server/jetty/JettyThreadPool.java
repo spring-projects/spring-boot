@@ -23,11 +23,9 @@ import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-
 /**
  * Creates a {@link ThreadPool} for Jetty, applying
- * {@link org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Threads
+ * {@link org.springframework.boot.autoconfigure.web.server.jetty.JettyServerProperties.Threads
  * ServerProperties.Jetty.Threads Jetty thread properties}.
  *
  * @author Moritz Halbritter
@@ -37,7 +35,7 @@ final class JettyThreadPool {
 	private JettyThreadPool() {
 	}
 
-	static QueuedThreadPool create(ServerProperties.Jetty.Threads properties) {
+	static QueuedThreadPool create(JettyServerProperties.Threads properties) {
 		BlockingQueue<Runnable> queue = determineBlockingQueue(properties.getMaxQueueCapacity());
 		int maxThreadCount = (properties.getMax() > 0) ? properties.getMax() : 200;
 		int minThreadCount = (properties.getMin() > 0) ? properties.getMin() : 8;

@@ -38,17 +38,22 @@ import org.springframework.core.env.Environment;
 @Configuration(proxyBeanMethods = false)
 public class JettyWebServerConfiguration {
 
+	private final JettyServerProperties jettyProperties;
+
+	public JettyWebServerConfiguration(JettyServerProperties jettyProperties) {
+		this.jettyProperties = jettyProperties;
+	}
+
 	@Bean
 	JettyWebServerFactoryCustomizer jettyWebServerFactoryCustomizer(Environment environment,
 			ServerProperties serverProperties) {
-		return new JettyWebServerFactoryCustomizer(environment, serverProperties);
+		return new JettyWebServerFactoryCustomizer(environment, serverProperties, this.jettyProperties);
 	}
 
 	@Bean
 	@ConditionalOnThreading(Threading.VIRTUAL)
-	JettyVirtualThreadsWebServerFactoryCustomizer jettyVirtualThreadsWebServerFactoryCustomizer(
-			ServerProperties serverProperties) {
-		return new JettyVirtualThreadsWebServerFactoryCustomizer(serverProperties);
+	JettyVirtualThreadsWebServerFactoryCustomizer jettyVirtualThreadsWebServerFactoryCustomizer() {
+		return new JettyVirtualThreadsWebServerFactoryCustomizer(this.jettyProperties);
 	}
 
 }

@@ -169,14 +169,6 @@ class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void testCustomizeTomcatMinSpareThreads() {
-		Map<String, String> map = new HashMap<>();
-		map.put("server.tomcat.threads.min-spare", "10");
-		bindProperties(map);
-		assertThat(this.properties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
-	}
-
-	@Test
 	void sessionStoreDir() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.store-dir", "mydirectory");
