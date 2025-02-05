@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.web.server.servlet.undertow;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.server.undertow.UndertowServerProperties;
 import org.springframework.boot.web.server.servlet.undertow.UndertowServletWebServerFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,9 +34,9 @@ class UndertowServletWebServerFactoryCustomizerTests {
 	void eagerFilterInitCanBeDisabled() {
 		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory(0);
 		assertThat(factory.isEagerFilterInit()).isTrue();
-		ServerProperties serverProperties = new ServerProperties();
-		serverProperties.getUndertow().setEagerFilterInit(false);
-		new UndertowServletWebServerFactoryCustomizer(serverProperties).customize(factory);
+		UndertowServerProperties undertowProperties = new UndertowServerProperties();
+		undertowProperties.setEagerFilterInit(false);
+		new UndertowServletWebServerFactoryCustomizer(undertowProperties).customize(factory);
 		assertThat(factory.isEagerFilterInit()).isFalse();
 	}
 
@@ -44,9 +44,9 @@ class UndertowServletWebServerFactoryCustomizerTests {
 	void preservePathOnForwardCanBeEnabled() {
 		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory(0);
 		assertThat(factory.isPreservePathOnForward()).isFalse();
-		ServerProperties serverProperties = new ServerProperties();
-		serverProperties.getUndertow().setPreservePathOnForward(true);
-		new UndertowServletWebServerFactoryCustomizer(serverProperties).customize(factory);
+		UndertowServerProperties undertowProperties = new UndertowServerProperties();
+		undertowProperties.setPreservePathOnForward(true);
+		new UndertowServletWebServerFactoryCustomizer(undertowProperties).customize(factory);
 		assertThat(factory.isPreservePathOnForward()).isTrue();
 	}
 

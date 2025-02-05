@@ -43,9 +43,13 @@ public class NettyReactiveWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	public NettyReactiveWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
+	private final NettyServerProperties nettyProperties;
+
+	public NettyReactiveWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
+			NettyServerProperties nettyProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
+		this.nettyProperties = nettyProperties;
 	}
 
 	@Override
@@ -57,11 +61,10 @@ public class NettyReactiveWebServerFactoryCustomizer
 	public void customize(NettyReactiveWebServerFactory factory) {
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
-		map.from(nettyProperties::getConnectionTimeout)
+		map.from(this.nettyProperties::getConnectionTimeout)
 			.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
-		map.from(nettyProperties::getIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
-		map.from(nettyProperties::getMaxKeepAliveRequests)
+		map.from(this.nettyProperties::getIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
+		map.from(this.nettyProperties::getMaxKeepAliveRequests)
 			.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
 		if (this.serverProperties.getHttp2() != null && this.serverProperties.getHttp2().isEnabled()) {
 			map.from(this.serverProperties.getMaxHttpRequestHeaderSize())
@@ -88,16 +91,15 @@ public class NettyReactiveWebServerFactoryCustomizer
 			propertyMapper.from(this.serverProperties.getMaxHttpRequestHeaderSize())
 				.to((maxHttpRequestHeader) -> httpRequestDecoderSpec
 					.maxHeaderSize((int) maxHttpRequestHeader.toBytes()));
-			ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
-			propertyMapper.from(nettyProperties.getMaxInitialLineLength())
+			propertyMapper.from(this.nettyProperties.getMaxInitialLineLength())
 				.to((maxInitialLineLength) -> httpRequestDecoderSpec
 					.maxInitialLineLength((int) maxInitialLineLength.toBytes()));
-			propertyMapper.from(nettyProperties.getH2cMaxContentLength())
+			propertyMapper.from(this.nettyProperties.getH2cMaxContentLength())
 				.to((h2cMaxContentLength) -> httpRequestDecoderSpec
 					.h2cMaxContentLength((int) h2cMaxContentLength.toBytes()));
-			propertyMapper.from(nettyProperties.getInitialBufferSize())
+			propertyMapper.from(this.nettyProperties.getInitialBufferSize())
 				.to((initialBufferSize) -> httpRequestDecoderSpec.initialBufferSize((int) initialBufferSize.toBytes()));
-			propertyMapper.from(nettyProperties.isValidateHeaders()).to(httpRequestDecoderSpec::validateHeaders);
+			propertyMapper.from(this.nettyProperties.isValidateHeaders()).to(httpRequestDecoderSpec::validateHeaders);
 			return httpRequestDecoderSpec;
 		}));
 	}
