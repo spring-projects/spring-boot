@@ -35,8 +35,8 @@ public class UndertowWebServerConfiguration {
 
 	@Bean
 	UndertowWebServerFactoryCustomizer undertowWebServerFactoryCustomizer(Environment environment,
-			ServerProperties serverProperties) {
-		return new UndertowWebServerFactoryCustomizer(environment, serverProperties);
+			ServerProperties serverProperties, UndertowServerProperties undertowProperties) {
+		return new UndertowWebServerFactoryCustomizer(environment, serverProperties, undertowProperties);
 	}
 
 }

@@ -20,7 +20,7 @@ import org.apache.catalina.Context;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -38,18 +38,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class TomcatServletWebServerFactoryCustomizerTests {
 
+	private final TomcatServerProperties tomcatProperties = new TomcatServerProperties();
+
 	private TomcatServletWebServerFactoryCustomizer customizer;
 
 	private MockEnvironment environment;
 
-	private ServerProperties serverProperties;
-
 	@BeforeEach
 	void setup() {
 		this.environment = new MockEnvironment();
-		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new TomcatServletWebServerFactoryCustomizer(this.serverProperties);
+		this.customizer = new TomcatServletWebServerFactoryCustomizer(this.tomcatProperties);
 	}
 
 	@Test
@@ -74,8 +73,7 @@ class TomcatServletWebServerFactoryCustomizerTests {
 	@Test
 	void redirectContextRootCanBeConfigured() {
 		bind("server.tomcat.redirect-context-root=false");
-		ServerProperties.Tomcat tomcat = this.serverProperties.getTomcat();
-		assertThat(tomcat.getRedirectContextRoot()).isFalse();
+		assertThat(this.tomcatProperties.getRedirectContextRoot()).isFalse();
 		TomcatWebServer server = customizeAndGetServer();
 		Context context = (Context) server.getTomcat().getHost().findChildren()[0];
 		assertThat(context.getMapperContextRootRedirectEnabled()).isFalse();
@@ -84,7 +82,7 @@ class TomcatServletWebServerFactoryCustomizerTests {
 	@Test
 	void useRelativeRedirectsCanBeConfigured() {
 		bind("server.tomcat.use-relative-redirects=true");
-		assertThat(this.serverProperties.getTomcat().isUseRelativeRedirects()).isTrue();
+		assertThat(this.tomcatProperties.isUseRelativeRedirects()).isTrue();
 		TomcatWebServer server = customizeAndGetServer();
 		Context context = (Context) server.getTomcat().getHost().findChildren()[0];
 		assertThat(context.getUseRelativeRedirects()).isTrue();
@@ -92,8 +90,8 @@ class TomcatServletWebServerFactoryCustomizerTests {
 
 	private void bind(String... inlinedProperties) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
-		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
-				Bindable.ofInstance(this.serverProperties));
+		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server.tomcat",
+				Bindable.ofInstance(this.tomcatProperties));
 	}
 
 	private TomcatWebServer customizeAndGetServer() {

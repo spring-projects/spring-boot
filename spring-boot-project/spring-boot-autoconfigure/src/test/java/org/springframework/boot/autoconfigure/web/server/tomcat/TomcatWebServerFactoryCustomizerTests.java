@@ -66,18 +66,19 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 @DirtiesUrlFactories
 class TomcatWebServerFactoryCustomizerTests {
 
-	private MockEnvironment environment;
+	private final MockEnvironment environment = new MockEnvironment();
 
-	private ServerProperties serverProperties;
+	private final ServerProperties serverProperties = new ServerProperties();
+
+	private final TomcatServerProperties tomcatProperties = new TomcatServerProperties();
 
 	private TomcatWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
 	void setup() {
-		this.environment = new MockEnvironment();
-		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new TomcatWebServerFactoryCustomizer(this.environment, this.serverProperties);
+		this.customizer = new TomcatWebServerFactoryCustomizer(this.environment, this.serverProperties,
+				this.tomcatProperties);
 	}
 
 	@Test
@@ -85,7 +86,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
 					.getMaxSwallowSize())
-			.isEqualTo(this.serverProperties.getTomcat().getMaxSwallowSize().toBytes()));
+			.isEqualTo(this.tomcatProperties.getMaxSwallowSize().toBytes()));
 	}
 
 	@Test
@@ -457,7 +458,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	void testCustomizeMinSpareThreads() {
 		bind("server.tomcat.threads.min-spare=10");
-		assertThat(this.serverProperties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
+		assertThat(this.tomcatProperties.getThreads().getMinSpare()).isEqualTo(10);
 	}
 
 	@Test
@@ -517,7 +518,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		bind("server.tomcat.accesslog.enabled=true");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(((AccessLogValve) factory.getEngineValves().iterator().next()).getMaxDays())
-			.isEqualTo(this.serverProperties.getTomcat().getAccesslog().getMaxDays());
+			.isEqualTo(this.tomcatProperties.getAccesslog().getMaxDays());
 	}
 
 	@Test
@@ -624,8 +625,9 @@ class TomcatWebServerFactoryCustomizerTests {
 
 	private void bind(String... inlinedProperties) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
-		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
-				Bindable.ofInstance(this.serverProperties));
+		Binder binder = new Binder(ConfigurationPropertySources.get(this.environment));
+		binder.bind("server", Bindable.ofInstance(this.serverProperties));
+		binder.bind("server.tomcat", Bindable.ofInstance(this.tomcatProperties));
 	}
 
 	private void customizeAndRunServer() {

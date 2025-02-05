@@ -35,9 +35,9 @@ import org.apache.coyote.http2.Http2Protocol;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Remoteip;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.UseApr;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties.Accesslog;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties.Remoteip;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties.UseApr;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -75,9 +75,13 @@ public class TomcatWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	public TomcatWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
+	private final TomcatServerProperties tomcatProperties;
+
+	public TomcatWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
+			TomcatServerProperties tomcatProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
+		this.tomcatProperties = tomcatProperties;
 	}
 
 	@Override
@@ -88,15 +92,14 @@ public class TomcatWebServerFactoryCustomizer
 	@Override
 	@SuppressWarnings("removal")
 	public void customize(ConfigurableTomcatWebServerFactory factory) {
-		ServerProperties.Tomcat properties = this.serverProperties.getTomcat();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getBasedir).to(factory::setBaseDirectory);
-		map.from(properties::getBackgroundProcessorDelay)
+		map.from(this.tomcatProperties::getBasedir).to(factory::setBaseDirectory);
+		map.from(this.tomcatProperties::getBackgroundProcessorDelay)
 			.as(Duration::getSeconds)
 			.as(Long::intValue)
 			.to(factory::setBackgroundProcessorDelay);
 		customizeRemoteIpValve(factory);
-		ServerProperties.Tomcat.Threads threadProperties = properties.getThreads();
+		TomcatServerProperties.Threads threadProperties = this.tomcatProperties.getThreads();
 		map.from(threadProperties::getMax)
 			.when(this::isPositive)
 			.to((maxThreads) -> customizeMaxThreads(factory, maxThreads));
@@ -110,52 +113,53 @@ public class TomcatWebServerFactoryCustomizer
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
 			.to((maxHttpRequestHeaderSize) -> customizeMaxHttpRequestHeaderSize(factory, maxHttpRequestHeaderSize));
-		map.from(properties::getMaxHttpResponseHeaderSize)
+		map.from(this.tomcatProperties::getMaxHttpResponseHeaderSize)
 			.asInt(DataSize::toBytes)
 			.when(this::isPositive)
 			.to((maxHttpResponseHeaderSize) -> customizeMaxHttpResponseHeaderSize(factory, maxHttpResponseHeaderSize));
-		map.from(properties::getMaxSwallowSize)
+		map.from(this.tomcatProperties::getMaxSwallowSize)
 			.asInt(DataSize::toBytes)
 			.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
-		map.from(properties::getMaxHttpFormPostSize)
+		map.from(this.tomcatProperties::getMaxHttpFormPostSize)
 			.asInt(DataSize::toBytes)
 			.when((maxHttpFormPostSize) -> maxHttpFormPostSize != 0)
 			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
-		map.from(properties::getMaxParameterCount)
+		map.from(this.tomcatProperties::getMaxParameterCount)
 			.to((maxParameterCount) -> customizeMaxParameterCount(factory, maxParameterCount));
-		map.from(properties::getMaxPartHeaderSize)
+		map.from(this.tomcatProperties::getMaxPartHeaderSize)
 			.asInt(DataSize::toBytes)
 			.to((maxPartHeaderSize) -> customizeMaxPartHeaderSize(factory, maxPartHeaderSize));
-		map.from(properties::getMaxPartCount).to((maxPartCount) -> customizeMaxPartCount(factory, maxPartCount));
-		map.from(properties::getAccesslog)
-			.when(ServerProperties.Tomcat.Accesslog::isEnabled)
+		map.from(this.tomcatProperties::getMaxPartCount)
+			.to((maxPartCount) -> customizeMaxPartCount(factory, maxPartCount));
+		map.from(this.tomcatProperties::getAccesslog)
+			.when(TomcatServerProperties.Accesslog::isEnabled)
 			.to((enabled) -> customizeAccessLog(factory));
-		map.from(properties::getUriEncoding).to(factory::setUriEncoding);
-		map.from(properties::getConnectionTimeout)
+		map.from(this.tomcatProperties::getUriEncoding).to(factory::setUriEncoding);
+		map.from(this.tomcatProperties::getConnectionTimeout)
 			.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
-		map.from(properties::getMaxConnections)
+		map.from(this.tomcatProperties::getMaxConnections)
 			.when(this::isPositive)
 			.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
-		map.from(properties::getAcceptCount)
+		map.from(this.tomcatProperties::getAcceptCount)
 			.when(this::isPositive)
 			.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
-		map.from(properties::getProcessorCache)
+		map.from(this.tomcatProperties::getProcessorCache)
 			.to((processorCache) -> customizeProcessorCache(factory, processorCache));
-		map.from(properties::getKeepAliveTimeout)
+		map.from(this.tomcatProperties::getKeepAliveTimeout)
 			.to((keepAliveTimeout) -> customizeKeepAliveTimeout(factory, keepAliveTimeout));
-		map.from(properties::getMaxKeepAliveRequests)
+		map.from(this.tomcatProperties::getMaxKeepAliveRequests)
 			.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
-		map.from(properties::getRelaxedPathChars)
+		map.from(this.tomcatProperties::getRelaxedPathChars)
 			.as(this::joinCharacters)
 			.whenHasText()
 			.to((relaxedChars) -> customizeRelaxedPathChars(factory, relaxedChars));
-		map.from(properties::getRelaxedQueryChars)
+		map.from(this.tomcatProperties::getRelaxedQueryChars)
 			.as(this::joinCharacters)
 			.whenHasText()
 			.to((relaxedChars) -> customizeRelaxedQueryChars(factory, relaxedChars));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(this.serverProperties.getError(), factory);
-		factory.setUseApr(getUseApr(this.serverProperties.getTomcat().getUseApr()));
+		factory.setUseApr(getUseApr(this.tomcatProperties.getUseApr()));
 	}
 
 	private boolean getUseApr(UseApr useApr) {
@@ -249,7 +253,7 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	private void customizeRemoteIpValve(ConfigurableTomcatWebServerFactory factory) {
-		Remoteip remoteIpProperties = this.serverProperties.getTomcat().getRemoteip();
+		Remoteip remoteIpProperties = this.tomcatProperties.getRemoteip();
 		String protocolHeader = remoteIpProperties.getProtocolHeader();
 		String remoteIpHeader = remoteIpProperties.getRemoteIpHeader();
 		// For back compatibility the valve is also enabled if protocol-header is set
@@ -346,10 +350,9 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	private void customizeAccessLog(ConfigurableTomcatWebServerFactory factory) {
-		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
 		AccessLogValve valve = new AccessLogValve();
 		PropertyMapper map = PropertyMapper.get();
-		Accesslog accessLogConfig = tomcatProperties.getAccesslog();
+		Accesslog accessLogConfig = this.tomcatProperties.getAccesslog();
 		map.from(accessLogConfig.getConditionIf()).to(valve::setConditionIf);
 		map.from(accessLogConfig.getConditionUnless()).to(valve::setConditionUnless);
 		map.from(accessLogConfig.getPattern()).to(valve::setPattern);
@@ -370,7 +373,7 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	private void customizeStaticResources(ConfigurableTomcatWebServerFactory factory) {
-		ServerProperties.Tomcat.Resource resource = this.serverProperties.getTomcat().getResource();
+		TomcatServerProperties.Resource resource = this.tomcatProperties.getResource();
 		factory.addContextCustomizers((context) -> context.addLifecycleListener((event) -> {
 			if (event.getType().equals(Lifecycle.CONFIGURE_START_EVENT)) {
 				context.getResources().setCachingAllowed(resource.isAllowCaching());
