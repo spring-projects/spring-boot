@@ -63,7 +63,7 @@ class ForkedProcessTaskRunner {
                             break;
                         }
                         case batch_messages_1.BatchMessageType.Performance: {
-                            // performance.measure(`run-batch`, message.start.name, message.end.name);
+                            // console.log("Time for run batch:", message.endsWith.)
                             break;
                         }
                         case batch_messages_1.BatchMessageType.RunTasks: {

@@ -45,3 +45,5 @@ node_modules
 .nx/installation
 .nx/cache
 .nx/workspace-data
+
+!nx-batch-runner.jar
