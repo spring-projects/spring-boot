@@ -56,18 +56,19 @@ import static org.mockito.Mockito.mock;
  */
 class UndertowWebServerFactoryCustomizerTests {
 
-	private MockEnvironment environment;
+	private final MockEnvironment environment = new MockEnvironment();
 
-	private ServerProperties serverProperties;
+	private final ServerProperties serverProperties = new ServerProperties();
+
+	private final UndertowServerProperties undertowProperties = new UndertowServerProperties();
 
 	private UndertowWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
 	void setup() {
-		this.environment = new MockEnvironment();
-		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new UndertowWebServerFactoryCustomizer(this.environment, this.serverProperties);
+		this.customizer = new UndertowWebServerFactoryCustomizer(this.environment, this.serverProperties,
+				this.undertowProperties);
 	}
 
 	@Test
@@ -266,8 +267,9 @@ class UndertowWebServerFactoryCustomizerTests {
 
 	private void bind(String... inlinedProperties) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
-		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
-				Bindable.ofInstance(this.serverProperties));
+		Binder binder = new Binder(ConfigurationPropertySources.get(this.environment));
+		binder.bind("server", Bindable.ofInstance(this.serverProperties));
+		binder.bind("server.undertow", Bindable.ofInstance(this.undertowProperties));
 	}
 
 }

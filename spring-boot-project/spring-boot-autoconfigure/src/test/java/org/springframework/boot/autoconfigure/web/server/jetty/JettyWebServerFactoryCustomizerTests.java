@@ -43,11 +43,9 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
-import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.server.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.server.jetty.JettyWebServer;
 import org.springframework.boot.web.server.servlet.jetty.JettyServletWebServerFactory;
@@ -66,21 +64,22 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author HaiTao Zhang
  */
-@DirtiesUrlFactories
+// @DirtiesUrlFactories
 class JettyWebServerFactoryCustomizerTests {
 
-	private MockEnvironment environment;
+	private final MockEnvironment environment = new MockEnvironment();
 
-	private ServerProperties serverProperties;
+	private final ServerProperties serverProperties = new ServerProperties();
+
+	private final JettyServerProperties jettyProperties = new JettyServerProperties();
 
 	private JettyWebServerFactoryCustomizer customizer;
 
 	@BeforeEach
 	void setup() {
-		this.environment = new MockEnvironment();
-		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new JettyWebServerFactoryCustomizer(this.environment, this.serverProperties);
+		this.customizer = new JettyWebServerFactoryCustomizer(this.environment, this.serverProperties,
+				this.jettyProperties);
 	}
 
 	@Test
@@ -235,7 +234,7 @@ class JettyWebServerFactoryCustomizerTests {
 	private void assertDefaultThreadPoolSettings(ThreadPool threadPool) {
 		assertThat(threadPool).isInstanceOf(QueuedThreadPool.class);
 		QueuedThreadPool queuedThreadPool = (QueuedThreadPool) threadPool;
-		Jetty defaultProperties = new Jetty();
+		JettyServerProperties defaultProperties = new JettyServerProperties();
 		assertThat(queuedThreadPool.getMinThreads()).isEqualTo(defaultProperties.getThreads().getMin());
 		assertThat(queuedThreadPool.getMaxThreads()).isEqualTo(defaultProperties.getThreads().getMax());
 		assertThat(queuedThreadPool.getIdleTimeout())
@@ -384,8 +383,9 @@ class JettyWebServerFactoryCustomizerTests {
 
 	private void bind(String... inlinedProperties) {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, inlinedProperties);
-		new Binder(ConfigurationPropertySources.get(this.environment)).bind("server",
-				Bindable.ofInstance(this.serverProperties));
+		Binder binder = new Binder(ConfigurationPropertySources.get(this.environment));
+		binder.bind("server", Bindable.ofInstance(this.serverProperties));
+		binder.bind("server.jetty", Bindable.ofInstance(this.jettyProperties));
 	}
 
 	private JettyWebServer customizeAndGetServer() {

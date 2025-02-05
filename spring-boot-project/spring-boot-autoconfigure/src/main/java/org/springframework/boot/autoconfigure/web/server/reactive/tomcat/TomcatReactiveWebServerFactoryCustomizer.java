@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.server.reactive.tomcat;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
 
 /**
- * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to Tomcat reactive
- * web servers.
+ * {@link WebServerFactoryCustomizer} to apply {@link TomcatServerProperties} to Tomcat
+ * reactive web servers.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
@@ -30,15 +30,15 @@ import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServ
 public class TomcatReactiveWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> {
 
-	private final ServerProperties serverProperties;
+	private final TomcatServerProperties tomcatProperties;
 
-	public TomcatReactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
+	public TomcatReactiveWebServerFactoryCustomizer(TomcatServerProperties tomcatProperties) {
+		this.tomcatProperties = tomcatProperties;
 	}
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		factory.setDisableMBeanRegistry(!this.serverProperties.getTomcat().getMbeanregistry().isEnabled());
+		factory.setDisableMBeanRegistry(!this.tomcatProperties.getMbeanregistry().isEnabled());
 	}
 
 }

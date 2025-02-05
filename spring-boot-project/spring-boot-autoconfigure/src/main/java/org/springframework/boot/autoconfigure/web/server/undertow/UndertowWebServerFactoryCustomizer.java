@@ -30,8 +30,7 @@ import org.xnio.Option;
 import org.xnio.Options;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Undertow.Accesslog;
+import org.springframework.boot.autoconfigure.web.server.undertow.UndertowServerProperties.Accesslog;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -63,9 +62,13 @@ public class UndertowWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
-	public UndertowWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties) {
+	private final UndertowServerProperties undertowProperties;
+
+	public UndertowWebServerFactoryCustomizer(Environment environment, ServerProperties serverProperties,
+			UndertowServerProperties undertowProperties) {
 		this.environment = environment;
 		this.serverProperties = serverProperties;
+		this.undertowProperties = undertowProperties;
 	}
 
 	@Override
@@ -88,33 +91,38 @@ public class UndertowWebServerFactoryCustomizer
 
 	private void mapUndertowProperties(ConfigurableUndertowWebServerFactory factory, ServerOptions serverOptions) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		Undertow properties = this.serverProperties.getUndertow();
-		map.from(properties::getBufferSize).whenNonNull().asInt(DataSize::toBytes).to(factory::setBufferSize);
-		ServerProperties.Undertow.Threads threadProperties = properties.getThreads();
+		map.from(this.undertowProperties::getBufferSize)
+			.whenNonNull()
+			.asInt(DataSize::toBytes)
+			.to(factory::setBufferSize);
+		UndertowServerProperties.Threads threadProperties = this.undertowProperties.getThreads();
 		map.from(threadProperties::getIo).to(factory::setIoThreads);
 		map.from(threadProperties::getWorker).to(factory::setWorkerThreads);
-		map.from(properties::getDirectBuffers).to(factory::setUseDirectBuffers);
-		map.from(properties::getMaxHttpPostSize)
+		map.from(this.undertowProperties::getDirectBuffers).to(factory::setUseDirectBuffers);
+		map.from(this.undertowProperties::getMaxHttpPostSize)
 			.as(DataSize::toBytes)
 			.when(this::isPositive)
 			.to(serverOptions.option(UndertowOptions.MAX_ENTITY_SIZE));
-		map.from(properties::getMaxParameters).to(serverOptions.option(UndertowOptions.MAX_PARAMETERS));
-		map.from(properties::getMaxHeaders).to(serverOptions.option(UndertowOptions.MAX_HEADERS));
-		map.from(properties::getMaxCookies).to(serverOptions.option(UndertowOptions.MAX_COOKIES));
-		mapSlashProperties(properties, serverOptions);
-		map.from(properties::isDecodeUrl).to(serverOptions.option(UndertowOptions.DECODE_URL));
-		map.from(properties::getUrlCharset).as(Charset::name).to(serverOptions.option(UndertowOptions.URL_CHARSET));
-		map.from(properties::isAlwaysSetKeepAlive).to(serverOptions.option(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
-		map.from(properties::getNoRequestTimeout)
+		map.from(this.undertowProperties::getMaxParameters).to(serverOptions.option(UndertowOptions.MAX_PARAMETERS));
+		map.from(this.undertowProperties::getMaxHeaders).to(serverOptions.option(UndertowOptions.MAX_HEADERS));
+		map.from(this.undertowProperties::getMaxCookies).to(serverOptions.option(UndertowOptions.MAX_COOKIES));
+		mapSlashProperties(this.undertowProperties, serverOptions);
+		map.from(this.undertowProperties::isDecodeUrl).to(serverOptions.option(UndertowOptions.DECODE_URL));
+		map.from(this.undertowProperties::getUrlCharset)
+			.as(Charset::name)
+			.to(serverOptions.option(UndertowOptions.URL_CHARSET));
+		map.from(this.undertowProperties::isAlwaysSetKeepAlive)
+			.to(serverOptions.option(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
+		map.from(this.undertowProperties::getNoRequestTimeout)
 			.asInt(Duration::toMillis)
 			.to(serverOptions.option(UndertowOptions.NO_REQUEST_TIMEOUT));
-		map.from(properties.getOptions()::getServer).to(serverOptions.forEach(serverOptions::option));
+		map.from(this.undertowProperties.getOptions()::getServer).to(serverOptions.forEach(serverOptions::option));
 		SocketOptions socketOptions = new SocketOptions(factory);
-		map.from(properties.getOptions()::getSocket).to(socketOptions.forEach(socketOptions::option));
+		map.from(this.undertowProperties.getOptions()::getSocket).to(socketOptions.forEach(socketOptions::option));
 	}
 
 	@SuppressWarnings({ "deprecation", "removal" })
-	private void mapSlashProperties(Undertow properties, ServerOptions serverOptions) {
+	private void mapSlashProperties(UndertowServerProperties properties, ServerOptions serverOptions) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
 		map.from(properties::getDecodeSlash).to(serverOptions.option(UndertowOptions.DECODE_SLASH));
@@ -126,7 +134,7 @@ public class UndertowWebServerFactoryCustomizer
 	}
 
 	private void mapAccessLogProperties(ConfigurableUndertowWebServerFactory factory) {
-		Accesslog properties = this.serverProperties.getUndertow().getAccesslog();
+		Accesslog properties = this.undertowProperties.getAccesslog();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::isEnabled).to(factory::setAccessLogEnabled);
 		map.from(properties::getDir).to(factory::setAccessLogDirectory);

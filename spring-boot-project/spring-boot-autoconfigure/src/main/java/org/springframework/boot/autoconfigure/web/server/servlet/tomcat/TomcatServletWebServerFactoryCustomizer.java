@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.server.servlet.tomcat;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.tomcat.ConfigurableTomcatWebServerFactory;
@@ -24,8 +24,8 @@ import org.springframework.core.Ordered;
 import org.springframework.util.ObjectUtils;
 
 /**
- * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to Tomcat web
- * servers.
+ * {@link WebServerFactoryCustomizer} to apply {@link TomcatServerProperties} to Tomcat
+ * web servers.
  *
  * @author Brian Clozel
  * @author Phillip Webb
@@ -33,10 +33,10 @@ import org.springframework.util.ObjectUtils;
 class TomcatServletWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<TomcatServletWebServerFactory>, Ordered {
 
-	private final ServerProperties serverProperties;
+	private final TomcatServerProperties tomcatProperties;
 
-	TomcatServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
+	TomcatServletWebServerFactoryCustomizer(TomcatServerProperties tomcatProperties) {
+		this.tomcatProperties = tomcatProperties;
 	}
 
 	@Override
@@ -46,15 +46,14 @@ class TomcatServletWebServerFactoryCustomizer
 
 	@Override
 	public void customize(TomcatServletWebServerFactory factory) {
-		ServerProperties.Tomcat tomcatProperties = this.serverProperties.getTomcat();
-		if (!ObjectUtils.isEmpty(tomcatProperties.getAdditionalTldSkipPatterns())) {
-			factory.getTldSkipPatterns().addAll(tomcatProperties.getAdditionalTldSkipPatterns());
+		if (!ObjectUtils.isEmpty(this.tomcatProperties.getAdditionalTldSkipPatterns())) {
+			factory.getTldSkipPatterns().addAll(this.tomcatProperties.getAdditionalTldSkipPatterns());
 		}
-		if (tomcatProperties.getRedirectContextRoot() != null) {
-			customizeRedirectContextRoot(factory, tomcatProperties.getRedirectContextRoot());
+		if (this.tomcatProperties.getRedirectContextRoot() != null) {
+			customizeRedirectContextRoot(factory, this.tomcatProperties.getRedirectContextRoot());
 		}
-		customizeUseRelativeRedirects(factory, tomcatProperties.isUseRelativeRedirects());
-		factory.setDisableMBeanRegistry(!tomcatProperties.getMbeanregistry().isEnabled());
+		customizeUseRelativeRedirects(factory, this.tomcatProperties.isUseRelativeRedirects());
+		factory.setDisableMBeanRegistry(!this.tomcatProperties.getMbeanregistry().isEnabled());
 	}
 
 	private void customizeRedirectContextRoot(ConfigurableTomcatWebServerFactory factory, boolean redirectContextRoot) {

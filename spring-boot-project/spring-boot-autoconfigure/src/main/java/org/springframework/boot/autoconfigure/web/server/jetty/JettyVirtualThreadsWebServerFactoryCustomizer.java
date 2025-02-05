@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.web.server.jetty;
 import org.eclipse.jetty.util.VirtualThreads;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.jetty.ConfigurableJettyWebServerFactory;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.Ordered;
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
@@ -32,18 +35,21 @@ import org.springframework.util.Assert;
  * @since 4.0.0
  */
 public class JettyVirtualThreadsWebServerFactoryCustomizer
-		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
+		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered, EnvironmentAware {
 
-	private final ServerProperties serverProperties;
+	private final JettyServerProperties jettyProperties;
 
-	public JettyVirtualThreadsWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
+	private final boolean bind;
+
+	public JettyVirtualThreadsWebServerFactoryCustomizer(JettyServerProperties jettyProperties) {
+		this.jettyProperties = jettyProperties;
+		this.bind = false;
 	}
 
 	@Override
 	public void customize(ConfigurableJettyWebServerFactory factory) {
 		Assert.state(VirtualThreads.areSupported(), "Virtual threads are not supported");
-		QueuedThreadPool threadPool = JettyThreadPool.create(this.serverProperties.getJetty().getThreads());
+		QueuedThreadPool threadPool = JettyThreadPool.create(this.jettyProperties.getThreads());
 		threadPool.setVirtualThreadsExecutor(VirtualThreads.getNamedVirtualThreadsExecutor("jetty-"));
 		factory.setThreadPool(threadPool);
 	}
@@ -51,6 +57,13 @@ public class JettyVirtualThreadsWebServerFactoryCustomizer
 	@Override
 	public int getOrder() {
 		return JettyWebServerFactoryCustomizer.ORDER + 1;
+	}
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		if (this.bind) {
+			Binder.get(environment).bind("server.jetty", Bindable.ofInstance(this.jettyProperties));
+		}
 	}
 
 }

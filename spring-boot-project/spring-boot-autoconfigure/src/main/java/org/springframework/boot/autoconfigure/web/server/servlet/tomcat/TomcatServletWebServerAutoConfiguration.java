@@ -32,7 +32,9 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.server.servlet.ForwardedHeaderFilterCustomizer;
 import org.springframework.boot.autoconfigure.web.server.servlet.ServletWebServerConfiguration;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatWebServerConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
 import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.tomcat.TomcatConnectorCustomizer;
@@ -51,8 +53,15 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration
 @ConditionalOnClass({ ServletRequest.class, Tomcat.class, UpgradeProtocol.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
+@EnableConfigurationProperties(TomcatServerProperties.class)
 @Import({ ServletWebServerConfiguration.class, TomcatWebServerConfiguration.class })
 public class TomcatServletWebServerAutoConfiguration {
+
+	private final TomcatServerProperties tomcatProperties;
+
+	public TomcatServletWebServerAutoConfiguration(TomcatServerProperties tomcatProperties) {
+		this.tomcatProperties = tomcatProperties;
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
@@ -68,14 +77,15 @@ public class TomcatServletWebServerAutoConfiguration {
 	}
 
 	@Bean
-	TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		return new TomcatServletWebServerFactoryCustomizer(serverProperties);
+	TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
+			TomcatServerProperties tomcatProperties) {
+		return new TomcatServletWebServerFactoryCustomizer(tomcatProperties);
 	}
 
 	@Bean
 	@ConditionalOnProperty(name = "server.forward-headers-strategy", havingValue = "framework")
 	ForwardedHeaderFilterCustomizer tomcatForwardedHeaderFilterCustomizer(ServerProperties serverProperties) {
-		return (filter) -> filter.setRelativeRedirects(serverProperties.getTomcat().isUseRelativeRedirects());
+		return (filter) -> filter.setRelativeRedirects(this.tomcatProperties.isUseRelativeRedirects());
 	}
 
 }
