@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.jms;
 
-import java.util.Map;
-
 import jakarta.jms.ConnectionFactory;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
@@ -52,8 +51,8 @@ public class JmsHealthContributorAutoConfiguration
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "jmsHealthIndicator", "jmsHealthContributor" })
-	public HealthContributor jmsHealthContributor(Map<String, ConnectionFactory> connectionFactories) {
-		return createContributor(connectionFactories);
+	public HealthContributor jmsHealthContributor(ConfigurableListableBeanFactory beanFactory) {
+		return createContributor(beanFactory, ConnectionFactory.class);
 	}
 
 }

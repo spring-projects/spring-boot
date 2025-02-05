@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,11 +86,11 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withUserConfiguration(TwoDataSourcesConfiguration.class)
 			.run((context) -> {
-				context.getBean("firstDataSource", DataSource.class).getConnection().getMetaData();
-				context.getBean("secondOne", DataSource.class).getConnection().getMetaData();
+				context.getBean("nonDefaultDataSource", DataSource.class).getConnection().getMetaData();
+				context.getBean("nonAutowireDataSource", DataSource.class).getConnection().getMetaData();
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
-				registry.get("jdbc.connections.max").tags("name", "first").meter();
-				registry.get("jdbc.connections.max").tags("name", "secondOne").meter();
+				assertThat(registry.find("jdbc.connections.max").meters()).map((meter) -> meter.getId().getTag("name"))
+					.containsOnly("dataSource", "nonDefault");
 			});
 	}
 
@@ -101,11 +101,11 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 					(context) -> context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
 			.withUserConfiguration(TwoDataSourcesConfiguration.class)
 			.run((context) -> {
-				context.getBean("firstDataSource", DataSource.class).getConnection().getMetaData();
-				context.getBean("secondOne", DataSource.class).getConnection().getMetaData();
+				context.getBean("nonDefaultDataSource", DataSource.class).getConnection().getMetaData();
+				context.getBean("nonAutowireDataSource", DataSource.class).getConnection().getMetaData();
 				MeterRegistry registry = context.getBean(MeterRegistry.class);
-				registry.get("jdbc.connections.max").tags("name", "first").meter();
-				registry.get("jdbc.connections.max").tags("name", "secondOne").meter();
+				assertThat(registry.find("jdbc.connections.max").meters()).map((meter) -> meter.getId().getTag("name"))
+					.containsOnly("dataSource", "nonDefault");
 			});
 	}
 
@@ -239,13 +239,13 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class TwoDataSourcesConfiguration {
 
-		@Bean
-		DataSource firstDataSource() {
+		@Bean(defaultCandidate = false)
+		DataSource nonDefaultDataSource() {
 			return createDataSource();
 		}
 
-		@Bean
-		DataSource secondOne() {
+		@Bean(autowireCandidate = false)
+		DataSource nonAutowireDataSource() {
 			return createDataSource();
 		}
 
