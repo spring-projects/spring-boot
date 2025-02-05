@@ -18,21 +18,20 @@ jobs:
             name: Windows
         java:
           - version: 17
-            toolchain: false
+            toolchain: true
           - version: 21
-            toolchain: false
+            toolchain: true
           - version: 22
-            toolchain: false
+            toolchain: true
           - version: 23
             toolchain: true
           - version: 24
-            early-access: true
-            toolchain: true
+            toolchain: false
         exclude:
           - os:
               name: Linux
             java:
-              version: 17
+              version: 24
           - os:
               name: ${{ github.repository == 'spring-projects/spring-boot-commercial' && 'Windows' }}
     steps:
