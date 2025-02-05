@@ -1,0 +1,27 @@
+{
+  "installation": {
+    "version": "21.0.1",
+    "plugins": {
+      "@nx/gradle": "21.0.1"
+    }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/gradle",
+      "options": {
+        "testTargetName": "test",
+        "classesTargetName": "classes",
+        "buildTargetName": "build"
+      }
+    }
+  ],
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/src/test/**/*"
+    ]
+  }
+}
