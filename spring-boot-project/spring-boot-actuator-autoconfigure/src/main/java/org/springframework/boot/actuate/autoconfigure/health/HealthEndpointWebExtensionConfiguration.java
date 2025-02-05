@@ -44,10 +44,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.jersey.DefaultJerseyApplicationPath;
+import org.springframework.boot.autoconfigure.jersey.JerseyApplicationPath;
 import org.springframework.boot.autoconfigure.jersey.JerseyProperties;
 import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
-import org.springframework.boot.autoconfigure.web.servlet.DefaultJerseyApplicationPath;
-import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;

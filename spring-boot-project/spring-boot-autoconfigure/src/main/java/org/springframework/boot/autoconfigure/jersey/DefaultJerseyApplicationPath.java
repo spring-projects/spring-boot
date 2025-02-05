@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.servlet;
+package org.springframework.boot.autoconfigure.jersey;
 
 import jakarta.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import org.springframework.boot.autoconfigure.jersey.JerseyProperties;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -30,7 +29,7 @@ import org.springframework.util.StringUtils;
  * {@link JerseyProperties} or the {@code @ApplicationPath} annotation.
  *
  * @author Madhura Bhave
- * @since 2.1.0
+ * @since 4.0.0
  */
 public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 
