@@ -1,4 +1,5 @@
 plugins {
+	id "dev.nx.gradle.native" version "+"
 	id "java-gradle-plugin"
 	id "io.spring.javaformat" version "${javaFormatVersion}"
 	id "checkstyle"
