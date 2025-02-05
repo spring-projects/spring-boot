@@ -18,7 +18,6 @@ allprojects {
 
 subprojects {
 	apply plugin: "org.springframework.boot.conventions"
-	// apply plugin: "dev.nx.gradle.project-graph"
 
 	repositories {
 		mavenLocal()
