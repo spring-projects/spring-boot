@@ -43,8 +43,8 @@ public class TomcatWebServerConfiguration {
 
 	@Bean
 	TomcatWebServerFactoryCustomizer tomcatWebServerFactoryCustomizer(Environment environment,
-			ServerProperties serverProperties) {
-		return new TomcatWebServerFactoryCustomizer(environment, serverProperties);
+			ServerProperties serverProperties, TomcatServerProperties tomcatProperties) {
+		return new TomcatWebServerFactoryCustomizer(environment, serverProperties, tomcatProperties);
 	}
 
 	@Bean

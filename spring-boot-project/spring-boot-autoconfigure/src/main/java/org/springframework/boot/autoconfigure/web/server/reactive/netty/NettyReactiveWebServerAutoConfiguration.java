@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigurations.ReactorResourceFactoryConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.server.reactive.ReactiveWebServerConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.reactive.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.server.reactive.netty.NettyRouteProvider;
@@ -45,6 +46,7 @@ import org.springframework.http.client.ReactorResourceFactory;
  */
 @AutoConfiguration
 @ConditionalOnClass({ ReactiveHttpInputMessage.class, HttpServer.class })
+@EnableConfigurationProperties(NettyServerProperties.class)
 @Import({ ReactiveWebServerConfiguration.class, ReactorResourceFactoryConfiguration.class })
 public class NettyReactiveWebServerAutoConfiguration {
 
@@ -61,8 +63,8 @@ public class NettyReactiveWebServerAutoConfiguration {
 
 	@Bean
 	NettyReactiveWebServerFactoryCustomizer nettyWebServerFactoryCustomizer(Environment environment,
-			ServerProperties serverProperties) {
-		return new NettyReactiveWebServerFactoryCustomizer(environment, serverProperties);
+			ServerProperties serverProperties, NettyServerProperties nettyProperties) {
+		return new NettyReactiveWebServerFactoryCustomizer(environment, serverProperties, nettyProperties);
 	}
 
 }

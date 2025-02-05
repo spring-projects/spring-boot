@@ -54,9 +54,11 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 class NettyReactiveWebServerFactoryCustomizerTests {
 
-	private MockEnvironment environment;
+	private final MockEnvironment environment = new MockEnvironment();
 
-	private ServerProperties serverProperties;
+	private final ServerProperties serverProperties = new ServerProperties();
+
+	private final NettyServerProperties nettyProperties = new NettyServerProperties();
 
 	private NettyReactiveWebServerFactoryCustomizer customizer;
 
@@ -65,10 +67,9 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 
 	@BeforeEach
 	void setup() {
-		this.environment = new MockEnvironment();
-		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
-		this.customizer = new NettyReactiveWebServerFactoryCustomizer(this.environment, this.serverProperties);
+		this.customizer = new NettyReactiveWebServerFactoryCustomizer(this.environment, this.serverProperties,
+				this.nettyProperties);
 	}
 
 	@Test
@@ -105,7 +106,7 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 
 	@Test
 	void setConnectionTimeout() {
-		this.serverProperties.getNetty().setConnectionTimeout(Duration.ofSeconds(1));
+		this.nettyProperties.setConnectionTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyConnectionTimeout(factory, 1000);
@@ -113,7 +114,7 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 
 	@Test
 	void setIdleTimeout() {
-		this.serverProperties.getNetty().setIdleTimeout(Duration.ofSeconds(1));
+		this.nettyProperties.setIdleTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyIdleTimeout(factory, Duration.ofSeconds(1));
@@ -121,7 +122,7 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 
 	@Test
 	void setMaxKeepAliveRequests() {
-		this.serverProperties.getNetty().setMaxKeepAliveRequests(100);
+		this.nettyProperties.setMaxKeepAliveRequests(100);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyMaxKeepAliveRequests(factory, 100);
@@ -139,7 +140,7 @@ class NettyReactiveWebServerFactoryCustomizerTests {
 
 	@Test
 	void configureHttpRequestDecoder() {
-		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
+		NettyServerProperties nettyProperties = this.nettyProperties;
 		this.serverProperties.setMaxHttpRequestHeaderSize(DataSize.ofKilobytes(24));
 		nettyProperties.setValidateHeaders(false);
 		nettyProperties.setInitialBufferSize(DataSize.ofBytes(512));
