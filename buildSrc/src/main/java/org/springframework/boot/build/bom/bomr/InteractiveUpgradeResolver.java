@@ -23,10 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
 
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.VersionAlignment;
+import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
 /**
  * Interactive {@link UpgradeResolver} that uses command line input to choose the upgrades
@@ -69,9 +72,21 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 		if (versionOptions.isEmpty()) {
 			return null;
 		}
-		VersionOption defaultOption = new VersionOption(library.getVersion().getVersion());
+		VersionOption defaultOption = defaultOption(library);
 		VersionOption selected = selectOption(defaultOption, library, versionOptions);
 		return (selected.equals(defaultOption)) ? null : selected.upgrade(library);
+	}
+
+	private VersionOption defaultOption(Library library) {
+		VersionAlignment alignment = library.getVersionAlignment();
+		Set<String> alignedVersions = (alignment != null) ? alignment.resolve() : null;
+		if (alignedVersions != null && alignedVersions.size() == 1) {
+			DependencyVersion alignedVersion = DependencyVersion.parse(alignedVersions.iterator().next());
+			if (alignedVersion.equals(library.getVersion().getVersion())) {
+				return new VersionOption.AlignedVersionOption(alignedVersion, alignment);
+			}
+		}
+		return new VersionOption(library.getVersion().getVersion());
 	}
 
 	private VersionOption selectOption(VersionOption defaultOption, Library library,
