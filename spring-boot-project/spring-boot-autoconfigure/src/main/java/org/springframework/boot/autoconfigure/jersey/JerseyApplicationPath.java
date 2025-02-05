@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.web.servlet;
+package org.springframework.boot.autoconfigure.jersey;
 
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 
@@ -23,7 +23,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
  * application path that serves as the base URI for the application.
  *
  * @author Madhura Bhave
- * @since 2.0.7
+ * @since 4.0.0
  */
 @FunctionalInterface
 public interface JerseyApplicationPath {
