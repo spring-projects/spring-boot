@@ -5,7 +5,7 @@ plugins {
 	id "org.springframework.boot.antora-contributor"
 	id "org.springframework.boot.antora-dependencies"
 	id "org.springframework.boot.deployed"
-	// id 'org.jetbrains.kotlin.jvm'
+	id 'org.jetbrains.kotlin.jvm'
 }
 
 description = "Spring Boot Docs"
