@@ -50,7 +50,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'liberica'
-          java-version: 17
+          java-version: 21
       - name: Set Up Homebrew
         if: ${{ !vars.COMMERCIAL }}
         uses: Homebrew/actions/setup-homebrew@7657c9512f50e1c35b640971116425935bab3eea

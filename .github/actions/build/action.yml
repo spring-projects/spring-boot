@@ -1,51 +1,51 @@
 name: Build
-description: 'Builds the project, optionally publishing it to a local deployment repository'
+description: "Builds the project, optionally publishing it to a local deployment repository"
 inputs:
   commercial-release-repository-url:
-    description: 'URL of the release repository'
+    description: "URL of the release repository"
     required: false
   commercial-repository-password:
-    description: 'Password for authentication with the commercial repository'
+    description: "Password for authentication with the commercial repository"
     required: false
   commercial-repository-username:
-    description: 'Username for authentication with the commercial repository'
+    description: "Username for authentication with the commercial repository"
     required: false
   commercial-snapshot-repository-url:
-    description: 'URL of the snapshot repository'
+    description: "URL of the snapshot repository"
     required: false
   develocity-access-key:
-    description: 'Access key for authentication with ge.spring.io'
+    description: "Access key for authentication with ge.spring.io"
     required: false
   gradle-cache-read-only:
-    description: 'Whether Gradle''s cache should be read only'
+    description: "Whether Gradle's cache should be read only"
     required: false
-    default: 'true'
+    default: "true"
   java-distribution:
-    description: 'Java distribution to use'
+    description: "Java distribution to use"
     required: false
-    default: 'liberica'
+    default: "liberica"
   java-early-access:
-    description: 'Whether the Java version is in early access'
+    description: "Whether the Java version is in early access"
     required: false
-    default: 'false'
+    default: "false"
   java-toolchain:
-    description: 'Whether a Java toolchain should be used'
+    description: "Whether a Java toolchain should be used"
     required: false
-    default: 'false'
+    default: "false"
   java-version:
-    description: 'Java version to compile and test with'
+    description: "Java version to compile and test with"
     required: false
-    default: '17'
+    default: "21"
   publish:
-    description: 'Whether to publish artifacts ready for deployment to Artifactory'
+    description: "Whether to publish artifacts ready for deployment to Artifactory"
     required: false
-    default: 'false'
+    default: "false"
 outputs:
   build-scan-url:
-    description: 'URL, if any, of the build scan produced by the build'
+    description: "URL, if any, of the build scan produced by the build"
     value: ${{ (inputs.publish == 'true' && steps.publish.outputs.build-scan-url) || steps.build.outputs.build-scan-url }}
   version:
-    description: 'Version that was built'
+    description: "Version that was built"
     value: ${{ steps.read-version.outputs.version }}
 runs:
   using: composite
@@ -68,7 +68,7 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: ./gradlew build
+      run: ./gradlew :spring-boot-project:spring-boot:build :spring-boot-project:spring-boot-actuator:build :spring-boot-project:spring-boot-devtools:build :spring-boot-project:spring-boot-autoconfigure:build --info
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}
