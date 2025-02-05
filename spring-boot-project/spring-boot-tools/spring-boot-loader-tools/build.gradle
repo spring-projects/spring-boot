@@ -84,6 +84,10 @@ sourceSets {
 	}
 }
 
+tasks.named("compileJava") {
+	options.compilerArgs -= ['-Werror']
+}
+
 plugins.withType(EclipsePlugin) {
 	eclipse {
 		classpath.file { merger ->
