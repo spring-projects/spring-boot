@@ -35,7 +35,7 @@ inputs:
   java-version:
     description: 'Java version to compile and test with'
     required: false
-    default: '17'
+    default: '21'
   publish:
     description: 'Whether to publish artifacts ready for deployment to Artifactory'
     required: false
@@ -68,7 +68,7 @@ runs:
         COMMERCIAL_REPO_PASSWORD: ${{ inputs.commercial-repository-password }}
         COMMERCIAL_REPO_USERNAME: ${{ inputs.commercial-repository-username }}
         COMMERCIAL_SNAPSHOT_REPO_URL: ${{ inputs.commercial-snapshot-repository-url }}
-      run: ./gradlew build
+      run: ./nx run-many --target=build --verbose
     - name: Publish
       id: publish
       if: ${{ inputs.publish == 'true' }}
