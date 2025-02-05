@@ -1,5 +1,5 @@
 launch-templates:
-  linux-medium-jvm:
+  linux-extra-large-plus-jvm:
     resource-class: 'docker_linux_amd64/extra_large+'
     image: 'ubuntu22.04-node20.11-v10'
     init-steps:
@@ -7,7 +7,7 @@ launch-templates:
         script: java -version
 
       - name: Checkout
-        uses: 'nrwl/nx-cloud-workflows/v3.6/workflow-steps/checkout/main.yaml'
+        uses: 'nrwl/nx-cloud-workflows/v4/workflow-steps/checkout/main.yaml'
 
       - name: Setup Java 21
         script: |
