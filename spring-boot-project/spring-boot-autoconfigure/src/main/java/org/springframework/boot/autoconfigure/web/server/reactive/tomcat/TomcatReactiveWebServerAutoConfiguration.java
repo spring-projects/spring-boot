@@ -24,9 +24,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.server.reactive.ReactiveWebServerConfiguration;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatWebServerConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.tomcat.TomcatConnectorCustomizer;
@@ -46,13 +47,14 @@ import org.springframework.http.ReactiveHttpInputMessage;
 @AutoConfiguration
 @ConditionalOnClass({ ReactiveHttpInputMessage.class, Tomcat.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@EnableConfigurationProperties(TomcatServerProperties.class)
 @Import({ TomcatWebServerConfiguration.class, ReactiveWebServerConfiguration.class })
 public class TomcatReactiveWebServerAutoConfiguration {
 
 	@Bean
 	TomcatReactiveWebServerFactoryCustomizer tomcatReactiveWebServerFactoryCustomizer(
-			ServerProperties serverProperties) {
-		return new TomcatReactiveWebServerFactoryCustomizer(serverProperties);
+			TomcatServerProperties tomcatProperties) {
+		return new TomcatReactiveWebServerFactoryCustomizer(tomcatProperties);
 	}
 
 	@Bean

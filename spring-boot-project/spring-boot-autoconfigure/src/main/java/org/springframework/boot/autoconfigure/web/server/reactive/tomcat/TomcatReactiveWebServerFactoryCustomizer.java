@@ -16,18 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.server.reactive.tomcat;
 
-import org.apache.catalina.core.AprLifecycleListener;
-
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat;
-import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.UseApr;
+import org.springframework.boot.autoconfigure.web.server.tomcat.TomcatServerProperties;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
-import org.springframework.util.Assert;
 
 /**
- * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to Tomcat reactive
- * web servers.
+ * {@link WebServerFactoryCustomizer} to apply {@link TomcatServerProperties} to Tomcat
+ * reactive web servers.
  *
  * @author Andy Wilkinson
  * @since 4.0.0
@@ -35,35 +30,15 @@ import org.springframework.util.Assert;
 public class TomcatReactiveWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> {
 
-	private final ServerProperties serverProperties;
+	private final TomcatServerProperties tomcatProperties;
 
-	public TomcatReactiveWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
+	public TomcatReactiveWebServerFactoryCustomizer(TomcatServerProperties tomcatProperties) {
+		this.tomcatProperties = tomcatProperties;
 	}
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		Tomcat tomcatProperties = this.serverProperties.getTomcat();
-		factory.setDisableMBeanRegistry(!tomcatProperties.getMbeanregistry().isEnabled());
-		factory.setUseApr(getUseApr(tomcatProperties.getUseApr()));
-	}
-
-	private boolean getUseApr(UseApr useApr) {
-		return switch (useApr) {
-			case ALWAYS -> {
-				Assert.state(isAprAvailable(), "APR has been configured to 'ALWAYS', but it's not available");
-				yield true;
-			}
-			case WHEN_AVAILABLE -> isAprAvailable();
-			case NEVER -> false;
-		};
-	}
-
-	private boolean isAprAvailable() {
-		// At least one instance of AprLifecycleListener has to be created for
-		// isAprAvailable() to work
-		new AprLifecycleListener();
-		return AprLifecycleListener.isAprAvailable();
+		factory.setDisableMBeanRegistry(!this.tomcatProperties.getMbeanregistry().isEnabled());
 	}
 
 }
