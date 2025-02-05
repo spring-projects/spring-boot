@@ -235,26 +235,18 @@ class JavaConventions {
 		if (!project.hasProperty("toolchainVersion")) {
 			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 			javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
+			javaPluginExtension.setTargetCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
 		}
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
+			compile.getOptions().getRelease().set(17);
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
 			}
-			if (project.hasProperty("toolchainVersion")) {
-				compile.setSourceCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
-				compile.setTargetCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
-			}
-			else if (buildingWithJava17(project)) {
-				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
-						"-Xlint:varargs"));
-			}
+			args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+					"-Xlint:varargs"));
 		});
-	}
-
-	private boolean buildingWithJava17(Project project) {
-		return !project.hasProperty("toolchainVersion") && JavaVersion.current() == JavaVersion.VERSION_17;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
