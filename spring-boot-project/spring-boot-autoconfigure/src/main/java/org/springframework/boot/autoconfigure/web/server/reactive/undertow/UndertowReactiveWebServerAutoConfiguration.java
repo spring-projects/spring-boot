@@ -25,7 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.server.reactive.ReactiveWebServerConfiguration;
+import org.springframework.boot.autoconfigure.web.server.undertow.UndertowServerProperties;
 import org.springframework.boot.autoconfigure.web.server.undertow.UndertowWebServerConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.reactive.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.boot.web.server.undertow.UndertowBuilderCustomizer;
@@ -43,6 +45,7 @@ import org.springframework.http.ReactiveHttpInputMessage;
 @AutoConfiguration
 @ConditionalOnClass({ ReactiveHttpInputMessage.class, Undertow.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@EnableConfigurationProperties(UndertowServerProperties.class)
 @Import({ UndertowWebServerConfiguration.class, ReactiveWebServerConfiguration.class })
 public class UndertowReactiveWebServerAutoConfiguration {
 
