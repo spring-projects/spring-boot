@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
-import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementChildContextConfiguration.AccessLogCustomizer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,38 +30,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ServletManagementChildContextConfigurationTests {
 
-	@Test
-	void accessLogCustomizer() {
-		AccessLogCustomizer customizer = new AccessLogCustomizer("prefix") {
-		};
-		assertThat(customizer.customizePrefix(null)).isEqualTo("prefix");
-		assertThat(customizer.customizePrefix("existing")).isEqualTo("prefixexisting");
-		assertThat(customizer.customizePrefix("prefixexisting")).isEqualTo("prefixexisting");
-	}
-
-	@Test
-	void accessLogCustomizerWithNullPrefix() {
-		AccessLogCustomizer customizer = new AccessLogCustomizer(null) {
-		};
-		assertThat(customizer.customizePrefix(null)).isEqualTo(null);
-		assertThat(customizer.customizePrefix("existing")).isEqualTo("existing");
-	}
-
-	@Test
-	// gh-45857
-	void failsWithoutManagementServerPropertiesBeanFromParent() {
-		new WebApplicationContextRunner().run((parent) -> new WebApplicationContextRunner().withParent(parent)
-			.withUserConfiguration(ServletManagementChildContextConfiguration.class)
-			.run((context) -> assertThat(context).hasFailed()));
-	}
-
-	@Test
-	// gh-45857
-	void succeedsWithManagementServerPropertiesBeanFromParent() {
+	@Test // gh-45857
+	void doesNotCreateManagementServerPropertiesInChildContext() {
 		new WebApplicationContextRunner().withBean(ManagementServerProperties.class)
 			.run((parent) -> new WebApplicationContextRunner().withParent(parent)
 				.withUserConfiguration(ServletManagementChildContextConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed()));
+				.run((context) -> assertThat(context.getBean(ManagementServerProperties.class))
+					.isSameAs(parent.getBean(ManagementServerProperties.class))));
 	}
 
 }

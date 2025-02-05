@@ -78,6 +78,7 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-proxy")
 	optional("io.r2dbc:r2dbc-spi")
+	optional("io.undertow:undertow-servlet")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")

@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementChildContextConfiguration.AccessLogCustomizer;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 
@@ -30,23 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  */
 class ReactiveManagementChildContextConfigurationTests {
-
-	@Test
-	void accessLogCustomizer() {
-		AccessLogCustomizer customizer = new AccessLogCustomizer("prefix") {
-		};
-		assertThat(customizer.customizePrefix(null)).isEqualTo("prefix");
-		assertThat(customizer.customizePrefix("existing")).isEqualTo("prefixexisting");
-		assertThat(customizer.customizePrefix("prefixexisting")).isEqualTo("prefixexisting");
-	}
-
-	@Test
-	void accessLogCustomizerWithNullPrefix() {
-		AccessLogCustomizer customizer = new AccessLogCustomizer(null) {
-		};
-		assertThat(customizer.customizePrefix(null)).isEqualTo(null);
-		assertThat(customizer.customizePrefix("existing")).isEqualTo("existing");
-	}
 
 	@Test
 	// gh-45857
