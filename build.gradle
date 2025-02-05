@@ -1,4 +1,5 @@
 plugins {
+	id "dev.nx.gradle.native" version "+"
 	id "base"
 	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
 }
@@ -9,10 +10,15 @@ defaultTasks 'build'
 
 allprojects {
 	group = "org.springframework.boot"
+	apply {
+		plugin("project-report")
+    	plugin("dev.nx.gradle.native")
+	}
 }
 
 subprojects {
 	apply plugin: "org.springframework.boot.conventions"
+	// apply plugin: "dev.nx.gradle.native"
 
 	repositories {
 		mavenCentral()
