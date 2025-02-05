@@ -7,7 +7,7 @@
   },
   "plugins": [
     {
-      "plugin": "@nx/gradle",
+      "plugin": "@nx/gradle/plugin-v1",
       "options": {
         "testTargetName": "test",
         "classesTargetName": "classes",
