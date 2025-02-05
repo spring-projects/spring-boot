@@ -1,65 +1,41 @@
 name: CI
+
 on:
   push:
     branches:
       - main
+  pull_request:
+
+permissions:
+  actions: read
+  contents: read
+
 jobs:
-  ci:
-    name: '${{ matrix.os.name}} | Java ${{ matrix.java.version}}'
-    if: ${{ github.repository == 'spring-projects/spring-boot' || github.repository == 'spring-projects/spring-boot-commercial' }}
-    runs-on: ${{ matrix.os.id }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - id: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
-            name: Linux
-          - id: windows-latest
-            name: Windows
-        java:
-          - version: 17
-            toolchain: false
-          - version: 21
-            toolchain: false
-          - version: 22
-            toolchain: false
-          - version: 23
-            toolchain: true
-        exclude:
-          - os:
-              name: Linux
-            java:
-              version: 17
-          - os:
-              name: ${{ github.repository == 'spring-projects/spring-boot-commercial' && 'Windows' }}
+  main:
+    runs-on: ubuntu-latest
     steps:
-      - name: Prepare Windows runner
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          git config --global core.autocrlf true
-          git config --global core.longPaths true
-          Stop-Service -name Docker
-      - name: Check Out Code
-        uses: actions/checkout@v4
-      - name: Build
-        id: build
-        uses: ./.github/actions/build
+      - uses: actions/checkout@v4
         with:
-          commercial-release-repository-url: ${{ vars.COMMERCIAL_RELEASE_REPO_URL }}
-          commercial-repository-password: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_PASSWORD }}
-          commercial-repository-username: ${{ secrets.COMMERCIAL_ARTIFACTORY_RO_USERNAME }}
-          commercial-snapshot-repository-url: ${{ vars.COMMERCIAL_SNAPSHOT_REPO_URL }}
-          develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-          gradle-cache-read-only: false
-          java-early-access: ${{ matrix.java.early-access || 'false' }}
-          java-distribution: ${{ matrix.java.distribution }}
-          java-toolchain: ${{ matrix.java.toolchain }}
-          java-version: ${{ matrix.java.version }}
-      - name: Send Notification
-        if: always()
-        uses: ./.github/actions/send-notification
+          fetch-depth: 0
+
+      # This enables task distribution via Nx Cloud
+      # Run this command as early as possible, before dependencies are installed
+      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
+      # Connect your workspace by running "nx connect" and uncomment this line to enable task distribution
+      # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-jvm" --stop-agents-after="build"
+
+      - name: Set up JDK 17 for x64
+        uses: actions/setup-java@v4
         with:
-          build-scan-url: ${{ steps.build.outputs.build-scan-url }}
-          run-name: ${{ format('{0} | {1} | Java {2}', github.ref_name, matrix.os.name, matrix.java.version) }}
-          status: ${{ job.status }}
-          webhook-url: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          java-version: '17'
+          distribution: 'temurin'
+          architecture: x64
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - uses: nrwl/nx-set-shas@v4
+
+
+      # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
+      - run: ./nx affected -t build
