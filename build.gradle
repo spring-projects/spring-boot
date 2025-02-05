@@ -21,6 +21,7 @@ subprojects {
 	// apply plugin: "dev.nx.gradle.native"
 
 	repositories {
+		mavenLocal()
 		mavenCentral()
 		spring.mavenRepositories()
 	}
