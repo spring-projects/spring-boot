@@ -1,8 +1,9 @@
 {
   "installation": {
-    "version": "0.0.0-pr-29464-f9a8c49",
+    "version": "0.0.0-pr-29464-4b41aa5",
     "plugins": {
-      "@nx/gradle": "0.0.0-pr-29464-f9a8c49"
+      "@nx/gradle": "0.0.0-pr-29464-4b41aa5",
+      "@nx/workspace": "0.0.0-pr-29464-4b41aa5"
     }
   },
   "plugins": [
@@ -16,12 +17,9 @@
     }
   ],
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*"
-    ],
-    "production": [
-      "default",
-      "!{projectRoot}/src/test/**/*"
-    ]
-  }
+    "default": ["{projectRoot}/**/*"],
+    "production": ["default", "!{projectRoot}/src/test/**/*"]
+  },
+  "nxCloudUrl": "https://staging.nx.app",
+  "nxCloudId": "67a56832eb5d9093e3ebe776"
 }
