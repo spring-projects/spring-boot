@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 
 /**
@@ -130,6 +131,40 @@ class ReactiveWebServerApplicationContextTests {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh);
 		WebServer webServer = this.context.getWebServer();
 		then(webServer).should(times(2)).stop();
+		then(webServer).should().destroy();
+	}
+
+	@Test
+	void whenContextRefreshFailedThenWebServerStopFailedCatchStopException() {
+		addWebServerFactoryBean();
+		addHttpHandlerBean();
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class, () -> {
+			willThrow(new RuntimeException("WebServer has failed to stop")).willCallRealMethod()
+				.given(this.context.getWebServer())
+				.stop();
+			return new RefreshFailure();
+		}));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.withStackTraceContaining("WebServer has failed to stop");
+		WebServer webServer = this.context.getWebServer();
+		then(webServer).should().stop();
+		then(webServer).should(times(0)).destroy();
+	}
+
+	@Test
+	void whenContextRefreshFailedThenWebServerIsStoppedAndDestroyFailedCatchDestroyException() {
+		addWebServerFactoryBean();
+		addHttpHandlerBean();
+		this.context.registerBeanDefinition("refreshFailure", new RootBeanDefinition(RefreshFailure.class, () -> {
+			willThrow(new RuntimeException("WebServer has failed to destroy")).willCallRealMethod()
+				.given(this.context.getWebServer())
+				.destroy();
+			return new RefreshFailure();
+		}));
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.withStackTraceContaining("WebServer has failed to destroy");
+		WebServer webServer = this.context.getWebServer();
+		then(webServer).should().stop();
 		then(webServer).should().destroy();
 	}
 
