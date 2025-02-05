@@ -1,8 +1,8 @@
 {
   "installation": {
-    "version": "21.0.1",
+    "version": "0.0.0-pr-29464-a8559fe",
     "plugins": {
-      "@nx/gradle": "21.0.1"
+      "@nx/gradle": "0.0.0-pr-29464-a8559fe"
     }
   },
   "plugins": [
