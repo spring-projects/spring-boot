@@ -5,7 +5,6 @@ permissions:
 jobs:
   build:
     name: Build Pull Request
-    if: ${{ github.repository == 'spring-projects/spring-boot' }}
     runs-on: ${{ vars.UBUNTU_MEDIUM || 'ubuntu-latest' }}
     steps:
       - name: Check Out Code
