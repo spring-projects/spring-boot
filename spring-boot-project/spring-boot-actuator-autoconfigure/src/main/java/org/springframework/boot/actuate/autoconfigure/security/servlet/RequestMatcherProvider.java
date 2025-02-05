@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.servlet;
+package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
@@ -23,19 +24,19 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * Spring Security.
  *
  * @author Madhura Bhave
- * @since 2.0.5
- * @deprecated since 3.5.0 for removal in 3.8.0 in favor of
- * {@code org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider}
+ * @author Chris Bono
+ * @since 3.5.0
  */
-@Deprecated(since = "3.5.0", forRemoval = true)
 @FunctionalInterface
 public interface RequestMatcherProvider {
 
 	/**
-	 * Return the {@link RequestMatcher} to be used for the specified pattern.
+	 * Return the {@link RequestMatcher} to be used for the specified pattern and http
+	 * method.
 	 * @param pattern the request pattern
+	 * @param httpMethod the http method
 	 * @return a request matcher
 	 */
-	RequestMatcher getRequestMatcher(String pattern);
+	RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod);
 
 }

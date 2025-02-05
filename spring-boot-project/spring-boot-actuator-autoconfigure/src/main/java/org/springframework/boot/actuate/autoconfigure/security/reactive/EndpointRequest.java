@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,10 +182,6 @@ public final class EndpointRequest {
 
 		protected abstract ServerWebExchangeMatcher createDelegate(C context);
 
-		protected final List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
-			return getDelegateMatchers(paths, null);
-		}
-
 		protected final List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths, HttpMethod httpMethod) {
 			return paths.stream()
 				.map((path) -> getDelegateMatcher(path, httpMethod))
@@ -312,7 +308,7 @@ public final class EndpointRequest {
 		 * the specified http method
 		 */
 		public EndpointServerWebExchangeMatcher withHttpMethod(HttpMethod httpMethod) {
-			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, false, httpMethod);
+			return new EndpointServerWebExchangeMatcher(this.includes, this.excludes, this.includeLinks, httpMethod);
 		}
 
 		@Override
@@ -379,22 +375,37 @@ public final class EndpointRequest {
 
 		private final List<Object> endpoints;
 
+		private final HttpMethod httpMethod;
+
 		AdditionalPathsEndpointServerWebExchangeMatcher(WebServerNamespace webServerNamespace, String... endpoints) {
-			this(webServerNamespace, Arrays.asList((Object[]) endpoints));
+			this(webServerNamespace, Arrays.asList((Object[]) endpoints), null);
 		}
 
 		AdditionalPathsEndpointServerWebExchangeMatcher(WebServerNamespace webServerNamespace, Class<?>... endpoints) {
-			this(webServerNamespace, Arrays.asList((Object[]) endpoints));
+			this(webServerNamespace, Arrays.asList((Object[]) endpoints), null);
 		}
 
 		private AdditionalPathsEndpointServerWebExchangeMatcher(WebServerNamespace webServerNamespace,
-				List<Object> endpoints) {
+				List<Object> endpoints, HttpMethod httpMethod) {
 			super(PathMappedEndpoints.class);
 			Assert.notNull(webServerNamespace, "'webServerNamespace' must not be null");
 			Assert.notNull(endpoints, "'endpoints' must not be null");
 			Assert.notEmpty(endpoints, "'endpoints' must not be empty");
 			this.webServerNamespace = webServerNamespace;
 			this.endpoints = endpoints;
+			this.httpMethod = httpMethod;
+		}
+
+		/**
+		 * Restricts the matcher to only consider requests with a particular HTTP method.
+		 * @param httpMethod the HTTP method to include
+		 * @return a copy of the matcher further restricted to only match requests with
+		 * the specified HTTP method
+		 * @since 3.5.0
+		 */
+		public AdditionalPathsEndpointServerWebExchangeMatcher withHttpMethod(HttpMethod httpMethod) {
+			return new AdditionalPathsEndpointServerWebExchangeMatcher(this.webServerNamespace, this.endpoints,
+					httpMethod);
 		}
 
 		@Override
@@ -410,7 +421,7 @@ public final class EndpointRequest {
 				.map(this::getEndpointId)
 				.flatMap((endpointId) -> streamAdditionalPaths(endpoints, endpointId))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
-			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths);
+			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths, this.httpMethod);
 			return (!CollectionUtils.isEmpty(delegateMatchers)) ? new OrServerWebExchangeMatcher(delegateMatchers)
 					: EMPTY_MATCHER;
 		}
