@@ -95,12 +95,6 @@ sourceSets {
 	}
 }
 
-compileJava {
-	if ((!project.hasProperty("toolchainVersion")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
-		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']
-	}
-}
-
 plugins.withType(EclipsePlugin) {
 	eclipse {
 		classpath.file { merger ->
