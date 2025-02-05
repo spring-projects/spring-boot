@@ -671,7 +671,11 @@ bom {
 			releaseNotes("https://github.com/jakartaee/jaf-api/releases/tag/{version}")
 		}
 	}
-	library("Jakarta Annotation", "3.0.0") {
+	library("Jakarta Annotation", "2.1.1") {
+		prohibit {
+			versionRange "[3.0.0,4.0.0]"
+			because "it's part of Jakarta EE 11"
+		}
 		group("jakarta.annotation") {
 			modules = [
 				"jakarta.annotation-api"
