@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.servlet;
+package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.util.function.Function;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -25,22 +26,20 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * {@link RequestMatcherProvider} that provides an {@link AntPathRequestMatcher}.
  *
  * @author Madhura Bhave
- * @since 2.1.8
- * @deprecated since 3.5.0 for removal in 3.8.0 along with {@link RequestMatcherProvider}
+ * @author Chris Bono
  */
-@Deprecated(since = "3.5.0", forRemoval = true)
-@SuppressWarnings("removal")
-public class AntPathRequestMatcherProvider implements RequestMatcherProvider {
+class AntPathRequestMatcherProvider implements RequestMatcherProvider {
 
 	private final Function<String, String> pathFactory;
 
-	public AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
+	AntPathRequestMatcherProvider(Function<String, String> pathFactory) {
 		this.pathFactory = pathFactory;
 	}
 
 	@Override
-	public RequestMatcher getRequestMatcher(String pattern) {
-		return new AntPathRequestMatcher(this.pathFactory.apply(pattern));
+	public RequestMatcher getRequestMatcher(String pattern, HttpMethod httpMethod) {
+		String path = this.pathFactory.apply(pattern);
+		return new AntPathRequestMatcher(path, (httpMethod != null) ? httpMethod.name() : null);
 	}
 
 }
