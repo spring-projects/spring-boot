@@ -83,13 +83,10 @@ public class QuartzEndpointWebExtension {
 	@WriteOperation
 	public WebEndpointResponse<Object> triggerQuartzJob(@Selector String jobs, @Selector String group,
 			@Selector String name, String state) throws SchedulerException {
-		if (!"jobs".equals(jobs)) {
-			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
+		if ("jobs".equals(jobs) && "running".equals(state)) {
+			return handleNull(this.delegate.triggerQuartzJob(group, name));
 		}
-		if (!"running".equals(state)) {
-			return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
-		}
-		return handleNull(this.delegate.triggerQuartzJob(group, name));
+		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_BAD_REQUEST);
 	}
 
 	private <T> WebEndpointResponse<T> handle(String jobsOrTriggers, ResponseSupplier<T> jobAction,
@@ -104,10 +101,8 @@ public class QuartzEndpointWebExtension {
 	}
 
 	private <T> WebEndpointResponse<T> handleNull(T value) {
-		if (value != null) {
-			return new WebEndpointResponse<>(value);
-		}
-		return new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
+		return (value != null) ? new WebEndpointResponse<>(value)
+				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}
 
 	@FunctionalInterface
