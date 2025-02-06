@@ -1120,14 +1120,6 @@ Metrics for Jetty's javadoc:org.eclipse.jetty.server.Connector[] instances are b
 
 
 
-[[actuator.metrics.supported.timed-annotation]]
-=== @Timed Annotation Support
-
-To enable scanning of javadoc:io.micrometer.core.annotation.Timed[format=annotation] annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
-Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer documentation].
-
-
-
 [[actuator.metrics.supported.redis]]
 === Redis Metrics
 
