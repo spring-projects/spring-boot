@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,8 @@ class HttpEncodingAutoConfigurationTests {
 		load(EmptyConfiguration.class);
 		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans).hasSize(1);
-		assertThat(this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings()).isEmpty();
+		assertThat(this.context.getBean(MockServletWebServerFactory.class).getSettings().getLocaleCharsetMappings())
+			.isEmpty();
 	}
 
 	@Test
@@ -142,7 +143,8 @@ class HttpEncodingAutoConfigurationTests {
 				"server.servlet.encoding.mapping.fr_FR:UTF-8");
 		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans).hasSize(1);
-		assertThat(this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings()).hasSize(2)
+		assertThat(this.context.getBean(MockServletWebServerFactory.class).getSettings().getLocaleCharsetMappings())
+			.hasSize(2)
 			.containsEntry(Locale.ENGLISH, StandardCharsets.UTF_8)
 			.containsEntry(Locale.FRANCE, StandardCharsets.UTF_8);
 	}

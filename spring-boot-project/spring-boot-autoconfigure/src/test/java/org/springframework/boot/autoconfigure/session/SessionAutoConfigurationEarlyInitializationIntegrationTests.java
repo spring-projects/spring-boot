@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -52,7 +52,7 @@ class SessionAutoConfigurationEarlyInitializationIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableSpringHttpSession
-	@ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, SessionAutoConfiguration.class })
+	@ImportAutoConfiguration({ TomcatServletWebServerAutoConfiguration.class, SessionAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Bean

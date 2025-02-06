@@ -38,9 +38,9 @@ import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContex
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
-import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
-import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.reactive.netty.NettyReactiveWebServerFactory;
+import org.springframework.boot.web.server.reactive.netty.NettyRouteProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.client.RSocketGraphQlClient;
