@@ -104,5 +104,9 @@ The next sections will provide more details about logging, metrics and traces.
 [[actuator.observability.annotations]]
 == Micrometer Observation Annotations support
 
-To enable scanning of metrics and tracing annotations like javadoc:io.micrometer.core.annotation.Timed[format=annotation], javadoc:io.micrometer.core.annotation.Counted[format=annotation], javadoc:io.micrometer.core.aop.MeterTag[format=annotation] and javadoc:io.micrometer.tracing.annotation.NewSpan[format=annotation] annotations, you will need to set the configprop:management.observations.annotations.enabled[] property to `true`.
-This feature is supported Micrometer directly. Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer] and {url-micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.
+To enable scanning of observability annotations like javadoc:io.micrometer.observation.annotation.Observed[format=annotation], javadoc:io.micrometer.core.annotation.Timed[format=annotation], javadoc:io.micrometer.core.annotation.Counted[format=annotation], javadoc:io.micrometer.core.aop.MeterTag[format=annotation] and javadoc:io.micrometer.tracing.annotation.NewSpan[format=annotation] annotations, you need to set the configprop:management.observations.annotations.enabled[] property to `true`.
+This feature is supported by Micrometer directly.
+Please refer to the {url-micrometer-docs-concepts}/timers.html#_the_timed_annotation[Micrometer], {url-micrometer-docs-observation}/components.html#micrometer-observation-annotations[Micrometer Observation] and {url-micrometer-tracing-docs}/api.html#_aspect_oriented_programming[Micrometer Tracing] reference docs.
+
+NOTE: When you annotate methods or classes which are already instrumented (for example xref:reference:actuator/metrics.adoc#actuator.metrics.supported.spring-data-repository[Spring Data repositories] or xref:reference:actuator/metrics.adoc#actuator.metrics.supported.spring-mvc[Spring MVC controllers]), you will get duplicate observations.
+In that case you can either disable the automatic instrumentation using xref:reference:actuator/observability.adoc#actuator.observability.preventing-observations[properties] or an javadoc:io.micrometer.observation.ObservationPredicate[] and rely on your annotations, or you can remove your annotation.
