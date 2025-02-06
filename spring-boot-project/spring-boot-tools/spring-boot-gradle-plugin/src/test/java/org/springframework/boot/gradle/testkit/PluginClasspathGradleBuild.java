@@ -84,7 +84,7 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
 				new File(pathOfJarContaining(HttpRequest.class)),
 				new File(pathOfJarContaining(HttpVersionPolicy.class)), new File(pathOfJarContaining(Module.class)),
-				new File(pathOfJarContaining(Versioned.class)),
+				new File(pathOfJarContaining(Versioned.class)), new File(pathOfJarContaining(JsonView.class)),
 				new File(pathOfJarContaining(ParameterNamesModule.class)),
 				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),
 				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)),
