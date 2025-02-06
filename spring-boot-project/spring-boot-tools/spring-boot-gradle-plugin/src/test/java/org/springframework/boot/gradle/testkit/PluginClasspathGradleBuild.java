@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.Versioned;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -83,7 +84,7 @@ public class PluginClasspathGradleBuild extends GradleBuild {
 				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
 				new File(pathOfJarContaining(HttpRequest.class)),
 				new File(pathOfJarContaining(HttpVersionPolicy.class)), new File(pathOfJarContaining(Module.class)),
-				new File(pathOfJarContaining(Versioned.class)),
+				new File(pathOfJarContaining(Versioned.class)), new File(pathOfJarContaining(JsonView.class)),
 				new File(pathOfJarContaining(ParameterNamesModule.class)),
 				new File(pathOfJarContaining("com.github.openjson.JSONObject")),
 				new File(pathOfJarContaining(Platform.class)), new File(pathOfJarContaining(Toml.class)),
