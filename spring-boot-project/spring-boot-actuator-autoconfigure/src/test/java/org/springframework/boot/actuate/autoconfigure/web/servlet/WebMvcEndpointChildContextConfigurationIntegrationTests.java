@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,12 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.tomcat.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.env.ConfigTreePropertySource;
@@ -72,9 +73,10 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	private final WebApplicationContextRunner runner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
 		.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-				ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-				WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class))
+				TomcatServletWebServerAutoConfiguration.class, TomcatServletManagementContextAutoConfiguration.class,
+				ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				ErrorMvcAutoConfiguration.class))
 		.withUserConfiguration(SucceedingEndpoint.class, FailingEndpoint.class, FailingControllerEndpoint.class)
 		.withInitializer(new ServerPortInfoApplicationContextInitializer())
 		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*",

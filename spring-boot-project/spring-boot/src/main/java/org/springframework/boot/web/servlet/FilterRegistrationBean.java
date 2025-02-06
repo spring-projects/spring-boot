@@ -19,6 +19,7 @@ package org.springframework.boot.web.servlet;
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContext;
 
+import org.springframework.boot.web.server.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 
 /**

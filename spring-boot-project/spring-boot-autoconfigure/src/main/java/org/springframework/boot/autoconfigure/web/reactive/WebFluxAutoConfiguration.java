@@ -106,9 +106,8 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Weix Sun
  * @since 2.0.0
  */
-@AutoConfiguration(after = { ReactiveWebServerFactoryAutoConfiguration.class, CodecsAutoConfiguration.class,
-		ReactiveMultipartAutoConfiguration.class, ValidationAutoConfiguration.class,
-		WebSessionIdResolverAutoConfiguration.class })
+@AutoConfiguration(after = { CodecsAutoConfiguration.class, ReactiveMultipartAutoConfiguration.class,
+		ValidationAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @ConditionalOnMissingBean({ WebFluxConfigurationSupport.class })
