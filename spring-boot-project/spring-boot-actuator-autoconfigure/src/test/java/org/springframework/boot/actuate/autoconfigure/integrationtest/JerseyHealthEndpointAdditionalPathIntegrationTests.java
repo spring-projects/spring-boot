@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.tomcat.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -45,10 +46,11 @@ class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 	JerseyHealthEndpointAdditionalPathIntegrationTests() {
 		super(new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
-					EndpointAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, JerseyAutoConfiguration.class,
-					ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))
+					EndpointAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
+					TomcatServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					JerseyAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+					ServletManagementContextAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
+					DiskSpaceHealthContributorAutoConfiguration.class))
 			.withInitializer(new ServerPortInfoApplicationContextInitializer())
 			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
 			.withPropertyValues("server.port=0"));

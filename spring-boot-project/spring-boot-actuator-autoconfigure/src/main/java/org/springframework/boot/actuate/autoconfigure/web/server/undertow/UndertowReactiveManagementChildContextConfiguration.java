@@ -18,14 +18,18 @@ package org.springframework.boot.actuate.autoconfigure.web.server.undertow;
 
 import io.undertow.Undertow;
 
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.server.reactive.undertow.UndertowReactiveWebServerAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.web.embedded.undertow.UndertowReactiveWebServerFactory;
+import org.springframework.boot.web.server.reactive.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.reactive.undertow.UndertowReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -40,6 +44,12 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(ManagementServerProperties.class)
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 class UndertowReactiveManagementChildContextConfiguration {
+
+	@Bean
+	static ManagementContextFactory reactiveWebChildContextFactory() {
+		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
+				UndertowReactiveWebServerAutoConfiguration.class);
+	}
 
 	@Bean
 	UndertowAccessLogCustomizer<UndertowReactiveWebServerFactory> undertowManagementAccessLogCustomizer(

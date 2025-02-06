@@ -17,12 +17,26 @@
 			<subpackage name="client">
 				<allow pkg="org.springframework.boot.web.client" />
 			</subpackage>
-			<subpackage name="embedded">
-				<allow pkg="org.springframework.boot.web.embedded" />
+			<subpackage name="server">
+				<allow pkg="org.springframework.boot.web.server" />
+				<subpackage name="reactive">
+					<allow pkg="org.springframework.boot.web.reactive.server" />
+					<subpackage name="jetty">
+						<allow pkg="org.springframework.boot.web.server.jetty" />
+						<allow pkg="jakarta.servlet" />
+					</subpackage>
+					<subpackage name="tomcat">
+						<allow pkg="org.springframework.boot.web.server.tomcat" />
+					</subpackage>
+				</subpackage>
+				<subpackage name="servlet">
+					<allow pkg="jakarta.servlet" />
+					<allow pkg="org.springframework.boot.web.servlet" />
+					<allow pkg="org.springframework.web.servlet" />
+				</subpackage>
 			</subpackage>
 			<subpackage name="servlet">
 				<allow pkg="jakarta.servlet" />
-				<allow pkg="org.springframework.boot.web.embedded" />
 				<allow pkg="org.springframework.boot.web.servlet" />
 				<allow pkg="org.springframework.web.servlet" />
 				<subpackage name="error">
@@ -31,7 +45,6 @@
 			</subpackage>
 			<subpackage name="reactive">
 				<allow pkg="org.springframework.boot.web.codec" />
-				<allow pkg="org.springframework.boot.web.embedded" />
 				<allow pkg="org.springframework.boot.web.reactive" />
 				<allow pkg="org.springframework.web.reactive" />
 				<subpackage name="error">
@@ -103,10 +116,41 @@
 		<subpackage name="client">
 		</subpackage>
 		<subpackage name="server">
-			<disallow pkg="org.springframework.context" />
 			<allow pkg="org.springframework.boot.web.server"/>
+			<disallow pkg="org.springframework.context" />
 			<subpackage name="context">
 				<allow pkg="org.springframework.context" />
+			</subpackage>
+			<subpackage name="reactive">
+				<allow pkg="org.springframework.boot.web.server.reactive"/>
+				<subpackage name="jetty">
+					<allow pkg="org.springframework.boot.web.server.jetty"/>
+				</subpackage>
+				<subpackage name="tomcat">
+					<allow pkg="org.springframework.boot.web.server.tomcat"/>
+				</subpackage>
+				<subpackage name="undertow">
+					<allow pkg="org.springframework.boot.web.server.undertow"/>
+				</subpackage>
+			</subpackage>
+			<subpackage name="servlet">
+				<allow pkg="jakarta.servlet" />
+				<allow pkg="org.springframework.boot.web.server.servlet"/>
+				<subpackage name="jetty">
+					<allow pkg="org.springframework.context" />
+					<allow pkg="org.springframework.boot.web.server.jetty"/>
+				</subpackage>
+				<subpackage name="tomcat">
+					<allow pkg="org.springframework.context" />
+					<allow pkg="org.springframework.boot.web.server.tomcat"/>
+				</subpackage>
+				<subpackage name="undertow">
+					<allow pkg="org.springframework.context" />
+					<allow pkg="org.springframework.boot.web.server.undertow"/>
+				</subpackage>
+			</subpackage>
+			<subpackage name="tomcat">
+				<allow pkg="jakarta.servlet"/>
 			</subpackage>
 		</subpackage>
 		<subpackage name="context">
@@ -116,6 +160,7 @@
 		<!-- Servlet -->
 		<subpackage name="servlet">
 			<allow pkg="jakarta.servlet" />
+			<allow pkg="org.springframework.boot.web.server.servlet" />
 			<subpackage name="context">
 				<allow pkg="org.springframework.boot.web.context" />
 				<allow pkg="org.springframework.boot.web.server" />
@@ -124,11 +169,6 @@
 			</subpackage>
 			<subpackage name="filter">
 				<allow pkg="jakarta.servlet" />
-				<allow pkg="org.springframework.boot.web.servlet" />
-			</subpackage>
-			<subpackage name="server">
-				<disallow pkg="org.springframework.context" />
-				<allow pkg="org.springframework.boot.web.server" />
 				<allow pkg="org.springframework.boot.web.servlet" />
 			</subpackage>
 			<subpackage name="support">
@@ -164,15 +204,6 @@
 					<allow pkg="org.springframework.boot.web.reactive.result.view" />
 				</subpackage>
 			</subpackage>
-		</subpackage>
-
-		<!-- Embedded Servers -->
-		<subpackage name="embedded">
-			<allow pkg="jakarta.servlet" />
-			<allow pkg="org.springframework.boot.web.server" />
-			<allow pkg="org.springframework.boot.web.servlet" />
-			<allow pkg="org.springframework.boot.web.servlet.server" />
-			<allow pkg="org.springframework.boot.web.reactive.server" />
 		</subpackage>
 
 	</subpackage>

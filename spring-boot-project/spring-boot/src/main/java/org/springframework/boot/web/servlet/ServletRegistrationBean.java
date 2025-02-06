@@ -26,6 +26,7 @@ import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
 
+import org.springframework.boot.web.server.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;

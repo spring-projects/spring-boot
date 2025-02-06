@@ -25,8 +25,8 @@ import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.AccessLogCustomizer;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
-import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.server.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.util.StringUtils;
 
 /**

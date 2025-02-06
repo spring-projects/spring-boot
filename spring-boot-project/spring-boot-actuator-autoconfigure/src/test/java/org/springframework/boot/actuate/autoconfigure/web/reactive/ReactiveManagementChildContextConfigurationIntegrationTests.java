@@ -32,12 +32,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.tomcat.TomcatReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.reactive.tomcat.TomcatReactiveWebServerAutoConfiguration;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.env.ConfigTreePropertySource;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
@@ -45,9 +46,9 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
-import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.tomcat.TomcatWebServer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.support.ConfigurableConversionService;
@@ -69,7 +70,7 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 	private final ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
 		.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-				ReactiveWebServerFactoryAutoConfiguration.class, ReactiveManagementContextAutoConfiguration.class,
+				TomcatReactiveWebServerAutoConfiguration.class, TomcatReactiveManagementContextAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
 				WebFluxAutoConfiguration.class))
 		.withUserConfiguration(SucceedingEndpoint.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ import org.springframework.boot.actuate.metrics.web.jetty.JettyConnectionMetrics
 import org.springframework.boot.actuate.metrics.web.jetty.JettyServerThreadPoolMetricsBinder;
 import org.springframework.boot.actuate.metrics.web.jetty.JettySslHandshakeMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.reactive.jetty.JettyReactiveWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.jetty.JettyServletWebServerAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
-import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.reactive.jetty.JettyReactiveWebServerFactory;
+import org.springframework.boot.web.server.servlet.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -55,7 +55,7 @@ class JettyMetricsAutoConfigurationTests {
 	void autoConfiguresThreadPoolMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					JettyServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
@@ -69,7 +69,7 @@ class JettyMetricsAutoConfigurationTests {
 	void autoConfiguresThreadPoolMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ReactiveWebServerFactoryAutoConfiguration.class))
+					JettyReactiveWebServerAutoConfiguration.class))
 			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
@@ -90,7 +90,7 @@ class JettyMetricsAutoConfigurationTests {
 	void autoConfiguresConnectionMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					JettyServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
@@ -104,7 +104,7 @@ class JettyMetricsAutoConfigurationTests {
 	void autoConfiguresConnectionMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ReactiveWebServerFactoryAutoConfiguration.class))
+					JettyReactiveWebServerAutoConfiguration.class))
 			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.run((context) -> {
 				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
@@ -117,7 +117,7 @@ class JettyMetricsAutoConfigurationTests {
 	void allowsCustomJettyConnectionMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					JettyServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettyConnectionMetricsBinder.class,
 					MeterRegistryConfiguration.class)
 			.run((context) -> {
@@ -135,7 +135,7 @@ class JettyMetricsAutoConfigurationTests {
 	void autoConfiguresSslHandshakeMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					JettyServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
 					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
@@ -151,7 +151,7 @@ class JettyMetricsAutoConfigurationTests {
 	void autoConfiguresSslHandshakeMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ReactiveWebServerFactoryAutoConfiguration.class))
+					JettyReactiveWebServerAutoConfiguration.class))
 			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
 					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
@@ -166,7 +166,7 @@ class JettyMetricsAutoConfigurationTests {
 	void allowsCustomJettySslHandshakeMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					JettyServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettySslHandshakeMetricsBinder.class,
 					MeterRegistryConfiguration.class)
 			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
@@ -192,7 +192,7 @@ class JettyMetricsAutoConfigurationTests {
 	void doesNotAutoConfigureSslHandshakeMetricsWhenSslEnabledPropertyNotSpecified() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					JettyServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));
 	}
@@ -201,7 +201,7 @@ class JettyMetricsAutoConfigurationTests {
 	void doesNotAutoConfigureSslHandshakeMetricsWhenSslEnabledPropertySetToFalse() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					JettyServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.withPropertyValues("server.ssl.enabled: false")
 			.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));

@@ -24,7 +24,6 @@ import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoCon
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive.WebFluxEndpointManagementContextConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
@@ -50,7 +49,7 @@ class WebFluxEndpointCorsIntegrationTests {
 		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
 				WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class, EndpointAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-				ReactiveManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))
+				BeansEndpointAutoConfiguration.class))
 		.withPropertyValues("management.endpoints.web.exposure.include:*");
 
 	@Test

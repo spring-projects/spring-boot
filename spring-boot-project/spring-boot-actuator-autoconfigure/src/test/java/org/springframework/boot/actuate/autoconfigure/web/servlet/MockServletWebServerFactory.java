@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
-import java.util.Arrays;
+import java.util.stream.StreamSupport;
 
 import jakarta.servlet.ServletContext;
 
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredServlet;
+import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.ServletContextInitializer;
+import org.springframework.boot.web.server.servlet.ServletContextInitializers;
+import org.springframework.boot.web.server.servlet.ServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.ServletWebServerSettings;
 
 import static org.mockito.Mockito.spy;
 
@@ -35,13 +38,17 @@ import static org.mockito.Mockito.spy;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class MockServletWebServerFactory extends AbstractServletWebServerFactory {
+public class MockServletWebServerFactory extends AbstractConfigurableWebServerFactory
+		implements ConfigurableServletWebServerFactory {
+
+	private final ServletWebServerSettings settings = new ServletWebServerSettings();
 
 	private MockServletWebServer webServer;
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
-		this.webServer = spy(new MockServletWebServer(mergeInitializers(initializers), getPort()));
+		this.webServer = spy(
+				new MockServletWebServer(ServletContextInitializers.from(this.settings, initializers), getPort()));
 		return this.webServer;
 	}
 
@@ -61,11 +68,16 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 		return (getWebServer() != null) ? getWebServer().getRegisteredFilters(index) : null;
 	}
 
+	@Override
+	public ServletWebServerSettings getSettings() {
+		return this.settings;
+	}
+
 	static class MockServletWebServer extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer
 			implements WebServer {
 
-		MockServletWebServer(ServletContextInitializer[] initializers, int port) {
-			super(Arrays.stream(initializers)
+		MockServletWebServer(Iterable<ServletContextInitializer> initializers, int port) {
+			super(StreamSupport.stream(initializers.spliterator(), false)
 				.map((initializer) -> (Initializer) initializer::onStartup)
 				.toArray(Initializer[]::new), port);
 		}

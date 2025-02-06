@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
@@ -124,14 +125,16 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 			.optional()
 			.withPathSensitivity(PathSensitivity.RELATIVE);
 		architectureCheck.getRules()
-			.add(allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
+			.add(allConcreteClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
 					autoConfigurationImports(project, resourcesDirectory)));
 	}
 
-	private ArchRule allClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
+	private ArchRule allConcreteClassesAnnotatedWithAutoConfigurationShouldBeListedInAutoConfigurationImports(
 			Provider<AutoConfigurationImports> imports) {
 		return ArchRuleDefinition.classes()
 			.that()
+			.doNotHaveModifier(JavaModifier.ABSTRACT)
+			.and()
 			.areAnnotatedWith("org.springframework.boot.autoconfigure.AutoConfiguration")
 			.should(beListedInAutoConfigurationImports(imports))
 			.allowEmptyShould(true);
