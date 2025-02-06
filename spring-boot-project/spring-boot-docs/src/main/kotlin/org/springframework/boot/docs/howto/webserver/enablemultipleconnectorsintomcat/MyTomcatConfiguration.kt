@@ -17,8 +17,8 @@
 package org.springframework.boot.docs.howto.webserver.enablemultipleconnectorsintomcat
 
 import org.apache.catalina.connector.Connector
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
+import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -28,9 +28,7 @@ class MyTomcatConfiguration {
 	@Bean
 	fun connectorCustomizer(): WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 		return WebServerFactoryCustomizer { tomcat: TomcatServletWebServerFactory ->
-			tomcat.addAdditionalTomcatConnectors(
-				createConnector()
-			)
+			tomcat.addAdditionalConnectors(createConnector())
 		}
 	}
 

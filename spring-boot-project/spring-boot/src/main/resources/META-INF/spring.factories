@@ -82,7 +82,7 @@ org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailur
 org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer,\
 org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
 org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzer,\
-org.springframework.boot.web.embedded.tomcat.ConnectorStartFailureAnalyzer,\
+org.springframework.boot.web.server.tomcat.ConnectorStartFailureAnalyzer
 org.springframework.boot.web.server.PortInUseFailureAnalyzer
 
 # Failure Analysis Reporters

@@ -26,8 +26,8 @@ import jakarta.servlet.ServletResponse
 import org.apache.catalina.Host
 import org.apache.catalina.core.StandardContext
 import org.apache.catalina.startup.Tomcat.FixContextListener
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
-import org.springframework.boot.web.servlet.ServletContextInitializer
+import org.springframework.boot.web.server.servlet.ServletContextInitializer
+import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.io.IOException

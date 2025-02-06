@@ -36,8 +36,8 @@ import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.reactive.netty.NettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -86,7 +86,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	private final LogIdFilter logIdFilter = new LogIdFilter();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(NettyReactiveWebServerAutoConfiguration.class,
 				HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class, ErrorWebFluxAutoConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class, MustacheAutoConfiguration.class))
 		.withPropertyValues("spring.main.web-application-type=reactive", "server.port=0")
