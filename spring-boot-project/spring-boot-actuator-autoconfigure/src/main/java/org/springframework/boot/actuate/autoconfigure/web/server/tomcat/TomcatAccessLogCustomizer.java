@@ -24,7 +24,7 @@ import org.apache.catalina.valves.AccessLogValve;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.AccessLogCustomizer;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
-import org.springframework.boot.web.embedded.tomcat.ConfigurableTomcatWebServerFactory;
+import org.springframework.boot.web.server.tomcat.ConfigurableTomcatWebServerFactory;
 
 /**
  * {@link AccessLogCustomizer} for Tomcat.

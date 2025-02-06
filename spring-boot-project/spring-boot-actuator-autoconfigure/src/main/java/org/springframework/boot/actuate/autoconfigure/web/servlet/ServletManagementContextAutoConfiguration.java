@@ -18,19 +18,14 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import jakarta.servlet.Servlet;
 
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.web.servlet.filter.ApplicationContextHeaderFilter;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,13 +41,6 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(Servlet.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 public class ServletManagementContextAutoConfiguration {
-
-	@Bean
-	public static ManagementContextFactory servletWebChildContextFactory() {
-		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
-				ServletWebServerFactoryAutoConfiguration.class,
-				EmbeddedWebServerFactoryCustomizerAutoConfiguration.class);
-	}
 
 	@Bean
 	public ManagementServletContext managementServletContext(WebEndpointProperties properties) {
