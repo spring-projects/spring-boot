@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 class FixedTrustManagerFactoryTests {
 
 	@Test
-	void shouldReturnTrustmanagers() throws Exception {
+	void shouldReturnTrustManagers() throws Exception {
 		TrustManager trustManager1 = mock(TrustManager.class);
 		TrustManager trustManager2 = mock(TrustManager.class);
 		FixedTrustManagerFactory factory = FixedTrustManagerFactory.of(getDefaultTrustManagerFactory(), trustManager1,

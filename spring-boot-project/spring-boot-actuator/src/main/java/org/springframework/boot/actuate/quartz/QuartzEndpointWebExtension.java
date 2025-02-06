@@ -80,6 +80,16 @@ public class QuartzEndpointWebExtension {
 				() -> this.delegate.quartzTrigger(group, name, showUnsanitized));
 	}
 
+	/**
+	 * Trigger a Quartz job.
+	 * @param jobs path segment "jobs"
+	 * @param group job's group
+	 * @param name job name
+	 * @param state desired state
+	 * @return web endpoint response
+	 * @throws SchedulerException if there is an error triggering the job
+	 * @since 3.5.0
+	 */
 	@WriteOperation
 	public WebEndpointResponse<Object> triggerQuartzJob(@Selector String jobs, @Selector String group,
 			@Selector String name, String state) throws SchedulerException {

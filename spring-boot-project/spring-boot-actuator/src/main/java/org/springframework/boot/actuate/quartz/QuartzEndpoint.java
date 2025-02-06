@@ -409,7 +409,9 @@ public class QuartzEndpoint {
 	}
 
 	/**
-	 * Description of a triggered on demand {@link Job Quartz Job}.
+	 * Description of a triggered on-demand {@link Job Quartz Job}.
+	 *
+	 * @since 3.5.0
 	 */
 	public static final class QuartzJobTriggerDescriptor {
 

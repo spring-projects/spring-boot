@@ -64,7 +64,7 @@
     },
     {
       "name": "management.endpoints.access.max-permitted",
-      "description": "The maximum level of endpoint access that is permitted. Caps an endpoint's individual access level (management.endpoint.<id>.access) and the default access (management.endpoints.access.default).'",
+      "description": "Maximum level of endpoint access that is permitted. Caps an endpoint's individual access level (management.endpoint.<id>.access) and the default access (management.endpoints.access.default).'",
       "defaultValue": "unrestricted"
     },
     {
@@ -2107,7 +2107,7 @@
     },
     {
       "name": "management.server.ssl.bundle",
-      "description": "The name of a configured SSL bundle."
+      "description": "Name of a configured SSL bundle."
     },
     {
       "name": "management.server.ssl.certificate",
