@@ -29,6 +29,7 @@ import jakarta.servlet.FilterRegistration;
 import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.ServletContext;
 
+import org.springframework.boot.web.server.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
