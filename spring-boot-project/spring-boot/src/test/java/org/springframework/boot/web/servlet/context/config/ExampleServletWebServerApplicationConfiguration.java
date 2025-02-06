@@ -18,8 +18,8 @@ package org.springframework.boot.web.servlet.context.config;
 
 import jakarta.servlet.Servlet;
 
+import org.springframework.boot.web.server.servlet.MockServletWebServerFactory;
 import org.springframework.boot.web.servlet.mock.MockServlet;
-import org.springframework.boot.web.servlet.server.MockServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

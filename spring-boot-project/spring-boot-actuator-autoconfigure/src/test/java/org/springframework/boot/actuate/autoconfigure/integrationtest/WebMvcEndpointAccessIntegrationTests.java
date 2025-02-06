@@ -34,8 +34,8 @@ import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagem
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -60,10 +60,10 @@ class WebMvcEndpointAccessIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(TomcatServletWebServerAutoConfiguration.class,
+				TomcatServletWebServerAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				WebMvcAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
 				HealthContributorAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))

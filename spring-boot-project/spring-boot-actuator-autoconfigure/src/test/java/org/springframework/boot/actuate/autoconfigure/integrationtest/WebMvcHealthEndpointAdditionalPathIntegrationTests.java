@@ -21,12 +21,13 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.server.tomcat.TomcatServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -46,7 +47,8 @@ class WebMvcHealthEndpointAdditionalPathIntegrationTests extends
 		super(new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
 					HttpMessageConvertersAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					TomcatServletWebServerAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
+					TomcatServletManagementContextAutoConfiguration.class, WebMvcAutoConfiguration.class,
 					ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 					EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 					HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))

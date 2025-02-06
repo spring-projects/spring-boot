@@ -41,8 +41,8 @@ import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.servlet.server.Jsp;
-import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.boot.web.server.servlet.Jsp;
+import org.springframework.boot.web.server.servlet.Session;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
 

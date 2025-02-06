@@ -37,8 +37,8 @@ import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeReposi
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -65,13 +65,13 @@ class WebMvcEndpointExposureIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
-				DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
-				HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-				HttpExchangesAutoConfiguration.class, HealthContributorAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(TomcatServletWebServerAutoConfiguration.class,
+				TomcatServletWebServerAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+				WebMvcAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+				ServletManagementContextAutoConfiguration.class, HttpExchangesAutoConfiguration.class,
+				HealthContributorAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 		.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
 				HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)

@@ -22,8 +22,8 @@ package org.springframework.boot.web.server;
  * @author Phillip Webb
  * @since 2.0.0
  * @see WebServer
- * @see org.springframework.boot.web.servlet.server.ServletWebServerFactory
- * @see org.springframework.boot.web.reactive.server.ReactiveWebServerFactory
+ * @see org.springframework.boot.web.server.servlet.ServletWebServerFactory
+ * @see org.springframework.boot.web.server.reactive.ReactiveWebServerFactory
  */
 public interface WebServerFactory {
 

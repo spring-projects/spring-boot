@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -49,7 +49,7 @@ class JerseyWebEndpointIntegrationTests {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(
 					AutoConfigurations.of(JerseySameManagementContextConfiguration.class, JerseyAutoConfiguration.class,
-							ServletWebServerFactoryAutoConfiguration.class, EndpointAutoConfiguration.class,
+							TomcatServletWebServerAutoConfiguration.class, EndpointAutoConfiguration.class,
 							WebEndpointAutoConfiguration.class, JerseyWebEndpointManagementContextConfiguration.class))
 			.withUserConfiguration(ResourceConfigConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))

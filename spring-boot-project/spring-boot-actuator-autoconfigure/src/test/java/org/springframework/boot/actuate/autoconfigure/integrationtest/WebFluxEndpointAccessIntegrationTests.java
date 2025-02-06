@@ -22,14 +22,13 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.reactive.netty.NettyReactiveWebServerAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
@@ -53,10 +52,10 @@ class WebFluxEndpointAccessIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
-		.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(NettyReactiveWebServerAutoConfiguration.class,
 				HttpHandlerAutoConfiguration.class, JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
 				WebFluxAutoConfiguration.class, EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-				ManagementContextAutoConfiguration.class, ReactiveManagementContextAutoConfiguration.class))
+				ManagementContextAutoConfiguration.class))
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
 		.withUserConfiguration(CustomWebFluxEndpoint.class)
 		.withPropertyValues("server.port:0");

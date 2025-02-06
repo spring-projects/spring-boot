@@ -63,7 +63,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @since 2.0.0
  */
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@AutoConfiguration(after = ServletWebServerFactoryAutoConfiguration.class)
+@AutoConfiguration
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 public class DispatcherServletAutoConfiguration {

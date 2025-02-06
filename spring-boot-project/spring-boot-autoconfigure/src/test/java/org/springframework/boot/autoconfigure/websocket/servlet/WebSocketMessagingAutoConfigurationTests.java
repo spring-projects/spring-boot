@@ -39,12 +39,13 @@ import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.tomcat.WebSocketTomcatWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration.WebSocketMessageConverterConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -261,7 +262,7 @@ class WebSocketMessagingAutoConfigurationTests {
 	@EnableWebSocket
 	@EnableConfigurationProperties
 	@EnableWebSocketMessageBroker
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, TomcatServletWebServerAutoConfiguration.class,
 			WebSocketMessagingAutoConfiguration.class, DispatcherServletAutoConfiguration.class })
 	static class WebSocketMessagingConfiguration implements WebSocketMessageBrokerConfigurer {
 
@@ -287,8 +288,8 @@ class WebSocketMessagingAutoConfigurationTests {
 		}
 
 		@Bean
-		TomcatWebSocketServletWebServerCustomizer tomcatCustomizer() {
-			return new TomcatWebSocketServletWebServerCustomizer();
+		WebSocketTomcatWebServerFactoryCustomizer tomcatCustomizer() {
+			return new WebSocketTomcatWebServerFactoryCustomizer();
 		}
 
 	}

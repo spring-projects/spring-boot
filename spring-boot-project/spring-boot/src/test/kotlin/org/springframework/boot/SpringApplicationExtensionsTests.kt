@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.kotlinsample.TestKotlinApplication
 import org.springframework.boot.web.servlet.mock.MockFilter
-import org.springframework.boot.web.servlet.server.MockServletWebServerFactory
+import org.springframework.boot.web.server.servlet.MockServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.StandardEnvironment

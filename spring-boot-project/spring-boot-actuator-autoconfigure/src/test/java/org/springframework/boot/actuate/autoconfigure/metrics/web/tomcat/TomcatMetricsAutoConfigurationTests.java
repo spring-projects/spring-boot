@@ -28,15 +28,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.metrics.web.tomcat.TomcatMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.reactive.tomcat.TomcatReactiveWebServerAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.server.servlet.tomcat.TomcatServletWebServerAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.reactive.tomcat.TomcatReactiveWebServerFactory;
+import org.springframework.boot.web.server.servlet.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.tomcat.TomcatWebServer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -59,7 +59,7 @@ class TomcatMetricsAutoConfigurationTests {
 		resetTomcatState();
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(TomcatMetricsAutoConfiguration.class,
-					ServletWebServerFactoryAutoConfiguration.class))
+					TomcatServletWebServerAutoConfiguration.class))
 			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.withPropertyValues("server.tomcat.mbeanregistry.enabled=true")
 			.run((context) -> {
@@ -76,7 +76,7 @@ class TomcatMetricsAutoConfigurationTests {
 		resetTomcatState();
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 			.withConfiguration(AutoConfigurations.of(TomcatMetricsAutoConfiguration.class,
-					ReactiveWebServerFactoryAutoConfiguration.class))
+					TomcatReactiveWebServerAutoConfiguration.class))
 			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
 			.withPropertyValues("server.tomcat.mbeanregistry.enabled=true")
 			.run((context) -> {

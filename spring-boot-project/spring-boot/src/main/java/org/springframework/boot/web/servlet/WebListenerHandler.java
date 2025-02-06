@@ -23,6 +23,7 @@ import jakarta.servlet.annotation.WebListener;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.web.server.servlet.WebListenerRegistry;
 
 /**
  * Handler for {@link WebListener @WebListener}-annotated classes.

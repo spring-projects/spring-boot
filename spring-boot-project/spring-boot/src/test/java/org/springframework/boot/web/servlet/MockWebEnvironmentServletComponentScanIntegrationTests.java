@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+import org.springframework.boot.web.server.servlet.WebListenerRegistry;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.boot.web.servlet.testcomponents.filter.TestFilter;
 import org.springframework.boot.web.servlet.testcomponents.listener.TestListener;

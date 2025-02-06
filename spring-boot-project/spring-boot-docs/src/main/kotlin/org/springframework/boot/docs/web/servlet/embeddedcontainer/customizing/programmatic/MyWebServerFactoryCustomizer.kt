@@ -16,8 +16,8 @@
 
 package org.springframework.boot.docs.web.servlet.embeddedcontainer.customizing.programmatic
 
+import org.springframework.boot.web.server.servlet.ConfigurableServletWebServerFactory
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
-import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory
 import org.springframework.stereotype.Component
 
 @Component
