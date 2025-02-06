@@ -35,7 +35,6 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.InstanceOfAssertFactory;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Test;
-import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -48,7 +47,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.r2dbc.core.DatabaseClient;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -98,9 +96,10 @@ class R2dbcAutoConfigurationTests {
 					assertThat(poolMetrics.getMaxAllocatedSize()).isEqualTo(15);
 					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxAcquireTime", Duration.ofMinutes(3));
 					assertThat(connectionPool).hasFieldOrPropertyWithValue("maxValidationTime", Duration.ofSeconds(1));
-					Mono<?> create = (Mono<?>) ReflectionTestUtils.getField(connectionPool, "create");
-					assertThat(create.getClass().getName()).endsWith("MonoRetry");
-					assertThat(create).hasFieldOrPropertyWithValue("times", 5L);
+					assertThat(connectionPool).extracting("create").satisfies((mono) -> {
+						assertThat(mono.getClass().getName()).endsWith("MonoRetry");
+						assertThat(mono).hasFieldOrPropertyWithValue("times", 5L);
+					});
 				}
 				finally {
 					connectionPool.close().block();

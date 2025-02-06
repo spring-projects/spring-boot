@@ -269,7 +269,7 @@
     },
     {
       "name": "server.ssl.bundle",
-      "description": "The name of a configured SSL bundle."
+      "description": "Name of a configured SSL bundle."
     },
     {
       "name": "server.ssl.certificate",
@@ -2606,7 +2606,7 @@
     },
     {
       "name": "spring.rsocket.server.ssl.bundle",
-      "description": "The name of a configured SSL bundle."
+      "description": "Name of a configured SSL bundle."
     },
     {
       "name": "spring.rsocket.server.ssl.certificate",

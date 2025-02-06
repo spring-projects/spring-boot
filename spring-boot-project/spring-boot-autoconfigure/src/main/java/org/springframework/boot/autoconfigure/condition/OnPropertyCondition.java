@@ -89,8 +89,8 @@ class OnPropertyCondition extends SpringBootCondition {
 	}
 
 	private Stream<MergedAnnotation<Annotation>> stream(MergedAnnotations annotations,
-			Class<? extends Annotation> containerType) {
-		return annotations.stream(containerType.getName())
+			Class<? extends Annotation> type) {
+		return annotations.stream(type.getName())
 			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes));
 	}
 
