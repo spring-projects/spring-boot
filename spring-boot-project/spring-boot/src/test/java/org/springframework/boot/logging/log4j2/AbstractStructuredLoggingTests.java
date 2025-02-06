@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,17 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected static MutableLogEvent createEvent() {
+		return createEvent(null);
+	}
+
+	protected static MutableLogEvent createEvent(Throwable thrown) {
 		MutableLogEvent event = new MutableLogEvent();
 		event.setTimeMillis(EVENT_TIME.toEpochMilli());
 		event.setLevel(Level.INFO);
 		event.setThreadName("main");
 		event.setLoggerName("org.example.Test");
 		event.setMessage(new SimpleMessage("message"));
+		event.setThrown(thrown);
 		return event;
 	}
 

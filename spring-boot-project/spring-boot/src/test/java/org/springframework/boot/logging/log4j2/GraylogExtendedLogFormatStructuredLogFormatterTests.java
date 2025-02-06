@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,19 +37,22 @@ import static org.mockito.BDDMockito.then;
  *
  * @author Samuel Lissner
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
 class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
 
 	private GraylogExtendedLogFormatStructuredLogFormatter formatter;
 
+	private MockEnvironment environment;
+
 	@BeforeEach
 	void setUp() {
-		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.structured.gelf.host", "name");
-		environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
-		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(environment, this.customizer);
+		this.environment = new MockEnvironment();
+		this.environment.setProperty("logging.structured.gelf.host", "name");
+		this.environment.setProperty("logging.structured.gelf.service.version", "1.0.0");
+		this.environment.setProperty("spring.application.pid", "1");
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment, null, this.customizer);
 	}
 
 	@Test
@@ -146,6 +149,22 @@ class GraylogExtendedLogFormatStructuredLogFormatterTests extends AbstractStruct
 		assertThat(json).contains(
 				"""
 						message\\n\\njava.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.GraylogExtendedLogFormatStructuredLogFormatterTests.shouldFormatException""");
+	}
+
+	@Test
+	void shouldFormatExceptionUsingStackTracePrinter() {
+		this.formatter = new GraylogExtendedLogFormatStructuredLogFormatter(this.environment,
+				new SimpleStackTracePrinter(), this.customizer);
+		MutableLogEvent event = createEvent();
+		event.setThrown(new RuntimeException("Boom"));
+		String json = this.formatter.format(event);
+		Map<String, Object> deserialized = deserialize(json);
+		String fullMessage = (String) deserialized.get("full_message");
+		String stackTrace = (String) deserialized.get("_error_stack_trace");
+		assertThat(fullMessage).isEqualTo("message\n\nstacktrace:RuntimeException");
+		assertThat(deserialized)
+			.containsAllEntriesOf(map("_error_type", "java.lang.RuntimeException", "_error_message", "Boom"));
+		assertThat(stackTrace).isEqualTo("stacktrace:RuntimeException");
 	}
 
 }

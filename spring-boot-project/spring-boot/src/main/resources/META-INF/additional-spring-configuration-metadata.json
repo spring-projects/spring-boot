@@ -287,6 +287,36 @@
       "description": "Mapping between member paths and an alternative name that should be used in structured logging JSON"
     },
     {
+      "name": "logging.structured.json.stacktrace.include-common-frames",
+      "type": "java.lang.Boolean",
+      "description": "Whether common frames should be included."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.include-hashes",
+      "type": "java.lang.Boolean",
+      "description": "Whether stack trace hashes should be included."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.max-length",
+      "type": "java.lang.Integer",
+      "description": "Maximum length to print."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.max-throwable-depth",
+      "type": "java.lang.Integer",
+      "description": "Maximum throwable depth to print."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.printer",
+      "type": "java.lang.String",
+      "description": "Name of the printer to use. Can be 'standard', 'logging-system', or the fully-qualified class name of a  StackTracePrinter. When not specified 'logging-system' or 'standard' will be used depening if other properties are set."
+    },
+    {
+      "name": "logging.structured.json.stacktrace.root",
+      "type": "org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace.Root",
+      "description": "Root ordering (root first or root last)."
+    },
+    {
       "name": "logging.threshold.console",
       "type": "java.lang.String",
       "description": "Log level threshold for console output.",
@@ -694,6 +724,25 @@
           "name": "handle-as",
           "parameters": {
             "target": "java.lang.Class"
+          }
+        }
+      ]
+    },
+ 	{
+      "name": "logging.structured.json.stacktrace.printer",
+      "values": [
+        {
+          "value": "standard"
+        },
+        {
+          "value": "logging-system"
+        }
+      ],
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Class<org.springframework.boot.logging.StackTracePrinter>"
           }
         }
       ]

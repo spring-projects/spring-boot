@@ -16,9 +16,11 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -26,8 +28,14 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.boot.logging.StandardStackTracePrinter;
+import org.springframework.boot.logging.TestException;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace;
+import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StackTrace.Root;
 import org.springframework.boot.logging.structured.StructuredLoggingJsonProperties.StructuredLoggingJsonPropertiesRuntimeHints;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,16 +47,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StructuredLoggingJsonPropertiesTests {
 
 	@Test
-	void getBindsFromEnvironment() {
+	void getWhenHasNoStackTracePropertiesBindsFromEnvironment() {
 		MockEnvironment environment = new MockEnvironment();
+		setupJsonProperties(environment);
+		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
+		assertThat(properties).isEqualTo(new StructuredLoggingJsonProperties(Set.of("a", "b"), Set.of("c", "d"),
+				Map.of("e", "f"), Map.of("g", "h"), null, Set.of(TestCustomizer.class)));
+	}
+
+	@Test
+	void getWhenHasStackTracePropertiesBindsFromEnvironment() {
+		MockEnvironment environment = new MockEnvironment();
+		setupJsonProperties(environment);
+		environment.setProperty("logging.structured.json.stacktrace.printer", "standard");
+		environment.setProperty("logging.structured.json.stacktrace.root", "first");
+		environment.setProperty("logging.structured.json.stacktrace.max-length", "1024");
+		environment.setProperty("logging.structured.json.stacktrace.max-throwable-depth", "5");
+		environment.setProperty("logging.structured.json.stacktrace.include-common-frames", "true");
+		environment.setProperty("logging.structured.json.stacktrace.include-hashes", "true");
+		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
+		assertThat(properties.stackTrace())
+			.isEqualTo(new StructuredLoggingJsonProperties.StackTrace("standard", Root.FIRST, 1024, 5, true, true));
+	}
+
+	private void setupJsonProperties(MockEnvironment environment) {
 		environment.setProperty("logging.structured.json.include", "a,b");
 		environment.setProperty("logging.structured.json.exclude", "c,d");
 		environment.setProperty("logging.structured.json.rename.e", "f");
 		environment.setProperty("logging.structured.json.add.g", "h");
 		environment.setProperty("logging.structured.json.customizer", TestCustomizer.class.getName());
-		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
-		assertThat(properties).isEqualTo(new StructuredLoggingJsonProperties(Set.of("a", "b"), Set.of("c", "d"),
-				Map.of("e", "f"), Map.of("g", "h"), Set.of(TestCustomizer.class)));
 	}
 
 	@Test
@@ -64,7 +91,7 @@ class StructuredLoggingJsonPropertiesTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(StructuredLoggingJsonProperties.class)).accepts(hints);
 		assertThat(RuntimeHintsPredicates.reflection()
 			.onConstructor(StructuredLoggingJsonProperties.class.getDeclaredConstructor(Set.class, Set.class, Map.class,
-					Map.class, Set.class))
+					Map.class, StackTrace.class, Set.class))
 			.invoke()).accepts(hints);
 	}
 
@@ -74,10 +101,120 @@ class StructuredLoggingJsonPropertiesTests {
 			.anyMatch(StructuredLoggingJsonPropertiesRuntimeHints.class::isInstance);
 	}
 
+	@Nested
+	class StackTraceTests {
+
+		@Test
+		void createPrinterWhenEmptyReturnsNull() {
+			StackTrace properties = new StackTrace(null, null, null, null, null, null);
+			assertThat(properties.createPrinter()).isNull();
+		}
+
+		@Test
+		void createPrinterWhenNoPrinterAndNotEmptyReturnsStandard() {
+			StackTrace properties = new StackTrace(null, Root.LAST, null, null, null, null);
+			assertThat(properties.createPrinter()).isInstanceOf(StandardStackTracePrinter.class);
+		}
+
+		@Test
+		void createPrinterWhenLoggingSystemReturnsNull() {
+			StackTrace properties = new StackTrace("logging-system", null, null, null, null, null);
+			assertThat(properties.createPrinter()).isNull();
+		}
+
+		@Test
+		void createPrinterWhenLoggingSystemRelaxedReturnsNull() {
+			StackTrace properties = new StackTrace("LoggingSystem", null, null, null, null, null);
+			assertThat(properties.createPrinter()).isNull();
+		}
+
+		@Test
+		void createPrinterWhenStandardReturnsStandardPrinter() {
+			StackTrace properties = new StackTrace("standard", null, null, null, null, null);
+			assertThat(properties.createPrinter()).isInstanceOf(StandardStackTracePrinter.class);
+		}
+
+		@Test
+		void createPrinterWhenStandardRelaxedReturnsStandardPrinter() {
+			StackTrace properties = new StackTrace("STANDARD", null, null, null, null, null);
+			assertThat(properties.createPrinter()).isInstanceOf(StandardStackTracePrinter.class);
+		}
+
+		@Test
+		void createPrinterWhenStandardAppliesCustomizations() {
+			Exception exception = TestException.create();
+			StackTrace properties = new StackTrace(null, Root.FIRST, 300, 2, true, false);
+			StackTracePrinter printer = properties.createPrinter();
+			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
+			assertThat(actual).isEqualTo("""
+					java.lang.RuntimeException: exception
+						at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:NN)
+						at org.springframework.boot.logging.TestException.createException(TestException.java:NN)
+						... 2 filtered
+						Suppressed: java.lang.RuntimeException: supressed
+							at o...""");
+		}
+
+		@Test
+		void createPrinterWhenStandardWithHashesPrintsHash() {
+			Exception exception = TestException.create();
+			StackTrace properties = new StackTrace(null, null, null, null, null, true);
+			StackTracePrinter printer = properties.createPrinter();
+			String actual = printer.printStackTraceToString(exception);
+			assertThat(actual).containsPattern("<#[0-9a-z]{8}>");
+		}
+
+		@Test
+		void createPrinterWhenClassNameCreatesPrinter() {
+			Exception exception = TestException.create();
+			StackTrace properties = new StackTrace(TestStackTracePrinter.class.getName(), null, null, null, true, null);
+			StackTracePrinter printer = properties.createPrinter();
+			assertThat(printer.printStackTraceToString(exception)).isEqualTo("java.lang.RuntimeException: exception");
+		}
+
+		@Test
+		void createPrinterWhenClassNameInjectsConfiguredPrinter() {
+			Exception exception = TestException.create();
+			StackTrace properties = new StackTrace(TestStackTracePrinterCustomized.class.getName(), Root.FIRST, 300, 2,
+					true, null);
+			StackTracePrinter printer = properties.createPrinter();
+			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
+			assertThat(actual).isEqualTo("RuntimeExceptionexception!	at org.spr...");
+
+		}
+
+	}
+
 	static class TestCustomizer implements StructuredLoggingJsonMembersCustomizer<String> {
 
 		@Override
 		public void customize(Members<String> members) {
+		}
+
+	}
+
+	static class TestStackTracePrinter implements StackTracePrinter {
+
+		@Override
+		public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
+			out.append(throwable.toString());
+		}
+
+	}
+
+	static class TestStackTracePrinterCustomized implements StackTracePrinter {
+
+		private final StandardStackTracePrinter printer;
+
+		TestStackTracePrinterCustomized(StandardStackTracePrinter printer) {
+			this.printer = printer.withMaximumLength(40)
+				.withLineSeparator("!")
+				.withFormatter((throwable) -> ClassUtils.getShortName(throwable.getClass()) + throwable.getMessage());
+		}
+
+		@Override
+		public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
+			this.printer.printStackTrace(throwable, out);
 		}
 
 	}

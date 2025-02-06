@@ -39,8 +39,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link StructuredLogLayout}.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
-class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
+class StructuredLogLayoutTests extends AbstractStructuredLoggingTests {
 
 	private MockEnvironment environment;
 
@@ -49,6 +50,8 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 	@BeforeEach
 	void setup() {
 		this.environment = new MockEnvironment();
+		this.environment.setProperty("logging.structured.json.stacktrace.printer",
+				SimpleStackTracePrinter.class.getName());
 		this.loggerContext = (LoggerContext) LogManager.getContext(false);
 		this.loggerContext.putObject(Log4J2LoggingSystem.ENVIRONMENT_KEY, this.environment);
 	}
@@ -61,17 +64,28 @@ class StructuredLoggingLayoutTests extends AbstractStructuredLoggingTests {
 	@Test
 	void shouldSupportEcsCommonFormat() {
 		StructuredLogLayout layout = newBuilder().setFormat("ecs").build();
-		String json = layout.toSerializable(createEvent());
+		String json = layout.toSerializable(createEvent(new RuntimeException("Boom!")));
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsKey("ecs.version");
+		assertThat(deserialized.get("error.stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test
 	void shouldSupportLogstashCommonFormat() {
 		StructuredLogLayout layout = newBuilder().setFormat("logstash").build();
-		String json = layout.toSerializable(createEvent());
+		String json = layout.toSerializable(createEvent(new RuntimeException("Boom!")));
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsKey("@version");
+		assertThat(deserialized.get("stack_trace")).isEqualTo("stacktrace:RuntimeException");
+	}
+
+	@Test
+	void shouldSupportGelfCommonFormat() {
+		StructuredLogLayout layout = newBuilder().setFormat("gelf").build();
+		String json = layout.toSerializable(createEvent(new RuntimeException("Boom!")));
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("version");
+		assertThat(deserialized.get("_error_stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test

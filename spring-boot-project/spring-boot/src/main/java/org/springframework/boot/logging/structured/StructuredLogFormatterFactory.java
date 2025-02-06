@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import java.util.function.Consumer;
 
 import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.boot.util.Instantiator.FailureHandler;
@@ -77,12 +78,14 @@ public class StructuredLogFormatterFactory<E> {
 
 	StructuredLogFormatterFactory(SpringFactoriesLoader factoriesLoader, Class<E> logEventType, Environment environment,
 			Consumer<AvailableParameters> availableParameters, Consumer<CommonFormatters<E>> commonFormatters) {
+		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		this.factoriesLoader = factoriesLoader;
 		this.logEventType = logEventType;
 		this.instantiator = new Instantiator<>(Object.class, (allAvailableParameters) -> {
 			allAvailableParameters.add(Environment.class, environment);
 			allAvailableParameters.add(StructuredLoggingJsonMembersCustomizer.class,
-					(type) -> getStructuredLoggingJsonMembersCustomizer(environment));
+					(type) -> getStructuredLoggingJsonMembersCustomizer(properties));
+			allAvailableParameters.add(StackTracePrinter.class, (type) -> getStackTracePrinter(properties));
 			if (availableParameters != null) {
 				availableParameters.accept(allAvailableParameters);
 			}
@@ -91,9 +94,9 @@ public class StructuredLogFormatterFactory<E> {
 		commonFormatters.accept(this.commonFormatters);
 	}
 
-	StructuredLoggingJsonMembersCustomizer<?> getStructuredLoggingJsonMembersCustomizer(Environment environment) {
+	StructuredLoggingJsonMembersCustomizer<?> getStructuredLoggingJsonMembersCustomizer(
+			StructuredLoggingJsonProperties properties) {
 		List<StructuredLoggingJsonMembersCustomizer<?>> customizers = new ArrayList<>();
-		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
 		if (properties != null) {
 			customizers.add(new StructuredLoggingJsonPropertiesJsonMembersCustomizer(this.instantiator, properties));
 		}
@@ -113,6 +116,10 @@ public class StructuredLogFormatterFactory<E> {
 		for (StructuredLoggingJsonMembersCustomizer<?> customizer : customizers) {
 			((StructuredLoggingJsonMembersCustomizer) customizer).customize(members);
 		}
+	}
+
+	private StackTracePrinter getStackTracePrinter(StructuredLoggingJsonProperties properties) {
+		return (properties != null && properties.stackTrace() != null) ? properties.stackTrace().createPrinter() : null;
 	}
 
 	/**

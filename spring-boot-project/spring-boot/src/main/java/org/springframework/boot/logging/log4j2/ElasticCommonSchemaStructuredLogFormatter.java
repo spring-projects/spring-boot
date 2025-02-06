@@ -28,6 +28,8 @@ import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
@@ -45,12 +47,14 @@ import org.springframework.util.ObjectUtils;
  */
 class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-	ElasticCommonSchemaStructuredLogFormatter(Environment environment,
+	ElasticCommonSchemaStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
 			StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(environment, members), customizer);
+		super((members) -> jsonMembers(environment, stackTracePrinter, members), customizer);
 	}
 
-	private static void jsonMembers(Environment environment, JsonWriter.Members<LogEvent> members) {
+	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
+			JsonWriter.Members<LogEvent> members) {
+		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("@timestamp", LogEvent::getInstant).as(ElasticCommonSchemaStructuredLogFormatter::asTimestamp);
 		members.add("log.level", LogEvent::getLevel).as(Level::name);
 		members.add("process.pid", environment.getProperty("spring.application.pid", Long.class))
@@ -62,13 +66,9 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		members.from(LogEvent::getContextData)
 			.whenNot(ReadOnlyStringMap::isEmpty)
 			.usingPairs((contextData, pairs) -> contextData.forEach(pairs::accept));
-		members.from(LogEvent::getThrownProxy).whenNotNull().usingMembers((thrownProxyMembers) -> {
-			thrownProxyMembers.add("error.type", ThrowableProxy::getThrowable)
-				.whenNotNull()
-				.as(ObjectUtils::nullSafeClassName);
-			thrownProxyMembers.add("error.message", ThrowableProxy::getMessage);
-			thrownProxyMembers.add("error.stack_trace", ThrowableProxy::getExtendedStackTraceAsString);
-		});
+		members.from(LogEvent::getThrownProxy)
+			.whenNotNull()
+			.usingMembers((thrownProxyMembers) -> throwableMembers(thrownProxyMembers, extractor));
 		members.add("tags", LogEvent::getMarker)
 			.whenNotNull()
 			.as(ElasticCommonSchemaStructuredLogFormatter::getMarkers)
@@ -78,6 +78,12 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 
 	private static java.time.Instant asTimestamp(Instant instant) {
 		return java.time.Instant.ofEpochMilli(instant.getEpochMillisecond()).plusNanos(instant.getNanoOfMillisecond());
+	}
+
+	private static void throwableMembers(Members<ThrowableProxy> members, Extractor extractor) {
+		members.add("error.type", ThrowableProxy::getThrowable).whenNotNull().as(ObjectUtils::nullSafeClassName);
+		members.add("error.message", ThrowableProxy::getMessage);
+		members.add("error.stack_trace", extractor::stackTrace);
 	}
 
 	private static Set<String> getMarkers(Marker marker) {

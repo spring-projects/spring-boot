@@ -30,6 +30,7 @@ import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.ElasticCommonSchemaProperties;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
@@ -49,13 +50,14 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	ElasticCommonSchemaStructuredLogFormatter(Environment environment, ThrowableProxyConverter throwableProxyConverter,
-			StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(environment, throwableProxyConverter, members), customizer);
+	ElasticCommonSchemaStructuredLogFormatter(Environment environment, StackTracePrinter stackTracePrinter,
+			ThrowableProxyConverter throwableProxyConverter, StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(environment, stackTracePrinter, throwableProxyConverter, members), customizer);
 	}
 
-	private static void jsonMembers(Environment environment, ThrowableProxyConverter throwableProxyConverter,
-			JsonWriter.Members<ILoggingEvent> members) {
+	private static void jsonMembers(Environment environment, StackTracePrinter stackTracePrinter,
+			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
+		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("@timestamp", ILoggingEvent::getInstant);
 		members.add("log.level", ILoggingEvent::getLevel);
 		members.add("process.pid", environment.getProperty("spring.application.pid", Long.class))
@@ -71,7 +73,7 @@ class ElasticCommonSchemaStructuredLogFormatter extends JsonWriterStructuredLogF
 		members.add().whenNotNull(ILoggingEvent::getThrowableProxy).usingMembers((throwableMembers) -> {
 			throwableMembers.add("error.type", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getClassName);
 			throwableMembers.add("error.message", ILoggingEvent::getThrowableProxy).as(IThrowableProxy::getMessage);
-			throwableMembers.add("error.stack_trace", throwableProxyConverter::convert);
+			throwableMembers.add("error.stack_trace", extractor::stackTrace);
 		});
 		members.add("ecs.version", "8.11");
 		members.add("tags", ILoggingEvent::getMarkerList)

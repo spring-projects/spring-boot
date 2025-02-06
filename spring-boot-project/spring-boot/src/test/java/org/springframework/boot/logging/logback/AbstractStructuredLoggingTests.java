@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Map;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.pattern.ThrowableProxyConverter;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,12 +101,19 @@ abstract class AbstractStructuredLoggingTests {
 	}
 
 	protected static LoggingEvent createEvent() {
+		return createEvent(null);
+	}
+
+	protected static LoggingEvent createEvent(Throwable thrown) {
 		LoggingEvent event = new LoggingEvent();
 		event.setInstant(EVENT_TIME);
 		event.setLevel(Level.INFO);
 		event.setThreadName("main");
 		event.setLoggerName("org.example.Test");
 		event.setMessage("message");
+		if (thrown != null) {
+			event.setThrowableProxy(new ThrowableProxy(thrown));
+		}
 		return event;
 	}
 

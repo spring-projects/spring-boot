@@ -37,20 +37,23 @@ import static org.mockito.BDDMockito.then;
  * Tests for {@link ElasticCommonSchemaStructuredLogFormatter}.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
+
+	private MockEnvironment environment;
 
 	private ElasticCommonSchemaStructuredLogFormatter formatter;
 
 	@BeforeEach
 	void setUp() {
-		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.structured.ecs.service.name", "name");
-		environment.setProperty("logging.structured.ecs.service.version", "1.0.0");
-		environment.setProperty("logging.structured.ecs.service.environment", "test");
-		environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
-		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(environment, this.customizer);
+		this.environment = new MockEnvironment();
+		this.environment.setProperty("logging.structured.ecs.service.name", "name");
+		this.environment.setProperty("logging.structured.ecs.service.version", "1.0.0");
+		this.environment.setProperty("logging.structured.ecs.service.environment", "test");
+		this.environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
+		this.environment.setProperty("spring.application.pid", "1");
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null, this.customizer);
 	}
 
 	@Test
@@ -87,6 +90,17 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 		assertThat(json).contains(
 				"""
 						java.lang.RuntimeException: Boom\\n\\tat org.springframework.boot.logging.log4j2.ElasticCommonSchemaStructuredLogFormatterTests.shouldFormatException""");
+	}
+
+	@Test
+	void shouldFormatExceptionUsingStackTracePrinter() {
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, new SimpleStackTracePrinter(),
+				this.customizer);
+		MutableLogEvent event = createEvent();
+		event.setThrown(new RuntimeException("Boom"));
+		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
+		String stackTrace = (String) deserialized.get("error.stack_trace");
+		assertThat(stackTrace).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test

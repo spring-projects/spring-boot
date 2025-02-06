@@ -37,8 +37,11 @@ import static org.mockito.BDDMockito.then;
  * Tests for {@link ElasticCommonSchemaStructuredLogFormatter}.
  *
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredLoggingTests {
+
+	private MockEnvironment environment;
 
 	private ElasticCommonSchemaStructuredLogFormatter formatter;
 
@@ -46,14 +49,14 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 	@BeforeEach
 	void setUp() {
 		super.setUp();
-		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("logging.structured.ecs.service.name", "name");
-		environment.setProperty("logging.structured.ecs.service.version", "1.0.0");
-		environment.setProperty("logging.structured.ecs.service.environment", "test");
-		environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
-		environment.setProperty("spring.application.pid", "1");
-		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(environment, getThrowableProxyConverter(),
-				this.customizer);
+		this.environment = new MockEnvironment();
+		this.environment.setProperty("logging.structured.ecs.service.name", "name");
+		this.environment.setProperty("logging.structured.ecs.service.version", "1.0.0");
+		this.environment.setProperty("logging.structured.ecs.service.environment", "test");
+		this.environment.setProperty("logging.structured.ecs.service.node-name", "node-1");
+		this.environment.setProperty("spring.application.pid", "1");
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, null,
+				getThrowableProxyConverter(), this.customizer);
 	}
 
 	@Test
@@ -93,6 +96,18 @@ class ElasticCommonSchemaStructuredLogFormatterTests extends AbstractStructuredL
 					.formatted()
 					.replace("\n", "\\n")
 					.replace("\r", "\\r"));
+	}
+
+	@Test
+	void shouldFormatExceptionUsingStackTracePrinter() {
+		this.formatter = new ElasticCommonSchemaStructuredLogFormatter(this.environment, new SimpleStackTracePrinter(),
+				getThrowableProxyConverter(), this.customizer);
+		LoggingEvent event = createEvent();
+		event.setMDCPropertyMap(Collections.emptyMap());
+		event.setThrowableProxy(new ThrowableProxy(new RuntimeException("Boom")));
+		Map<String, Object> deserialized = deserialize(this.formatter.format(event));
+		String stackTrace = (String) deserialized.get("error.stack_trace");
+		assertThat(stackTrace).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test

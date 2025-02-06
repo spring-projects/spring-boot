@@ -56,6 +56,8 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 	void setUp() {
 		super.setUp();
 		this.environment = new MockEnvironment();
+		this.environment.setProperty("logging.structured.json.stacktrace.printer",
+				SimpleStackTracePrinter.class.getName());
 		this.loggerContext = new ContextBase();
 		this.loggerContext.putObject(Environment.class.getName(), this.environment);
 		this.encoder = new StructuredLogEncoder();
@@ -73,22 +75,36 @@ class StructuredLogEncoderTests extends AbstractStructuredLoggingTests {
 	void shouldSupportEcsCommonFormat() {
 		this.encoder.setFormat("ecs");
 		this.encoder.start();
-		LoggingEvent event = createEvent();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
 		event.setMDCPropertyMap(Collections.emptyMap());
 		String json = encode(event);
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsKey("ecs.version");
+		assertThat(deserialized.get("error.stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test
 	void shouldSupportLogstashCommonFormat() {
 		this.encoder.setFormat("logstash");
 		this.encoder.start();
-		LoggingEvent event = createEvent();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
 		event.setMDCPropertyMap(Collections.emptyMap());
 		String json = encode(event);
 		Map<String, Object> deserialized = deserialize(json);
 		assertThat(deserialized).containsKey("@version");
+		assertThat(deserialized.get("stack_trace")).isEqualTo("stacktrace:RuntimeException");
+	}
+
+	@Test
+	void shouldSupportGelfCommonFormat() {
+		this.encoder.setFormat("gelf");
+		this.encoder.start();
+		LoggingEvent event = createEvent(new RuntimeException("Boom!"));
+		event.setMDCPropertyMap(Collections.emptyMap());
+		String json = encode(event);
+		Map<String, Object> deserialized = deserialize(json);
+		assertThat(deserialized).containsKey("version");
+		assertThat(deserialized.get("_error_stack_trace")).isEqualTo("stacktrace:RuntimeException");
 	}
 
 	@Test

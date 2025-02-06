@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.json.JsonWriter.Members;
 import org.springframework.boot.json.JsonWriter.ValueProcessor;
+import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.logging.structured.StructuredLogFormatterFactory.CommonFormatters;
 import org.springframework.boot.util.Instantiator.AvailableParameters;
 import org.springframework.core.env.Environment;
@@ -60,7 +62,7 @@ class StructuredLogFormatterFactoryTests {
 	private void addCommonFormatters(CommonFormatters<LogEvent> commonFormatters) {
 		commonFormatters.add(CommonStructuredLogFormat.ELASTIC_COMMON_SCHEMA,
 				(instantiator) -> new TestEcsFormatter(instantiator.getArg(Environment.class),
-						instantiator.getArg(StringBuilder.class)));
+						instantiator.getArg(StackTracePrinter.class), instantiator.getArg(StringBuilder.class)));
 	}
 
 	@Test
@@ -94,9 +96,18 @@ class StructuredLogFormatterFactoryTests {
 	}
 
 	@Test
-	void getUsingClassNameInjectsApplicationMetadata() {
+	void getUsingClassNameInjectsEnvironment() {
 		TestEcsFormatter formatter = (TestEcsFormatter) this.factory.get(TestEcsFormatter.class.getName());
 		assertThat(formatter.getEnvironment()).isSameAs(this.environment);
+	}
+
+	@Test
+	void getUsingClassNameInjectsStackTracePrinter() {
+		this.environment.setProperty("logging.structured.json.stacktrace.printer", "standard");
+		StructuredLogFormatterFactory<LogEvent> factory = new StructuredLogFormatterFactory<>(LogEvent.class,
+				this.environment, this::addAvailableParameters, this::addCommonFormatters);
+		TestEcsFormatter formatter = (TestEcsFormatter) factory.get(TestEcsFormatter.class.getName());
+		assertThat(formatter.getStackTracePrinter()).isInstanceOf(StandardStackTracePrinter.class);
 	}
 
 	@Test
@@ -159,12 +170,15 @@ class StructuredLogFormatterFactoryTests {
 
 	static class TestEcsFormatter implements StructuredLogFormatter<LogEvent> {
 
-		private Environment environment;
+		private final Environment environment;
 
-		private StringBuilder custom;
+		private final StackTracePrinter stackTracePrinter;
 
-		TestEcsFormatter(Environment environment, StringBuilder custom) {
+		private final StringBuilder custom;
+
+		TestEcsFormatter(Environment environment, StackTracePrinter stackTracePrinter, StringBuilder custom) {
 			this.environment = environment;
+			this.stackTracePrinter = stackTracePrinter;
 			this.custom = custom;
 		}
 
@@ -177,6 +191,10 @@ class StructuredLogFormatterFactoryTests {
 			return this.environment;
 		}
 
+		StackTracePrinter getStackTracePrinter() {
+			return this.stackTracePrinter;
+		}
+
 		StringBuilder getCustom() {
 			return this.custom;
 		}
@@ -185,8 +203,8 @@ class StructuredLogFormatterFactoryTests {
 
 	static class ExtendedTestEcsFormatter extends TestEcsFormatter {
 
-		ExtendedTestEcsFormatter(Environment environment, StringBuilder custom) {
-			super(environment, custom);
+		ExtendedTestEcsFormatter(Environment environment, StackTracePrinter stackTracePrinter, StringBuilder custom) {
+			super(environment, stackTracePrinter, custom);
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.slf4j.event.KeyValuePair;
 
 import org.springframework.boot.json.JsonWriter;
 import org.springframework.boot.json.JsonWriter.PairExtractor;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
@@ -49,13 +50,14 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 	private static final PairExtractor<KeyValuePair> keyValuePairExtractor = PairExtractor.of((pair) -> pair.key,
 			(pair) -> pair.value);
 
-	LogstashStructuredLogFormatter(ThrowableProxyConverter throwableProxyConverter,
+	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter, ThrowableProxyConverter throwableProxyConverter,
 			StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super((members) -> jsonMembers(throwableProxyConverter, members), customizer);
+		super((members) -> jsonMembers(stackTracePrinter, throwableProxyConverter, members), customizer);
 	}
 
-	private static void jsonMembers(ThrowableProxyConverter throwableProxyConverter,
-			JsonWriter.Members<ILoggingEvent> members) {
+	private static void jsonMembers(StackTracePrinter stackTracePrinter,
+			ThrowableProxyConverter throwableProxyConverter, JsonWriter.Members<ILoggingEvent> members) {
+		Extractor extractor = new Extractor(stackTracePrinter, throwableProxyConverter);
 		members.add("@timestamp", ILoggingEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
 		members.add("@version", "1");
 		members.add("message", ILoggingEvent::getFormattedMessage);
@@ -73,7 +75,7 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<IL
 			.whenNotEmpty();
 		members.add("stack_trace", (event) -> event)
 			.whenNotNull(ILoggingEvent::getThrowableProxy)
-			.as(throwableProxyConverter::convert);
+			.as(extractor::stackTrace);
 	}
 
 	private static String asTimestamp(Instant instant) {

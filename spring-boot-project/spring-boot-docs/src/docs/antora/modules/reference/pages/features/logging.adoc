@@ -647,6 +647,57 @@ You can also declare implementations by listing them in a `META-INF/spring.facto
 
 
 
+[[features.logging.structured.customizing-stack-traces]]
+=== Customizing Structured Logging Stack Traces
+
+Complete stack traces are included in the JSON output whenever a message is logged with an exception.
+This amount of information may be costly to process by your log ingestion system, so you may want to tune the way that stack traces are printed.
+
+To do this, you can use one or more of the following properties:
+
+|===
+| Property | Description
+
+| configprop:logging.structured.json.stacktrace.root[]
+| Use `last` to print the root item last (same as Java) or `first` to print the root item first.
+
+| configprop:logging.structured.json.stacktrace.max-length[]
+| The maximum length that should be printed
+
+| configprop:logging.structured.json.stacktrace.max-throwable-depth[]
+| The maximum number of frames to print per stack trace (including common and suppressed frames)
+
+| configprop:logging.structured.json.stacktrace.include-common-frames[]
+| If common frames should be included or removed
+
+| configprop:logging.structured.json.stacktrace.include-hashes[]
+| If a hash of the stack trace should be included
+|===
+
+For example, the following will use root first stack traces, limit their length, and include hashes.
+
+[configprops,yaml]
+----
+logging:
+  structured:
+    json:
+      stacktrace:
+        root: first
+        max-length: 1024
+        include-common-frames: true
+        include-hashes: true
+----
+
+[TIP]
+====
+If you need complete control over stack trace printing you can set configprop:logging.structured.json.stacktrace.printer[] to the name of a javadoc:org.springframework.boot.logging.StackTracePrinter[] implementation.
+You can also set it to `logging-system` to force regular logging system stack trace output to be used.
+
+Your `StackTracePrinter` implementation can also include a constructor argument that accepts a javadoc:org.springframework.boot.logging.StandardStackTracePrinter[] if it wishes to apply further customization to the stack trace printer created from the properties.
+====
+
+
+
 [[features.logging.structured.other-formats]]
 === Supporting Other Structured Logging Formats
 

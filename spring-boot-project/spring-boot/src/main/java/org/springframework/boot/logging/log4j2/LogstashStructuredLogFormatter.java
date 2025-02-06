@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ import java.util.TreeSet;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.impl.ThrowableProxy;
 import org.apache.logging.log4j.core.time.Instant;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 
 import org.springframework.boot.json.JsonWriter;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.boot.logging.structured.CommonStructuredLogFormat;
 import org.springframework.boot.logging.structured.JsonWriterStructuredLogFormatter;
 import org.springframework.boot.logging.structured.StructuredLogFormatter;
@@ -44,11 +44,13 @@ import org.springframework.util.CollectionUtils;
  */
 class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<LogEvent> {
 
-	LogstashStructuredLogFormatter(StructuredLoggingJsonMembersCustomizer<?> customizer) {
-		super(LogstashStructuredLogFormatter::jsonMembers, customizer);
+	LogstashStructuredLogFormatter(StackTracePrinter stackTracePrinter,
+			StructuredLoggingJsonMembersCustomizer<?> customizer) {
+		super((members) -> jsonMembers(stackTracePrinter, members), customizer);
 	}
 
-	private static void jsonMembers(JsonWriter.Members<LogEvent> members) {
+	private static void jsonMembers(StackTracePrinter stackTracePrinter, JsonWriter.Members<LogEvent> members) {
+		Extractor extractor = new Extractor(stackTracePrinter);
 		members.add("@timestamp", LogEvent::getInstant).as(LogstashStructuredLogFormatter::asTimestamp);
 		members.add("@version", "1");
 		members.add("message", LogEvent::getMessage).as(StructuredMessage::get);
@@ -63,9 +65,7 @@ class LogstashStructuredLogFormatter extends JsonWriterStructuredLogFormatter<Lo
 			.whenNotNull()
 			.as(LogstashStructuredLogFormatter::getMarkers)
 			.whenNot(CollectionUtils::isEmpty);
-		members.add("stack_trace", LogEvent::getThrownProxy)
-			.whenNotNull()
-			.as(ThrowableProxy::getExtendedStackTraceAsString);
+		members.add("stack_trace", LogEvent::getThrownProxy).whenNotNull().as(extractor::stackTrace);
 	}
 
 	private static String asTimestamp(Instant instant) {

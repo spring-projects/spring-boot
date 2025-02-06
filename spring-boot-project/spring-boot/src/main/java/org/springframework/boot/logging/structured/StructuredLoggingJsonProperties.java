@@ -19,11 +19,19 @@ package org.springframework.boot.logging.structured;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.logging.StackTracePrinter;
+import org.springframework.boot.logging.StandardStackTracePrinter;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 
@@ -34,13 +42,15 @@ import org.springframework.core.env.Environment;
  * @param exclude the paths that should be excluded. An empty set excludes nothing
  * @param rename a map of path to replacement names
  * @param add a map of additional elements {@link StructuredLoggingJsonMembersCustomizer}
+ * @param stackTrace stack trace properties
  * @param customizer the fully qualified names of
  * {@link StructuredLoggingJsonMembersCustomizer} implementations
  * @author Phillip Webb
  * @author Yanming Zhou
  */
 record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude, Map<String, String> rename,
-		Map<String, String> add, Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
+		Map<String, String> add, StackTrace stackTrace,
+		Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizer) {
 
 	StructuredLoggingJsonProperties {
 		customizer = (customizer != null) ? customizer : Collections.emptySet();
@@ -55,6 +65,74 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		return Binder.get(environment)
 			.bind("logging.structured.json", StructuredLoggingJsonProperties.class)
 			.orElse(null);
+	}
+
+	/**
+	 * Properties to influence stack trace printing.
+	 *
+	 * @param printer the name of the printer to use. Can be {@code null},
+	 * {@code "standard"}, {@code "logging-system"}, or the fully-qualified class name of
+	 * a {@link StackTracePrinter} implementation. A {@code null} value will be treated as
+	 * {@code "standard"} when any other property is set, otherwise it will be treated as
+	 * {@code "logging-system"}. {@link StackTracePrinter} implementations may optionally
+	 * inject a {@link StandardStackTracePrinter} instance into their constructor which
+	 * will be configured from the properties.
+	 * @param root the root ordering (root first or root last)
+	 * @param maxLength the maximum length to print
+	 * @param maxThrowableDepth the maximum throwable depth to print
+	 * @param includeCommonFrames whether common frames should be included
+	 * @param includeHashes whether stack trace hashes should be included
+	 */
+	record StackTrace(String printer, Root root, Integer maxLength, Integer maxThrowableDepth,
+			Boolean includeCommonFrames, Boolean includeHashes) {
+
+		StackTracePrinter createPrinter() {
+			String name = (printer() != null) ? printer() : "";
+			name = name.toLowerCase(Locale.getDefault()).replace("-", "");
+			if ("loggingsystem".equals(name) || (name.isEmpty() && !hasAnyOtherProperty())) {
+				return null;
+			}
+			StandardStackTracePrinter standardPrinter = createStandardPrinter();
+			if ("standard".equals(name) || name.isEmpty()) {
+				return standardPrinter;
+			}
+			return (StackTracePrinter) new Instantiator<>(StackTracePrinter.class,
+					(parameters) -> parameters.add(StandardStackTracePrinter.class, standardPrinter))
+				.instantiate(printer());
+		}
+
+		private boolean hasAnyOtherProperty() {
+			return Stream.of(root(), maxLength(), maxThrowableDepth(), includeCommonFrames(), includeHashes())
+				.anyMatch(Objects::nonNull);
+		}
+
+		private StandardStackTracePrinter createStandardPrinter() {
+			StandardStackTracePrinter printer = (root() != Root.FIRST) ? StandardStackTracePrinter.rootFirst()
+					: StandardStackTracePrinter.rootLast();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			printer = map.from(this::maxLength).to(printer, StandardStackTracePrinter::withMaximumLength);
+			printer = map.from(this::maxThrowableDepth)
+				.to(printer, StandardStackTracePrinter::withMaximumThrowableDepth);
+			printer = map.from(this::includeCommonFrames)
+				.to(printer, apply(StandardStackTracePrinter::withCommonFrames));
+			printer = map.from(this::includeHashes).to(printer, apply(StandardStackTracePrinter::withHashes));
+			return printer;
+		}
+
+		private BiFunction<StandardStackTracePrinter, Boolean, StandardStackTracePrinter> apply(
+				UnaryOperator<StandardStackTracePrinter> action) {
+			return (printer, value) -> (!value) ? printer : action.apply(printer);
+		}
+
+		/**
+		 * Root ordering.
+		 */
+		enum Root {
+
+			LAST, FIRST
+
+		}
+
 	}
 
 	static class StructuredLoggingJsonPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
