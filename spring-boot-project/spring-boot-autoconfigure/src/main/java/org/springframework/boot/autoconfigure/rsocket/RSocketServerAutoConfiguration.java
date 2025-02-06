@@ -56,8 +56,8 @@ import org.springframework.util.unit.DataSize;
  * {@link EnableAutoConfiguration Auto-configuration} for RSocket servers. In the case of
  * {@link org.springframework.boot.WebApplicationType#REACTIVE}, the RSocket server is
  * added as a WebSocket endpoint on the existing
- * {@link org.springframework.boot.web.embedded.netty.NettyWebServer}. If a specific
- * server port is configured, a new standalone RSocket server is created.
+ * {@link org.springframework.boot.web.server.reactive.netty.NettyWebServer}. If a
+ * specific server port is configured, a new standalone RSocket server is created.
  *
  * @author Brian Clozel
  * @author Scott Frederick

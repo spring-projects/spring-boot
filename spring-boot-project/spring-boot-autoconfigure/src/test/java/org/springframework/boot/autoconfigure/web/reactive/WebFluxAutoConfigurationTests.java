@@ -61,7 +61,7 @@ import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
-import org.springframework.boot.web.reactive.server.MockReactiveWebServerFactory;
+import org.springframework.boot.web.server.reactive.MockReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
