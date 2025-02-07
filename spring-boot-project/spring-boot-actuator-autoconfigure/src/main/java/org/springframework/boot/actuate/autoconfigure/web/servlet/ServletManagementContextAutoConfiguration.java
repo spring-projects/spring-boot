@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProp
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.web.servlet.filter.ApplicationContextHeaderFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -49,7 +50,8 @@ public class ServletManagementContextAutoConfiguration {
 	@Bean
 	public static ManagementContextFactory servletWebChildContextFactory() {
 		return new ManagementContextFactory(WebApplicationType.SERVLET, ServletWebServerFactory.class,
-				ServletWebServerFactoryAutoConfiguration.class);
+				ServletWebServerFactoryAutoConfiguration.class,
+				EmbeddedWebServerFactoryCustomizerAutoConfiguration.class);
 	}
 
 	@Bean

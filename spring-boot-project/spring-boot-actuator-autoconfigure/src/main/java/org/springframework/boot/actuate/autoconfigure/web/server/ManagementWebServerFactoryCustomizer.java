@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.core.Ordered;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public abstract class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServerFactory>
+public class ManagementWebServerFactoryCustomizer<T extends ConfigurableWebServerFactory>
 		implements WebServerFactoryCustomizer<T>, Ordered {
 
 	private final ListableBeanFactory beanFactory;
@@ -48,10 +48,22 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 
 	@SafeVarargs
 	@SuppressWarnings("varargs")
+	@Deprecated(since = "3.5.0", forRemoval = true)
 	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
 			Class<? extends WebServerFactoryCustomizer<?>>... customizerClasses) {
 		this.beanFactory = beanFactory;
 		this.customizerClasses = customizerClasses;
+	}
+
+	/**
+	 * Creates a new customizer that will retrieve beans using the given
+	 * {@code beanFactory}.
+	 * @param beanFactory the bean factory to use
+	 * @since 3.5.0
+	 */
+	public ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
+		this.customizerClasses = null;
 	}
 
 	@Override
@@ -65,7 +77,9 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 			.beanOfTypeIncludingAncestors(this.beanFactory, ManagementServerProperties.class);
 		// Customize as per the parent context first (so e.g. the access logs go to
 		// the same place)
-		customizeSameAsParentContext(factory);
+		if (this.customizerClasses != null) {
+			customizeSameAsParentContext(factory);
+		}
 		// Then reset the error pages
 		factory.setErrorPages(Collections.emptySet());
 		// and add the management-specific bits

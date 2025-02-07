@@ -39,14 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.embedded.JettyVirtualThreadsWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.JettyWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.TomcatVirtualThreadsWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.servlet.TomcatServletWebServerFactoryCustomizer;
-import org.springframework.boot.autoconfigure.web.servlet.UndertowServletWebServerFactoryCustomizer;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -125,10 +117,7 @@ class ServletManagementChildContextConfiguration {
 			extends ManagementWebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
 		ServletManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
-			super(beanFactory, ServletWebServerFactoryCustomizer.class, TomcatServletWebServerFactoryCustomizer.class,
-					TomcatWebServerFactoryCustomizer.class, TomcatVirtualThreadsWebServerFactoryCustomizer.class,
-					JettyWebServerFactoryCustomizer.class, JettyVirtualThreadsWebServerFactoryCustomizer.class,
-					UndertowServletWebServerFactoryCustomizer.class, UndertowWebServerFactoryCustomizer.class);
+			super(beanFactory);
 		}
 
 		@Override
