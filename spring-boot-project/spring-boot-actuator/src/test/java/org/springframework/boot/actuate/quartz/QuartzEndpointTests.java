@@ -778,7 +778,7 @@ class QuartzEndpointTests {
 	}
 
 	@Test
-	void quartzJobShouldNotBeTriggeredJobDoesNotExist() throws SchedulerException {
+	void quartzJobShouldNotBeTriggeredWhenJobDoesNotExist() throws SchedulerException {
 		QuartzJobTriggerDescriptor quartzJobTriggerDescriptor = this.endpoint.triggerQuartzJob("samples", "hello");
 		assertThat(quartzJobTriggerDescriptor).isNull();
 		then(this.scheduler).should(never()).triggerJob(any());

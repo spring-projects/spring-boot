@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * Container annotation that aggregates several
- * {@link ConditionalOnProperty @ConditionalOnProperty} annotations.
+ * {@link ConditionalOnBooleanProperty @ConditionalOnBooleanProperty} annotations.
  *
  * @author Phillip Webb
  * @since 3.5.0

@@ -176,7 +176,7 @@ include::partial$rest/actuator/quartz/trigger-job/http-response.adoc[]
 === Request Structure
 
 The request specifies a desired `state` associated with a particular job.
-Sending an HTTP Request with a  `"state": "running"` body indicates that the job should be run now.
+Sending an HTTP request with a `"state": "running"` body indicates that the job should be run now.
 The following table describes the structure of the request:
 
 [cols="2,1,3"]
