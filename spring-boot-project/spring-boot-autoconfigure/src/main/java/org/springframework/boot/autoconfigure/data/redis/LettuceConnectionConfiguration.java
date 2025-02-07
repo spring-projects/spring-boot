@@ -23,6 +23,7 @@ import io.lettuce.core.ReadFrom;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
+import io.lettuce.core.api.StatefulConnection;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.Builder;
@@ -251,8 +252,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			return LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(properties));
 		}
 
-		private GenericObjectPoolConfig<?> getPoolConfig(Pool properties) {
-			GenericObjectPoolConfig<?> config = new GenericObjectPoolConfig<>();
+		private GenericObjectPoolConfig<StatefulConnection<?, ?>> getPoolConfig(Pool properties) {
+			GenericObjectPoolConfig<StatefulConnection<?, ?>> config = new GenericObjectPoolConfig<>();
 			config.setMaxTotal(properties.getMaxActive());
 			config.setMaxIdle(properties.getMaxIdle());
 			config.setMinIdle(properties.getMinIdle());
