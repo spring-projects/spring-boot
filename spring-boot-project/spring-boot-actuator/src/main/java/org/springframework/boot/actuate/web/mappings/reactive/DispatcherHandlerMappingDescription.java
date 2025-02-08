@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.web.mappings.reactive;
 
+import java.util.List;
+
 import org.springframework.web.servlet.DispatcherServlet;
 
 /**
@@ -30,12 +32,22 @@ public class DispatcherHandlerMappingDescription {
 
 	private final String handler;
 
+	private final List<DispatcherHandlerMappingDescription> children;
+
 	private final DispatcherHandlerMappingDetails details;
+
+	DispatcherHandlerMappingDescription(String predicate, String handler, DispatcherHandlerMappingDetails details, List<DispatcherHandlerMappingDescription> children) {
+		this.predicate = predicate;
+		this.handler = handler;
+		this.details = details;
+		this.children = children;
+	}
 
 	DispatcherHandlerMappingDescription(String predicate, String handler, DispatcherHandlerMappingDetails details) {
 		this.predicate = predicate;
 		this.handler = handler;
 		this.details = details;
+		this.children = null;
 	}
 
 	public String getHandler() {
@@ -44,6 +56,10 @@ public class DispatcherHandlerMappingDescription {
 
 	public String getPredicate() {
 		return this.predicate;
+	}
+
+	public List<DispatcherHandlerMappingDescription> getChildren() {
+		return this.children;
 	}
 
 	public DispatcherHandlerMappingDetails getDetails() {

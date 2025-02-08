@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
@@ -63,6 +65,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		providers.add(new RequestMappingInfoHandlerMappingDescriptionProvider());
 		providers.add(new UrlHandlerMappingDescriptionProvider());
 		providers.add(new IterableDelegatesHandlerMappingDescriptionProvider(new ArrayList<>(providers)));
+		providers.add(new RouterFunctionMappingDescriptionProvider());
 		descriptionProviders = Collections.unmodifiableList(providers);
 	}
 
@@ -196,6 +199,26 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 					.addAll(DispatcherServletsMappingDescriptionProvider.describe(delegate, this.descriptionProviders));
 			}
 			return descriptions;
+		}
+
+	}
+
+	private static final class RouterFunctionMappingDescriptionProvider
+			implements HandlerMappingDescriptionProvider<RouterFunctionMapping> {
+
+		@Override
+		public Class<RouterFunctionMapping> getMappingClass() {
+			return RouterFunctionMapping.class;
+		}
+
+		@Override
+		public List<DispatcherServletMappingDescription> describe(RouterFunctionMapping handlerMapping) {
+			MappingDescriptionVisitor visitor = new MappingDescriptionVisitor();
+			RouterFunction<?> routerFunction = handlerMapping.getRouterFunction();
+			if (routerFunction != null) {
+				routerFunction.accept(visitor);
+			}
+			return visitor.getDescriptions();
 		}
 
 	}
