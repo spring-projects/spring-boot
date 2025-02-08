@@ -4,7 +4,7 @@
 The javadoc:org.springframework.boot.loader.launch.Launcher[] class is a special bootstrap class that is used as an executable jar's main entry point.
 It is the actual `Main-Class` in your jar file, and it is used to setup an appropriate javadoc:java.lang.ClassLoader[] and ultimately call your `main()` method.
 
-There are three launcher subclasses (`JarLauncher`, javadoc:org.springframework.boot.loader.launch.WarLauncher[], and javadoc:org.springframework.boot.loader.launch.PropertiesLauncher[]).
+There are three launcher subclasses (javadoc:org.springframework.boot.loader.launch.JarLauncher[], javadoc:org.springframework.boot.loader.launch.WarLauncher[], and javadoc:org.springframework.boot.loader.launch.PropertiesLauncher[]).
 Their purpose is to load resources (`.class` files and so on) from nested jar files or war files in directories (as opposed to those explicitly on the classpath).
 In the case of javadoc:org.springframework.boot.loader.launch.JarLauncher[] and javadoc:org.springframework.boot.loader.launch.WarLauncher[], the nested paths are fixed.
 javadoc:org.springframework.boot.loader.launch.JarLauncher[] looks in `BOOT-INF/lib/`, and javadoc:org.springframework.boot.loader.launch.WarLauncher[] looks in `WEB-INF/lib/` and `WEB-INF/lib-provided/`.
