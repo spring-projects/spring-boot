@@ -92,19 +92,21 @@ public abstract class MoveToSnapshots extends UpgradeDependencies {
 			VersionOption versionOption = resolver.apply(library, dependencyVersion);
 			if (versionOption != null) {
 				List<Release> releases = scheduledReleases.get(library.getCalendarName());
-				List<Release> matches = releases.stream()
-					.filter((release) -> dependencyVersion.isSnapshotFor(release.getVersion()))
-					.toList();
-				if (matches.isEmpty()) {
-					if (logger.isInfoEnabled()) {
-						logger.info("Ignoring {}. No release of {} scheduled before {}", dependencyVersion,
-								library.getName(), milestone.getDueOn());
+				if (releases != null) {
+					List<Release> matches = releases.stream()
+						.filter((release) -> dependencyVersion.isSnapshotFor(release.getVersion()))
+						.toList();
+					if (!matches.isEmpty()) {
+						return new VersionOption.SnapshotVersionOption(versionOption.getVersion(),
+								matches.get(0).getVersion());
 					}
-					return null;
 				}
-				return new VersionOption.SnapshotVersionOption(versionOption.getVersion(), matches.get(0).getVersion());
+				if (logger.isInfoEnabled()) {
+					logger.info("Ignoring {}. No release of {} scheduled before {}", dependencyVersion,
+							library.getName(), milestone.getDueOn());
+				}
 			}
-			return versionOption;
+			return null;
 		};
 	}
 
