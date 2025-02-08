@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ class MappingsEndpointTests {
 						"dispatcherServlets");
 				assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
 				List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets.get("dispatcherServlet");
-				assertThat(handlerMappings).hasSize(1);
+				assertThat(handlerMappings).hasSize(3);
 				List<ServletRegistrationMappingDescription> servlets = mappings(contextMappings, "servlets");
 				assertThat(servlets).hasSize(1);
 				List<FilterRegistrationMappingDescription> filters = mappings(contextMappings, "servletFilters");
@@ -111,7 +111,7 @@ class MappingsEndpointTests {
 						"dispatcherServlets");
 				assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet");
 				List<DispatcherServletMappingDescription> handlerMappings = dispatcherServlets.get("dispatcherServlet");
-				assertThat(handlerMappings).hasSize(1);
+				assertThat(handlerMappings).hasSize(3);
 				List<ServletRegistrationMappingDescription> servlets = mappings(contextMappings, "servlets");
 				assertThat(servlets).hasSize(1);
 				List<FilterRegistrationMappingDescription> filters = mappings(contextMappings, "servletFilters");
@@ -131,9 +131,9 @@ class MappingsEndpointTests {
 						"dispatcherServlets");
 				assertThat(dispatcherServlets).containsOnlyKeys("dispatcherServlet",
 						"customDispatcherServletRegistration", "anotherDispatcherServletRegistration");
-				assertThat(dispatcherServlets.get("dispatcherServlet")).hasSize(1);
-				assertThat(dispatcherServlets.get("customDispatcherServletRegistration")).hasSize(1);
-				assertThat(dispatcherServlets.get("anotherDispatcherServletRegistration")).hasSize(1);
+				assertThat(dispatcherServlets.get("dispatcherServlet")).hasSize(3);
+				assertThat(dispatcherServlets.get("customDispatcherServletRegistration")).hasSize(3);
+				assertThat(dispatcherServlets.get("anotherDispatcherServletRegistration")).hasSize(3);
 			});
 	}
 
@@ -251,6 +251,15 @@ class MappingsEndpointTests {
 		@RequestMapping("/three")
 		void three() {
 
+		}
+
+		@Bean
+		org.springframework.web.servlet.function.RouterFunction<org.springframework.web.servlet.function.ServerResponse> routerFunction() {
+			return org.springframework.web.servlet.function.RouterFunctions
+					.route(org.springframework.web.servlet.function.RequestPredicates.GET("/one"),
+							(request) -> org.springframework.web.servlet.function.ServerResponse.ok().build())
+					.andRoute(org.springframework.web.servlet.function.RequestPredicates.POST("/two"),
+							(request) -> org.springframework.web.servlet.function.ServerResponse.ok().build());
 		}
 
 	}
