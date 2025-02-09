@@ -107,7 +107,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 		/**
 		 * The fallback job name. We use 'spring' since there's a history of Prometheus
-		 * spring integration defaulting to that name from when Prometheus integration
+		 * Spring integration defaulting to that name from when Prometheus integration
 		 * didn't exist in Spring itself.
 		 */
 		private static final String FALLBACK_JOB = "spring";
@@ -160,8 +160,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 
 		private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {
 			String job = properties.getJob();
-			job = (job != null) ? job : environment.getProperty("spring.application.name");
-			return (job != null) ? job : FALLBACK_JOB;
+			return (job != null) ? job : environment.getProperty("spring.application.name", FALLBACK_JOB);
 		}
 
 	}

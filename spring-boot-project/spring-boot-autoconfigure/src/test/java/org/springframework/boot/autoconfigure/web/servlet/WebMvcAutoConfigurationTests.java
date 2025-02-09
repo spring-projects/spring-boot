@@ -571,28 +571,23 @@ class WebMvcAutoConfigurationTests {
 	@Test
 	void customMediaTypes() {
 		this.contextRunner.withPropertyValues("spring.mvc.contentnegotiation.media-types.yaml:text/yaml")
-			.run((context) -> {
-				RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
-				ContentNegotiationManager contentNegotiationManager = (ContentNegotiationManager) ReflectionTestUtils
-					.getField(adapter, "contentNegotiationManager");
-				assertThat(contentNegotiationManager.getAllFileExtensions()).contains("yaml");
-			});
+			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("contentNegotiationManager",
+						InstanceOfAssertFactories.type(ContentNegotiationManager.class))
+				.satisfies((contentNegotiationManager) -> assertThat(contentNegotiationManager.getAllFileExtensions())
+					.contains("yaml")));
 	}
 
 	@Test
 	void customDefaultContentTypes() {
 		this.contextRunner
 			.withPropertyValues("spring.mvc.contentnegotiation.default-content-types:application/json,application/xml")
-			.run((context) -> {
-				RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
-				ContentNegotiationManager contentNegotiationManager = (ContentNegotiationManager) ReflectionTestUtils
-					.getField(adapter, "contentNegotiationManager");
-				assertThat(contentNegotiationManager).isNotNull();
-				assertThat(contentNegotiationManager.getStrategy(FixedContentNegotiationStrategy.class))
-					.extracting(FixedContentNegotiationStrategy::getContentTypes)
-					.asInstanceOf(InstanceOfAssertFactories.list(MediaType.class))
-					.containsExactly(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML);
-			});
+			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("contentNegotiationManager",
+						InstanceOfAssertFactories.type(ContentNegotiationManager.class))
+				.satisfies((contentNegotiationManager) -> assertThat(
+						contentNegotiationManager.getStrategy(FixedContentNegotiationStrategy.class).getContentTypes())
+					.containsExactly(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)));
 	}
 
 	@Test

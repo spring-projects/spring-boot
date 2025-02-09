@@ -109,7 +109,7 @@ public class PrometheusProperties {
 		private String address = "localhost:9091";
 
 		/**
-		 * The scheme to use when pushing metrics.
+		 * Scheme to use when pushing metrics.
 		 */
 		private Scheme scheme = Scheme.HTTP;
 
@@ -124,12 +124,12 @@ public class PrometheusProperties {
 		private String password;
 
 		/**
-		 * The token to use for authentication with the Prometheus Pushgateway.
+		 * Token to use for authentication with the Prometheus Pushgateway.
 		 */
 		private String token;
 
 		/**
-		 * The format to use when pushing metrics.
+		 * Format to use when pushing metrics.
 		 */
 		private Format format = Format.PROTOBUF;
 
