@@ -55,7 +55,7 @@ public class PrometheusPushGatewayManager {
 	 * @param pushGateway the source push gateway
 	 * @param pushRate the rate at which push operations occur
 	 * @param shutdownOperation the shutdown operation that should be performed when
-	 * context is closed.
+	 * context is closed
 	 * @since 3.5.0
 	 */
 	public PrometheusPushGatewayManager(PushGateway pushGateway, Duration pushRate,
