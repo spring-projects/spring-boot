@@ -5,14 +5,47 @@ The https://www.testcontainers.org/[Testcontainers] library provides a way to ma
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
 
+In following sections we will describe some of the methods you can use to integrate Testcontainers with your tests.
+
+== Using via @Testcontainers JUnit5 extension
+
+The Testcontainers framework provides JUnit5 extensions, which can be used to manage containers in your tests.
+The extension is activated by applying the
+
 Testcontainers can be used in a Spring Boot test as follows:
 
 include-code::vanilla/MyIntegrationTests[]
 
-This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
+This will start up a Docker container running Neo4j (if Docker is running locally) before any of the tests are run.
 In most cases, you will need to configure the application to connect to the service running in the container.
 
+In this case the lifecycle of the container instance is managed by Testcontainers framework, as described in official documentation.
 
+== Using via Spring managed beans
+
+The containers provided by Testcontainers framework can be managed by Spring Boot as beans.
+This method is often used in combination with javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
+
+To use Testcontainer contains as Spring beans we need to create a configuration class declaring the container as bean:
+
+include-code::beandeclaration/BeanDeclarationConfig[]
+
+then we can start the container by importing the configuration class in the test class:
+
+include-code::beandeclaration/SpringTest[]
+
+
+== Using via importing container declaration classes
+
+A common pattern with Testcontainers framework is to declare the Container instances as static fields in an interface
+For example the following interface `MyInterface` declares two containers, one named `mongo` of type MongoDB and another named `neo` of type Neo4j:
+
+include-code::importcontainers/MyInterface[]
+
+When you have containers declared in this way, then you can have these containers managed by Spring Boot as beans.
+All that is needed to do that is adding javadoc:org.springframework.boot.testcontainers.context.ImportTestcontainers[format=annotation] to your configuration class as in:
+
+include-code::importcontainers/MyConfiguration[]
 
 [[testing.testcontainers.service-connections]]
 == Service Connections
