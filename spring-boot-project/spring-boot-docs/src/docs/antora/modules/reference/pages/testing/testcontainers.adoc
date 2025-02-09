@@ -47,6 +47,28 @@ All that is needed to do that is adding javadoc:org.springframework.boot.testcon
 
 include-code::importcontainers/MyConfiguration[]
 
+== Lifecycle of managed containers
+
+If you have used the annotations and extensions provided by Testcontainers framework, then the lifecycle of container instances is managed by the Testcontainers framework.
+Please refer to the official documentation for the information about lifecycle of the containers, when managed by the Testcontainers framework.
+
+When the containers are managed by Spring as beans, then the lifecycle is clearly defined by Spring.
+The container beans are created and started before the beans of other types are created.
+This process ensures that any beans, which rely on functionality provided by the containers, can use those functionalities.
+
+The test containers can be started multiple times.
+Like any other beans the test containers are created and started once per application context managed by the TestContext Framework.
+For details about how TestContext framework manages the underlying application contexts and beans therein, please refer to the official Spring documentation.
+
+The container beans are stopped after the destruction of beans of other types.
+This ensures that any beans depending on the functionalities provided by the containers are cleaned up first.
+
+The containers are stopped as part of the application shutdown process, managed by the TestContext framework.
+When the application context gets shutdown, the containers are shutdown as well.
+This usually happens after all tests using that specific cached application context have finished executing, but may happen earlier depending on the caching behavior configured in TestContext Framework.
+
+It is important to note that a single test container instance can be, and often is, retained across execution of tests from multiple test classes.
+
 [[testing.testcontainers.service-connections]]
 == Service Connections
 
