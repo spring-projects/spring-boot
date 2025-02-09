@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest
 @Import(BeanDeclarationConfig.class)
-public class SpringTest {
+class SpringTest {
 
 	@Autowired
 	private MongoDBContainer mongo;
@@ -34,4 +34,5 @@ public class SpringTest {
 	void doTest() {
 		System.out.println("Mongo db is running: " + this.mongo.isRunning());
 	}
+
 }
