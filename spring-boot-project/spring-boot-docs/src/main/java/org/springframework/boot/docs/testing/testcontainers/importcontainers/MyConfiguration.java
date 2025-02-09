@@ -22,4 +22,5 @@ import org.springframework.boot.testcontainers.context.ImportTestcontainers;
 @TestConfiguration(proxyBeanMethods = false)
 @ImportTestcontainers(MyInterface.class)
 class MyConfiguration {
+
 }
