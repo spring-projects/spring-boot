@@ -31,4 +31,5 @@ class BeanDeclarationConfig {
 	MongoDBContainer container() {
 		return new MongoDBContainer(DockerImageName.parse("mongo:latest"));
 	}
+
 }
