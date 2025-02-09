@@ -31,19 +31,21 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 @Configuration(proxyBeanMethods = false)
 public class MyAdditionalEntityManagerFactoryConfiguration {
 
-	@Qualifier("second")
+	private static final String SECOND = "second";
+
+	@Qualifier(SECOND)
 	@Bean(defaultCandidate = false)
 	@ConfigurationProperties("app.jpa")
 	public JpaProperties secondJpaProperties() {
 		return new JpaProperties();
 	}
 
-	@Qualifier("second")
+	@Qualifier(SECOND)
 	@Bean(defaultCandidate = false)
-	public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(@Qualifier("second") DataSource dataSource,
-			@Qualifier("second") JpaProperties jpaProperties) {
+	public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(@Qualifier(SECOND) DataSource dataSource,
+			@Qualifier(SECOND) JpaProperties jpaProperties) {
 		EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(jpaProperties);
-		return builder.dataSource(dataSource).packages(Order.class).persistenceUnit("second").build();
+		return builder.dataSource(dataSource).packages(Order.class).persistenceUnit(SECOND).build();
 	}
 
 	private EntityManagerFactoryBuilder createEntityManagerFactoryBuilder(JpaProperties jpaProperties) {
