@@ -1812,12 +1812,8 @@ bom {
 	}
 	library("Pulsar Reactive", "0.5.10") {
 		group("org.apache.pulsar") {
-			modules = [
-				"pulsar-client-reactive-adapter",
-				"pulsar-client-reactive-api",
-				"pulsar-client-reactive-jackson",
-				"pulsar-client-reactive-producer-cache-caffeine-shaded",
-				"pulsar-client-reactive-producer-cache-caffeine"
+			imports = [
+				"pulsar-client-reactive-bom"
 			]
 		}
 		links {
