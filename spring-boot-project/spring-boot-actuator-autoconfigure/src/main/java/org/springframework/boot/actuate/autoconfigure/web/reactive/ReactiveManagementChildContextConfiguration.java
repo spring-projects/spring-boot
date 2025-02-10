@@ -129,14 +129,11 @@ public class ReactiveManagementChildContextConfiguration {
 
 		@Override
 		public void customize(TomcatReactiveWebServerFactory factory) {
-			System.out.println("Looking for access log valve in " + factory);
 			AccessLogValve accessLogValve = findAccessLogValve(factory);
 			if (accessLogValve == null) {
-				System.out.println("Did not find it");
 				return;
 			}
 			accessLogValve.setPrefix(customizePrefix(accessLogValve.getPrefix()));
-			System.out.println("Customized " + factory);
 		}
 
 		private AccessLogValve findAccessLogValve(TomcatReactiveWebServerFactory factory) {
