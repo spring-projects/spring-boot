@@ -185,8 +185,14 @@ public final class EndpointRequest {
 		protected final boolean hasWebServerNamespace(ApplicationContext applicationContext,
 				WebServerNamespace webServerNamespace) {
 			return WebServerApplicationContext.hasServerNamespace(applicationContext, webServerNamespace.getValue())
-					|| (webServerNamespace.equals(WebServerNamespace.SERVER)
-							&& !(applicationContext instanceof WebServerApplicationContext));
+					|| hasImplicitServerNamespace(applicationContext, webServerNamespace);
+		}
+
+		private boolean hasImplicitServerNamespace(ApplicationContext applicationContext,
+				WebServerNamespace webServerNamespace) {
+			return WebServerNamespace.SERVER.equals(webServerNamespace)
+					&& WebServerApplicationContext.getServerNamespace(applicationContext) == null
+					&& applicationContext.getParent() == null;
 		}
 
 		@Override
