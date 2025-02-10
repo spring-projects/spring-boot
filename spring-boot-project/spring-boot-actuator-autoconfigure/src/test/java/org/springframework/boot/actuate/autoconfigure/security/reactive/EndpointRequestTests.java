@@ -32,12 +32,15 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebHandler;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
@@ -315,10 +318,8 @@ class EndpointRequestTests {
 			PathMappedEndpoints pathMappedEndpoints, WebServerNamespace namespace) {
 		StaticApplicationContext context = new StaticApplicationContext();
 		if (namespace != null && !WebServerNamespace.SERVER.equals(namespace)) {
-			StaticApplicationContext parentContext = new StaticApplicationContext();
-			parentContext.setId("app");
+			NamedStaticWebApplicationContext parentContext = new NamedStaticWebApplicationContext(namespace);
 			context.setParent(parentContext);
-			context.setId(parentContext.getId() + ":" + namespace);
 		}
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {
@@ -349,6 +350,27 @@ class EndpointRequestTests {
 		given(endpoint.getRootPath()).willReturn(rootPath);
 		given(endpoint.getAdditionalPaths(webServerNamespace)).willReturn(Arrays.asList(additionalPaths));
 		return endpoint;
+	}
+
+	static class NamedStaticWebApplicationContext extends StaticWebApplicationContext
+			implements WebServerApplicationContext {
+
+		private final WebServerNamespace webServerNamespace;
+
+		NamedStaticWebApplicationContext(WebServerNamespace webServerNamespace) {
+			this.webServerNamespace = webServerNamespace;
+		}
+
+		@Override
+		public WebServer getWebServer() {
+			return null;
+		}
+
+		@Override
+		public String getServerNamespace() {
+			return (this.webServerNamespace != null) ? this.webServerNamespace.getValue() : null;
+		}
+
 	}
 
 	static class RequestMatcherAssert implements AssertDelegateTarget {
