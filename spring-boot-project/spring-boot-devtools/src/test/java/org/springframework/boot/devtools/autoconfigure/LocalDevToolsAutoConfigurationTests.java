@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
+import org.springframework.boot.devtools.livereload.LiveReloadScriptInjectingFilter;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.FailureHandler;
 import org.springframework.boot.devtools.restart.MockRestartInitializer;
@@ -116,6 +117,7 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(Config.class));
 		LiveReloadServer server = this.context.getBean(LiveReloadServer.class);
 		assertThat(server.isStarted()).isTrue();
+		assertThat(this.context.getBean(LiveReloadScriptInjectingFilter.class)).isNotNull();
 	}
 
 	@Test
@@ -154,6 +156,8 @@ class LocalDevToolsAutoConfigurationTests {
 		this.context = getContext(() -> initializeAndRun(Config.class, properties));
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 			.isThrownBy(() -> this.context.getBean(OptionalLiveReloadServer.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
+			.isThrownBy(() -> this.context.getBean(LiveReloadScriptInjectingFilter.class));
 	}
 
 	@Test
