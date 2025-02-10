@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,12 +127,25 @@ public class ObservationProperties {
 				 */
 				private String name = "http.server.requests";
 
+				/**
+				 * Whether to write the "X-Trace-Id" HTTP response header.
+				 */
+				private boolean writeTraceHeader = false;
+
 				public String getName() {
 					return this.name;
 				}
 
 				public void setName(String name) {
 					this.name = name;
+				}
+
+				public boolean isWriteTraceHeader() {
+					return this.writeTraceHeader;
+				}
+
+				public void setWriteTraceHeader(boolean writeTraceHeader) {
+					this.writeTraceHeader = writeTraceHeader;
 				}
 
 			}
