@@ -23,6 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import jakarta.servlet.Servlet;
@@ -36,11 +38,16 @@ import org.springframework.boot.actuate.web.mappings.servlet.DispatcherServletsM
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.function.HandlerFunction;
+import org.springframework.web.servlet.function.RequestPredicate;
 import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions.Visitor;
+import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.support.RouterFunctionMapping;
 import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -218,7 +225,43 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 			if (routerFunction != null) {
 				routerFunction.accept(visitor);
 			}
-			return visitor.getDescriptions();
+			return visitor.descriptions;
+		}
+
+	}
+
+	private static final class MappingDescriptionVisitor implements Visitor {
+
+		private final List<DispatcherServletMappingDescription> descriptions = new ArrayList<>();
+
+		@Override
+		public void startNested(RequestPredicate predicate) {
+		}
+
+		@Override
+		public void endNested(RequestPredicate predicate) {
+		}
+
+		@Override
+		public void route(RequestPredicate predicate, HandlerFunction<?> handlerFunction) {
+			DispatcherServletMappingDetails details = new DispatcherServletMappingDetails();
+			details.setHandlerFunction(new HandlerFunctionDescription(handlerFunction));
+			this.descriptions.add(
+					new DispatcherServletMappingDescription(predicate.toString(), handlerFunction.toString(), details));
+		}
+
+		@Override
+		public void resources(Function<ServerRequest, Optional<Resource>> lookupFunction) {
+
+		}
+
+		@Override
+		public void attributes(Map<String, Object> attributes) {
+		}
+
+		@Override
+		public void unknown(RouterFunction<?> routerFunction) {
+
 		}
 
 	}

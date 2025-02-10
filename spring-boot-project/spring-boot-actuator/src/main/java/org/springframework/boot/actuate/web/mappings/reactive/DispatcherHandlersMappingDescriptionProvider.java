@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2025 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,16 @@
 
 package org.springframework.boot.actuate.web.mappings.reactive;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import reactor.core.publisher.Mono;
 
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
@@ -32,10 +35,15 @@ import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlersMappingDescriptionProvider.DispatcherHandlersMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.io.Resource;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.reactive.function.server.HandlerFunction;
+import org.springframework.web.reactive.function.server.RequestPredicate;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions.Visitor;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.support.RouterFunctionMapping;
 import org.springframework.web.reactive.handler.AbstractUrlHandlerMapping;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
@@ -150,7 +158,41 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 			if (routerFunction != null) {
 				routerFunction.accept(visitor);
 			}
-			return visitor.getDescriptions();
+			return visitor.descriptions;
+		}
+
+	}
+
+	private static final class MappingDescriptionVisitor implements Visitor {
+
+		private final List<DispatcherHandlerMappingDescription> descriptions = new ArrayList<>();
+
+		@Override
+		public void startNested(RequestPredicate predicate) {
+		}
+
+		@Override
+		public void endNested(RequestPredicate predicate) {
+		}
+
+		@Override
+		public void route(RequestPredicate predicate, HandlerFunction<?> handlerFunction) {
+			DispatcherHandlerMappingDetails details = new DispatcherHandlerMappingDetails();
+			details.setHandlerFunction(new HandlerFunctionDescription(handlerFunction));
+			this.descriptions.add(
+					new DispatcherHandlerMappingDescription(predicate.toString(), handlerFunction.toString(), details));
+		}
+
+		@Override
+		public void resources(Function<ServerRequest, Mono<Resource>> lookupFunction) {
+		}
+
+		@Override
+		public void attributes(Map<String, Object> attributes) {
+		}
+
+		@Override
+		public void unknown(RouterFunction<?> routerFunction) {
 		}
 
 	}

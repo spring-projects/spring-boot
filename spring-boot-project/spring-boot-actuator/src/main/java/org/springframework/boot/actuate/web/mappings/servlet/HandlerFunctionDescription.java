@@ -22,7 +22,7 @@ import org.springframework.web.servlet.function.HandlerFunction;
 /**
  * Description of a {@link HandlerFunction}.
  *
- * @author Andy Wilkinson
+ * @author Xiong Tang
  * @since 3.5.0
  */
 public class HandlerFunctionDescription {
