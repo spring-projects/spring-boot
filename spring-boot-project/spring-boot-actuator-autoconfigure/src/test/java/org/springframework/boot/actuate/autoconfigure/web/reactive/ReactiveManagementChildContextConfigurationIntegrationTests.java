@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.web.reactive;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
+import org.apache.catalina.Valve;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.catalina.valves.AccessLogValve;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -39,7 +44,11 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
+import org.springframework.boot.web.server.WebServer;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.http.MediaType;
@@ -55,6 +64,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ReactiveManagementChildContextConfigurationIntegrationTests {
 
+	private final List<WebServer> webServers = new ArrayList<>();
+
 	private final ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
 		.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
@@ -63,6 +74,8 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 				WebFluxAutoConfiguration.class))
 		.withUserConfiguration(SucceedingEndpoint.class)
 		.withInitializer(new ServerPortInfoApplicationContextInitializer())
+		.withInitializer((context) -> context.addApplicationListener(
+				(ApplicationListener<WebServerInitializedEvent>) (event) -> this.webServers.add(event.getWebServer())))
 		.withPropertyValues("server.port=0", "management.server.port=0", "management.endpoints.web.exposure.include=*");
 
 	@TempDir
@@ -97,6 +110,26 @@ class ReactiveManagementChildContextConfigurationIntegrationTests {
 	void whenManagementServerPortLoadedFromConfigTree() {
 		this.runner.withInitializer(this::addConfigTreePropertySource)
 			.run((context) -> assertThat(context).hasNotFailed());
+	}
+
+	@Test
+	void accessLogHasManagementServerSpecificPrefix() {
+		this.runner.withPropertyValues("server.tomcat.accesslog.enabled=true").run((context) -> {
+			AccessLogValve accessLogValve = findAccessLogValve();
+			assertThat(accessLogValve).isNotNull();
+			assertThat(accessLogValve.getPrefix()).isEqualTo("management_access_log");
+		});
+	}
+
+	private AccessLogValve findAccessLogValve() {
+		assertThat(this.webServers).hasSize(2);
+		Tomcat tomcat = ((TomcatWebServer) this.webServers.get(1)).getTomcat();
+		for (Valve valve : tomcat.getEngine().getPipeline().getValves()) {
+			if (valve instanceof AccessLogValve accessLogValve) {
+				return accessLogValve;
+			}
+		}
+		return null;
 	}
 
 	private void addConfigTreePropertySource(ConfigurableApplicationContext applicationContext) {
