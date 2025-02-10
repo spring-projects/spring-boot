@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,8 +184,14 @@ public final class EndpointRequest {
 		protected final boolean hasWebServerNamespace(ApplicationContext applicationContext,
 				WebServerNamespace webServerNamespace) {
 			return WebServerApplicationContext.hasServerNamespace(applicationContext, webServerNamespace.getValue())
-					|| (webServerNamespace.equals(WebServerNamespace.SERVER)
-							&& !(applicationContext instanceof WebServerApplicationContext));
+					|| hasImplicitServerNamespace(applicationContext, webServerNamespace);
+		}
+
+		private boolean hasImplicitServerNamespace(ApplicationContext applicationContext,
+				WebServerNamespace webServerNamespace) {
+			return WebServerNamespace.SERVER.equals(webServerNamespace)
+					&& WebServerApplicationContext.getServerNamespace(applicationContext) == null
+					&& applicationContext.getParent() == null;
 		}
 
 		@Override

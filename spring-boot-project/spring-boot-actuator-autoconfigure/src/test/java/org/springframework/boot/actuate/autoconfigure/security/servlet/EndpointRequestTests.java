@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -340,9 +340,12 @@ class EndpointRequestTests {
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, PathMappedEndpoints pathMappedEndpoints,
-			RequestMatcherProvider matcherProvider, WebServerNamespace webServerNamespace) {
-		StaticWebApplicationContext context = (webServerNamespace != null)
-				? new NamedStaticWebApplicationContext(webServerNamespace) : new StaticWebApplicationContext();
+			RequestMatcherProvider matcherProvider, WebServerNamespace namespace) {
+		StaticWebApplicationContext context = new StaticWebApplicationContext();
+		if (namespace != null && !WebServerNamespace.SERVER.equals(namespace)) {
+			NamedStaticWebApplicationContext parentContext = new NamedStaticWebApplicationContext(namespace);
+			context.setParent(parentContext);
+		}
 		context.registerBean(WebEndpointProperties.class);
 		if (pathMappedEndpoints != null) {
 			context.registerBean(PathMappedEndpoints.class, () -> pathMappedEndpoints);
@@ -373,7 +376,7 @@ class EndpointRequestTests {
 
 		@Override
 		public String getServerNamespace() {
-			return this.webServerNamespace.getValue();
+			return (this.webServerNamespace != null) ? this.webServerNamespace.getValue() : null;
 		}
 
 	}
