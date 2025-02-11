@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.JksKeyStore;
+import org.springframework.boot.testcontainers.service.connection.JksTrustStore;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.context.annotation.Bean;
@@ -43,15 +45,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 @DataCassandraTest(properties = { "spring.cassandra.schema-action=create-if-not-exists",
 		"spring.cassandra.connection.connect-timeout=60s", "spring.cassandra.connection.init-query-timeout=60s",
-		"spring.cassandra.request.timeout=60s", "spring.cassandra.ssl.bundle=client",
-		"spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
-		"spring.ssl.bundle.jks.client.keystore.password=password",
-		"spring.ssl.bundle.jks.client.truststore.location=classpath:ssl/test-ca.p12",
-		"spring.ssl.bundle.jks.client.truststore.password=password" })
+		"spring.cassandra.request.timeout=60s" })
 class SampleCassandraApplicationSslTests {
 
 	@Container
 	@ServiceConnection
+	@JksTrustStore(location = "classpath:ssl/test-ca.p12", password = "password")
+	@JksKeyStore(location = "classpath:ssl/test-client.p12", password = "password")
 	static final SecureCassandraContainer cassandra = TestImage.container(SecureCassandraContainer.class);
 
 	@Autowired
