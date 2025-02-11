@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.fail;
 
@@ -46,21 +47,24 @@ import static org.assertj.core.api.Assertions.fail;
  * {@link Extension} for {@link DockerComposeTest @DockerComposeTest}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback, ParameterResolver {
 
 	private static final Namespace NAMESPACE = Namespace.create(DockerComposeTestExtension.class);
 
-	private static final String STORE_KEY_COMPOSE_FILE = "compose-file";
+	private static final String STORE_KEY_WORKSPACE = "workspace";
 
 	private static final String STORE_KEY_APPLICATION_CONTEXT = "application-context";
 
 	@Override
 	public void beforeTestExecution(ExtensionContext context) throws Exception {
-		Path transformedComposeFile = prepareComposeFile(context);
 		Store store = context.getStore(NAMESPACE);
-		store.put(STORE_KEY_COMPOSE_FILE, transformedComposeFile);
+		Path workspace = Files.createTempDirectory("DockerComposeTestExtension-");
+		store.put(STORE_KEY_WORKSPACE, workspace);
 		try {
+			Path transformedComposeFile = prepareComposeFile(workspace, context);
+			copyAdditionalResources(workspace, context);
 			SpringApplication application = prepareApplication(transformedComposeFile);
 			store.put(STORE_KEY_APPLICATION_CONTEXT, application.run());
 		}
@@ -70,26 +74,44 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		}
 	}
 
-	private Path prepareComposeFile(ExtensionContext context) {
+	private Path prepareComposeFile(Path workspace, ExtensionContext context) {
 		DockerComposeTest dockerComposeTest = context.getRequiredTestMethod().getAnnotation(DockerComposeTest.class);
 		TestImage image = dockerComposeTest.image();
 		Resource composeResource = new ClassPathResource(dockerComposeTest.composeFile(),
 				context.getRequiredTestClass());
-		return transformedComposeFile(composeResource, image);
+		return transformedComposeFile(workspace, composeResource, image);
 	}
 
-	private Path transformedComposeFile(Resource composeFileResource, TestImage image) {
+	private Path transformedComposeFile(Path workspace, Resource composeFileResource, TestImage image) {
 		try {
 			Path composeFile = composeFileResource.getFile().toPath();
-			Path transformedComposeFile = Files.createTempFile("", "-" + composeFile.getFileName().toString());
 			String transformedContent = Files.readString(composeFile).replace("{imageName}", image.toString());
+			Path transformedComposeFile = workspace.resolve("compose.yaml");
 			Files.writeString(transformedComposeFile, transformedContent);
 			return transformedComposeFile;
 		}
 		catch (IOException ex) {
-			fail("Error transforming Docker compose file '" + composeFileResource + "': " + ex.getMessage());
+			fail("Error transforming Docker compose file '" + composeFileResource + "': " + ex.getMessage(), ex);
+			return null;
 		}
-		return null;
+	}
+
+	private void copyAdditionalResources(Path workspace, ExtensionContext context) {
+		DockerComposeTest dockerComposeTest = context.getRequiredTestMethod().getAnnotation(DockerComposeTest.class);
+		for (String additionalResource : dockerComposeTest.additionalResources()) {
+			Resource resource = new ClassPathResource(additionalResource, context.getRequiredTestClass());
+			copyAdditionalResource(workspace, resource);
+		}
+	}
+
+	private void copyAdditionalResource(Path workspace, Resource resource) {
+		try {
+			Path source = resource.getFile().toPath();
+			Files.copy(source, workspace.resolve(source.getFileName()));
+		}
+		catch (IOException ex) {
+			fail("Error copying additional resource '" + resource + "': " + ex.getMessage(), ex);
+		}
 	}
 
 	private SpringApplication prepareApplication(Path transformedComposeFile) {
@@ -110,7 +132,7 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 	private void cleanUp(ExtensionContext context) throws Exception {
 		Store store = context.getStore(NAMESPACE);
 		runShutdownHandlers();
-		deleteComposeFile(store);
+		deleteWorkspace(store);
 	}
 
 	private void runShutdownHandlers() {
@@ -118,10 +140,10 @@ class DockerComposeTestExtension implements BeforeTestExecutionCallback, AfterTe
 		((Runnable) shutdownHandlers).run();
 	}
 
-	private void deleteComposeFile(Store store) throws IOException {
-		Path composeFile = store.get(STORE_KEY_COMPOSE_FILE, Path.class);
-		if (composeFile != null) {
-			Files.delete(composeFile);
+	private void deleteWorkspace(Store store) throws IOException {
+		Path workspace = (Path) store.get(STORE_KEY_WORKSPACE);
+		if (workspace != null) {
+			FileSystemUtils.deleteRecursively(workspace);
 		}
 	}
 
