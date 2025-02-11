@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 package org.springframework.boot.io;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
@@ -40,6 +45,7 @@ import org.springframework.util.StringUtils;
  * {@code DefaultResourceLoader}, which resolves unqualified paths to classpath resources.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  * @author Phillip Webb
  * @since 3.3.0
  */
@@ -109,7 +115,23 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 * @since 3.4.0
 	 */
 	public static ResourceLoader get(ClassLoader classLoader, SpringFactoriesLoader springFactoriesLoader) {
-		return get(ApplicationFileSystemResourceLoader.get(classLoader), springFactoriesLoader);
+		return get(classLoader, springFactoriesLoader, null);
+	}
+
+	/**
+	 * Return a {@link ResourceLoader} supporting additional {@link ProtocolResolver
+	 * ProtocolResolvers} registered in {@code spring.factories}.
+	 * @param classLoader the class loader to use or {@code null} to use the default class
+	 * loader
+	 * @param springFactoriesLoader the {@link SpringFactoriesLoader} used to load
+	 * {@link ProtocolResolver ProtocolResolvers}
+	 * @param workingDirectory the working directory
+	 * @return a {@link ResourceLoader} instance
+	 * @since 3.5.0
+	 */
+	public static ResourceLoader get(ClassLoader classLoader, SpringFactoriesLoader springFactoriesLoader,
+			Path workingDirectory) {
+		return get(ApplicationFileSystemResourceLoader.get(classLoader, workingDirectory), springFactoriesLoader);
 	}
 
 	/**
@@ -170,10 +192,41 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	 */
 	private static final class ApplicationFileSystemResourceLoader extends DefaultResourceLoader {
 
-		private static final ResourceLoader shared = new ApplicationFileSystemResourceLoader(null);
+		private static final ResourceLoader shared = new ApplicationFileSystemResourceLoader(null, null);
 
-		private ApplicationFileSystemResourceLoader(ClassLoader classLoader) {
+		private final Path workingDirectory;
+
+		private ApplicationFileSystemResourceLoader(ClassLoader classLoader, Path workingDirectory) {
 			super(classLoader);
+			this.workingDirectory = workingDirectory;
+		}
+
+		@Override
+		public Resource getResource(String location) {
+			Resource resource = super.getResource(location);
+			if (this.workingDirectory == null) {
+				return resource;
+			}
+			if (!resource.isFile()) {
+				return resource;
+			}
+			return resolveFile(resource);
+		}
+
+		private Resource resolveFile(Resource resource) {
+			try {
+				File file = resource.getFile();
+				if (file.isAbsolute()) {
+					return resource;
+				}
+				return new ApplicationResource(new File(this.workingDirectory.toFile(), file.getPath()).getPath());
+			}
+			catch (FileNotFoundException ex) {
+				return resource;
+			}
+			catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
 		}
 
 		@Override
@@ -181,8 +234,12 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 			return new ApplicationResource(path);
 		}
 
-		static ResourceLoader get(ClassLoader classLoader) {
-			return (classLoader != null) ? new ApplicationFileSystemResourceLoader(classLoader)
+		static ResourceLoader get(ClassLoader classLoader, Path workingDirectory) {
+			if (classLoader == null && workingDirectory != null) {
+				throw new IllegalArgumentException(
+						"It's not possible to use null as 'classLoader' but specify a 'workingDirectory'");
+			}
+			return (classLoader != null) ? new ApplicationFileSystemResourceLoader(classLoader, workingDirectory)
 					: ApplicationFileSystemResourceLoader.shared;
 		}
 
@@ -218,7 +275,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 
 		private final boolean preferFileResolution;
 
-		private Class<?> servletContextResourceClass;
+		private final Class<?> servletContextResourceClass;
 
 		ProtocolResolvingResourceLoader(ResourceLoader resourceLoader, List<ProtocolResolver> protocolResolvers,
 				boolean preferFileResolution) {
