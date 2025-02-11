@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,10 +65,18 @@ class DispatcherServletAutoConfigurationTests {
 		});
 	}
 
-	// If a DispatcherServlet instance is registered with a name different
-	// from the default one, we're registering one anyway
 	@Test
-	void registrationOverrideWithDispatcherServletWrongName() {
+	void registrationOverrideWithDefaultDispatcherServletNameResultsInSingleDispatcherServlet() {
+		this.contextRunner.withUserConfiguration(CustomDispatcherServletSameName.class).run((context) -> {
+			ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
+			assertThat(registration.getUrlMappings()).containsExactly("/");
+			assertThat(registration.getServletName()).isEqualTo("dispatcherServlet");
+			assertThat(context).getBeanNames(DispatcherServlet.class).hasSize(1);
+		});
+	}
+
+	@Test
+	void registrationOverrideWithNonDefaultDispatcherServletNameResultsInTwoDispatcherServlets() {
 		this.contextRunner
 			.withUserConfiguration(CustomDispatcherServletDifferentName.class, CustomDispatcherServletPath.class)
 			.run((context) -> {
