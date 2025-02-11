@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
 
 /**
@@ -98,11 +99,58 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 			return 0;
 		}
 
-		static Standalone of(String host, int port) {
-			return of(host, port, 0);
+		/**
+		 * SSL bundle to use.
+		 * @return the SSL bundle to use
+		 * @since 3.5.0
+		 */
+		default SslBundle getSslBundle() {
+			return null;
 		}
 
+		/**
+		 * Creates a new instance with the given host and port.
+		 * @param host the host
+		 * @param port the port
+		 * @return the new instance
+		 */
+		static Standalone of(String host, int port) {
+			return of(host, port, 0, null);
+		}
+
+		/**
+		 * Creates a new instance with the given host, port and SSL bundle.
+		 * @param host the host
+		 * @param port the port
+		 * @param sslBundle the SSL bundle
+		 * @return the new instance
+		 * @since 3.5.0
+		 */
+		static Standalone of(String host, int port, SslBundle sslBundle) {
+			return of(host, port, 0, sslBundle);
+		}
+
+		/**
+		 * Creates a new instance with the given host, port and database.
+		 * @param host the host
+		 * @param port the port
+		 * @param database the database
+		 * @return the new instance
+		 */
 		static Standalone of(String host, int port, int database) {
+			return of(host, port, database, null);
+		}
+
+		/**
+		 * Creates a new instance with the given host, port, database and SSL bundle.
+		 * @param host the host
+		 * @param port the port
+		 * @param database the database
+		 * @param sslBundle the SSL bundle
+		 * @return the new instance
+		 * @since 3.5.0
+		 */
+		static Standalone of(String host, int port, int database, SslBundle sslBundle) {
 			Assert.hasLength(host, "'host' must not be empty");
 			return new Standalone() {
 
@@ -121,6 +169,10 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 					return database;
 				}
 
+				@Override
+				public SslBundle getSslBundle() {
+					return sslBundle;
+				}
 			};
 		}
 
@@ -161,6 +213,15 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 */
 		String getPassword();
 
+		/**
+		 * SSL bundle to use.
+		 * @return the SSL bundle to use
+		 * @since 3.5.0
+		 */
+		default SslBundle getSslBundle() {
+			return null;
+		}
+
 	}
 
 	/**
@@ -174,6 +235,15 @@ public interface RedisConnectionDetails extends ConnectionDetails {
 		 * @return nodes to bootstrap from
 		 */
 		List<Node> getNodes();
+
+		/**
+		 * SSL bundle to use.
+		 * @return the SSL bundle to use
+		 * @since 3.5.0
+		 */
+		default SslBundle getSslBundle() {
+			return null;
+		}
 
 	}
 

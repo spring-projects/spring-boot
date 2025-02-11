@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.docker.compose.service.connection.redis;
 
+import javax.net.ssl.SSLContext;
+
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Standalone;
 import org.springframework.boot.docker.compose.service.connection.test.DockerComposeTest;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testsupport.container.TestImage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +40,17 @@ class RedisDockerComposeConnectionDetailsFactoryIntegrationTests {
 	@DockerComposeTest(composeFile = "redis-compose.yaml", image = TestImage.REDIS)
 	void runCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
 		assertConnectionDetails(connectionDetails);
+	}
+
+	@DockerComposeTest(composeFile = "redis-ssl-compose.yaml", image = TestImage.REDIS,
+			additionalResources = { "ca.crt", "server.crt", "server.key", "client.crt", "client.key" })
+	void runWithSslCreatesConnectionDetails(RedisConnectionDetails connectionDetails) {
+		assertConnectionDetails(connectionDetails);
+		Standalone standalone = connectionDetails.getStandalone();
+		SslBundle sslBundle = standalone.getSslBundle();
+		assertThat(sslBundle).isNotNull();
+		SSLContext sslContext = sslBundle.createSslContext();
+		assertThat(sslContext).isNotNull();
 	}
 
 	@DockerComposeTest(composeFile = "redis-bitnami-compose.yaml", image = TestImage.BITNAMI_REDIS)

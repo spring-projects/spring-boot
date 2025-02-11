@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -51,8 +53,9 @@ public class RedisAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(RedisConnectionDetails.class)
-	PropertiesRedisConnectionDetails redisConnectionDetails(RedisProperties properties) {
-		return new PropertiesRedisConnectionDetails(properties);
+	PropertiesRedisConnectionDetails redisConnectionDetails(RedisProperties properties,
+			ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesRedisConnectionDetails(properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean

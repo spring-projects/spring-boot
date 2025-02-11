@@ -18,6 +18,11 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.List;
 
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 /**
  * Adapts {@link RedisProperties} to {@link RedisConnectionDetails}.
  *
@@ -32,8 +37,11 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 
 	private final RedisProperties properties;
 
-	PropertiesRedisConnectionDetails(RedisProperties properties) {
+	private final SslBundles sslBundles;
+
+	PropertiesRedisConnectionDetails(RedisProperties properties, SslBundles sslBundles) {
 		this.properties = properties;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
@@ -52,8 +60,21 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	public Standalone getStandalone() {
 		RedisUrl redisUrl = getRedisUrl();
 		return (redisUrl != null)
-				? Standalone.of(redisUrl.uri().getHost(), redisUrl.uri().getPort(), redisUrl.database())
-				: Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase());
+				? Standalone.of(redisUrl.uri().getHost(), redisUrl.uri().getPort(), redisUrl.database(), getSslBundle())
+				: Standalone.of(this.properties.getHost(), this.properties.getPort(), this.properties.getDatabase(),
+						getSslBundle());
+	}
+
+	private SslBundle getSslBundle() {
+		if (!this.properties.getSsl().isEnabled()) {
+			return null;
+		}
+		String bundleName = this.properties.getSsl().getBundle();
+		if (StringUtils.hasLength(bundleName)) {
+			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return this.sslBundles.getBundle(bundleName);
+		}
+		return SslBundle.systemDefault();
 	}
 
 	@Override
@@ -65,8 +86,7 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 	@Override
 	public Cluster getCluster() {
 		RedisProperties.Cluster cluster = this.properties.getCluster();
-		List<Node> nodes = (cluster != null) ? asNodes(cluster.getNodes()) : null;
-		return (nodes != null) ? () -> nodes : null;
+		return (cluster != null) ? new PropertiesCluster(cluster) : null;
 	}
 
 	private RedisUrl getRedisUrl() {
@@ -82,6 +102,29 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		String host = node.substring(0, portSeparatorIndex);
 		int port = Integer.parseInt(node.substring(portSeparatorIndex + 1));
 		return new Node(host, port);
+	}
+
+	/**
+	 * {@link Cluster} implementation backed by properties.
+	 */
+	private class PropertiesCluster implements Cluster {
+
+		private final List<Node> nodes;
+
+		PropertiesCluster(RedisProperties.Cluster properties) {
+			this.nodes = asNodes(properties.getNodes());
+		}
+
+		@Override
+		public List<Node> getNodes() {
+			return this.nodes;
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return PropertiesRedisConnectionDetails.this.getSslBundle();
+		}
+
 	}
 
 	/**
@@ -121,6 +164,11 @@ class PropertiesRedisConnectionDetails implements RedisConnectionDetails {
 		@Override
 		public String getPassword() {
 			return this.properties.getPassword();
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			return PropertiesRedisConnectionDetails.this.getSslBundle();
 		}
 
 	}

@@ -116,19 +116,14 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> clientConfigurationBuilderCustomizers,
 			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
 			ClientResources clientResources) {
-		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(clientConfigurationBuilderCustomizers,
-				clientOptionsBuilderCustomizers, clientResources, getProperties().getLettuce().getPool());
-		return createLettuceConnectionFactory(clientConfig);
-	}
-
-	private LettuceConnectionFactory createLettuceConnectionFactory(LettuceClientConfiguration clientConfiguration) {
-		if (getSentinelConfig() != null) {
-			return new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
-		}
-		if (getClusterConfiguration() != null) {
-			return new LettuceConnectionFactory(getClusterConfiguration(), clientConfiguration);
-		}
-		return new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+		LettuceClientConfiguration clientConfiguration = getLettuceClientConfiguration(
+				clientConfigurationBuilderCustomizers, clientOptionsBuilderCustomizers, clientResources,
+				getProperties().getLettuce().getPool());
+		return switch (this.mode) {
+			case STANDALONE -> new LettuceConnectionFactory(getStandaloneConfig(), clientConfiguration);
+			case CLUSTER -> new LettuceConnectionFactory(getClusterConfiguration(), clientConfiguration);
+			case SENTINEL -> new LettuceConnectionFactory(getSentinelConfig(), clientConfiguration);
+		};
 	}
 
 	private LettuceClientConfiguration getLettuceClientConfiguration(
@@ -136,11 +131,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientOptionsBuilderCustomizers,
 			ClientResources clientResources, Pool pool) {
 		LettuceClientConfigurationBuilder builder = createBuilder(pool);
-		applyProperties(builder);
+		SslBundle sslBundle = getSslBundle();
+		applyProperties(builder, sslBundle);
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		builder.clientOptions(createClientOptions(clientOptionsBuilderCustomizers));
+		builder.clientOptions(createClientOptions(clientOptionsBuilderCustomizers, sslBundle));
 		builder.clientResources(clientResources);
 		clientConfigurationBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -153,8 +149,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		return LettuceClientConfiguration.builder();
 	}
 
-	private void applyProperties(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		if (isSslEnabled()) {
+	private void applyProperties(LettuceClientConfigurationBuilder builder, SslBundle sslBundle) {
+		if (sslBundle != null) {
 			builder.useSsl();
 		}
 		if (getProperties().getTimeout() != null) {
@@ -195,14 +191,14 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private ClientOptions createClientOptions(
-			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientConfigurationBuilderCustomizers) {
+			ObjectProvider<LettuceClientOptionsBuilderCustomizer> clientConfigurationBuilderCustomizers,
+			SslBundle sslBundle) {
 		ClientOptions.Builder builder = initializeClientOptionsBuilder();
 		Duration connectTimeout = getProperties().getConnectTimeout();
 		if (connectTimeout != null) {
 			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
 		}
-		if (isSslEnabled() && getProperties().getSsl().getBundle() != null) {
-			SslBundle sslBundle = getSslBundles().getBundle(getProperties().getSsl().getBundle());
+		if (sslBundle != null) {
 			io.lettuce.core.SslOptions.Builder sslOptionsBuilder = io.lettuce.core.SslOptions.builder();
 			sslOptionsBuilder.keyManager(sslBundle.getManagers().getKeyManagerFactory());
 			sslOptionsBuilder.trustManager(sslBundle.getManagers().getTrustManagerFactory());

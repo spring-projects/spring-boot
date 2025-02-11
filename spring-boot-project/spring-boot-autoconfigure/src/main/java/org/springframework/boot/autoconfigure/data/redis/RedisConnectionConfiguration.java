@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails.Sentinel;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
@@ -62,6 +63,8 @@ abstract class RedisConnectionConfiguration {
 
 	private final SslBundles sslBundles;
 
+	protected final Mode mode;
+
 	protected RedisConnectionConfiguration(RedisProperties properties, RedisConnectionDetails connectionDetails,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
@@ -73,6 +76,7 @@ abstract class RedisConnectionConfiguration {
 		this.clusterConfiguration = clusterConfigurationProvider.getIfAvailable();
 		this.connectionDetails = connectionDetails;
 		this.sslBundles = sslBundles.getIfAvailable();
+		this.mode = determineMode();
 	}
 
 	protected final RedisStandaloneConfiguration getStandaloneConfig() {
@@ -153,6 +157,17 @@ abstract class RedisConnectionConfiguration {
 		return this.sslBundles;
 	}
 
+	protected SslBundle getSslBundle() {
+		return switch (this.mode) {
+			case STANDALONE -> (this.connectionDetails.getStandalone() != null)
+					? this.connectionDetails.getStandalone().getSslBundle() : null;
+			case CLUSTER -> (this.connectionDetails.getCluster() != null)
+					? this.connectionDetails.getCluster().getSslBundle() : null;
+			case SENTINEL -> (this.connectionDetails.getSentinel() != null)
+					? this.connectionDetails.getSentinel().getSslBundle() : null;
+		};
+	}
+
 	protected final boolean isSslEnabled() {
 		return getProperties().getSsl().isEnabled();
 	}
@@ -176,6 +191,22 @@ abstract class RedisConnectionConfiguration {
 
 	protected final RedisConnectionDetails getConnectionDetails() {
 		return this.connectionDetails;
+	}
+
+	private Mode determineMode() {
+		if (getSentinelConfig() != null) {
+			return Mode.SENTINEL;
+		}
+		if (getClusterConfiguration() != null) {
+			return Mode.CLUSTER;
+		}
+		return Mode.STANDALONE;
+	}
+
+	enum Mode {
+
+		STANDALONE, CLUSTER, SENTINEL
+
 	}
 
 }
