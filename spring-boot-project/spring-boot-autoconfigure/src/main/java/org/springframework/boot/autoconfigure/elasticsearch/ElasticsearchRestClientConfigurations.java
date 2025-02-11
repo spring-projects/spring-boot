@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,12 +44,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties.Restclient.Ssl;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -75,8 +77,8 @@ class ElasticsearchRestClientConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(ElasticsearchConnectionDetails.class)
-		PropertiesElasticsearchConnectionDetails elasticsearchConnectionDetails() {
-			return new PropertiesElasticsearchConnectionDetails(this.properties);
+		PropertiesElasticsearchConnectionDetails elasticsearchConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+			return new PropertiesElasticsearchConnectionDetails(this.properties, sslBundles.getIfAvailable());
 		}
 
 		@Bean
@@ -87,16 +89,16 @@ class ElasticsearchRestClientConfigurations {
 
 		@Bean
 		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
-				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers, ObjectProvider<SslBundles> sslBundles) {
+				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
 			RestClientBuilder builder = RestClient.builder(connectionDetails.getNodes()
 				.stream()
 				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
 				.toArray(HttpHost[]::new));
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
-				String sslBundleName = this.properties.getRestclient().getSsl().getBundle();
-				if (StringUtils.hasText(sslBundleName)) {
-					configureSsl(httpClientBuilder, sslBundles.getObject().getBundle(sslBundleName));
+				SslBundle sslBundle = connectionDetails.getSslBundle();
+				if (sslBundle != null) {
+					configureSsl(httpClientBuilder, sslBundle);
 				}
 				return httpClientBuilder;
 			});
@@ -236,8 +238,11 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties) {
+		private final SslBundles sslBundles;
+
+		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties, SslBundles sslBundles) {
 			this.properties = properties;
+			this.sslBundles = sslBundles;
 		}
 
 		@Override
@@ -258,6 +263,16 @@ class ElasticsearchRestClientConfigurations {
 		@Override
 		public String getPathPrefix() {
 			return this.properties.getPathPrefix();
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			Ssl ssl = this.properties.getRestclient().getSsl();
+			if (StringUtils.hasLength(ssl.getBundle())) {
+				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+				return this.sslBundles.getBundle(ssl.getBundle());
+			}
+			return null;
 		}
 
 		private Node createNode(String uri) {
