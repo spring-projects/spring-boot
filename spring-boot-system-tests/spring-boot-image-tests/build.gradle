@@ -42,3 +42,7 @@ dependencies {
 	systemTestImplementation("org.testcontainers:junit-jupiter")
 	systemTestImplementation("org.testcontainers:testcontainers")
 }
+
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(23)
+}
