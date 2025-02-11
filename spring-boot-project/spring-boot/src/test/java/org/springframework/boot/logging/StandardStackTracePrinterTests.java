@@ -311,7 +311,7 @@ class StandardStackTracePrinterTests {
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast()
 			.withFrameFormatter(
 					(element) -> ClassUtils.getShortName(element.getClassName()) + "." + element.getMethodName());
-		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
+		assertThat(printer.printStackTraceToString(exception)).isEqualToNormalizingNewlines("""
 				java.lang.RuntimeException: exception
 					at TestException.actualCreateException
 					at TestException.createException
@@ -335,7 +335,7 @@ class StandardStackTracePrinterTests {
 		Throwable exception = TestException.create();
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast()
 			.withHashes((frame) -> Objects.hash(frame.getClassName(), frame.getMethodName()));
-		assertThat(printer.printStackTraceToString(exception)).isEqualTo("""
+		assertThat(printer.printStackTraceToString(exception)).isEqualToNormalizingNewlines("""
 				<#cc3eebec> java.lang.RuntimeException: exception
 					at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:63)
 					at org.springframework.boot.logging.TestException.createException(TestException.java:59)
@@ -384,7 +384,7 @@ class StandardStackTracePrinterTests {
 	private void assertThatCleanedStackTraceMatches(StandardStackTracePrinter printer, Throwable throwable,
 			String expected) {
 		String actual = printer.printStackTraceToString(throwable);
-		assertThat(TestException.withoutLineNumbers(actual)).isEqualTo(expected);
+		assertThat(TestException.withoutLineNumbers(actual)).isEqualToNormalizingNewlines(expected);
 	}
 
 }

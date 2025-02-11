@@ -146,7 +146,7 @@ class StructuredLoggingJsonPropertiesTests {
 			StackTrace properties = new StackTrace(null, Root.FIRST, 300, 2, true, false);
 			StackTracePrinter printer = properties.createPrinter();
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
-			assertThat(actual).isEqualTo("""
+			assertThat(actual).isEqualToNormalizingNewlines("""
 					java.lang.RuntimeException: exception
 						at org.springframework.boot.logging.TestException.actualCreateException(TestException.java:NN)
 						at org.springframework.boot.logging.TestException.createException(TestException.java:NN)
