@@ -263,8 +263,7 @@ class StandardStackTracePrinterTests {
 	void withLineSeparatorUsesLineSeparator() {
 		Throwable exception = TestException.create();
 		StandardStackTracePrinter printer = StandardStackTracePrinter.rootLast().withLineSeparator("!");
-		assertThatCleanedStackTraceMatches(printer, exception,
-				standardStackTrace().replace(System.lineSeparator(), "!"));
+		assertThatCleanedStackTraceMatches(printer, exception, standardStackTrace().replace("\n", "!"));
 	}
 
 	@Test

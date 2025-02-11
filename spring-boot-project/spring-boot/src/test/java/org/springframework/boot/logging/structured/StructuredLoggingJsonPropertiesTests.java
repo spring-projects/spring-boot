@@ -144,7 +144,8 @@ class StructuredLoggingJsonPropertiesTests {
 		void createPrinterWhenStandardAppliesCustomizations() {
 			Exception exception = TestException.create();
 			StackTrace properties = new StackTrace(null, Root.FIRST, 300, 2, true, false);
-			StackTracePrinter printer = properties.createPrinter();
+			StackTracePrinter printer = ((StandardStackTracePrinter) properties.createPrinter())
+				.withLineSeparator("\n");
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
 			assertThat(actual).isEqualToNormalizingNewlines("""
 					java.lang.RuntimeException: exception
