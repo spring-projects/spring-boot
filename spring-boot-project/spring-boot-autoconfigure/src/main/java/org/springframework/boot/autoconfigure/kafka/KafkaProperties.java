@@ -38,7 +38,6 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
-import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.io.Resource;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
@@ -1401,10 +1400,10 @@ public class KafkaProperties {
 		public Map<String, Object> buildProperties(SslBundles sslBundles) {
 			validate();
 			String bundleName = getBundle();
-			if (StringUtils.hasText(bundleName)) {
-				return buildPropertiesForSslBundle(sslBundles, bundleName);
-			}
 			Properties properties = new Properties();
+			if (StringUtils.hasText(bundleName)) {
+				return properties;
+			}
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getKeyPassword).to(properties.in(SslConfigs.SSL_KEY_PASSWORD_CONFIG));
 			map.from(this::getKeyStoreCertificateChain)
@@ -1422,13 +1421,6 @@ public class KafkaProperties {
 			map.from(this::getTrustStorePassword).to(properties.in(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG));
 			map.from(this::getTrustStoreType).to(properties.in(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG));
 			map.from(this::getProtocol).to(properties.in(SslConfigs.SSL_PROTOCOL_CONFIG));
-			return properties;
-		}
-
-		private Map<String, Object> buildPropertiesForSslBundle(SslBundles sslBundles, String name) {
-			Properties properties = new Properties();
-			properties.in(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG).accept(SslBundleSslEngineFactory.class.getName());
-			properties.in(SslBundle.class.getName()).accept(sslBundles.getBundle(name));
 			return properties;
 		}
 

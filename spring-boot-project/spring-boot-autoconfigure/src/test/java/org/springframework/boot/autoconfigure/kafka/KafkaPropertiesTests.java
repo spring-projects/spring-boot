@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,8 +107,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setBundle("myBundle");
 		Map<String, Object> consumerProperties = properties
 			.buildConsumerProperties(new DefaultSslBundleRegistry("myBundle", this.sslBundle));
-		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG,
-				SslBundleSslEngineFactory.class.getName());
+		assertThat(consumerProperties).doesNotContainKey(SslConfigs.SSL_ENGINE_FACTORY_CLASS_CONFIG);
 	}
 
 	@Test
@@ -117,7 +116,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
 		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-			.isThrownBy(() -> properties.buildConsumerProperties());
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -126,7 +125,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
 		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-			.isThrownBy(() -> properties.buildConsumerProperties());
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
