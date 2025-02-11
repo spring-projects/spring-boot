@@ -38,17 +38,14 @@ class TraceHeaderObservationFilterTests {
 	@Test
 	void shouldWriteTraceHeaderWhenCurrentTrace() throws Exception {
 		TraceHeaderObservationFilter filter = createFilter(new SimpleTracer());
-
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		filter.doFilter(new MockHttpServletRequest(), response, getFilterChain());
-
 		assertThat(response.getHeader("X-Trace-Id")).isNotEmpty();
 	}
 
 	@Test
 	void shouldNotWriteTraceHeaderWhenNoCurrentTrace() throws Exception {
 		TraceHeaderObservationFilter filter = createFilter(Tracer.NOOP);
-
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		filter.doFilter(new MockHttpServletRequest(), response, getFilterChain());
 		assertThat(response.getHeaderNames()).doesNotContain("X-Trace-Id");
