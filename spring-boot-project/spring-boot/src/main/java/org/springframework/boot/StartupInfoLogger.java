@@ -101,8 +101,8 @@ class StartupInfoLogger {
 	}
 
 	private void appendApplicationName(StringBuilder message) {
-		append(message, "",
-				() -> (this.sourceClass != null) ? ClassUtils.getShortName(this.sourceClass) : "application");
+		append(message, "", () -> this.environment.getProperty("spring.application.name",
+				this.sourceClass != null ? ClassUtils.getShortName(this.sourceClass) : "application"));
 	}
 
 	private void appendVersion(StringBuilder message, Class<?> source) {

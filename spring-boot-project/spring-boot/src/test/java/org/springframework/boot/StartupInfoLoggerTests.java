@@ -103,6 +103,19 @@ class StartupInfoLoggerTests {
 	}
 
 	@Test
+	void startingFormatWhenApplicationNameIsAvailable() {
+		String applicationName = "test-application";
+		this.environment.setProperty("spring.application.name", applicationName);
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment).logStarting(this.log);
+		then(this.log).should()
+				.info(assertArg(
+						(message) -> assertThat(message.toString()).contains("Starting " + applicationName
+								+ " v1.2.3 using Java " + System.getProperty("java.version") + " with PID 42 (started by "
+								+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")")));
+	}
+
+	@Test
 	void startedFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
 		new StartupInfoLogger(getClass(), this.environment).logStarted(this.log, new TestStartup(1345L, "Started"));
@@ -118,6 +131,17 @@ class StartupInfoLoggerTests {
 		then(this.log).should()
 			.info(assertArg((message) -> assertThat(message.toString())
 				.matches("Started " + getClass().getSimpleName() + " in \\d+\\.\\d{1,3} seconds")));
+	}
+
+	@Test
+	void startedFormatWhenApplicationNameIsAvailable() {
+		String applicationName = "test-application";
+		this.environment.setProperty("spring.application.name", applicationName);
+		given(this.log.isInfoEnabled()).willReturn(true);
+		new StartupInfoLogger(getClass(), this.environment).logStarted(this.log, new TestStartup(1345L, "Started"));
+		then(this.log).should()
+				.info(assertArg((message) -> assertThat(message.toString()).matches("Started " + applicationName
+						+ " in \\d+\\.\\d{1,3} seconds \\(process running for 1.345\\)")));
 	}
 
 	@Test
