@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest;
+import org.springframework.boot.testcontainers.service.connection.PemKeyStore;
+import org.springframework.boot.testcontainers.service.connection.PemTrustStore;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
@@ -36,17 +38,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-@DataCouchbaseTest(properties = { "spring.couchbase.env.ssl.bundle=client", "spring.couchbase.env.timeouts.connect=2m",
-		"spring.data.couchbase.bucket-name=cbbucket",
-		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
-		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
-		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
+@DataCouchbaseTest(
+		properties = { "spring.couchbase.env.timeouts.connect=2m", "spring.data.couchbase.bucket-name=cbbucket" })
 class SampleCouchbaseApplicationSslTests {
 
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
 	@ServiceConnection
+	@PemKeyStore(certificate = "classpath:ssl/test-client.crt", privateKey = "classpath:ssl/test-client.key")
+	@PemTrustStore(certificate = "classpath:ssl/test-ca.crt")
 	static final CouchbaseContainer couchbase = TestImage.container(SecureCouchbaseContainer.class)
 		.withBucket(new BucketDefinition(BUCKET_NAME));
 

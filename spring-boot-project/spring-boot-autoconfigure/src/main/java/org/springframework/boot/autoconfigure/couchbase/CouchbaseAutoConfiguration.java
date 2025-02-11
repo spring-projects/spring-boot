@@ -93,15 +93,16 @@ public class CouchbaseAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(CouchbaseConnectionDetails.class)
-	PropertiesCouchbaseConnectionDetails couchbaseConnectionDetails() {
-		return new PropertiesCouchbaseConnectionDetails(this.properties);
+	PropertiesCouchbaseConnectionDetails couchbaseConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+		return new PropertiesCouchbaseConnectionDetails(this.properties, sslBundles.getIfAvailable());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ClusterEnvironment couchbaseClusterEnvironment(
-			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
-		Builder builder = initializeEnvironmentBuilder(sslBundles.getIfAvailable());
+			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers,
+			CouchbaseConnectionDetails connectionDetails) {
+		Builder builder = initializeEnvironmentBuilder(connectionDetails);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -143,7 +144,7 @@ public class CouchbaseAutoConfiguration {
 		return Cluster.connect(connectionDetails.getConnectionString(), options);
 	}
 
-	private ClusterEnvironment.Builder initializeEnvironmentBuilder(SslBundles sslBundles) {
+	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseConnectionDetails connectionDetails) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = this.properties.getEnv().getTimeouts();
 		builder.timeoutConfig((config) -> config.kvTimeout(timeouts.getKeyValue())
@@ -159,29 +160,22 @@ public class CouchbaseAutoConfiguration {
 		builder.ioConfig((config) -> config.maxHttpConnections(io.getMaxEndpoints())
 			.numKvConnections(io.getMinEndpoints())
 			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
-		if (this.properties.getEnv().getSsl().getEnabled()) {
-			configureSsl(builder, sslBundles);
+		SslBundle sslBundle = connectionDetails.getSslBundle();
+		if (sslBundle != null) {
+			configureSsl(builder, sslBundle);
 		}
 		return builder;
 	}
 
-	private void configureSsl(Builder builder, SslBundles sslBundles) {
-		Ssl sslProperties = this.properties.getEnv().getSsl();
-		SslBundle sslBundle = (StringUtils.hasText(sslProperties.getBundle()))
-				? sslBundles.getBundle(sslProperties.getBundle()) : null;
-		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
-				"SSL Options cannot be specified with Couchbase");
+	private void configureSsl(Builder builder, SslBundle sslBundle) {
+		Assert.state(!sslBundle.getOptions().isSpecified(), "SSL Options cannot be specified with Couchbase");
 		builder.securityConfig((config) -> {
 			config.enableTls(true);
-			TrustManagerFactory trustManagerFactory = getTrustManagerFactory(sslBundle);
+			TrustManagerFactory trustManagerFactory = sslBundle.getManagers().getTrustManagerFactory();
 			if (trustManagerFactory != null) {
 				config.trustManagerFactory(trustManagerFactory);
 			}
 		});
-	}
-
-	private TrustManagerFactory getTrustManagerFactory(SslBundle sslBundle) {
-		return (sslBundle != null) ? sslBundle.getManagers().getTrustManagerFactory() : null;
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -247,8 +241,11 @@ public class CouchbaseAutoConfiguration {
 
 		private final CouchbaseProperties properties;
 
-		PropertiesCouchbaseConnectionDetails(CouchbaseProperties properties) {
+		private final SslBundles sslBundles;
+
+		PropertiesCouchbaseConnectionDetails(CouchbaseProperties properties, SslBundles sslBundles) {
 			this.properties = properties;
+			this.sslBundles = sslBundles;
 		}
 
 		@Override
@@ -264,6 +261,19 @@ public class CouchbaseAutoConfiguration {
 		@Override
 		public String getPassword() {
 			return this.properties.getPassword();
+		}
+
+		@Override
+		public SslBundle getSslBundle() {
+			Ssl ssl = this.properties.getEnv().getSsl();
+			if (!ssl.getEnabled()) {
+				return null;
+			}
+			if (StringUtils.hasLength(ssl.getBundle())) {
+				Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+				return this.sslBundles.getBundle(ssl.getBundle());
+			}
+			return SslBundle.systemDefault();
 		}
 
 	}
