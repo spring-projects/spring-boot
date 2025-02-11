@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testcontainers.service.connection.PemKeyStore;
+import org.springframework.boot.testcontainers.service.connection.PemTrustStore;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.container.TestImage;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,24 +40,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Scott Frederick
  */
-@SpringBootTest(properties = { "spring.rabbitmq.ssl.bundle=client",
-		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
-		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
-		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
+@SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
 @ExtendWith(OutputCaptureExtension.class)
 class SampleAmqpSimpleApplicationSslTests {
 
 	@Container
+	@ServiceConnection
+	@PemKeyStore(certificate = "classpath:ssl/test-client.crt", privateKey = "classpath:ssl/test-client.key")
+	@PemTrustStore("classpath:ssl/test-ca.crt")
 	static final SecureRabbitMqContainer rabbit = TestImage.container(SecureRabbitMqContainer.class);
-
-	@DynamicPropertySource
-	static void secureRabbitMqProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.rabbitmq.host", rabbit::getHost);
-		registry.add("spring.rabbitmq.port", rabbit::getAmqpsPort);
-		registry.add("spring.rabbitmq.username", rabbit::getAdminUsername);
-		registry.add("spring.rabbitmq.password", rabbit::getAdminPassword);
-	}
 
 	@Autowired
 	private Sender sender;

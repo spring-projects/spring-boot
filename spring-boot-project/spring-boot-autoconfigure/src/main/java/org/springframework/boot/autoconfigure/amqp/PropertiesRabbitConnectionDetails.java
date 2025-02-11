@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,12 @@ package org.springframework.boot.autoconfigure.amqp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.amqp.RabbitProperties.Ssl;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 /**
  * Adapts {@link RabbitProperties} to {@link RabbitConnectionDetails}.
  *
@@ -30,8 +36,11 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 
 	private final RabbitProperties properties;
 
-	PropertiesRabbitConnectionDetails(RabbitProperties properties) {
+	private final SslBundles sslBundles;
+
+	PropertiesRabbitConnectionDetails(RabbitProperties properties, SslBundles sslBundles) {
 		this.properties = properties;
+		this.sslBundles = sslBundles;
 	}
 
 	@Override
@@ -59,6 +68,19 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 			addresses.add(new Address(host, Integer.parseInt(port)));
 		}
 		return addresses;
+	}
+
+	@Override
+	public SslBundle getSslBundle() {
+		Ssl ssl = this.properties.getSsl();
+		if (!ssl.determineEnabled()) {
+			return null;
+		}
+		if (StringUtils.hasLength(ssl.getBundle())) {
+			Assert.notNull(this.sslBundles, "SSL bundle name has been set but no SSL bundles found in context");
+			return this.sslBundles.getBundle(ssl.getBundle());
+		}
+		return null;
 	}
 
 }

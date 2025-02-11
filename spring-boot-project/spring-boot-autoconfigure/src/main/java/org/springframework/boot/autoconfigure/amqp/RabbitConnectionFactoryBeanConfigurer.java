@@ -48,8 +48,6 @@ public class RabbitConnectionFactoryBeanConfigurer {
 
 	private final RabbitConnectionDetails connectionDetails;
 
-	private final SslBundles sslBundles;
-
 	private CredentialsProvider credentialsProvider;
 
 	private CredentialsRefreshService credentialsRefreshService;
@@ -61,7 +59,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 * @param properties the properties
 	 */
 	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties) {
-		this(resourceLoader, properties, new PropertiesRabbitConnectionDetails(properties));
+		this(resourceLoader, properties, new PropertiesRabbitConnectionDetails(properties, null));
 	}
 
 	/**
@@ -96,7 +94,6 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		this.resourceLoader = resourceLoader;
 		this.rabbitProperties = properties;
 		this.connectionDetails = connectionDetails;
-		this.sslBundles = sslBundles;
 	}
 
 	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
@@ -129,16 +126,14 @@ public class RabbitConnectionFactoryBeanConfigurer {
 			.asInt(Duration::getSeconds)
 			.to(factory::setRequestedHeartbeat);
 		map.from(this.rabbitProperties::getRequestedChannelMax).to(factory::setRequestedChannelMax);
-		RabbitProperties.Ssl ssl = this.rabbitProperties.getSsl();
-		if (ssl.determineEnabled()) {
-			factory.setUseSSL(true);
-			if (ssl.getBundle() != null) {
-				SslBundle bundle = this.sslBundles.getBundle(ssl.getBundle());
-				if (factory instanceof SslBundleRabbitConnectionFactoryBean sslFactory) {
-					sslFactory.setSslBundle(bundle);
-				}
-			}
-			else {
+		SslBundle sslBundle = this.connectionDetails.getSslBundle();
+		if (sslBundle != null) {
+			applySslBundle(factory, sslBundle);
+		}
+		else {
+			RabbitProperties.Ssl ssl = this.rabbitProperties.getSsl();
+			if (ssl.determineEnabled()) {
+				factory.setUseSSL(true);
 				map.from(ssl::getAlgorithm).whenNonNull().to(factory::setSslAlgorithm);
 				map.from(ssl::getKeyStoreType).to(factory::setKeyStoreType);
 				map.from(ssl::getKeyStore).to(factory::setKeyStore);
@@ -148,10 +143,10 @@ public class RabbitConnectionFactoryBeanConfigurer {
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
 				map.from(ssl::getTrustStoreAlgorithm).whenNonNull().to(factory::setTrustStoreAlgorithm);
+				map.from(ssl::isValidateServerCertificate)
+					.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
+				map.from(ssl::isVerifyHostname).to(factory::setEnableHostnameVerification);
 			}
-			map.from(ssl::isValidateServerCertificate)
-				.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
-			map.from(ssl::isVerifyHostname).to(factory::setEnableHostnameVerification);
 		}
 		map.from(this.rabbitProperties::getConnectionTimeout)
 			.whenNonNull()
@@ -167,6 +162,13 @@ public class RabbitConnectionFactoryBeanConfigurer {
 			.whenNonNull()
 			.asInt(DataSize::toBytes)
 			.to(factory::setMaxInboundMessageBodySize);
+	}
+
+	private static void applySslBundle(RabbitConnectionFactoryBean factory, SslBundle bundle) {
+		factory.setUseSSL(true);
+		if (factory instanceof SslBundleRabbitConnectionFactoryBean sslFactory) {
+			sslFactory.setSslBundle(bundle);
+		}
 	}
 
 }

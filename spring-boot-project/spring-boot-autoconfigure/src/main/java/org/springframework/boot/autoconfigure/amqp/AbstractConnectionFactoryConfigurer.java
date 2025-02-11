@@ -48,7 +48,7 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	 * @param properties the properties to use to configure the connection factory
 	 */
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
-		this(properties, new PropertiesRabbitConnectionDetails(properties));
+		this(properties, new PropertiesRabbitConnectionDetails(properties, null));
 	}
 
 	/**

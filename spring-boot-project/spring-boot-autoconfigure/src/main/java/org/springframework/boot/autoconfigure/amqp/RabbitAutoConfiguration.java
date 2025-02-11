@@ -90,18 +90,17 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		RabbitConnectionDetails rabbitConnectionDetails() {
-			return new PropertiesRabbitConnectionDetails(this.properties);
+		RabbitConnectionDetails rabbitConnectionDetails(ObjectProvider<SslBundles> sslBundles) {
+			return new PropertiesRabbitConnectionDetails(this.properties, sslBundles.getIfAvailable());
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader,
 				RabbitConnectionDetails connectionDetails, ObjectProvider<CredentialsProvider> credentialsProvider,
-				ObjectProvider<CredentialsRefreshService> credentialsRefreshService,
-				ObjectProvider<SslBundles> sslBundles) {
+				ObjectProvider<CredentialsRefreshService> credentialsRefreshService) {
 			RabbitConnectionFactoryBeanConfigurer configurer = new RabbitConnectionFactoryBeanConfigurer(resourceLoader,
-					this.properties, connectionDetails, sslBundles.getIfAvailable());
+					this.properties, connectionDetails);
 			configurer.setCredentialsProvider(credentialsProvider.getIfUnique());
 			configurer.setCredentialsRefreshService(credentialsRefreshService.getIfUnique());
 			return configurer;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.amqp;
 import java.util.List;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.util.Assert;
 
 /**
@@ -71,6 +72,15 @@ public interface RabbitConnectionDetails extends ConnectionDetails {
 		List<Address> addresses = getAddresses();
 		Assert.state(!addresses.isEmpty(), "Address list is empty");
 		return addresses.get(0);
+	}
+
+	/**
+	 * SSL bundle to use.
+	 * @return the SSL bundle to use
+	 * @since 3.5.0
+	 */
+	default SslBundle getSslBundle() {
+		return null;
 	}
 
 	/**
