@@ -67,7 +67,18 @@ class LoaderIntegrationTests {
 			.withLogConsumer(this.output)
 			.withCopyFileToContainer(MountableFile.forHostPath(findApplication().toPath()), "/app.jar")
 			.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
-			.withCommand("java", "-jar", "app.jar");
+			.withCommand(command(javaRuntime));
+	}
+
+	private String[] command(JavaRuntime javaRuntime) {
+		List<String> command = new ArrayList<>();
+		command.add("java");
+		if (javaRuntime.version == JavaVersion.TWENTY_FOUR) {
+			command.add("--enable-native-access=ALL-UNNAMED");
+		}
+		command.add("-jar");
+		command.add("app.jar");
+		return command.toArray(new String[0]);
 	}
 
 	private File findApplication() {
@@ -84,6 +95,7 @@ class LoaderIntegrationTests {
 		javaRuntimes.add(JavaRuntime.oracleJdk17());
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_TWO));
 		javaRuntimes.add(JavaRuntime.openJdk(JavaVersion.TWENTY_THREE));
+		javaRuntimes.add(JavaRuntime.openJdkEarlyAccess(JavaVersion.TWENTY_FOUR));
 		return javaRuntimes.stream().filter(JavaRuntime::isCompatible);
 	}
 
