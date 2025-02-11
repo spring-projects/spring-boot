@@ -97,7 +97,7 @@ dependencies {
 			classifier = 'jakarta'
 		}
 	}
-	optional("org.elasticsearch.client:elasticsearch-rest-client") {
+	optional("org.elasticsearch.client:elasticsearch-rest-client:8.17.2") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer") {
