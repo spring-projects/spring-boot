@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	private final DockerEnv env;
 
+	private final DockerComposeFile composeFile;
+
 	DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse composePsResponse,
 			DockerCliInspectResponse inspectResponse) {
 		this.origin = new DockerComposeOrigin(composeFile, composePsResponse.name());
@@ -55,6 +57,7 @@ class DefaultRunningService implements RunningService, OriginProvider {
 		this.ports = new DefaultConnectionPorts(inspectResponse);
 		this.env = new DockerEnv(inspectResponse.config().env());
 		this.labels = Collections.unmodifiableMap(inspectResponse.config().labels());
+		this.composeFile = composeFile;
 	}
 
 	@Override
@@ -95,6 +98,11 @@ class DefaultRunningService implements RunningService, OriginProvider {
 	@Override
 	public String toString() {
 		return this.name;
+	}
+
+	@Override
+	public DockerComposeFile composeFile() {
+		return this.composeFile;
 	}
 
 }

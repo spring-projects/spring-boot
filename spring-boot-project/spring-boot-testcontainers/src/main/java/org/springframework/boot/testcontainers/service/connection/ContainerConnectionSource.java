@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.lang.annotation.Annotation;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -27,6 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
@@ -60,8 +62,13 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	private final Supplier<C> containerSupplier;
 
+	private final SslBundleSource sslBundleSource;
+
+	private final MergedAnnotations annotations;
+
 	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
-			MergedAnnotation<ServiceConnection> annotation, Supplier<C> containerSupplier) {
+			MergedAnnotation<ServiceConnection> annotation, Supplier<C> containerSupplier,
+			SslBundleSource sslBundleSource, MergedAnnotations annotations) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
@@ -69,10 +76,13 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.connectionName = getOrDeduceConnectionName(annotation.getString("name"), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.getClassArray("type"));
 		this.containerSupplier = containerSupplier;
+		this.sslBundleSource = sslBundleSource;
+		this.annotations = annotations;
 	}
 
 	ContainerConnectionSource(String beanNameSuffix, Origin origin, Class<C> containerType, String containerImageName,
-			ServiceConnection annotation, Supplier<C> containerSupplier) {
+			ServiceConnection annotation, Supplier<C> containerSupplier, SslBundleSource sslBundleSource,
+			MergedAnnotations annotations) {
 		this.beanNameSuffix = beanNameSuffix;
 		this.origin = origin;
 		this.containerType = containerType;
@@ -80,6 +90,8 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		this.connectionName = getOrDeduceConnectionName(annotation.name(), containerImageName);
 		this.connectionDetailsTypes = Set.of(annotation.type());
 		this.containerSupplier = containerSupplier;
+		this.sslBundleSource = sslBundleSource;
+		this.annotations = annotations;
 	}
 
 	private static String getOrDeduceConnectionName(String connectionName, String containerImageName) {
@@ -154,6 +166,17 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 
 	Set<Class<?>> getConnectionDetailsTypes() {
 		return this.connectionDetailsTypes;
+	}
+
+	SslBundleSource getSslBundleSource() {
+		return this.sslBundleSource;
+	}
+
+	boolean hasAnnotation(Class<? extends Annotation> annotationType) {
+		if (this.annotations == null) {
+			return false;
+		}
+		return this.annotations.isPresent(annotationType);
 	}
 
 	@Override

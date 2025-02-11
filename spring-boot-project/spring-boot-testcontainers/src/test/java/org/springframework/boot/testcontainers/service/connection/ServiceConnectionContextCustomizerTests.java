@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class ServiceConnectionContextCustomizerTests {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "myname", "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null, null);
 		this.factories = mock(ConnectionDetailsFactories.class);
 	}
 
@@ -103,37 +103,37 @@ class ServiceConnectionContextCustomizerTests {
 		// Connection Names
 		ServiceConnectionContextCustomizer n1 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation1, () -> container1)));
+						annotation1, () -> container1, null, null)));
 		ServiceConnectionContextCustomizer n2 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation1, () -> container1)));
+						annotation1, () -> container1, null, null)));
 		ServiceConnectionContextCustomizer n3 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "namex",
-						annotation1, () -> container1)));
+						annotation1, () -> container1, null, null)));
 		assertThat(n1.hashCode()).isEqualTo(n2.hashCode()).isNotEqualTo(n3.hashCode());
 		assertThat(n1).isEqualTo(n2).isNotEqualTo(n3);
 		// Connection Details Types
 		ServiceConnectionContextCustomizer t1 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation1, () -> container1)));
+						annotation1, () -> container1, null, null)));
 		ServiceConnectionContextCustomizer t2 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation2, () -> container1)));
+						annotation2, () -> container1, null, null)));
 		ServiceConnectionContextCustomizer t3 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation3, () -> container1)));
+						annotation3, () -> container1, null, null)));
 		assertThat(t1.hashCode()).isEqualTo(t2.hashCode()).isNotEqualTo(t3.hashCode());
 		assertThat(t1).isEqualTo(t2).isNotEqualTo(t3);
 		// Container
 		ServiceConnectionContextCustomizer c1 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation1, () -> container1)));
+						annotation1, () -> container1, null, null)));
 		ServiceConnectionContextCustomizer c2 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation1, () -> container1)));
+						annotation1, () -> container1, null, null)));
 		ServiceConnectionContextCustomizer c3 = new ServiceConnectionContextCustomizer(
 				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
-						annotation1, () -> container2)));
+						annotation1, () -> container2, null, null)));
 		assertThat(c1.hashCode()).isEqualTo(c2.hashCode()).isNotEqualTo(c3.hashCode());
 		assertThat(c1).isEqualTo(c2).isNotEqualTo(c3);
 	}

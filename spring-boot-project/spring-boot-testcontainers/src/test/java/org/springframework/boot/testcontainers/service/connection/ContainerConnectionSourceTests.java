@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class ContainerConnectionSourceTests {
 		given(this.container.getDockerImageName()).willReturn("postgres");
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", "", "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null, null);
 	}
 
 	@Test
@@ -180,14 +180,14 @@ class ContainerConnectionSourceTests {
 	private void setupSourceAnnotatedWithName(String name) {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class, Map.of("name", name, "type", new Class<?>[0]));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null, null);
 	}
 
 	private void setupSourceAnnotatedWithType(Class<?> type) {
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "", "type", new Class<?>[] { type }));
 		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, PostgreSQLContainer.class,
-				this.container.getDockerImageName(), this.annotation, () -> this.container);
+				this.container.getDockerImageName(), this.annotation, () -> this.container, null, null);
 	}
 
 }

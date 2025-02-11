@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * Annotation used to indicate that a field or method is a
- * {@link ContainerConnectionSource} which provides a service that can be connected to.
+ * Indicates that a field or method is a {@link ContainerConnectionSource} which provides
+ * a service that can be connected to.
+ * <p>
+ * If the underling connection supports SSL, the {@link PemKeyStore @PemKeyStore},
+ * {@link PemTrustStore @PemTrustStore}, {@link JksKeyStore @JksKeyStore},
+ * {@link JksTrustStore @JksTrustStore}, {@link Ssl @Ssl} annotations may be used to
+ * provide additional configuration.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -33,6 +34,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersStartup;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -166,6 +168,8 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 
 		private volatile C container;
 
+		private volatile SslBundle sslBundle;
+
 		/**
 		 * Create a new {@link ContainerConnectionDetails} instance.
 		 * @param source the source {@link ContainerConnectionSource}
@@ -192,6 +196,33 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 				TestcontainersStartup.start(startable);
 			}
 			return this.container;
+		}
+
+		/**
+		 * Return the {@link SslBundle} to use with this connection or {@code null}.
+		 * @return the ssl bundle or {@code null}
+		 * @since 3.5.0
+		 */
+		protected SslBundle getSslBundle() {
+			if (this.source.getSslBundleSource() == null) {
+				return null;
+			}
+			SslBundle sslBundle = this.sslBundle;
+			if (sslBundle == null) {
+				sslBundle = this.source.getSslBundleSource().getSslBundle();
+				this.sslBundle = sslBundle;
+			}
+			return sslBundle;
+		}
+
+		/**
+		 * Whether the field or bean is annotated with the given annotation.
+		 * @param annotationType the annotation to check
+		 * @return whether the field or bean is annotated with the annotation
+		 * @since 3.5.0
+		 */
+		protected boolean hasAnnotation(Class<? extends Annotation> annotationType) {
+			return this.source.hasAnnotation(annotationType);
 		}
 
 		@Override
