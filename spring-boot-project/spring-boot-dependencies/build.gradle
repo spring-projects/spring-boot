@@ -1315,7 +1315,7 @@ bom {
 			javadoc("https://projectlombok.org/api")
 		}
 	}
-	library("MariaDB", "3.5.1") {
+	library("MariaDB", "3.5.2") {
 		group("org.mariadb.jdbc") {
 			modules = [
 				"mariadb-java-client"
