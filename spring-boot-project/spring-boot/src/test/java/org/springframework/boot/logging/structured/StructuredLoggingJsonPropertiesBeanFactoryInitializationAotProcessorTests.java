@@ -16,7 +16,11 @@
 
 package org.springframework.boot.logging.structured;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
@@ -26,6 +30,7 @@ import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
 import org.springframework.boot.json.JsonWriter.Members;
+import org.springframework.boot.logging.StackTracePrinter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
@@ -33,21 +38,20 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for
- * {@link StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcessor}.
+ * Tests for {@link StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor}.
  *
  * @author Dmytro Nosan
  */
-class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcessorTests {
+class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessorTests {
 
 	@Test
-	void structuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcessorIsRegistered() {
+	void structuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessorIsRegistered() {
 		assertThat(AotServices.factories().load(BeanFactoryInitializationAotProcessor.class))
-			.anyMatch(StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcessor.class::isInstance);
+			.anyMatch(StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor.class::isInstance);
 	}
 
 	@Test
-	void shouldRegisterStructuredLoggingJsonMembersCustomizerRuntimeHints() {
+	void shouldRegisterRuntimeHintsWhenCustomizerIsPresent() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.json.customizer", TestCustomizer.class.getName());
 
@@ -63,14 +67,40 @@ class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcesso
 	}
 
 	@Test
-	void shouldNotRegisterStructuredLoggingJsonMembersCustomizerRuntimeHintsWhenPropertiesAreNotSet() {
+	void shouldRegisterRuntimeHintsWhenStackTracePrinterIsPresent() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.structured.json.stacktrace.printer", TestStackTracePrinter.class.getName());
+
+		BeanFactoryInitializationAotContribution contribution = getContribution(environment);
+		assertThat(contribution).isNotNull();
+
+		RuntimeHints hints = getRuntimeHints(contribution);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(TestStackTracePrinter.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS))
+			.accepts(hints);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "logging-system", "standard" })
+	void shouldNotRegisterRuntimeHintsWhenStackTracePrinterIsNotCustomImplementation(String printer) {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("logging.structured.json.stacktrace.printer", printer);
+
+		BeanFactoryInitializationAotContribution contribution = getContribution(environment);
+		assertThat(contribution).isNull();
+	}
+
+	@Test
+	void shouldNotRegisterRuntimeHintsWhenPropertiesAreNotSet() {
 		MockEnvironment environment = new MockEnvironment();
 		BeanFactoryInitializationAotContribution contribution = getContribution(environment);
 		assertThat(contribution).isNull();
 	}
 
 	@Test
-	void shouldNotRegisterStructuredLoggingJsonMembersCustomizerRuntimeHintsWhenCustomizerIsNotSet() {
+	void shouldNotRegisterRuntimeHintsWhenCustomizerAndPrinterAreNotSet() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.json.exclude", "something");
 		BeanFactoryInitializationAotContribution contribution = getContribution(environment);
@@ -81,7 +111,7 @@ class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcesso
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			context.setEnvironment(environment);
 			context.refresh();
-			return new StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcessor()
+			return new StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor()
 				.processAheadOfTime(context.getBeanFactory());
 		}
 	}
@@ -96,6 +126,15 @@ class StructuredLoggingJsonMembersCustomizerBeanFactoryInitializationAotProcesso
 
 		@Override
 		public void customize(Members<String> members) {
+		}
+
+	}
+
+	static class TestStackTracePrinter implements StackTracePrinter {
+
+		@Override
+		public void printStackTrace(Throwable throwable, Appendable out) throws IOException {
+
 		}
 
 	}
