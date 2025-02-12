@@ -9,6 +9,13 @@ launch-templates:
       - name: Checkout
         uses: 'nrwl/nx-cloud-workflows/v3.6/workflow-steps/checkout/main.yaml'
 
+      - name: Setup Java 21
+        script: |
+          sudo apt update
+          sudo apt install -y openjdk-21-jdk
+          sudo update-alternatives --set java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+          java -version
+
       - name: Setup gradle
         script: ./gradlew wrapper
       - name: Setup Nx

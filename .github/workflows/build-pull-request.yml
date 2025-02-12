@@ -13,7 +13,7 @@ jobs:
       # Run this command as early as possible, before dependencies are installed
       # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
       # Uncomment this line to enable task distribution
-      - run: npx nx-cloud start-ci-run --distribute-on="5 linux-medium-jvm"
+      - run: npx nx-cloud start-ci-run --distribute-on="7 linux-medium-jvm"
       - name: Build
         id: build
         uses: ./.github/actions/build
