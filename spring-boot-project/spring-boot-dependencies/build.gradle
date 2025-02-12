@@ -1080,7 +1080,7 @@ bom {
 			releaseNotes("https://github.com/json-path/JsonPath/releases/tag/json-path-{version}")
 		}
 	}
-	library("Json-smart", "2.5.1") {
+	library("Json-smart", "2.5.2") {
 		group("net.minidev") {
 			modules = [
 				"json-smart"
