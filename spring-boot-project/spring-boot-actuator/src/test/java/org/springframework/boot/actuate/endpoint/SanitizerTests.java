@@ -94,6 +94,15 @@ class SanitizerTests {
 	}
 
 	@Test
+	void overridingDefaultSanitizingFunctionWithFiltered() {
+		Sanitizer sanitizer = new Sanitizer(List.of(SanitizingFunction.sanitizeValue().ifLikelySenstive()));
+		SanitizableData other = new SanitizableData(null, "other", "123456");
+		SanitizableData password = new SanitizableData(null, "password", "123456");
+		assertThat(sanitizer.sanitize(other, true)).isEqualTo("123456");
+		assertThat(sanitizer.sanitize(password, true)).isEqualTo(SanitizableData.SANITIZED_VALUE);
+	}
+
+	@Test
 	void whenValueSanitizedLaterSanitizingFunctionsShouldBeSkipped() {
 		final String sameKey = "custom";
 		List<SanitizingFunction> sanitizingFunctions = new ArrayList<>();

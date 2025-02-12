@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.Locale;
+
 import org.springframework.core.env.PropertySource;
 
 /**
@@ -35,6 +37,8 @@ public final class SanitizableData {
 	private final PropertySource<?> propertySource;
 
 	private final String key;
+
+	private String lowerCaseKey;
 
 	private final Object value;
 
@@ -65,6 +69,20 @@ public final class SanitizableData {
 	 */
 	public String getKey() {
 		return this.key;
+	}
+
+	/**
+	 * Return the key as a lowercase value.
+	 * @return the key as a lowercase value
+	 * @since 3.5.0
+	 */
+	public String getLowerCaseKey() {
+		String result = this.lowerCaseKey;
+		if (result == null && this.key != null) {
+			result = this.key.toLowerCase(Locale.getDefault());
+			this.lowerCaseKey = result;
+		}
+		return result;
 	}
 
 	/**

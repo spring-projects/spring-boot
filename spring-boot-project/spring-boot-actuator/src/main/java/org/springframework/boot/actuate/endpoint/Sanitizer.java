@@ -72,7 +72,7 @@ public class Sanitizer {
 			return SanitizableData.SANITIZED_VALUE;
 		}
 		for (SanitizingFunction sanitizingFunction : this.sanitizingFunctions) {
-			data = sanitizingFunction.apply(data);
+			data = sanitizingFunction.applyUnlessFiltered(data);
 			Object sanitizedValue = data.getValue();
 			if (!value.equals(sanitizedValue)) {
 				return sanitizedValue;
