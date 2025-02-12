@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public interface SanitizingFunction {
 	 * @see #sanitizeValue()
 	 */
 	default SanitizingFunction ifLikelySenstive() {
-		return ifLikelyCredential().ifLikelyUri().ifLikelySenstiveEnvironmentVariable().ifVcapServices();
+		return ifLikelyCredential().ifLikelyUri().ifLikelySenstiveProperty().ifVcapServices();
 	}
 
 	/**
@@ -113,7 +113,7 @@ public interface SanitizingFunction {
 
 	/**
 	 * Return a new function with a filter that <em>also</em> applies if the data is
-	 * likely to sensitive environment variable value. This method can help construct a
+	 * likely to contain a sensitive property value. This method can help construct a
 	 * useful sanitizing function, but may not catch all sensitive data so care should be
 	 * taken to test the results for your specific environment.
 	 * @return a new sanitizing function with an updated {@link #filter()}
@@ -121,7 +121,7 @@ public interface SanitizingFunction {
 	 * @see #filter()
 	 * @see #sanitizeValue()
 	 */
-	default SanitizingFunction ifLikelySenstiveEnvironmentVariable() {
+	default SanitizingFunction ifLikelySenstiveProperty() {
 		return ifKeyMatches("sun.java.command", "^spring[._]application[._]json$");
 	}
 
@@ -429,6 +429,20 @@ public interface SanitizingFunction {
 	 */
 	static SanitizingFunction sanitizeValue() {
 		return SanitizableData::withSanitizedValue;
+	}
+
+	/**
+	 * Helper method that can be used working with a sanitizingFunction as a lambda. For
+	 * example: <pre class="code">
+	 * SanitizingFunction.of((data) -> data.withValue("----")).ifKeyContains("password");
+	 * </pre>
+	 * @param sanitizingFunction the sanitizing function lambda
+	 * @return a {@link SanitizingFunction} for further method calls
+	 * @since 3.5.0
+	 */
+	static SanitizingFunction of(SanitizingFunction sanitizingFunction) {
+		Assert.notNull(sanitizingFunction, "'sanitizingFunction' must not be null");
+		return sanitizingFunction;
 	}
 
 }

@@ -60,7 +60,7 @@ class SanitizingFunctionTests {
 	void ifLikelySenstiveFiltersExpected() {
 		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySenstive();
 		assertThat(function).satisfies(this::likelyCredentialChecks, this::likelyUriChecks,
-				this::likelySenstiveEnvironmentVariableChecks, this::vcapServicesChecks);
+				this::likelySenstivePropertyChecks, this::vcapServicesChecks);
 	}
 
 	@Test
@@ -101,12 +101,12 @@ class SanitizingFunctionTests {
 	}
 
 	@Test
-	void ifLikelySenstiveEnvironmentVariableFiltersExpected() {
-		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySenstiveEnvironmentVariable();
-		assertThat(function).satisfies(this::likelySenstiveEnvironmentVariableChecks);
+	void ifLikelySenstivePropertyFiltersExpected() {
+		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySenstiveProperty();
+		assertThat(function).satisfies(this::likelySenstivePropertyChecks);
 	}
 
-	private void likelySenstiveEnvironmentVariableChecks(SanitizingFunction function) {
+	private void likelySenstivePropertyChecks(SanitizingFunction function) {
 		assertThatApplyingToKey(function, "sun.java.command").has(sanitizedValue());
 		assertThatApplyingToKey(function, "spring.application.json").has(sanitizedValue());
 		assertThatApplyingToKey(function, "SPRING_APPLICATION_JSON").has(sanitizedValue());
@@ -303,6 +303,13 @@ class SanitizingFunctionTests {
 		assertThatApplying(function, data("spring", "framework")).is(unsanitizedValue());
 		assertThatApplying(function, data("spring", "data")).is(unsanitizedValue());
 		assertThatApplying(function, data("spring", null)).is(unsanitizedValue());
+	}
+
+	@Test
+	void ofAllowsChainingFromLambda() {
+		SanitizingFunction function = SanitizingFunction.of((data) -> data.withValue("----")).ifKeyContains("password");
+		assertThat(function.applyUnlessFiltered(data("username", "spring")).getValue()).isEqualTo("spring");
+		assertThat(function.applyUnlessFiltered(data("password", "boot")).getValue()).isEqualTo("----");
 	}
 
 	private ObjectAssert<SanitizableData> assertThatApplyingToKey(SanitizingFunction function, String key) {
