@@ -70,12 +70,14 @@ class DataSourceHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWhenMultipleDataSourceBeansShouldCreateCompositeIndicator() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, DataSourceConfig.class)
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, DataSourceConfig.class,
+					NonStandardDataSourceConfig.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(CompositeHealthContributor.class);
 				CompositeHealthContributor contributor = context.getBean(CompositeHealthContributor.class);
 				String[] names = contributor.stream().map(NamedContributor::getName).toArray(String[]::new);
-				assertThat(names).containsExactlyInAnyOrder("dataSource", "testDataSource");
+				assertThat(names).containsExactlyInAnyOrder("dataSource", "standardDataSource", "nonDefaultDataSource");
 			});
 	}
 
@@ -217,11 +219,39 @@ class DataSourceHealthContributorAutoConfigurationTests {
 
 		@Bean
 		@ConfigurationProperties("spring.datasource.test")
-		DataSource testDataSource() {
+		DataSource standardDataSource() {
 			return DataSourceBuilder.create()
 				.type(org.apache.tomcat.jdbc.pool.DataSource.class)
 				.driverClassName("org.hsqldb.jdbc.JDBCDriver")
 				.url("jdbc:hsqldb:mem:test")
+				.username("sa")
+				.build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
+	static class NonStandardDataSourceConfig {
+
+		@Bean(defaultCandidate = false)
+		@ConfigurationProperties("spring.datasource.non-default")
+		DataSource nonDefaultDataSource() {
+			return DataSourceBuilder.create()
+				.type(org.apache.tomcat.jdbc.pool.DataSource.class)
+				.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+				.url("jdbc:hsqldb:mem:non-default")
+				.username("sa")
+				.build();
+		}
+
+		@Bean(autowireCandidate = false)
+		@ConfigurationProperties("spring.datasource.non-autowire")
+		DataSource nonAutowireDataSource() {
+			return DataSourceBuilder.create()
+				.type(org.apache.tomcat.jdbc.pool.DataSource.class)
+				.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+				.url("jdbc:hsqldb:mem:non-autowire")
 				.username("sa")
 				.build();
 		}

@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.util.Assert;
 
 /**
@@ -44,6 +46,18 @@ public abstract class AbstractCompositeHealthContributorConfiguration<C, I exten
 	 */
 	protected AbstractCompositeHealthContributorConfiguration(Function<B, I> indicatorFactory) {
 		this.indicatorFactory = indicatorFactory;
+	}
+
+	/**
+	 * Creates a composite contributor from the beans of the given {@code beanType}
+	 * retrieved from the given {@code beanFactory}.
+	 * @param beanFactory the bean factory from which the beans are retrieved
+	 * @param beanType the type of the beans that are retrieved
+	 * @return the contributor
+	 * @since 3.4.3
+	 */
+	protected final C createContributor(ConfigurableListableBeanFactory beanFactory, Class<B> beanType) {
+		return createContributor(SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory, beanType));
 	}
 
 	protected final C createContributor(Map<String, B> beans) {

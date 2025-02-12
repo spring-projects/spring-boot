@@ -28,6 +28,8 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.SimpleAutowireCandidateResolver;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.HealthContributor;
@@ -84,8 +86,10 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "dbHealthIndicator", "dbHealthContributor" })
-	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources,
+	public HealthContributor dbHealthContributor(ConfigurableListableBeanFactory beanFactory,
 			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
+		Map<String, DataSource> dataSources = SimpleAutowireCandidateResolver.resolveAutowireCandidates(beanFactory,
+				DataSource.class);
 		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
 			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
 				.stream()
