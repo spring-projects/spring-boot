@@ -87,8 +87,7 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 			Boolean includeCommonFrames, Boolean includeHashes) {
 
 		StackTracePrinter createPrinter() {
-			String name = (printer() != null) ? printer() : "";
-			name = name.toLowerCase(Locale.getDefault()).replace("-", "");
+			String name = getPrinter();
 			if ("loggingsystem".equals(name) || (name.isEmpty() && !hasAnyOtherProperty())) {
 				return null;
 			}
@@ -99,6 +98,18 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 			return (StackTracePrinter) new Instantiator<>(StackTracePrinter.class,
 					(parameters) -> parameters.add(StandardStackTracePrinter.class, standardPrinter))
 				.instantiate(printer());
+		}
+
+		boolean hasCustomPrinter() {
+			String name = getPrinter();
+			if (name.isEmpty()) {
+				return false;
+			}
+			return !("loggingsystem".equals(name) || "standard".equals(name));
+		}
+
+		private String getPrinter() {
+			return Objects.toString(printer(), "").toLowerCase(Locale.ROOT).replace("-", "");
 		}
 
 		private boolean hasAnyOtherProperty() {

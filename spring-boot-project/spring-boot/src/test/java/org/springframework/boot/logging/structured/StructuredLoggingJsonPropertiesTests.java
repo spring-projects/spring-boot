@@ -93,6 +93,10 @@ class StructuredLoggingJsonPropertiesTests {
 			.onConstructor(StructuredLoggingJsonProperties.class.getDeclaredConstructor(Set.class, Set.class, Map.class,
 					Map.class, StackTrace.class, Set.class))
 			.invoke()).accepts(hints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onConstructor(StackTrace.class.getDeclaredConstructor(String.class, Root.class, Integer.class,
+					Integer.class, Boolean.class, Boolean.class))
+			.invoke()).accepts(hints);
 	}
 
 	@Test
@@ -182,6 +186,30 @@ class StructuredLoggingJsonPropertiesTests {
 			String actual = TestException.withoutLineNumbers(printer.printStackTraceToString(exception));
 			assertThat(actual).isEqualTo("RuntimeExceptionexception!	at org.spr...");
 
+		}
+
+		@Test
+		void shouldReturnFalseWhenPrinterIsEmpty() {
+			StackTrace stackTrace = new StackTrace("", null, null, null, null, null);
+			assertThat(stackTrace.hasCustomPrinter()).isFalse();
+		}
+
+		@Test
+		void hasCustomPrinterShouldReturnFalseWhenPrinterHasLoggingSystem() {
+			StackTrace stackTrace = new StackTrace("loggingsystem", null, null, null, null, null);
+			assertThat(stackTrace.hasCustomPrinter()).isFalse();
+		}
+
+		@Test
+		void hasCustomPrinterShouldReturnFalseWhenPrinterHasStandard() {
+			StackTrace stackTrace = new StackTrace("standard", null, null, null, null, null);
+			assertThat(stackTrace.hasCustomPrinter()).isFalse();
+		}
+
+		@Test
+		void hasCustomPrinterShouldReturnTrueWhenPrinterHasCustom() {
+			StackTrace stackTrace = new StackTrace("custom-printer", null, null, null, null, null);
+			assertThat(stackTrace.hasCustomPrinter()).isTrue();
 		}
 
 	}
