@@ -309,7 +309,7 @@
     {
       "name": "logging.structured.json.stacktrace.printer",
       "type": "java.lang.String",
-      "description": "Name of the printer to use. Can be 'standard', 'logging-system', or the fully-qualified class name of a  StackTracePrinter. When not specified 'logging-system' or 'standard' will be used depening if other properties are set."
+      "description": "Name of the printer to use. Can be 'standard', 'logging-system', or the fully-qualified class name of a  StackTracePrinter. When not specified 'logging-system' or 'standard' will be used depending if other properties are set."
     },
     {
       "name": "logging.structured.json.stacktrace.root",

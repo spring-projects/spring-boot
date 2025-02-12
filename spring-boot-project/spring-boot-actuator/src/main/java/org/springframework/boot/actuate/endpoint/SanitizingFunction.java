@@ -79,8 +79,8 @@ public interface SanitizingFunction {
 	 * @see #filter()
 	 * @see #sanitizeValue()
 	 */
-	default SanitizingFunction ifLikelySenstive() {
-		return ifLikelyCredential().ifLikelyUri().ifLikelySenstiveProperty().ifVcapServices();
+	default SanitizingFunction ifLikelySensitive() {
+		return ifLikelyCredential().ifLikelyUri().ifLikelySensitiveProperty().ifVcapServices();
 	}
 
 	/**
@@ -121,7 +121,7 @@ public interface SanitizingFunction {
 	 * @see #filter()
 	 * @see #sanitizeValue()
 	 */
-	default SanitizingFunction ifLikelySenstiveProperty() {
+	default SanitizingFunction ifLikelySensitiveProperty() {
 		return ifKeyMatches("sun.java.command", "^spring[._]application[._]json$");
 	}
 

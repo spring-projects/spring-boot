@@ -57,8 +57,8 @@ class SanitizingFunctionTests {
 	}
 
 	@Test
-	void ifLikelySenstiveFiltersExpected() {
-		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySenstive();
+	void ifLikelySensitiveFiltersExpected() {
+		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySensitive();
 		assertThat(function).satisfies(this::likelyCredentialChecks, this::likelyUriChecks,
 				this::likelySenstivePropertyChecks, this::vcapServicesChecks);
 	}
@@ -101,8 +101,8 @@ class SanitizingFunctionTests {
 	}
 
 	@Test
-	void ifLikelySenstivePropertyFiltersExpected() {
-		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySenstiveProperty();
+	void ifLikelySensitivePropertyFiltersExpected() {
+		SanitizingFunction function = SanitizingFunction.sanitizeValue().ifLikelySensitiveProperty();
 		assertThat(function).satisfies(this::likelySenstivePropertyChecks);
 	}
 
