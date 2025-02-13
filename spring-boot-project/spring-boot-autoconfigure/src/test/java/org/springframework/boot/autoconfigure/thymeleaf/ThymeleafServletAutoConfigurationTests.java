@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.BuildOutput;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.context.annotation.Bean;
@@ -334,6 +335,13 @@ class ThymeleafServletAutoConfigurationTests {
 			SpringResourceTemplateResolver templateResolver = context.getBean(SpringResourceTemplateResolver.class);
 			assertThat(templateResolver.isCacheable()).isFalse();
 		});
+	}
+
+	@Test
+	@ClassPathExclusions("spring-webmvc-*.jar")
+	void missingAbstractCachingViewResolver() {
+		this.contextRunner
+			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean("thymeleafViewResolver"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
