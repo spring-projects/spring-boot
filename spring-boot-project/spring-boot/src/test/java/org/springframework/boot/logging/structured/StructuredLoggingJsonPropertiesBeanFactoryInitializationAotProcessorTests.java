@@ -67,7 +67,7 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessorTests 
 	}
 
 	@Test
-	void shouldRegisterRuntimeHintsWhenStackTracePrinterIsPresent() {
+	void shouldRegisterRuntimeHintsWhenCustomStackTracePrinterIsPresent() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.structured.json.stacktrace.printer", TestStackTracePrinter.class.getName());
 

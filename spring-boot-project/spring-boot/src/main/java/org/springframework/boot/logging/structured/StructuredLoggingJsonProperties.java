@@ -87,7 +87,7 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 			Boolean includeCommonFrames, Boolean includeHashes) {
 
 		StackTracePrinter createPrinter() {
-			String name = getPrinter();
+			String name = sanitizePrinter();
 			if ("loggingsystem".equals(name) || (name.isEmpty() && !hasAnyOtherProperty())) {
 				return null;
 			}
@@ -101,14 +101,14 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 		}
 
 		boolean hasCustomPrinter() {
-			String name = getPrinter();
+			String name = sanitizePrinter();
 			if (name.isEmpty()) {
 				return false;
 			}
 			return !("loggingsystem".equals(name) || "standard".equals(name));
 		}
 
-		private String getPrinter() {
+		private String sanitizePrinter() {
 			return Objects.toString(printer(), "").toLowerCase(Locale.ROOT).replace("-", "");
 		}
 

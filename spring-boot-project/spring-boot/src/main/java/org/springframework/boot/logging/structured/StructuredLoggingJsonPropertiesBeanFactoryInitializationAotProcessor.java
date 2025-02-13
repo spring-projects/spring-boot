@@ -32,7 +32,7 @@ import org.springframework.core.env.Environment;
 
 /**
  * {@link BeanFactoryInitializationAotProcessor} that registers {@link RuntimeHints} for
- * {@link StructuredLoggingJsonPropertiesJsonMembersCustomizer}.
+ * {@link StructuredLoggingJsonProperties}.
  *
  * @author Dmytro Nosan
  * @author Yanming Zhou
@@ -47,17 +47,34 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor
 	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
 		Environment environment = beanFactory.getBean(ENVIRONMENT_BEAN_NAME, Environment.class);
 		StructuredLoggingJsonProperties properties = StructuredLoggingJsonProperties.get(environment);
-		return (properties != null) ? AotContribution.get(properties) : null;
+		if (properties != null) {
+			Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers = properties.customizer();
+			String stackTracePrinter = getCustomStackTracePrinter(properties);
+			if (stackTracePrinter != null || !customizers.isEmpty()) {
+				return new AotContribution(beanFactory.getBeanClassLoader(), customizers, stackTracePrinter);
+			}
+		}
+		return null;
+	}
+
+	private static String getCustomStackTracePrinter(StructuredLoggingJsonProperties properties) {
+		return Optional.ofNullable(properties.stackTrace())
+			.filter(StackTrace::hasCustomPrinter)
+			.map(StackTrace::printer)
+			.orElse(null);
 	}
 
 	private static final class AotContribution implements BeanFactoryInitializationAotContribution {
+
+		private final ClassLoader classLoader;
 
 		private final Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers;
 
 		private final String stackTracePrinter;
 
-		private AotContribution(Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers,
-				String stackTracePrinter) {
+		private AotContribution(ClassLoader classLoader,
+				Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers, String stackTracePrinter) {
+			this.classLoader = classLoader;
 			this.customizers = customizers;
 			this.stackTracePrinter = stackTracePrinter;
 		}
@@ -69,25 +86,9 @@ class StructuredLoggingJsonPropertiesBeanFactoryInitializationAotProcessor
 			this.customizers.forEach((customizer) -> reflection.registerType(customizer,
 					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 			if (this.stackTracePrinter != null) {
-				reflection.registerTypeIfPresent(getClass().getClassLoader(), this.stackTracePrinter,
+				reflection.registerTypeIfPresent(this.classLoader, this.stackTracePrinter,
 						MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 			}
-		}
-
-		static AotContribution get(StructuredLoggingJsonProperties properties) {
-			Set<Class<? extends StructuredLoggingJsonMembersCustomizer<?>>> customizers = properties.customizer();
-			String stackTracePrinter = getStackTracePrinter(properties);
-			if (stackTracePrinter == null && customizers.isEmpty()) {
-				return null;
-			}
-			return new AotContribution(customizers, stackTracePrinter);
-		}
-
-		private static String getStackTracePrinter(StructuredLoggingJsonProperties properties) {
-			return Optional.ofNullable(properties.stackTrace())
-				.filter(StackTrace::hasCustomPrinter)
-				.map(StackTrace::printer)
-				.orElse(null);
 		}
 
 	}
