@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.embedded.test;
+package org.springframework.boot.testsupport.ssl;
 
 import java.security.Provider;
 
