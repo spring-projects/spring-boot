@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,22 +85,34 @@ public class ResourceBanner implements Banner {
 	 * @return a mutable list of property resolvers
 	 */
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
-		MutablePropertySources sources = new MutablePropertySources();
-		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
-			configurableEnvironment.getPropertySources().forEach(sources::addLast);
-		}
-		sources.addLast(getTitleSource(sourceClass));
-		sources.addLast(getAnsiSource());
-		sources.addLast(getVersionSource(sourceClass));
 		List<PropertyResolver> resolvers = new ArrayList<>();
-		resolvers.add(new PropertySourcesPropertyResolver(sources));
+		resolvers.add(new PropertySourcesPropertyResolver(createNullDefaultSources(environment, sourceClass)));
+		resolvers.add(new PropertySourcesPropertyResolver(createEmptyDefaultSources(sourceClass)));
 		return resolvers;
 	}
 
-	private MapPropertySource getTitleSource(Class<?> sourceClass) {
+	private MutablePropertySources createNullDefaultSources(Environment environment, Class<?> sourceClass) {
+		MutablePropertySources nullDefaultSources = new MutablePropertySources();
+		if (environment instanceof ConfigurableEnvironment configurableEnvironment) {
+			configurableEnvironment.getPropertySources().forEach(nullDefaultSources::addLast);
+		}
+		nullDefaultSources.addLast(getTitleSource(sourceClass, null));
+		nullDefaultSources.addLast(getAnsiSource());
+		nullDefaultSources.addLast(getVersionSource(sourceClass, null));
+		return nullDefaultSources;
+	}
+
+	private MutablePropertySources createEmptyDefaultSources(Class<?> sourceClass) {
+		MutablePropertySources emptyDefaultSources = new MutablePropertySources();
+		emptyDefaultSources.addLast(getTitleSource(sourceClass, ""));
+		emptyDefaultSources.addLast(getVersionSource(sourceClass, ""));
+		return emptyDefaultSources;
+	}
+
+	private MapPropertySource getTitleSource(Class<?> sourceClass, String defaultValue) {
 		String applicationTitle = getApplicationTitle(sourceClass);
 		Map<String, Object> titleMap = Collections.singletonMap("application.title",
-				(applicationTitle != null) ? applicationTitle : "");
+				(applicationTitle != null) ? applicationTitle : defaultValue);
 		return new MapPropertySource("title", titleMap);
 	}
 
@@ -119,18 +131,18 @@ public class ResourceBanner implements Banner {
 		return new AnsiPropertySource("ansi", true);
 	}
 
-	private MapPropertySource getVersionSource(Class<?> sourceClass) {
-		return new MapPropertySource("version", getVersionsMap(sourceClass));
+	private MapPropertySource getVersionSource(Class<?> sourceClass, String defaultValue) {
+		return new MapPropertySource("version", getVersionsMap(sourceClass, defaultValue));
 	}
 
-	private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
+	private Map<String, Object> getVersionsMap(Class<?> sourceClass, String defaultValue) {
 		String appVersion = getApplicationVersion(sourceClass);
 		String bootVersion = getBootVersion();
 		Map<String, Object> versions = new HashMap<>();
-		versions.put("application.version", getVersionString(appVersion, false));
-		versions.put("spring-boot.version", getVersionString(bootVersion, false));
-		versions.put("application.formatted-version", getVersionString(appVersion, true));
-		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true));
+		versions.put("application.version", getVersionString(appVersion, false, defaultValue));
+		versions.put("spring-boot.version", getVersionString(bootVersion, false, defaultValue));
+		versions.put("application.formatted-version", getVersionString(appVersion, true, defaultValue));
+		versions.put("spring-boot.formatted-version", getVersionString(bootVersion, true, defaultValue));
 		return versions;
 	}
 
@@ -143,9 +155,9 @@ public class ResourceBanner implements Banner {
 		return SpringBootVersion.getVersion();
 	}
 
-	private String getVersionString(String version, boolean format) {
+	private String getVersionString(String version, boolean format, String fallback) {
 		if (version == null) {
-			return "";
+			return fallback;
 		}
 		return format ? " (v" + version + ")" : version;
 	}
