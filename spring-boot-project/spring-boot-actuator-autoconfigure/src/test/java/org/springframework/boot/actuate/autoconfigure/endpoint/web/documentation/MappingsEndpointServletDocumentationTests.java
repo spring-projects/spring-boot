@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,9 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions;
+import org.springframework.web.servlet.function.ServerResponse;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -54,11 +57,13 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document;
 import static org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration;
+import static org.springframework.web.servlet.function.RequestPredicates.GET;
 
 /**
  * Tests for generating documentation describing {@link MappingsEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Xiong Tang
  */
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -130,6 +135,13 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 				fieldWithPath("*.[].details.handlerMethod.name").description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor")
 					.description("Descriptor of the method as specified in the Java Language Specification."));
+		List<FieldDescriptor> handlerFunction = List.of(
+				fieldWithPath("*.[].details.handlerFunction").optional()
+					.type(JsonFieldType.OBJECT)
+					.description("Details of the function, if any, that will handle requests to this mapping."),
+				fieldWithPath("*.[].details.handlerFunction.className").type(JsonFieldType.STRING)
+					.description("Fully qualified name of the class of the function."));
+		dispatcherServletFields.addAll(handlerFunction);
 		dispatcherServletFields.addAll(handlerMethod);
 		dispatcherServletFields.addAll(requestMappingConditions);
 		this.client.get()
@@ -190,6 +202,11 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 		@Bean
 		ExampleController exampleController() {
 			return new ExampleController();
+		}
+
+		@Bean
+		RouterFunction<ServerResponse> exampleRouter() {
+			return RouterFunctions.route(GET("/foo"), (request) -> ServerResponse.ok().build());
 		}
 
 	}

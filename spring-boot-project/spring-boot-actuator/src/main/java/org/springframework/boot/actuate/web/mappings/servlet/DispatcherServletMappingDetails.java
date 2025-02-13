@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,14 @@ import org.springframework.web.servlet.DispatcherServlet;
  * Details of a {@link DispatcherServlet} mapping.
  *
  * @author Andy Wilkinson
+ * @author Xiong Tang
  * @since 2.0.0
  */
 public class DispatcherServletMappingDetails {
 
 	private HandlerMethodDescription handlerMethod;
+
+	private HandlerFunctionDescription handlerFunction;
 
 	private RequestMappingConditionsDescription requestMappingConditions;
 
@@ -37,6 +40,14 @@ public class DispatcherServletMappingDetails {
 
 	void setHandlerMethod(HandlerMethodDescription handlerMethod) {
 		this.handlerMethod = handlerMethod;
+	}
+
+	public HandlerFunctionDescription getHandlerFunction() {
+		return this.handlerFunction;
+	}
+
+	void setHandlerFunction(HandlerFunctionDescription handlerFunction) {
+		this.handlerFunction = handlerFunction;
 	}
 
 	public RequestMappingConditionsDescription getRequestMappingConditions() {
