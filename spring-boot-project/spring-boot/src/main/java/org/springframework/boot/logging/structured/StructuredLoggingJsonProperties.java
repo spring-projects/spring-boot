@@ -19,6 +19,8 @@ package org.springframework.boot.logging.structured;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.Environment;
@@ -43,10 +45,12 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 			.orElse(null);
 	}
 
-	static class StructuredLoggingJsonPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+	static class StructuredLoggingJsonPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
-		StructuredLoggingJsonPropertiesRuntimeHints() {
-			super(StructuredLoggingJsonProperties.class);
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			BindableRuntimeHintsRegistrar.forTypes(StructuredLoggingJsonProperties.class)
+				.registerHints(hints, classLoader);
 		}
 
 	}
