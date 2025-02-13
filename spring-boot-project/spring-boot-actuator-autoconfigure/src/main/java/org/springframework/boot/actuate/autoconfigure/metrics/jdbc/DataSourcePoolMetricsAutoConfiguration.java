@@ -54,6 +54,7 @@ import org.springframework.util.StringUtils;
  * {@link DataSource datasources}.
  *
  * @author Stephane Nicoll
+ * @author Yanming Zhou
  * @since 2.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, DataSourceAutoConfiguration.class,
@@ -140,13 +141,13 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 			@Override
 			public void bindTo(MeterRegistry registry) {
-				for (DataSource dataSource : this.dataSources) {
+				this.dataSources.stream(ObjectProvider.UNFILTERED).forEach((dataSource) -> {
 					HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
 							HikariDataSource.class);
 					if (hikariDataSource != null) {
 						bindMetricsRegistryToHikariDataSource(hikariDataSource, registry);
 					}
-				}
+				});
 			}
 
 			private void bindMetricsRegistryToHikariDataSource(HikariDataSource hikari, MeterRegistry registry) {
