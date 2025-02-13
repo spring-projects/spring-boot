@@ -63,6 +63,7 @@ import static org.springframework.web.servlet.function.RequestPredicates.GET;
  * Tests for generating documentation describing {@link MappingsEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Xiong Tang
  */
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -136,10 +137,10 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 					.description("Descriptor of the method as specified in the Java Language Specification."));
 		List<FieldDescriptor> handlerFunction = List.of(
 				fieldWithPath("*.[].details.handlerFunction").optional()
-						.type(JsonFieldType.OBJECT)
-						.description("Details of the function, if any, that will handle requests to this mapping."),
+					.type(JsonFieldType.OBJECT)
+					.description("Details of the function, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerFunction.className").type(JsonFieldType.STRING)
-						.description("Fully qualified name of the class of the function."));
+					.description("Fully qualified name of the class of the function."));
 		dispatcherServletFields.addAll(handlerFunction);
 		dispatcherServletFields.addAll(handlerMethod);
 		dispatcherServletFields.addAll(requestMappingConditions);

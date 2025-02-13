@@ -60,6 +60,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Xiong Tang
  * @since 2.0.0
  */
 @ImportRuntimeHints(DispatcherServletsMappingDescriptionProviderRuntimeHints.class)

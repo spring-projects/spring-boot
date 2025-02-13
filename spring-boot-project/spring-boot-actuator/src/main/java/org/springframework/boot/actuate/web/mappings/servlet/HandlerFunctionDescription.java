@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.web.mappings.servlet;
 
-
 import org.springframework.web.servlet.function.HandlerFunction;
 
 /**

@@ -23,6 +23,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * Details of a {@link DispatcherServlet} mapping.
  *
  * @author Andy Wilkinson
+ * @author Xiong Tang
  * @since 2.0.0
  */
 public class DispatcherServletMappingDetails {
