@@ -366,7 +366,7 @@ bom {
 			javadoc("elasticsearch-rest-client-sniffer", version -> "https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-client-sniffer/%s".formatted(version), "org.elasticsearch.client.sniff")
 		}
 	}
-	library("Flyway", "11.3.1") {
+	library("Flyway", "11.3.2") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-commandline",
