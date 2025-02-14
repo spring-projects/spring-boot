@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -66,13 +67,17 @@ class AutoConfigurationSorter {
 		// Then sort by order
 		AutoConfigurationClasses classes = new AutoConfigurationClasses(this.metadataReaderFactory,
 				this.autoConfigurationMetadata, alphabeticallyOrderedClassNames);
-		List<String> orderedClassNames = new ArrayList<>(classNames);
-		Collections.sort(orderedClassNames);
-		orderedClassNames.sort((o1, o2) -> {
-			int i1 = classes.get(o1).getOrder();
-			int i2 = classes.get(o2).getOrder();
-			return Integer.compare(i1, i2);
-		});
+		List<String> orderedClassNames = classNames.stream()
+				// collect the changed className (e.g. for source style nested class name)
+				.map(classes::getAutoConfigurationClassName)
+				// sort by alphabetical order
+				.sorted()
+				// then by order
+				.sorted((o1, o2) -> {
+					int i1 = classes.get(o1).getOrder();
+					int i2 = classes.get(o2).getOrder();
+					return Integer.compare(i1, i2);
+				}).collect(Collectors.toList());
 		// Then respect @AutoConfigureBefore @AutoConfigureAfter
 		orderedClassNames = sortByAnnotation(classes, orderedClassNames);
 		return orderedClassNames;
@@ -135,6 +140,10 @@ class AutoConfigurationSorter {
 					boolean available = autoConfigurationClass.isAvailable();
 					if (required || available) {
 						this.classes.put(className, autoConfigurationClass);
+						// collect the changed className (e.g. for source style nested class name)
+						if (!className.equals(autoConfigurationClass.getClassName())) {
+							this.classes.put(autoConfigurationClass.getClassName(), autoConfigurationClass);
+						}
 					}
 					if (available) {
 						addToClasses(metadataReaderFactory, autoConfigurationMetadata,
@@ -150,10 +159,16 @@ class AutoConfigurationSorter {
 			return this.classes.get(className);
 		}
 
+		String getAutoConfigurationClassName(String className) {
+			AutoConfigurationClass autoConfigurationClass = this.classes.get(className);
+			return null == autoConfigurationClass ? className : autoConfigurationClass.getClassName();
+		}
+
 		Set<String> getClassesRequestedAfter(String className) {
 			Set<String> classesRequestedAfter = new LinkedHashSet<>(get(className).getAfter());
 			this.classes.forEach((name, autoConfigurationClass) -> {
-				if (autoConfigurationClass.getBefore().contains(className)) {
+				if (autoConfigurationClass.getCorrectedBeforeClassNames(this::getAutoConfigurationClassName)
+						.contains(className)) {
 					classesRequestedAfter.add(name);
 				}
 			});
@@ -164,7 +179,7 @@ class AutoConfigurationSorter {
 
 	private class AutoConfigurationClass {
 
-		private final String className;
+		private String className;
 
 		private final MetadataReaderFactory metadataReaderFactory;
 
@@ -176,11 +191,18 @@ class AutoConfigurationSorter {
 
 		private volatile Set<String> after;
 
+		private volatile Set<String> correctedBeforeClassNames;
+
 		AutoConfigurationClass(String className, MetadataReaderFactory metadataReaderFactory,
 				AutoConfigurationMetadata autoConfigurationMetadata) {
 			this.className = className;
 			this.metadataReaderFactory = metadataReaderFactory;
 			this.autoConfigurationMetadata = autoConfigurationMetadata;
+		}
+
+		public String getClassName() {
+			// should be called after getAnnotationMetadata method for correcting className
+			return this.className;
 		}
 
 		boolean isAvailable() {
@@ -227,6 +249,14 @@ class AutoConfigurationSorter {
 			return replaced;
 		}
 
+		Set<String> getCorrectedBeforeClassNames(UnaryOperator<String> correctionMapper) {
+			if (null == this.correctedBeforeClassNames) {
+				this.correctedBeforeClassNames = getBefore().stream().map(correctionMapper)
+						.collect(Collectors.toCollection(LinkedHashSet::new));
+			}
+			return this.correctedBeforeClassNames;
+		}
+
 		private int getOrder() {
 			if (wasProcessed()) {
 				return this.autoConfigurationMetadata.getInteger(this.className, "AutoConfigureOrder",
@@ -259,6 +289,8 @@ class AutoConfigurationSorter {
 				try {
 					MetadataReader metadataReader = this.metadataReaderFactory.getMetadataReader(this.className);
 					this.annotationMetadata = metadataReader.getAnnotationMetadata();
+					// correct the class name (e.g. for source style nested class name)
+					this.className = this.annotationMetadata.getClassName();
 				}
 				catch (IOException ex) {
 					throw new IllegalStateException("Unable to read meta-data for class " + this.className, ex);

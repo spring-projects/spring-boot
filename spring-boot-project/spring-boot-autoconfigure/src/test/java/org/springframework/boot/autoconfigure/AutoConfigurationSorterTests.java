@@ -233,6 +233,14 @@ class AutoConfigurationSorterTests {
 		assertThat(actual).containsExactly(oa1, oa2, oa3, oa4, oa);
 	}
 
+	@Test
+	void byAutoConfigureAfterWithNestedClassNameInSourceStyle() {
+		// For B, replace the last $ with .
+		String srcStyleB = B.substring(0, B.lastIndexOf('$')) + '.' + B.substring(B.lastIndexOf('$') + 1);
+		List<String> actual = getInPriorityOrder(A, srcStyleB, C);
+		assertThat(actual).containsExactly(C, B, A);
+	}
+
 	private List<String> getInPriorityOrder(String... classNames) {
 		return this.sorter.getInPriorityOrder(Arrays.asList(classNames));
 	}
