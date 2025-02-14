@@ -182,7 +182,7 @@ bom {
 			releaseNotes("https://github.com/ben-manes/caffeine/releases/tag/v{version}")
 		}
 	}
-	library("Cassandra Driver", "4.18.1") {
+	library("Cassandra Driver", "4.19.0") {
 		group("org.apache.cassandra") {
 			imports = [
 				"java-driver-bom"
