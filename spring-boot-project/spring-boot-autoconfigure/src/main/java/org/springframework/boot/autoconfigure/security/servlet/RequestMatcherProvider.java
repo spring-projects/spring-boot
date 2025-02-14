@@ -24,8 +24,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author Madhura Bhave
  * @since 2.0.5
- * @deprecated since 3.5.0 for removal in 3.8.0 in favor of
- * {@code org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider}
+ * @deprecated since 3.5.0 for removal in 3.7.0 in favor of
+ * {@code org.springframework.boot.actuate.autoconfigure.security.servlet.RequestMatcherProvider}
  */
 @Deprecated(since = "3.5.0", forRemoval = true)
 @FunctionalInterface
