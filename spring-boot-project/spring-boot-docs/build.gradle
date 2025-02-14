@@ -78,6 +78,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-testcontainers"))
 	implementation(project(path: ":spring-boot-project:spring-boot-devtools"))
 	implementation("ch.qos.logback:logback-classic")
+	implementation("com.redis:testcontainers-redis")
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-jakarta9")
 	implementation("io.micrometer:micrometer-tracing")
@@ -170,6 +171,7 @@ dependencies {
 	implementation("org.testcontainers:junit-jupiter")
 	implementation("org.testcontainers:neo4j")
 	implementation("org.testcontainers:mongodb")
+	implementation("org.testcontainers:elasticsearch")
 	implementation("org.junit.jupiter:junit-jupiter")
 	implementation("org.yaml:snakeyaml")
 

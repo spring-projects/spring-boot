@@ -137,6 +137,92 @@ The following service connections are currently supported:
 
 
 
+[[features.dev-services.docker-compose.ssl]]
+=== SSL support
+
+Some images come with SSL enabled out of the box, or maybe you want to enable SSL for the container to mirror your production setup.
+Spring Boot supports SSL configuration for supported service connections.
+Please note that you still have to enable SSL on the service which is running inside the container yourself, this feature only configures SSL on the client side in your application.
+
+SSL is supported for the following service connections:
+
+* Cassandra
+* Couchbase
+* Elasticsearch
+* Kafka
+* MongoDB
+* RabbitMQ
+* Redis
+
+To enable SSL support for a service, you can use https://docs.docker.com/reference/compose-file/services/#labels[service labels].
+
+For JKS based keystores and truststores, you can use the following container labels:
+
+* `org.springframework.boot.sslbundle.jks.key.alias`
+* `org.springframework.boot.sslbundle.jks.key.password`
+* `org.springframework.boot.sslbundle.jks.options.ciphers`
+* `org.springframework.boot.sslbundle.jks.options.enabled-protocols`
+* `org.springframework.boot.sslbundle.jks.protocol`
+
+* `org.springframework.boot.sslbundle.jks.keystore.type`
+* `org.springframework.boot.sslbundle.jks.keystore.provider`
+* `org.springframework.boot.sslbundle.jks.keystore.location`
+* `org.springframework.boot.sslbundle.jks.keystore.password`
+
+* `org.springframework.boot.sslbundle.jks.truststore.type`
+* `org.springframework.boot.sslbundle.jks.truststore.provider`
+* `org.springframework.boot.sslbundle.jks.truststore.location`
+* `org.springframework.boot.sslbundle.jks.truststore.password`
+
+These labels mirror the properties available for xref:reference:features/ssl.adoc#features.ssl.jks[SSL bundles].
+
+For PEM based keystores and truststores, you can use the following container labels:
+
+* `org.springframework.boot.sslbundle.pem.key.alias`
+* `org.springframework.boot.sslbundle.pem.key.password`
+* `org.springframework.boot.sslbundle.pem.options.ciphers`
+* `org.springframework.boot.sslbundle.pem.options.enabled-protocols`
+* `org.springframework.boot.sslbundle.pem.protocol`
+
+* `org.springframework.boot.sslbundle.pem.keystore.type`
+* `org.springframework.boot.sslbundle.pem.keystore.certificate`
+* `org.springframework.boot.sslbundle.pem.keystore.private-key`
+* `org.springframework.boot.sslbundle.pem.keystore.private-key-password`
+
+* `org.springframework.boot.sslbundle.pem.truststore.type`
+* `org.springframework.boot.sslbundle.pem.truststore.certificate`
+* `org.springframework.boot.sslbundle.pem.truststore.private-key`
+* `org.springframework.boot.sslbundle.pem.truststore.private-key-password`
+
+These labels mirror the properties available for xref:reference:features/ssl.adoc#features.ssl.pem[SSL bundles].
+
+The following example enables SSL for a redis container:
+
+[source,yaml,]
+----
+services:
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379'
+    secrets:
+      - ssl-ca
+      - ssl-key
+      - ssl-cert
+    command: 'redis-server --tls-port 6379 --port 0 --tls-cert-file /run/secrets/ssl-cert --tls-key-file /run/secrets/ssl-key --tls-ca-cert-file /run/secrets/ssl-ca'
+    labels:
+      - 'org.springframework.boot.sslbundle.pem.keystore.certificate=client.crt'
+      - 'org.springframework.boot.sslbundle.pem.keystore.private-key=client.key'
+      - 'org.springframework.boot.sslbundle.pem.truststore.certificate=ca.crt'
+secrets:
+  ssl-ca:
+    file: 'ca.crt'
+  ssl-key:
+    file: 'server.key'
+  ssl-cert:
+    file: 'server.crt'
+----
+
 [[features.dev-services.docker-compose.custom-images]]
 === Custom Images
 

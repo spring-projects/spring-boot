@@ -122,6 +122,36 @@ If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd
 
 
 
+[[testing.testcontainers.service-connections.ssl]]
+=== SSL with Service Connections
+
+You can use the javadoc:org.springframework.boot.testcontainers.service.connection.Ssl[format=annotation], javadoc:org.springframework.boot.testcontainers.service.connection.JksKeyStore[format=annotation], javadoc:org.springframework.boot.testcontainers.service.connection.JksTrustStore[format=annotation], javadoc:org.springframework.boot.testcontainers.service.connection.PemKeyStore[format=annotation] and javadoc:org.springframework.boot.testcontainers.service.connection.PemTrustStore[format=annotation] annotations on a supported container to enable SSL support for that service connection.
+Please note that you still have to enable SSL on the service which is running inside the Testcontainer yourself, the annotations only configure SSL on the client side in your application.
+
+include-code::MyRedisWithSslIntegrationTests[]
+
+The above code uses the javadoc:org.springframework.boot.testcontainers.service.connection.PemKeyStore[format=annotation] annotation to load the client certificate and key into the keystore and the and javadoc:org.springframework.boot.testcontainers.service.connection.PemTrustStore[format=annotation] annotation to load the CA certificate into the truststore.
+This will authenticate the client against the server, and the CA certificate in the truststore makes sure that the server certificate is valid and trusted.
+
+The `SecureRedisContainer` in this example is a custom subclass of `RedisContainer` which copies certificates to the correct places and invokes `redis-server` with commandline parameters enabling SSL.
+
+The SSL annotations are supported for the following service connections:
+
+* Cassandra
+* Couchbase
+* Elasticsearch
+* Kafka
+* MongoDB
+* RabbitMQ
+* Redis
+
+The `ElasticsearchContainer` additionally supports automatic detection of server side SSL.
+To use this feature, annotate the container with javadoc:org.springframework.boot.testcontainers.service.connection.Ssl[format=annotation], as seen in the following example, and Spring Boot takes care of the client side SSL configuration for you:
+
+include-code::MyElasticsearchWithSslIntegrationTests[]
+
+
+
 [[testing.testcontainers.dynamic-properties]]
 == Dynamic Properties
 
