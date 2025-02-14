@@ -1978,7 +1978,7 @@ bom {
 			releaseNotes("https://github.com/reactor/reactor/releases/tag/{version}")
 		}
 	}
-	library("REST Assured", "5.5.0") {
+	library("REST Assured", "5.5.1") {
 		group("io.rest-assured") {
 			imports = [
 				"rest-assured-bom"
