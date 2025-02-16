@@ -24,7 +24,7 @@ In this case the lifecycle of the container instance is managed by Testcontainer
 == Using via Spring managed beans
 
 The containers provided by Testcontainers can be managed by Spring Boot as beans.
-This method is often used in combination with javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
+This method of managing contains can be used in combination with javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation].
 
 To use Testcontainer contains as Spring beans we need to create a configuration class declaring the container as bean:
 
@@ -37,7 +37,7 @@ include-code::beandeclaration/SpringTest[]
 
 == Using via importing container declaration classes
 
-A common pattern with Testcontainers is to declare the Container instances as static fields in an interface
+A common pattern with Testcontainers is to declare the Container instances as static fields in an interface.
 For example the following interface `MyInterface` declares two containers, one named `mongo` of type MongoDB and another named `neo` of type Neo4j:
 
 include-code::importcontainers/MyInterface[]
@@ -47,10 +47,13 @@ All that is needed to do that is adding javadoc:org.springframework.boot.testcon
 
 include-code::importcontainers/MyConfiguration[]
 
+TIP: Using interfaces for declaring contains helps with reuse.
+When containers are declared in an interface, this can be reused in your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes and in test classes.
+
 == Lifecycle of managed containers
 
 If you have used the annotations and extensions provided by Testcontainers, then the lifecycle of container instances is managed by the Testcontainers.
-Please refer to the official documentation for the information about lifecycle of the containers, when managed by the Testcontainers.
+Please refer to the {url-testcontainres-java-doc}[Testcontainers official documentation] for the information about lifecycle of the containers, when managed by the Testcontainers.
 
 When the containers are managed by Spring as beans, then the lifecycle is clearly defined by Spring.
 The container beans are created and started before the beans of other types are created.
@@ -58,10 +61,18 @@ This process ensures that any beans, which rely on functionality provided by the
 
 The test containers can be started multiple times.
 Like any other beans the test containers are created and started once per application context managed by the TestContext Framework.
-For details about how TestContext framework manages the underlying application contexts and beans therein, please refer to the official Spring documentation.
+For details about how TestContext framework manages the underlying application contexts and beans therein, please refer to the {url-spring-framework-docs}[official Spring documentation].
 
 The container beans are stopped after the destruction of beans of other types.
 This ensures that any beans depending on the functionalities provided by the containers are cleaned up first.
+
+TIP: When your application beans rely on functionality of containers, prefer configuring the containers as Spring beans.
+When containers are managed as Spring beans, then Spring framework ensures that upon start the container beans are started before any beans relying on them.
+On shutdown the application beans depending on container functionalities are cleaned up first, and only then are the containers shut down.
+
+NOTE: Having containers managed by Testcontainers instead of as Spring beans provides no guarantee of order in which beans and containers will shutdown.
+It can happen that containers are shutdown before the beans relying on container functionality are cleaned up.
+This can lead to exceptions being thrown by client beans due to loss of connection for example.
 
 The containers are stopped as part of the application shutdown process, managed by the TestContext framework.
 When the application context gets shutdown, the containers are shutdown as well.
