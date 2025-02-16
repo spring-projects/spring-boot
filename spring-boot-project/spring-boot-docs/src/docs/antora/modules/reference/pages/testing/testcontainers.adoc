@@ -7,6 +7,9 @@ Testcontainers is especially useful for writing integration tests that talk to a
 
 In following sections we will describe some of the methods you can use to integrate Testcontainers with your tests.
 
+
+
+[[testing.testcontainers.via-junit-extension]]
 == Using via @Testcontainers JUnit5 extension
 
 The Testcontainers provides JUnit5 extensions, which can be used to manage containers in your tests.
@@ -21,6 +24,8 @@ In most cases, you will need to configure the application to connect to the serv
 
 In this case the lifecycle of the container instance is managed by Testcontainers, as described in official documentation.
 
+
+[[testing.testcontainers.via-spring-beans]]
 == Using via Spring managed beans
 
 The containers provided by Testcontainers can be managed by Spring Boot as beans.
@@ -35,6 +40,7 @@ then we can start the container by importing the configuration class in the test
 include-code::beandeclaration/SpringTest[]
 
 
+[[testing.testcontainers.via-declaration-classes]]
 == Using via importing container declaration classes
 
 A common pattern with Testcontainers is to declare the Container instances as static fields in an interface.
@@ -50,6 +56,8 @@ include-code::importcontainers/MyConfiguration[]
 TIP: Using interfaces for declaring contains helps with reuse.
 When containers are declared in an interface, this can be reused in your javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes and in test classes.
 
+
+[[test.testcontainers.container-lifecycle]]
 == Lifecycle of managed containers
 
 If you have used the annotations and extensions provided by Testcontainers, then the lifecycle of container instances is managed by the Testcontainers.
@@ -79,6 +87,8 @@ When the application context gets shutdown, the containers are shutdown as well.
 This usually happens after all tests using that specific cached application context have finished executing, but may happen earlier depending on the caching behavior configured in TestContext Framework.
 
 It is important to note that a single test container instance can be, and often is, retained across execution of tests from multiple test classes.
+
+
 
 [[testing.testcontainers.service-connections]]
 == Service Connections
