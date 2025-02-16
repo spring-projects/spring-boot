@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.cassandra.core.CassandraTemplate;
 import org.springframework.data.cassandra.core.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
+import org.springframework.data.cassandra.core.cql.CqlTemplate;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.data.domain.ManagedTypes;
@@ -63,6 +64,12 @@ class CassandraDataAutoConfigurationTests {
 	void templateExists() {
 		load(CassandraMockConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(CassandraTemplate.class)).hasSize(1);
+	}
+
+	@Test
+	void cqlTemplateExists() {
+		load(CassandraMockConfiguration.class);
+		assertThat(this.context.getBeanNamesForType(CqlTemplate.class)).hasSize(1);
 	}
 
 	@Test
