@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.ldap;
 
+import javax.naming.Name;
+
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +31,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.core.support.SimpleDirContextAuthenticationStrategy;
+import org.springframework.ldap.odm.core.ObjectDirectoryMapper;
 import org.springframework.ldap.pool2.factory.PoolConfig;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
 import org.springframework.ldap.support.LdapUtils;
@@ -191,6 +196,36 @@ class LdapAutoConfigurationTests {
 					.isNotSameAs(context.getBean("customDirContextAuthenticationStrategy"))
 					.isNotSameAs(context.getBean("anotherCustomDirContextAuthenticationStrategy"))
 					.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
+			});
+	}
+
+	@Test
+	void objectDirectoryMapperBeanAutoConfigured() {
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
+			assertThat(context).hasSingleBean(ObjectDirectoryMapper.class);
+			assertThat(context).hasSingleBean(LdapTemplate.class);
+			ObjectDirectoryMapper objectDirectoryMapper = context.getBean(ObjectDirectoryMapper.class);
+			LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
+			ApplicationConversionService conversionService = assertThat(objectDirectoryMapper)
+				.extracting("converterManager")
+				.extracting("conversionService")
+				.asInstanceOf(InstanceOfAssertFactories.type(ApplicationConversionService.class))
+				.actual();
+			assertThat(conversionService.canConvert(String.class, Name.class)).isTrue();
+			assertThat(conversionService.canConvert(Name.class, String.class)).isTrue();
+			assertThat(ldapTemplate).extracting("objectDirectoryMapper").isSameAs(objectDirectoryMapper);
+		});
+	}
+
+	@Test
+	void customObjectDirectoryMapperBeanCanBeUsed() {
+		ObjectDirectoryMapper objectDirectoryMapper = mock(ObjectDirectoryMapper.class);
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
+			.withBean(ObjectDirectoryMapper.class, () -> objectDirectoryMapper)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(LdapTemplate.class);
+				LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
+				assertThat(ldapTemplate).extracting("objectDirectoryMapper").isSameAs(objectDirectoryMapper);
 			});
 	}
 
