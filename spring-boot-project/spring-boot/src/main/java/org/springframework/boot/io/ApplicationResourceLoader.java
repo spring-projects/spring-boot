@@ -216,10 +216,7 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 		private Resource resolveFile(Resource resource) {
 			try {
 				File file = resource.getFile();
-				if (file.isAbsolute()) {
-					return resource;
-				}
-				return new ApplicationResource(new File(this.workingDirectory.toFile(), file.getPath()).getPath());
+				return new ApplicationResource(this.workingDirectory.resolve(file.toPath()));
 			}
 			catch (FileNotFoundException ex) {
 				return resource;
@@ -251,6 +248,10 @@ public class ApplicationResourceLoader extends DefaultResourceLoader {
 	private static final class ApplicationResource extends FileSystemResource implements ContextResource {
 
 		ApplicationResource(String path) {
+			super(path);
+		}
+
+		ApplicationResource(Path path) {
 			super(path);
 		}
 
