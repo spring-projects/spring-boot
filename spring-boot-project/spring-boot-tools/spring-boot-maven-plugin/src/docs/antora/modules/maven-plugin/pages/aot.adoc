@@ -1,6 +1,104 @@
-[[aot]]
-= Ahead-of-Time Processing
+= 提前处理（AOT）
+:encoding: utf-8
+:numbered:
 
+[[aot]]
+== 提前处理（AOT）
+
+Spring AOT 是一个在构建时分析应用程序并生成其优化版本的过程。这是在原生镜像中运行 Spring `ApplicationContext` 的必需步骤。
+
+NOTE: 有关 Spring Boot 中 GraalVM 原生镜像支持的概述，请查看 xref:reference:packaging/native-image/index.adoc[参考文档]。
+
+Spring Boot Maven 插件提供了可用于对应用程序和测试代码执行 AOT 处理的目标。
+
+[[aot.processing-applications]]
+== 处理应用程序
+
+要配置应用程序以使用此功能，请为 `process-aot` 目标添加一个执行，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$aot/pom.xml[tags=aot]
+----
+
+由于 `BeanFactory` 在构建时已完全准备好，条件也会被评估。这与常规 Spring Boot 应用程序在运行时的行为有重要区别。例如，如果你想选择加入或退出某些功能，则需要配置构建时使用的环境以实现这一点。为此，`process-aot` 目标与 xref:run.adoc[run 目标] 共享了许多属性。
+
+[[aot.processing-applications.using-the-native-profile]]
+=== 使用 Native 配置文件
+
+如果你使用 `spring-boot-starter-parent` 作为项目的 `parent`，则可以使用 `native` 配置文件来简化构建原生镜像所需的步骤。
+
+`native` 配置文件配置了以下内容：
+
+* 在项目上应用 Spring Boot Maven 插件时执行 `process-aot`。
+* 适当的设置，以便 xref:build-image.adoc[build-image] 生成原生镜像。
+* {url-native-build-tools-docs-maven-plugin}[Native Build Tools Maven Plugin] 的合理默认值，特别是：
+** 确保插件使用原始类路径，而不是主 jar 文件，因为它不理解我们重新打包的 jar 格式。
+** 验证是否有合适的 GraalVM 版本可用。
+** 下载第三方可达性元数据。
+
+[WARNING]
+====
+使用原始类路径意味着原生镜像不知道生成的 `MANIFEST.MF`。如果你需要在原生镜像中读取清单的内容，例如获取应用程序的实现版本，请配置 `classesDirectory` 选项以使用常规 jar。
+====
+
+要受益于 `native` 配置文件，表示应用程序的模块应定义两个插件，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$aot-native/pom.xml[tags=aot-native]
+----
+
+单个项目可以通过命令行使用 xref:how-to:native-image/developing-your-first-application.adoc#howto.native-image.developing-your-first-application.buildpacks.maven[Cloud Native Buildpacks] 或 xref:how-to:native-image/developing-your-first-application.adoc#howto.native-image.developing-your-first-application.native-build-tools.maven[Native Image Build Tools] 触发原生镜像的生成。
+
+要在多模块项目中使用 `native` 配置文件，你可以创建 `native` 配置文件的定制版本，以便调用你首选的技术。
+
+要将 Cloud Native Buildpacks 绑定到 `package` 阶段，请将以下内容添加到多模块项目的根 POM 中：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$aot-native-profile-buildpacks/pom.xml[tags=profile]
+----
+
+以下示例对 Native Build Tools 执行相同的操作：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$aot-native-profile-nbt/pom.xml[tags=profile]
+----
+
+完成上述操作后，你可以构建多模块项目并在相关子模块中生成原生镜像，如下例所示：
+
+[source,shell]
+----
+$ mvn package -Pnative
+----
+
+NOTE: “相关”子模块是表示 Spring Boot 应用程序的模块。此类模块必须如上所述定义 Native Build Tools 和 Spring Boot 插件。
+
+include::partial$goals/process-aot.adoc[leveloffset=+1]
+
+[[aot.processing-tests]]
+== 处理测试
+
+AOT 引擎可以应用于使用 Spring 测试上下文框架的 JUnit 5 测试。AOT 引擎会处理合适的测试，以生成 `ApplicationContextInitializer` 代码。
+
+要配置应用程序以使用此功能，请为 `process-test-aot` 目标添加一个执行，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$aot-test/pom.xml[tags=aot]
+----
+
+TIP: 如果你使用 `spring-boot-starter-parent`，则在启用 `nativeTest` 配置文件时会自动配置此执行。
+
+与应用程序 AOT 处理一样，`BeanFactory` 在构建时已完全准备好。
+
+include::partial$goals/process-test-aot.adoc[leveloffset=+1]
+
+'''
+[[aot]]
+== Ahead-of-Time Processing
 Spring AOT is a process that analyzes your application at build-time and generate an optimized version of it.
 It is a mandatory step to run a Spring `ApplicationContext` in a native image.
 
@@ -8,11 +106,8 @@ NOTE: For an overview of GraalVM Native Images support in Spring Boot, check the
 
 The Spring Boot Maven plugin offers goals that can be used to perform AOT processing on both application and test code.
 
-
-
 [[aot.processing-applications]]
 == Processing Applications
-
 To configure your application to use this feature, add an execution for the `process-aot` goal, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -25,11 +120,8 @@ This has an important difference compared to what a regular Spring Boot applicat
 For instance, if you want to opt-in or opt-out for certain features, you need to configure the environment used at build time to do so.
 The `process-aot` goal shares a number of properties with the xref:run.adoc[run goal] for that reason.
 
-
-
 [[aot.processing-applications.using-the-native-profile]]
 === Using the Native Profile
-
 If you use `spring-boot-starter-parent` as the `parent` of your project, a `native` profile can be used to streamline the steps required to build a native image.
 
 The `native` profile configures the following:
@@ -84,11 +176,8 @@ Such module must define the Native Build Tools and Spring Boot plugins as descri
 
 include::partial$goals/process-aot.adoc[leveloffset=+1]
 
-
-
 [[aot.processing-tests]]
 == Processing Tests
-
 The AOT engine can be applied to JUnit 5 tests that use Spring's Test Context Framework.
 Suitable tests are processed by the AOT engine in order to generate `ApplicationContextInitializer` code.
 

@@ -1,0 +1,21 @@
+|===
+| 名称 | 描述
+
+| [[spring-boot-starter-jetty]]`spring-boot-starter-jetty`
+| 使用 Jetty 作为嵌入式 Servlet 容器的启动器。xref:#spring-boot-starter-tomcat[`spring-boot-starter-tomcat`] 的替代方案
+
+| [[spring-boot-starter-log4j2]]`spring-boot-starter-log4j2`
+| 使用 Log4j2 进行日志记录的启动器。xref:#spring-boot-starter-logging[`spring-boot-starter-logging`] 的替代方案
+
+| [[spring-boot-starter-logging]]`spring-boot-starter-logging`
+| 使用 Logback 进行日志记录的启动器。默认的日志记录启动器
+
+| [[spring-boot-starter-reactor-netty]]`spring-boot-starter-reactor-netty`
+| 使用 Reactor Netty 作为嵌入式响应式 HTTP 服务器的启动器。
+
+| [[spring-boot-starter-tomcat]]`spring-boot-starter-tomcat`
+| 使用 Tomcat 作为嵌入式 Servlet 容器的启动器。xref:#spring-boot-starter-web[`spring-boot-starter-web`] 使用的默认 Servlet 容器启动器
+
+| [[spring-boot-starter-undertow]]`spring-boot-starter-undertow`
+| 使用 Undertow 作为嵌入式 Servlet 容器的启动器。xref:#spring-boot-starter-tomcat[`spring-boot-starter-tomcat`] 的替代方案
+|===

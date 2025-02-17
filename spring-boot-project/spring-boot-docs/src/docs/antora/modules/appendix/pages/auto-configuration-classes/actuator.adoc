@@ -1,5 +1,17 @@
-[[appendix.auto-configuration-classes.actuator]]
 = spring-boot-actuator-autoconfigure
+:encoding: utf-8
+:numbered:
+
+[[appendix.auto-configuration-classes.actuator]]
+== spring-boot-actuator-autoconfigure
+
+以下自动配置类来自 `spring-boot-actuator-autoconfigure` 模块：
+
+include::partial$/auto-configuration-classes/spring-boot-actuator-autoconfigure.adoc[]
+
+'''
+[[appendix.auto-configuration-classes.actuator]]
+== spring-boot-actuator-autoconfigure
 
 The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
 

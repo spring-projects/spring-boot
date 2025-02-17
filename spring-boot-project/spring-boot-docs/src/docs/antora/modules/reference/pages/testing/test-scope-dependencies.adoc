@@ -1,6 +1,25 @@
-[[testing.test-scope-dependencies]]
-= Test Scope Dependencies
+= 测试范围的依赖项
+:encoding: utf-8
+:numbered:
 
+[[testing.test-scope-dependencies]]
+== 测试范围的依赖项
+`spring-boot-starter-test` starter（在 `test` 范围内）包含以下提供的库：
+
+* https://junit.org/junit5/[JUnit 5]：Java 应用程序单元测试的事实标准。
+* {url-spring-framework-docs}/testing/integration.html[Spring Test] 和 Spring Boot Test：为 Spring Boot 应用程序提供实用工具和集成测试支持。
+* https://assertj.github.io/doc/[AssertJ]：一个流畅的断言库。
+* https://github.com/hamcrest/JavaHamcrest[Hamcrest]：一个匹配器对象库（也称为约束或谓词）。
+* https://site.mockito.org/[Mockito]：一个 Java 模拟框架。
+* https://github.com/skyscreamer/JSONassert[JSONassert]：一个用于 JSON 的断言库。
+* https://github.com/jayway/JsonPath[JsonPath]：JSON 的 XPath。
+* https://github.com/awaitility/awaitility[Awaitility]：一个用于测试异步系统的库。
+
+我们通常发现这些常用库在编写测试时非常有用。如果这些库不符合你的需求，你可以添加自己的额外测试依赖项。
+
+'''
+[[testing.test-scope-dependencies]]
+== Test Scope Dependencies
 The `spring-boot-starter-test` starter (in the `test` `scope`) contains the following provided libraries:
 
 * https://junit.org/junit5/[JUnit 5]: The de-facto standard for unit testing Java applications.

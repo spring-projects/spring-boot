@@ -1,6 +1,37 @@
-[[actuator.process-monitoring]]
 = Process Monitoring
+:encoding: utf-8
+:numbered:
 
+[[actuator.process-monitoring]]
+== 进程监控
+在 `spring-boot` 模块中，你可以找到两个类来创建通常对进程监控有用的文件：
+
+* javadoc:org.springframework.boot.context.ApplicationPidFileWriter[] 创建一个包含应用程序 PID 的文件（默认情况下，在应用程序目录中，文件名为 `application.pid`）。
+* javadoc:org.springframework.boot.web.context.WebServerPortFileWriter[] 创建一个（或多个）包含运行中的 Web 服务器端口的文件（默认情况下，在应用程序目录中，文件名为 `application.port`）。
+
+默认情况下，这些写入器未激活，但你可以启用它们：
+
+* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.configuration[]
+* xref:actuator/process-monitoring.adoc#actuator.process-monitoring.programmatically[]
+
+[[actuator.process-monitoring.configuration]]
+== 扩展配置
+在 `META-INF/spring.factories` 文件中，你可以激活写入 PID 文件的监听器（或多个监听器）：
+
+[source]
+----
+org.springframework.context.ApplicationListener=\
+org.springframework.boot.context.ApplicationPidFileWriter,\
+org.springframework.boot.web.context.WebServerPortFileWriter
+----
+
+[[actuator.process-monitoring.programmatically]]
+== 以编程方式启用进程监控
+你也可以通过调用 `SpringApplication.addListeners(...)` 方法并传递适当的 javadoc:java.io.Writer[] 对象来激活监听器。此方法还允许你在 javadoc:java.io.Writer[] 构造函数中自定义文件名和路径。
+
+'''
+[[actuator.process-monitoring]]
+== Process Monitoring
 In the `spring-boot` module, you can find two classes to create files that are often useful for process monitoring:
 
 * javadoc:org.springframework.boot.context.ApplicationPidFileWriter[] creates a file that contains the application PID (by default, in the application directory with a file name of `application.pid`).
@@ -11,11 +42,8 @@ By default, these writers are not activated, but you can enable them:
 * xref:actuator/process-monitoring.adoc#actuator.process-monitoring.configuration[]
 * xref:actuator/process-monitoring.adoc#actuator.process-monitoring.programmatically[]
 
-
-
 [[actuator.process-monitoring.configuration]]
 == Extending Configuration
-
 In the `META-INF/spring.factories` file, you can activate the listener (or listeners) that writes a PID file:
 
 [source]
@@ -25,10 +53,7 @@ org.springframework.boot.context.ApplicationPidFileWriter,\
 org.springframework.boot.web.context.WebServerPortFileWriter
 ----
 
-
-
 [[actuator.process-monitoring.programmatically]]
 == Programmatically Enabling Process Monitoring
-
 You can also activate a listener by invoking the `SpringApplication.addListeners(...)` method and passing the appropriate javadoc:java.io.Writer[] object.
 This method also lets you customize the file name and path in the javadoc:java.io.Writer[] constructor.

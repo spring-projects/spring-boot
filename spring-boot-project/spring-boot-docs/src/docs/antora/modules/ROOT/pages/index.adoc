@@ -1,5 +1,26 @@
-:navtitle: Overview
 = Spring Boot
+:encoding: utf-8
+:numbered:
+
+:navtitle: 概述
+== Spring Boot
+Spring Boot 帮助你创建可以运行的、独立的、生产级别的基于 Spring 的应用程序。
+我们对 Spring 平台和第三方库持有一种约定优于配置的观点，因此你可以以最小的麻烦快速上手。
+大多数 Spring Boot 应用程序只需要很少的 Spring 配置。
+
+你可以使用 Spring Boot 创建 Java 应用程序，这些应用程序可以通过 `java -jar` 启动，或者以更传统的 war 包部署方式运行。
+
+我们的主要目标是：
+
+* 为所有 Spring 开发提供一个显著更快且广泛适用的入门体验。
+* 默认提供开箱即用的约定配置，但在需求开始偏离默认值时快速退出，避免干扰。
+* 提供一系列适用于大型项目类别的非功能性特性（例如嵌入式服务器、安全性、指标、健康检查和外部化配置）。
+* 绝对不需要代码生成（除非目标为原生镜像），也不需要 XML 配置。
+
+'''
+
+:navtitle: Overview
+== Spring Boot
 
 Spring Boot helps you to create stand-alone, production-grade Spring-based applications that you can run.
 We take an opinionated view of the Spring platform and third-party libraries, so that you can get started with minimum fuss.

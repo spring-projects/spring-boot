@@ -1,5 +1,57 @@
+= 升级 Spring Boot
+:encoding: utf-8
+:numbered:
+
 [[upgrading]]
-= Upgrading Spring Boot
+== 升级 Spring Boot
+有关如何从早期版本的 Spring Boot 升级的说明，请参阅项目的 https://github.com/spring-projects/spring-boot/wiki[wiki]。
+在 https://github.com/spring-projects/spring-boot/wiki#release-notes[发布说明] 部分中查找你要升级到的版本。
+
+升级说明始终是发布说明中的第一项。
+如果你落后于多个版本，请确保还查看了你跳过的版本的发布说明。
+
+[[upgrading.from-1x]]
+== 从 1.x 升级
+
+如果你是从 Spring Boot 的 `1.x` 版本升级，请查看项目 wiki 上的 https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide[迁移指南]，其中提供了升级到 Spring Boot 2.x 的详细说明。
+还可以查看 https://github.com/spring-projects/spring-boot/wiki[发布说明]，了解每个版本的“新功能和亮点”。
+
+[[upgrading.from-2x]]
+== 从 2.x 升级
+
+如果你是从 Spring Boot 的 `2.x` 版本升级，请查看项目 wiki 上的 https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide[迁移指南]，其中提供了详细的升级说明。
+还可以查看 https://github.com/spring-projects/spring-boot/wiki[发布说明]，了解每个版本的“新功能和亮点”。
+
+[[upgrading.to-feature]]
+== 升级到新特性版本
+
+在升级到新特性版本时，某些属性可能已被重命名或删除。
+Spring Boot 提供了一种方法来分析你的应用程序环境，并在启动时打印诊断信息，同时还可以在运行时临时迁移属性。
+要启用此功能，请将以下依赖项添加到你的项目中：
+
+[source,xml]
+----
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-properties-migrator</artifactId>
+	<scope>runtime</scope>
+</dependency>
+----
+
+WARNING: 添加到环境中的属性（例如使用 https://docs.spring.io/spring-framework/docs/6.2.x/javadoc-api/org/springframework/context/annotation/PropertySource.html[@PropertySource] 时）将不会被考虑。
+
+NOTE: 完成迁移后，请确保从项目的依赖项中删除此模块。
+
+[[upgrading.cli]]
+== 升级 Spring Boot CLI
+
+要升级现有的 CLI 安装，请使用适当的包管理器命令（例如 `brew upgrade`）。
+如果你是手动安装的 CLI，请按照 xref:installing.adoc#getting-started.installing.cli.manual-installation[标准说明] 操作，并记得更新 `PATH` 环境变量以删除任何旧版本的引用。
+
+'''
+
+[[upgrading]]
+== Upgrading Spring Boot
 
 Instructions for how to upgrade from earlier versions of Spring Boot are provided on the project {url-github-wiki}[wiki].
 Follow the links in the {url-github-wiki}#release-notes[release notes] section to find the version that you want to upgrade to.

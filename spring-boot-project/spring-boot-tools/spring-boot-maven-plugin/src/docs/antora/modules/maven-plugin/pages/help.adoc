@@ -1,5 +1,16 @@
+= 帮助信息
+:encoding: utf-8
+:numbered:
+
 [[help]]
-= Help Information
+== 帮助信息
+`help` 目标是一个标准目标，用于显示插件的功能信息。
+
+include::partial$goals/help.adoc[leveloffset=+1]
+
+'''
+[[help]]
+== Help Information
 The `help` goal is a standard goal that  displays information on the capabilities of the plugin.
 
 include::partial$goals/help.adoc[leveloffset=+1]

@@ -1,6 +1,27 @@
-[[io.validation]]
-= Validation
+= 验证
+:encoding: utf-8
+:numbered:
 
+[[io.validation]]
+== 验证
+只要类路径上存在 JSR-303 实现（例如 Hibernate Validator），Bean Validation 1.1 支持的方法验证功能就会自动启用。
+这使得可以在 bean 方法的参数和/或返回值上使用 `jakarta.validation` 约束注解进行标注。
+带有此类注解方法的目标类需要在类型级别上使用 javadoc:org.springframework.validation.annotation.Validated[format=annotation] 注解进行标注，以便搜索其方法中的内联约束注解。
+
+例如，以下服务触发了对第一个参数的验证，确保其大小在 8 到 10 之间：
+
+include-code::MyBean[]
+
+在解析约束消息中的 `+{parameters}+` 时，会使用应用程序的 javadoc:org.springframework.context.MessageSource[]。
+这允许你使用 xref:features/internationalization.adoc[应用程序的 `messages.properties` 文件] 来处理 Bean Validation 消息。
+一旦参数被解析，消息插值将使用 Bean Validation 的默认插值器完成。
+
+要自定义用于构建 javadoc:jakarta.validation.ValidatorFactory[] 的 javadoc:jakarta.validation.Configuration[]，可以定义一个 javadoc:org.springframework.boot.autoconfigure.validation.ValidationConfigurationCustomizer[] bean。
+当定义了多个自定义器 bean 时，它们会根据其 javadoc:org.springframework.core.annotation.Order[format=annotation] 注解或 javadoc:org.springframework.core.Ordered[] 实现按顺序调用。
+
+'''
+[[io.validation]]
+== Validation
 The method validation feature supported by Bean Validation 1.1 is automatically enabled as long as a JSR-303 implementation (such as Hibernate validator) is on the classpath.
 This lets bean methods be annotated with `jakarta.validation` constraints on their parameters and/or on their return value.
 Target classes with such annotated methods need to be annotated with the javadoc:org.springframework.validation.annotation.Validated[format=annotation] annotation at the type level for their methods to be searched for inline constraint annotations.

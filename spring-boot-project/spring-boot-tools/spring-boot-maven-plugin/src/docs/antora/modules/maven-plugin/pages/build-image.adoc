@@ -1,6 +1,499 @@
-[[build-image]]
 = Packaging OCI Images
+:encoding: utf-8
+:numbered:
 
+[[build-image]]
+== 打包 OCI 镜像
+
+该插件可以使用 https://buildpacks.io/[Cloud Native Buildpacks] (CNB) 从 jar 或 war 文件创建 https://github.com/opencontainers/image-spec[OCI 镜像]。可以通过命令行使用 `build-image` 目标构建镜像。这确保在创建镜像之前运行了打包生命周期。
+
+NOTE: 出于安全原因，镜像以非 root 用户身份构建和运行。有关更多详细信息，请参阅 {url-buildpacks-docs}/reference/spec/platform-api/#users[CNB 规范]。
+
+最简单的方法是直接在项目上调用 `mvn spring-boot:build-image`。可以自动化在调用 `package` 阶段时创建镜像，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/pom.xml[tags=packaging-oci-image]
+----
+
+NOTE: 将目标绑定到 `package` 生命周期时，请使用 `build-image-no-fork`。此目标类似于 `build-image`，但不会分叉生命周期以确保 `package` 已运行。在本节的其余部分中，`build-image` 用于指代 `build-image` 或 `build-image-no-fork` 目标。
+
+TIP: 虽然构建包从 xref:packaging.adoc[可执行归档文件] 运行，但不需要先执行 `repackage` 目标，因为如果需要，可执行归档文件会自动创建。当 `build-image` 重新打包应用程序时，它会应用与 `repackage` 目标相同的设置，即可以使用排除选项之一排除依赖项。默认情况下，`spring-boot-devtools` 和 `spring-boot-docker-compose` 模块会自动排除（你可以使用 `excludeDevtools` 和 `excludeDockerCompose` 属性来控制此行为）。
+
+[[build-image.docker-daemon]]
+== Docker 守护进程
+
+`build-image` 目标需要访问 Docker 守护进程。该目标将检查本地 Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[配置文件] 以确定当前的 https://docs.docker.com/engine/context/working-with-contexts/[上下文]，并使用上下文连接信息与 Docker 守护进程通信。如果无法确定当前上下文或上下文没有连接信息，则目标将使用默认的本地连接。这适用于所有支持平台上的 https://docs.docker.com/install/[Docker Engine]，无需配置。
+
+可以设置环境变量来配置 `build-image` 目标以使用替代的本地或远程连接。下表显示了环境变量及其值：
+
+|===
+| 环境变量 | 描述
+
+| DOCKER_CONFIG
+| 用于确定当前上下文的 Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[配置文件] 的位置（默认为 `$HOME/.docker`）
+
+| DOCKER_CONTEXT
+| 应从 Docker CLI 配置文件中检索主机信息的 https://docs.docker.com/engine/context/working-with-contexts/[上下文] 名称（覆盖 `DOCKER_HOST`）
+
+| DOCKER_HOST
+| 包含 Docker 守护进程的主机和端口的 URL - 例如 `tcp://192.168.99.100:2376`
+
+| DOCKER_TLS_VERIFY
+| 设置为 `1` 时启用安全的 HTTPS 协议（可选）
+
+| DOCKER_CERT_PATH
+| HTTPS 的证书和密钥文件的路径（如果 `DOCKER_TLS_VERIFY=1` 则为必需，否则忽略）
+|===
+
+还可以使用插件配置中的 `docker` 参数提供 Docker 守护进程连接信息。下表总结了可用的参数：
+
+|===
+| 参数 | 描述
+
+| `context`
+| 应从 Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[配置文件] 中检索主机信息的 https://docs.docker.com/engine/context/working-with-contexts/[上下文] 名称
+
+| `host`
+| 包含 Docker 守护进程的主机和端口的 URL - 例如 `tcp://192.168.99.100:2376`
+
+| `tlsVerify`
+| 设置为 `true` 时启用安全的 HTTPS 协议（可选）
+
+| `certPath`
+| HTTPS 的证书和密钥文件的路径（如果 `tlsVerify` 为 `true` 则为必需，否则忽略）
+
+| `bindHostToBuilder`
+| 当为 `true` 时，`host` 属性的值将提供给为 CNB 构建器创建的容器（可选）
+|===
+
+有关更多详细信息，请参阅 xref:build-image.adoc#build-image.examples.docker[示例]。
+
+[[build-image.docker-registry]]
+== Docker 仓库
+
+如果 `builder` 或 `runImage` 参数指定的 Docker 镜像存储在需要身份验证的私有 Docker 镜像仓库中，则可以使用 `docker.builderRegistry` 参数提供身份验证凭据。
+
+如果生成的 Docker 镜像要发布到 Docker 镜像仓库，则可以使用 `docker.publishRegistry` 参数提供身份验证凭据。
+
+参数用于用户身份验证或身份令牌身份验证。请查阅用于存储镜像的 Docker 仓库的文档，以获取有关支持的身份验证方法的更多信息。
+
+下表总结了 `docker.builderRegistry` 和 `docker.publishRegistry` 的可用参数：
+
+|===
+| 参数 | 描述
+
+| `username`
+| Docker 镜像仓库用户的用户名。用户身份验证必需。
+
+| `password`
+| Docker 镜像仓库用户的密码。用户身份验证必需。
+
+| `url`
+| Docker 镜像仓库的地址。用户身份验证可选。
+
+| `email`
+| Docker 镜像仓库用户的电子邮件地址。用户身份验证可选。
+
+| `token`
+| Docker 镜像仓库用户的身份令牌。令牌身份验证必需。
+|===
+
+有关更多详细信息，请参阅 xref:build-image.adoc#build-image.examples.docker[示例]。
+
+[[build-image.customization]]
+== 镜像定制
+
+插件调用 {url-buildpacks-docs}/concepts/components/builder/[构建器] 来协调镜像的生成。构建器包括多个 {url-buildpacks-docs}/concepts/components/buildpack[构建包]，可以检查应用程序以影响生成的镜像。默认情况下，插件选择构建器镜像。生成的镜像的名称从项目属性中推断。
+
+`image` 参数允许配置构建器及其在项目上的操作方式。下表总结了可用参数及其默认值：
+
+[cols="1,4,1"]
+|===
+| 参数 / (用户属性) | 描述 | 默认值
+
+| `builder` +
+(`spring-boot.build-image.builder`)
+| 要使用的构建器镜像的名称。
+| `paketobuildpacks/builder-jammy-java-tiny:latest`
+
+| `trustBuilder` +
+(`spring-boot.build-image.trustBuilder`)
+| 是否将构建器视为 https://buildpacks.io/docs/for-platform-operators/how-to/integrate-ci/pack/concepts/trusted_builders/#what-is-a-trusted-builder[受信任的]。
+| 如果构建器是 `paketobuildpacks/builder-jammy-java-tiny`、`paketobuildpacks/builder-noble-java-tiny`、`paketobuildpacks/builder-jammy-tiny`、`paketobuildpacks/builder-jammy-base`、`paketobuildpacks/builder-jammy-full`、`paketobuildpacks/builder-jammy-buildpackless-tiny`、`paketobuildpacks/builder-jammy-buildpackless-base`、`paketobuildpacks/builder-jammy-buildpackless-full`、`gcr.io/buildpacks/builder`、`heroku/builder` 之一，则为 `true`；否则为 `false`。
+
+| `imagePlatform` +
+(`spring-boot.build-image.imagePlatform`)
+a|任何构建器、运行和构建包镜像的平台（操作系统和架构）。
+必须采用 `OS[/architecture[/variant]]` 的形式，例如 `linux/amd64`、`linux/arm64` 或 `linux/arm/v5`。
+请参阅所使用的构建器的文档以确定可用的镜像操作系统和架构选项。
+| 无默认值，表示应使用主机的平台。
+
+| `runImage` +
+(`spring-boot.build-image.runImage`)
+| 要使用的运行镜像的名称。
+| 无默认值，表示应使用构建器元数据中指定的运行镜像。
+
+| `name` +
+(`spring-boot.build-image.imageName`)
+| javadoc:org.springframework.boot.buildpack.platform.docker.type.ImageName#of-java.lang.String-[生成的镜像的名称]。
+| `docker.io/library/` +
+`${project.artifactId}:${project.version}`
+
+| `pullPolicy` +
+(`spring-boot.build-image.pullPolicy`)
+| javadoc:org.springframework.boot.buildpack.platform.build.PullPolicy[策略]，用于确定何时从仓库拉取构建器和运行镜像。
+可接受的值为 `ALWAYS`、`NEVER` 和 `IF_NOT_PRESENT`。
+| `ALWAYS`
+
+| `env`
+| 应传递给构建器的环境变量。
+|
+
+| `buildpacks`
+a|构建器在构建镜像时应使用的构建包。
+仅使用指定的构建包，覆盖构建器中包含的默认构建包。
+构建包引用必须采用以下形式之一：
+
+* 构建器中的构建包 - `[urn:cnb:builder:]<构建包 ID>[@<版本>]`
+* 文件系统上目录中的构建包 - `[file://]<路径>`
+* 文件系统上的 gzip 压缩 tar (.tgz) 文件中的构建包 - `[file://]<路径>/<文件名>`
+* OCI 镜像中的构建包 - `[docker://]<主机>/<仓库>[:<标签>][@<摘要>]`
+| 无，表示构建器应使用其中包含的构建包。
+
+| `bindings`
+a|https://docs.docker.com/storage/bind-mounts/[卷绑定挂载]，在构建镜像时应挂载到构建器容器。
+绑定将未经解析和验证地传递给 Docker 以创建构建器容器。
+绑定必须采用以下形式之一：
+
+* `<主机源路径>:<容器目标路径>[:<选项>]`
+* `<主机卷名>:<容器目标路径>[:<选项>]`
+
+其中 `<选项>` 可以包含：
+
+* `ro` 以只读方式挂载卷到容器
+* `rw` 以读写方式挂载卷到容器
+* `volume-opt=key=value` 以指定由选项名称及其值组成的键值对
+|
+
+| `network` + (`spring-boot.build-image.network`)
+| https://docs.docker.com/network/#network-drivers[网络驱动程序]，构建器容器将配置为使用该驱动程序。
+提供的值将在创建构建器容器时未经验证地传递给 Docker。
+|
+
+| `cleanCache` + (`spring-boot.build-image.cleanCache`)
+| 是否在构建之前清理缓存。
+| `false`
+
+| `verboseLogging`
+| 启用构建器操作的详细日志记录。
+| `false`
+
+| `publish` + (`spring-boot.build-image.publish`)
+| 是否将生成的镜像发布到 Docker 仓库。
+| `false`
+
+| `tags`
+| 应用于生成镜像的一个或多个附加标签。
+提供给 `tags` 选项的值应为 *完整* 的镜像引用。
+有关更多详细信息，请参阅 xref:build-image.adoc#build-image.customization.tags[标签部分]。
+|
+
+| `buildWorkspace`
+| 构建器和构建包在镜像构建期间用于存储文件的临时工作区。
+该值可以是命名卷或绑定挂载位置。
+| Docker 守护进程中的命名卷，其名称从镜像名称派生。
+
+| `buildCache`
+| 包含构建包创建的层并由镜像构建过程使用的缓存。
+该值可以是命名卷或绑定挂载位置。
+| Docker 守护进程中的命名卷，其名称从镜像名称派生。
+
+| `launchCache`
+| 包含构建包创建的层并由镜像启动过程使用的缓存。
+该值可以是命名卷或绑定挂载位置。
+| Docker 守护进程中的命名卷，其名称从镜像名称派生。
+
+| `createdDate` +
+(`spring-boot.build-image.createdDate`)
+| 用于设置生成镜像元数据中 `Created` 字段的日期。
+该值必须是 ISO 8601 即时格式的字符串，或 `now` 以使用当前日期和时间。
+| 启用 https://buildpacks.io/docs/features/reproducibility/[构建可重现性] 的固定日期。
+
+
+| `applicationDirectory` +
+(`spring-boot.build-image.applicationDirectory`)
+| 应用程序内容将上传到构建器镜像中的目录路径。
+应用程序内容在生成的镜像中也位于此位置。
+| `/workspace`
+
+| `securityOptions`
+| https://docs.docker.com/engine/reference/run/#security-configuration[安全选项]，将应用于构建器容器，作为字符串值数组提供
+| 在 Linux 和 macOS 上为 `["label=disable"]`，在 Windows 上为 `[]`
+
+|===
+
+NOTE: 插件使用编译器的插件配置或 `maven.compiler.target` 属性检测项目的目标 Java 兼容性。当使用默认的 Paketo 构建器和构建包时，插件指示构建包安装相同的 Java 版本。你可以覆盖此行为，如 xref:build-image.adoc#build-image.examples.builder-configuration[构建器配置] 示例所示。
+
+有关更多详细信息，请参阅 xref:build-image.adoc#build-image.examples[示例]。
+
+[[build-image.customization.tags]]
+=== 标签格式
+
+提供给 `tags` 选项的值应为 *完整* 的镜像引用。接受的格式为 `[domainHost:port/][path/]name[:tag][@digest]`。
+
+如果缺少域，则默认为 `docker.io`。如果缺少路径，则默认为 `library`。如果缺少标签，则默认为 `latest`。
+
+一些示例：
+
+* `my-image` 导致镜像引用 `docker.io/library/my-image:latest`
+* `my-repository/my-image` 导致 `docker.io/my-repository/my-image:latest`
+* `example.com/my-repository/my-image:1.0.0` 将按原样使用
+
+include::partial$goals/build-image.adoc[leveloffset=+1]
+include::partial$goals/build-image-no-fork.adoc[leveloffset=+1]
+
+[[build-image.examples]]
+== 示例
+
+[[build-image.examples.custom-image-builder]]
+=== 自定义镜像构建器
+
+如果需要自定义用于创建镜像的构建器或用于启动构建镜像的运行镜像，请按如下方式配置插件：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/custom-image-builder-pom.xml[tags=custom-image-builder]
+----
+
+此配置将使用名为 `mine/java-cnb-builder` 且标签为 `latest` 的构建器镜像，以及名为 `mine/java-cnb-run` 且标签为 `latest` 的运行镜像。
+
+构建器和运行镜像也可以在命令行上指定，如下例所示：
+
+[source,shell]
+----
+$ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder -Dspring-boot.build-image.runImage=mine/java-cnb-run
+----
+
+[[build-image.examples.builder-configuration]]
+=== 构建器配置
+
+如果构建器使用环境变量公开配置选项，则可以使用 `env` 属性设置这些选项。
+
+以下是 {url-paketo-docs-java-buildpack}/#configuring-the-jvm-version[配置 JVM 版本] 的示例，该版本由 Paketo Java 构建包在构建时使用：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/build-image-example-builder-configuration-pom.xml[tags=build-image-example-builder-configuration]
+----
+
+如果 Docker 守护进程与构建包下载工件的网络位置之间存在网络代理，则需要配置构建器以使用代理。使用 Paketo 构建器时，可以通过设置 `HTTPS_PROXY` 和/或 `HTTP_PROXY` 环境变量来实现，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/paketo-pom.xml[tags=paketo]
+----
+
+[[build-image.examples.runtime-jvm-configuration]]
+=== 运行时 JVM 配置
+
+Paketo Java 构建包 {url-paketo-docs-java-buildpack}/#runtime-jvm-configuration[通过设置 `JAVA_TOOL_OPTIONS` 环境变量配置 JVM 运行时环境]。构建包提供的 `JAVA_TOOL_OPTIONS` 值可以修改以自定义在容器中启动应用程序镜像时的 JVM 运行时行为。
+
+应存储在镜像中并应用于每次部署的环境变量修改可以按照 {url-paketo-docs}/buildpacks/configuration/#environment-variables[Paketo 文档] 中的描述进行设置，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=runtime-jvm-configuration]
+----
+
+[[build-image.examples.custom-image-name]]
+=== 自定义镜像名称
+
+默认情况下，镜像名称从项目的 `artifactId` 和 `version` 推断，类似于 `docker.io/library/${project.artifactId}:${project.version}`。你可以控制名称，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/custom-image-name-pom.xml[tags=custom-image-name]
+----
+
+NOTE: 此配置未提供显式标签，因此使用 `latest`。也可以指定标签，使用 `${project.version}`、构建中可用的任何属性或硬编码版本。
+
+镜像名称也可以在命令行上指定，如下例所示：
+
+[source,shell]
+----
+$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=example.com/library/my-app:v1
+----
+
+[[build-image.examples.buildpacks]]
+=== 构建包
+
+默认情况下，构建器将使用构建器镜像中包含的构建包并按预定义顺序应用它们。可以提供替代的构建包集以应用未包含在构建器中的构建包，或更改包含的构建包的顺序。当提供一个或多个构建包时，仅应用指定的构建包。
+
+以下示例指示构建器使用打包在 `.tgz` 文件中的自定义构建包，然后使用构建器中的构建包。
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/buildpacks-pom.xml[tags=buildpacks]
+----
+
+构建包可以以下列形式之一指定。
+
+位于 CNB 构建器中的构建包（如果构建器中只有一个与 `buildpack-id` 匹配的构建包，则可以省略版本）：
+
+* `urn:cnb:builder:buildpack-id`
+* `urn:cnb:builder:buildpack-id@0.0.1`
+* `buildpack-id`
+* `buildpack-id@0.0.1`
+
+包含构建包内容的目录路径（Windows 上不支持）：
+
+* `\file:///path/to/buildpack/`
+* `/path/to/buildpack/`
+
+包含构建包内容的 gzip 压缩 tar 文件路径：
+
+* `\file:///path/to/buildpack.tgz`
+* `/path/to/buildpack.tgz`
+
+包含 https://buildpacks.io/docs/buildpack-author-guide/package-a-buildpack/[打包构建包] 的 OCI 镜像：
+
+* `docker://example/buildpack`
+* `docker:///example/buildpack:latest`
+* `docker:///example/buildpack@sha256:45b23dee08...`
+* `example/buildpack`
+* `example/buildpack:latest`
+* `example/buildpack@sha256:45b23dee08...`
+
+[[build-image.examples.publish]]
+=== 镜像发布
+
+可以通过启用 `publish` 选项将生成的镜像发布到 Docker 仓库。
+
+如果 Docker 仓库需要身份验证，则可以使用 `docker.publishRegistry` 参数配置凭据。如果 Docker 仓库不需要身份验证，则可以省略 `docker.publishRegistry` 配置。
+
+NOTE: 镜像将发布到的仓库由镜像名称的仓库部分确定（在这些示例中为 `docker.example.com`）。如果配置了 `docker.publishRegistry` 凭据并包含 `url` 参数，则此值将传递给仓库，但不用于确定发布仓库的位置。
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-pom.xml[tags=docker]
+----
+
+`publish` 选项也可以在命令行上指定，如下例所示：
+
+[source,shell]
+----
+$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
+----
+
+在命令行上使用 `publish` 选项进行身份验证时，可以使用属性提供凭据，如下例所示：
+
+[source,shell]
+----
+$ mvn spring-boot:build-image \
+      -Ddocker.publishRegistry.username=user \
+      -Ddocker.publishRegistry.password=secret \
+      -Ddocker.publishRegistry.url=docker.example.com \
+      -Dspring-boot.build-image.publish=true \
+      -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1
+----
+
+并在 XML 配置中引用属性：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
+----
+
+[[build-image.examples.caches]]
+=== 构建器缓存和工作区配置
+
+CNB 构建器缓存用于构建和启动镜像的层。默认情况下，这些缓存作为 Docker 守护进程中的命名卷存储，其名称从目标镜像的完整名称派生。如果镜像名称频繁更改，例如当项目版本用作镜像名称中的标签时，缓存可能会频繁失效。
+
+可以配置缓存卷以使用替代名称，以便更好地控制缓存生命周期，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/caches-pom.xml[tags=caches]
+----
+
+构建器和构建包在镜像构建期间需要存储临时文件的位置。默认情况下，此临时构建工作区存储在命名卷中。
+
+缓存和构建工作区可以配置为使用绑定挂载而不是命名卷，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/bind-caches-pom.xml[tags=caches]
+----
+
+[[build-image.examples.docker]]
+=== Docker 配置
+
+[[build-image.examples.docker.minikube]]
+==== minikube 的 Docker 配置
+
+插件可以与 https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[minikube 提供的 Docker 守护进程] 通信，而不是默认的本地连接。
+
+在 Linux 和 macOS 上，可以在启动 minikube 后使用命令 `eval $(minikube docker-env)` 设置环境变量。
+
+插件还可以通过提供类似于以下示例的连接详细信息来配置为使用 minikube 守护进程：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-minikube-pom.xml[tags=docker-minikube]
+----
+
+[[build-image.examples.docker.podman]]
+==== podman 的 Docker 配置
+
+插件可以与 https://podman.io/[podman 容器引擎] 通信。
+
+插件可以通过提供类似于以下示例的连接详细信息来配置为使用 podman 本地连接：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-podman-pom.xml[tags=docker-podman]
+----
+
+TIP: 安装 `colima` CLI 后，可以使用命令 `podman info --format='{{.Host.RemoteSocket.Path}}'` 获取此示例中显示的 `docker.host` 配置属性的值。
+
+[[build-image.examples.docker.colima]]
+==== Colima 的 Docker 配置
+
+插件可以与 https://github.com/abiosoft/colima[Colima] 提供的 Docker 守护进程通信。可以使用以下命令设置 `DOCKER_HOST` 环境变量：
+
+[source,shell,subs="verbatim,attributes"]
+----
+$ export DOCKER_HOST=$(docker context inspect colima -f '{{.Endpoints.docker.Host}}')
+----
+
+插件还可以通过提供类似于以下示例的连接详细信息来配置为使用 Colima 守护进程：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-colima-pom.xml[tags=docker-colima]
+----
+
+[[build-image.examples.docker.auth]]
+==== 身份验证的 Docker 配置
+
+如果构建器或运行镜像存储在支持用户身份验证的私有 Docker 仓库中，则可以使用 `docker.builderRegistry` 参数提供身份验证详细信息，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-registry-authentication-pom.xml[tags=docker-registry-authentication]
+----
+
+如果构建器或运行镜像存储在支持令牌身份验证的私有 Docker 仓库中，则可以使用 `docker.builderRegistry` 参数提供令牌值，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging-oci-image/docker-token-authentication-pom.xml[tags=docker-token-authentication]
+----
+
+'''
+[[build-image]]
+== Packaging OCI Images
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from a jar or war file using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
 Images can be built on the command-line using the `build-image` goal.
 This makes sure that the package lifecycle has run before the image is created.
@@ -24,11 +517,8 @@ TIP: While the buildpack runs from an xref:packaging.adoc[executable archive], i
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, that is dependencies can be excluded using one of the exclude options.
 The `spring-boot-devtools` and `spring-boot-docker-compose` modules are automatically excluded by default (you can control this using the `excludeDevtools` and `excludeDockerCompose` properties).
 
-
-
 [[build-image.docker-daemon]]
 == Docker Daemon
-
 The `build-image` goal requires access to a Docker daemon.
 The goal will inspect local Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[configuration files] to determine the current https://docs.docker.com/engine/context/working-with-contexts/[context] and use the context connection information to communicate with a Docker daemon.
 If the current context can not be determined or the context does not have connection information, then the goal will use a default local connection.
@@ -80,11 +570,8 @@ The following table summarizes the available parameters:
 
 For more details, see also xref:build-image.adoc#build-image.examples.docker[examples].
 
-
-
 [[build-image.docker-registry]]
 == Docker Registry
-
 If the Docker images specified by the `builder` or `runImage` parameters are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.builderRegistry` parameters.
 
 If the generated Docker image is to be published to a Docker image registry, the authentication credentials can be provided using `docker.publishRegistry` parameters.
@@ -115,11 +602,8 @@ The following table summarizes the available parameters for `docker.builderRegis
 
 For more details, see also xref:build-image.adoc#build-image.examples.docker[examples].
 
-
-
 [[build-image.customization]]
 == Image Customizations
-
 The plugin invokes a {url-buildpacks-docs}/concepts/components/builder/[builder] to orchestrate the generation of an image.
 The builder includes multiple {url-buildpacks-docs}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
 By default, the plugin chooses a builder image.
@@ -259,11 +743,8 @@ You can override this behaviour as shown in the xref:build-image.adoc#build-imag
 
 For more details, see also xref:build-image.adoc#build-image.examples[examples].
 
-
-
 [[build-image.customization.tags]]
 === Tags Format
-
 The values provided to the `tags` option should be *full* image references.
 The accepted format is `[domainHost:port/][path/]name[:tag][@digest]`.
 
@@ -280,16 +761,11 @@ Some examples:
 include::partial$goals/build-image.adoc[leveloffset=+1]
 include::partial$goals/build-image-no-fork.adoc[leveloffset=+1]
 
-
-
 [[build-image.examples]]
 == Examples
 
-
-
 [[build-image.examples.custom-image-builder]]
 === Custom Image Builder
-
 If you need to customize the builder used to create the image or the run image used to launch the built image, configure the plugin as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -306,11 +782,8 @@ The builder and run image can be specified on the command line as well, as shown
 $ mvn spring-boot:build-image -Dspring-boot.build-image.builder=mine/java-cnb-builder -Dspring-boot.build-image.runImage=mine/java-cnb-run
 ----
 
-
-
 [[build-image.examples.builder-configuration]]
 === Builder Configuration
-
 If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
 
 The following is an example of {url-paketo-docs-java-buildpack}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
@@ -328,11 +801,8 @@ When using the Paketo builder, this can be accomplished by setting the `HTTPS_PR
 include::example$packaging-oci-image/paketo-pom.xml[tags=paketo]
 ----
 
-
-
 [[build-image.examples.runtime-jvm-configuration]]
 === Runtime JVM Configuration
-
 Paketo Java buildpacks {url-paketo-docs-java-buildpack}/#runtime-jvm-configuration[configure the JVM runtime environment] by setting the `JAVA_TOOL_OPTIONS` environment variable.
 The buildpack-provided `JAVA_TOOL_OPTIONS` value can be modified to customize JVM runtime behavior when the application image is launched in a container.
 
@@ -343,11 +813,8 @@ Environment variable modifications that should be stored in the image and applie
 include::example$packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=runtime-jvm-configuration]
 ----
 
-
-
 [[build-image.examples.custom-image-name]]
 === Custom Image Name
-
 By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
 You can take control over the name, as shown in the following example:
 
@@ -366,11 +833,8 @@ The image name can be specified on the command line as well, as shown in this ex
 $ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=example.com/library/my-app:v1
 ----
 
-
-
 [[build-image.examples.buildpacks]]
 === Buildpacks
-
 By default, the builder will use buildpacks included in the builder image and apply them in a pre-defined order.
 An alternative set of buildpacks can be provided to apply buildpacks that are not included in the builder, or to change the order of included buildpacks.
 When one or more buildpacks are provided, only the specified buildpacks will be applied.
@@ -410,11 +874,8 @@ An OCI image containing a https://buildpacks.io/docs/buildpack-author-guide/pack
 * `example/buildpack:latest`
 * `example/buildpack@sha256:45b23dee08...`
 
-
-
 [[build-image.examples.publish]]
 === Image Publishing
-
 The generated image can be published to a Docker registry by enabling a `publish` option.
 
 If the Docker registry requires authentication, the credentials can be configured using `docker.publishRegistry` parameters.
@@ -454,11 +915,8 @@ and reference the properties in the XML configuration:
 include::example$packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
 ----
 
-
-
 [[build-image.examples.caches]]
 === Builder Cache and Workspace Configuration
-
 The CNB builder caches layers that are used when building and launching an image.
 By default, these caches are stored as named volumes in the Docker daemon with names that are derived from the full name of the target image.
 If the image name changes frequently, for example when the project version is used as a tag in the image name, then the caches can be invalidated frequently.
@@ -480,16 +938,11 @@ The caches and the build workspace can be configured to use bind mounts instead 
 include::example$packaging-oci-image/bind-caches-pom.xml[tags=caches]
 ----
 
-
-
 [[build-image.examples.docker]]
 === Docker Configuration
 
-
-
 [[build-image.examples.docker.minikube]]
 ==== Docker Configuration for minikube
-
 The plugin can communicate with the https://minikube.sigs.k8s.io/docs/tasks/docker_daemon/[Docker daemon provided by minikube] instead of the default local connection.
 
 On Linux and macOS, environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
@@ -501,11 +954,8 @@ The plugin can also be configured to use the minikube daemon by providing connec
 include::example$packaging-oci-image/docker-minikube-pom.xml[tags=docker-minikube]
 ----
 
-
-
 [[build-image.examples.docker.podman]]
 ==== Docker Configuration for podman
-
 The plugin can communicate with a https://podman.io/[podman container engine].
 
 The plugin can be configured to use podman local connection by providing connection details similar to those shown in the following example:
@@ -517,11 +967,8 @@ include::example$packaging-oci-image/docker-podman-pom.xml[tags=docker-podman]
 
 TIP: With the `colima` CLI installed, the command `podman info --format='{{.Host.RemoteSocket.Path}}'` can be used to get the value for the `docker.host` configuration property shown in this example.
 
-
-
 [[build-image.examples.docker.colima]]
 ==== Docker Configuration for Colima
-
 The plugin can communicate with the Docker daemon provided by https://github.com/abiosoft/colima[Colima].
 The `DOCKER_HOST` environment variable can be set by using the following command:
 
@@ -537,11 +984,8 @@ The plugin can also be configured to use Colima daemon by providing connection d
 include::example$packaging-oci-image/docker-colima-pom.xml[tags=docker-colima]
 ----
 
-
-
 [[build-image.examples.docker.auth]]
 ==== Docker Configuration for Authentication
-
 If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]

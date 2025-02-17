@@ -1,6 +1,23 @@
-[[packaging.checkpoint-restore]]
-= Checkpoint and Restore With the JVM
+= 使用 JVM 进行检查点和恢复
+:encoding: utf-8
+:numbered:
 
+[[packaging.checkpoint-restore]]
+== 使用 JVM 进行检查点和恢复
+
+https://wiki.openjdk.org/display/crac/Main[协调恢复检查点]（Coordinated Restore at Checkpoint，CRaC）是一个 OpenJDK 项目，定义了一个新的 Java API，允许你在 HotSpot JVM 上检查点和恢复应用程序。它基于 https://github.com/checkpoint-restore/criu[CRIU]，这是一个在 Linux 上实现检查点/恢复功能的项目。
+
+其原理如下：你几乎像往常一样启动你的应用程序，但使用支持 CRaC 的 JDK 版本，例如 https://bell-sw.com/pages/downloads/?package=jdk-crac[BellSoft Liberica JDK with CRaC] 或 https://www.azul.com/downloads/?package=jdk-crac#zulu[Azul Zulu JDK with CRaC]。然后在某个时刻，可能是在执行一些工作负载以通过执行所有常见代码路径来预热你的 JVM 之后，你可以通过 API 调用、`jcmd` 命令、HTTP 端点或不同的机制触发检查点。
+
+然后，运行中的 JVM 的内存表示（包括其预热状态）会被序列化到磁盘，从而允许在稍后的时间点快速恢复，可能是在具有类似操作系统和 CPU 架构的另一台机器上。恢复的进程保留了 HotSpot JVM 的所有功能，包括在运行时的进一步 JIT 优化。
+
+基于 Spring Framework 提供的基础，Spring Boot 提供了对应用程序检查点和恢复的支持，并开箱即用地管理资源（如套接字、文件和线程池）的生命周期 https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/ci/STATUS.adoc[在有限范围内]。预计将对其他依赖项以及可能处理此类资源的应用程序代码进行额外的生命周期管理。
+
+你可以在 {url-spring-framework-docs}/integration/checkpoint-restore.html[Spring Framework JVM 检查点恢复支持文档] 中找到有关支持的两种模式（“按需检查点/恢复运行中的应用程序”和“启动时自动检查点/恢复”）、如何启用检查点和恢复支持以及一些指南的更多详细信息。
+
+'''
+[[packaging.checkpoint-restore]]
+== Checkpoint and Restore With the JVM
 https://wiki.openjdk.org/display/crac/Main[Coordinated Restore at Checkpoint] (CRaC) is an OpenJDK project that defines a new Java API to allow you to checkpoint and restore an application on the HotSpot JVM.
 It is based on https://github.com/checkpoint-restore/criu[CRIU], a project that implements checkpoint/restore functionality on Linux.
 

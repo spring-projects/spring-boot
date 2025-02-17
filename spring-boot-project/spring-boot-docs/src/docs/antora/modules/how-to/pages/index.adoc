@@ -1,6 +1,18 @@
-[[howto]]
-= How-to Guides
+= 操作指南
+:encoding: utf-8
+:numbered:
 
+[[howto]]
+== 操作指南
+本节提供了一些在使用 Spring Boot 时经常遇到的“`如何做...`”问题的答案。虽然它的覆盖面并不全面，但确实涵盖了很多内容。
+
+如果你有我们这里没有涉及的特定问题，你可能想查看 https://stackoverflow.com/tags/spring-boot[stackoverflow.com]，看看是否有人已经提供了答案。这也是一个提出新问题的好地方（请使用 `spring-boot` 标签）。
+
+我们也很乐意扩展本节内容。如果你想添加一个“`操作指南`”，请向我们发送一个 {url-github}[pull request]。
+
+'''
+[[howto]]
+== How-to Guides
 This section provides answers to some common '`how do I do that...`' questions that often arise when using Spring Boot.
 Its coverage is not exhaustive, but it does cover quite a lot.
 

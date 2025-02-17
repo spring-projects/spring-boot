@@ -1,6 +1,58 @@
-[[actuator.loggers]]
-= Loggers
+= 日志记录器
+:encoding: utf-8
+:numbered:
 
+[[actuator.loggers]]
+== 日志记录器
+Spring Boot Actuator 包含了在运行时查看和配置应用程序日志级别的能力。你可以查看整个列表或单个日志记录器的配置，该配置由显式配置的日志级别以及日志框架赋予它的有效日志级别组成。这些级别可以是以下之一：
+
+* `TRACE`
+* `DEBUG`
+* `INFO`
+* `WARN`
+* `ERROR`
+* `FATAL`
+* `OFF`
+* `null`
+
+`null` 表示没有显式配置。
+
+[[actuator.loggers.configure]]
+== 配置日志记录器
+要配置给定的日志记录器，可以向资源的 URI 发送一个部分实体，如下例所示：
+
+[source,json]
+----
+{
+	"configuredLevel": "DEBUG"
+}
+----
+
+TIP: 要“`重置`”日志记录器的特定级别（并使用默认配置），可以将 `configuredLevel` 的值设置为 `null`。
+
+[[actuator.loggers.opentelemetry]]
+== OpenTelemetry
+默认情况下，未配置通过 OpenTelemetry 进行日志记录。你必须提供 OpenTelemetry 日志端点的位置来配置它：
+
+[configprops,yaml]
+----
+management:
+  otlp:
+    logging:
+      endpoint: "https://otlp.example.com:4318/v1/logs"
+----
+
+NOTE: OpenTelemetry Logback 附加器和 Log4j 附加器不是 Spring Boot 的一部分。有关更多详细信息，请参阅 https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/logback/logback-appender-1.0/library[OpenTelemetry Logback 附加器] 或 https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/log4j/log4j-appender-2.17/library[OpenTelemetry Log4j2 附加器]，这些内容位于 https://github.com/open-telemetry/opentelemetry-java-instrumentation[OpenTelemetry Java instrumentation GitHub 仓库] 中。
+
+TIP: 你必须在 `logback-spring.xml` 或 `log4j2-spring.xml` 配置中配置附加器以使 OpenTelemetry 日志记录正常工作。
+
+Logback 和 Log4j 的 `OpenTelemetryAppender` 都需要访问 javadoc:io.opentelemetry.api.OpenTelemetry[] 实例才能正常工作。此实例必须在应用程序启动期间以编程方式设置，可以像这样完成：
+
+include-code::OpenTelemetryAppenderInitializer[]
+
+'''
+[[actuator.loggers]]
+== Loggers
 Spring Boot Actuator includes the ability to view and configure the log levels of your application at runtime.
 You can view either the entire list or an individual logger's configuration, which is made up of both the explicitly configured logging level as well as the effective logging level given to it by the logging framework.
 These levels can be one of:
@@ -16,11 +68,8 @@ These levels can be one of:
 
 `null` indicates that there is no explicit configuration.
 
-
-
 [[actuator.loggers.configure]]
 == Configure a Logger
-
 To configure a given logger, `POST` a partial entity to the resource's URI, as the following example shows:
 
 [source,json]
@@ -31,8 +80,6 @@ To configure a given logger, `POST` a partial entity to the resource's URI, as t
 ----
 
 TIP: To "`reset`" the specific level of the logger (and use the default configuration instead), you can pass a value of `null` as the `configuredLevel`.
-
-
 
 [[actuator.loggers.opentelemetry]]
 == OpenTelemetry

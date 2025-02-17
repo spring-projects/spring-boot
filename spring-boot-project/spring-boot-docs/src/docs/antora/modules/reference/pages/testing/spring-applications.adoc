@@ -1,6 +1,24 @@
-[[testing.spring-applications]]
-= Testing Spring Applications
+= 测试 Spring 应用程序
+:encoding: utf-8
+:numbered:
 
+[[testing.spring-applications]]
+== 测试 Spring 应用程序
+依赖注入的主要优势之一是它应该使你的代码更容易进行单元测试。
+你可以使用 `new` 操作符实例化对象，甚至不需要涉及 Spring。
+你还可以使用 _模拟对象_ 来代替真实的依赖项。
+
+通常，你需要超越单元测试，开始进行集成测试（使用 Spring 的 javadoc:org.springframework.context.ApplicationContext[]）。
+能够在不部署应用程序或连接到其他基础设施的情况下执行集成测试是非常有用的。
+
+Spring 框架包含一个专门用于此类集成测试的测试模块。
+你可以直接声明对 `org.springframework:spring-test` 的依赖，或者使用 `spring-boot-starter-test` starter 来间接引入它。
+
+如果你以前没有使用过 `spring-test` 模块，你应该先阅读 Spring 框架参考文档中的 {url-spring-framework-docs}/testing.html[相关部分]。
+
+'''
+[[testing.spring-applications]]
+== Testing Spring Applications
 One of the major advantages of dependency injection is that it should make your code easier to unit test.
 You can instantiate objects by using the `new` operator without even involving Spring.
 You can also use _mock objects_ instead of real dependencies.

@@ -1,6 +1,179 @@
-[[running-your-application]]
 = Running your Application with Gradle
+:encoding: utf-8
+:numbered:
 
+[[running-your-application]]
+== 使用 Gradle 运行你的应用程序
+要在不先构建归档文件的情况下运行你的应用程序，请使用 `bootRun` 任务：
+
+[source,shell]
+----
+$ ./gradlew bootRun
+----
+
+`bootRun` 任务是 xref:api/java/org/springframework/boot/gradle/tasks/run/BootRun.html[`BootRun`] 的一个实例，它是 `JavaExec` 的子类。
+因此，Gradle 中执行 Java 进程的 {url-gradle-dsl}/org.gradle.api.tasks.JavaExec.html[所有常规配置选项] 都可供你使用。
+该任务会自动配置为使用主源集的运行时类路径。
+
+默认情况下，主类将通过在主源集的输出中查找具有 `public static void main(String[])` 方法的类来自动配置。
+
+也可以使用任务的 `main` 属性显式配置主类：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-main.gradle[tags=main]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-main.gradle.kts[tags=main]
+----
+======
+
+或者，可以使用 Spring Boot DSL 的 `mainClass` 属性在项目范围内配置主类名称：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/spring-boot-dsl-main-class-name.gradle[tags=main-class]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/spring-boot-dsl-main-class-name.gradle.kts[tags=main-class]
+----
+======
+
+默认情况下，`bootRun` 会配置 JVM 以优化其启动，以便在开发期间更快地启动。
+可以通过使用 `optimizedLaunch` 属性禁用此行为，如下例所示：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-disable-optimized-launch.gradle[tags=launch]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-disable-optimized-launch.gradle.kts[tags=launch]
+----
+======
+
+如果应用了 {url-gradle-docs-application-plugin}[`application` 插件]，则必须配置其 `mainClass` 属性，并且可以用于相同目的：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/application-plugin-main-class-name.gradle[tags=main-class]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/application-plugin-main-class-name.gradle.kts[tags=main-class]
+----
+======
+
+[[running-your-application.passing-arguments]]
+== 向你的应用程序传递参数
+与所有 `JavaExec` 任务一样，在使用 Gradle 4.9 或更高版本时，可以通过命令行使用 `--args='<arguments>'` 将参数传递给 `bootRun`。
+例如，要使用名为 `dev` 的配置文件运行你的应用程序，可以使用以下命令：
+
+[source,shell]
+----
+$ ./gradlew bootRun --args='--spring.profiles.active=dev'
+----
+
+有关更多详细信息，请参阅 {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[`JavaExec.setArgsString` 的 javadoc]。
+
+[[running-your-application.passing-system-properties]]
+== 向你的应用程序传递系统属性
+由于 `bootRun` 是标准的 `JavaExec` 任务，因此可以通过在构建脚本中指定系统属性来将其传递给应用程序的 JVM。
+要使系统属性的值可配置，请使用 {url-gradle-dsl}/org.gradle.api.Project.html#N14FE1[项目属性] 设置其值。
+为了使项目属性可选，请使用 `findProperty` 引用它。
+这样做还允许使用 `?:` Elvis 运算符提供默认值，如下例所示：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-system-property.gradle[tags=system-property]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-system-property.gradle.kts[tags=system-property]
+----
+======
+
+前面的示例将 `com.example.property` 系统属性设置为 `example` 项目属性的值。
+如果未设置 `example` 项目属性，则系统属性的值将为 `default`。
+
+Gradle 允许以多种方式设置项目属性，包括在命令行上使用 `-P` 标志，如下例所示：
+
+[source,bash,indent=0,subs="verbatim,attributes"]
+----
+$ ./gradlew bootRun -Pexample=custom
+----
+
+前面的示例将 `example` 项目属性的值设置为 `custom`。
+`bootRun` 随后将使用此值作为 `com.example.property` 系统属性的值。
+
+[[running-your-application.reloading-resources]]
+== 重新加载资源
+如果已将 devtools 添加到你的项目中，它将自动监视应用程序的类路径以查找更改。
+请注意，修改后的文件需要重新编译以使类路径更新，从而触发 devtools 的重新加载。
+有关使用 devtools 的更多详细信息，请参阅 xref:reference:using/devtools.adoc#using.devtools.restart[参考文档中的此部分]。
+
+或者，你可以配置 `bootRun`，以便从源位置加载应用程序的静态资源：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-source-resources.gradle[tags=source-resources]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$running/boot-run-source-resources.gradle.kts[tags=source-resources]
+----
+======
+
+这使得它们可以在实时应用程序中重新加载，这在开发时非常有用。
+
+[[running-your-application.using-a-test-main-class]]
+== 使用测试主类
+除了 `bootRun` 之外，还会注册一个 `bootTestRun` 任务。
+与 `bootRun` 一样，`bootTestRun` 是 `BootRun` 的一个实例，但它配置为使用在测试源集的输出中找到的主类，而不是主源集的主类。
+它还使用测试源集的运行时类路径，而不是主源集的运行时类路径。
+由于 `bootTestRun` 是 `BootRun` 的一个实例，因此上述 `bootRun` 的所有配置选项也可以与 `bootTestRun` 一起使用。
+
+'''
+[[running-your-application]]
+== Running your Application with Gradle
 To run your application without first building an archive use the `bootRun` task:
 
 [source,shell]
@@ -87,11 +260,8 @@ include::example$running/application-plugin-main-class-name.gradle.kts[tags=main
 ----
 ======
 
-
-
 [[running-your-application.passing-arguments]]
 == Passing Arguments to Your Application
-
 Like all `JavaExec` tasks, arguments can be passed into `bootRun` from the command line using `--args='<arguments>'` when using Gradle 4.9 or later.
 For example, to run your application with a profile named `dev` active the following command can be used:
 
@@ -102,11 +272,8 @@ $ ./gradlew bootRun --args='--spring.profiles.active=dev'
 
 See {url-gradle-javadoc}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[the javadoc for `JavaExec.setArgsString`] for further details.
 
-
-
 [[running-your-application.passing-system-properties]]
 == Passing System Properties to Your application
-
 Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
 To make that value of a system property to be configurable set its value using a {url-gradle-dsl}/org.gradle.api.Project.html#N14FE1[project property].
 To allow a project property to be optional, reference it using `findProperty`.
@@ -141,11 +308,8 @@ $ ./gradlew bootRun -Pexample=custom
 The preceding example sets the value of the `example` project property to `custom`.
 `bootRun` will then use this as the value of the `com.example.property` system property.
 
-
-
 [[running-your-application.reloading-resources]]
 == Reloading Resources
-
 If devtools has been added to your project it will automatically monitor your application's classpath for changes.
 Note that modified files need to be recompiled for the classpath to update in order to trigger reloading with devtools.
 For more details on using devtools, refer to xref:reference:using/devtools.adoc#using.devtools.restart[this section of the reference documentation].
@@ -170,11 +334,8 @@ include::example$running/boot-run-source-resources.gradle.kts[tags=source-resour
 
 This makes them reloadable in the live application which can be helpful at development time.
 
-
-
 [[running-your-application.using-a-test-main-class]]
 == Using a Test Main Class
-
 In addition to `bootRun` a `bootTestRun` task is also registered.
 Like `bootRun`, `bootTestRun` is an instance of `BootRun` but it's configured to use a main class found in the output of the test source set rather than the main source set.
 It also uses the test source set's runtime classpath rather than the main source set's runtime classpath.

@@ -1,6 +1,50 @@
-[[using.auto-configuration]]
-= Auto-configuration
+= 自动配置
+:encoding: utf-8
+:numbered:
 
+[[using.auto-configuration]]
+== 自动配置
+Spring Boot 自动配置会根据你添加的 jar 依赖项尝试自动配置你的 Spring 应用程序。
+例如，如果 `HSQLDB` 在你的类路径上，并且你没有手动配置任何数据库连接 bean，那么 Spring Boot 会自动配置一个内存数据库。
+
+你需要通过将 `javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]` 或 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 注解添加到你的某个 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 类中来选择启用自动配置。
+
+TIP: 你应该只添加一个 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 或 `javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]` 注解。
+我们通常建议你仅将其添加到你的主要 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 类中。
+
+[[using.auto-configuration.replacing]]
+== 逐步替换自动配置
+自动配置是非侵入式的。
+你可以随时开始定义自己的配置以替换自动配置的特定部分。
+例如，如果你添加了自己的 `javadoc:javax.sql.DataSource[]` bean，默认的嵌入式数据库支持将自动退出。
+
+如果你需要了解当前正在应用哪些自动配置以及原因，可以使用 `--debug` 开关启动应用程序。
+这样做会为核心日志记录器启用调试日志，并将条件报告记录到控制台。
+
+[[using.auto-configuration.disabling-specific]]
+== 禁用特定的自动配置类
+如果你发现应用了你不想要的特定自动配置类，可以使用 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 的 `exclude` 属性来禁用它们，如下例所示：
+
+include-code::MyApplication[]
+
+如果该类不在类路径上，你可以使用注解的 `excludeName` 属性并指定完全限定的类名。
+如果你更喜欢使用 `javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]` 而不是 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]`，`exclude` 和 `excludeName` 也是可用的。
+最后，你还可以使用 `configprop:spring.autoconfigure.exclude[]` 属性来控制要排除的自动配置类列表。
+
+TIP: 你可以在注解级别和使用属性时定义排除项。
+
+NOTE: 尽管自动配置类是 `public` 的，但唯一被视为公共 API 的部分是类的名称，该名称可用于禁用自动配置。
+这些类的实际内容（例如嵌套的配置类或 bean 方法）仅供内部使用，我们不建议直接使用这些内容。
+
+[[using.auto-configuration.packages]]
+== 自动配置包
+自动配置包是各种自动配置功能在扫描实体和 Spring Data 存储库等内容时默认查找的包。
+`javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]` 注解（直接或通过其在 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 中的存在）决定了默认的自动配置包。
+可以使用 `javadoc:org.springframework.boot.autoconfigure.AutoConfigurationPackage[format=annotation]` 注解配置其他包。
+
+'''
+
+== Auto-configuration
 Spring Boot auto-configuration attempts to automatically configure your Spring application based on the jar dependencies that you have added.
 For example, if `HSQLDB` is on your classpath, and you have not manually configured any database connection beans, then Spring Boot auto-configures an in-memory database.
 
@@ -9,11 +53,8 @@ You need to opt-in to auto-configuration by adding the javadoc:org.springframewo
 TIP: You should only ever add one javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] or javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] annotation.
 We generally recommend that you add one or the other to your primary javadoc:org.springframework.context.annotation.Configuration[format=annotation] class only.
 
-
-
 [[using.auto-configuration.replacing]]
 == Gradually Replacing Auto-configuration
-
 Auto-configuration is non-invasive.
 At any point, you can start to define your own configuration to replace specific parts of the auto-configuration.
 For example, if you add your own javadoc:javax.sql.DataSource[] bean, the default embedded database support backs away.
@@ -21,11 +62,8 @@ For example, if you add your own javadoc:javax.sql.DataSource[] bean, the defaul
 If you need to find out what auto-configuration is currently being applied, and why, start your application with the `--debug` switch.
 Doing so enables debug logs for a selection of core loggers and logs a conditions report to the console.
 
-
-
 [[using.auto-configuration.disabling-specific]]
 == Disabling Specific Auto-configuration Classes
-
 If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] to disable them, as shown in the following example:
 
 include-code::MyApplication[]
@@ -39,11 +77,8 @@ TIP: You can define exclusions both at the annotation level and by using the pro
 NOTE: Even though auto-configuration classes are `public`, the only aspect of the class that is considered public API is the name of the class which can be used for disabling the auto-configuration.
 The actual contents of those classes, such as nested configuration classes or bean methods are for internal use only and we do not recommend using those directly.
 
-
-
 [[using.auto-configuration.packages]]
 == Auto-configuration Packages
-
 Auto-configuration packages are the packages that various auto-configured features look in by default when scanning for things such as entities and Spring Data repositories.
 The javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] annotation (either directly or through its presence on javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]) determines the default auto-configuration package.
 Additional packages can be configured using the javadoc:org.springframework.boot.autoconfigure.AutoConfigurationPackage[format=annotation] annotation.

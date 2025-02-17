@@ -1,6 +1,31 @@
-[[using.configuration-classes]]
-= Configuration Classes
+= 配置类
+:encoding: utf-8
+:numbered:
 
+[[using.configuration-classes]]
+== 配置类
+Spring Boot 更倾向于基于 Java 的配置。
+尽管可以将 `javadoc:org.springframework.boot.SpringApplication[]` 与 XML 源一起使用，但我们通常建议你的主要配置源是一个单独的 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 类。
+通常，定义 `main` 方法的类是作为主要 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 的良好候选。
+
+TIP: 互联网上发布了许多使用 XML 配置的 Spring 配置示例。
+如果可能，请始终尝试使用等效的基于 Java 的配置。
+搜索 `+Enable*+` 注解可能是一个不错的起点。
+
+
+[[using.configuration-classes.importing-additional-configuration]]
+== 导入其他配置类
+你无需将所有 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 放在一个类中。
+可以使用 `javadoc:org.springframework.context.annotation.Import[format=annotation]` 注解导入其他配置类。
+或者，你可以使用 `javadoc:org.springframework.context.annotation.ComponentScan[format=annotation]` 自动扫描所有 Spring 组件，包括 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 类。
+
+
+[[using.configuration-classes.importing-xml-configuration]]
+== 导入 XML 配置
+如果你绝对必须使用基于 XML 的配置，我们仍然建议你从一个 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 类开始。
+然后，你可以使用 `javadoc:org.springframework.context.annotation.ImportResource[format=annotation]` 注解加载 XML 配置文件。
+
+== Configuration Classes
 Spring Boot favors Java-based configuration.
 Although it is possible to use javadoc:org.springframework.boot.SpringApplication[] with XML sources, we generally recommend that your primary source be a single javadoc:org.springframework.context.annotation.Configuration[format=annotation] class.
 Usually the class that defines the `main` method is a good candidate as the primary javadoc:org.springframework.context.annotation.Configuration[format=annotation].
@@ -10,18 +35,14 @@ If possible, always try to use the equivalent Java-based configuration.
 Searching for `+Enable*+` annotations can be a good starting point.
 
 
-
 [[using.configuration-classes.importing-additional-configuration]]
 == Importing Additional Configuration Classes
-
 You need not put all your javadoc:org.springframework.context.annotation.Configuration[format=annotation] into a single class.
 The javadoc:org.springframework.context.annotation.Import[format=annotation] annotation can be used to import additional configuration classes.
 Alternatively, you can use javadoc:org.springframework.context.annotation.ComponentScan[format=annotation] to automatically pick up all Spring components, including javadoc:org.springframework.context.annotation.Configuration[format=annotation] classes.
 
 
-
 [[using.configuration-classes.importing-xml-configuration]]
 == Importing XML Configuration
-
 If you absolutely must use XML based configuration, we recommend that you still start with a javadoc:org.springframework.context.annotation.Configuration[format=annotation] class.
 You can then use an javadoc:org.springframework.context.annotation.ImportResource[format=annotation] annotation to load XML configuration files.

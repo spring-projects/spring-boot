@@ -1,0 +1,147 @@
+|===
+| 名称 | 描述
+
+| [[spring-boot-starter]]`spring-boot-starter`
+| 核心启动器，包括自动配置支持、日志记录和 YAML
+
+| [[spring-boot-starter-activemq]]`spring-boot-starter-activemq`
+| 使用 Apache ActiveMQ 进行 JMS 消息传递的启动器
+
+| [[spring-boot-starter-amqp]]`spring-boot-starter-amqp`
+| 使用 Spring AMQP 和 RabbitMQ 的启动器
+
+| [[spring-boot-starter-aop]]`spring-boot-starter-aop`
+| 使用 Spring AOP 和 AspectJ 进行面向切面编程的启动器
+
+| [[spring-boot-starter-artemis]]`spring-boot-starter-artemis`
+| 使用 Apache Artemis 进行 JMS 消息传递的启动器
+
+| [[spring-boot-starter-batch]]`spring-boot-starter-batch`
+| 使用 Spring Batch 的启动器
+
+| [[spring-boot-starter-cache]]`spring-boot-starter-cache`
+| 使用 Spring 框架缓存支持的启动器
+
+| [[spring-boot-starter-data-cassandra]]`spring-boot-starter-data-cassandra`
+| 使用 Cassandra 分布式数据库和 Spring Data Cassandra 的启动器
+
+| [[spring-boot-starter-data-cassandra-reactive]]`spring-boot-starter-data-cassandra-reactive`
+| 使用 Cassandra 分布式数据库和 Spring Data Cassandra Reactive 的启动器
+
+| [[spring-boot-starter-data-couchbase]]`spring-boot-starter-data-couchbase`
+| 使用 Couchbase 面向文档数据库和 Spring Data Couchbase 的启动器
+
+| [[spring-boot-starter-data-couchbase-reactive]]`spring-boot-starter-data-couchbase-reactive`
+| 使用 Couchbase 面向文档数据库和 Spring Data Couchbase Reactive 的启动器
+
+| [[spring-boot-starter-data-elasticsearch]]`spring-boot-starter-data-elasticsearch`
+| 使用 Elasticsearch 搜索和分析引擎以及 Spring Data Elasticsearch 的启动器
+
+| [[spring-boot-starter-data-jdbc]]`spring-boot-starter-data-jdbc`
+| 使用 Spring Data JDBC 的启动器
+
+| [[spring-boot-starter-data-jpa]]`spring-boot-starter-data-jpa`
+| 使用 Spring Data JPA 和 Hibernate 的启动器
+
+| [[spring-boot-starter-data-ldap]]`spring-boot-starter-data-ldap`
+| 使用 Spring Data LDAP 的启动器
+
+| [[spring-boot-starter-data-mongodb]]`spring-boot-starter-data-mongodb`
+| 使用 MongoDB 面向文档数据库和 Spring Data MongoDB 的启动器
+
+| [[spring-boot-starter-data-mongodb-reactive]]`spring-boot-starter-data-mongodb-reactive`
+| 使用 MongoDB 面向文档数据库和 Spring Data MongoDB Reactive 的启动器
+
+| [[spring-boot-starter-data-neo4j]]`spring-boot-starter-data-neo4j`
+| 使用 Neo4j 图数据库和 Spring Data Neo4j 的启动器
+
+| [[spring-boot-starter-data-r2dbc]]`spring-boot-starter-data-r2dbc`
+| 使用 Spring Data R2DBC 的启动器
+
+| [[spring-boot-starter-data-redis]]`spring-boot-starter-data-redis`
+| 使用 Redis 键值数据存储、Spring Data Redis 和 Lettuce 客户端的启动器
+
+| [[spring-boot-starter-data-redis-reactive]]`spring-boot-starter-data-redis-reactive`
+| 使用 Redis 键值数据存储、Spring Data Redis Reactive 和 Lettuce 客户端的启动器
+
+| [[spring-boot-starter-data-rest]]`spring-boot-starter-data-rest`
+| 使用 Spring Data REST 和 Spring MVC 通过 REST 公开 Spring Data 仓库的启动器
+
+| [[spring-boot-starter-freemarker]]`spring-boot-starter-freemarker`
+| 使用 FreeMarker 视图构建 MVC Web 应用程序的启动器
+
+| [[spring-boot-starter-graphql]]`spring-boot-starter-graphql`
+| 使用 Spring GraphQL 构建 GraphQL 应用程序的启动器
+
+| [[spring-boot-starter-groovy-templates]]`spring-boot-starter-groovy-templates`
+| 使用 Groovy 模板视图构建 MVC Web 应用程序的启动器
+
+| [[spring-boot-starter-hateoas]]`spring-boot-starter-hateoas`
+| 使用 Spring MVC 和 Spring HATEOAS 构建基于超媒体的 RESTful Web 应用程序的启动器
+
+| [[spring-boot-starter-integration]]`spring-boot-starter-integration`
+| 使用 Spring Integration 的启动器
+
+| [[spring-boot-starter-jdbc]]`spring-boot-starter-jdbc`
+| 使用 JDBC 和 HikariCP 连接池的启动器
+
+| [[spring-boot-starter-jersey]]`spring-boot-starter-jersey`
+| 使用 JAX-RS 和 Jersey 构建 RESTful Web 应用程序的启动器。xref:#spring-boot-starter-web[`spring-boot-starter-web`] 的替代方案
+
+| [[spring-boot-starter-jooq]]`spring-boot-starter-jooq`
+| 使用 jOOQ 通过 JDBC 访问 SQL 数据库的启动器。xref:#spring-boot-starter-data-jpa[`spring-boot-starter-data-jpa`] 或 xref:#spring-boot-starter-jdbc[`spring-boot-starter-jdbc`] 的替代方案
+
+| [[spring-boot-starter-json]]`spring-boot-starter-json`
+| 用于读写 JSON 的启动器
+
+| [[spring-boot-starter-mail]]`spring-boot-starter-mail`
+| 使用 Java Mail 和 Spring 框架的邮件发送支持的启动器
+
+| [[spring-boot-starter-mustache]]`spring-boot-starter-mustache`
+| 使用 Mustache 视图构建 Web 应用程序的启动器
+
+| [[spring-boot-starter-oauth2-authorization-server]]`spring-boot-starter-oauth2-authorization-server`
+| 使用 Spring Authorization Server 功能的启动器
+
+| [[spring-boot-starter-oauth2-client]]`spring-boot-starter-oauth2-client`
+| 使用 Spring Security 的 OAuth2/OpenID Connect 客户端功能的启动器
+
+| [[spring-boot-starter-oauth2-resource-server]]`spring-boot-starter-oauth2-resource-server`
+| 使用 Spring Security 的 OAuth2 资源服务器功能的启动器
+
+| [[spring-boot-starter-pulsar]]`spring-boot-starter-pulsar`
+| 使用 Spring for Apache Pulsar 的启动器
+
+| [[spring-boot-starter-pulsar-reactive]]`spring-boot-starter-pulsar-reactive`
+| 使用 Spring for Apache Pulsar Reactive 的启动器
+
+| [[spring-boot-starter-quartz]]`spring-boot-starter-quartz`
+| 使用 Quartz 调度器的启动器
+
+| [[spring-boot-starter-rsocket]]`spring-boot-starter-rsocket`
+| 构建 RSocket 客户端和服务器的启动器
+
+| [[spring-boot-starter-security]]`spring-boot-starter-security`
+| 使用 Spring Security 的启动器
+
+| [[spring-boot-starter-test]]`spring-boot-starter-test`
+| 使用包括 JUnit Jupiter、Hamcrest 和 Mockito 在内的库测试 Spring Boot 应用程序的启动器
+
+| [[spring-boot-starter-thymeleaf]]`spring-boot-starter-thymeleaf`
+| 使用 Thymeleaf 视图构建 MVC Web 应用程序的启动器
+
+| [[spring-boot-starter-validation]]`spring-boot-starter-validation`
+| 使用 Hibernate Validator 进行 Java Bean 验证的启动器
+
+| [[spring-boot-starter-web]]`spring-boot-starter-web`
+| 使用 Spring MVC 构建 Web（包括 RESTful）应用程序的启动器。使用 Tomcat 作为默认的嵌入式容器
+
+| [[spring-boot-starter-web-services]]`spring-boot-starter-web-services`
+| 使用 Spring Web Services 的启动器
+
+| [[spring-boot-starter-webflux]]`spring-boot-starter-webflux`
+| 使用 Spring 框架的 Reactive Web 支持构建 WebFlux 应用程序的启动器
+
+| [[spring-boot-starter-websocket]]`spring-boot-starter-websocket`
+| 使用 Spring 框架的 MVC WebSocket 支持构建 WebSocket 应用程序的启动器
+|===

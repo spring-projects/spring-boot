@@ -1,5 +1,18 @@
-[[cli.installation]]
 = Installing the CLI
+:encoding: utf-8
+:numbered:
 
+[[cli.installation]]
+== 安装 CLI
+
+Spring Boot CLI（命令行界面）可以通过以下方式手动安装：
+- 使用 SDKMAN!（SDK 管理器）进行安装。
+- 如果你是 OSX 用户，可以使用 Homebrew 或 MacPorts 进行安装。
+
+有关详细的安装说明，请参阅“入门”部分中的 xref:ROOT:installing.adoc#getting-started.installing.cli[]。
+
+'''
+[[cli.installation]]
+== Installing the CLI
 The Spring Boot CLI (Command-Line Interface) can be installed manually by using SDKMAN! (the SDK Manager) or by using Homebrew or MacPorts if you are an OSX user.
 See xref:ROOT:installing.adoc#getting-started.installing.cli[] in the "`Getting Started`" section for comprehensive installation instructions.

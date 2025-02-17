@@ -1,14 +1,298 @@
-[[howto.data-access]]
-= Data Access
+= 数据访问
+:encoding: utf-8
+:numbered:
 
+[[howto.data-access]]
+== 数据访问
+Spring Boot 包含了许多用于处理数据源的启动器。本节回答与此相关的问题。
+
+[[howto.data-access.configure-custom-datasource]]
+== 配置自定义数据源
+要配置你自己的 javadoc:javax.sql.DataSource[]，请在配置中定义该类型的 javadoc:org.springframework.context.annotation.Bean[format=annotation]。Spring Boot 会在需要的地方重用你的 javadoc:javax.sql.DataSource[]，包括数据库初始化。如果你需要外部化一些设置，可以将你的 javadoc:javax.sql.DataSource[] 绑定到环境（参见 xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.third-party-configuration[]）。
+
+以下示例展示了如何在 bean 中定义数据源：
+
+include-code::custom/MyDataSourceConfiguration[]
+
+以下示例展示了如何通过设置属性来定义数据源：
+
+[configprops%novalidate,yaml]
+----
+app:
+  datasource:
+    url: "jdbc:h2:mem:mydb"
+    username: "sa"
+    pool-size: 30
+----
+
+假设 `SomeDataSource` 具有 URL、用户名和池大小的常规 JavaBean 属性，这些设置在 javadoc:javax.sql.DataSource[] 提供给其他组件之前会自动绑定。
+
+Spring Boot 还提供了一个名为 javadoc:org.springframework.boot.jdbc.DataSourceBuilder[] 的工具类，可用于创建标准数据源之一（如果它在类路径上）。构建器可以根据类路径上可用的内容检测要使用的数据源。它还会根据 JDBC URL 自动检测驱动程序。
+
+以下示例展示了如何使用 javadoc:org.springframework.boot.jdbc.DataSourceBuilder[] 创建数据源：
+
+include-code::builder/MyDataSourceConfiguration[]
+
+要使用该 javadoc:javax.sql.DataSource[] 运行应用程序，你只需要连接信息。还可以提供特定于池的设置。有关更多详细信息，请检查运行时使用的实现。
+
+以下示例展示了如何通过设置属性来定义 JDBC 数据源：
+
+[configprops%novalidate,yaml]
+----
+app:
+  datasource:
+    url: "jdbc:mysql://localhost/test"
+    username: "dbuser"
+    password: "dbpass"
+    pool-size: 30
+----
+
+然而，由于方法的 javadoc:javax.sql.DataSource[] 返回类型，存在一个问题。这隐藏了连接池的实际类型，因此不会为你的自定义 javadoc:javax.sql.DataSource[] 生成配置属性元数据，并且在 IDE 中也不会有自动补全。为了解决这个问题，使用构建器的 `type(Class)` 方法指定要构建的 javadoc:javax.sql.DataSource[] 类型，并更新方法的返回类型。例如，以下展示了如何使用 javadoc:org.springframework.boot.jdbc.DataSourceBuilder[] 创建 javadoc:com.zaxxer.hikari.HikariDataSource[]：
+
+include-code::simple/MyDataSourceConfiguration[]
+
+不幸的是，这个基本设置不起作用，因为 Hikari 没有 `url` 属性。相反，它有一个 `jdbc-url` 属性，这意味着你必须将配置重写如下：
+
+[configprops%novalidate,yaml]
+----
+app:
+  datasource:
+    jdbc-url: "jdbc:mysql://localhost/test"
+    username: "dbuser"
+    password: "dbpass"
+    pool-size: 30
+----
+
+为了解决这个问题，使用 javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[]，它将为你处理 `url` 到 `jdbc-url` 的转换。你可以使用其 `initializeDataSourceBuilder()` 方法从任何 javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] 对象的状态初始化 javadoc:org.springframework.boot.jdbc.DataSourceBuilder[]。你可以注入 Spring Boot 自动创建的 javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[]，但这会将你的配置拆分为 `+spring.datasource.*+` 和 `+app.datasource.*+`。为了避免这种情况，定义一个具有自定义配置属性前缀的自定义 javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[]，如下例所示：
+
+include-code::configurable/MyDataSourceConfiguration[]
+
+此设置等同于 Spring Boot 默认为你执行的操作，除了池的类型在代码中指定，并且其设置作为 `app.datasource.configuration.*` 属性暴露。javadoc:org.springframework.boot.autoconfigure.jdbc.DataSourceProperties[] 负责 `url` 到 `jdbc-url` 的转换，因此你可以按如下方式配置它：
+
+[configprops%novalidate,yaml]
+----
+app:
+  datasource:
+    url: "jdbc:mysql://localhost/test"
+    username: "dbuser"
+    password: "dbpass"
+    configuration:
+      maximum-pool-size: 30
+----
+
+请注意，由于自定义配置在代码中指定了应使用 Hikari，因此 `app.datasource.type` 将不起作用。
+
+如 xref:reference:data/sql.adoc#data.sql.datasource.connection-pool[] 中所述，javadoc:org.springframework.boot.jdbc.DataSourceBuilder[] 支持几种不同的连接池。要使用 Hikari 以外的池，请将其添加到类路径中，使用 `type(Class)` 方法指定要使用的池类，并更新 javadoc:org.springframework.context.annotation.Bean[format=annotation] 方法的返回类型以匹配。这还将为你提供所选特定连接池的配置属性元数据。
+
+TIP: Spring Boot 会将 Hikari 特定的设置暴露给 `spring.datasource.hikari`。此示例使用更通用的 `configuration` 子命名空间，因为该示例不支持多个数据源实现。
+
+有关更多详细信息，请参阅 xref:reference:data/sql.adoc#data.sql.datasource[] 和 {code-spring-boot-autoconfigure-src}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] 类。
+
+[[howto.data-access.configure-two-datasources]]
+== 配置两个数据源
+要定义额外的 javadoc:javax.sql.DataSource[]，可以使用与上一节类似的方法。一个关键区别是 javadoc:javax.sql.DataSource[] javadoc:org.springframework.context.annotation.Bean[format=annotation] 必须声明为 `defaultCandidate=false`。这可以防止自动配置的 javadoc:javax.sql.DataSource[] 回退。
+
+NOTE: {url-spring-framework-docs}/core/beans/dependencies/factory-autowire.html#beans-factory-autowire-candidate[Spring Framework 参考文档] 更详细地描述了此功能。
+
+为了在需要的地方注入额外的 javadoc:javax.sql.DataSource[]，还需要使用 javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation] 对其进行注解，如下例所示：
+
+include-code::MyAdditionalDataSourceConfiguration[]
+
+要使用额外的 javadoc:javax.sql.DataSource[]，请在注入点使用相同的 javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation] 进行注解。
+
+自动配置和额外的数据源可以按如下方式配置：
+
+[configprops%novalidate,yaml]
+----
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost/first"
+    username: "dbuser"
+    password: "dbpass"
+    configuration:
+      maximum-pool-size: 30
+app:
+  datasource:
+    url: "jdbc:mysql://localhost/second"
+    username: "dbuser"
+    password: "dbpass"
+    max-total: 30
+----
+
+更高级的、特定于实现的自动配置 javadoc:javax.sql.DataSource[] 的配置可通过 `spring.datasource.configuration.*` 属性获得。你也可以将相同的概念应用于额外的 javadoc:javax.sql.DataSource[]，如下例所示：
+
+include-code::MyCompleteAdditionalDataSourceConfiguration[]
+
+前面的示例使用与 Spring Boot 在自动配置中使用的相同逻辑配置了额外的数据源。请注意，`app.datasource.configuration.*` 属性根据所选实现提供了高级设置。
+
+与 xref:how-to:data-access.adoc#howto.data-access.configure-custom-datasource[配置单个自定义 javadoc:javax.sql.DataSource[]] 一样，可以使用 javadoc:org.springframework.boot.jdbc.DataSourceBuilder[] 上的 `type(Class)` 方法自定义一个或两个 javadoc:javax.sql.DataSource[] bean 的类型。有关支持的类型的详细信息，请参阅 xref:reference:data/sql.adoc#data.sql.datasource.connection-pool[]。
+
+[[howto.data-access.spring-data-repositories]]
+== 使用 Spring Data 仓库
+Spring Data 可以创建各种风格的 javadoc:org.springframework.data.repository.Repository[] 接口的实现。Spring Boot 会为你处理所有这些，只要这些 javadoc:org.springframework.data.repository.Repository[] 实现包含在 xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[自动配置包] 之一中，通常是你的主应用程序类的包（或子包），该类使用 javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] 或 javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation] 进行注解。
+
+对于许多应用程序，你只需要在类路径上放置正确的 Spring Data 依赖项。对于 JPA，有 `spring-boot-starter-data-jpa`，对于 Mongodb，有 `spring-boot-starter-data-mongodb`，还有其他支持技术的启动器。要开始使用，创建一些仓库接口来处理你的 javadoc:jakarta.persistence.Entity[format=annotation] 对象。
+
+Spring Boot 通过扫描 xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[自动配置包] 来确定你的 javadoc:org.springframework.data.repository.Repository[] 实现的位置。为了获得更多控制，请使用 Spring Data 的 `@Enable…Repositories` 注解。
+
+有关 Spring Data 的更多信息，请参阅 {url-spring-data-site}[Spring Data 项目页面]。
+
+[[howto.data-access.separate-entity-definitions-from-spring-configuration]]
+== 将 @Entity 定义与 Spring 配置分离
+Spring Boot 通过扫描 xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[自动配置包] 来确定你的 javadoc:jakarta.persistence.Entity[format=annotation] 定义的位置。为了获得更多控制，请使用 javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] 注解，如下例所示：
+
+include-code::MyApplication[]
+
+[[howto.data-access.filter-scanned-entity-definitions]]
+== 过滤扫描的 @Entity 定义
+可以使用 javadoc:org.springframework.orm.jpa.persistenceunit.ManagedClassNameFilter[] bean 过滤 javadoc:jakarta.persistence.Entity[format=annotation] 定义。这在测试中非常有用，当只应考虑可用实体的子集时。在以下示例中，仅包含来自 `com.example.app.customer` 包的实体：
+
+include-code::MyEntityScanConfiguration[]
+
+[[howto.data-access.jpa-properties]]
+== 配置 JPA 属性
+Spring Data JPA 已经提供了一些与供应商无关的配置选项（例如 SQL 日志记录），Spring Boot 将这些选项以及 Hibernate 的一些其他选项暴露为外部配置属性。其中一些选项会根据上下文自动检测，因此你不必设置它们。
+
+`spring.jpa.hibernate.ddl-auto` 是一个特殊情况，因为根据运行时条件，它有不同的默认值。如果使用嵌入式数据库并且没有模式管理器（例如 Liquibase 或 Flyway）处理 javadoc:javax.sql.DataSource[]，则默认为 `create-drop`。在所有其他情况下，默认为 `none`。
+
+JPA 提供商会检测要使用的方言。如果你更喜欢自己设置方言，请设置 configprop:spring.jpa.database-platform[] 属性。
+
+最常见的设置选项如下例所示：
+
+[configprops,yaml]
+----
+spring:
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: "com.example.MyPhysicalNamingStrategy"
+    show-sql: true
+----
+
+此外，当创建本地 javadoc:jakarta.persistence.EntityManagerFactory[] 时，`+spring.jpa.properties.*+` 中的所有属性都会作为普通 JPA 属性传递（前缀被剥离）。
+
+[WARNING]
+====
+你需要确保 `+spring.jpa.properties.*+` 下定义的名称与 JPA 提供程序期望的名称完全匹配。Spring Boot 不会对这些条目进行任何形式的宽松绑定。
+
+例如，如果你想配置 Hibernate 的批处理大小，你必须使用 `+spring.jpa.properties.hibernate.jdbc.batch_size+`。如果你使用其他形式，例如 `batchSize` 或 `batch-size`，Hibernate 将不会应用该设置。
+====
+
+TIP: 如果你需要对 Hibernate 属性进行高级自定义，请考虑注册一个 javadoc:org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer[] bean，它将在创建 javadoc:jakarta.persistence.EntityManagerFactory[] 之前调用。这优先于自动配置应用的任何内容。
+
+[[howto.data-access.configure-hibernate-naming-strategy]]
+== 配置 Hibernate 命名策略
+Hibernate 使用 {url-hibernate-userguide}#naming[两种不同的命名策略] 将对象模型中的名称映射到相应的数据库名称。物理和隐式策略实现的完全限定类名可以通过分别设置 `spring.jpa.hibernate.naming.physical-strategy` 和 `spring.jpa.hibernate.naming.implicit-strategy` 属性来配置。或者，如果应用程序上下文中存在 javadoc:org.hibernate.boot.model.naming.ImplicitNamingStrategy[] 或 javadoc:org.hibernate.boot.model.naming.PhysicalNamingStrategy[] bean，Hibernate 将自动配置为使用它们。
+
+默认情况下，Spring Boot 使用 javadoc:org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy[] 配置物理命名策略。使用此策略，所有点都被替换为下划线，驼峰命名法也被替换为下划线。此外，默认情况下，所有表名都以小写形式生成。例如，`TelephoneNumber` 实体映射到 `telephone_number` 表。如果你的模式需要混合大小写的标识符，请定义一个自定义的 javadoc:org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy[] bean，如下例所示：
+
+include-code::spring/MyHibernateConfiguration[]
+
+如果你更喜欢使用 Hibernate 的默认值，请设置以下属性：
+
+[configprops,yaml]
+----
+spring:
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+----
+
+或者，你可以配置以下 bean：
+
+include-code::standard/MyHibernateConfiguration[]
+
+有关更多详细信息，请参阅 {code-spring-boot-autoconfigure-src}/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`] 和 {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]。
+
+[[howto.data-access.configure-hibernate-second-level-caching]]
+== 配置 Hibernate 二级缓存
+Hibernate {url-hibernate-userguide}#caching[二级缓存] 可以为一系列缓存提供程序配置。与其配置 Hibernate 再次查找缓存提供程序，不如尽可能提供上下文中可用的缓存提供程序。
+
+要使用 JCache 实现这一点，首先确保 `org.hibernate.orm:hibernate-jcache` 在类路径上。然后，添加一个 javadoc:org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer[] bean，如下例所示：
+
+include-code::MyHibernateSecondLevelCacheConfiguration[]
+
+此自定义器将配置 Hibernate 使用与应用程序相同的 javadoc:org.springframework.cache.CacheManager[]。也可以使用单独的 javadoc:org.springframework.cache.CacheManager[] 实例。有关详细信息，请参阅 {url-hibernate-userguide}#caching-provider-jcache[Hibernate 用户指南]。
+
+[[howto.data-access.dependency-injection-in-hibernate-components]]
+== 在 Hibernate 组件中使用依赖注入
+默认情况下，Spring Boot 注册了一个使用 javadoc:org.springframework.beans.factory.BeanFactory[] 的 javadoc:org.hibernate.resource.beans.container.spi.BeanContainer[] 实现，以便转换器和实体监听器可以使用常规的依赖注入。
+
+你可以通过注册一个删除或更改 `hibernate.resource.beans.container` 属性的 javadoc:org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer[] 来禁用或调整此行为。
+
+[[howto.data-access.use-custom-entity-manager]]
+== 使用自定义 EntityManagerFactory
+要完全控制 javadoc:jakarta.persistence.EntityManagerFactory[] 的配置，你需要添加一个名为 '`entityManagerFactory`' 的 javadoc:org.springframework.context.annotation.Bean[format=annotation]。Spring Boot 自动配置在存在该类型的 bean 时会关闭其实体管理器。
+
+NOTE: 当你自己为 javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] 创建 bean 时，在创建自动配置的 javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] 期间应用的任何自定义都会丢失。确保使用自动配置的 javadoc:org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder[] 以保留 JPA 和供应商属性。如果你依赖 `spring.jpa.*` 属性来配置诸如命名策略或 DDL 模式之类的内容，这一点尤为重要。
+
+[[howto.data-access.use-multiple-entity-managers]]
+== 使用多个 EntityManagerFactory
+如果你需要对多个数据源使用 JPA，你可能需要每个数据源一个 javadoc:jakarta.persistence.EntityManagerFactory[]。Spring ORM 的 javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] 允许你根据需要配置 javadoc:jakarta.persistence.EntityManagerFactory[]。你还可以重用 javadoc:org.springframework.boot.autoconfigure.orm.jpa.JpaProperties[] 来绑定第二个 javadoc:jakarta.persistence.EntityManagerFactory[] 的设置。基于 xref:how-to:data-access.adoc#howto.data-access.configure-two-datasources[配置第二个 javadoc:javax.sql.DataSource[] 的示例]，可以定义第二个 javadoc:jakarta.persistence.EntityManagerFactory[]，如下例所示：
+
+include-code::MyAdditionalEntityManagerFactoryConfiguration[]
+
+上面的示例使用 `@Qualifier("second")` 限定的 javadoc:javax.sql.DataSource[] bean 创建了一个 javadoc:jakarta.persistence.EntityManagerFactory[]。它扫描与 `Order` 位于同一包中的实体。可以使用 `app.jpa` 命名空间映射其他 JPA 属性。使用 `@Bean(defaultCandidate=false)` 允许定义 `secondJpaProperties` 和 `secondEntityManagerFactory` bean，而不会干扰相同类型的自动配置 bean。
+
+NOTE: {url-spring-framework-docs}/core/beans/dependencies/factory-autowire.html#beans-factory-autowire-candidate[Spring Framework 参考文档] 更详细地描述了此功能。
+
+你应该为需要 JPA 访问的任何更多额外数据源提供类似的配置。为了完成这一过程，你还需要为每个 javadoc:jakarta.persistence.EntityManagerFactory[] 配置一个 javadoc:org.springframework.orm.jpa.JpaTransactionManager[]。或者，你可以使用跨越两者的 JTA 事务管理器。
+
+如果你使用 Spring Data，你需要相应地配置 javadoc:org.springframework.data.jpa.repository.config.EnableJpaRepositories[format=annotation]，如下例所示：
+
+include-code::OrderConfiguration[]
+
+include-code::CustomerConfiguration[]
+
+[[howto.data-access.use-traditional-persistence-xml]]
+== 使用传统的 persistence.xml 文件
+Spring Boot 默认不会搜索或使用 `META-INF/persistence.xml`。如果你更喜欢使用传统的 `persistence.xml`，你需要定义自己的类型为 javadoc:org.springframework.orm.jpa.LocalEntityManagerFactoryBean[] 的 javadoc:org.springframework.context.annotation.Bean[format=annotation]（ID 为 '`entityManagerFactory`'），并在那里设置持久化单元名称。
+
+有关默认设置，请参阅 {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`]。
+
+[[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
+== 使用 Spring Data JPA 和 Mongo 仓库
+Spring Data JPA 和 Spring Data Mongo 都可以自动为你创建 javadoc:org.springframework.data.repository.Repository[] 实现。如果它们都在类路径上，你可能需要做一些额外的配置来告诉 Spring Boot 创建哪些仓库。最明确的方法是使用标准的 Spring Data javadoc:org.springframework.data.jpa.repository.config.EnableJpaRepositories[format=annotation] 和 javadoc:org.springframework.data.mongodb.repository.config.EnableMongoRepositories[format=annotation] 注解，并提供你的 javadoc:org.springframework.data.repository.Repository[] 接口的位置。
+
+还有一些标志（`+spring.data.*.repositories.enabled+` 和 `+spring.data.*.repositories.type+`），你可以使用它们在外部配置中切换自动配置的仓库。例如，如果你想关闭 Mongo 仓库并仍然使用自动配置的 javadoc:org.springframework.data.mongodb.core.MongoTemplate[]，这非常有用。
+
+对于其他自动配置的 Spring Data 仓库类型（Elasticsearch、Redis 等），存在相同的障碍和相同的功能。要使用它们，请相应地更改注解和标志的名称。
+
+[[howto.data-access.customize-spring-data-web-support]]
+== 自定义 Spring Data 的 Web 支持
+Spring Data 提供了 Web 支持，简化了在 Web 应用程序中使用 Spring Data 仓库的操作。Spring Boot 在 `spring.data.web` 命名空间中提供了用于自定义其配置的属性。请注意，如果你使用 Spring Data REST，则必须改用 `spring.data.rest` 命名空间中的属性。
+
+[[howto.data-access.exposing-spring-data-repositories-as-rest]]
+== 将 Spring Data 仓库暴露为 REST 端点
+Spring Data REST 可以将 javadoc:org.springframework.data.repository.Repository[] 实现暴露为 REST 端点，前提是应用程序已启用 Spring MVC。
+
+Spring Boot 暴露了一组有用的属性（来自 `spring.data.rest` 命名空间），用于自定义 javadoc:org.springframework.data.rest.core.config.RepositoryRestConfiguration[]。如果你需要提供额外的自定义，你应该使用 javadoc:org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer[] bean。
+
+NOTE: 如果你没有在自定义的 javadoc:org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer[] 上指定任何顺序，它将在 Spring Boot 内部使用的配置器之后运行。如果你需要指定顺序，请确保它高于 0。
+
+[[howto.data-access.configure-a-component-that-is-used-by-jpa]]
+== 配置 JPA 使用的组件
+如果你想要配置 JPA 使用的组件，那么你需要确保该组件在 JPA 之前初始化。当组件是自动配置时，Spring Boot 会为你处理这个问题。例如，当 Flyway 自动配置时，Hibernate 被配置为依赖于 Flyway，以便 Flyway 有机会在 Hibernate 尝试使用数据库之前初始化数据库。
+
+如果你自己配置组件，可以使用 javadoc:org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor[] 子类作为设置必要依赖项的便捷方式。例如，如果你将 Hibernate Search 与 Elasticsearch 作为其索引管理器一起使用，则必须将任何 javadoc:jakarta.persistence.EntityManagerFactory[] bean 配置为依赖于 `elasticsearchClient` bean，如下例所示：
+
+include-code::ElasticsearchEntityManagerFactoryDependsOnPostProcessor[]
+
+[[howto.data-access.configure-jooq-with-multiple-datasources]]
+== 使用两个数据源配置 jOOQ
+如果你需要使用 jOOQ 与多个数据源，你应该为每个数据源创建自己的 javadoc:org.jooq.DSLContext[]。有关更多详细信息，请参阅 {code-spring-boot-autoconfigure-src}/jooq/JooqAutoConfiguration.java[`JooqAutoConfiguration`]。
+
+TIP: 特别是，javadoc:org.springframework.boot.autoconfigure.jooq.JooqExceptionTranslator[] 和 javadoc:org.springframework.boot.autoconfigure.jooq.SpringTransactionProvider[] 可以重用，以提供与自动配置使用单个 javadoc:javax.sql.DataSource[] 时类似的功能。
+
+'''
+[[howto.data-access]]
+== Data Access
 Spring Boot includes a number of starters for working with data sources.
 This section answers questions related to doing so.
 
-
-
 [[howto.data-access.configure-custom-datasource]]
 == Configure a Custom DataSource
-
 To configure your own javadoc:javax.sql.DataSource[], define a javadoc:org.springframework.context.annotation.Bean[format=annotation] of that type in your configuration.
 Spring Boot reuses your javadoc:javax.sql.DataSource[] anywhere one is required, including database initialization.
 If you need to externalize some settings, you can bind your javadoc:javax.sql.DataSource[] to the environment (see xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.third-party-configuration[]).
@@ -106,11 +390,8 @@ This example uses a more generic `configuration` sub namespace as the example do
 
 See xref:reference:data/sql.adoc#data.sql.datasource[] and the {code-spring-boot-autoconfigure-src}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
 
-
-
 [[howto.data-access.configure-two-datasources]]
 == Configure Two DataSources
-
 To define an additional javadoc:javax.sql.DataSource[], an approach that's similar to the previous section can be used.
 A key difference is that the javadoc:javax.sql.DataSource[] javadoc:org.springframework.context.annotation.Bean[format=annotation] must be declared with `defaultCandidate=false`.
 This prevents the auto-configured javadoc:javax.sql.DataSource[] from backing off.
@@ -153,11 +434,8 @@ Note that the `app.datasource.configuration.*` properties provide advanced setti
 As with xref:how-to:data-access.adoc#howto.data-access.configure-custom-datasource[configuring a single custom javadoc:javax.sql.DataSource[]], the type of one or both of the javadoc:javax.sql.DataSource[] beans can be customized using the `type(Class)` method on javadoc:org.springframework.boot.jdbc.DataSourceBuilder[].
 See xref:reference:data/sql.adoc#data.sql.datasource.connection-pool[] for details of the supported types.
 
-
-
 [[howto.data-access.spring-data-repositories]]
 == Use Spring Data Repositories
-
 Spring Data can create implementations of javadoc:org.springframework.data.repository.Repository[] interfaces of various flavors.
 Spring Boot handles all of that for you, as long as those javadoc:org.springframework.data.repository.Repository[] implementations are included in one of the xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages], typically the package (or a sub-package) of your main application class that is annotated with javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] or javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation].
 
@@ -170,32 +448,23 @@ For more control, use the `@Enable…Repositories` annotations from Spring Data.
 
 For more about Spring Data, see the {url-spring-data-site}[Spring Data project page].
 
-
-
 [[howto.data-access.separate-entity-definitions-from-spring-configuration]]
 == Separate @Entity Definitions from Spring Configuration
-
 Spring Boot determines the location of your javadoc:jakarta.persistence.Entity[format=annotation] definitions by scanning the xref:reference:using/auto-configuration.adoc#using.auto-configuration.packages[auto-configuration packages].
 For more control, use the javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation] annotation, as shown in the following example:
 
 include-code::MyApplication[]
 
-
-
 [[howto.data-access.filter-scanned-entity-definitions]]
 == Filter Scanned @Entity Definitions
-
 It is possible to filter the javadoc:jakarta.persistence.Entity[format=annotation] definitions using a javadoc:org.springframework.orm.jpa.persistenceunit.ManagedClassNameFilter[] bean.
 This can be useful in tests when only a sub-set of the available entities should be considered.
 In the following example, only entities from the `com.example.app.customer` package are included:
 
 include-code::MyEntityScanConfiguration[]
 
-
-
 [[howto.data-access.jpa-properties]]
 == Configure JPA Properties
-
 Spring Data JPA already provides some vendor-independent configuration options (such as those for SQL logging), and Spring Boot exposes those options and a few more for Hibernate as external configuration properties.
 Some of them are automatically detected according to the context so you should not have to set them.
 
@@ -232,11 +501,8 @@ If you use other forms, such as `batchSize` or `batch-size`, Hibernate will not 
 TIP: If you need to apply advanced customization to Hibernate properties, consider registering a javadoc:org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer[] bean that will be invoked prior to creating the javadoc:jakarta.persistence.EntityManagerFactory[].
 This takes precedence over anything that is applied by the auto-configuration.
 
-
-
 [[howto.data-access.configure-hibernate-naming-strategy]]
 == Configure Hibernate Naming Strategy
-
 Hibernate uses {url-hibernate-userguide}#naming[two different naming strategies] to map names from the object model to the corresponding database names.
 The fully qualified class name of the physical and the implicit strategy implementations can be configured by setting the `spring.jpa.hibernate.naming.physical-strategy` and `spring.jpa.hibernate.naming.implicit-strategy` properties, respectively.
 Alternatively, if javadoc:org.hibernate.boot.model.naming.ImplicitNamingStrategy[] or javadoc:org.hibernate.boot.model.naming.PhysicalNamingStrategy[] beans are available in the application context, Hibernate will be automatically configured to use them.
@@ -266,11 +532,8 @@ include-code::standard/MyHibernateConfiguration[]
 
 See {code-spring-boot-autoconfigure-src}/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`] and {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for more details.
 
-
-
 [[howto.data-access.configure-hibernate-second-level-caching]]
 == Configure Hibernate Second-Level Caching
-
 Hibernate {url-hibernate-userguide}#caching[second-level cache] can be configured for a range of cache providers.
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
 
@@ -283,20 +546,14 @@ This customizer will configure Hibernate to use the same javadoc:org.springframe
 It is also possible to use separate javadoc:org.springframework.cache.CacheManager[] instances.
 For details, see {url-hibernate-userguide}#caching-provider-jcache[the Hibernate user guide].
 
-
-
 [[howto.data-access.dependency-injection-in-hibernate-components]]
 == Use Dependency Injection in Hibernate Components
-
 By default, Spring Boot registers a javadoc:org.hibernate.resource.beans.container.spi.BeanContainer[] implementation that uses the javadoc:org.springframework.beans.factory.BeanFactory[] so that converters and entity listeners can use regular dependency injection.
 
 You can disable or tune this behavior by registering a javadoc:org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer[] that removes or changes the `hibernate.resource.beans.container` property.
 
-
-
 [[howto.data-access.use-custom-entity-manager]]
 == Use a Custom EntityManagerFactory
-
 To take full control of the configuration of the javadoc:jakarta.persistence.EntityManagerFactory[], you need to add a javadoc:org.springframework.context.annotation.Bean[format=annotation] named '`entityManagerFactory`'.
 Spring Boot auto-configuration switches off its entity manager in the presence of a bean of that type.
 
@@ -304,11 +561,8 @@ NOTE: When you create a bean for javadoc:org.springframework.orm.jpa.LocalContai
 Make sure to use the auto-configured javadoc:org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder[] to retain JPA and vendor properties.
 This is particularly important if you were relying on `spring.jpa.*` properties for configuring things like the naming strategy or the DDL mode.
 
-
-
 [[howto.data-access.use-multiple-entity-managers]]
 == Using Multiple EntityManagerFactories
-
 If you need to use JPA against multiple datasources, you likely need one javadoc:jakarta.persistence.EntityManagerFactory[] per datasource.
 The javadoc:org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean[] from Spring ORM allows you to configure an javadoc:jakarta.persistence.EntityManagerFactory[] for your needs.
 You can also reuse javadoc:org.springframework.boot.autoconfigure.orm.jpa.JpaProperties[] to bind settings for a second javadoc:jakarta.persistence.EntityManagerFactory[].
@@ -333,21 +587,15 @@ include-code::OrderConfiguration[]
 
 include-code::CustomerConfiguration[]
 
-
-
 [[howto.data-access.use-traditional-persistence-xml]]
 == Use a Traditional persistence.xml File
-
 Spring Boot will not search for or use a `META-INF/persistence.xml` by default.
 If you prefer to use a traditional `persistence.xml`, you need to define your own javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.orm.jpa.LocalEntityManagerFactoryBean[] (with an ID of '`entityManagerFactory`') and set the persistence unit name there.
 
 See {code-spring-boot-autoconfigure-src}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for the default settings.
 
-
-
 [[howto.data-access.use-spring-data-jpa-and-mongo-repositories]]
 == Use Spring Data JPA and Mongo Repositories
-
 Spring Data JPA and Spring Data Mongo can both automatically create javadoc:org.springframework.data.repository.Repository[] implementations for you.
 If they are both present on the classpath, you might have to do some extra configuration to tell Spring Boot which repositories to create.
 The most explicit way to do that is to use the standard Spring Data javadoc:org.springframework.data.jpa.repository.config.EnableJpaRepositories[format=annotation] and javadoc:org.springframework.data.mongodb.repository.config.EnableMongoRepositories[format=annotation] annotations and provide the location of your javadoc:org.springframework.data.repository.Repository[] interfaces.
@@ -358,20 +606,14 @@ Doing so is useful, for instance, in case you want to switch off the Mongo repos
 The same obstacle and the same features exist for other auto-configured Spring Data repository types (Elasticsearch, Redis, and others).
 To work with them, change the names of the annotations and flags accordingly.
 
-
-
 [[howto.data-access.customize-spring-data-web-support]]
 == Customize Spring Data's Web Support
-
 Spring Data provides web support that simplifies the use of Spring Data repositories in a web application.
 Spring Boot provides properties in the `spring.data.web` namespace for customizing its configuration.
 Note that if you are using Spring Data REST, you must use the properties in the `spring.data.rest` namespace instead.
 
-
-
 [[howto.data-access.exposing-spring-data-repositories-as-rest]]
 == Expose Spring Data Repositories as REST Endpoint
-
 Spring Data REST can expose the javadoc:org.springframework.data.repository.Repository[] implementations as REST endpoints for you,
 provided Spring MVC has been enabled for the application.
 
@@ -381,11 +623,8 @@ If you need to provide additional customization, you should use a javadoc:org.sp
 NOTE: If you do not specify any order on your custom javadoc:org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer[], it runs after the one Spring Boot uses internally.
 If you need to specify an order, make sure it is higher than 0.
 
-
-
 [[howto.data-access.configure-a-component-that-is-used-by-jpa]]
 == Configure a Component that is Used by JPA
-
 If you want to configure a component that JPA uses, then you need to ensure that the component is initialized before JPA.
 When the component is auto-configured, Spring Boot takes care of this for you.
 For example, when Flyway is auto-configured, Hibernate is configured to depend on Flyway so that Flyway has a chance to initialize the database before Hibernate tries to use it.
@@ -395,11 +634,8 @@ For example, if you use Hibernate Search with Elasticsearch as its index manager
 
 include-code::ElasticsearchEntityManagerFactoryDependsOnPostProcessor[]
 
-
-
 [[howto.data-access.configure-jooq-with-multiple-datasources]]
 == Configure jOOQ with Two DataSources
-
 If you need to use jOOQ with multiple data sources, you should create your own javadoc:org.jooq.DSLContext[] for each one.
 See {code-spring-boot-autoconfigure-src}/jooq/JooqAutoConfiguration.java[`JooqAutoConfiguration`] for more details.
 

@@ -1,6 +1,45 @@
-[[io.hazelcast]]
 = Hazelcast
+:encoding: utf-8
+:numbered:
 
+[[io.hazelcast]]
+== Hazelcast
+如果类路径上存在 https://hazelcast.com/[Hazelcast] 并且找到了合适的配置，Spring Boot 会自动配置一个 javadoc:com.hazelcast.core.HazelcastInstance[]，你可以将其注入到应用程序中。
+
+Spring Boot 首先尝试通过检查以下配置选项来创建客户端：
+
+* 是否存在 javadoc:com.hazelcast.client.config.ClientConfig[] bean。
+* 由 configprop:spring.hazelcast.config[] 属性定义的配置文件。
+* 是否存在 `hazelcast.client.config` 系统属性。
+* 工作目录或类路径根目录下的 `hazelcast-client.xml`。
+* 工作目录或类路径根目录下的 `hazelcast-client.yaml`（或 `hazelcast-client.yml`）。
+
+如果无法创建客户端，Spring Boot 会尝试配置一个嵌入式服务器。
+如果你定义了 javadoc:com.hazelcast.config.Config[] bean，Spring Boot 会使用它。
+如果你的配置定义了实例名称，Spring Boot 会尝试定位现有实例，而不是创建新实例。
+
+你也可以通过配置指定要使用的 Hazelcast 配置文件，如下例所示：
+
+[configprops,yaml]
+----
+spring:
+  hazelcast:
+    config: "classpath:config/my-hazelcast.xml"
+----
+
+否则，Spring Boot 会尝试从默认位置查找 Hazelcast 配置：工作目录或类路径根目录下的 `hazelcast.xml`，或相同位置的 YAML 文件。
+我们还会检查是否设置了 `hazelcast.config` 系统属性。
+有关更多详细信息，请参阅 https://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast 文档]。
+
+TIP: 默认情况下，支持 Hazelcast 组件上的 javadoc:com.hazelcast.spring.context.SpringAware[format=annotation]。
+可以通过声明一个 javadoc:org.springframework.boot.autoconfigure.hazelcast.HazelcastConfigCustomizer[] bean 来覆盖 javadoc:com.hazelcast.core.ManagedContext[]，并使用 javadoc:org.springframework.core.annotation.Order[format=annotation] 设置优先级高于零的值。
+
+NOTE: Spring Boot 还对 Hazelcast 提供了 xref:io/caching.adoc#io.caching.provider.hazelcast[显式的缓存支持]。
+如果启用了缓存，javadoc:com.hazelcast.core.HazelcastInstance[] 会自动包装在 javadoc:org.springframework.cache.CacheManager[] 实现中。
+
+'''
+[[io.hazelcast]]
+== Hazelcast
 If https://hazelcast.com/[Hazelcast] is on the classpath and a suitable configuration is found, Spring Boot auto-configures a javadoc:com.hazelcast.core.HazelcastInstance[] that you can inject in your application.
 
 Spring Boot first attempts to create a client by checking the following configuration options:

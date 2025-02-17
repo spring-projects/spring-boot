@@ -1,5 +1,116 @@
+= 使用插件
+:encoding: utf-8
+:numbered:
+
 [[using]]
-= Using the Plugin
+== 使用插件
+
+Maven 用户可以继承 `spring-boot-starter-parent` 项目以获得合理的默认配置。父项目提供以下功能：
+
+* 默认使用 Java 17 作为编译器级别。
+* UTF-8 源代码编码。
+* 使用 `-parameters` 进行编译。
+* 从 `spring-boot-dependencies` POM 继承的依赖管理部分，管理常见依赖的版本。这种依赖管理允许你在自己的 POM 中使用这些依赖时省略 `<version>` 标签。
+* 使用 `repackage` 执行 ID 执行 xref:maven-plugin:packaging.adoc#packaging.repackage-goal[`repackage` 目标]。
+* 配置构建以能够生成 Native 镜像的 `native` 配置文件。
+* 合理的 https://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html[资源过滤]。
+* 合理的插件配置（ https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID] 和 https://maven.apache.org/plugins/maven-shade-plugin/[shade]）。
+* 对 `application.properties` 和 `application.yml` 的合理资源过滤，包括特定于配置文件的文件（例如 `application-dev.properties` 和 `application-dev.yml`）。
+
+NOTE: 由于 `application.properties` 和 `application.yml` 文件接受 Spring 风格的占位符（`${...}`），Maven 过滤更改为使用 `@..@` 占位符。（你可以通过设置名为 `resource.delimiter` 的 Maven 属性来覆盖此行为。）
+
+[NOTE]
+====
+`spring-boot-starter-parent` 设置了 `maven.compiler.release` 属性，该属性限制了 https://openjdk.org/jeps/247[如果它们修改系统模块] 的 `--add-exports`、`--add-reads` 和 `--patch-module` 选项。如果你需要使用这些选项，请取消设置 `maven.compiler.release`：
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+<maven.compiler.release></maven.compiler.release>
+----
+
+然后配置源和目标选项：
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+<maven.compiler.source>${java.version}</maven.compiler.source>
+<maven.compiler.target>${java.version}</maven.compiler.target>
+----
+====
+
+[[using.parent-pom]]
+== 继承 Starter Parent POM
+
+要配置项目以继承 `spring-boot-starter-parent`，请按如下方式设置 `parent`：
+
+[source,xml,subs="verbatim,quotes,attributes"]
+----
+<!-- 从 Spring Boot 继承默认配置 -->
+<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>{version-spring-boot}</version>
+</parent>
+----
+
+NOTE: 你只需要在此依赖项中指定 Spring Boot 版本号。如果你导入了其他启动器，可以安全地省略版本号。
+
+通过此设置，你还可以通过覆盖项目中的属性来覆盖单个依赖项。例如，要使用不同版本的 SLF4J 库和 Spring Data 发布列车，你可以在 `pom.xml` 中添加以下内容：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/different-versions-pom.xml[tags=different-versions]
+----
+
+浏览 Spring Boot 参考文档中的 xref:appendix:dependency-versions/properties.adoc[依赖版本属性] 部分，以获取完整的依赖版本属性列表。
+
+[[using.import]]
+== 不使用 Parent POM 的 Spring Boot
+
+你可能有一些原因不想继承 `spring-boot-starter-parent` POM。你可能需要使用自己的公司标准父 POM，或者你更喜欢显式声明所有 Maven 配置。
+
+如果你不想使用 `spring-boot-starter-parent`，你仍然可以通过使用 `import` 范围的依赖项来保留依赖管理的优势（但不包括插件管理），如下所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/no-starter-parent-pom.xml[tags=no-starter-parent]
+----
+
+上述示例设置不允许你通过使用属性覆盖单个依赖项，如上所述。要实现相同的结果，你需要在项目的 `dependencyManagement` 部分中添加条目，**在** `spring-boot-dependencies` 条目之前。例如，要使用不同版本的 SLF4J 库和 Spring Data 发布列车，你可以在 `pom.xml` 中添加以下元素：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/no-starter-parent-override-dependencies-pom.xml[tags=no-starter-parent-override-dependencies]
+----
+
+[[using.overriding-command-line]]
+== 在命令行上覆盖设置
+
+插件提供了许多以 `spring-boot` 开头的用户属性，允许你从命令行自定义配置。
+
+例如，你可以在运行应用程序时调整启用的配置文件，如下所示：
+
+[source,shell]
+----
+$ mvn spring-boot:run -Dspring-boot.run.profiles=dev,local
+----
+
+如果你希望在允许在命令行上覆盖的同时设置默认值，你应该结合使用用户提供的项目属性和 MOJO 配置。
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$using/default-and-override-pom.xml[tags=default-and-override]
+----
+
+上述配置确保默认启用 `local` 和 `dev`。现在已公开了一个专用属性，也可以在命令行上覆盖它：
+
+[source,shell]
+----
+$ mvn spring-boot:run -Dapp.profiles=test
+----
+
+'''
+[[using]]
+== Using the Plugin
 
 Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible defaults.
 The parent project provides the following features:

@@ -1,6 +1,153 @@
-[[getting-started]]
 = Getting Started
+:encoding: utf-8
+:numbered:
 
+[[getting-started]]
+== 入门指南
+
+要开始使用该插件，需要将其应用到你的项目中。
+
+ifeval::["{build-type}" == "commercial"]
+该插件发布到 Spring 商业仓库。你需要配置构建以访问此仓库。通常通过本地工件仓库来实现，该仓库镜像 Spring 商业仓库的内容。或者，虽然不推荐，也可以直接访问 Spring 商业仓库。无论哪种情况，请参阅 https://docs.vmware.com/en/Tanzu-Spring-Runtime/Commercial/Tanzu-Spring-Runtime/spring-enterprise-subscription.html[Tanzu Spring Runtime 文档] 以获取更多详细信息。
+
+在 `settings.gradle` 或 `settings.gradle.kts` 中配置了对 Spring 商业仓库的访问后，可以使用 `plugins` 块应用该插件：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-commercial.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-commercial.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-release"]
+该插件已发布到 https://plugins.gradle.org/plugin/org.springframework.boot[Gradle 的插件门户]，可以使用 `plugins` 块应用：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
+该插件发布到 Spring 里程碑仓库。可以配置 Gradle 使用里程碑仓库，然后使用 `plugins` 块应用该插件。要配置 Gradle 使用里程碑仓库，请将以下内容添加到 `settings.gradle`（Groovy）或 `settings.gradle.kts`（Kotlin）中：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/milestone-settings.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/milestone-settings.gradle.kts[]
+----
+======
+
+然后可以使用 `plugins` 块应用该插件：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
+该插件发布到 Spring 快照仓库。可以配置 Gradle 使用快照仓库，然后使用 `plugins` 块应用该插件。要配置 Gradle 使用快照仓库，请将以下内容添加到 `settings.gradle`（Groovy）或 `settings.gradle.kts`（Kotlin）中：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/snapshot-settings.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/snapshot-settings.gradle.kts[]
+----
+======
+
+然后可以使用 `plugins` 块应用该插件：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/apply-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+单独应用时，该插件对项目的更改很少。相反，该插件会检测何时应用了某些其他插件并做出相应的反应。例如，当应用 `java` 插件时，会自动配置一个用于构建可执行 jar 的任务。典型的 Spring Boot 项目将应用 {url-gradle-docs-groovy-plugin}[`groovy`]、{url-gradle-docs-java-plugin}[`java`] 或 {url-kotlin-docs-kotlin-plugin}[`org.jetbrains.kotlin.jvm`] 插件作为最低要求，并使用 {url-dependency-management-plugin-site}[`io.spring.dependency-management`] 插件或 Gradle 的原生 bom 支持进行依赖管理。例如：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/typical-plugins.gradle[tags=apply]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$getting-started/typical-plugins.gradle.kts[tags=apply]
+----
+======
+
+要了解有关 Spring Boot 插件在应用其他插件时的行为的更多信息，请参阅 xref:reacting.adoc[对其他插件的反应] 部分。
+
+'''
+[[getting-started]]
+== Getting Started
 To get started with the plugin it needs to be applied to your project.
 
 ifeval::["{build-type}" == "commercial"]

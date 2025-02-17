@@ -1,11 +1,45 @@
+= 高效部署
+:encoding: utf-8
+:numbered:
+
 [[packaging.efficient]]
-= Efficient Deployments
+== 高效部署
+
+[[packaging.efficient.unpacking]]
+== 解压可执行 jar 文件
+
+你可以使用可执行 jar 文件运行你的应用程序，但从嵌套的 jar 文件中加载类会有一些启动成本。根据 jar 文件的大小，从解压后的结构中运行应用程序会更快，并且建议在生产环境中使用。某些 PaaS 实现也可能选择在运行之前解压归档文件。例如，Cloud Foundry 就是这样操作的。
+
+Spring Boot 支持使用不同的布局将你的应用程序解压到一个目录中。默认布局是最有效的，并且与 xref:reference:packaging/class-data-sharing.adoc[CDS] 兼容。
+
+在这种布局中，库被解压到 `lib/` 文件夹中，而应用程序 jar 文件包含应用程序类和一个引用 `lib/` 文件夹中库的清单。
+
+要解压可执行 jar 文件，请运行以下命令：
+
+[source,shell]
+----
+$ java -Djarmode=tools -jar my-app.jar extract
+----
+
+然后在生产环境中，你可以运行解压后的 jar 文件：
+
+[source,shell]
+----
+$ java -jar my-app/my-app.jar
+----
+
+启动后，运行可执行 jar 文件和解压后的 jar 文件在执行时间上不应有任何差异。
+
+TIP: 运行 `java -Djarmode=tools -jar my-app.jar help extract` 查看所有可能的选项。
+
+'''
 
 
+[[packaging.efficient]]
+== Efficient Deployments
 
 [[packaging.efficient.unpacking]]
 == Unpacking the Executable jar
-
 You can run your application using the executable jar, but loading the classes from nested jars has a small startup cost.
 Depending on the size of the jar, running the application from an exploded structure is faster and recommended in production.
 Certain PaaS implementations may also choose to extract archives before they run.
@@ -34,5 +68,3 @@ $ java -jar my-app/my-app.jar
 After startup, you should not expect any differences in execution time between running an executable jar and running an extracted jar.
 
 TIP: Run `java -Djarmode=tools -jar my-app.jar help extract` to see all possible options.
-
-

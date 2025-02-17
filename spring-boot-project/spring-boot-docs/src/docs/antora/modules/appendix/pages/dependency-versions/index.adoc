@@ -1,5 +1,16 @@
+= Dependency Versions
+:encoding: utf-8
+:numbered:
+
 [appendix]
 [[appendix.dependency-versions]]
-= Dependency Versions
+== 依赖版本
+
+本附录提供了由 Spring Boot 管理的依赖项的详细信息。
+
+'''
+[appendix]
+[[appendix.dependency-versions]]
+== Dependency Versions
 
 This appendix provides details of the dependencies that are managed by Spring Boot.

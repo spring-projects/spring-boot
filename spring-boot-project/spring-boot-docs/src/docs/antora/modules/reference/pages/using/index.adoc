@@ -1,5 +1,18 @@
+= 使用 Spring Boot 进行开发
+:encoding: utf-8
+:numbered:
+
 [[using]]
-= Developing with Spring Boot
+== 使用 Spring Boot 进行开发
+本节将详细介绍如何使用 Spring Boot。
+它涵盖了构建系统、自动配置以及如何运行应用程序等主题。
+我们还将介绍一些 Spring Boot 的最佳实践。
+尽管 Spring Boot 并没有什么特别之处（它只是你可以使用的另一个库），但遵循一些建议可以使你的开发过程更加轻松。
+
+如果你是 Spring Boot 的初学者，在深入本节之前，你可能需要先阅读 xref:tutorial:first-application/index.adoc[] 教程。
+
+[[using]]
+== Developing with Spring Boot
 
 This section goes into more detail about how you should use Spring Boot.
 It covers topics such as build systems, auto-configuration, and how to run your applications.
@@ -7,4 +20,3 @@ We also cover some Spring Boot best practices.
 Although there is nothing particularly special about Spring Boot (it is just another library that you can consume), there are a few recommendations that, when followed, make your development process a little easier.
 
 If you are starting out with Spring Boot, you should probably read the xref:tutorial:first-application/index.adoc[] tutorial before diving into this section.
-

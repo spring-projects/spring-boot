@@ -1,14 +1,35 @@
-[[howto.class-data-sharing]]
-= Class Data Sharing
+= 类数据共享
+:encoding: utf-8
+:numbered:
 
+[[howto.class-data-sharing]]
+== 类数据共享
+本节包含有关在 Spring Boot 应用程序中使用类数据共享 (CDS) 的信息。有关 Spring Boot 对 CDS 支持的概述，请参阅 xref:reference:packaging/class-data-sharing.adoc[]。
+
+[[howto.class-data-sharing.buildpacks]]
+== 使用 CDS 和 Buildpacks 打包应用程序
+Spring Boot 的 xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[对云原生 Buildpacks 的支持] 以及 https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] 及其 https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot 支持] 可用于生成包含 CDS 优化应用程序的 Docker 镜像。
+
+要在生成的 Docker 镜像中启用 CDS 优化，构建镜像时应将 buildpack 环境变量 `BP_JVM_CDS_ENABLED` 设置为 `true`，如 xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven 插件] 和 xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle 插件] 文档中所述。这将导致 buildpack 对应用程序进行训练运行，将 CDS 存档保存在镜像中，并在启动应用程序时使用 CDS 存档。
+
+Paketo Buildpack for Spring Boot 的 https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[文档] 提供了有关可以通过构建器环境变量启用的其他配置选项的信息，例如 `CDS_TRAINING_JAVA_TOOL_OPTIONS`，它允许覆盖默认的 `JAVA_TOOL_OPTIONS`，仅用于 CDS 训练运行。
+
+[[howto.class-data-sharing.dockerfiles]]
+== 使用 CDS 和 Dockerfiles 打包应用程序
+如果你不想使用云原生 Buildpacks，也可以使用 CDS 与 `Dockerfile`。有关更多信息，请参阅 xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.cds[Dockerfiles 参考文档]。
+
+[[howto.class-data-sharing.training-run-configuration]]
+== 防止训练运行期间的远程服务交互
+在执行训练运行时，可能需要自定义 Spring Boot 应用程序配置，以防止在 Spring 生命周期启动之前发生的远程服务连接。这通常发生在早期数据库交互中，可以通过相关配置来处理，这些配置可以默认应用于你的应用程序（或专门应用于训练运行）以防止此类交互，请参阅 https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/main/README.adoc#training-run-configuration[相关文档]。
+
+'''
+[[howto.class-data-sharing]]
+== Class Data Sharing
 This section includes information about using Class Data Sharing (CDS) with Spring Boot applications.
 For an overview of Spring Boot support for CDS, see xref:reference:packaging/class-data-sharing.adoc[].
 
-
-
 [[howto.class-data-sharing.buildpacks]]
 == Packaging an Application Using CDS and Buildpacks
-
 Spring Boot's xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[support for Cloud Native Buildpacks] along with the https://paketo.io/docs/reference/java-reference[Paketo Java buildpack] and its https://paketo.io/docs/reference/java-reference/#spring-boot-applications[Spring Boot support] can be used to generate a Docker image containing a CDS-optimized application.
 
 To enable CDS optimization in a generated Docker image, the buildpack environment variable `BP_JVM_CDS_ENABLED` should be set to `true` when building the image as described in the xref:maven-plugin:build-image.adoc#build-image.examples.builder-configuration[Maven plugin] and xref:gradle-plugin:packaging-oci-image.adoc#build-image.examples.builder-configuration[Gradle plugin] documentation.
@@ -16,18 +37,12 @@ This will cause the buildpack to do a training run of the application, save the 
 
 The Paketo Buildpack for Spring Boot https://github.com/paketo-buildpacks/spring-boot?tab=readme-ov-file#configuration[documentation] has information on other configuration options that can be enabled with builder environment variables, like `CDS_TRAINING_JAVA_TOOL_OPTIONS` that allows to override the default `JAVA_TOOL_OPTIONS`, only for the CDS training run.
 
-
-
 [[howto.class-data-sharing.dockerfiles]]
 == Packaging an Application Using CDS and Dockerfiles
-
 If you don't want to use Cloud Native Buildpacks, it is also possible to use CDS with a `Dockerfile`.
 For more information about that, please see the xref:reference:packaging/container-images/dockerfiles.adoc#packaging.container-images.dockerfiles.cds[Dockerfiles reference documentation].
 
-
-
 [[howto.class-data-sharing.training-run-configuration]]
 == Preventing Remote Services Interaction During the Training Run
-
 When performing the training run, it may be needed to customize the Spring Boot application configuration to prevent connections to remote services that may happen before the Spring lifecycle is started.
 This can typically happen with early database interactions and can be handled via related configuration that can be applied by default to your application (or specifically to the training run) to prevent such interactions, see https://github.com/spring-projects/spring-lifecycle-smoke-tests/blob/main/README.adoc#training-run-configuration[related documentation].

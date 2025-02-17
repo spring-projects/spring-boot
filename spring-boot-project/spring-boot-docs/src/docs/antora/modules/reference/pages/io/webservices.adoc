@@ -1,13 +1,15 @@
+= Web 服务
+:encoding: utf-8
+:numbered:
+
 [[io.webservices]]
-= Web Services
+== Web 服务
+Spring Boot 提供了 Web 服务的自动配置，因此你只需定义你的 javadoc:org.springframework.ws.server.endpoint.annotation.Endpoint[format=annotation] bean。
 
-Spring Boot provides Web Services auto-configuration so that all you must do is define your javadoc:org.springframework.ws.server.endpoint.annotation.Endpoint[format=annotation] beans.
+使用 `spring-boot-starter-webservices` 模块可以轻松访问 {url-spring-webservices-docs}[Spring Web Services 功能]。
 
-The {url-spring-webservices-docs}[Spring Web Services features] can be easily accessed with the `spring-boot-starter-webservices` module.
-
-javadoc:org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition[] and javadoc:org.springframework.xml.xsd.SimpleXsdSchema[] beans can be automatically created for your WSDLs and XSDs respectively.
-To do so, configure their location, as shown in the following example:
-
+可以为你的 WSDL 和 XSD 分别自动创建 javadoc:org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition[] 和 javadoc:org.springframework.xml.xsd.SimpleXsdSchema[] bean。
+为此，请配置它们的位置，如下例所示：
 
 [configprops,yaml]
 ----
@@ -16,11 +18,42 @@ spring:
     wsdl-locations: "classpath:/wsdl"
 ----
 
+[[io.webservices.template]]
+== 使用 WebServiceTemplate 调用 Web 服务
+如果你需要从应用程序中调用远程 Web 服务，可以使用 {url-spring-webservices-docs}#client-web-service-template[`WebServiceTemplate`] 类。
+由于 javadoc:org.springframework.ws.client.core.WebServiceTemplate[] 实例在使用前通常需要自定义，Spring Boot 没有提供任何单一的自动配置的 javadoc:org.springframework.ws.client.core.WebServiceTemplate[] bean。
+然而，它会自动配置一个 javadoc:org.springframework.boot.webservices.client.WebServiceTemplateBuilder[]，可以在需要时用来创建 javadoc:org.springframework.ws.client.core.WebServiceTemplate[] 实例。
 
+以下代码展示了一个典型示例：
+
+include-code::MyService[]
+
+默认情况下，javadoc:org.springframework.boot.webservices.client.WebServiceTemplateBuilder[] 会使用类路径上可用的 HTTP 客户端库检测合适的基于 HTTP 的 javadoc:org.springframework.ws.transport.WebServiceMessageSender[]。
+你还可以为单个构建器自定义读取和连接超时，如下所示：
+
+include-code::MyWebServiceTemplateConfiguration[]
+
+TIP: 如果没有应用特定的模板自定义代码，你还可以更改 xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[全局 HTTP 客户端配置]。
+
+'''
+[[io.webservices]]
+== Web Services
+Spring Boot provides Web Services auto-configuration so that all you must do is define your javadoc:org.springframework.ws.server.endpoint.annotation.Endpoint[format=annotation] beans.
+
+The {url-spring-webservices-docs}[Spring Web Services features] can be easily accessed with the `spring-boot-starter-webservices` module.
+
+javadoc:org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition[] and javadoc:org.springframework.xml.xsd.SimpleXsdSchema[] beans can be automatically created for your WSDLs and XSDs respectively.
+To do so, configure their location, as shown in the following example:
+
+[configprops,yaml]
+----
+spring:
+  webservices:
+    wsdl-locations: "classpath:/wsdl"
+----
 
 [[io.webservices.template]]
 == Calling Web Services with WebServiceTemplate
-
 If you need to call remote Web services from your application, you can use the {url-spring-webservices-docs}#client-web-service-template[`WebServiceTemplate`] class.
 Since javadoc:org.springframework.ws.client.core.WebServiceTemplate[] instances often need to be customized before being used, Spring Boot does not provide any single auto-configured javadoc:org.springframework.ws.client.core.WebServiceTemplate[] bean.
 It does, however, auto-configure a javadoc:org.springframework.boot.webservices.client.WebServiceTemplateBuilder[], which can be used to create javadoc:org.springframework.ws.client.core.WebServiceTemplate[] instances when needed.

@@ -1,6 +1,348 @@
-[[features.dev-services]]
-= Development-time Services
+= 开发时服务
+:encoding: utf-8
+:numbered::
 
+[[features.dev-services]]
+== 开发时服务
+开发时服务提供了在开发应用程序时运行应用程序所需的外部依赖项。它们仅在开发时使用，并在应用程序部署时禁用。
+
+Spring Boot 提供了对两种开发时服务的支持，Docker Compose 和 Testcontainers。接下来的部分将提供有关它们的更多详细信息。
+
+[[features.dev-services.docker-compose]]
+== Docker Compose 支持
+Docker Compose 是一种流行的技术，可用于定义和管理应用程序所需服务的多个容器。通常会在应用程序旁边创建一个 `compose.yml` 文件，用于定义和配置服务容器。
+
+使用 Docker Compose 的典型工作流程是运行 `docker compose up`，使用启动的服务进行应用程序开发，然后在完成后运行 `docker compose down`。
+
+可以将 `spring-boot-docker-compose` 模块包含在项目中，以提供使用 Docker Compose 处理容器的支持。将模块依赖项添加到你的构建中，如下面的 Maven 和 Gradle 列表所示：
+
+.Maven
+[source,xml]
+----
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-docker-compose</artifactId>
+		<optional>true</optional>
+	</dependency>
+</dependencies>
+----
+
+.Gradle
+[source,gradle]
+----
+dependencies {
+	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+}
+----
+
+当此模块作为依赖项包含时，Spring Boot 将执行以下操作：
+
+* 在工作目录中搜索 `compose.yml` 和其他常见的 compose 文件名
+* 使用发现的 `compose.yml` 调用 `docker compose up`
+* 为每个支持的容器创建服务连接 bean
+* 在应用程序关闭时调用 `docker compose stop`
+
+如果在启动应用程序时 Docker Compose 服务已经在运行，Spring Boot 将仅为每个支持的容器创建服务连接 bean。它不会再次调用 `docker compose up`，并且在应用程序关闭时也不会调用 `docker compose stop`。
+
+TIP: 默认情况下，重新打包的归档文件不包含 Spring Boot 的 Docker Compose。如果你想使用此支持，需要包含它。使用 Maven 插件时，将 `excludeDockerCompose` 属性设置为 `false`。使用 Gradle 插件时，配置任务的类路径以包含 `developmentOnly` 配置。
+
+[[features.dev-services.docker-compose.prerequisites]]
+=== 先决条件
+你需要在路径上有 `docker` 和 `docker compose`（或 `docker-compose`）CLI 应用程序。支持的最低 Docker Compose 版本是 2.2.0。
+
+[[features.dev-services.docker-compose.service-connections]]
+=== 服务连接
+服务连接是到任何远程服务的连接。Spring Boot 的自动配置可以使用服务连接的详细信息来建立与远程服务的连接。这样做时，连接详细信息优先于任何与连接相关的配置属性。
+
+当使用 Spring Boot 的 Docker Compose 支持时，服务连接将建立到容器映射的端口。
+
+NOTE: Docker compose 通常以容器内的端口映射到计算机上的临时端口的方式使用。例如，Postgres 服务器可能在容器内使用端口 5432 运行，但在本地映射到完全不同的端口。服务连接将始终发现并使用本地映射的端口。
+
+服务连接通过使用容器的镜像名称建立。当前支持以下服务连接：
+
+|===
+| 连接详细信息 | 匹配的容器
+
+| `ActiveMQConnectionDetails`
+| 名为 "symptoma/activemq" 或 "apache/activemq-classic" 的容器
+
+| `ArtemisConnectionDetails`
+| 名为 "apache/activemq-artemis" 的容器
+
+| `CassandraConnectionDetails`
+| 名为 "cassandra" 或 "bitnami/cassandra" 的容器
+
+| `ElasticsearchConnectionDetails`
+| 名为 "elasticsearch" 或 "bitnami/elasticsearch" 的容器
+
+| `HazelcastConnectionDetails`
+| 名为 "hazelcast/hazelcast" 的容器
+
+| `JdbcConnectionDetails`
+| 名为 "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", 或 "bitnami/postgresql" 的容器
+
+| `LdapConnectionDetails`
+| 名为 "osixia/openldap" 的容器
+
+| `MongoConnectionDetails`
+| 名为 "mongo" 或 "bitnami/mongodb" 的容器
+
+| `Neo4jConnectionDetails`
+| 名为 "neo4j" 或 "bitnami/neo4j" 的容器
+
+| `OtlpLoggingConnectionDetails`
+| 名为 "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm" 的容器
+
+| `OtlpMetricsConnectionDetails`
+| 名为 "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm" 的容器
+
+| `OtlpTracingConnectionDetails`
+| 名为 "otel/opentelemetry-collector-contrib", "grafana/otel-lgtm" 的容器
+
+| `PulsarConnectionDetails`
+| 名为 "apachepulsar/pulsar" 的容器
+
+| `R2dbcConnectionDetails`
+| 名为 "clickhouse/clickhouse-server", "bitnami/clickhouse", "gvenzl/oracle-free", "gvenzl/oracle-xe", "mariadb", "bitnami/mariadb", "mssql/server", "mysql", "bitnami/mysql", "postgres", 或 "bitnami/postgresql" 的容器
+
+| `RabbitConnectionDetails`
+| 名为 "rabbitmq" 或 "bitnami/rabbitmq" 的容器
+
+| `RedisConnectionDetails`
+| 名为 "redis", "bitnami/redis", "redis/redis-stack" 或 "redis/redis-stack-server" 的容器
+
+| `ZipkinConnectionDetails`
+| 名为 "openzipkin/zipkin" 的容器
+|===
+
+[[features.dev-services.docker-compose.custom-images]]
+=== 自定义镜像
+有时你可能需要使用自己的镜像版本来提供服务。只要自定义镜像的行为与标准镜像相同，就可以使用任何自定义镜像。具体来说，标准镜像支持的任何环境变量也必须在自定义镜像中使用。
+
+如果你的镜像使用不同的名称，可以在 `compose.yml` 文件中使用标签，以便 Spring Boot 可以提供服务连接。使用名为 `org.springframework.boot.service-connection` 的标签来提供服务名称。
+
+例如：
+
+[source,yaml,]
+----
+services:
+  redis:
+    image: 'mycompany/mycustomredis:7.0'
+    ports:
+      - '6379'
+    labels:
+      org.springframework.boot.service-connection: redis
+----
+
+[[features.dev-services.docker-compose.skipping]]
+=== 跳过特定容器
+如果你在 `compose.yml` 中定义了一个不想连接到应用程序的容器镜像，可以使用标签来忽略它。任何带有 `org.springframework.boot.ignore` 标签的容器都会被 Spring Boot 忽略。
+
+例如：
+
+[source,yaml]
+----
+services:
+  redis:
+    image: 'redis:7.0'
+    ports:
+      - '6379'
+    labels:
+      org.springframework.boot.ignore: true
+----
+
+[[features.dev-services.docker-compose.specific-file]]
+=== 使用特定的 Compose 文件
+如果你的 compose 文件不在应用程序的同一目录中，或者它的名称不同，可以在 `application.properties` 或 `application.yaml` 中使用 `spring.docker.compose.file` 指向不同的文件。属性可以定义为绝对路径或相对于应用程序的路径。
+
+例如：
+
+[configprops,yaml]
+----
+spring:
+  docker:
+    compose:
+      file: "../my-compose.yml"
+----
+
+[[features.dev-services.docker-compose.readiness]]
+=== 等待容器准备就绪
+由 Docker Compose 启动的容器可能需要一些时间才能完全准备就绪。推荐的检查准备就绪的方法是在 `compose.yml` 文件的服务定义下添加 `healthcheck` 部分。
+
+由于 `healthcheck` 配置通常从 `compose.yml` 文件中省略，Spring Boot 还会直接检查服务准备就绪。默认情况下，当可以建立到其映射端口的 TCP/IP 连接时，容器被视为准备就绪。
+
+你可以通过在 `compose.yml` 文件中添加 `org.springframework.boot.readiness-check.tcp.disable` 标签来禁用此功能。
+
+例如：
+
+[source,yaml]
+----
+services:
+  redis:
+    image: 'redis:7.0'
+    ports:
+      - '6379'
+    labels:
+      org.springframework.boot.readiness-check.tcp.disable: true
+----
+
+你还可以在 `application.properties` 或 `application.yaml` 文件中更改超时值：
+
+[configprops,yaml]
+----
+spring:
+  docker:
+    compose:
+      readiness:
+        tcp:
+          connect-timeout: 10s
+          read-timeout: 5s
+----
+
+可以使用 `spring.docker.compose.readiness.timeout` 配置整体超时。
+
+[[features.dev-services.docker-compose.lifecycle]]
+=== 控制 Docker Compose 生命周期
+默认情况下，Spring Boot 在应用程序启动时调用 `docker compose up`，在关闭时调用 `docker compose stop`。如果你希望有不同的生命周期管理，可以使用 `spring.docker.compose.lifecycle-management` 属性。
+
+支持以下值：
+
+* `none` - 不启动或停止 Docker Compose
+* `start-only` - 在应用程序启动时启动 Docker Compose 并保持其运行
+* `start-and-stop` - 在应用程序启动时启动 Docker Compose 并在 JVM 退出时停止它
+
+此外，你可以使用 `spring.docker.compose.start.command` 属性来更改是使用 `docker compose up` 还是 `docker compose start`。`spring.docker.compose.stop.command` 允许你配置是使用 `docker compose down` 还是 `docker compose stop`。
+
+以下示例显示了如何配置生命周期管理：
+
+[configprops,yaml]
+----
+spring:
+  docker:
+    compose:
+      lifecycle-management: start-and-stop
+      start:
+        command: start
+      stop:
+        command: down
+        timeout: 1m
+----
+
+[[features.dev-services.docker-compose.profiles]]
+=== 激活 Docker Compose 配置文件
+Docker Compose 配置文件类似于 Spring 配置文件，因为它们允许你为特定环境调整 Docker Compose 配置。如果你想激活特定的 Docker Compose 配置文件，可以在 `application.properties` 或 `application.yaml` 文件中使用 `spring.docker.compose.profiles.active` 属性：
+
+[configprops,yaml]
+----
+spring:
+  docker:
+    compose:
+      profiles:
+        active: "myprofile"
+----
+
+[[features.dev-services.docker-compose.tests]]
+=== 在测试中使用 Docker Compose
+默认情况下，Spring Boot 的 Docker Compose 支持在运行测试时禁用。
+
+要在测试中启用 Docker Compose 支持，请将 `spring.docker.compose.skip.in-tests` 设置为 `false`。
+
+使用 Gradle 时，还需要将 `spring-boot-docker-compose` 依赖项的配置从 `developmentOnly` 更改为 `testAndDevelopmentOnly`：
+
+.Gradle
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		testAndDevelopmentOnly("org.springframework.boot:spring-boot-docker-compose")
+	}
+----
+
+[[features.dev-services.testcontainers]]
+== Testcontainers 支持
+除了使用 Testcontainers 进行集成测试外，还可以在开发时使用它们。接下来的部分将提供有关此的更多详细信息。
+
+[[features.dev-services.testcontainers.at-development-time]]
+=== 在开发时使用 Testcontainers
+这种方法允许开发人员快速启动应用程序依赖的服务容器，从而无需手动配置数据库服务器等内容。以这种方式使用 Testcontainers 提供了类似于 Docker Compose 的功能，只是容器配置是用 Java 而不是 YAML 编写的。
+
+要在开发时使用 Testcontainers，你需要使用“测试”类路径而不是“主”类路径启动应用程序。这将允许你访问所有声明的测试依赖项，并为你提供一个自然的地方来编写测试配置。
+
+要创建应用程序的测试可启动版本，你应在 `src/test` 目录中创建一个“Application”类。例如，如果你的主应用程序在 `src/main/java/com/example/MyApplication.java` 中，你应创建 `src/test/java/com/example/TestMyApplication.java`
+
+`TestMyApplication` 类可以使用 `SpringApplication.from(...)` 方法启动实际应用程序：
+
+```java
+include-code::launch/TestMyApplication[]
+```
+
+你还需要定义要与应用程序一起启动的 `Container` 实例。为此，你需要确保已将 `spring-boot-testcontainers` 模块添加为 `test` 依赖项。完成后，你可以创建一个 `TestConfiguration` 类，该类声明要启动的容器的 `Bean` 方法。
+
+你还可以使用 `ServiceConnection` 注解你的 `Bean` 方法，以创建 `ConnectionDetails` bean。有关支持的技术，请参阅服务连接部分。
+
+典型的 Testcontainers 配置如下所示：
+
+```java
+include-code::test/MyContainersConfiguration[]
+```
+
+NOTE: `Container` bean 的生命周期由 Spring Boot 自动管理。容器将自动启动和停止。
+
+TIP: 你可以使用 `spring.testcontainers.beans.startup` 属性来更改容器的启动方式。默认情况下使用 `sequential` 启动，但如果你希望并行启动多个容器，也可以选择 `parallel`。
+
+定义测试配置后，你可以使用 `with(...)` 方法将其附加到测试启动器：
+
+```java
+include-code::test/TestMyApplication[]
+```
+
+你现在可以像启动任何常规 Java `main` 方法应用程序一样启动 `TestMyApplication`，以启动应用程序及其所需的容器。
+
+TIP: 你可以使用 Maven 目标 `spring-boot:test-run` 或 Gradle 任务 `bootTestRun` 从命令行执行此操作。
+
+[[features.dev-services.testcontainers.at-development-time.dynamic-properties]]
+==== 在开发时贡献动态属性
+如果你想从 `Container` `Bean` 方法在开发时贡献动态属性，请定义一个额外的 `DynamicPropertyRegistrar` bean。注册器应使用一个 `Bean` 方法定义，该方法将从中获取属性的容器作为参数注入。这种安排确保在使用属性之前容器已启动。
+
+典型的配置如下所示：
+
+```java
+include-code::MyContainersConfiguration[]
+```
+
+NOTE: 尽可能使用 `ServiceConnection` 是推荐的，但是动态属性可以作为尚未支持 `ServiceConnection` 的技术的有用回退。
+
+[[features.dev-services.testcontainers.at-development-time.importing-container-declarations]]
+==== 导入 Testcontainer 声明类
+使用 Testcontainers 时的常见模式是将 `Container` 实例声明为静态字段。通常这些字段直接定义在测试类上。它们也可以声明在父类或测试实现的接口上。
+
+例如，以下 `MyContainers` 接口声明了 `mongo` 和 `neo4j` 容器：
+
+```java
+include-code::MyContainers[]
+```
+
+如果你已经以这种方式定义了容器，或者你只是更喜欢这种风格，你可以导入这些声明类，而不是将容器定义为 `Bean` 方法。为此，请将 `ImportTestcontainers` 注解添加到你的测试配置类中：
+
+```java
+include-code::MyContainersConfiguration[]
+```
+
+TIP: 如果你不打算使用服务连接功能，而是想使用 `@DynamicPropertySource`，请从 `Container` 字段中删除 `ServiceConnection` 注解。你还可以将 `DynamicPropertySource` 注解的方法添加到声明类中。
+
+[[features.dev-services.testcontainers.at-development-time.devtools]]
+==== 在开发时使用 DevTools 和 Testcontainers
+使用 devtools 时，你可以使用 `RestartScope` 注解 bean 和 bean 方法。此类 bean 在 devtools 重新启动应用程序时不会重新创建。这对于 Testcontainer `Container` bean 特别有用，因为它们在应用程序重新启动时保持其状态。
+
+```java
+include-code::MyContainersConfiguration[]
+```
+
+WARNING: 如果你使用 Gradle 并希望使用此功能，你需要将 `spring-boot-devtools` 依赖项的配置从 `developmentOnly` 更改为 `testAndDevelopmentOnly`。使用默认的 `developmentOnly` 范围时，`bootTestRun` 任务不会检测代码中的更改，因为 devtools 未激活。
+
+'''
+[[features.dev-services]]
+== Development-time Services
 Development-time services provide external dependencies needed to run the application while developing it.
 They are only supposed to be used while developing and are disabled when the application is deployed.
 
@@ -9,7 +351,6 @@ The next sections will provide more details about them.
 
 [[features.dev-services.docker-compose]]
 == Docker Compose Support
-
 Docker Compose is a popular technology that can be used to define and manage multiple containers for services that your application needs.
 A `compose.yml` file is typically created next to your application which defines and configures service containers.
 
@@ -53,19 +394,13 @@ If you want to use this support, you need to include it.
 When using the Maven plugin, set the `excludeDockerCompose` property to `false`.
 When using the Gradle plugin, xref:gradle-plugin:packaging.adoc#packaging-executable.configuring.including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
 
-
-
 [[features.dev-services.docker-compose.prerequisites]]
 === Prerequisites
-
 You need to have the `docker` and `docker compose` (or `docker-compose`) CLI applications on your path.
 The minimum supported Docker Compose version is 2.2.0.
 
-
-
 [[features.dev-services.docker-compose.service-connections]]
 === Service Connections
-
 A service connection is a connection to any remote service.
 Spring Boot’s auto-configuration can consume the details of a service connection and use them to establish a connection to a remote service.
 When doing so, the connection details take precedence over any connection-related configuration properties.
@@ -78,7 +413,6 @@ The service connection will always discover and use the locally mapped port.
 
 Service connections are established by using the image name of the container.
 The following service connections are currently supported:
-
 
 |===
 | Connection Details | Matched on
@@ -135,11 +469,8 @@ The following service connections are currently supported:
 | Containers named "openzipkin/zipkin".
 |===
 
-
-
 [[features.dev-services.docker-compose.custom-images]]
 === Custom Images
-
 Sometimes you may need to use your own version of an image to provide a service.
 You can use any custom image as long as it behaves in the same way as the standard image.
 Specifically, any environment variables that the standard image supports must also be used in your custom image.
@@ -160,11 +491,8 @@ services:
       org.springframework.boot.service-connection: redis
 ----
 
-
-
 [[features.dev-services.docker-compose.skipping]]
 === Skipping Specific Containers
-
 If you have a container image defined in your `compose.yml` that you don’t want connected to your application you can use a label to ignore it.
 Any container with labeled with `org.springframework.boot.ignore` will be ignored by Spring Boot.
 
@@ -181,11 +509,8 @@ services:
       org.springframework.boot.ignore: true
 ----
 
-
-
 [[features.dev-services.docker-compose.specific-file]]
 === Using a Specific Compose File
-
 If your compose file is not in the same directory as your application, or if it’s named differently, you can use configprop:spring.docker.compose.file[] in your `application.properties` or `application.yaml` to point to a different file.
 Properties can be defined as an exact path or a path that’s relative to your application.
 
@@ -199,11 +524,8 @@ spring:
       file: "../my-compose.yml"
 ----
 
-
-
 [[features.dev-services.docker-compose.readiness]]
 === Waiting for Container Readiness
-
 Containers started by Docker Compose may take some time to become fully ready.
 The recommended way of checking for readiness is to add a `healthcheck` section under the service definition in your `compose.yml` file.
 
@@ -240,11 +562,8 @@ spring:
 
 The overall timeout can be configured using configprop:spring.docker.compose.readiness.timeout[].
 
-
-
 [[features.dev-services.docker-compose.lifecycle]]
 === Controlling the Docker Compose Lifecycle
-
 By default Spring Boot calls `docker compose up` when your application starts and `docker compose stop` when it's shut down.
 If you prefer to have different lifecycle management you can use the configprop:spring.docker.compose.lifecycle-management[] property.
 
@@ -272,11 +591,8 @@ spring:
         timeout: 1m
 ----
 
-
-
 [[features.dev-services.docker-compose.profiles]]
 === Activating Docker Compose Profiles
-
 Docker Compose profiles are similar to Spring profiles in that they let you adjust your Docker Compose configuration for specific environments.
 If you want to activate a specific Docker Compose profile you can use the configprop:spring.docker.compose.profiles.active[] property in your `application.properties` or `application.yaml` file:
 
@@ -289,11 +605,8 @@ spring:
         active: "myprofile"
 ----
 
-
-
 [[features.dev-services.docker-compose.tests]]
 === Using Docker Compose in Tests
-
 By default, Spring Boot's Docker Compose support is disabled when running tests.
 
 To enable Docker Compose support in tests, set configprop:spring.docker.compose.skip.in-tests[] to `false`.
@@ -308,19 +621,13 @@ When using Gradle, you also need to change the configuration of the `spring-boot
 	}
 ----
 
-
-
 [[features.dev-services.testcontainers]]
 == Testcontainers Support
-
 As well as xref:testing/testcontainers.adoc#testing.testcontainers[using Testcontainers for integration testing], it's also possible to use them at development time.
 The next sections will provide more details about that.
 
-
-
 [[features.dev-services.testcontainers.at-development-time]]
 === Using Testcontainers at Development Time
-
 This approach allows developers to quickly start containers for the services that the application depends on, removing the need to manually provision things like database servers.
 Using Testcontainers in this way provides functionality similar to Docker Compose, except that your container configuration is in Java rather than YAML.
 
@@ -359,11 +666,8 @@ You can now launch `TestMyApplication` as you would any regular Java `main` meth
 
 TIP: You can use the Maven goal `spring-boot:test-run` or the Gradle task `bootTestRun` to do this from the command line.
 
-
-
 [[features.dev-services.testcontainers.at-development-time.dynamic-properties]]
 ==== Contributing Dynamic Properties at Development Time
-
 If you want to contribute dynamic properties at development time from your javadoc:org.testcontainers.containers.Container[] javadoc:org.springframework.context.annotation.Bean[format=annotation] methods, define an additional javadoc:org.springframework.test.context.DynamicPropertyRegistrar[] bean.
 The registrar should be defined using a javadoc:org.springframework.context.annotation.Bean[format=annotation] method that injects the container from which the properties will be sourced as a parameter.
 This arrangement ensures that container has been started before the properties are used.
@@ -374,11 +678,8 @@ include-code::MyContainersConfiguration[]
 
 NOTE: Using a javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] is recommended whenever possible, however, dynamic properties can be a useful fallback for technologies that don't yet have javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] support.
 
-
-
 [[features.dev-services.testcontainers.at-development-time.importing-container-declarations]]
 ==== Importing Testcontainer Declaration Classes
-
 A common pattern when using Testcontainers is to declare javadoc:org.testcontainers.containers.Container[] instances as static fields.
 Often these fields are defined directly on the test class.
 They can also be declared on a parent class or on an interface that the test implements.
@@ -395,11 +696,8 @@ include-code::MyContainersConfiguration[]
 TIP: If you don't intend to use the xref:testing/testcontainers.adoc#testing.testcontainers.service-connections[service connections feature] but want to use xref:testing/testcontainers.adoc#testing.testcontainers.dynamic-properties[`@DynamicPropertySource`] instead, remove the javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] annotation from the javadoc:org.testcontainers.containers.Container[] fields.
 You can also add javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation] annotated methods to your declaration class.
 
-
-
 [[features.dev-services.testcontainers.at-development-time.devtools]]
 ==== Using DevTools with Testcontainers at Development Time
-
 When using devtools, you can annotate beans and bean methods with javadoc:org.springframework.boot.devtools.restart.RestartScope[format=annotation].
 Such beans won't be recreated when the devtools restart the application.
 This is especially useful for Testcontainer javadoc:org.testcontainers.containers.Container[] beans, as they keep their state despite the application restart.

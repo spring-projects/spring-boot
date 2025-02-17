@@ -1,6 +1,150 @@
-[[build-tool-plugins.antlib]]
-= Spring Boot AntLib Module
+= Spring Boot AntLib 模块
+:encoding: utf-8
+:numbered:
 
+[[build-tool-plugins.antlib]]
+== Spring Boot AntLib 模块
+
+Spring Boot AntLib 模块为 Apache Ant 提供了基本的 Spring Boot 支持。你可以使用该模块来创建可执行的 jar 文件。要使用该模块，你需要在 `build.xml` 中声明一个额外的 `spring-boot` 命名空间，如下例所示：
+
+[source,xml]
+----
+<project xmlns:ivy="antlib:org.apache.ivy.ant"
+	xmlns:spring-boot="antlib:org.springframework.boot.ant"
+	name="myapp" default="build">
+	...
+</project>
+----
+
+你需要记住使用 `-lib` 选项启动 Ant，如下例所示：
+
+[source,shell,subs="verbatim,attributes"]
+----
+$ ant -lib <包含 spring-boot-antlib-{version-spring-boot}.jar 的目录>
+----
+
+TIP:  "`使用 Spring Boot`" 部分包含了一个更完整的示例，展示了如何 xref:reference:using/build-systems.adoc#using.build-systems.ant[使用 Apache Ant 与 `spring-boot-antlib`]。
+
+[[build-tool-plugins.antlib.tasks]]
+== Spring Boot Ant 任务
+
+一旦声明了 `spring-boot-antlib` 命名空间，以下额外的任务将可用：
+
+* xref:antlib.adoc#build-tool-plugins.antlib.tasks.exejar[]
+* xref:antlib.adoc#build-tool-plugins.antlib.findmainclass[]
+
+[[build-tool-plugins.antlib.tasks.exejar]]
+=== 使用 "`exejar`" 任务
+
+你可以使用 `exejar` 任务来创建一个 Spring Boot 可执行 jar 文件。该任务支持以下属性：
+
+[cols="1,2,2"]
+|====
+| 属性 | 描述 | 是否必填
+
+| `destfile`
+| 要创建的目标 jar 文件
+| 是
+
+| `classes`
+| Java 类文件的根目录
+| 是
+
+| `start-class`
+| 要运行的主应用程序类
+| 否 _(默认是第一个声明了 `main` 方法的类)_
+|====
+
+该任务可以使用以下嵌套元素：
+
+[cols="1,4"]
+|====
+| 元素 | 描述
+
+| `resources`
+| 一个或多个 {url-ant-docs}/Types/resources.html#collection[资源集合]，描述应添加到创建的 +jar+ 文件内容中的 {url-ant-docs}/Types/resources.html[资源] 集合。
+
+| `lib`
+| 一个或多个 {url-ant-docs}/Types/resources.html#collection[资源集合]，应添加到构成应用程序运行时依赖类路径的 jar 库集合中。
+|====
+
+[[build-tool-plugins.antlib.tasks.examples]]
+=== 示例
+
+本节展示了两个 Ant 任务的示例。
+
+.指定 +start-class+
+[source,xml]
+----
+<spring-boot:exejar destfile="target/my-application.jar"
+		classes="target/classes" start-class="com.example.MyApplication">
+	<resources>
+		<fileset dir="src/main/resources" />
+	</resources>
+	<lib>
+		<fileset dir="lib" />
+	</lib>
+</spring-boot:exejar>
+----
+
+.检测 +start-class+
+[source,xml]
+----
+<exejar destfile="target/my-application.jar" classes="target/classes">
+	<lib>
+		<fileset dir="lib" />
+	</lib>
+</exejar>
+----
+
+[[build-tool-plugins.antlib.findmainclass]]
+== 使用 "`findmainclass`" 任务
+
+`findmainclass` 任务被 `exejar` 内部用于定位声明了 `main` 方法的类。如果需要，你也可以在构建中直接使用此任务。该任务支持以下属性：
+
+[cols="1,2,2"]
+|====
+| 属性 | 描述 | 是否必填
+
+| `classesroot`
+| Java 类文件的根目录
+| 是 _(除非指定了 `mainclass`)_
+
+| `mainclass`
+| 可用于短路 `main` 类搜索
+| 否
+
+| `property`
+| 应设置结果的 Ant 属性
+| 否 _(如果未指定，结果将被记录)_
+|====
+
+[[build-tool-plugins.antlib.findmainclass.examples]]
+=== 示例
+
+本节包含三个使用 `findmainclass` 的示例。
+
+.查找并记录
+[source,xml]
+----
+<findmainclass classesroot="target/classes" />
+----
+
+.查找并设置
+[source,xml]
+----
+<findmainclass classesroot="target/classes" property="main-class" />
+----
+
+.覆盖并设置
+[source,xml]
+----
+<findmainclass mainclass="com.example.MainClass" property="main-class" />
+----
+
+'''
+[[build-tool-plugins.antlib]]
+== Spring Boot AntLib Module
 The Spring Boot AntLib module provides basic Spring Boot support for Apache Ant.
 You can use the module to create executable jars.
 To use the module, you need to declare an additional `spring-boot` namespace in your `build.xml`, as shown in the following example:
@@ -23,21 +167,15 @@ $ ant -lib <directory containing spring-boot-antlib-{version-spring-boot}.jar>
 
 TIP: The "`Using Spring Boot`" section includes a more complete example of xref:reference:using/build-systems.adoc#using.build-systems.ant[using Apache Ant with `spring-boot-antlib`].
 
-
-
 [[build-tool-plugins.antlib.tasks]]
 == Spring Boot Ant Tasks
-
 Once the `spring-boot-antlib` namespace has been declared, the following additional tasks are available:
 
 * xref:antlib.adoc#build-tool-plugins.antlib.tasks.exejar[]
 * xref:antlib.adoc#build-tool-plugins.antlib.findmainclass[]
 
-
-
 [[build-tool-plugins.antlib.tasks.exejar]]
 === Using the "`exejar`" Task
-
 You can use the `exejar` task to create a Spring Boot executable jar.
 The following attributes are supported by the task:
 
@@ -71,11 +209,8 @@ The following nested elements can be used with the task:
 | One or more {url-ant-docs}/Types/resources.html#collection[Resource Collections] that should be added to the set of jar libraries that make up the runtime dependency classpath of the application.
 |====
 
-
-
 [[build-tool-plugins.antlib.tasks.examples]]
 === Examples
-
 This section shows two examples of Ant tasks.
 
 .Specify +start-class+
@@ -102,11 +237,8 @@ This section shows two examples of Ant tasks.
 </exejar>
 ----
 
-
-
 [[build-tool-plugins.antlib.findmainclass]]
 == Using the "`findmainclass`" Task
-
 The `findmainclass` task is used internally by `exejar` to locate a class declaring a `main`.
 If necessary, you can also use this task directly in your build.
 The following attributes are supported:
@@ -128,11 +260,8 @@ The following attributes are supported:
 | No _(result will be logged if unspecified)_
 |====
 
-
-
 [[build-tool-plugins.antlib.findmainclass.examples]]
 === Examples
-
 This section contains three examples of using `findmainclass`.
 
 .Find and log

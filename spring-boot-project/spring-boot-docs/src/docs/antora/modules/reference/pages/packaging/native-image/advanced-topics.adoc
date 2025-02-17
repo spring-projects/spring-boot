@@ -1,11 +1,172 @@
+= 高级原生镜像主题
+:encoding: utf-8
+:numbered:
+
 [[packaging.native-image.advanced]]
-= Advanced Native Images Topics
+== 高级原生镜像主题
 
+[[packaging.native-image.advanced.nested-configuration-properties]]
+== 嵌套配置属性
 
+Spring 提前处理引擎会自动为配置属性创建反射提示。然而，不是内部类的嵌套配置属性 *必须* 使用 `@NestedConfigurationProperty` 注解，否则它们将无法被检测到并且不可绑定。
+
+include-code::MyProperties[]
+
+其中 `Nested` 是：
+
+include-code::Nested[]
+
+上面的示例生成了 `my.properties.name` 和 `my.properties.nested.number` 的配置属性。如果没有在 `nested` 字段上使用 `@NestedConfigurationProperty` 注解，`my.properties.nested.number` 属性在原生镜像中将不可绑定。你也可以在 getter 方法上使用该注解。
+
+当使用构造函数绑定时，你必须在字段上使用 `@NestedConfigurationProperty` 注解：
+
+include-code::MyPropertiesCtor[]
+
+当使用记录（record）时，你必须在参数上使用 `@NestedConfigurationProperty` 注解：
+
+include-code::MyPropertiesRecord[]
+
+当使用 Kotlin 时，你需要在数据类的参数上使用 `@NestedConfigurationProperty` 注解：
+
+include-code::MyPropertiesKotlin[]
+
+NOTE: 在所有情况下请使用公共的 getter 和 setter，否则属性将不可绑定。
+
+[[packaging.native-image.advanced.converting-executable-jars]]
+== 转换 Spring Boot 可执行 Jar
+
+只要 jar 包含 AOT 生成的资源，就可以将 Spring Boot xref:specification:executable-jar/index.adoc[可执行 jar] 转换为原生镜像。这在许多情况下都很有用，包括：
+
+* 你可以保留常规的 JVM 流水线，并在 CI/CD 平台上将 JVM 应用程序转换为原生镜像。
+* 由于 `native-image` https://github.com/oracle/graal/issues/407[不支持交叉编译]，你可以保留一个与操作系统无关的部署工件，稍后再将其转换为不同的操作系统架构。
+
+你可以使用 Cloud Native Buildpacks 或 GraalVM 附带的 `native-image` 工具将 Spring Boot 可执行 jar 转换为原生镜像。
+
+NOTE: 你的可执行 jar 必须包含 AOT 生成的资源，例如生成的类和 JSON 提示文件。
+
+[[packaging.native-image.advanced.converting-executable-jars.buildpacks]]
+=== 使用 Buildpacks
+
+Spring Boot 应用程序通常通过 Maven（`mvn spring-boot:build-image`）或 Gradle（`gradle bootBuildImage`）集成使用 Cloud Native Buildpacks。然而，你也可以使用 https://buildpacks.io//docs/tools/pack/[`pack`] 将 AOT 处理的 Spring Boot 可执行 jar 转换为原生容器镜像。
+
+首先，确保 Docker 守护进程可用（有关更多详细信息，请参阅 https://docs.docker.com/installation/#installation[获取 Docker]）。如果你在 Linux 上，请 https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[配置它以允许非 root 用户]。
+
+你还需要按照 https://buildpacks.io//docs/tools/pack/#install[buildpacks.io 上的安装指南] 安装 `pack`。
+
+假设 AOT 处理的 Spring Boot 可执行 jar 构建为 `myproject-0.0.1-SNAPSHOT.jar` 并位于 `target` 目录中，运行：
+
+[source,shell]
+----
+$ pack build --builder paketobuildpacks/builder-jammy-java-tiny \
+    --path target/myproject-0.0.1-SNAPSHOT.jar \
+    --env 'BP_NATIVE_IMAGE=true' \
+    my-application:0.0.1-SNAPSHOT
+----
+
+NOTE: 你不需要本地安装 GraalVM 来以这种方式生成镜像。
+
+一旦 `pack` 完成，你可以使用 `docker run` 启动应用程序：
+
+[source,shell]
+----
+$ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
+----
+
+[[packaging.native-image.advanced.converting-executable-jars.native-image]]
+=== 使用 GraalVM native-image
+
+将 AOT 处理的 Spring Boot 可执行 jar 转换为原生可执行文件的另一种选择是使用 GraalVM `native-image` 工具。为此，你需要在机器上安装 GraalVM 发行版。你可以手动从 {url-download-liberica-nik}[Liberica Native Image Kit 页面] 下载，或者使用像 SDKMAN! 这样的下载管理器。
+
+假设 AOT 处理的 Spring Boot 可执行 jar 构建为 `myproject-0.0.1-SNAPSHOT.jar` 并位于 `target` 目录中，运行：
+
+[source,shell]
+----
+$ rm -rf target/native
+$ mkdir -p target/native
+$ cd target/native
+$ jar -xvf ../myproject-0.0.1-SNAPSHOT.jar
+$ native-image -H:Name=myproject @META-INF/native-image/argfile -cp .:BOOT-INF/classes:`find BOOT-INF/lib | tr '\n' ':'`
+$ mv myproject ../
+----
+
+NOTE: 这些命令适用于 Linux 或 macOS 机器，但你需要在 Windows 上进行调整。
+
+TIP: `@META-INF/native-image/argfile` 可能不会打包在你的 jar 中。只有在需要覆盖可达性元数据时才会包含它。
+
+WARNING: `native-image` 的 `-cp` 标志不接受通配符。你需要确保列出所有 jar（上面的命令使用 `find` 和 `tr` 来实现这一点）。
+
+[[packaging.native-image.advanced.using-the-tracing-agent]]
+== 使用追踪代理
+
+GraalVM 原生镜像 {url-graal-docs-native-image}/metadata/AutomaticMetadataCollection[追踪代理] 允许你拦截 JVM 上的反射、资源或代理使用，以生成相关的提示。Spring 应该会自动生成大多数这些提示，但追踪代理可以用于快速识别缺失的条目。
+
+当使用代理为原生镜像生成提示时，有几种方法：
+
+* 直接启动应用程序并运行它。
+* 运行应用程序测试以运行应用程序。
+
+第一种方法对于识别当库或模式未被 Spring 识别时的缺失提示很有用。
+
+第二种方法对于可重复的设置听起来更有吸引力，但默认情况下生成的提示将包括测试基础设施所需的任何内容。其中一些在实际运行应用程序时是不必要的。为了解决这个问题，代理支持一个访问过滤器文件，该文件将导致某些数据从生成的输出中排除。
+
+[[packaging.native-image.advanced.using-the-tracing-agent.launch]]
+=== 直接启动应用程序
+
+使用以下命令启动附加了原生镜像追踪代理的应用程序：
+
+[source,shell,subs="verbatim,attributes"]
+----
+$ java -Dspring.aot.enabled=true \
+    -agentlib:native-image-agent=config-output-dir=/path/to/config-dir/ \
+    -jar target/myproject-0.0.1-SNAPSHOT.jar
+----
+
+现在你可以运行你想要为其生成提示的代码路径，然后使用 `ctrl-c` 停止应用程序。
+
+在应用程序关闭时，原生镜像追踪代理会将提示文件写入给定的配置输出目录。你可以手动检查这些文件，或者将它们作为原生镜像构建过程的输入。要将它们作为输入使用，请将它们复制到 `src/main/resources/META-INF/native-image/` 目录中。下次构建原生镜像时，GraalVM 将考虑这些文件。
+
+追踪代理还有更多高级选项可以设置，例如按调用者类过滤记录的提示等。有关更多信息，请参阅 {url-graal-docs-native-image}/metadata/AutomaticMetadataCollection[官方文档]。
+
+[[packaging.native-image.advanced.custom-hints]]
+== 自定义提示
+
+如果你需要为反射、资源、序列化、代理使用等提供自己的提示，可以使用 `RuntimeHintsRegistrar` API。创建一个实现 `RuntimeHintsRegistrar` 接口的类，然后对提供的 `RuntimeHints` 实例进行适当的调用：
+
+include-code::MyRuntimeHints[]
+
+然后你可以在任何 `@Configuration` 类（例如你的 `@SpringBootApplication` 注解的应用程序类）上使用 `@ImportRuntimeHints` 来激活这些提示。
+
+如果你有需要绑定的类（主要用于序列化或反序列化 JSON），你可以在任何 Bean 上使用 `@RegisterReflectionForBinding`。大多数提示是自动推断的，例如当从 `@RestController` 方法接受或返回数据时。但是当你直接使用 `WebClient`、`RestClient` 或 `RestTemplate` 时，你可能需要使用 `@RegisterReflectionForBinding`。
+
+[[packaging.native-image.advanced.custom-hints.testing]]
+=== 测试自定义提示
+
+`RuntimeHintsPredicates` API 可用于测试你的提示。该 API 提供了构建 `Predicate` 的方法，可用于测试 `RuntimeHints` 实例。
+
+如果你使用 AssertJ，你的测试将如下所示：
+
+include-code::MyRuntimeHintsTests[]
+
+[[packaging.native-image.advanced.custom-hints.static]]
+=== 静态提供提示
+
+如果你愿意，可以在一个或多个 GraalVM JSON 提示文件中静态提供自定义提示。这些文件应放置在 `src/main/resources/` 中的 `+META-INF/native-image/*/*/+` 目录中。xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[AOT 处理期间生成的提示] 会写入名为 `+META-INF/native-image/{groupId}/{artifactId}/+` 的目录中。将你的静态提示文件放置在不与此位置冲突的目录中，例如 `+META-INF/native-image/{groupId}/{artifactId}-additional-hints/+`。
+
+[[packaging.native-image.advanced.known-limitations]]
+== 已知限制
+
+GraalVM 原生镜像是一项不断发展的技术，并非所有库都提供支持。GraalVM 社区通过为尚未提供自己的 https://github.com/oracle/graalvm-reachability-metadata[可达性元数据] 的项目提供帮助。Spring 本身不包含第三方库的提示，而是依赖于可达性元数据项目。
+
+如果你在生成 Spring Boot 应用程序的原生镜像时遇到问题，请查看 Spring Boot wiki 的 {url-github-wiki}/Spring-Boot-with-GraalVM[Spring Boot with GraalVM] 页面。你还可以在 GitHub 上向 https://github.com/spring-projects/spring-aot-smoke-tests[spring-aot-smoke-tests] 项目提交问题，该项目用于确认常见的应用程序类型是否按预期工作。
+
+如果你发现某个库无法与 GraalVM 一起使用，请在 https://github.com/oracle/graalvm-reachability-metadata[可达性元数据项目] 上提出问题。
+
+'''
+[[packaging.native-image.advanced]]
+== Advanced Native Images Topics
 
 [[packaging.native-image.advanced.nested-configuration-properties]]
 == Nested Configuration Properties
-
 Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
 Nested configuration properties which are not inner classes, however, *must* be annotated with javadoc:org.springframework.boot.context.properties.NestedConfigurationProperty[format=annotation], otherwise they won't be detected and will not be bindable.
 
@@ -33,11 +194,8 @@ include-code::MyPropertiesKotlin[]
 
 NOTE: Please use public getters and setters in all cases, otherwise the properties will not be bindable.
 
-
-
 [[packaging.native-image.advanced.converting-executable-jars]]
 == Converting a Spring Boot Executable Jar
-
 It is possible to convert a Spring Boot xref:specification:executable-jar/index.adoc[executable jar] into a native image as long as the jar contains the AOT generated assets.
 This can be useful for a number of reasons, including:
 
@@ -48,14 +206,10 @@ You can convert a Spring Boot executable jar into a native image using Cloud Nat
 
 NOTE: Your executable jar must include AOT generated assets such as generated classes and JSON hint files.
 
-
-
 [[packaging.native-image.advanced.converting-executable-jars.buildpacks]]
 === Using Buildpacks
-
 Spring Boot applications usually use Cloud Native Buildpacks through the Maven (`mvn spring-boot:build-image`) or Gradle (`gradle bootBuildImage`) integrations.
 You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable jar into a native container image.
-
 
 First, make sure that a Docker daemon is available (see https://docs.docker.com/installation/#installation[Get Docker] for more details).
 https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
@@ -81,11 +235,8 @@ Once `pack` has finished, you can launch the application using `docker run`:
 $ docker run --rm -p 8080:8080 docker.io/library/myproject:0.0.1-SNAPSHOT
 ----
 
-
-
 [[packaging.native-image.advanced.converting-executable-jars.native-image]]
 === Using GraalVM native-image
-
 Another option to turn an AOT processed Spring Boot executable jar into a native executable is to use the GraalVM `native-image` tool.
 For this to work, you'll need a GraalVM distribution on your machine.
 You can either download it manually on the {url-download-liberica-nik}[Liberica Native Image Kit page] or you can use a download manager like SDKMAN!.
@@ -110,11 +261,8 @@ It is only included when reachability metadata overrides are needed.
 WARNING: The `native-image` `-cp` flag does not accept wildcards.
 You need to ensure that all jars are listed (the command above uses `find` and `tr` to do this).
 
-
-
 [[packaging.native-image.advanced.using-the-tracing-agent]]
 == Using the Tracing Agent
-
 The GraalVM native image {url-graal-docs-native-image}/metadata/AutomaticMetadataCollection[tracing agent] allows you to intercept reflection, resources or proxy usage on the JVM in order to generate the related hints.
 Spring should generate most of these hints automatically, but the tracing agent can be used to quickly identify the missing entries.
 
@@ -129,11 +277,8 @@ The second option sounds more appealing for a repeatable setup, but by default t
 Some of these will be unnecessary when the application runs for real.
 To address this problem the agent supports an access-filter file that will cause certain data to be excluded from the generated output.
 
-
-
 [[packaging.native-image.advanced.using-the-tracing-agent.launch]]
 === Launch the Application Directly
-
 Use the following command to launch the application with the native image tracing agent attached:
 
 [source,shell,subs="verbatim,attributes"]
@@ -153,11 +298,8 @@ The next time you build the native image, GraalVM will take these files into con
 There are more advanced options which can be set on the native image tracing agent, for example filtering the recorded hints by caller classes, etc.
 For further reading, please see {url-graal-docs-native-image}/metadata/AutomaticMetadataCollection[the official documentation].
 
-
-
 [[packaging.native-image.advanced.custom-hints]]
 == Custom Hints
-
 If you need to provide your own hints for reflection, resources, serialization, proxy usage and so on, you can use the javadoc:org.springframework.aot.hint.RuntimeHintsRegistrar[] API.
 Create a class that implements the javadoc:org.springframework.aot.hint.RuntimeHintsRegistrar[] interface, and then make appropriate calls to the provided javadoc:org.springframework.aot.hint.RuntimeHints[] instance:
 
@@ -169,19 +311,14 @@ If you have classes which need binding (mostly needed when serializing or deseri
 Most of the hints are automatically inferred, for example when accepting or returning data from a javadoc:org.springframework.web.bind.annotation.RestController[format=annotation] method.
 But when you work with javadoc:org.springframework.web.reactive.function.client.WebClient[], javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.client.RestTemplate[] directly, you might need to use javadoc:org.springframework.aot.hint.annotation.RegisterReflectionForBinding[format=annotation].
 
-
-
 [[packaging.native-image.advanced.custom-hints.testing]]
 === Testing Custom Hints
-
 The javadoc:org.springframework.aot.hint.predicate.RuntimeHintsPredicates[] API can be used to test your hints.
 The API provides methods that build a javadoc:java.util.function.Predicate[] that can be used to test a javadoc:org.springframework.aot.hint.RuntimeHints[] instance.
 
 If you're using AssertJ, your test would look like this:
 
 include-code::MyRuntimeHintsTests[]
-
-
 
 [[packaging.native-image.advanced.custom-hints.static]]
 === Providing Hints Statically
@@ -190,11 +327,8 @@ Such files should be placed in `src/main/resources/` within a `+META-INF/native-
 The xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[hints generated during AOT processing] are written to a directory named `+META-INF/native-image/{groupId}/{artifactId}/+`.
 Place your static hint files in a directory that does not clash with this location, such as `+META-INF/native-image/{groupId}/{artifactId}-additional-hints/+`.
 
-
-
 [[packaging.native-image.advanced.known-limitations]]
 == Known Limitations
-
 GraalVM native images are an evolving technology and not all libraries provide support.
 The GraalVM community is helping by providing https://github.com/oracle/graalvm-reachability-metadata[reachability metadata] for projects that don't yet ship their own.
 Spring itself doesn't contain hints for 3rd party libraries and instead relies on the reachability metadata project.

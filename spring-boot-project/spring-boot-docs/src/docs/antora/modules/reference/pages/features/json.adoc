@@ -1,6 +1,56 @@
-[[features.json]]
 = JSON
+:encoding: utf-8
+:numbered:
 
+[[features.json]]
+== JSON
+Spring Boot 提供了与三种 JSON 映射库的集成：
+
+- Gson
+- Jackson
+- JSON-B
+
+Jackson 是首选和默认的库。
+
+[[features.json.jackson]]
+== Jackson
+提供了 Jackson 的自动配置，Jackson 是 `spring-boot-starter-json` 的一部分。当类路径上有 Jackson 时，会自动配置一个 `ObjectMapper` bean。提供了多个配置属性用于自定义 `ObjectMapper` 的配置。
+
+[[features.json.jackson.custom-serializers-and-deserializers]]
+=== 自定义序列化器和反序列化器
+如果你使用 Jackson 来序列化和反序列化 JSON 数据，你可能希望编写自己的 `JsonSerializer` 和 `JsonDeserializer` 类。自定义序列化器通常通过模块注册到 Jackson，但 Spring Boot 提供了一个替代的 `@JsonComponent` 注解，使得直接注册 Spring Bean 更加容易。
+
+你可以直接在 `JsonSerializer`、`JsonDeserializer` 或 `KeyDeserializer` 实现上使用 `@JsonComponent` 注解。你也可以在包含序列化器/反序列化器作为内部类的类上使用它，如下例所示：
+
+```java
+include-code::MyJsonComponent[]
+```
+
+`ApplicationContext` 中的所有 `@JsonComponent` bean 都会自动注册到 Jackson。由于 `@JsonComponent` 是用 `@Component` 元注解的，因此通常的组件扫描规则适用。
+
+Spring Boot 还提供了 `JsonObjectSerializer` 和 `JsonObjectDeserializer` 基类，它们在序列化对象时提供了标准 Jackson 版本的有用替代方案。有关详细信息，请参阅 API 文档中的 `JsonObjectSerializer` 和 `JsonObjectDeserializer`。
+
+上面的示例可以重写为使用 `JsonObjectSerializer`/`JsonObjectDeserializer`，如下所示：
+
+```java
+include-code::object/MyJsonComponent[]
+```
+
+[[features.json.jackson.mixins]]
+=== 混入
+Jackson 支持混入，可以用于将额外的注解混合到目标类上已经声明的注解中。Spring Boot 的 Jackson 自动配置将扫描应用程序的包，查找带有 `@JsonMixin` 注解的类，并将它们注册到自动配置的 `ObjectMapper` 中。注册由 Spring Boot 的 `JsonMixinModule` 执行。
+
+[[features.json.gson]]
+== Gson
+提供了 Gson 的自动配置。当类路径上有 Gson 时，会自动配置一个 `Gson` bean。提供了多个 `spring.gson.*` 配置属性用于自定义配置。为了获得更多控制，可以使用一个或多个 `GsonBuilderCustomizer` bean。
+
+[[features.json.json-b]]
+== JSON-B
+提供了 JSON-B 的自动配置。当类路径上有 JSON-B API 和实现时，会自动配置一个 `Jsonb` bean。首选的 JSON-B 实现是 Eclipse Yasson，Spring Boot 为其提供了依赖管理。
+
+'''
+[[features.json]]
+== JSON
 Spring Boot provides integration with three JSON mapping libraries:
 
 - Gson
@@ -9,20 +59,14 @@ Spring Boot provides integration with three JSON mapping libraries:
 
 Jackson is the preferred and default library.
 
-
-
 [[features.json.jackson]]
 == Jackson
-
 Auto-configuration for Jackson is provided and Jackson is part of `spring-boot-starter-json`.
 When Jackson is on the classpath an javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean is automatically configured.
 Several configuration properties are provided for xref:how-to:spring-mvc.adoc#howto.spring-mvc.customize-jackson-objectmapper[customizing the configuration of the javadoc:com.fasterxml.jackson.databind.ObjectMapper[]].
 
-
-
 [[features.json.jackson.custom-serializers-and-deserializers]]
 === Custom Serializers and Deserializers
-
 If you use Jackson to serialize and deserialize JSON data, you might want to write your own javadoc:com.fasterxml.jackson.databind.JsonSerializer[] and javadoc:com.fasterxml.jackson.databind.JsonDeserializer[] classes.
 Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through a module], but Spring Boot provides an alternative javadoc:org.springframework.boot.jackson.JsonComponent[format=annotation] annotation that makes it easier to directly register Spring Beans.
 
@@ -41,30 +85,21 @@ The example above can be rewritten to use javadoc:org.springframework.boot.jacks
 
 include-code::object/MyJsonComponent[]
 
-
-
 [[features.json.jackson.mixins]]
 === Mixins
-
 Jackson has support for mixins that can be used to mix additional annotations into those already declared on a target class.
 Spring Boot's Jackson auto-configuration will scan your application's packages for classes annotated with javadoc:org.springframework.boot.jackson.JsonMixin[format=annotation] and register them with the auto-configured javadoc:com.fasterxml.jackson.databind.ObjectMapper[].
 The registration is performed by Spring Boot's javadoc:org.springframework.boot.jackson.JsonMixinModule[].
 
-
-
 [[features.json.gson]]
 == Gson
-
 Auto-configuration for Gson is provided.
 When Gson is on the classpath a javadoc:com.google.gson.Gson[] bean is automatically configured.
 Several `+spring.gson.*+` configuration properties are provided for customizing the configuration.
 To take more control, one or more javadoc:org.springframework.boot.autoconfigure.gson.GsonBuilderCustomizer[] beans can be used.
 
-
-
 [[features.json.json-b]]
 == JSON-B
-
 Auto-configuration for JSON-B is provided.
 When the JSON-B API and an implementation are on the classpath a javadoc:jakarta.json.bind.Jsonb[] bean will be automatically configured.
 The preferred JSON-B implementation is Eclipse Yasson for which dependency management is provided.

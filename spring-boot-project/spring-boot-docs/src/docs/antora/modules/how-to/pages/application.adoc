@@ -1,13 +1,80 @@
+= Spring Boot 应用程序
+:encoding: utf-8
+:numbered:
+
 [[howto.application]]
-= Spring Boot Application
+== Spring Boot 应用程序
+本节包含与 Spring Boot 应用程序直接相关的主题。
 
+[[howto.application.failure-analyzer]]
+== 创建你自己的 FailureAnalyzer
+javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] 是一种在启动时拦截异常并将其转换为人类可读消息的好方法，该消息包装在 javadoc:org.springframework.boot.diagnostics.FailureAnalysis[] 中。Spring Boot 为应用程序上下文相关异常、JSR-303 验证等提供了此类分析器。你也可以创建自己的。
+
+javadoc:org.springframework.boot.diagnostics.AbstractFailureAnalyzer[] 是 javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] 的一个便捷扩展，它检查异常中是否存在指定的异常类型以进行处理。你可以从中扩展，以便你的实现仅在异常实际存在时有机会处理它。如果由于某种原因你无法处理异常，请返回 `null` 以给其他实现处理异常的机会。
+
+javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] 实现必须在 `META-INF/spring.factories` 中注册。以下示例注册了 `ProjectConstraintViolationFailureAnalyzer`：
+
+[source,properties]
+----
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+com.example.ProjectConstraintViolationFailureAnalyzer
+----
+
+NOTE: 如果你需要访问 javadoc:org.springframework.beans.factory.BeanFactory[] 或 javadoc:org.springframework.core.env.Environment[]，请在 javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] 实现中将它们声明为构造函数参数。
+
+[[howto.application.troubleshoot-auto-configuration]]
+== 自动配置故障排除
+Spring Boot 自动配置尽力“`做正确的事情`”，但有时事情会失败，很难找出原因。
+
+在任何 Spring Boot javadoc:org.springframework.context.ApplicationContext[] 中都有一个非常有用的 javadoc:org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport[]。如果你启用 `DEBUG` 日志输出，你可以看到它。如果你使用 `spring-boot-actuator`（请参阅 xref:actuator.adoc[] 部分），还有一个 `conditions` 端点以 JSON 格式呈现报告。使用该端点调试应用程序，并查看 Spring Boot 在运行时添加了哪些功能（以及哪些功能未添加）。
+
+通过查看源代码和 API 文档可以回答更多问题。阅读代码时，请记住以下经验法则：
+
+* 查找名为 `+*AutoConfiguration+` 的类并阅读其源代码。特别注意 `+@Conditional*+` 注解，以了解它们启用了哪些功能以及何时启用。在命令行中添加 `--debug` 或系统属性 `-Ddebug`，以在控制台上获取应用程序中所有自动配置决策的日志。在启用了 actuator 的运行应用程序中，查看 `conditions` 端点（`/actuator/conditions` 或 JMX 等效项）以获取相同的信息。
+* 查找带有 javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] 的类（例如 javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[]）并从那里读取可用的外部配置选项。javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] 注解具有一个 `name` 属性，该属性作为外部属性的前缀。因此，javadoc:org.springframework.boot.autoconfigure.web.ServerProperties[] 具有 `prefix="server"`，其配置属性为 `server.port`、`server.address` 等。在启用了 actuator 的运行应用程序中，查看 `configprops` 端点。
+* 查找使用 javadoc:org.springframework.boot.context.properties.bind.Binder[] 上的 `bind` 方法以宽松的方式从 javadoc:org.springframework.core.env.Environment[] 中显式提取配置值的情况。它通常与前缀一起使用。
+* 查找直接绑定到 javadoc:org.springframework.core.env.Environment[] 的 javadoc:org.springframework.beans.factory.annotation.Value[format=annotation] 注解。
+* 查找响应 SpEL 表达式切换功能的 javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnExpression[format=annotation] 注解，通常使用从 javadoc:org.springframework.core.env.Environment[] 解析的占位符进行评估。
+
+[[howto.application.customize-the-environment-or-application-context]]
+== 在启动之前自定义环境或应用程序上下文
+javadoc:org.springframework.boot.SpringApplication[] 具有 javadoc:org.springframework.context.ApplicationListener[] 和 javadoc:org.springframework.context.ApplicationContextInitializer[] 实现，用于对上下文或环境应用自定义。Spring Boot 从 `META-INF/spring.factories` 加载了许多此类自定义以供内部使用。有多种方法可以注册额外的自定义：
+
+* 以编程方式，每个应用程序，在运行 javadoc:org.springframework.boot.SpringApplication[] 之前调用 `addListeners` 和 `addInitializers` 方法。
+* 以声明方式，为所有应用程序，通过添加 `META-INF/spring.factories` 并打包一个所有应用程序都使用的库 jar 文件。
+
+javadoc:org.springframework.boot.SpringApplication[] 向监听器发送一些特殊的 javadoc:org.springframework.test.context.event.ApplicationEvents[]（有些甚至在创建上下文之前），然后为 javadoc:org.springframework.context.ApplicationContext[] 发布的事件注册监听器。有关完整列表，请参阅“`Spring Boot 功能`”部分中的 xref:reference:features/spring-application.adoc#features.spring-application.application-events-and-listeners[]。
+
+还可以在刷新应用程序上下文之前使用 javadoc:org.springframework.boot.env.EnvironmentPostProcessor[] 自定义 javadoc:org.springframework.core.env.Environment[]。每个实现都应在 `META-INF/spring.factories` 中注册，如下例所示：
+
+[source]
+----
+org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
+----
+
+实现可以加载任意文件并将它们添加到 javadoc:org.springframework.core.env.Environment[] 中。例如，以下示例从类路径加载 YAML 配置文件：
+
+include-code::MyEnvironmentPostProcessor[]
+
+TIP: javadoc:org.springframework.core.env.Environment[] 已经准备好了 Spring Boot 默认加载的所有常用属性源。因此，可以从环境中获取文件的位置。前面的示例在列表末尾添加了 `custom-resource` 属性源，以便在任何其他常用位置定义的键优先。自定义实现可以定义另一个顺序。
+
+NOTE: 虽然在 javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] 上使用 javadoc:org.springframework.context.annotation.PropertySource[format=annotation] 可能看起来是在 javadoc:org.springframework.core.env.Environment[] 中加载自定义资源的便捷方法，但我们不建议这样做。此类属性源在应用程序上下文刷新之前不会添加到 javadoc:org.springframework.core.env.Environment[] 中。这对于配置某些属性（如 `+logging.*+` 和 `+spring.main.*+`）来说太晚了，这些属性在刷新开始之前就已经读取。
+
+[[howto.application.context-hierarchy]]
+== 构建应用程序上下文层次结构（添加父级或根上下文）
+你可以使用 javadoc:org.springframework.boot.builder.SpringApplicationBuilder[] 类创建父/子 javadoc:org.springframework.context.ApplicationContext[] 层次结构。有关更多信息，请参阅“`Spring Boot 功能`”部分中的 xref:reference:features/spring-application.adoc#features.spring-application.fluent-builder-api[]。
+
+[[howto.application.non-web-application]]
+== 创建非 Web 应用程序
+并非所有 Spring 应用程序都必须是 Web 应用程序（或 Web 服务）。如果你想在 `main` 方法中执行一些代码，但又希望引导 Spring 应用程序以设置要使用的基础设施，你可以使用 Spring Boot 的 javadoc:org.springframework.boot.SpringApplication[] 功能。javadoc:org.springframework.boot.SpringApplication[] 根据它认为是否需要 Web 应用程序来更改其 javadoc:org.springframework.context.ApplicationContext[] 类。你可以做的第一件事是从类路径中删除与服务器相关的依赖项（例如 servlet API）。如果你不能这样做（例如，如果你从同一代码库运行两个应用程序），那么你可以在 javadoc:org.springframework.boot.SpringApplication[] 实例上显式调用 `setWebApplicationType(WebApplicationType.NONE)` 或设置 `applicationContextClass` 属性（通过 Java API 或外部属性）。你希望作为业务逻辑运行的应用程序代码可以实现为 javadoc:org.springframework.boot.CommandLineRunner[] 并作为 javadoc:org.springframework.context.annotation.Bean[format=annotation] 定义放入上下文中。
+
+'''
+[[howto.application]]
+== Spring Boot Application
 This section includes topics relating directly to Spring Boot applications.
-
-
 
 [[howto.application.failure-analyzer]]
 == Create Your Own FailureAnalyzer
-
 javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] is a great way to intercept an exception on startup and turn it into a human-readable message, wrapped in a javadoc:org.springframework.boot.diagnostics.FailureAnalysis[].
 Spring Boot provides such an analyzer for application-context-related exceptions, JSR-303 validations, and more.
 You can also create your own.
@@ -27,11 +94,8 @@ com.example.ProjectConstraintViolationFailureAnalyzer
 
 NOTE: If you need access to the javadoc:org.springframework.beans.factory.BeanFactory[] or the javadoc:org.springframework.core.env.Environment[], declare them as constructor arguments in your javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] implementation.
 
-
-
 [[howto.application.troubleshoot-auto-configuration]]
 == Troubleshoot Auto-configuration
-
 The Spring Boot auto-configuration tries its best to "`do the right thing`", but sometimes things fail, and it can be hard to tell why.
 
 There is a really useful javadoc:org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport[] available in any Spring Boot javadoc:org.springframework.context.ApplicationContext[].
@@ -55,11 +119,8 @@ When reading the code, remember the following rules of thumb:
 * Look for javadoc:org.springframework.beans.factory.annotation.Value[format=annotation] annotations that bind directly to the javadoc:org.springframework.core.env.Environment[].
 * Look for javadoc:org.springframework.boot.autoconfigure.condition.ConditionalOnExpression[format=annotation] annotations that switch features on and off in response to SpEL expressions, normally evaluated with placeholders resolved from the javadoc:org.springframework.core.env.Environment[].
 
-
-
 [[howto.application.customize-the-environment-or-application-context]]
 == Customize the Environment or ApplicationContext Before It Starts
-
 A javadoc:org.springframework.boot.SpringApplication[] has javadoc:org.springframework.context.ApplicationListener[] and javadoc:org.springframework.context.ApplicationContextInitializer[] implementations that are used to apply customizations to the context or environment.
 Spring Boot loads a number of such customizations for use internally from `META-INF/spring.factories`.
 There is more than one way to register additional customizations:
@@ -92,19 +153,13 @@ CAUTION: While using javadoc:org.springframework.context.annotation.PropertySour
 Such property sources are not added to the javadoc:org.springframework.core.env.Environment[] until the application context is being refreshed.
 This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
 
-
-
 [[howto.application.context-hierarchy]]
 == Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
-
 You can use the javadoc:org.springframework.boot.builder.SpringApplicationBuilder[] class to create parent/child javadoc:org.springframework.context.ApplicationContext[] hierarchies.
 See xref:reference:features/spring-application.adoc#features.spring-application.fluent-builder-api[] in the "`Spring Boot Features`" section for more information.
 
-
-
 [[howto.application.non-web-application]]
 == Create a Non-web Application
-
 Not all Spring applications have to be web applications (or web services).
 If you want to execute some code in a `main` method but also bootstrap a Spring application to set up the infrastructure to use, you can use the javadoc:org.springframework.boot.SpringApplication[] features of Spring Boot.
 A javadoc:org.springframework.boot.SpringApplication[] changes its javadoc:org.springframework.context.ApplicationContext[] class, depending on whether it thinks it needs a web application or not.

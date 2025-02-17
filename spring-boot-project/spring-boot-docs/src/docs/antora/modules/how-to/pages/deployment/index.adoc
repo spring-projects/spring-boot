@@ -1,8 +1,17 @@
-[[howto.deployment]]
-= Deploying Spring Boot Applications
+= 部署 Spring Boot 应用程序
+:encoding: utf-8
+:numbered:
 
+[[howto.deployment]]
+== 部署 Spring Boot 应用程序
+Spring Boot 灵活的打包选项为应用程序的部署提供了多种选择。你可以将 Spring Boot 应用程序部署到各种云平台、虚拟机/物理机，或者为 Unix 系统制作完全可执行的应用程序。
+
+本节介绍一些更常见的部署场景。
+
+'''
+[[howto.deployment]]
+== Deploying Spring Boot Applications
 Spring Boot's flexible packaging options provide a great deal of choice when it comes to deploying your application.
 You can deploy Spring Boot applications to a variety of cloud platforms, to virtual/real machines, or make them fully executable for Unix systems.
 
 This section covers some of the more common deployment scenarios.
-

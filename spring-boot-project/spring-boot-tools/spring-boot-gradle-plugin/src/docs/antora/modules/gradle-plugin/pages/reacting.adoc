@@ -1,14 +1,97 @@
-[[reacting-to-other-plugins]]
 = Reacting to Other Plugins
+:encoding: utf-8
+:numbered:
 
+[[reacting-to-other-plugins]]
+== 对其他插件的反应
+当应用其他插件时，Spring Boot 插件会通过对项目的配置进行各种更改来做出反应。
+本节描述了这些更改。
+
+[[reacting-to-other-plugins.java]]
+== 对 Java 插件的反应
+当 Gradle 的 {url-gradle-docs-java-plugin}[`java` 插件] 应用于项目时，Spring Boot 插件会：
+
+1. 创建一个名为 `bootJar` 的 {apiref-gradle-plugin-boot-jar}[`BootJar`] 任务，该任务将为项目创建一个可执行的 uber jar。
+jar 将包含主源集运行时类路径中的所有内容；类打包在 `BOOT-INF/classes` 中，jar 打包在 `BOOT-INF/lib` 中。
+2. 配置 `assemble` 任务以依赖于 `bootJar` 任务。
+3. 配置 `jar` 任务以使用 `plain` 作为其归档分类器的约定。
+4. 创建一个名为 `bootBuildImage` 的 {apiref-gradle-plugin-boot-build-image}[`BootBuildImage`] 任务，该任务将使用 https://buildpacks.io[buildpack] 创建一个 OCI 镜像。
+5. 创建一个名为 `bootRun` 的 {apiref-gradle-plugin-boot-run}[`BootRun`] 任务，该任务可用于运行你的应用程序，使用 `main` 源集查找其主方法并提供其运行时类路径。
+6. 创建一个名为 `bootTestRun` 的 {apiref-gradle-plugin-boot-run}[`BootRun`] 任务，该任务可用于运行你的应用程序，使用 `test` 源集查找其主方法并提供其运行时类路径。
+7. 创建一个名为 `bootArchives` 的配置，其中包含由 `bootJar` 任务生成的工件。
+8. 创建一个名为 `developmentOnly` 的配置，用于仅在开发时需要的依赖项（例如 Spring Boot 的 Devtools），这些依赖项不应打包在可执行的 jar 和 war 中。
+9. 创建一个名为 `testAndDevelopmentOnly` 的配置，用于仅在开发时以及编写和运行测试时需要的依赖项，这些依赖项不应打包在可执行的 jar 和 war 中。
+10. 创建一个名为 `productionRuntimeClasspath` 的配置。它等同于 `runtimeClasspath` 减去仅出现在 `developmentOnly` 或 `testDevelopmentOnly` 配置中的任何依赖项。
+11. 配置任何未配置编码的 `JavaCompile` 任务以使用 `UTF-8`。
+12. 配置任何 `JavaCompile` 任务以使用 `-parameters` 编译器参数。
+
+[[reacting-to-other-plugins.kotlin]]
+== 对 Kotlin 插件的反应
+当 {url-kotlin-docs-kotlin-plugin}[Kotlin 的 Gradle 插件] 应用于项目时，Spring Boot 插件会：
+
+1. 将 Spring Boot 依赖管理中使用的 Kotlin 版本与插件的版本对齐。
+这是通过设置 `kotlin.version` 属性来实现的，该属性的值与 Kotlin 插件的版本匹配。
+2. 配置任何 `KotlinCompile` 任务以使用 `-java-parameters` 编译器参数。
+
+[[reacting-to-other-plugins.war]]
+== 对 War 插件的反应
+当 Gradle 的 {url-gradle-docs-war-plugin}[`war` 插件] 应用于项目时，Spring Boot 插件会：
+
+1. 创建一个名为 `bootWar` 的 {apiref-gradle-plugin-boot-war}[`BootWar`] 任务，该任务将为项目创建一个可执行的 fat war。
+除了标准打包外，`providedRuntime` 配置中的所有内容都将打包在 `WEB-INF/lib-provided` 中。
+2. 配置 `assemble` 任务以依赖于 `bootWar` 任务。
+3. 配置 `war` 任务以使用 `plain` 作为其归档分类器的约定。
+4. 配置 `bootArchives` 配置以包含由 `bootWar` 任务生成的工件。
+
+[[reacting-to-other-plugins.dependency-management]]
+== 对依赖管理插件的反应
+当 {url-dependency-management-plugin-site}[`io.spring.dependency-management` 插件] 应用于项目时，Spring Boot 插件将自动导入 `spring-boot-dependencies` bom。
+
+[[reacting-to-other-plugins.application]]
+== 对 Application 插件的反应
+当 Gradle 的 {url-gradle-docs-application-plugin}[`application` 插件] 应用于项目时，Spring Boot 插件会：
+
+1. 创建一个名为 `bootStartScripts` 的 `CreateStartScripts` 任务，该任务将创建脚本以使用 `java -jar` 启动 `bootArchives` 配置中的工件。
+该任务配置为使用 `applicationDefaultJvmArgs` 属性作为其 `defaultJvmOpts` 属性的约定。
+2. 创建一个名为 `boot` 的新分发，并配置其在其 `lib` 目录中包含 `bootArchives` 配置中的工件，并在其 `bin` 目录中包含启动脚本。
+3. 配置 `bootRun` 任务以使用 `mainClassName` 属性作为其 `main` 属性的约定。
+4. 配置 `bootRun` 和 `bootTestRun` 任务以使用 `applicationDefaultJvmArgs` 属性作为其 `jvmArgs` 属性的约定。
+5. 配置 `bootJar` 任务以使用 `mainClassName` 属性作为其清单中 `Start-Class` 条目的约定。
+6. 配置 `bootWar` 任务以使用 `mainClassName` 属性作为其清单中 `Start-Class` 条目的约定。
+
+[[reacting-to-other-plugins.nbt]]
+== 对 GraalVM Native Image 插件的反应
+当 {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image 插件] 应用于项目时，Spring Boot 插件会：
+
+1. 应用 `org.springframework.boot.aot` 插件，该插件：
+- 注册 `aot` 和 `aotTest` 源集。
+- 注册一个名为 `processAot` 的 `ProcessAot` 任务，该任务将为 `aot` 源集中的应用程序生成 AOT 优化的源代码。
+- 配置 `aot` 源集的 Java 编译和资源处理任务以依赖于 `processAot`。
+- 注册一个名为 `processTestAot` 的 `ProcessTestAot` 任务，该任务将为 `aotTest` 源集中的应用程序测试生成 AOT 优化的源代码。
+- 配置 `aotTest` 源集的 Java 编译和资源处理任务以依赖于 `processTestAot`。
+2. 将 `aot` 源集的输出添加到 `main` GraalVM 原生二进制文件的类路径中。
+3. 将 `aotTest` 源集的输出添加到 `test` GraalVM 原生二进制文件的类路径中。
+4. 配置 GraalVM 扩展以禁用工具链检测。
+5. 配置每个 GraalVM 原生二进制文件以要求 GraalVM 22.3 或更高版本。
+6. 配置 `bootJar` 任务以在其 jar 中包含由 `collectReachabilityMetadata` 任务生成的可达性元数据。
+7. 配置 `bootJar` 任务以添加 `Spring-Boot-Native-Processed: true` 清单条目。
+
+[[reacting-to-other-plugins.cyclonedx]]
+== 对 CycloneDX 插件的反应
+当 {url-cyclonedx-docs-gradle-plugin}[CycloneDX 插件] 应用于项目时，Spring Boot 插件会：
+
+1. 配置 `cyclonedxBom` 任务以使用 `application` 项目类型，并将 SBOM 输出为 JSON 格式的 `application.cdx` 文件，不包含完整的许可证文本。
+2. 将 SBOM 添加到生成的 jar 或 war 文件中的 `META-INF/sbom` 下。
+3. 将 `Sbom-Format` 和 `Sbom-Location` 添加到 jar 或 war 文件的清单中。
+
+'''
+[[reacting-to-other-plugins]]
+== Reacting to Other Plugins
 When another plugin is applied the Spring Boot plugin reacts by making various changes to the project's configuration.
 This section describes those changes.
 
-
-
 [[reacting-to-other-plugins.java]]
 == Reacting to the Java Plugin
-
 When Gradle's {url-gradle-docs-java-plugin}[`java` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {apiref-gradle-plugin-boot-jar}[`BootJar`] task named `bootJar` that will create an executable, uber jar for the project.
@@ -25,22 +108,16 @@ When Gradle's {url-gradle-docs-java-plugin}[`java` plugin] is applied to a proje
 11. Configures any `JavaCompile` tasks with no configured encoding to use `UTF-8`.
 12. Configures any `JavaCompile` tasks to use the `-parameters` compiler argument.
 
-
-
 [[reacting-to-other-plugins.kotlin]]
 == Reacting to the Kotlin Plugin
-
 When {url-kotlin-docs-kotlin-plugin}[Kotlin's Gradle plugin] is applied to a project, the Spring Boot plugin:
 
 1. Aligns the Kotlin version used in Spring Boot's dependency management with the version of the plugin.
    This is achieved by setting the `kotlin.version` property with a value that matches the version of the Kotlin plugin.
 2. Configures any `KotlinCompile` tasks to use the `-java-parameters` compiler argument.
 
-
-
 [[reacting-to-other-plugins.war]]
 == Reacting to the War Plugin
-
 When Gradle's {url-gradle-docs-war-plugin}[`war` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a {apiref-gradle-plugin-boot-war}[`BootWar`] task named `bootWar` that will create an executable, fat war for the project.
@@ -49,18 +126,12 @@ When Gradle's {url-gradle-docs-war-plugin}[`war` plugin] is applied to a project
 3. Configures the `war` task to use `plain` as the convention for its archive classifier.
 4. Configures the `bootArchives` configuration to contain the artifact produced by the `bootWar` task.
 
-
-
 [[reacting-to-other-plugins.dependency-management]]
 == Reacting to the Dependency Management Plugin
-
 When the {url-dependency-management-plugin-site}[`io.spring.dependency-management` plugin] is applied to a project, the Spring Boot plugin will automatically import the `spring-boot-dependencies` bom.
-
-
 
 [[reacting-to-other-plugins.application]]
 == Reacting to the Application Plugin
-
 When Gradle's {url-gradle-docs-application-plugin}[`application` plugin] is applied to a project, the Spring Boot plugin:
 
 1. Creates a `CreateStartScripts` task named `bootStartScripts` that will create scripts that launch the artifact in the `bootArchives` configuration using `java -jar`.
@@ -71,11 +142,8 @@ When Gradle's {url-gradle-docs-application-plugin}[`application` plugin] is appl
 5. Configures the `bootJar` task to use the `mainClassName` property as a convention for the `Start-Class` entry in its manifest.
 6. Configures the `bootWar` task to use the `mainClassName` property as a convention for the `Start-Class` entry in its manifest.
 
-
-
 [[reacting-to-other-plugins.nbt]]
 == Reacting to the GraalVM Native Image Plugin
-
 When the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin] is applied to a project, the Spring Boot plugin:
 
 . Applies the `org.springframework.boot.aot` plugin that:
@@ -91,11 +159,8 @@ When the {url-native-build-tools-docs-gradle-plugin}[GraalVM Native Image plugin
 . Configures the `bootJar` task to include the reachability metadata produced by the `collectReachabilityMetadata` task in its jar.
 . Configures the `bootJar` task to add the `Spring-Boot-Native-Processed: true` manifest entry.
 
-
-
 [[reacting-to-other-plugins.cyclonedx]]
 == Reacting to the CycloneDX Plugin
-
 When the {url-cyclonedx-docs-gradle-plugin}[CycloneDX plugin] is applied to a project, the Spring Boot plugin:
 
 . Configures the `cyclonedxBom` task to use the `application` project type and output the SBOM to the `application.cdx` file in JSON format without full license texts.

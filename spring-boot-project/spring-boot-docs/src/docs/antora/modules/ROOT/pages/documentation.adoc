@@ -1,26 +1,192 @@
+= 文档概述
+:encoding: utf-8
+:numbered:
+
+:navtitle: 文档
+[[documentation]]
+== 文档概述
+本节简要概述了 Spring Boot 的参考文档。它为文档的其余部分提供了一份导航地图。
+
+[[documentation.first-steps]]
+== 第一步
+
+如果你是 Spring Boot 或 Spring 的初学者，可以从以下主题开始：
+
+从零开始： xref:index.adoc[概述] | xref:system-requirements.adoc[系统要求] | xref:installing.adoc[安装]
+
+教程： xref:tutorial:first-application/index.adoc[第一部分] | xref:tutorial:first-application/index.adoc#getting-started.first-application.code[第二部分]
+
+运行示例： xref:tutorial:first-application/index.adoc#getting-started.first-application.run[第一部分] | xref:tutorial:first-application/index.adoc#getting-started.first-application.executable-jar[第二部分]
+
+[[documentation.upgrading]]
+== 从早期版本升级
+
+你应始终确保运行的是 Spring Boot 的 {url-github-wiki}/Supported-Versions[受支持版本]。
+
+根据你要升级到的版本，你可以在这里找到一些额外的TIP: 
+
+从 1.x 升级到 2.x： xref:upgrading.adoc#upgrading.from-1x[从 1.x 升级]
+
+从 2.x 升级： xref:upgrading.adoc#upgrading.from-2x[从 2.x 升级]
+
+升级到新特性版本： xref:upgrading.adoc#upgrading.to-feature[升级到新特性版本]
+
+Spring Boot CLI： xref:upgrading.adoc#upgrading.cli[升级 Spring Boot CLI]
+
+[[documentation.using]]
+== 使用 Spring Boot 进行开发
+
+准备好开始使用 Spring Boot 了吗？xref:reference:using/index.adoc[我们为你提供了以下内容]：
+
+构建系统： xref:reference:using/build-systems.adoc#using.build-systems.maven[Maven] | xref:reference:using/build-systems.adoc#using.build-systems.gradle[Gradle] | xref:reference:using/build-systems.adoc#using.build-systems.ant[Ant] | xref:reference:using/build-systems.adoc#using.build-systems.starters[Starters]
+
+最佳实践： xref:reference:using/structuring-your-code.adoc[代码结构] | xref:reference:using/configuration-classes.adoc[@Configuration] | xref:reference:using/auto-configuration.adoc[@EnableAutoConfiguration] | xref:reference:using/spring-beans-and-dependency-injection.adoc[Bean 和依赖注入]
+
+运行代码： xref:reference:using/running-your-application.adoc#using.running-your-application.from-an-ide[IDE] | xref:reference:using/running-your-application.adoc#using.running-your-application.as-a-packaged-application[打包应用] | xref:reference:using/running-your-application.adoc#using.running-your-application.with-the-maven-plugin[Maven] | xref:reference:using/running-your-application.adoc#using.running-your-application.with-the-gradle-plugin[Gradle]
+
+打包应用： xref:reference:using/packaging-for-production.adoc[生产环境 JAR]
+
+Spring Boot CLI： xref:cli:index.adoc[使用 CLI]
+
+[[documentation.features]]
+== 了解 Spring Boot 特性
+
+需要更多关于 Spring Boot 核心特性的详细信息吗？xref:reference:features/index.adoc[以下内容适合你]：
+
+Spring 应用： xref:reference:features/spring-application.adoc[SpringApplication]
+
+外部配置： xref:reference:features/external-config.adoc[外部配置]
+
+配置文件： xref:reference:features/profiles.adoc[配置文件]
+
+日志： xref:reference:features/logging.adoc[日志]
+
+[[documentation.web]]
+== Web
+
+如果你开发 Spring Boot Web 应用程序，请查看以下内容：
+
+Servlet Web 应用： xref:reference:web/servlet.adoc[Spring MVC、Jersey、嵌入式 Servlet 容器]
+
+响应式 Web 应用： xref:reference:web/reactive.adoc[Spring Webflux、嵌入式 Servlet 容器]
+
+优雅关机： xref:reference:web/graceful-shutdown.adoc[优雅关机]
+
+Spring Security： xref:reference:web/spring-security.adoc[默认安全配置、OAuth2 自动配置、SAML]
+
+Spring Session： xref:reference:web/spring-session.adoc[Spring Session 自动配置]
+
+Spring HATEOAS： xref:reference:web/spring-hateoas.adoc[Spring HATEOAS 自动配置]
+
+[[documentation.data]]
+== 数据
+
+如果你的应用程序涉及数据存储，你可以在这里查看如何配置：
+
+SQL： xref:reference:data/sql.adoc[配置 SQL 数据存储、嵌入式数据库支持、连接池等]
+
+NOSQL： xref:reference:data/nosql.adoc[Redis、MongoDB、Neo4j 等 NOSQL 存储的自动配置]
+
+[[documentation.messaging]]
+== 消息传递
+
+如果你的应用程序使用任何消息传递协议，请查看以下部分：
+
+JMS： xref:reference:messaging/jms.adoc[ActiveMQ 和 Artemis 的自动配置、通过 JMS 发送和接收消息]
+
+AMQP： xref:reference:messaging/amqp.adoc[RabbitMQ 的自动配置]
+
+Kafka： xref:reference:messaging/kafka.adoc[Spring Kafka 的自动配置]
+
+Pulsar： xref:reference:messaging/pulsar.adoc[Spring for Apache Pulsar 的自动配置]
+
+RSocket： xref:reference:messaging/rsocket.adoc[Spring Framework 的 RSocket 支持自动配置]
+
+Spring Integration： xref:reference:messaging/spring-integration.adoc[Spring Integration 的自动配置]
+
+[[documentation.io]]
+== IO
+
+如果你的应用程序需要 IO 功能，请查看以下部分：
+
+缓存： xref:reference:io/caching.adoc[EhCache、Hazelcast、Infinispan 等的缓存支持]
+
+Quartz： xref:reference:io/quartz.adoc[Quartz 调度]
+
+邮件： xref:reference:io/email.adoc[发送邮件]
+
+验证： xref:reference:io/validation.adoc[JSR-303 验证]
+
+REST 客户端： xref:reference:io/rest-client.adoc[使用 RestTemplate 和 WebClient 调用 REST 服务]
+
+Web 服务： xref:reference:io/webservices.adoc[Spring Web Services 的自动配置]
+
+JTA： xref:reference:io/jta.adoc[使用 JTA 进行分布式事务]
+
+[[documentation.container-images]]
+== 容器镜像
+
+Spring Boot 提供了对构建高效容器镜像的一流支持。你可以在这里了解更多：
+
+高效容器镜像： xref:reference:packaging/container-images/efficient-images.adoc[优化 Docker 镜像等容器镜像的技巧]
+
+Dockerfile： xref:reference:packaging/container-images/dockerfiles.adoc[使用 Dockerfile 构建容器镜像]
+
+云原生构建包： xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[支持 Maven 和 Gradle 的云原生构建包]
+
+[[documentation.actuator]]
+== 投入生产
+
+当你准备将 Spring Boot 应用程序投入生产时，我们有一些 xref:how-to:actuator.adoc[技巧] 可能会对你有用：
+
+管理端点： xref:reference:actuator/endpoints.adoc[概述]
+
+连接选项： xref:reference:actuator/monitoring.adoc[HTTP] | xref:reference:actuator/jmx.adoc[JMX]
+
+监控： xref:reference:actuator/metrics.adoc[指标] | xref:reference:actuator/auditing.adoc[审计] | xref:reference:actuator/http-exchanges.adoc[HTTP 交换] | xref:reference:actuator/process-monitoring.adoc[进程]
+
+[[documentation.packaging]]
+== 生产优化
+
+Spring Boot 应用程序可以使用以下部分描述的技术进行生产优化：
+
+高效部署： xref:reference:packaging/efficient.adoc#packaging.efficient.unpacking[解压可执行 JAR]
+
+GraalVM 原生镜像： xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[介绍] | xref:reference:packaging/native-image/advanced-topics.adoc[高级主题] | xref:how-to:native-image/developing-your-first-application.adoc[入门] | xref:how-to:native-image/testing-native-applications.adoc[测试]
+
+类数据共享： xref:reference:packaging/class-data-sharing.adoc[概述]
+
+检查点与恢复： xref:reference:packaging/checkpoint-restore.adoc[概述]
+
+[[documentation.advanced]]
+== 高级主题
+
+最后，我们为高级用户提供了一些主题：
+
+Spring Boot 应用程序部署： xref:how-to:deployment/cloud.adoc[云部署] | xref:how-to:deployment/installing.adoc[操作系统服务]
+
+构建工具插件： xref:maven-plugin:index.adoc[Maven] | xref:gradle-plugin:index.adoc[Gradle]
+
+附录： xref:appendix:application-properties/index.adoc[应用程序属性] | xref:specification:configuration-metadata/index.adoc[配置元数据] | xref:appendix:auto-configuration-classes/index.adoc[自动配置类] | xref:appendix:test-auto-configuration/index.adoc[测试自动配置注解] | xref:specification:executable-jar/index.adoc[可执行 JAR] | xref:appendix:dependency-versions/index.adoc[依赖版本]
+
+'''
+
 :navtitle: Documentation
 [[documentation]]
-= Documentation Overview
-
+== Documentation Overview
 This section provides a brief overview of Spring Boot reference documentation.
 It serves as a map for the rest of the document.
 
-
-
 [[documentation.first-steps]]
 == First Steps
-
 If you are getting started with Spring Boot or 'Spring' in general, start with the following topics:
 
 * *From scratch:* xref:index.adoc[Overview] | xref:system-requirements.adoc[Requirements] | xref:installing.adoc[Installation]
 * *Tutorial:* xref:tutorial:first-application/index.adoc[Part 1] | xref:tutorial:first-application/index.adoc#getting-started.first-application.code[Part 2]
 * *Running your example:* xref:tutorial:first-application/index.adoc#getting-started.first-application.run[Part 1] | xref:tutorial:first-application/index.adoc#getting-started.first-application.executable-jar[Part 2]
 
-
-
 [[documentation.upgrading]]
 == Upgrading From an Earlier Version
-
 You should always ensure that you are running a {url-github-wiki}/Supported-Versions[supported version] of Spring Boot.
 
 Depending on the version that you are upgrading to, you can find some additional tips here:
@@ -30,11 +196,8 @@ Depending on the version that you are upgrading to, you can find some additional
 * *To a new feature release:* xref:upgrading.adoc#upgrading.to-feature[Upgrading to New Feature Release]
 * *Spring Boot CLI:* xref:upgrading.adoc#upgrading.cli[Upgrading the Spring Boot CLI]
 
-
-
 [[documentation.using]]
 == Developing With Spring Boot
-
 Ready to actually start using Spring Boot? xref:reference:using/index.adoc[We have you covered]:
 
 * *Build systems:* xref:reference:using/build-systems.adoc#using.build-systems.maven[Maven] | xref:reference:using/build-systems.adoc#using.build-systems.gradle[Gradle] | xref:reference:using/build-systems.adoc#using.build-systems.ant[Ant] | xref:reference:using/build-systems.adoc#using.build-systems.starters[Starters]
@@ -43,11 +206,8 @@ Ready to actually start using Spring Boot? xref:reference:using/index.adoc[We ha
 * *Packaging your app:* xref:reference:using/packaging-for-production.adoc[Production jars]
 * *Spring Boot CLI:* xref:cli:index.adoc[Using the CLI]
 
-
-
 [[documentation.features]]
 == Learning About Spring Boot Features
-
 Need more details about Spring Boot's core features?
 xref:reference:features/index.adoc[The following content is for you]:
 
@@ -56,11 +216,8 @@ xref:reference:features/index.adoc[The following content is for you]:
 * *Profiles:* xref:reference:features/profiles.adoc[Profiles]
 * *Logging:* xref:reference:features/logging.adoc[Logging]
 
-
-
 [[documentation.web]]
 == Web
-
 If you develop Spring Boot web applications, take a look at the following content:
 
 * *Servlet Web Applications:* xref:reference:web/servlet.adoc[Spring MVC, Jersey, Embedded Servlet Containers]
@@ -70,11 +227,8 @@ If you develop Spring Boot web applications, take a look at the following conten
 * *Spring Session:* xref:reference:web/spring-session.adoc[Auto-configuration for Spring Session]
 * *Spring HATEOAS:* xref:reference:web/spring-hateoas.adoc[Auto-configuration for Spring HATEOAS]
 
-
-
 [[documentation.data]]
 == Data
-
 If your application deals with a datastore, you can see how to configure that here:
 
 * *SQL:* xref:reference:data/sql.adoc[Configuring a SQL Datastore, Embedded Database support, Connection pools, and more.]
@@ -84,7 +238,6 @@ If your application deals with a datastore, you can see how to configure that he
 
 [[documentation.messaging]]
 == Messaging
-
 If your application uses any messaging protocol, see one or more of the following sections:
 
 * *JMS:* xref:reference:messaging/jms.adoc[Auto-configuration for ActiveMQ and Artemis, Sending and Receiving messages through JMS]
@@ -94,11 +247,8 @@ If your application uses any messaging protocol, see one or more of the followin
 * *RSocket:* xref:reference:messaging/rsocket.adoc[Auto-configuration for Spring Framework's RSocket Support]
 * *Spring Integration:* xref:reference:messaging/spring-integration.adoc[Auto-configuration for Spring Integration]
 
-
-
 [[documentation.io]]
 == IO
-
 If your application needs IO capabilities, see one or more of the following sections:
 
 * *Caching:* xref:reference:io/caching.adoc[Caching support with EhCache, Hazelcast, Infinispan, and more]
@@ -109,33 +259,24 @@ If your application needs IO capabilities, see one or more of the following sect
 * *Webservices:* xref:reference:io/webservices.adoc[Auto-configuration for Spring Web Services]
 * *JTA:* xref:reference:io/jta.adoc[Distributed Transactions with JTA]
 
-
-
 [[documentation.container-images]]
 == Container Images
-
 Spring Boot provides first-class support for building efficient container images. You can read more about it here:
 
 * *Efficient Container Images:* xref:reference:packaging/container-images/efficient-images.adoc[Tips to optimize container images such as Docker images]
 * *Dockerfiles:* xref:reference:packaging/container-images/dockerfiles.adoc[Building container images using dockerfiles]
 * *Cloud Native Buildpacks:* xref:reference:packaging/container-images/cloud-native-buildpacks.adoc[Support for Cloud Native Buildpacks with Maven and Gradle]
 
-
-
 [[documentation.actuator]]
 == Moving to Production
-
 When you are ready to push your Spring Boot application to production, we have xref:how-to:actuator.adoc[some tricks] that you might like:
 
 * *Management endpoints:* xref:reference:actuator/endpoints.adoc[Overview]
 * *Connection options:* xref:reference:actuator/monitoring.adoc[HTTP] | xref:reference:actuator/jmx.adoc[JMX]
 * *Monitoring:* xref:reference:actuator/metrics.adoc[Metrics] | xref:reference:actuator/auditing.adoc[Auditing] | xref:reference:actuator/http-exchanges.adoc[HTTP Exchanges] | xref:reference:actuator/process-monitoring.adoc[Process]
 
-
-
 [[documentation.packaging]]
 == Optimizing for Production
-
 Spring Boot applications can be optimized for production using technologies described in these sections:
 
 * *Efficient Deployments:* xref:reference:packaging/efficient.adoc#packaging.efficient.unpacking[Unpacking the Executable JAR]
@@ -143,10 +284,8 @@ Spring Boot applications can be optimized for production using technologies desc
 * *Class Data Sharing:* xref:reference:packaging/class-data-sharing.adoc[Overview]
 * *Checkpoint and Restore* xref:reference:packaging/checkpoint-restore.adoc[Overview]
 
-
 [[documentation.advanced]]
 == Advanced Topics
-
 Finally, we have a few topics for more advanced users:
 
 * *Spring Boot Applications Deployment:* xref:how-to:deployment/cloud.adoc[Cloud Deployment] | xref:how-to:deployment/installing.adoc[OS Service]

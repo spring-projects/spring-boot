@@ -1,6 +1,54 @@
-[[actuator.jmx]]
-= Monitoring and Management over JMX
+= 通过 JMX 进行监控和管理
+:encoding: utf-8
+:numbered:
 
+[[actuator.jmx]]
+== 通过 JMX 进行监控和管理
+Java 管理扩展（JMX）提供了一种标准的机制来监控和管理应用程序。默认情况下，此功能未启用。你可以通过将 configprop:spring.jmx.enabled[] 配置属性设置为 `true` 来启用它。Spring Boot 将最合适的 javadoc:javax.management.MBeanServer[] 暴露为一个 ID 为 `mbeanServer` 的 bean。任何使用 Spring JMX 注解（`@org.springframework.jmx.export.annotation.ManagedResource`、javadoc:org.springframework.jmx.export.annotation.ManagedAttribute[format=annotation] 或 javadoc:org.springframework.jmx.export.annotation.ManagedOperation[format=annotation]）注解的 bean 都会暴露给它。
+
+如果你的平台提供了标准的 javadoc:javax.management.MBeanServer[]，Spring Boot 会使用它，并在必要时默认使用 VM 的 javadoc:javax.management.MBeanServer[]。如果所有这些都失败，则会创建一个新的 javadoc:javax.management.MBeanServer[]。
+
+NOTE: `spring.jmx.enabled` 仅影响由 Spring 提供的管理 bean。启用由其他库提供的管理 bean（例如 {url-log4j2-docs}/jmx.html[Log4j2] 或 {url-quartz-javadoc}/constant-values.html#org.quartz.impl.StdSchedulerFactory.PROP_SCHED_JMX_EXPORT[Quartz]）是独立的。
+
+有关更多详细信息，请参阅 {code-spring-boot-autoconfigure-src}/jmx/JmxAutoConfiguration.java[`JmxAutoConfiguration`] 类。
+
+默认情况下，Spring Boot 还将管理端点暴露为 `org.springframework.boot` 域下的 JMX MBean。要完全控制 JMX 域中的端点注册，请考虑注册你自己的 javadoc:org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory[] 实现。
+
+[[actuator.jmx.custom-mbean-names]]
+== 自定义 MBean 名称
+MBean 的名称通常从端点的 `id` 生成。例如，`health` 端点暴露为 `org.springframework.boot:type=Endpoint,name=Health`。
+
+如果你的应用程序包含多个 Spring javadoc:org.springframework.context.ApplicationContext[]，你可能会发现名称冲突。为了解决这个问题，你可以将 configprop:spring.jmx.unique-names[] 属性设置为 `true`，以便 MBean 名称始终唯一。
+
+你还可以自定义端点暴露的 JMX 域。以下设置显示了在 `application.properties` 中执行此操作的示例：
+
+[configprops,yaml]
+----
+spring:
+  jmx:
+    unique-names: true
+management:
+  endpoints:
+    jmx:
+      domain: "com.example.myapp"
+----
+
+[[actuator.jmx.disable-jmx-endpoints]]
+== 禁用 JMX 端点
+如果你不想通过 JMX 暴露端点，可以将 configprop:management.endpoints.jmx.exposure.exclude[] 属性设置为 `*`，如下例所示：
+
+[configprops,yaml]
+----
+management:
+  endpoints:
+    jmx:
+      exposure:
+        exclude: "*"
+----
+
+'''
+[[actuator.jmx]]
+== Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
 By default, this feature is not enabled.
 You can turn it on by setting the configprop:spring.jmx.enabled[] configuration property to `true`.
@@ -18,11 +66,8 @@ See the {code-spring-boot-autoconfigure-src}/jmx/JmxAutoConfiguration.java[`JmxA
 By default, Spring Boot also exposes management endpoints as JMX MBeans under the `org.springframework.boot` domain.
 To take full control over endpoint registration in the JMX domain, consider registering your own javadoc:org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory[] implementation.
 
-
-
 [[actuator.jmx.custom-mbean-names]]
 == Customizing MBean Names
-
 The name of the MBean is usually generated from the `id` of the endpoint.
 For example, the `health` endpoint is exposed as `org.springframework.boot:type=Endpoint,name=Health`.
 
@@ -43,11 +88,8 @@ management:
       domain: "com.example.myapp"
 ----
 
-
-
 [[actuator.jmx.disable-jmx-endpoints]]
 == Disabling JMX Endpoints
-
 If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as the following example shows:
 
 [configprops,yaml]

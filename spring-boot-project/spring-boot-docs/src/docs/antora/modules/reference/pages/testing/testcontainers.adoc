@@ -1,6 +1,124 @@
-[[testing.testcontainers]]
 = Testcontainers
+:encoding: utf-8
+:numbered:
 
+[[testing.testcontainers]]
+== Testcontainers
+https://www.testcontainers.org/[Testcontainers] 库提供了一种管理运行在 Docker 容器中的服务的方式。它与 JUnit 集成，允许你编写一个测试类，在运行任何测试之前启动容器。Testcontainers 特别适用于编写与真实后端服务（如 MySQL、MongoDB、Cassandra 等）通信的集成测试。
+
+Testcontainers 可以在 Spring Boot 测试中使用，如下所示：
+
+include-code::vanilla/MyIntegrationTests[]
+
+这将在运行任何测试之前启动一个运行 Neo4j 的 Docker 容器（如果 Docker 在本地运行）。在大多数情况下，你需要配置应用程序以连接到在容器中运行的服务。
+
+[[testing.testcontainers.service-connections]]
+== 服务连接
+
+服务连接是指与任何远程服务的连接。Spring Boot 的自动配置可以消费服务连接的详细信息，并使用它们建立与远程服务的连接。这样做时，连接详细信息优先于任何与连接相关的配置属性。
+
+当使用 Testcontainers 时，可以通过在测试类中标注容器字段来自动创建与容器中运行的服务的连接详细信息。
+
+include-code::MyIntegrationTests[]
+
+由于 `@ServiceConnection`，上述配置允许应用程序中的 Neo4j 相关 Bean 与 Testcontainers 管理的 Docker 容器中运行的 Neo4j 通信。这是通过自动定义一个 `Neo4jConnectionDetails` Bean 来实现的，然后由 Neo4j 自动配置使用该 Bean，覆盖任何与连接相关的配置属性。
+
+NOTE: 你需要将 `spring-boot-testcontainers` 模块添加为测试依赖项，以便与 Testcontainers 一起使用服务连接。
+
+服务连接注解由注册在 `spring.factories` 中的 `ContainerConnectionDetailsFactory` 类处理。`ContainerConnectionDetailsFactory` 可以根据特定的 `Container` 子类或 Docker 镜像名称创建 `ConnectionDetails` Bean。
+
+`spring-boot-testcontainers` jar 中提供了以下服务连接工厂：
+
+|===
+| 连接详细信息 | 匹配条件
+
+| `ActiveMQConnectionDetails`
+| 名为 "symptoma/activemq" 的容器或 `ActiveMQContainer`
+
+| `ArtemisConnectionDetails`
+| `ArtemisContainer` 类型的容器
+
+| `CassandraConnectionDetails`
+| `CassandraContainer` 类型的容器
+
+| `CouchbaseConnectionDetails`
+| `CouchbaseContainer` 类型的容器
+
+| `ElasticsearchConnectionDetails`
+| `ElasticsearchContainer` 类型的容器
+
+| `FlywayConnectionDetails`
+| `JdbcDatabaseContainer` 类型的容器
+
+| `JdbcConnectionDetails`
+| `JdbcDatabaseContainer` 类型的容器
+
+| `KafkaConnectionDetails`
+| `KafkaContainer`、`ConfluentKafkaContainer` 或 `RedpandaContainer` 类型的容器
+
+| `LiquibaseConnectionDetails`
+| `JdbcDatabaseContainer` 类型的容器
+
+| `MongoConnectionDetails`
+| `MongoDBContainer` 类型的容器
+
+| `Neo4jConnectionDetails`
+| `Neo4jContainer` 类型的容器
+
+| `OtlpLoggingConnectionDetails`
+| 名为 "otel/opentelemetry-collector-contrib" 的容器或 `LgtmStackContainer` 类型的容器
+
+| `OtlpMetricsConnectionDetails`
+| 名为 "otel/opentelemetry-collector-contrib" 的容器或 `LgtmStackContainer` 类型的容器
+
+| `OtlpTracingConnectionDetails`
+| 名为 "otel/opentelemetry-collector-contrib" 的容器或 `LgtmStackContainer` 类型的容器
+
+| `PulsarConnectionDetails`
+| `PulsarContainer` 类型的容器
+
+| `R2dbcConnectionDetails`
+| `ClickHouseContainer`、`MariaDBContainer`、`MSSQLServerContainer`、`MySQLContainer`、`OracleContainer`（免费版）、`OracleContainer`（XE 版）或 `PostgreSQLContainer` 类型的容器
+
+| `RabbitConnectionDetails`
+| `RabbitMQContainer` 类型的容器
+
+| `RedisConnectionDetails`
+| `RedisContainer` 或 `RedisStackContainer` 类型的容器，或名为 "redis"、"redis/redis-stack" 或 "redis/redis-stack-server" 的容器
+
+| `ZipkinConnectionDetails`
+| 名为 "openzipkin/zipkin" 的容器
+|===
+
+[TIP]
+====
+默认情况下，将为给定的 `Container` 创建所有适用的连接详细信息 Bean。例如，`PostgreSQLContainer` 将创建 `JdbcConnectionDetails` 和 `R2dbcConnectionDetails`。
+
+如果你只想创建适用类型的子集，可以使用 `@ServiceConnection` 的 `type` 属性。
+====
+
+默认情况下，使用 `Container.getDockerImageName().getRepository()` 获取用于查找连接详细信息的名称。Docker 镜像名称的存储库部分忽略任何注册表和版本。只要 Spring Boot 能够获取 `Container` 的实例，这就可以正常工作，就像在上面的示例中使用 `static` 字段时一样。
+
+如果你使用 `@Bean` 方法，Spring Boot 不会调用 Bean 方法来获取 Docker 镜像名称，因为这会导致急切初始化问题。相反，使用 Bean 方法的返回类型来确定应使用哪种连接详细信息。只要你使用类型化的容器（如 `Neo4jContainer` 或 `RabbitMQContainer`），这就可以正常工作。如果你使用 `GenericContainer`，例如以下示例中的 Redis，这将停止工作：
+
+include-code::MyRedisConfiguration[]
+
+Spring Boot 无法从 `GenericContainer` 中判断使用了哪个容器镜像，因此必须使用 `@ServiceConnection` 的 `name` 属性来提供提示。
+
+你还可以使用 `@ServiceConnection` 的 `name` 属性来覆盖将使用的连接详细信息，例如在使用自定义镜像时。如果你使用的是 Docker 镜像 `registry.mycompany.com/mirror/myredis`，你将使用 `@ServiceConnection(name="redis")` 来确保创建 `RedisConnectionDetails`。
+
+[[testing.testcontainers.dynamic-properties]]
+== 动态属性
+
+与服务连接相比，`@DynamicPropertySource` 是一种稍微冗长但更灵活的替代方案。静态的 `@DynamicPropertySource` 方法允许向 Spring 环境添加动态属性值。
+
+include-code::MyIntegrationTests[]
+
+上述配置允许应用程序中的 Neo4j 相关 Bean 与 Testcontainers 管理的 Docker 容器中运行的 Neo4j 通信。
+
+'''
+[[testing.testcontainers]]
+== Testcontainers
 The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra and others.
@@ -12,11 +130,8 @@ include-code::vanilla/MyIntegrationTests[]
 This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
 In most cases, you will need to configure the application to connect to the service running in the container.
 
-
-
 [[testing.testcontainers.service-connections]]
 == Service Connections
-
 A service connection is a connection to any remote service.
 Spring Boot's auto-configuration can consume the details of a service connection and use them to establish a connection to a remote service.
 When doing so, the connection details take precedence over any connection-related configuration properties.
@@ -120,11 +235,8 @@ Spring Boot can't tell from javadoc:org.testcontainers.containers.GenericContain
 You can also use the `name` attribute of javadoc:org.springframework.boot.testcontainers.service.connection.ServiceConnection[format=annotation] to override which connection detail will be used, for example when using custom images.
 If you are using the Docker image `registry.mycompany.com/mirror/myredis`, you'd use `@ServiceConnection(name="redis")` to ensure javadoc:org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails[] are created.
 
-
-
 [[testing.testcontainers.dynamic-properties]]
 == Dynamic Properties
-
 A slightly more verbose but also more flexible alternative to service connections is javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation].
 A static javadoc:org.springframework.test.context.DynamicPropertySource[format=annotation] method allows adding dynamic property values to the Spring Environment.
 

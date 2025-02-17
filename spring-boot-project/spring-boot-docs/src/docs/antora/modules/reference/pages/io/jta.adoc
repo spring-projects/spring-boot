@@ -1,6 +1,50 @@
-[[io.jta]]
-= Distributed Transactions With JTA
+= 使用 JTA 进行分布式事务
+:encoding: utf-8
+:numbered:
 
+[[io.jta]]
+== 使用 JTA 进行分布式事务
+Spring Boot 支持通过从 JNDI 检索的事务管理器跨多个 XA 资源进行分布式 JTA 事务。
+
+当检测到 JTA 环境时，Spring 的 javadoc:org.springframework.transaction.jta.JtaTransactionManager[] 用于管理事务。
+自动配置的 JMS、DataSource 和 JPA bean 会升级以支持 XA 事务。
+你可以使用标准的 Spring 习惯用法，例如 javadoc:org.springframework.transaction.annotation.Transactional[format=annotation]，来参与分布式事务。
+如果你处于 JTA 环境中但仍希望使用本地事务，可以将 configprop:spring.jta.enabled[] 属性设置为 `false` 以禁用 JTA 自动配置。
+
+[[io.jta.jakartaee]]
+== 使用 Jakarta EE 托管的事务管理器
+如果你将 Spring Boot 应用程序打包为 `war` 或 `ear` 文件并将其部署到 Jakarta EE 应用服务器，你可以使用应用服务器的内置事务管理器。
+Spring Boot 尝试通过查看常见的 JNDI 位置（`java:comp/UserTransaction`、`java:comp/TransactionManager` 等）来自动配置事务管理器。
+当使用应用服务器提供的事务服务时，通常还需要确保所有资源都由服务器管理并通过 JNDI 公开。
+Spring Boot 尝试通过在 JNDI 路径（`java:/JmsXA` 或 `java:/XAConnectionFactory`）上查找 javadoc:jakarta.jms.ConnectionFactory[] 来自动配置 JMS，并且你可以使用 xref:data/sql.adoc#data.sql.datasource.jndi[configprop:spring.datasource.jndi-name[] 属性] 来配置你的 javadoc:javax.sql.DataSource[]。
+
+[[io.jta.mixing-xa-and-non-xa-connections]]
+== 混合使用 XA 和非 XA JMS 连接
+在使用 JTA 时，主要的 JMS javadoc:jakarta.jms.ConnectionFactory[] bean 是支持 XA 的，并参与分布式事务。
+你可以将其注入到你的 bean 中，而无需使用任何 javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation]：
+
+include-code::primary/MyBean[]
+
+在某些情况下，你可能希望使用非 XA 的 javadoc:jakarta.jms.ConnectionFactory[] 来处理某些 JMS 消息。
+例如，你的 JMS 处理逻辑可能比 XA 超时时间更长。
+
+如果你希望使用非 XA 的 javadoc:jakarta.jms.ConnectionFactory[]，可以使用 `nonXaJmsConnectionFactory` bean：
+
+include-code::nonxa/MyBean[]
+
+为了保持一致性，`jmsConnectionFactory` bean 也通过使用 bean 别名 `xaJmsConnectionFactory` 提供：
+
+include-code::xa/MyBean[]
+
+[[io.jta.supporting-embedded-transaction-manager]]
+== 支持嵌入式事务管理器
+javadoc:org.springframework.boot.jms.XAConnectionFactoryWrapper[] 和 javadoc:org.springframework.boot.jdbc.XADataSourceWrapper[] 接口可用于支持嵌入式事务管理器。
+这些接口负责包装 javadoc:jakarta.jms.XAConnectionFactory[] 和 javadoc:javax.sql.XADataSource[] bean，并将它们暴露为常规的 javadoc:jakarta.jms.ConnectionFactory[] 和 javadoc:javax.sql.DataSource[] bean，这些 bean 会透明地加入分布式事务。
+如果你在 javadoc:org.springframework.context.ApplicationContext[] 中注册了 javadoc:org.springframework.transaction.jta.JtaTransactionManager[] bean 和适当的 XA 包装器 bean，则 DataSource 和 JMS 自动配置会使用 JTA 变体。
+
+'''
+[[io.jta]]
+== Distributed Transactions With JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources by using a transaction manager retrieved from JNDI.
 
 When a JTA environment is detected, Spring's javadoc:org.springframework.transaction.jta.JtaTransactionManager[] is used to manage transactions.
@@ -8,21 +52,15 @@ Auto-configured JMS, DataSource, and JPA beans are upgraded to support XA transa
 You can use standard Spring idioms, such as javadoc:org.springframework.transaction.annotation.Transactional[format=annotation], to participate in a distributed transaction.
 If you are within a JTA environment and still want to use local transactions, you can set the configprop:spring.jta.enabled[] property to `false` to disable the JTA auto-configuration.
 
-
-
 [[io.jta.jakartaee]]
 == Using a Jakarta EE Managed Transaction Manager
-
 If you package your Spring Boot application as a `war` or `ear` file and deploy it to a Jakarta EE application server, you can use your application server's built-in transaction manager.
 Spring Boot tries to auto-configure a transaction manager by looking at common JNDI locations (`java:comp/UserTransaction`, `java:comp/TransactionManager`, and so on).
 When using a transaction service provided by your application server, you generally also want to ensure that all resources are managed by the server and exposed over JNDI.
 Spring Boot tries to auto-configure JMS by looking for a javadoc:jakarta.jms.ConnectionFactory[] at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the xref:data/sql.adoc#data.sql.datasource.jndi[configprop:spring.datasource.jndi-name[] property] to configure your javadoc:javax.sql.DataSource[].
 
-
-
 [[io.jta.mixing-xa-and-non-xa-connections]]
 == Mixing XA and Non-XA JMS Connections
-
 When using JTA, the primary JMS javadoc:jakarta.jms.ConnectionFactory[] bean is XA-aware and participates in distributed transactions.
 You can inject into your bean without needing to use any javadoc:org.springframework.beans.factory.annotation.Qualifier[format=annotation]:
 
@@ -39,11 +77,8 @@ For consistency, the `jmsConnectionFactory` bean is also provided by using the b
 
 include-code::xa/MyBean[]
 
-
-
 [[io.jta.supporting-embedded-transaction-manager]]
 == Supporting an Embedded Transaction Manager
-
 The javadoc:org.springframework.boot.jms.XAConnectionFactoryWrapper[] and javadoc:org.springframework.boot.jdbc.XADataSourceWrapper[] interfaces can be used to support embedded transaction managers.
 The interfaces are responsible for wrapping javadoc:jakarta.jms.XAConnectionFactory[] and javadoc:javax.sql.XADataSource[] beans and exposing them as regular javadoc:jakarta.jms.ConnectionFactory[] and javadoc:javax.sql.DataSource[] beans, which transparently enroll in the distributed transaction.
 DataSource and JMS auto-configuration use JTA variants, provided you have a javadoc:org.springframework.transaction.jta.JtaTransactionManager[] bean and appropriate XA wrapper beans registered within your javadoc:org.springframework.context.ApplicationContext[].

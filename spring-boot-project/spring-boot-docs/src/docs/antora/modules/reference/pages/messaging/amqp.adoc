@@ -1,15 +1,139 @@
-[[messaging.amqp]]
 = AMQP
+:encoding: utf-8
+:numbered:
 
+[[messaging.amqp]]
+== AMQP
+高级消息队列协议（AMQP）是一种平台无关的、面向消息中间件的线级协议。
+Spring AMQP 项目将 Spring 核心概念应用于基于 AMQP 的消息传递解决方案的开发。
+Spring Boot 通过 RabbitMQ 提供了多种便利来使用 AMQP，包括 `spring-boot-starter-amqp` starter。
+
+[[messaging.amqp.rabbitmq]]
+== RabbitMQ 支持
+https://www.rabbitmq.com/[RabbitMQ] 是一个基于 AMQP 协议的轻量级、可靠、可扩展且可移植的消息代理。
+Spring 使用 RabbitMQ 通过 AMQP 协议进行通信。
+
+RabbitMQ 的配置由 `+spring.rabbitmq.*+` 中的外部配置属性控制。
+例如，你可以在 `application.properties` 中声明以下部分：
+
+[configprops,yaml]
+----
+spring:
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "admin"
+    password: "secret"
+----
+
+或者，你可以使用 `addresses` 属性配置相同的连接：
+
+[configprops,yaml]
+----
+spring:
+  rabbitmq:
+    addresses: "amqp://admin:secret@localhost"
+----
+
+NOTE: 当以这种方式指定地址时，`host` 和 `port` 属性将被忽略。
+如果地址使用 `amqps` 协议，则会自动启用 SSL 支持。
+
+有关更多支持的基于属性的配置选项，请参阅 javadoc:org.springframework.boot.autoconfigure.amqp.RabbitProperties[]。
+要配置 Spring AMQP 使用的 RabbitMQ javadoc:com.rabbitmq.client.ConnectionFactory[] 的低级细节，可以定义一个 javadoc:org.springframework.boot.autoconfigure.amqp.ConnectionFactoryCustomizer[] bean。
+
+如果上下文中存在 javadoc:org.springframework.amqp.rabbit.connection.ConnectionNameStrategy[] bean，它将自动用于命名由自动配置的 javadoc:org.springframework.amqp.rabbit.connection.CachingConnectionFactory[] 创建的连接。
+
+要对 javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] 进行应用程序范围的附加自定义，可以使用 javadoc:org.springframework.boot.autoconfigure.amqp.RabbitTemplateCustomizer[] bean。
+
+TIP: 有关更多详细信息，请参阅 https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[理解 AMQP，RabbitMQ 使用的协议]。
+
+[[messaging.amqp.sending]]
+== 发送消息
+Spring 的 javadoc:org.springframework.amqp.core.AmqpTemplate[] 和 javadoc:org.springframework.amqp.core.AmqpAdmin[] 是自动配置的，你可以直接将它们自动注入到你自己的 bean 中，如下例所示：
+
+include-code::MyBean[]
+
+NOTE: javadoc:org.springframework.amqp.rabbit.core.RabbitMessagingTemplate[] 可以以类似的方式注入。
+如果定义了 javadoc:org.springframework.amqp.support.converter.MessageConverter[] bean，它会自动与自动配置的 javadoc:org.springframework.amqp.core.AmqpTemplate[] 关联。
+
+如果需要，任何定义为 bean 的 javadoc:org.springframework.amqp.core.Queue[] 都会自动用于在 RabbitMQ 实例上声明相应的队列。
+
+要重试操作，你可以在 javadoc:org.springframework.amqp.core.AmqpTemplate[] 上启用重试（例如，在代理连接丢失的情况下）：
+
+[configprops,yaml]
+----
+spring:
+  rabbitmq:
+    template:
+      retry:
+        enabled: true
+        initial-interval: "2s"
+----
+
+默认情况下，重试是禁用的。
+你还可以通过声明 javadoc:org.springframework.boot.autoconfigure.amqp.RabbitRetryTemplateCustomizer[] bean 以编程方式自定义 javadoc:org.springframework.retry.support.RetryTemplate[]。
+
+如果你需要创建更多的 javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] 实例，或者如果你想覆盖默认配置，Spring Boot 提供了一个 javadoc:org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer[] bean，你可以使用它来初始化一个与自动配置使用的工厂具有相同设置的 javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[]。
+
+[[messaging.amqp.sending-stream]]
+== 向流发送消息
+要向特定流发送消息，请指定流的名称，如下例所示：
+
+[configprops,yaml]
+----
+spring:
+  rabbitmq:
+    stream:
+      name: "my-stream"
+----
+
+如果定义了 javadoc:org.springframework.amqp.support.converter.MessageConverter[]、javadoc:org.springframework.rabbit.stream.support.converter.StreamMessageConverter[] 或 javadoc:org.springframework.rabbit.stream.producer.ProducerCustomizer[] bean，它会自动与自动配置的 javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] 关联。
+
+如果你需要创建更多的 javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] 实例，或者如果你想覆盖默认配置，Spring Boot 提供了一个 javadoc:org.springframework.boot.autoconfigure.amqp.RabbitStreamTemplateConfigurer[] bean，你可以使用它来初始化一个与自动配置使用的工厂具有相同设置的 javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[]。
+
+[[messaging.amqp.receiving]]
+== 接收消息
+当 Rabbit 基础设施存在时，任何 bean 都可以使用 javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] 注解来创建监听器端点。
+如果没有定义 javadoc:org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory[]，则会自动配置一个默认的 javadoc:org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory[]，并且你可以使用 configprop:spring.rabbitmq.listener.type[] 属性切换到直接容器。
+如果定义了 javadoc:org.springframework.amqp.support.converter.MessageConverter[] 或 javadoc:org.springframework.amqp.rabbit.retry.MessageRecoverer[] bean，它会自动与默认工厂关联。
+
+以下示例组件在 `someQueue` 队列上创建了一个监听器端点：
+
+include-code::MyBean[]
+
+TIP: 有关更多详细信息，请参阅 javadoc:org.springframework.amqp.rabbit.annotation.EnableRabbit[format=annotation]。
+
+如果你需要创建更多的 javadoc:org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory[] 实例，或者如果你想覆盖默认配置，Spring Boot 提供了 javadoc:org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer[] 和 javadoc:org.springframework.boot.autoconfigure.amqp.DirectRabbitListenerContainerFactoryConfigurer[]，你可以使用它们来初始化一个与自动配置使用的工厂具有相同设置的 javadoc:org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory[] 和 javadoc:org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory[]。
+
+TIP: 无论你选择哪种容器类型，这两个 bean 都会由自动配置暴露。
+
+例如，以下配置类暴露了另一个使用特定 javadoc:org.springframework.amqp.support.converter.MessageConverter[] 的工厂：
+
+include-code::custom/MyRabbitConfiguration[]
+
+然后你可以在任何使用 javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] 注解的方法中使用该工厂，如下所示：
+
+include-code::custom/MyBean[]
+
+你可以启用重试来处理监听器抛出异常的情况。
+默认情况下，使用 javadoc:org.springframework.amqp.rabbit.retry.RejectAndDontRequeueRecoverer[]，但你可以定义自己的 javadoc:org.springframework.amqp.rabbit.retry.MessageRecoverer[]。
+当重试耗尽时，消息将被拒绝，并且如果代理配置为这样做，则消息将被丢弃或路由到死信交换器。
+默认情况下，重试是禁用的。
+你还可以通过声明 javadoc:org.springframework.boot.autoconfigure.amqp.RabbitRetryTemplateCustomizer[] bean 以编程方式自定义 javadoc:org.springframework.retry.support.RetryTemplate[]。
+
+IMPORTANT: 默认情况下，如果重试被禁用并且监听器抛出异常，则传递将无限重试。
+你可以通过两种方式修改此行为：将 `defaultRequeueRejected` 属性设置为 `false`，以便不尝试重新传递，或者抛出 javadoc:org.springframework.amqp.AmqpRejectAndDontRequeueException[] 以指示应拒绝该消息。
+后者是在启用重试并且达到最大传递尝试次数时使用的机制。
+
+'''
+[[messaging.amqp]]
+== AMQP
 The Advanced Message Queuing Protocol (AMQP) is a platform-neutral, wire-level protocol for message-oriented middleware.
 The Spring AMQP project applies core Spring concepts to the development of AMQP-based messaging solutions.
 Spring Boot offers several conveniences for working with AMQP through RabbitMQ, including the `spring-boot-starter-amqp` starter.
 
-
-
 [[messaging.amqp.rabbitmq]]
 == RabbitMQ Support
-
 https://www.rabbitmq.com/[RabbitMQ] is a lightweight, reliable, scalable, and portable message broker based on the AMQP protocol.
 Spring uses RabbitMQ to communicate through the AMQP protocol.
 
@@ -47,11 +171,8 @@ To make an application-wide, additive customization to the javadoc:org.springfra
 
 TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ] for more details.
 
-
-
 [[messaging.amqp.sending]]
 == Sending a Message
-
 Spring's javadoc:org.springframework.amqp.core.AmqpTemplate[] and javadoc:org.springframework.amqp.core.AmqpAdmin[] are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
 include-code::MyBean[]
@@ -78,11 +199,8 @@ You can also customize the javadoc:org.springframework.retry.support.RetryTempla
 
 If you need to create more javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.amqp.rabbit.core.RabbitTemplate[] with the same settings as the factories used by the auto-configuration.
 
-
-
 [[messaging.amqp.sending-stream]]
 == Sending a Message To A Stream
-
 To send a message to a particular stream, specify the name of the stream, as shown in the following example:
 
 [configprops,yaml]
@@ -97,11 +215,8 @@ If a javadoc:org.springframework.amqp.support.converter.MessageConverter[], java
 
 If you need to create more javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.autoconfigure.amqp.RabbitStreamTemplateConfigurer[] bean that you can use to initialize a javadoc:org.springframework.rabbit.stream.producer.RabbitStreamTemplate[] with the same settings as the factories used by the auto-configuration.
 
-
-
 [[messaging.amqp.receiving]]
 == Receiving a Message
-
 When the Rabbit infrastructure is present, any bean can be annotated with javadoc:org.springframework.amqp.rabbit.annotation.RabbitListener[format=annotation] to create a listener endpoint.
 If no javadoc:org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory[] has been defined, a default javadoc:org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory[] is automatically configured and you can switch to a direct container using the configprop:spring.rabbitmq.listener.type[] property.
 If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] or a javadoc:org.springframework.amqp.rabbit.retry.MessageRecoverer[] bean is defined, it is automatically associated with the default factory.

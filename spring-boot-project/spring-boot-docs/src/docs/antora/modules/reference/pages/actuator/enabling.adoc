@@ -1,6 +1,41 @@
-[[actuator.enabling]]
-= Enabling Production-ready Features
+= 启用生产就绪功能
+:encoding: utf-8
+:numbered:
 
+[[actuator.enabling]]
+== 启用生产就绪功能
+
+{code-spring-boot}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] 模块提供了 Spring Boot 的所有生产就绪功能。启用这些功能的推荐方法是添加对 `spring-boot-starter-actuator` starter 的依赖。
+
+.执行器定义
+****
+执行器是一个制造术语，指的是用于移动或控制某物的机械装置。执行器可以从一个小的变化中产生大量的运动。
+****
+
+要将执行器添加到基于 Maven 的项目中，请添加以下 starter 依赖：
+
+[source,xml]
+----
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+</dependencies>
+----
+
+对于 Gradle，使用以下声明：
+
+[source,gradle]
+----
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+}
+----
+
+'''
+[[actuator.enabling]]
+== Enabling Production-ready Features
 The {code-spring-boot}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of Spring Boot's production-ready features.
 The recommended way to enable the features is to add a dependency on the `spring-boot-starter-actuator` starter.
 

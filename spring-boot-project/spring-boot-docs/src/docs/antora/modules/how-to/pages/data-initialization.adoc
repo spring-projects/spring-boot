@@ -1,15 +1,186 @@
-[[howto.data-initialization]]
-= Database Initialization
+= 数据库初始化
+:encoding: utf-8
+:numbered:
 
+[[howto.data-initialization]]
+== 数据库初始化
+根据你的技术栈，SQL 数据库可以通过不同的方式进行初始化。当然，如果数据库是一个独立的进程，你也可以手动完成初始化。建议使用单一机制来生成数据库模式。
+
+[[howto.data-initialization.using-hibernate]]
+== 使用 Hibernate 初始化数据库
+你可以通过设置 `spring.jpa.hibernate.ddl-auto` 来控制 Hibernate 的数据库初始化。支持的值包括 `none`、`validate`、`update`、`create` 和 `create-drop`。Spring Boot 会根据你是否使用嵌入式数据库为你选择一个默认值。嵌入式数据库通过检查 `java.sql.Connection` 类型和 JDBC URL 来识别。`hsqldb`、`h2` 和 `derby` 是嵌入式数据库，其他则不是。如果识别到嵌入式数据库且未检测到模式管理工具（如 Flyway 或 Liquibase），则 `ddl-auto` 默认为 `create-drop`。在其他情况下，默认为 `none`。
+
+在从内存数据库切换到“真实”数据库时，请注意不要假设新平台中表和数据的现有状态。你必须显式设置 `ddl-auto` 或使用其他机制来初始化数据库。
+
+NOTE: 你可以通过启用 `org.hibernate.SQL` 日志记录器来输出模式创建语句。如果启用了调试模式，这将自动完成。
+
+此外，如果 Hibernate 从头创建模式（即 `ddl-auto` 属性设置为 `create` 或 `create-drop`），则会在启动时执行类路径根目录下名为 `import.sql` 的文件。这对于演示和测试可能有用，但在生产环境中可能不希望将其放在类路径中。这是 Hibernate 的功能（与 Spring 无关）。
+
+[[howto.data-initialization.using-basic-sql-scripts]]
+== 使用基本 SQL 脚本初始化数据库
+Spring Boot 可以自动创建 JDBC `javax.sql.DataSource` 或 R2DBC `io.r2dbc.spi.ConnectionFactory` 的模式（DDL 脚本）并初始化其数据（DML 脚本）。
+
+默认情况下，它从 `optional:classpath*:schema.sql` 加载模式脚本，从 `optional:classpath*:data.sql` 加载数据脚本。这些模式和数据脚本的位置可以通过 `spring.sql.init.schema-locations` 和 `spring.sql.init.data-locations` 分别进行自定义。`optional:` 前缀表示即使文件不存在，应用程序也会启动。如果希望文件不存在时应用程序启动失败，请删除 `optional:` 前缀。
+
+此外，Spring Boot 会处理 `optional:classpath*:schema-${platform}.sql` 和 `optional:classpath*:data-${platform}.sql` 文件（如果存在），其中 `${platform}` 是 `spring.sql.init.platform` 的值。这允许你在必要时切换到特定于数据库的脚本。例如，你可以将其设置为数据库的供应商名称（如 `hsqldb`、`h2`、`oracle`、`mysql`、`postgresql` 等）。
+
+默认情况下，SQL 数据库初始化仅在嵌入式内存数据库中使用时执行。要始终初始化 SQL 数据库（无论其类型如何），请将 `spring.sql.init.mode` 设置为 `always`。同样，要禁用初始化，请将其设置为 `never`。默认情况下，Spring Boot 启用基于脚本的数据库初始化器的快速失败功能。这意味着如果脚本引发异常，应用程序将无法启动。你可以通过设置 `spring.sql.init.continue-on-error` 来调整此行为。
+
+默认情况下，基于脚本的 `javax.sql.DataSource` 初始化会在任何 JPA `jakarta.persistence.EntityManagerFactory` Bean 创建之前执行。`schema.sql` 可用于创建 JPA 管理的实体的模式，`data.sql` 可用于填充数据。虽然我们不建议使用多种数据源初始化技术，但如果你希望基于脚本的 `javax.sql.DataSource` 初始化能够基于 Hibernate 执行的模式创建，请将 `spring.jpa.defer-datasource-initialization` 设置为 `true`。这将推迟数据源初始化，直到所有 `jakarta.persistence.EntityManagerFactory` Bean 创建并初始化完成。然后，`schema.sql` 可用于对 Hibernate 执行的模式创建进行补充，`data.sql` 可用于填充数据。
+
+NOTE: 初始化脚本支持 `--` 作为单行注释，`/* */` 作为块注释。不支持其他注释格式。
+
+如果你使用的是更高级的数据库迁移工具（如 Flyway 或 Liquibase），则应单独使用它们来创建和初始化模式。不建议将基本的 `schema.sql` 和 `data.sql` 脚本与 Flyway 或 Liquibase 一起使用，未来版本将移除对此的支持。
+
+如果需要使用更高级的数据库迁移工具初始化测试数据，请参阅有关 Flyway 和 Liquibase 的部分。
+
+[[howto.data-initialization.batch]]
+== 初始化 Spring Batch 数据库
+如果你使用 Spring Batch，它附带了针对大多数流行数据库平台的 SQL 初始化脚本。Spring Boot 可以检测你的数据库类型并在启动时执行这些脚本。如果使用嵌入式数据库，则默认情况下会发生这种情况。你也可以为任何数据库类型启用它，如下例所示：
+
+```yaml
+spring:
+  batch:
+    jdbc:
+      initialize-schema: "always"
+```
+
+你还可以通过将 `spring.batch.jdbc.initialize-schema` 设置为 `never` 来显式关闭初始化。
+
+[[howto.data-initialization.migration-tool]]
+== 使用更高级的数据库迁移工具
+Spring Boot 支持两种更高级的迁移工具：[Flyway](https://flywaydb.org/) 和 [Liquibase](https://www.liquibase.org/)。
+
+[[howto.data-initialization.migration-tool.flyway]]
+=== 在启动时执行 Flyway 数据库迁移
+要在启动时自动运行 Flyway 数据库迁移，请将适当的 Flyway 模块添加到类路径中。内存和基于文件的数据库由 `org.flywaydb:flyway-core` 支持。否则，需要特定于数据库的模块。例如，PostgreSQL 使用 `org.flywaydb:flyway-database-postgresql`，MySQL 使用 `org.flywaydb:flyway-mysql`。有关更多详细信息，请参阅 [Flyway 文档](https://documentation.red-gate.com/flyway/flyway-cli-and-api/supported-databases)。
+
+通常，迁移脚本的格式为 `V<VERSION>__<NAME>.sql`（其中 `<VERSION>` 是下划线分隔的版本，如 `1` 或 `2_1`）。默认情况下，它们位于 `classpath:db/migration` 目录中，但你可以通过设置 `spring.flyway.locations` 来修改该位置。这是一个逗号分隔的列表，包含一个或多个 `classpath:` 或 `filesystem:` 位置。例如，以下配置将在默认类路径位置和 `/opt/migration` 目录中搜索脚本：
+
+```yaml
+spring:
+  flyway:
+    locations: "classpath:db/migration,filesystem:/opt/migration"
+```
+
+你还可以添加特殊的 `{vendor}` 占位符以使用特定于供应商的脚本。假设如下：
+
+```yaml
+spring:
+  flyway:
+    locations: "classpath:db/migration/{vendor}"
+```
+
+上述配置将根据数据库类型设置要使用的目录（例如，MySQL 使用 `db/migration/mysql`）。支持的数据库列表可在 `org.springframework.boot.jdbc.DatabaseDriver` 中找到。
+
+迁移也可以用 Java 编写。Flyway 将自动配置任何实现 `org.flywaydb.core.api.migration.JavaMigration` 的 Bean。
+
+`org.springframework.boot.autoconfigure.flyway.FlywayProperties` 提供了 Flyway 的大部分设置以及一些附加属性，可用于禁用迁移或关闭位置检查。如果需要更多控制，请考虑注册一个 `org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer` Bean。
+
+Spring Boot 调用 `Flyway.migrate()` 来执行数据库迁移。如果需要更多控制，请提供一个实现 `org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy` 的 `@Bean`。
+
+Flyway 支持 SQL 和 Java [回调](https://documentation.red-gate.com/fd/callback-concept-184127466.html)。要使用基于 SQL 的回调，请将回调脚本放在 `classpath:db/migration` 目录中。要使用基于 Java 的回调，请创建一个或多个实现 `org.flywaydb.core.api.callback.Callback` 的 Bean。这些 Bean 会自动注册到 `org.flywaydb.core.Flyway`。可以通过使用 `@Order` 注解或实现 `org.springframework.core.Ordered` 来排序。
+
+默认情况下，Flyway 自动装配上下文中的（`@Primary`）`javax.sql.DataSource` 并用于迁移。如果希望使用不同的 `javax.sql.DataSource`，可以创建一个并将其 `@Bean` 标记为 `@FlywayDataSource`。如果这样做并希望保留两个数据源（例如保留主要自动配置的 `javax.sql.DataSource`），请记住将 `@Bean` 注解的 `defaultCandidate` 属性设置为 `false`。或者，你可以通过在外部属性中设置 `spring.flyway.[url,user,password]` 来使用 Flyway 的原生 `javax.sql.DataSource`。设置 `spring.flyway.url` 或 `spring.flyway.user` 足以使 Flyway 使用其自己的 `javax.sql.DataSource`。如果未设置这三个属性中的任何一个，则将使用其等效的 `spring.datasource` 属性的值。
+
+你还可以使用 Flyway 为特定场景提供数据。例如，你可以将测试特定的迁移放在 `src/test/resources` 中，它们仅在应用程序启动以进行测试时运行。此外，你可以使用特定于配置文件的配置来自定义 `spring.flyway.locations`，以便某些迁移仅在特定配置文件激活时运行。例如，在 `application-dev.properties` 中，你可以指定以下设置：
+
+```yaml
+spring:
+  flyway:
+    locations: "classpath:/db/migration,classpath:/dev/db/migration"
+```
+
+通过此设置，`dev/db/migration` 中的迁移仅在 `dev` 配置文件激活时运行。
+
+[[howto.data-initialization.migration-tool.liquibase]]
+=== 在启动时执行 Liquibase 数据库迁移
+要在启动时自动运行 Liquibase 数据库迁移，请将 `org.liquibase:liquibase-core` 添加到类路径中。
+
+NOTE: 当你将 `org.liquibase:liquibase-core` 添加到类路径时，数据库迁移默认会在应用程序启动时和测试运行前执行。可以通过使用 `spring.liquibase.enabled` 属性在 `main` 和 `test` 配置中设置不同的值来自定义此行为。不可能同时使用两种不同的方式来初始化数据库（例如，Liquibase 用于应用程序启动，JPA 用于测试运行）。
+
+默认情况下，主变更日志从 `db/changelog/db.changelog-master.yaml` 读取，但你可以通过设置 `spring.liquibase.change-log` 来更改位置。除了 YAML，Liquibase 还支持 JSON、XML 和 SQL 变更日志格式。
+
+默认情况下，Liquibase 自动装配上下文中的（`@Primary`）`javax.sql.DataSource` 并用于迁移。如果需要使用不同的 `javax.sql.DataSource`，可以创建一个并将其 `@Bean` 标记为 `@LiquibaseDataSource`。如果这样做并希望保留两个数据源（例如保留主要自动配置的 `javax.sql.DataSource`），请记住将 `@Bean` 注解的 `defaultCandidate` 属性设置为 `false`。或者，你可以通过在外部属性中设置 `spring.liquibase.[driver-class-name,url,user,password]` 来使用 Liquibase 的原生 `javax.sql.DataSource`。设置 `spring.liquibase.url` 或 `spring.liquibase.user` 足以使 Liquibase 使用其自己的 `javax.sql.DataSource`。如果未设置这三个属性中的任何一个，则将使用其等效的 `spring.datasource` 属性的值。
+
+有关可用设置（如上下文、默认模式等）的详细信息，请参阅 `org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties`。
+
+如果希望在 `Liquibase` 实例使用之前对其进行自定义，可以使用 `Customizer<Liquibase>` Bean。
+
+[[howto.data-initialization.migration-tool.flyway-tests]]
+=== 使用 Flyway 进行仅测试的迁移
+如果你希望创建 Flyway 迁移以填充测试数据库，请将其放在 `src/test/resources/db/migration` 中。例如，名为 `src/test/resources/db/migration/V9999__test-data.sql` 的文件将在生产迁移之后执行，并且仅在运行测试时执行。你可以使用此文件创建所需的测试数据。此文件不会打包在你的 uber jar 或容器中。
+
+[[howto.data-initialization.migration-tool.liquibase-tests]]
+=== 使用 Liquibase 进行仅测试的迁移
+如果你希望创建 Liquibase 迁移以填充测试数据库，则必须创建一个包含生产变更日志的测试变更日志。
+
+首先，你需要配置 Liquibase 在运行测试时使用不同的变更日志。一种方法是创建一个 Spring Boot `test` 配置文件并将 Liquibase 属性放在其中。为此，创建一个名为 `src/test/resources/application-test.properties` 的文件，并将以下属性放入其中：
+
+```yaml
+spring:
+  liquibase:
+    change-log: "classpath:/db/changelog/db.changelog-test.yaml"
+```
+
+这将配置 Liquibase 在 `test` 配置文件中使用不同的变更日志。
+
+现在在 `src/test/resources/db/changelog/db.changelog-test.yaml` 中创建变更日志文件：
+
+```yaml
+databaseChangeLog:
+  - include:
+      file: classpath:/db/changelog/db.changelog-master.yaml
+  - changeSet:
+      runOrder: "last"
+      id: "test"
+      changes:
+        # 在此处插入你的更改
+```
+
+此变更日志将在运行测试时使用，并且不会打包在你的 uber jar 或容器中。它包括生产变更日志，然后声明一个新的变更集，其 `runOrder: last` 设置指定它在所有生产变更集运行后运行。你现在可以使用例如 [insert 变更集](https://docs.liquibase.com/change-types/insert.html) 插入数据或使用 [sql 变更集](https://docs.liquibase.com/change-types/sql.html) 直接执行 SQL。
+
+最后要做的是配置 Spring Boot 在运行测试时激活 `test` 配置文件。为此，你可以将 `@ActiveProfiles("test")` 注解添加到 `@SpringBootTest` 注解的测试类中。
+
+[[howto.data-initialization.dependencies]]
+== 依赖于初始化的数据库
+数据库初始化在应用程序启动时作为应用程序上下文刷新的一部分执行。为了允许在启动期间访问已初始化的数据库，会自动检测充当数据库初始化器的 Bean 和需要数据库已初始化的 Bean。依赖于数据库初始化的 Bean 被配置为依赖于初始化它的 Bean。如果在启动期间，你的应用程序尝试访问尚未初始化的数据库，你可以配置额外的检测以识别初始化数据库的 Bean 和需要数据库已初始化的 Bean。
+
+[[howto.data-initialization.dependencies.initializer-detection]]
+=== 检测数据库初始化器
+Spring Boot 将自动检测以下类型的 Bean 以初始化 SQL 数据库：
+
+- `org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer`
+- `jakarta.persistence.EntityManagerFactory`
+- `org.flywaydb.core.Flyway`
+- `org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer`
+- `org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer`
+- `liquibase.integration.spring.SpringLiquibase`
+
+如果你使用的是第三方启动器用于数据库初始化库，它可能会提供一个检测器，以便自动检测其他类型的 Bean。要使其他 Bean 被检测到，请在 `META-INF/spring.factories` 中注册 `org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector` 的实现。
+
+[[howto.data-initialization.dependencies.depends-on-initialization-detection]]
+=== 检测依赖于数据库初始化的 Bean
+Spring Boot 将自动检测以下类型的 Bean，这些 Bean 依赖于数据库初始化：
+
+- `org.springframework.orm.jpa.AbstractEntityManagerFactoryBean`（除非 `spring.jpa.defer-datasource-initialization` 设置为 `true`）
+- `org.jooq.DSLContext`（jOOQ）
+- `jakarta.persistence.EntityManagerFactory`（除非 `spring.jpa.defer-datasource-initialization` 设置为 `true`）
+- `org.springframework.jdbc.core.simple.JdbcClient`
+- `org.springframework.jdbc.core.JdbcOperations`
+- `org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations`
+
+如果你使用的是第三方数据访问库启动器，它可能会提供一个检测器，以便自动检测其他类型的 Bean。要使其他 Bean 被检测到，请在 `META-INF/spring.factories` 中注册 `org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector` 的实现。或者，使用 `@DependsOnDatabaseInitialization` 注解标注 Bean 的类或其 `@Bean` 方法。
+
+'''
+[[howto.data-initialization]]
+== Database Initialization
 An SQL database can be initialized in different ways depending on what your stack is.
 Of course, you can also do it manually, provided the database is a separate process.
 It is recommended to use a single mechanism for schema generation.
 
-
-
 [[howto.data-initialization.using-hibernate]]
 == Initialize a Database Using Hibernate
-
 You can set configprop:spring.jpa.hibernate.ddl-auto[] to control Hibernate's database initialization.
 Supported values are `none`, `validate`, `update`, `create`, and `create-drop`.
 Spring Boot chooses a default value for you based on whether you are using an embedded database.
@@ -28,11 +199,8 @@ In addition, a file named `import.sql` in the root of the classpath is executed 
 This can be useful for demos and for testing if you are careful but is probably not something you want to be on the classpath in production.
 It is a Hibernate feature (and has nothing to do with Spring).
 
-
-
 [[howto.data-initialization.using-basic-sql-scripts]]
 == Initialize a Database Using Basic SQL Scripts
-
 Spring Boot can automatically create the schema (DDL scripts) of your JDBC javadoc:javax.sql.DataSource[] or R2DBC javadoc:io.r2dbc.spi.ConnectionFactory[] and initialize its data (DML scripts).
 
 By default, it loads schema scripts from `optional:classpath*:schema.sql` and data scripts from `optional:classpath*:data.sql`.
@@ -65,11 +233,8 @@ Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibas
 
 If you need to initialize test data using a higher-level database migration tool, please see the sections about xref:data-initialization.adoc#howto.data-initialization.migration-tool.flyway-tests[Flyway] and xref:data-initialization.adoc#howto.data-initialization.migration-tool.liquibase-tests[Liquibase].
 
-
-
 [[howto.data-initialization.batch]]
 == Initialize a Spring Batch Database
-
 If you use Spring Batch, it comes pre-packaged with SQL initialization scripts for most popular database platforms.
 Spring Boot can detect your database type and execute those scripts on startup.
 If you use an embedded database, this happens by default.
@@ -85,18 +250,12 @@ spring:
 
 You can also switch off the initialization explicitly by setting `spring.batch.jdbc.initialize-schema` to `never`.
 
-
-
 [[howto.data-initialization.migration-tool]]
 == Use a Higher-level Database Migration Tool
-
 Spring Boot supports two higher-level migration tools: https://flywaydb.org/[Flyway] and https://www.liquibase.org/[Liquibase].
-
-
 
 [[howto.data-initialization.migration-tool.flyway]]
 === Execute Flyway Database Migrations on Startup
-
 To automatically run Flyway database migrations on startup, add the appropriate Flyway module to your classpath.
 In-memory and file-based databases are supported by `org.flywaydb:flyway-core`.
 Otherwise, a database-specific module is required.
@@ -164,11 +323,8 @@ spring:
 
 With that setup, migrations in `dev/db/migration` run only when the `dev` profile is active.
 
-
-
 [[howto.data-initialization.migration-tool.liquibase]]
 === Execute Liquibase Database Migrations on Startup
-
 To automatically run Liquibase database migrations on startup, add the `org.liquibase:liquibase-core` to your classpath.
 
 [NOTE]
@@ -192,21 +348,15 @@ See javadoc:org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties
 
 You can also use a `Customizer<Liquibase>` bean if you want to customize the javadoc:{url-liquibase-javadoc}/liquibase.Liquibase[] instance before it is being used.
 
-
-
 [[howto.data-initialization.migration-tool.flyway-tests]]
 === Use Flyway for Test-only Migrations
-
 If you want to create Flyway migrations which populate your test database, place them in `src/test/resources/db/migration`.
 A file named, for example, `src/test/resources/db/migration/V9999__test-data.sql` will be executed after your production migrations and only if you're running the tests.
 You can use this file to create the needed test data.
 This file will not be packaged in your uber jar or your container.
 
-
-
 [[howto.data-initialization.migration-tool.liquibase-tests]]
 === Use Liquibase for Test-only Migrations
-
 If you want to create Liquibase migrations which populate your test database, you have to create a test changelog which also includes the production changelog.
 
 First, you need to configure Liquibase to use a different changelog when running the tests.
@@ -243,21 +393,15 @@ You can now use for example the https://docs.liquibase.com/change-types/insert.h
 The last thing to do is to configure Spring Boot to activate the `test` profile when running tests.
 To do this, you can add the `@ActiveProfiles("test")` annotation to your javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] annotated test classes.
 
-
-
 [[howto.data-initialization.dependencies]]
 == Depend Upon an Initialized Database
-
 Database initialization is performed while the application is starting up as part of application context refresh.
 To allow an initialized database to be accessed during startup, beans that act as database initializers and beans that require that database to have been initialized are detected automatically.
 Beans whose initialization depends upon the database having been initialized are configured to depend upon those that initialize it.
 If, during startup, your application tries to access the database and it has not been initialized, you can configure additional detection of beans that initialize the database and require the database to have been initialized.
 
-
-
 [[howto.data-initialization.dependencies.initializer-detection]]
 === Detect a Database Initializer
-
 Spring Boot will automatically detect beans of the following types that initialize an SQL database:
 
 - javadoc:org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer[]
@@ -270,11 +414,8 @@ Spring Boot will automatically detect beans of the following types that initiali
 If you are using a third-party starter for a database initialization library, it may provide a detector such that beans of other types are also detected automatically.
 To have other beans be detected, register an implementation of javadoc:org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector[] in `META-INF/spring.factories`.
 
-
-
 [[howto.data-initialization.dependencies.depends-on-initialization-detection]]
 === Detect a Bean That Depends On Database Initialization
-
 Spring Boot will automatically detect beans of the following types that depends upon database initialization:
 
 - javadoc:org.springframework.orm.jpa.AbstractEntityManagerFactoryBean[] (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)

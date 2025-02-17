@@ -1,6 +1,256 @@
-[[io.caching]]
-= Caching
+= 缓存
+:encoding: utf-8
+:numbered:
 
+[[io.caching]]
+== 缓存
+Spring 框架提供了透明地为应用程序添加缓存的支持。
+其核心是将缓存应用于方法，从而根据缓存中的可用信息减少方法的执行次数。
+缓存逻辑是透明应用的，不会对调用者产生任何干扰。
+只要通过使用 javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] 注解启用了缓存支持，Spring Boot 就会自动配置缓存基础设施。
+
+NOTE: 有关更多详细信息，请查看 Spring 框架参考文档中的 {url-spring-framework-docs}/integration/cache.html[相关部分]。
+
+简而言之，要为服务的操作添加缓存，只需将相关注解添加到其方法上，如下例所示：
+
+include-code::MyMathService[]
+
+此示例演示了在可能代价高昂的操作上使用缓存。
+在调用 `computePiDecimal` 之前，抽象层会在 `piDecimals` 缓存中查找与 `precision` 参数匹配的条目。
+如果找到条目，则立即将缓存中的内容返回给调用者，并且不会调用该方法。
+否则，将调用该方法，并在返回值之前更新缓存。
+
+NOTE: 你也可以透明地使用标准的 JSR-107（JCache）注解（例如 javadoc:javax.cache.annotation.CacheResult[format=annotation]）。
+但是，我们强烈建议你不要混用 Spring Cache 和 JCache 注解。
+
+如果你没有添加任何特定的缓存库，Spring Boot 会自动配置一个使用内存中并发映射的 xref:io/caching.adoc#io.caching.provider.simple[简单提供程序]。
+当需要缓存时（例如前面示例中的 `piDecimals`），此提供程序会为你创建它。
+简单提供程序并不推荐用于生产环境，但它非常适合入门和确保你理解相关功能。
+当你决定使用哪种缓存提供程序时，请务必阅读其文档，以了解如何配置应用程序使用的缓存。
+几乎所有提供程序都要求你显式配置应用程序中使用的每个缓存。
+有些提供程序提供了一种方法来自定义由 configprop:spring.cache.cache-names[] 属性定义的默认缓存。
+
+TIP: 还可以透明地 {url-spring-framework-docs}/integration/cache/annotations.html#cache-annotations-put[更新] 或 {url-spring-framework-docs}/integration/cache/annotations.html#cache-annotations-evict[清除] 缓存中的数据。
+
+[[io.caching.provider]]
+== 支持的缓存提供程序
+缓存抽象并不提供实际的存储，而是依赖于由 javadoc:org.springframework.cache.Cache[] 和 javadoc:org.springframework.cache.CacheManager[] 接口实现的抽象。
+
+如果你没有定义类型为 javadoc:org.springframework.cache.CacheManager[] 的 bean 或名为 `cacheResolver` 的 javadoc:org.springframework.cache.interceptor.CacheResolver[]（参见 javadoc:org.springframework.cache.annotation.CachingConfigurer[]），Spring Boot 会尝试检测以下提供程序（按指定顺序）：
+
+. xref:io/caching.adoc#io.caching.provider.generic[]
+. xref:io/caching.adoc#io.caching.provider.jcache[]（EhCache 3、Hazelcast、Infinispan 等）
+. xref:io/caching.adoc#io.caching.provider.hazelcast[]
+. xref:io/caching.adoc#io.caching.provider.infinispan[]
+. xref:io/caching.adoc#io.caching.provider.couchbase[]
+. xref:io/caching.adoc#io.caching.provider.redis[]
+. xref:io/caching.adoc#io.caching.provider.caffeine[]
+. xref:io/caching.adoc#io.caching.provider.cache2k[]
+. xref:io/caching.adoc#io.caching.provider.simple[]
+
+此外，{url-spring-boot-for-apache-geode-site}[Spring Boot for Apache Geode] 提供了 {url-spring-boot-for-apache-geode-docs}#geode-caching-provider[使用 Apache Geode 作为缓存提供程序的自动配置]。
+
+TIP: 如果 javadoc:org.springframework.cache.CacheManager[] 是由 Spring Boot 自动配置的，则可以通过设置 configprop:spring.cache.type[] 属性来强制使用特定的缓存提供程序。
+如果需要在某些环境（例如测试）中使用无操作缓存，请使用此属性。
+
+TIP: 使用 `spring-boot-starter-cache` starter 可以快速添加基本的缓存依赖项。
+该 starter 引入了 `spring-context-support`。
+如果你手动添加依赖项，则必须包含 `spring-context-support` 才能使用 JCache 或 Caffeine 支持。
+
+如果 javadoc:org.springframework.cache.CacheManager[] 是由 Spring Boot 自动配置的，则可以通过暴露实现 javadoc:org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer[] 接口的 bean 来进一步调整其配置，然后再完全初始化。
+以下示例设置了一个标志，指示不应将 `null` 值传递到底层映射：
+
+include-code::MyCacheManagerConfiguration[]
+
+NOTE: 在前面的示例中，期望使用自动配置的 javadoc:org.springframework.cache.concurrent.ConcurrentMapCacheManager[]。
+如果不是这种情况（要么你提供了自己的配置，要么自动配置了其他缓存提供程序），则根本不会调用自定义器。
+你可以根据需要拥有任意数量的自定义器，并且还可以使用 javadoc:org.springframework.core.annotation.Order[format=annotation] 或 javadoc:org.springframework.core.Ordered[] 对它们进行排序。
+
+[[io.caching.provider.generic]]
+=== 通用
+如果上下文中定义了至少一个 javadoc:org.springframework.cache.Cache[] bean，则使用通用缓存。
+将创建一个 javadoc:org.springframework.cache.CacheManager[]，用于包装该类型的所有 bean。
+
+[[io.caching.provider.jcache]]
+=== JCache (JSR-107)
+https://jcp.org/en/jsr/detail?id=107[JCache] 通过类路径上存在 javadoc:javax.cache.spi.CachingProvider[]（即类路径上存在符合 JSR-107 的缓存库）进行引导，并且 `spring-boot-starter-cache` starter 提供了 javadoc:org.springframework.cache.jcache.JCacheCacheManager[]。
+有多种符合规范的库可用，Spring Boot 为 Ehcache 3、Hazelcast 和 Infinispan 提供了依赖管理。
+也可以添加其他符合规范的库。
+
+可能会出现多个提供程序的情况，此时必须显式指定提供程序。
+即使 JSR-107 标准没有强制规定定义配置文件位置的标准方法，Spring Boot 也会尽力适应实现细节的设置，如下例所示：
+
+[configprops,yaml]
+----
+    # 仅在存在多个提供程序时需要
+	spring:
+	  cache:
+	    jcache:
+	      provider: "com.example.MyCachingProvider"
+	      config: "classpath:example.xml"
+----
+
+NOTE: 当缓存库同时提供本地实现和 JSR-107 支持时，Spring Boot 优先选择 JSR-107 支持，以便在切换到其他 JSR-107 实现时可以使用相同的功能。
+
+TIP: Spring Boot 对 Hazelcast 提供了 xref:io/hazelcast.adoc[通用支持]。
+如果只有一个 javadoc:com.hazelcast.core.HazelcastInstance[] 可用，则除非指定了 configprop:spring.cache.jcache.config[] 属性，否则它也会自动用于 javadoc:javax.cache.CacheManager[]。
+
+有两种方法可以自定义底层的 javadoc:javax.cache.CacheManager[]：
+
+* 可以通过设置 configprop:spring.cache.cache-names[] 属性在启动时创建缓存。
+如果定义了自定义的 javadoc:javax.cache.configuration.Configuration[] bean，则使用它来自定义缓存。
+* javadoc:org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer[] bean 会使用 javadoc:javax.cache.CacheManager[] 的引用进行调用，以实现完全自定义。
+
+TIP: 如果定义了标准的 javadoc:javax.cache.CacheManager[] bean，则会自动将其包装在抽象层期望的 javadoc:org.springframework.cache.CacheManager[] 实现中。
+不会对其应用进一步的定制。
+
+[[io.caching.provider.hazelcast]]
+=== Hazelcast
+Spring Boot 对 Hazelcast 提供了 xref:io/hazelcast.adoc[通用支持]。
+如果自动配置了 javadoc:com.hazelcast.core.HazelcastInstance[] 并且类路径上存在 `com.hazelcast:hazelcast-spring`，则会自动将其包装在 javadoc:org.springframework.cache.CacheManager[] 中。
+
+NOTE: Hazelcast 可以用作符合 JCache 标准的缓存，也可以用作符合 Spring javadoc:org.springframework.cache.CacheManager[] 标准的缓存。
+当将 configprop:spring.cache.type[] 设置为 `hazelcast` 时，Spring Boot 将使用基于 javadoc:org.springframework.cache.CacheManager[] 的实现。
+如果你想将 Hazelcast 用作符合 JCache 标准的缓存，请将 configprop:spring.cache.type[] 设置为 `jcache`。
+如果你有多个符合 JCache 标准的缓存提供程序，并且希望强制使用 Hazelcast，则必须 xref:io/caching.adoc#io.caching.provider.jcache[显式设置 JCache 提供程序]。
+
+[[io.caching.provider.infinispan]]
+=== Infinispan
+https://infinispan.org/[Infinispan] 没有默认的配置文件位置，因此必须显式指定。
+否则，将使用默认的引导程序。
+
+[configprops,yaml]
+----
+spring:
+  cache:
+    infinispan:
+      config: "infinispan.xml"
+----
+
+可以通过设置 configprop:spring.cache.cache-names[] 属性在启动时创建缓存。
+如果定义了自定义的 javadoc:org.infinispan.configuration.cache.ConfigurationBuilder[] bean，则使用它来自定义缓存。
+
+为了与 Spring Boot 的 Jakarta EE 9 基线兼容，必须使用 Infinispan 的 `-jakarta` 模块。
+对于每个具有 `-jakarta` 变体的模块，必须使用该变体代替标准模块。
+例如，必须使用 `infinispan-core-jakarta` 和 `infinispan-commons-jakarta` 代替 `infinispan-core` 和 `infinispan-commons`。
+
+[[io.caching.provider.couchbase]]
+=== Couchbase
+如果 Spring Data Couchbase 可用并且 Couchbase 已 xref:data/nosql.adoc#data.nosql.couchbase[配置]，则会自动配置 javadoc:org.springframework.data.couchbase.cache.CouchbaseCacheManager[]。
+可以通过设置 configprop:spring.cache.cache-names[] 属性在启动时创建其他缓存，并且可以使用 `spring.cache.couchbase.*` 属性配置缓存默认值。
+例如，以下配置创建了 `cache1` 和 `cache2` 缓存，并设置了 10 分钟的条目过期时间：
+
+[configprops,yaml]
+----
+spring:
+  cache:
+    cache-names: "cache1,cache2"
+    couchbase:
+      expiration: "10m"
+----
+
+如果你需要对配置进行更多控制，请考虑注册一个 javadoc:org.springframework.boot.autoconfigure.cache.CouchbaseCacheManagerBuilderCustomizer[] bean。
+以下示例显示了一个自定义器，它为 `cache1` 和 `cache2` 配置了特定的条目过期时间：
+
+include-code::MyCouchbaseCacheManagerConfiguration[]
+
+[[io.caching.provider.redis]]
+=== Redis
+如果 https://redis.io/[Redis] 可用并已配置，则会自动配置 javadoc:org.springframework.data.redis.cache.RedisCacheManager[]。
+可以通过设置 configprop:spring.cache.cache-names[] 属性在启动时创建其他缓存，并且可以使用 `spring.cache.redis.*` 属性配置缓存默认值。
+例如，以下配置创建了 `cache1` 和 `cache2` 缓存，并设置了 10 分钟的生存时间：
+
+[configprops,yaml]
+----
+spring:
+  cache:
+    cache-names: "cache1,cache2"
+    redis:
+      time-to-live: "10m"
+----
+
+NOTE: 默认情况下，会添加一个键前缀，以便如果两个单独的缓存使用相同的键，Redis 不会有重叠的键，也不会返回无效的值。
+如果你创建自己的 javadoc:org.springframework.data.redis.cache.RedisCacheManager[]，我们强烈建议你保持此设置启用。
+
+TIP: 你可以通过添加自己的 javadoc:org.springframework.data.redis.cache.RedisCacheConfiguration[] javadoc:org.springframework.context.annotation.Bean[format=annotation] 来完全控制默认配置。
+如果你需要自定义默认的序列化策略，这将非常有用。
+
+如果你需要对配置进行更多控制，请考虑注册一个 javadoc:org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer[] bean。
+以下示例显示了一个自定义器，它为 `cache1` 和 `cache2` 配置了特定的生存时间：
+
+include-code::MyRedisCacheManagerConfiguration[]
+
+[[io.caching.provider.caffeine]]
+=== Caffeine
+https://github.com/ben-manes/caffeine[Caffeine] 是 Guava 缓存的 Java 8 重写版本，取代了对 Guava 的支持。
+如果存在 Caffeine，则会自动配置 javadoc:org.springframework.cache.caffeine.CaffeineCacheManager[]（由 `spring-boot-starter-cache` starter 提供）。
+可以通过设置 configprop:spring.cache.cache-names[] 属性在启动时创建缓存，并且可以通过以下方式之一进行自定义（按指定顺序）：
+
+. 由 `spring.cache.caffeine.spec` 定义的缓存规范
+. 定义了 javadoc:com.github.benmanes.caffeine.cache.CaffeineSpec[] bean
+. 定义了 javadoc:com.github.benmanes.caffeine.cache.Caffeine[] bean
+
+例如，以下配置创建了 `cache1` 和 `cache2` 缓存，并设置了最大大小为 500 和 10 分钟的生存时间：
+
+[configprops,yaml]
+----
+spring:
+  cache:
+    cache-names: "cache1,cache2"
+    caffeine:
+      spec: "maximumSize=500,expireAfterAccess=600s"
+----
+
+如果定义了 javadoc:com.github.benmanes.caffeine.cache.CacheLoader[] bean，则会自动将其与 javadoc:org.springframework.cache.caffeine.CaffeineCacheManager[] 关联。
+由于 javadoc:com.github.benmanes.caffeine.cache.CacheLoader[] 将与缓存管理器管理的所有缓存关联，因此必须将其定义为 `CacheLoader<Object, Object>`。
+自动配置会忽略任何其他泛型类型。
+
+[[io.caching.provider.cache2k]]
+=== Cache2k
+https://cache2k.org/[Cache2k] 是一个内存缓存。
+如果存在 Cache2k 的 Spring 集成，则会自动配置 `SpringCache2kCacheManager`。
+
+可以通过设置 configprop:spring.cache.cache-names[] 属性在启动时创建缓存。
+可以使用 javadoc:org.springframework.boot.autoconfigure.cache.Cache2kBuilderCustomizer[] bean 自定义缓存默认值。
+以下示例显示了一个自定义器，它将缓存的容量配置为 200 个条目，并设置了 5 分钟的过期时间：
+
+include-code::MyCache2kDefaultsConfiguration[]
+
+[[io.caching.provider.simple]]
+=== 简单
+如果找不到其他提供程序，则会配置一个使用 javadoc:java.util.concurrent.ConcurrentHashMap[] 作为缓存存储的简单实现。
+如果应用程序中不存在缓存库，则这是默认设置。
+默认情况下，缓存是按需创建的，但你可以通过设置 `cache-names` 属性来限制可用缓存的列表。
+例如，如果你只想使用 `cache1` 和 `cache2` 缓存，请按如下方式设置 `cache-names` 属性：
+
+[configprops,yaml]
+----
+spring:
+  cache:
+    cache-names: "cache1,cache2"
+----
+
+如果你这样做并且应用程序使用了未列出的缓存，则当需要缓存时会在运行时失败，但不会在启动时失败。
+这与使用未声明的缓存时“真实”缓存提供程序的行为类似。
+
+[[io.caching.provider.none]]
+=== 无
+当配置中存在 javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] 时，也需要合适的缓存配置。
+如果你有自定义的 `org.springframework.cache.CacheManager`，请考虑将其定义在单独的 javadoc:org.springframework.context.annotation.Configuration[format=annotation] 类中，以便在必要时可以覆盖它。
+无操作实现使用了一个无操作实现，这在测试中很有用，切片测试默认通过 javadoc:org.springframework.boot.test.autoconfigure.core.AutoConfigureCache[format=annotation] 使用它。
+
+如果你需要在某些环境中使用无操作缓存而不是自动配置的缓存管理器，请将缓存类型设置为 `none`，如下例所示：
+
+[configprops,yaml]
+----
+spring:
+  cache:
+    type: "none"
+----
+
+'''
+[[io.caching]]
+== Caching
 The Spring Framework provides support for transparently adding caching to an application.
 At its core, the abstraction applies caching to methods, thus reducing the number of executions based on the information available in the cache.
 The caching logic is applied transparently, without any interference to the invoker.
@@ -29,11 +279,8 @@ Some offer a way to customize the default caches defined by the configprop:sprin
 
 TIP: It is also possible to transparently {url-spring-framework-docs}/integration/cache/annotations.html#cache-annotations-put[update] or {url-spring-framework-docs}/integration/cache/annotations.html#cache-annotations-evict[evict] data from the cache.
 
-
-
 [[io.caching.provider]]
 == Supported Cache Providers
-
 The cache abstraction does not provide an actual store and relies on abstraction materialized by the javadoc:org.springframework.cache.Cache[] and javadoc:org.springframework.cache.CacheManager[] interfaces.
 
 If you have not defined a bean of type javadoc:org.springframework.cache.CacheManager[] or a javadoc:org.springframework.cache.interceptor.CacheResolver[] named `cacheResolver` (see javadoc:org.springframework.cache.annotation.CachingConfigurer[]), Spring Boot tries to detect the following providers (in the indicated order):
@@ -66,19 +313,13 @@ NOTE: In the preceding example, an auto-configured javadoc:org.springframework.c
 If that is not the case (either you provided your own config or a different cache provider was auto-configured), the customizer is not invoked at all.
 You can have as many customizers as you want, and you can also order them by using javadoc:org.springframework.core.annotation.Order[format=annotation] or javadoc:org.springframework.core.Ordered[].
 
-
-
 [[io.caching.provider.generic]]
 === Generic
-
 Generic caching is used if the context defines _at least_ one javadoc:org.springframework.cache.Cache[] bean.
 A javadoc:org.springframework.cache.CacheManager[] wrapping all beans of that type is created.
 
-
-
 [[io.caching.provider.jcache]]
 === JCache (JSR-107)
-
 https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a javadoc:javax.cache.spi.CachingProvider[] on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the javadoc:org.springframework.cache.jcache.JCacheCacheManager[] is provided by the `spring-boot-starter-cache` starter.
 Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3, Hazelcast, and Infinispan.
 Any other compliant library can be added as well.
@@ -110,11 +351,8 @@ If a custom javadoc:javax.cache.configuration.Configuration[] bean is defined, i
 TIP: If a standard javadoc:javax.cache.CacheManager[] bean is defined, it is wrapped automatically in an javadoc:org.springframework.cache.CacheManager[] implementation that the abstraction expects.
 No further customization is applied to it.
 
-
-
 [[io.caching.provider.hazelcast]]
 === Hazelcast
-
 Spring Boot has xref:io/hazelcast.adoc[general support for Hazelcast].
 If a javadoc:com.hazelcast.core.HazelcastInstance[] has been auto-configured and `com.hazelcast:hazelcast-spring` is on the classpath, it is automatically wrapped in a javadoc:org.springframework.cache.CacheManager[].
 
@@ -123,11 +361,8 @@ When setting configprop:spring.cache.type[] to `hazelcast`, Spring Boot will use
 If you want to use Hazelcast as a JCache compliant cache, set configprop:spring.cache.type[] to `jcache`.
 If you have multiple JCache compliant cache providers and want to force the use of Hazelcast, you have to xref:io/caching.adoc#io.caching.provider.jcache[explicitly set the JCache provider].
 
-
-
 [[io.caching.provider.infinispan]]
 === Infinispan
-
 https://infinispan.org/[Infinispan] has no default configuration file location, so it must be specified explicitly.
 Otherwise, the default bootstrap is used.
 
@@ -146,11 +381,8 @@ To be compatible with Spring Boot's Jakarta EE 9 baseline, Infinispan's `-jakart
 For every module with a `-jakarta` variant, the variant must be used in place of the standard module.
 For example, `infinispan-core-jakarta` and `infinispan-commons-jakarta` must be used in place of `infinispan-core` and `infinispan-commons` respectively.
 
-
-
 [[io.caching.provider.couchbase]]
 === Couchbase
-
 If Spring Data Couchbase is available and Couchbase is xref:data/nosql.adoc#data.nosql.couchbase[configured], a javadoc:org.springframework.data.couchbase.cache.CouchbaseCacheManager[] is auto-configured.
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
 For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
@@ -169,11 +401,8 @@ The following example shows a customizer that configures a specific entry expira
 
 include-code::MyCouchbaseCacheManagerConfiguration[]
 
-
-
 [[io.caching.provider.redis]]
 === Redis
-
 If https://redis.io/[Redis] is available and configured, a javadoc:org.springframework.data.redis.cache.RedisCacheManager[] is auto-configured.
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.redis.*` properties.
 For instance, the following configuration creates `cache1` and `cache2` caches with a _time to live_ of 10 minutes:
@@ -198,11 +427,8 @@ The following example shows a customizer that configures a specific time to live
 
 include-code::MyRedisCacheManagerConfiguration[]
 
-
-
 [[io.caching.provider.caffeine]]
 === Caffeine
-
 https://github.com/ben-manes/caffeine[Caffeine] is a Java 8 rewrite of Guava's cache that supersedes support for Guava.
 If Caffeine is present, a javadoc:org.springframework.cache.caffeine.CaffeineCacheManager[] (provided by the `spring-boot-starter-cache` starter) is auto-configured.
 Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property and can be customized by one of the following (in the indicated order):
@@ -226,11 +452,8 @@ If a javadoc:com.github.benmanes.caffeine.cache.CacheLoader[] bean is defined, i
 Since the javadoc:com.github.benmanes.caffeine.cache.CacheLoader[] is going to be associated with _all_ caches managed by the cache manager, it must be defined as `CacheLoader<Object, Object>`.
 The auto-configuration ignores any other generic type.
 
-
-
 [[io.caching.provider.cache2k]]
 === Cache2k
-
 https://cache2k.org/[Cache2k] is an in-memory cache.
 If the Cache2k spring integration is present, a `SpringCache2kCacheManager` is auto-configured.
 
@@ -240,11 +463,8 @@ The following example shows a customizer that configures the capacity of the cac
 
 include-code::MyCache2kDefaultsConfiguration[]
 
-
-
 [[io.caching.provider.simple]]
 === Simple
-
 If none of the other providers can be found, a simple implementation using a javadoc:java.util.concurrent.ConcurrentHashMap[] as the cache store is configured.
 This is the default if no caching library is present in your application.
 By default, caches are created as needed, but you can restrict the list of available caches by setting the `cache-names` property.
@@ -260,11 +480,8 @@ spring:
 If you do so and your application uses a cache not listed, then it fails at runtime when the cache is needed, but not on startup.
 This is similar to the way the "real" cache providers behave if you use an undeclared cache.
 
-
-
 [[io.caching.provider.none]]
 === None
-
 When javadoc:org.springframework.cache.annotation.EnableCaching[format=annotation] is present in your configuration, a suitable cache configuration is expected as well.
 If you have a custom ` org.springframework.cache.CacheManager`, consider defining it in a separate javadoc:org.springframework.context.annotation.Configuration[format=annotation] class so that you can override it if necessary.
 None uses a no-op implementation that is useful in tests, and slice tests use that by default via javadoc:org.springframework.boot.test.autoconfigure.core.AutoConfigureCache[format=annotation].

@@ -1,6 +1,59 @@
-[[messaging.spring-integration]]
 = Spring Integration
+:encoding: utf-8
+:numbered:
 
+[[messaging.spring-integration]]
+== Spring Integration
+Spring Boot 为使用 {url-spring-integration-site}[Spring Integration] 提供了多种便利，包括 `spring-boot-starter-integration` starter。
+Spring Integration 提供了对消息传递以及其他传输方式（如 HTTP、TCP 等）的抽象。
+如果你的类路径上有 Spring Integration，它将通过 javadoc:org.springframework.integration.config.EnableIntegration[format=annotation] 注解进行初始化。
+
+Spring Integration 的轮询逻辑依赖于 xref:features/task-execution-and-scheduling.adoc[自动配置的 javadoc:org.springframework.scheduling.TaskScheduler[]]。
+默认的 javadoc:org.springframework.integration.scheduling.PollerMetadata[]（每秒轮询无限数量的消息）可以使用 `spring.integration.poller.*` 配置属性进行自定义。
+
+Spring Boot 还会配置一些由额外的 Spring Integration 模块触发的功能。
+如果类路径上还有 `spring-integration-jmx`，则消息处理统计信息将通过 JMX 发布。
+如果 `spring-integration-jdbc` 可用，则可以在启动时创建默认的数据库模式，如下所示：
+
+[configprops,yaml]
+----
+spring:
+  integration:
+    jdbc:
+      initialize-schema: "always"
+----
+
+如果 `spring-integration-rsocket` 可用，开发者可以使用 `spring.rsocket.server.*` 属性配置 RSocket 服务器，并让其使用 javadoc:org.springframework.integration.rsocket.IntegrationRSocketEndpoint[] 或 javadoc:org.springframework.integration.rsocket.outbound.RSocketOutboundGateway[] 组件来处理传入的 RSocket 消息。
+此基础设施可以处理 Spring Integration RSocket 通道适配器和 javadoc:org.springframework.messaging.handler.annotation.MessageMapping[format=annotation] 处理器（前提是配置了 `spring.integration.rsocket.server.message-mapping-enabled`）。
+
+Spring Boot 还可以使用配置属性自动配置 javadoc:org.springframework.integration.rsocket.ClientRSocketConnector[]：
+
+[configprops,yaml]
+----
+# 通过 TCP 连接到 RSocket 服务器
+spring:
+  integration:
+    rsocket:
+      client:
+        host: "example.org"
+        port: 9898
+----
+
+[configprops,yaml]
+----
+# 通过 WebSocket 连接到 RSocket 服务器
+spring:
+  integration:
+    rsocket:
+      client:
+        uri: "ws://example.org"
+----
+
+有关更多详细信息，请参阅 {code-spring-boot-autoconfigure-src}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] 和 javadoc:org.springframework.boot.autoconfigure.integration.IntegrationProperties[] 类。
+
+'''
+[[messaging.spring-integration]]
+== Spring Integration
 Spring Boot offers several conveniences for working with {url-spring-integration-site}[Spring Integration], including the `spring-boot-starter-integration` starter.
 Spring Integration provides abstractions over messaging and also other transports such as HTTP, TCP, and others.
 If Spring Integration is available on your classpath, it is initialized through the javadoc:org.springframework.integration.config.EnableIntegration[format=annotation] annotation.

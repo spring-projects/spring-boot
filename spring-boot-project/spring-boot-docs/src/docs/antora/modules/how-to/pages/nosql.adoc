@@ -1,14 +1,54 @@
-[[howto.nosql]]
 = NoSQL
+:encoding: utf-8
+:numbered:
 
+[[howto.nosql]]
+== NoSQL
+Spring Boot 提供了多个支持 NoSQL 技术的启动器。本节回答与使用 Spring Boot 进行 NoSQL 相关的问题。
+
+[[howto.nosql.jedis-instead-of-lettuce]]
+== 使用 Jedis 替代 Lettuce
+默认情况下，Spring Boot 启动器（`spring-boot-starter-data-redis`）使用 [Lettuce](https://github.com/lettuce-io/lettuce-core/)。你需要排除该依赖项并改为包含 [Jedis](https://github.com/xetorthio/jedis/)。Spring Boot 管理这两个依赖项，允许你在不指定版本的情况下切换到 Jedis。
+
+以下示例展示了如何在 Maven 中实现这一点：
+
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-redis</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>io.lettuce</groupId>
+			<artifactId>lettuce-core</artifactId>
+		</exclusion>
+	</exclusions>
+</dependency>
+<dependency>
+	<groupId>redis.clients</groupId>
+	<artifactId>jedis</artifactId>
+</dependency>
+```
+
+以下示例展示了如何在 Gradle 中实现这一点：
+
+```gradle
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-data-redis') {
+	    exclude group: 'io.lettuce', module: 'lettuce-core'
+	}
+	implementation 'redis.clients:jedis'
+	// ...
+}
+```
+
+'''
+[[howto.nosql]]
+== NoSQL
 Spring Boot offers a number of starters that support NoSQL technologies.
 This section answers questions that arise from using NoSQL with Spring Boot.
 
-
-
 [[howto.nosql.jedis-instead-of-lettuce]]
 == Use Jedis Instead of Lettuce
-
 By default, the Spring Boot starter (`spring-boot-starter-data-redis`) uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
 You need to exclude that dependency and include the https://github.com/xetorthio/jedis/[Jedis] one instead.
 Spring Boot manages both of these dependencies, allowing you to switch to Jedis without specifying a version.

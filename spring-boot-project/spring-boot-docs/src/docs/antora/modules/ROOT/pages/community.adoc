@@ -1,6 +1,27 @@
-[[community]]
-= Community
+= 社区
+:encoding: utf-8
+:numbered:
 
+[[community]]
+== 社区
+如果你在使用 Spring Boot 时遇到问题，我们很乐意为你提供帮助。
+
+* 尝试查阅 xref:how-to:index.adoc[操作指南文档]。
+这些文档提供了针对最常见问题的解决方案。
+* 学习 Spring 基础知识。
+Spring Boot 是基于许多其他 Spring 项目构建的。
+你可以访问 https://spring.io[spring.io] 网站，获取丰富的参考文档。
+如果你是 Spring 的初学者，可以尝试学习 https://spring.io/guides[指南] 中的内容。
+* 提出问题。
+我们会在 https://stackoverflow.com[stackoverflow.com] 上关注带有 https://stackoverflow.com/tags/spring-boot[`spring-boot`] 标签的问题。
+* 在 https://github.com/spring-projects/spring-boot/issues 上报告 Spring Boot 的 bug。
+
+NOTE: Spring Boot 的所有内容都是开源的，包括文档。
+如果你发现文档存在问题或希望改进文档，请 {url-github}[参与贡献]。
+
+'''
+
+== Community
 If you have trouble with Spring Boot, we would like to help.
 
 * Try the xref:how-to:index.adoc[How-to documents].

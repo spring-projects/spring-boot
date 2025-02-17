@@ -1,45 +1,68 @@
-[[build-tool-plugins.other-build-systems]]
-= Supporting Other Build Systems
+= 支持其他构建系统
+:encoding: utf-8
+:numbered:
 
+[[build-tool-plugins.other-build-systems]]
+== 支持其他构建系统
+
+如果你希望使用 Maven、Gradle 或 Ant 之外的构建工具，可能需要开发自己的插件。可执行 jar 文件需要遵循特定的格式，并且某些条目必须以未压缩的形式写入（详见附录中的 xref:specification:/executable-jar/index.adoc[可执行 jar 格式] 部分）。
+
+Spring Boot 的 Maven 和 Gradle 插件都使用 `spring-boot-loader-tools` 来实际生成 jar 文件。如果需要，你可以直接使用这个库。
+
+[[build-tool-plugins.other-build-systems.repackaging-archives]]
+== 重新打包归档文件
+
+要将现有的归档文件重新打包为自包含的可执行归档文件，可以使用 javadoc:org.springframework.boot.loader.tools.Repackager[]。javadoc:org.springframework.boot.loader.tools.Repackager[] 类接受一个构造函数参数，该参数指向现有的 jar 或 war 归档文件。使用两个可用的 `repackage()` 方法之一来替换原始文件或写入新目标。在运行重新打包器之前，还可以配置各种设置。
+
+[[build-tool-plugins.other-build-systems.nested-libraries]]
+== 嵌套库
+
+在重新打包归档文件时，可以通过使用 javadoc:org.springframework.boot.loader.tools.Libraries[] 接口来包含对依赖文件的引用。我们在这里不提供 javadoc:org.springframework.boot.loader.tools.Libraries[] 的任何具体实现，因为它们通常是特定于构建系统的。
+
+如果你的归档文件已经包含库，可以使用 javadoc:org.springframework.boot.loader.tools.Libraries#NONE[]。
+
+[[build-tool-plugins.other-build-systems.finding-main-class]]
+== 查找主类
+
+如果你不使用 `Repackager.setMainClass()` 来指定主类，重新打包器会使用 https://asm.ow2.io/[ASM] 读取类文件，并尝试找到具有 `public static void main(String[] args)` 方法的合适类。如果找到多个候选类，则会抛出异常。
+
+[[build-tool-plugins.other-build-systems.example-repackage-implementation]]
+== 重新打包实现示例
+
+以下示例展示了一个典型的重新打包实现：
+
+include-code::MyBuildTool[]
+
+'''
+[[build-tool-plugins.other-build-systems]]
+== Supporting Other Build Systems
 If you want to use a build tool other than Maven, Gradle, or Ant, you likely need to develop your own plugin.
 Executable jars need to follow a specific format and certain entries need to be written in an uncompressed form (see the xref:specification:/executable-jar/index.adoc[executable jar format] section in the appendix for details).
 
 The Spring Boot Maven and Gradle plugins both make use of `spring-boot-loader-tools` to actually generate jars.
 If you need to, you may use this library directly.
 
-
-
 [[build-tool-plugins.other-build-systems.repackaging-archives]]
 == Repackaging Archives
-
 To repackage an existing archive so that it becomes a self-contained executable archive, use javadoc:org.springframework.boot.loader.tools.Repackager[].
 The javadoc:org.springframework.boot.loader.tools.Repackager[] class takes a single constructor argument that refers to an existing jar or war archive.
 Use one of the two available `repackage()` methods to either replace the original file or write to a new destination.
 Various settings can also be configured on the repackager before it is run.
 
-
-
 [[build-tool-plugins.other-build-systems.nested-libraries]]
 == Nested Libraries
-
 When repackaging an archive, you can include references to dependency files by using the javadoc:org.springframework.boot.loader.tools.Libraries[] interface.
 We do not provide any concrete implementations of javadoc:org.springframework.boot.loader.tools.Libraries[] here as they are usually build-system-specific.
 
 If your archive already includes libraries, you can use javadoc:org.springframework.boot.loader.tools.Libraries#NONE[].
 
-
-
 [[build-tool-plugins.other-build-systems.finding-main-class]]
 == Finding a Main Class
-
 If you do not use `Repackager.setMainClass()` to specify a main class, the repackager uses https://asm.ow2.io/[ASM] to read class files and tries to find a suitable class with a `public static void main(String[] args)` method.
 An exception is thrown if more than one candidate is found.
 
-
-
 [[build-tool-plugins.other-build-systems.example-repackage-implementation]]
 == Example Repackage Implementation
-
 The following example shows a typical repackage implementation:
 
 include-code::MyBuildTool[]

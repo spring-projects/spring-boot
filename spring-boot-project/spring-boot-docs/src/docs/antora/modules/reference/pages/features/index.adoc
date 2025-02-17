@@ -1,7 +1,16 @@
-[[features]]
-= Core Features
+= 核心功能
+:encoding: utf-8
+:numbered:
 
+[[features]]
+== 核心功能
+本节深入探讨 Spring Boot 的细节。
+在这里，你可以了解你可能想要使用和自定义的关键功能。
+如果你还没有这样做，你可能需要先阅读 xref:tutorial:index.adoc[] 和 xref:using/index.adoc[] 部分，以便对基础知识有良好的了解。
+
+'''
+[[features]]
+== Core Features
 This section dives into the details of Spring Boot.
 Here you can learn about the key features that you may want to use and customize.
 If you have not already done so, you might want to read the xref:tutorial:index.adoc[] and xref:using/index.adoc[] sections, so that you have a good grounding of the basics.
-

@@ -1,14 +1,227 @@
-[[managing-dependencies]]
 = Managing Dependencies
+:encoding: utf-8
+:numbered:
 
+[[managing-dependencies]]
+== 管理依赖
+
+要在 Spring Boot 应用程序中管理依赖项，你可以应用 {url-dependency-management-plugin-site}[`io.spring.dependency-management`] 插件，或者使用 Gradle 的原生 bom 支持。前者的主要好处是它提供了基于属性的托管版本自定义，而使用后者可能会加快构建速度。
+
+[[managing-dependencies.dependency-management-plugin]]
+== 使用依赖管理插件管理依赖
+
+当你应用 {url-dependency-management-plugin-site}[`io.spring.dependency-management`] 插件时，Spring Boot 插件会自动从你使用的 Spring Boot 版本中 xref:reacting.adoc#reacting-to-other-plugins.dependency-management[导入 `spring-boot-dependencies` bom]。这提供了与 Maven 用户类似的依赖管理体验。例如，它允许你在声明由 bom 管理的依赖项时省略版本号。要使用此功能，请按通常方式声明依赖项，但省略版本号：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/dependencies.gradle[tags=dependencies]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/dependencies.gradle.kts[tags=dependencies]
+----
+======
+
+[[managing-dependencies.dependency-management-plugin.customizing]]
+=== 自定义托管版本
+
+应用依赖管理插件时自动导入的 `spring-boot-dependencies` bom 使用属性来控制其管理的依赖项的版本。浏览 Spring Boot 参考文档中的 xref:appendix:dependency-versions/properties.adoc[依赖版本属性] 部分，以获取这些属性的完整列表。
+
+要自定义托管版本，请设置其相应的属性。例如，要自定义由 `slf4j.version` 属性控制的 SLF4J 版本：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/custom-version.gradle[tags=custom-version]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/custom-version.gradle.kts[tags=custom-version]
+----
+======
+
+WARNING: 每个 Spring Boot 版本都是针对一组特定的第三方依赖项设计和测试的。覆盖版本可能会导致兼容性问题，应谨慎操作。
+
+[[managing-dependencies.dependency-management-plugin.using-in-isolation]]
+=== 单独使用 Spring Boot 的依赖管理
+
+Spring Boot 的依赖管理可以在不将 Spring Boot 插件应用到项目的情况下在项目中使用。`SpringBootPlugin` 类提供了一个 `BOM_COORDINATES` 常量，可用于导入 bom，而无需知道其 group ID、artifact ID 或版本。
+
+首先，配置项目以依赖 Spring Boot 插件，但不应用它：
+
+ifeval::["{build-type}" == "commercial"]
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-commercial.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-commercial.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-release"]
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-release.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-milestone"]
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-milestone.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+ifeval::["{build-and-artifact-release-type}" == "opensource-snapshot"]
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-snapshot.gradle[]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/depend-on-plugin-release.gradle.kts[]
+----
+======
+endif::[]
+
+Spring Boot 插件对依赖管理插件的依赖意味着你可以在不声明对依赖管理插件的依赖的情况下使用它。这也意味着你将自动使用与 Spring Boot 相同版本的依赖管理插件。
+
+应用依赖管理插件，然后配置它以导入 Spring Boot 的 bom：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/configure-bom.gradle[tags=configure-bom]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/configure-bom.gradle.kts[tags=configure-bom]
+----
+======
+
+上面的 Kotlin 代码有点笨拙。这是因为我们使用了命令式的方式来应用依赖管理插件。
+
+我们可以通过从根父项目应用插件，或者像我们对 Spring Boot 插件所做的那样使用 `plugins` 块来使代码不那么笨拙。这种方法的缺点是它迫使我们指定依赖管理插件的版本：
+
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/configure-bom-with-plugins.gradle.kts[tags=configure-bom]
+----
+
+[[managing-dependencies.dependency-management-plugin.learning-more]]
+=== 了解更多
+
+要了解有关依赖管理插件功能的更多信息，请参阅其 {url-dependency-management-plugin-docs}[文档]。
+
+[[managing-dependencies.gradle-bom-support]]
+== 使用 Gradle 的 Bom 支持管理依赖
+
+Gradle 允许通过将 bom 声明为 `platform` 或 `enforcedPlatform` 依赖项来管理项目的版本。`platform` 依赖项将 bom 中的版本视为建议，依赖图中的其他版本和约束可能会导致使用 bom 中声明的版本以外的版本。`enforcedPlatform` 依赖项将 bom 中的版本视为要求，它们将覆盖依赖图中找到的任何其他版本。
+
+`SpringBootPlugin` 类提供了一个 `BOM_COORDINATES` 常量，可用于声明对 Spring Boot bom 的依赖，而无需知道其 group ID、artifact ID 或版本，如下例所示：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/configure-platform.gradle[tags=configure-platform]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/configure-platform.gradle.kts[tags=configure-platform]
+----
+======
+
+平台或强制平台只会约束在其声明的配置中或从其声明的配置扩展的配置中的版本。因此，可能需要在多个配置中声明相同的依赖项。
+
+[[managing-dependencies.gradle-bom-support.customizing]]
+=== 自定义托管版本
+
+使用 Gradle 的 bom 支持时，你不能使用 `spring-boot-dependencies` 中的属性来控制其管理的依赖项的版本。相反，你必须使用 Gradle 提供的机制之一。其中一种机制是解析策略。SLF4J 的所有模块都在 `org.slf4j` 组中，因此可以通过配置该组中的每个依赖项来使用特定版本，如下例所示：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/custom-version-with-platform.gradle[tags=custom-version]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$managing-dependencies/custom-version-with-platform.gradle.kts[tags=custom-version]
+----
+======
+
+WARNING: 每个 Spring Boot 版本都是针对一组特定的第三方依赖项设计和测试的。覆盖版本可能会导致兼容性问题，应谨慎操作。
+
+'''
+[[managing-dependencies]]
+== Managing Dependencies
 To manage dependencies in your Spring Boot application, you can either apply the {url-dependency-management-plugin-site}[`io.spring.dependency-management`] plugin or use Gradle's native bom support.
 The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds.
 
-
-
 [[managing-dependencies.dependency-management-plugin]]
 == Managing Dependencies with the Dependency Management Plugin
-
 When you apply the {url-dependency-management-plugin-site}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically xref:reacting.adoc#reacting-to-other-plugins.dependency-management[import the `spring-boot-dependencies` bom] from the version of Spring Boot that you are using.
 This provides a similar dependency management experience to the one that's enjoyed by Maven users.
 For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
@@ -30,11 +243,8 @@ include::example$managing-dependencies/dependencies.gradle.kts[tags=dependencies
 ----
 ======
 
-
-
 [[managing-dependencies.dependency-management-plugin.customizing]]
 === Customizing Managed Versions
-
 The `spring-boot-dependencies` bom that is automatically imported when the dependency management plugin is applied uses properties to control the versions of the dependencies that it manages.
 Browse the xref:appendix:dependency-versions/properties.adoc[Dependency Versions Properties] section in the Spring Boot reference for a complete list of these properties.
 
@@ -60,11 +270,8 @@ include::example$managing-dependencies/custom-version.gradle.kts[tags=custom-ver
 WARNING: Each Spring Boot release is designed and tested against a specific set of third-party dependencies.
 Overriding versions may cause compatibility issues and should be done with care.
 
-
-
 [[managing-dependencies.dependency-management-plugin.using-in-isolation]]
 === Using Spring Boot's Dependency Management in Isolation
-
 Spring Boot's dependency management can be used in a project without applying Spring Boot's plugin to that project.
 The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be used to import the bom without having to know its group ID, artifact ID, or version.
 
@@ -174,18 +381,12 @@ A downside of this method is that it forces us to specify the version of the dep
 include::example$managing-dependencies/configure-bom-with-plugins.gradle.kts[tags=configure-bom]
 ----
 
-
-
 [[managing-dependencies.dependency-management-plugin.learning-more]]
 === Learning More
-
 To learn more about the capabilities of the dependency management plugin, please refer to its {url-dependency-management-plugin-docs}[documentation].
-
-
 
 [[managing-dependencies.gradle-bom-support]]
 == Managing Dependencies with Gradle's Bom Support
-
 Gradle allows a bom to be used to manage a project's versions by declaring it as a `platform` or `enforcedPlatform` dependency.
 A `platform` dependency treats the versions in the bom as recommendations and other versions and constraints in the dependency graph may cause a version of a dependency other than that declared in the bom to be used.
 An `enforcedPlatform` dependency treats the versions in the bom as requirements and they will override any other version found in the dependency graph.
@@ -211,11 +412,8 @@ include::example$managing-dependencies/configure-platform.gradle.kts[tags=config
 A platform or enforced platform will only constrain the versions of the configuration in which it has been declared or that extend from the configuration in which it has been declared.
 As a result, in may be necessary to declare the same dependency in more than one configuration.
 
-
-
 [[managing-dependencies.gradle-bom-support.customizing]]
 === Customizing Managed Versions
-
 When using Gradle's bom support, you cannot use the properties from `spring-boot-dependencies` to control the versions of the dependencies that it manages.
 Instead, you must use one of the mechanisms that Gradle provides.
 One such mechanism is a resolution strategy.

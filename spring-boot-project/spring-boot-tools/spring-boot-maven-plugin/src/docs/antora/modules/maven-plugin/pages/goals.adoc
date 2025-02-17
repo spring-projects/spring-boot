@@ -1,6 +1,17 @@
-[[goals]]
-= Goals
+= 目标
+:encoding: utf-8
+:numbered:
 
+[[goals]]
+== 目标
+
+Spring Boot 插件具有以下目标：
+
+include::partial$goals/overview.adoc[]
+
+'''
+[[goals]]
+== Goals
 The Spring Boot Plugin has the following goals:
 
 include::partial$goals/overview.adoc[]

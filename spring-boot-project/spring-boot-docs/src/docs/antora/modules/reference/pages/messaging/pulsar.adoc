@@ -1,6 +1,220 @@
-[[messaging.pulsar]]
-= Apache Pulsar Support
+= Apache Pulsar 支持
+:encoding: utf-8
+:numbered:
 
+[[messaging.pulsar]]
+== Apache Pulsar 支持
+通过提供 {url-spring-pulsar-site}[Spring for Apache Pulsar] 项目的自动配置，Spring Boot 支持 https://pulsar.apache.org/[Apache Pulsar]。
+
+当类路径上有 `org.springframework.pulsar:spring-pulsar` 时，Spring Boot 将自动配置并注册经典的（命令式）Spring for Apache Pulsar 组件。
+当类路径上有 `org.springframework.pulsar:spring-pulsar-reactive` 时，它将对响应式组件执行相同的操作。
+
+为了方便地收集命令式和响应式使用的依赖项，分别提供了 `spring-boot-starter-pulsar` 和 `spring-boot-starter-pulsar-reactive` starter。
+
+[[messaging.pulsar.connecting]]
+== 连接到 Pulsar
+当你使用 Pulsar starter 时，Spring Boot 将自动配置并注册一个 javadoc:org.apache.pulsar.client.api.PulsarClient[] bean。
+
+默认情况下，应用程序尝试连接到 `pulsar://localhost:6650` 的本地 Pulsar 实例。
+可以通过将 configprop:spring.pulsar.client.service-url[] 属性设置为不同的值来调整此设置。
+
+NOTE: 该值必须是有效的 https://pulsar.apache.org/docs/client-libraries-java/#connection-urls[Pulsar 协议] URL。
+
+你可以通过指定任何以 `spring.pulsar.client.*` 为前缀的应用程序属性来配置客户端。
+
+如果你需要对配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.core.PulsarClientBuilderCustomizer[] bean。
+
+[[messaging.pulsar.connecting.auth]]
+=== 认证
+要连接到需要认证的 Pulsar 集群，你需要通过设置 `pluginClassName` 和插件所需的任何参数来指定使用哪个认证插件。
+你可以将参数设置为参数名称到参数值的映射。
+以下示例展示了如何配置 `AuthenticationOAuth2` 插件。
+
+[configprops,yaml]
+----
+spring:
+  pulsar:
+    client:
+      authentication:
+        plugin-class-name: org.apache.pulsar.client.impl.auth.oauth2.AuthenticationOAuth2
+        param:
+          issuerUrl: https://auth.server.cloud/
+          privateKey: file:///Users/some-key.json
+          audience: urn:sn:acme:dev:my-instance
+----
+
+[NOTE]
+====
+你需要确保在 `+spring.pulsar.client.authentication.param.*+` 下定义的名称与你的认证插件期望的名称完全匹配（通常是驼峰式）。
+Spring Boot 不会对这些条目尝试任何形式的宽松绑定。
+
+例如，如果你想为 `AuthenticationOAuth2` 认证插件配置发行者 URL，你必须使用 `+spring.pulsar.client.authentication.param.issuerUrl+`。
+如果你使用其他形式，例如 `issuerurl` 或 `issuer-url`，则该设置将不会应用于插件。
+
+这种缺乏宽松绑定的情况也使得使用环境变量作为认证参数变得有问题，因为在转换过程中大小写敏感性会丢失。
+如果你使用环境变量作为参数，则需要按照 Spring for Apache Pulsar 参考文档中的 {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html#client-authentication-env-vars[这些步骤] 来使其正常工作。
+====
+
+[[messaging.pulsar.connecting.ssl]]
+=== SSL
+默认情况下，Pulsar 客户端以纯文本形式与 Pulsar 服务通信。
+你可以按照 Spring for Apache Pulsar 参考文档中的 {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html#tls-encryption[这些步骤] 来启用 TLS 加密。
+
+有关客户端和认证的完整详细信息，请参阅 Spring for Apache Pulsar 的 {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html[参考文档]。
+
+[[messaging.pulsar.connecting-reactive]]
+== 以响应式方式连接到 Pulsar
+当激活响应式自动配置时，Spring Boot 将自动配置并注册一个 javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[] bean。
+
+javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[] 适配了前面描述的 javadoc:org.apache.pulsar.client.api.PulsarClient[] 实例。
+因此，请按照前面的部分来配置 javadoc:org.apache.pulsar.client.api.PulsarClient[]，供 javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[] 使用。
+
+[[messaging.pulsar.admin]]
+== 连接到 Pulsar 管理
+Spring for Apache Pulsar 的 javadoc:org.springframework.pulsar.core.PulsarAdministration[] 客户端也会自动配置。
+
+默认情况下，应用程序尝试连接到 `\http://localhost:8080` 的本地 Pulsar 实例。
+可以通过将 configprop:spring.pulsar.admin.service-url[] 属性设置为 `(http|https)://<host>:<port>` 形式的不同值来调整此设置。
+
+如果你需要对配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.core.PulsarAdminBuilderCustomizer[] bean。
+
+[[messaging.pulsar.admin.auth]]
+=== 认证
+当访问需要认证的 Pulsar 集群时，管理客户端需要与常规 Pulsar 客户端相同的安全配置。
+你可以使用前面提到的 xref:messaging/pulsar.adoc#messaging.pulsar.connecting.auth[认证配置]，只需将 `spring.pulsar.client.authentication` 替换为 `spring.pulsar.admin.authentication`。
+
+TIP: 要在启动时创建一个主题，可以添加一个类型为 javadoc:org.springframework.pulsar.core.PulsarTopic[] 的 bean。
+如果主题已经存在，则该 bean 将被忽略。
+
+[[messaging.pulsar.sending]]
+== 发送消息
+Spring 的 javadoc:org.springframework.pulsar.core.PulsarTemplate[] 是自动配置的，你可以使用它来发送消息，如下例所示：
+
+include-code::MyBean[]
+
+javadoc:org.springframework.pulsar.core.PulsarTemplate[] 依赖于 javadoc:org.springframework.pulsar.core.PulsarProducerFactory[] 来创建底层的 Pulsar 生产者。
+Spring Boot 自动配置还提供了这个生产者工厂，默认情况下，它会缓存它创建的生产者。
+你可以通过指定任何以 `spring.pulsar.producer.\*` 和 `spring.pulsar.producer.cache.*` 为前缀的应用程序属性来配置生产者工厂和缓存设置。
+
+如果你需要对生产者工厂配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.core.ProducerBuilderCustomizer[] bean。
+这些自定义器将应用于所有创建的生产者。
+你还可以在发送消息时传入一个 javadoc:org.springframework.pulsar.core.ProducerBuilderCustomizer[]，以仅影响当前生产者。
+
+如果你需要对发送的消息进行更多控制，可以在发送消息时传入一个 javadoc:org.springframework.pulsar.core.TypedMessageBuilderCustomizer[]。
+
+[[messaging.pulsar.sending-reactive]]
+== 以响应式方式发送消息
+当激活响应式自动配置时，Spring 的 javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarTemplate[] 是自动配置的，你可以使用它来发送消息，如下例所示：
+
+include-code::MyBean[]
+
+javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarTemplate[] 依赖于 javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarSenderFactory[] 来实际创建底层的发送者。
+Spring Boot 自动配置还提供了这个发送者工厂，默认情况下，它会缓存它创建的生产者。
+你可以通过指定任何以 `spring.pulsar.producer.\*` 和 `spring.pulsar.producer.cache.*` 为前缀的应用程序属性来配置发送者工厂和缓存设置。
+
+如果你需要对发送者工厂配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageSenderBuilderCustomizer[] bean。
+这些自定义器将应用于所有创建的发送者。
+你还可以在发送消息时传入一个 javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageSenderBuilderCustomizer[]，以仅影响当前发送者。
+
+如果你需要对发送的消息进行更多控制，可以在发送消息时传入一个 javadoc:org.springframework.pulsar.reactive.core.MessageSpecBuilderCustomizer[]。
+
+[[messaging.pulsar.receiving]]
+== 接收消息
+当 Apache Pulsar 基础设施存在时，任何 bean 都可以使用 javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] 注解来创建监听器端点。
+以下组件在 `someTopic` 主题上创建了一个监听器端点：
+
+include-code::MyBean[]
+
+Spring Boot 自动配置提供了 javadoc:org.springframework.pulsar.annotation.PulsarListener[] 所需的所有组件，例如 javadoc:org.springframework.pulsar.config.PulsarListenerContainerFactory[] 和它用于构建底层 Pulsar 消费者的消费者工厂。
+你可以通过指定任何以 `spring.pulsar.listener.\*` 和 `spring.pulsar.consumer.*` 为前缀的应用程序属性来配置这些组件。
+
+如果你需要对消费者工厂的配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.core.ConsumerBuilderCustomizer[] bean。
+这些自定义器将应用于工厂创建的所有消费者，因此所有 javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] 实例。
+你还可以通过设置 javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] 注解的 `consumerCustomizer` 属性来自定义单个监听器。
+
+如果你需要对实际容器工厂配置进行更多控制，请考虑注册一个或多个 `PulsarContainerFactoryCustomizer<ConcurrentPulsarListenerContainerFactory<?>>` bean。
+
+[[messaging.pulsar.receiving-reactive]]
+== 以响应式方式接收消息
+当 Apache Pulsar 基础设施存在并且激活了响应式自动配置时，任何 bean 都可以使用 javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[format=annotation] 注解来创建响应式监听器端点。
+以下组件在 `someTopic` 主题上创建了一个响应式监听器端点：
+
+include-code::MyBean[]
+
+Spring Boot 自动配置提供了 javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[] 所需的所有组件，例如 javadoc:org.springframework.pulsar.reactive.config.ReactivePulsarListenerContainerFactory[] 和它用于构建底层响应式 Pulsar 消费者的消费者工厂。
+你可以通过指定任何以 `spring.pulsar.listener.\*` 和 `spring.pulsar.consumer.*` 为前缀的应用程序属性来配置这些组件。
+
+如果你需要对消费者工厂的配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageConsumerBuilderCustomizer[] bean。
+这些自定义器将应用于工厂创建的所有消费者，因此所有 javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[format=annotation] 实例。
+你还可以通过设置 javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[format=annotation] 注解的 `consumerCustomizer` 属性来自定义单个监听器。
+
+如果你需要对实际容器工厂配置进行更多控制，请考虑注册一个或多个 `PulsarContainerFactoryCustomizer<DefaultReactivePulsarListenerContainerFactory<?>>` bean。
+
+[[messaging.pulsar.reading]]
+== 读取消息
+Pulsar 读取器接口使应用程序能够手动管理游标。
+当你使用读取器连接到主题时，你需要指定读取器在连接到主题时从哪个消息开始读取。
+
+当 Apache Pulsar 基础设施存在时，任何 bean 都可以使用 javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] 注解来使用读取器消费消息。
+以下组件创建了一个读取器端点，从 `someTopic` 主题的开头开始读取消息：
+
+include-code::MyBean[]
+
+javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] 依赖于 javadoc:org.springframework.pulsar.core.PulsarReaderFactory[] 来创建底层的 Pulsar 读取器。
+Spring Boot 自动配置提供了这个读取器工厂，可以通过设置任何以 `spring.pulsar.reader.*` 为前缀的应用程序属性来配置它。
+
+如果你需要对读取器工厂的配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.core.ReaderBuilderCustomizer[] bean。
+这些自定义器将应用于工厂创建的所有读取器，因此所有 javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] 实例。
+你还可以通过设置 javadoc:org.springframework.pulsar.annotation.PulsarReader[format=annotation] 注解的 `readerCustomizer` 属性来自定义单个监听器。
+
+如果你需要对实际容器工厂配置进行更多控制，请考虑注册一个或多个 `PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>>` bean。
+
+[[messaging.pulsar.reading-reactive]]
+== 以响应式方式读取消息
+当 Apache Pulsar 基础设施存在并且激活了响应式自动配置时，Spring 的 javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarReaderFactory[] 会被提供，你可以使用它来创建一个读取器，以便以响应式方式读取消息。
+以下组件使用提供的工厂创建了一个读取器，并从 `someTopic` 主题中读取 5 分钟前的单个消息：
+
+include-code::MyBean[]
+
+Spring Boot 自动配置提供了这个读取器工厂，可以通过设置任何以 `spring.pulsar.reader.*` 为前缀的应用程序属性来配置它。
+
+如果你需要对读取器工厂配置进行更多控制，请考虑在使用工厂创建读取器时传入一个或多个 javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageReaderBuilderCustomizer[] 实例。
+
+如果你需要对读取器工厂配置进行更多控制，请考虑注册一个或多个 javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageReaderBuilderCustomizer[] bean。
+这些自定义器将应用于所有创建的读取器。
+你还可以在创建读取器时传入一个或多个 javadoc:org.springframework.pulsar.reactive.core.ReactiveMessageReaderBuilderCustomizer[]，以仅将自定义应用于创建的读取器。
+
+TIP: 有关上述任何组件的更多详细信息以及发现其他可用功能，请参阅 Spring for Apache Pulsar 的 {url-spring-pulsar-docs}[参考文档]。
+
+[[messaging.pulsar.transactions]]
+== 事务支持
+Spring for Apache Pulsar 在使用 javadoc:org.springframework.pulsar.core.PulsarTemplate[] 和 javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] 时支持事务。
+
+NOTE: 当前在使用响应式变体时不支持事务。
+
+将 configprop:spring.pulsar.transaction.enabled[] 属性设置为 `true` 将会：
+
+* 配置一个 javadoc:org.springframework.pulsar.transaction.PulsarTransactionManager[] bean
+* 为 javadoc:org.springframework.pulsar.core.PulsarTemplate[] 启用事务支持
+* 为 javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] 方法启用事务支持
+
+javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] 的 `transactional` 属性可用于微调何时应在监听器中使用事务。
+
+如果你需要对 Spring for Apache Pulsar 事务功能进行更多控制，则应定义你自己的 javadoc:org.springframework.pulsar.core.PulsarTemplate[] 和/或 javadoc:org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory[] bean。
+如果默认的自动配置的 javadoc:org.springframework.pulsar.transaction.PulsarTransactionManager[] 不合适，你还可以定义一个 javadoc:org.springframework.pulsar.transaction.PulsarAwareTransactionManager[] bean。
+
+[[messaging.pulsar.additional-properties]]
+== 其他 Pulsar 属性
+自动配置支持的属性在附录的 xref:appendix:application-properties/index.adoc#appendix.application-properties.integration[集成属性] 部分中列出。
+请注意，这些属性（连字符或驼峰式）大多直接映射到 Apache Pulsar 配置属性。
+有关详细信息，请参阅 Apache Pulsar 文档。
+
+只有一部分 Pulsar 支持的属性可以直接通过 javadoc:org.springframework.boot.autoconfigure.pulsar.PulsarProperties[] 类进行配置。
+如果你希望使用不直接支持的附加属性来调整自动配置的组件，可以使用每个上述组件支持的自定义器。
+
+'''
+[[messaging.pulsar]]
+== Apache Pulsar Support
 https://pulsar.apache.org/[Apache Pulsar] is supported by providing auto-configuration of the {url-spring-pulsar-site}[Spring for Apache Pulsar] project.
 
 Spring Boot will auto-configure and register the classic (imperative) Spring for Apache Pulsar components when `org.springframework.pulsar:spring-pulsar` is on the classpath.
@@ -8,11 +222,8 @@ It will do the same for the reactive components when `org.springframework.pulsar
 
 There are `spring-boot-starter-pulsar` and `spring-boot-starter-pulsar-reactive` starters for conveniently collecting the dependencies for imperative and reactive use, respectively.
 
-
-
 [[messaging.pulsar.connecting]]
 == Connecting to Pulsar
-
 When you use the Pulsar starter, Spring Boot will auto-configure and register a javadoc:org.apache.pulsar.client.api.PulsarClient[] bean.
 
 By default, the application tries to connect to a local Pulsar instance at `pulsar://localhost:6650`.
@@ -24,11 +235,8 @@ You can configure the client by specifying any of the `spring.pulsar.client.*` p
 
 If you need more control over the configuration, consider registering one or more javadoc:org.springframework.pulsar.core.PulsarClientBuilderCustomizer[] beans.
 
-
-
 [[messaging.pulsar.connecting.auth]]
 === Authentication
-
 To connect to a Pulsar cluster that requires authentication, you need to specify which authentication plugin to use by setting the `pluginClassName` and any parameters required by the plugin.
 You can set the parameters as a map of parameter names to parameter values.
 The following example shows how to configure the `AuthenticationOAuth2` plugin.
@@ -58,11 +266,8 @@ This lack of relaxed binding also makes using environment variables for authenti
 If you use environment variables for the parameters then you will need to follow {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html#client-authentication-env-vars[these steps] in the Spring for Apache Pulsar reference documentation for it to work properly.
 ====
 
-
-
 [[messaging.pulsar.connecting.ssl]]
 === SSL
-
 By default, Pulsar clients communicate with Pulsar services in plain text.
 You can follow {url-spring-pulsar-docs}/reference/pulsar/pulsar-client.html#tls-encryption[these steps] in the Spring for Apache Pulsar reference documentation to enable TLS encryption.
 
@@ -70,17 +275,13 @@ For complete details on the client and authentication see the Spring for Apache 
 
 [[messaging.pulsar.connecting-reactive]]
 == Connecting to Pulsar Reactively
-
 When the Reactive auto-configuration is activated, Spring Boot will auto-configure and register a javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[] bean.
 
 The javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[] adapts an instance of the previously described javadoc:org.apache.pulsar.client.api.PulsarClient[].
 Therefore, follow the previous section to configure the javadoc:org.apache.pulsar.client.api.PulsarClient[] used by the javadoc:org.apache.pulsar.reactive.client.api.ReactivePulsarClient[].
 
-
-
 [[messaging.pulsar.admin]]
 == Connecting to Pulsar Administration
-
 Spring for Apache Pulsar's javadoc:org.springframework.pulsar.core.PulsarAdministration[] client is also auto-configured.
 
 By default, the application tries to connect to a local Pulsar instance at `\http://localhost:8080`.
@@ -88,22 +289,16 @@ This can be adjusted by setting the configprop:spring.pulsar.admin.service-url[]
 
 If you need more control over the configuration, consider registering one or more javadoc:org.springframework.pulsar.core.PulsarAdminBuilderCustomizer[] beans.
 
-
-
 [[messaging.pulsar.admin.auth]]
 === Authentication
-
 When accessing a Pulsar cluster that requires authentication, the admin client requires the same security configuration as the regular Pulsar client.
 You can use the aforementioned xref:messaging/pulsar.adoc#messaging.pulsar.connecting.auth[authentication configuration] by replacing `spring.pulsar.client.authentication` with `spring.pulsar.admin.authentication`.
 
 TIP: To create a topic on startup, add a bean of type javadoc:org.springframework.pulsar.core.PulsarTopic[].
 If the topic already exists, the bean is ignored.
 
-
-
 [[messaging.pulsar.sending]]
 == Sending a Message
-
 Spring's javadoc:org.springframework.pulsar.core.PulsarTemplate[] is auto-configured, and you can use it to send messages, as shown in the following example:
 
 include-code::MyBean[]
@@ -118,11 +313,8 @@ You can also pass in a javadoc:org.springframework.pulsar.core.ProducerBuilderCu
 
 If you need more control over the message being sent, you can pass in a javadoc:org.springframework.pulsar.core.TypedMessageBuilderCustomizer[] when sending a message.
 
-
-
 [[messaging.pulsar.sending-reactive]]
 == Sending a Message Reactively
-
 When the Reactive auto-configuration is activated, Spring's javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarTemplate[] is auto-configured, and you can use it to send messages, as shown in the following example:
 
 include-code::MyBean[]
@@ -137,11 +329,8 @@ You can also pass in a javadoc:org.springframework.pulsar.reactive.core.Reactive
 
 If you need more control over the message being sent, you can pass in a javadoc:org.springframework.pulsar.reactive.core.MessageSpecBuilderCustomizer[] when sending a message.
 
-
-
 [[messaging.pulsar.receiving]]
 == Receiving a Message
-
 When the Apache Pulsar infrastructure is present, any bean can be annotated with javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation] to create a listener endpoint.
 The following component creates a listener endpoint on the `someTopic` topic:
 
@@ -158,7 +347,6 @@ If you need more control over the actual container factory configuration, consid
 
 [[messaging.pulsar.receiving-reactive]]
 == Receiving a Message Reactively
-
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, any bean can be annotated with javadoc:org.springframework.pulsar.reactive.config.annotation.ReactivePulsarListener[format=annotation] to create a reactive listener endpoint.
 The following component creates a reactive listener endpoint on the `someTopic` topic:
 
@@ -175,7 +363,6 @@ If you need more control over the actual container factory configuration, consid
 
 [[messaging.pulsar.reading]]
 == Reading a Message
-
 The Pulsar reader interface enables applications to manually manage cursors.
 When you use a reader to connect to a topic you need to specify which message the reader begins reading from when it connects to a topic.
 
@@ -193,10 +380,8 @@ You can also customize a single listener by setting the `readerCustomizer` attri
 
 If you need more control over the actual container factory configuration, consider registering one or more `PulsarContainerFactoryCustomizer<DefaultPulsarReaderContainerFactory<?>>` beans.
 
-
 [[messaging.pulsar.reading-reactive]]
 == Reading a Message Reactively
-
 When the Apache Pulsar infrastructure is present and the Reactive auto-configuration is activated, Spring's javadoc:org.springframework.pulsar.reactive.core.ReactivePulsarReaderFactory[] is provided, and you can use it to create a reader in order to read messages in a reactive fashion.
 The following component creates a reader using the provided factory and reads a single message from 5 minutes ago from the `someTopic` topic:
 
@@ -212,11 +397,8 @@ You can also pass one or more javadoc:org.springframework.pulsar.reactive.core.R
 
 TIP: For more details on any of the above components and to discover other available features, see the Spring for Apache Pulsar {url-spring-pulsar-docs}[reference documentation].
 
-
-
 [[messaging.pulsar.transactions]]
 == Transaction Support
-
 Spring for Apache Pulsar supports transactions when using javadoc:org.springframework.pulsar.core.PulsarTemplate[] and javadoc:org.springframework.pulsar.annotation.PulsarListener[format=annotation].
 
 NOTE: Transactions are not currently supported when using the reactive variants.
@@ -232,11 +414,8 @@ The `transactional` attribute of javadoc:org.springframework.pulsar.annotation.P
 For more control of the Spring for Apache Pulsar transaction features you should define your own javadoc:org.springframework.pulsar.core.PulsarTemplate[] and/or javadoc:org.springframework.pulsar.config.ConcurrentPulsarListenerContainerFactory[] beans.
 You can also define a javadoc:org.springframework.pulsar.transaction.PulsarAwareTransactionManager[] bean if the default auto-configured javadoc:org.springframework.pulsar.transaction.PulsarTransactionManager[] is not suitable.
 
-
-
 [[messaging.pulsar.additional-properties]]
 == Additional Pulsar Properties
-
 The properties supported by auto-configuration are shown in the xref:appendix:application-properties/index.adoc#appendix.application-properties.integration[Integration Properties] section of the Appendix.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Pulsar configuration properties.
 See the Apache Pulsar documentation for details.

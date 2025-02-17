@@ -1,6 +1,18 @@
-[[introduction]]
 = Introduction
+:encoding: utf-8
+:numbered:
 
+[[introduction]]
+== 简介
+Spring Boot Gradle 插件在 https://gradle.org[Gradle] 中提供了 Spring Boot 支持。
+它允许你打包可执行的 jar 或 war 归档文件，运行 Spring Boot 应用程序，并使用 `spring-boot-dependencies` 提供的依赖管理。
+Spring Boot 的 Gradle 插件需要 Gradle 7.x（7.6.4 或更高版本）或 8.x（8.4 或更高版本），并且可以与 Gradle 的 {url-gradle-docs}/configuration_cache.html[配置缓存] 一起使用。
+
+除了本用户指南外，还可以参阅 xref:api/java/index.html[API 文档]。
+
+'''
+[[introduction]]
+== Introduction
 The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle].
 It allows you to package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
 Spring Boot's Gradle plugin requires Gradle 7.x (7.6.4 or later) or 8.x (8.4 or later) and can be used with Gradle's {url-gradle-docs}/configuration_cache.html[configuration cache].

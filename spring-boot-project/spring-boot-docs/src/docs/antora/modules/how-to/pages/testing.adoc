@@ -1,14 +1,51 @@
-[[howto.testing]]
-= Testing
+= 测试
+:encoding: utf-8
+:numbered:
 
+[[howto.testing]]
+== 测试
+Spring Boot 包含了许多测试工具和支持类，以及一个专门的启动器，提供了常见的测试依赖项。本节回答有关测试的常见问题。
+
+[[howto.testing.with-spring-security]]
+== 使用 Spring Security 进行测试
+Spring Security 提供了以特定用户身份运行测试的支持。例如，下面的代码片段中的测试将以具有 `ADMIN` 角色的认证用户身份运行。
+
+```java
+include-code::MySecurityTests[]
+```
+
+Spring Security 提供了与 Spring MVC Test 的全面集成，这也可以在使用 `@WebMvcTest` 切片和 `MockMvc` 测试控制器时使用。
+
+有关 Spring Security 测试支持的更多详细信息，请参阅 Spring Security 的[参考文档]({url-spring-security-docs}/servlet/test/index.html)。
+
+[[howto.testing.slice-tests]]
+== 为切片测试构建 `@Configuration` 类
+切片测试通过将 Spring Framework 的组件扫描限制为基于类型的有限组件集来工作。对于任何不是通过组件扫描创建的 Bean，例如使用 `@Bean` 注解创建的 Bean，切片测试将无法将它们包含在应用程序上下文中或从应用程序上下文中排除它们。考虑以下示例：
+
+```java
+include-code::MyConfiguration[]
+```
+
+对于具有上述 `@Configuration` 类的应用程序的 `@WebMvcTest`，你可能期望在应用程序上下文中具有 `SecurityFilterChain` Bean，以便你可以测试控制器端点是否正确保护。然而，`MyConfiguration` 不会被 `@WebMvcTest` 的组件扫描过滤器捕获，因为它与过滤器指定的任何类型都不匹配。你可以通过在测试类上使用 `@Import(MyConfiguration.class)` 显式包含配置。这将加载 `MyConfiguration` 中的所有 Bean，包括在测试 Web 层时不需要的 `HikariDataSource` Bean。将配置类拆分为两个类可以仅导入安全配置。
+
+```java
+include-code::MySecurityConfiguration[]
+```
+
+```java
+include-code::MyDatasourceConfiguration[]
+```
+
+当某个领域的 Bean 需要包含在切片测试中时，拥有单个配置类可能效率低下。相反，将应用程序的配置构建为多个细粒度的类，每个类包含特定领域的 Bean，可以仅在特定切片测试中导入它们。
+
+'''
+[[howto.testing]]
+== Testing
 Spring Boot includes a number of testing utilities and support classes as well as a dedicated starter that provides common test dependencies.
 This section answers common questions about testing.
 
-
-
 [[howto.testing.with-spring-security]]
 == Testing With Spring Security
-
 Spring Security provides support for running tests as a specific user.
 For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
 
@@ -18,12 +55,8 @@ Spring Security provides comprehensive integration with Spring MVC Test, and thi
 
 For additional details on Spring Security's testing support, see Spring Security's {url-spring-security-docs}/servlet/test/index.html[reference documentation].
 
-
-
-
 [[howto.testing.slice-tests]]
 == Structure javadoc:org.springframework.context.annotation.Configuration[format=annotation] Classes for Inclusion in Slice Tests
-
 Slice tests work by restricting Spring Framework's component scanning to a limited set of components based on their type.
 For any beans that are not created through component scanning, for example, beans that are created using the javadoc:org.springframework.context.annotation.Bean[format=annotation] annotation, slice tests will not be able to include/exclude them from the application context.
 Consider this example:
@@ -42,4 +75,3 @@ include-code::MyDatasourceConfiguration[]
 
 Having a single configuration class can be inefficient when beans from a certain domain need to be included in slice tests.
 Instead, structuring the application's configuration as multiple granular classes with beans for a specific domain can enable importing them only for specific slice tests.
-

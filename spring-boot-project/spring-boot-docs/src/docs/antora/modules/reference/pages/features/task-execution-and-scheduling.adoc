@@ -1,6 +1,54 @@
-[[features.task-execution-and-scheduling]]
-= Task Execution and Scheduling
+= 任务执行与调度
+:encoding: utf-8
+:numbered:
 
+[[features.task-execution-and-scheduling]]
+== 任务执行与调度
+在上下文中没有 `Executor` bean 的情况下，Spring Boot 会自动配置一个 `AsyncTaskExecutor`。当启用虚拟线程时（使用 Java 21+ 并将 `spring.threads.virtual.enabled` 设置为 `true`），这将是一个使用虚拟线程的 `SimpleAsyncTaskExecutor`。否则，它将是一个具有合理默认值的 `ThreadPoolTaskExecutor`。无论哪种情况，自动配置的执行器将自动用于：
+
+- 异步任务执行（`@EnableAsync`）
+- Spring for GraphQL 对控制器方法返回的 `Callable` 值的异步处理
+- Spring MVC 的异步请求处理
+- Spring WebFlux 的阻塞执行支持
+
+TIP: 如果你在上下文中定义了自定义的 `Executor`，常规任务执行（即 `@EnableAsync`）和 Spring for GraphQL 都会使用它。然而，Spring MVC 和 Spring WebFlux 支持仅在它是 `AsyncTaskExecutor` 实现（命名为 `applicationTaskExecutor`）时才会使用它。根据你的目标安排，你可以将你的 `Executor` 更改为 `AsyncTaskExecutor`，或者定义一个 `AsyncTaskExecutor` 和一个 `AsyncConfigurer` 来包装你的自定义 `Executor`。
+
+自动配置的 `ThreadPoolTaskExecutorBuilder` 允许你轻松创建实例，以重现自动配置默认执行的操作。
+
+当自动配置 `ThreadPoolTaskExecutor` 时，线程池使用 8 个核心线程，这些线程可以根据负载增长和收缩。可以使用 `spring.task.execution` 命名空间微调这些默认设置，如下例所示：
+
+```yaml
+spring:
+  task:
+    execution:
+      pool:
+        max-size: 16
+        queue-capacity: 100
+        keep-alive: "10s"
+```
+
+这将线程池更改为使用有界队列，以便当队列满（100 个任务）时，线程池增加到最多 16 个线程。当线程空闲 10 秒（而不是默认的 60 秒）时，池的收缩更加积极。
+
+如果需要与计划任务执行相关联（例如使用 `@EnableScheduling`），还可以自动配置调度程序。
+
+如果启用虚拟线程（使用 Java 21+ 并将 `spring.threads.virtual.enabled` 设置为 `true`），这将是一个使用虚拟线程的 `SimpleAsyncTaskScheduler`。此 `SimpleAsyncTaskScheduler` 将忽略任何与池相关的属性。
+
+如果未启用虚拟线程，它将是一个具有合理默认值的 `ThreadPoolTaskScheduler`。`ThreadPoolTaskScheduler` 默认使用一个线程，其设置可以使用 `spring.task.scheduling` 命名空间进行微调，如下例所示：
+
+```yaml
+spring:
+  task:
+    scheduling:
+      thread-name-prefix: "scheduling-"
+      pool:
+        size: 2
+```
+
+如果需要创建自定义执行器或调度程序，上下文中会提供 `ThreadPoolTaskExecutorBuilder` bean、`SimpleAsyncTaskExecutorBuilder` bean、`ThreadPoolTaskSchedulerBuilder` bean 和 `SimpleAsyncTaskSchedulerBuilder` bean。如果启用了虚拟线程（使用 Java 21+ 并将 `spring.threads.virtual.enabled` 设置为 `true`），`SimpleAsyncTaskExecutorBuilder` 和 `SimpleAsyncTaskSchedulerBuilder` bean 会自动配置为使用虚拟线程。
+
+'''
+[[features.task-execution-and-scheduling]]
+== Task Execution and Scheduling
 In the absence of an javadoc:java.util.concurrent.Executor[] bean in the context, Spring Boot auto-configures an javadoc:org.springframework.core.task.AsyncTaskExecutor[].
 When virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a javadoc:org.springframework.core.task.SimpleAsyncTaskExecutor[] that uses virtual threads.
 Otherwise, it will be a javadoc:org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor[] with sensible defaults.

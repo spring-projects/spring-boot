@@ -1,0 +1,6 @@
+|===
+| 名称 | 描述
+
+| [[spring-boot-starter-actuator]]`spring-boot-starter-actuator`
+| 使用 Spring Boot Actuator 的启动器，它提供了生产就绪的功能，帮助你监控和管理应用程序
+|===

@@ -1,6 +1,116 @@
-[[packaging.native-image.introducing-graalvm-native-images]]
-= Introducing GraalVM Native Images
+= 介绍 GraalVM 原生镜像
+:encoding: utf-8
+:numbered:
 
+[[packaging.native-image.introducing-graalvm-native-images]]
+== 介绍 GraalVM 原生镜像
+
+GraalVM 原生镜像提供了一种新的方式来部署和运行 Java 应用程序。与 Java 虚拟机相比，原生镜像可以以更小的内存占用和更快的启动时间运行。
+
+它们非常适合使用容器镜像部署的应用程序，尤其是在与“函数即服务”（FaaS）平台结合使用时特别有趣。
+
+与为 JVM 编写的传统应用程序不同，GraalVM 原生镜像应用程序需要提前处理以创建可执行文件。这种提前处理涉及从其主入口点静态分析应用程序代码。
+
+GraalVM 原生镜像是一个完整的、特定于平台的可执行文件。你不需要为了运行原生镜像而提供 Java 虚拟机。
+
+TIP: 如果你只是想开始并尝试 GraalVM，可以跳转到 xref:how-to:native-image/developing-your-first-application.adoc[] 部分，稍后再回到本节。
+
+[[packaging.native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments]]
+== 与 JVM 部署的关键区别
+
+GraalVM 原生镜像是在构建时生成的，这意味着原生应用程序和基于 JVM 的应用程序之间存在一些关键区别。主要区别包括：
+
+* 在构建时从 `main` 入口点对应用程序进行静态分析。
+* 在创建原生镜像时无法访问的代码将被删除，不会成为可执行文件的一部分。
+* GraalVM 不会直接感知代码的动态元素，必须被告知反射、资源、序列化和动态代理。
+* 应用程序的类路径在构建时是固定的，不能更改。
+* 没有延迟类加载，可执行文件中的所有内容都将在启动时加载到内存中。
+* 某些 Java 应用程序的方面存在一些不完全支持的限制。
+
+除了这些区别之外，Spring 使用了一种称为 xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[Spring 提前处理] 的过程，这进一步增加了限制。请确保至少阅读下一节的开头以了解这些限制。
+
+TIP: GraalVM 参考文档中的 {url-graal-docs-native-image}/metadata/Compatibility/[原生镜像兼容性指南] 部分提供了有关 GraalVM 限制的更多详细信息。
+
+[[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing]]
+== 理解 Spring 提前处理
+
+典型的 Spring Boot 应用程序非常动态，配置在运行时进行。事实上，Spring Boot 自动配置的概念在很大程度上依赖于对运行时状态的响应，以便正确配置。
+
+尽管可以告诉 GraalVM 应用程序的这些动态方面，但这样做会抵消静态分析的大部分好处。因此，当使用 Spring Boot 创建原生镜像时，假设了一个封闭的世界，并且应用程序的动态方面受到限制。
+
+封闭世界的假设意味着，除了 xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments[GraalVM 本身的限制] 之外，还有以下限制：
+
+* 应用程序中定义的 Bean 在运行时不能更改，这意味着：
+- Spring 的 `@Profile` 注解和特定于配置文件的配置 xref:how-to:aot.adoc#howto.aot.conditions[有局限性]。
+- 不支持在创建 Bean 时更改的属性（例如，`@ConditionalOnProperty` 和 `.enabled` 属性）。
+
+当这些限制生效时，Spring 可以在构建时执行提前处理并生成 GraalVM 可以使用的额外资源。Spring AOT 处理的应用程序通常会生成：
+
+* Java 源代码
+* 字节码（用于动态代理等）
+* GraalVM JSON 提示文件，位于 `+META-INF/native-image/{groupId}/{artifactId}/+`：
+- 资源提示（`resource-config.json`）
+- 反射提示（`reflect-config.json`）
+- 序列化提示（`serialization-config.json`）
+- Java 代理提示（`proxy-config.json`）
+- JNI 提示（`jni-config.json`）
+
+如果生成的提示不足，你还可以 xref:packaging/native-image/advanced-topics.adoc#packaging.native-image.advanced.custom-hints[提供自己的提示]。
+
+[[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing.source-code-generation]]
+=== 源代码生成
+
+Spring 应用程序由 Spring Bean 组成。在内部，Spring Framework 使用两个不同的概念来管理 Bean。有 Bean 实例，它们是已创建的实际实例，可以注入到其他 Bean 中。还有 Bean 定义，用于定义 Bean 的属性以及如何创建其实例。
+
+如果我们以一个典型的 `@Configuration` 类为例：
+
+include-code::MyConfiguration[]
+
+Bean 定义是通过解析 `@Configuration` 类并找到 `@Bean` 方法创建的。在上面的示例中，我们为名为 `myBean` 的单例 Bean 定义了一个 `BeanDefinition`。我们还为 `MyConfiguration` 类本身创建了一个 `BeanDefinition`。
+
+当需要 `myBean` 实例时，Spring 知道它必须调用 `myBean()` 方法并使用结果。在 JVM 上运行时，`@Configuration` 类解析发生在应用程序启动时，`@Bean` 方法通过反射调用。
+
+在创建原生镜像时，Spring 以不同的方式操作。它不是在运行时解析 `@Configuration` 类并生成 Bean 定义，而是在构建时进行。一旦发现 Bean 定义，它们就会被处理并转换为 GraalVM 编译器可以分析的源代码。
+
+Spring AOT 过程会将上述配置类转换为如下代码：
+
+include-code::MyConfiguration__BeanDefinitions[]
+
+NOTE: 生成的代码可能因 Bean 定义的性质而异。
+
+你可以看到，生成的代码以 GraalVM 可以理解的直接方式创建了与 `@Configuration` 类等效的 Bean 定义。
+
+有一个 `myConfiguration` Bean 的定义，以及一个 `myBean` 的定义。当需要 `myBean` 实例时，会调用 `BeanInstanceSupplier`。该供应商将调用 `myConfiguration` Bean 上的 `myBean()` 方法。
+
+NOTE: 在 Spring AOT 处理期间，你的应用程序会启动到 Bean 定义可用的程度。在 AOT 处理阶段不会创建 Bean 实例。
+
+Spring AOT 会为所有 Bean 定义生成类似的代码。当需要 Bean 后处理时（例如，调用 `@Autowired` 方法），它也会生成代码。还会生成一个 `ApplicationContextInitializer`，Spring Boot 将在实际运行 AOT 处理的应用程序时使用它来初始化 `ApplicationContext`。
+
+TIP: 尽管 AOT 生成的源代码可能冗长，但它非常易读，并且在调试应用程序时很有帮助。生成的源文件可以在使用 Maven 时在 `target/spring-aot/main/sources` 中找到，在使用 Gradle 时在 `build/generated/aotSources` 中找到。
+
+[[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing.hint-file-generation]]
+=== 提示文件生成
+
+除了生成源文件外，Spring AOT 引擎还会生成 GraalVM 使用的提示文件。提示文件包含 JSON 数据，描述 GraalVM 应如何处理它无法通过直接检查代码理解的内容。
+
+例如，你可能在私有方法上使用 Spring 注解。Spring 需要使用反射来调用私有方法，即使在 GraalVM 上也是如此。当出现这种情况时，Spring 可以编写反射提示，以便 GraalVM 知道即使私有方法没有被直接调用，它仍然需要在原生镜像中可用。
+
+提示文件生成在 `META-INF/native-image` 下，GraalVM 会自动拾取它们。
+
+TIP: 生成的提示文件可以在使用 Maven 时在 `target/spring-aot/main/resources` 中找到，在使用 Gradle 时在 `build/generated/aotResources` 中找到。
+
+[[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing.proxy-class-generation]]
+=== 代理类生成
+
+Spring 有时需要生成代理类，以增强你编写的代码的附加功能。为此，它使用 cglib 库直接生成字节码。
+
+当应用程序在 JVM 上运行时，代理类会在应用程序运行时动态生成。在创建原生镜像时，这些代理需要在构建时生成，以便 GraalVM 可以包含它们。
+
+NOTE: 与源代码生成不同，生成的字节码在调试应用程序时并不是特别有用。但是，如果你需要使用 `javap` 等工具检查 `.class` 文件的内容，可以在 Maven 的 `target/spring-aot/main/classes` 和 Gradle 的 `build/generated/aotClasses` 中找到它们。
+
+'''
+[[packaging.native-image.introducing-graalvm-native-images]]
+== Introducing GraalVM Native Images
 GraalVM Native Images provide a new way to deploy and run Java applications.
 Compared to the Java Virtual Machine, native images can run with a smaller memory footprint and with much faster startup times.
 
@@ -14,11 +124,8 @@ You do not need to ship a Java Virtual Machine in order to run a native image.
 
 TIP: If you just want to get started and experiment with GraalVM you can jump to the xref:how-to:native-image/developing-your-first-application.adoc[] section and return to this section later.
 
-
-
 [[packaging.native-image.introducing-graalvm-native-images.key-differences-with-jvm-deployments]]
 == Key Differences with JVM Deployments
-
 The fact that GraalVM Native Images are produced ahead-of-time means that there are some key differences between native and JVM based applications.
 The main differences are:
 
@@ -34,11 +141,8 @@ Please make sure to read at least the beginning of the next section to learn abo
 
 TIP: The {url-graal-docs-native-image}/metadata/Compatibility/[Native Image Compatibility Guide] section of the GraalVM reference documentation provides more details about GraalVM limitations.
 
-
-
 [[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing]]
 == Understanding Spring Ahead-of-Time Processing
-
 Typical Spring Boot applications are quite dynamic and configuration is performed at runtime.
 In fact, the concept of Spring Boot auto-configuration depends heavily on reacting to the state of the runtime in order to configure things correctly.
 
@@ -65,11 +169,8 @@ A Spring AOT processed application will typically generate:
 
 If the generated hints are not sufficient, you can also xref:packaging/native-image/advanced-topics.adoc#packaging.native-image.advanced.custom-hints[provide your own].
 
-
-
 [[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing.source-code-generation]]
 === Source Code Generation
-
 Spring applications are composed of Spring Beans.
 Internally, Spring Framework uses two distinct concepts to manage beans.
 There are bean instances, which are the actual instances that have been created and can be injected into other beans.
@@ -112,11 +213,8 @@ An javadoc:org.springframework.context.ApplicationContextInitializer[] will also
 TIP: Although AOT generated source code can be verbose, it is quite readable and can be helpful when debugging an application.
 Generated source files can be found in `target/spring-aot/main/sources` when using Maven and `build/generated/aotSources` with Gradle.
 
-
-
 [[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing.hint-file-generation]]
 === Hint File Generation
-
 In addition to generating source files, the Spring AOT engine will also generate hint files that are used by GraalVM.
 Hint files contain JSON data that describes how GraalVM should deal with things that it can't understand by directly inspecting the code.
 
@@ -128,11 +226,8 @@ Hint files are generated under `META-INF/native-image` where they are automatica
 
 TIP: Generated hint files can be found in `target/spring-aot/main/resources` when using Maven and `build/generated/aotResources` with Gradle.
 
-
-
 [[packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing.proxy-class-generation]]
 === Proxy Class Generation
-
 Spring sometimes needs to generate proxy classes to enhance the code you've written with additional features.
 To do this, it uses the cglib library which directly generates bytecode.
 

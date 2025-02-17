@@ -1,15 +1,221 @@
-[[io.rest-client]]
-= Calling REST Services
+= 调用 REST 服务
+:encoding: utf-8
+:numbered:
 
+[[io.rest-client]]
+== 调用 REST 服务
+Spring Boot 提供了多种便捷的方式来调用远程 REST 服务。
+如果你正在开发一个非阻塞的响应式应用程序，并且使用 Spring WebFlux，那么你可以使用 javadoc:org.springframework.web.reactive.function.client.WebClient[]。
+如果你更喜欢阻塞式 API，那么你可以使用 javadoc:org.springframework.web.client.RestClient[] 或 javadoc:org.springframework.web.client.RestTemplate[]。
+
+[[io.rest-client.webclient]]
+== WebClient
+如果你的类路径上有 Spring WebFlux，我们建议你使用 javadoc:org.springframework.web.reactive.function.client.WebClient[] 来调用远程 REST 服务。
+javadoc:org.springframework.web.reactive.function.client.WebClient[] 接口提供了函数式风格的 API，并且是完全响应式的。
+你可以在 Spring 框架文档的 {url-spring-framework-docs}/web/webflux-webclient.html[专门章节] 中了解更多关于 javadoc:org.springframework.web.reactive.function.client.WebClient[] 的信息。
+
+TIP: 如果你没有编写响应式的 Spring WebFlux 应用程序，你可以使用 xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient`] 来代替 javadoc:org.springframework.web.reactive.function.client.WebClient[]。
+它提供了类似的函数式 API，但是是阻塞式的而非响应式的。
+
+Spring Boot 会为你创建并预配置一个原型 javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[] bean。
+强烈建议将其注入到你的组件中，并使用它来创建 javadoc:org.springframework.web.reactive.function.client.WebClient[] 实例。
+Spring Boot 会配置该构建器以共享 HTTP 资源，并以与服务器相同的方式反映编解码器设置（参见 xref:web/reactive.adoc#web.reactive.webflux.httpcodecs[WebFlux HTTP 编解码器自动配置]），等等。
+
+以下代码展示了一个典型示例：
+
+include-code::MyService[]
+
+[[io.rest-client.webclient.runtime]]
+=== WebClient 运行时
+Spring Boot 会根据应用程序类路径上可用的库自动检测使用哪个 javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] 来驱动 javadoc:org.springframework.web.reactive.function.client.WebClient[]。
+按优先级顺序，支持以下客户端：
+
+1. Reactor Netty
+2. Jetty RS 客户端
+3. Apache HttpClient
+4. JDK HttpClient
+
+如果类路径上有多个客户端可用，则会使用优先级最高的客户端。
+
+默认情况下，`spring-boot-starter-webflux` starter 依赖于 `io.projectreactor.netty:reactor-netty`，它同时提供了服务器和客户端实现。
+如果你选择使用 Jetty 作为响应式服务器，则应添加对 Jetty 响应式 HTTP 客户端库 `org.eclipse.jetty:jetty-reactive-httpclient` 的依赖。
+在服务器和客户端使用相同的技术有其优势，因为它会自动在客户端和服务器之间共享 HTTP 资源。
+
+开发者可以通过提供自定义的 javadoc:org.springframework.http.client.ReactorResourceFactory[] 或 javadoc:org.springframework.http.client.reactive.JettyResourceFactory[] bean 来覆盖 Jetty 和 Reactor Netty 的资源配置——这将同时应用于客户端和服务器。
+
+如果你希望覆盖客户端的选择，可以定义自己的 javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] bean，并完全控制客户端配置。
+
+你可以在 Spring 框架参考文档中了解更多关于 {url-spring-framework-docs}/web/webflux-webclient/client-builder.html[`WebClient` 配置选项] 的信息。
+
+[[io.rest-client.webclient.customization]]
+=== WebClient 自定义
+根据你希望自定义的范围，有三种主要的方法可以对 javadoc:org.springframework.web.reactive.function.client.WebClient[] 进行自定义。
+
+为了使任何自定义的范围尽可能小，可以注入自动配置的 javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[]，然后根据需要调用其方法。
+javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[] 实例是有状态的：构建器上的任何更改都会反映在随后使用它创建的所有客户端中。
+如果你想使用同一个构建器创建多个客户端，还可以考虑使用 `WebClient.Builder other = builder.clone();` 克隆构建器。
+
+要对所有 javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[] 实例进行应用程序范围的附加自定义，可以声明 javadoc:org.springframework.boot.web.reactive.function.client.WebClientCustomizer[] bean，并在注入点本地更改 javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[]。
+
+最后，你可以回退到原始 API 并使用 `WebClient.create()`。
+在这种情况下，不会应用任何自动配置或 javadoc:org.springframework.boot.web.reactive.function.client.WebClientCustomizer[]。
+
+[[io.rest-client.webclient.ssl]]
+=== WebClient SSL 支持
+如果你需要对 javadoc:org.springframework.web.reactive.function.client.WebClient[] 使用的 javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] 进行自定义 SSL 配置，可以注入一个 javadoc:org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl[] 实例，并将其与构建器的 `apply` 方法一起使用。
+
+javadoc:org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl[] 接口提供了对你在 `application.properties` 或 `application.yaml` 文件中定义的任何 xref:features/ssl.adoc#features.ssl.bundles[SSL 包] 的访问权限。
+
+以下代码展示了一个典型示例：
+
+include-code::MyService[]
+
+[[io.rest-client.restclient]]
+== RestClient
+如果你的应用程序中没有使用 Spring WebFlux 或 Project Reactor，我们建议你使用 javadoc:org.springframework.web.client.RestClient[] 来调用远程 REST 服务。
+
+javadoc:org.springframework.web.client.RestClient[] 接口提供了函数式风格的阻塞式 API。
+
+Spring Boot 会为你创建并预配置一个原型 javadoc:org.springframework.web.client.RestClient$Builder[] bean。
+强烈建议将其注入到你的组件中，并使用它来创建 javadoc:org.springframework.web.client.RestClient[] 实例。
+Spring Boot 会使用 javadoc:org.springframework.boot.autoconfigure.http.HttpMessageConverters[] 和适当的 javadoc:org.springframework.http.client.ClientHttpRequestFactory[] 来配置该构建器。
+
+以下代码展示了一个典型示例：
+
+include-code::MyService[]
+
+[[io.rest-client.restclient.customization]]
+=== RestClient 自定义
+根据你希望自定义的范围，有三种主要的方法可以对 javadoc:org.springframework.web.client.RestClient[] 进行自定义。
+
+为了使任何自定义的范围尽可能小，可以注入自动配置的 javadoc:org.springframework.web.client.RestClient$Builder[]，然后根据需要调用其方法。
+javadoc:org.springframework.web.client.RestClient$Builder[] 实例是有状态的：构建器上的任何更改都会反映在随后使用它创建的所有客户端中。
+如果你想使用同一个构建器创建多个客户端，还可以考虑使用 `RestClient.Builder other = builder.clone();` 克隆构建器。
+
+要对所有 javadoc:org.springframework.web.client.RestClient$Builder[] 实例进行应用程序范围的附加自定义，可以声明 javadoc:org.springframework.boot.web.client.RestClientCustomizer[] bean，并在注入点本地更改 javadoc:org.springframework.web.client.RestClient$Builder[]。
+
+最后，你可以回退到原始 API 并使用 `RestClient.create()`。
+在这种情况下，不会应用任何自动配置或 javadoc:org.springframework.boot.web.client.RestClientCustomizer[]。
+
+TIP: 你还可以更改 xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[全局 HTTP 客户端配置]。
+
+[[io.rest-client.restclient.ssl]]
+=== RestClient SSL 支持
+如果你需要对 javadoc:org.springframework.web.client.RestClient[] 使用的 javadoc:org.springframework.http.client.ClientHttpRequestFactory[] 进行自定义 SSL 配置，可以注入一个 javadoc:org.springframework.boot.autoconfigure.web.client.RestClientSsl[] 实例，并将其与构建器的 `apply` 方法一起使用。
+
+javadoc:org.springframework.boot.autoconfigure.web.client.RestClientSsl[] 接口提供了对你在 `application.properties` 或 `application.yaml` 文件中定义的任何 xref:features/ssl.adoc#features.ssl.bundles[SSL 包] 的访问权限。
+
+以下代码展示了一个典型示例：
+
+include-code::MyService[]
+
+如果你需要除了 SSL 包之外的其他自定义，可以使用 javadoc:org.springframework.boot.http.client.ClientHttpRequestFactorySettings[] 类与 javadoc:org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder[]：
+
+include-code::settings/MyService[]
+
+[[io.rest-client.resttemplate]]
+== RestTemplate
+Spring 框架的 javadoc:org.springframework.web.client.RestTemplate[] 类早于 javadoc:org.springframework.web.client.RestClient[]，是许多应用程序用来调用远程 REST 服务的经典方式。
+当你有一些不想迁移到 javadoc:org.springframework.web.client.RestClient[] 的现有代码，或者因为你已经熟悉 javadoc:org.springframework.web.client.RestTemplate[] API 时，你可能会选择使用 javadoc:org.springframework.web.client.RestTemplate[]。
+
+由于 javadoc:org.springframework.web.client.RestTemplate[] 实例在使用前通常需要自定义，Spring Boot 没有提供任何单一的自动配置的 javadoc:org.springframework.web.client.RestTemplate[] bean。
+然而，它会自动配置一个 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[]，可以在需要时用来创建 javadoc:org.springframework.web.client.RestTemplate[] 实例。
+自动配置的 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] 确保将合理的 javadoc:org.springframework.boot.autoconfigure.http.HttpMessageConverters[] 和适当的 javadoc:org.springframework.http.client.ClientHttpRequestFactory[] 应用于 javadoc:org.springframework.web.client.RestTemplate[] 实例。
+
+以下代码展示了一个典型示例：
+
+include-code::MyService[]
+
+javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] 包含许多有用的方法，可以用来快速配置 javadoc:org.springframework.web.client.RestTemplate[]。
+例如，要添加 BASIC 认证支持，你可以使用 `builder.basicAuthentication("user", "password").build()`。
+
+[[io.rest-client.resttemplate.customization]]
+=== RestTemplate 自定义
+根据你希望自定义的范围，有三种主要的方法可以对 javadoc:org.springframework.web.client.RestTemplate[] 进行自定义。
+
+为了使任何自定义的范围尽可能小，可以注入自动配置的 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[]，然后根据需要调用其方法。
+每次方法调用都会返回一个新的 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] 实例，因此自定义仅影响此次构建器的使用。
+
+要进行应用程序范围的附加自定义，可以使用 javadoc:org.springframework.boot.web.client.RestTemplateCustomizer[] bean。
+所有此类 bean 都会自动注册到自动配置的 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] 中，并应用于使用它构建的任何模板。
+
+以下示例展示了一个自定义器，它为除 `192.168.0.5` 之外的所有主机配置了代理的使用：
+
+include-code::MyRestTemplateCustomizer[]
+
+最后，你可以定义自己的 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] bean。
+这样做将替换自动配置的构建器。
+如果你希望任何 javadoc:org.springframework.boot.web.client.RestTemplateCustomizer[] bean 应用于你的自定义构建器，就像自动配置所做的那样，可以使用 javadoc:org.springframework.boot.autoconfigure.web.client.RestTemplateBuilderConfigurer[] 进行配置。
+以下示例暴露了一个与 Spring Boot 自动配置相匹配的 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[]，只不过还指定了自定义的连接和读取超时：
+
+include-code::MyRestTemplateBuilderConfiguration[]
+
+最极端（且很少使用）的选项是在不使用配置器的情况下创建自己的 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] bean。
+除了替换自动配置的构建器外，这还会阻止任何 javadoc:org.springframework.boot.web.client.RestTemplateCustomizer[] bean 的使用。
+
+TIP: 你还可以更改 xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[全局 HTTP 客户端配置]。
+
+[[io.rest-client.resttemplate.ssl]]
+=== RestTemplate SSL 支持
+如果你需要对 javadoc:org.springframework.web.client.RestTemplate[] 进行自定义 SSL 配置，可以将 xref:features/ssl.adoc#features.ssl.bundles[SSL 包] 应用于 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[]，如下例所示：
+
+include-code::MyService[]
+
+[[io.rest-client.clienthttprequestfactory]]
+== RestClient 和 RestTemplate 的 HTTP 客户端检测
+Spring Boot 会根据应用程序类路径上可用的库自动检测与 javadoc:org.springframework.web.client.RestClient[] 和 javadoc:org.springframework.web.client.RestTemplate[] 一起使用的 HTTP 客户端。
+按优先级顺序，支持以下客户端：
+
+1. Apache HttpClient
+2. Jetty HttpClient
+3. Reactor Netty HttpClient
+4. JDK 客户端 (`java.net.http.HttpClient`)
+5. 简单的 JDK 客户端 (`java.net.HttpURLConnection`)
+
+如果类路径上有多个客户端可用，并且没有提供全局配置，则会使用优先级最高的客户端。
+
+[[io.rest-client.clienthttprequestfactory.configuration]]
+=== 全局 HTTP 客户端配置
+如果自动检测到的 HTTP 客户端不符合你的需求，你可以使用 configprop:spring.http.client.factory[] 属性来选择特定的工厂。
+例如，如果你的类路径上有 Apache HttpClient，但你更喜欢 Jetty 的 javadoc:org.eclipse.jetty.client.HttpClient[]，你可以添加以下内容：
+
+[configprops,yaml]
+----
+spring:
+  http:
+    client:
+      factory: jetty
+----
+
+你还可以设置属性来更改将应用于所有客户端的默认值。
+例如，你可能希望更改超时和是否遵循重定向：
+
+[configprops,yaml]
+----
+spring:
+  http:
+    client:
+      connect-timeout: 2s
+      read-timeout: 1s
+      redirects: dont-follow
+----
+
+对于更复杂的自定义，你可以声明自己的 javadoc:org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder[] bean，这将导致自动配置回退。
+当你需要自定义底层 HTTP 库的某些内部结构时，这可能很有用。
+
+例如，以下代码将使用配置了特定 javadoc:java.net.ProxySelector[] 的 JDK 客户端：
+
+include-code::MyClientHttpConfiguration[]
+
+'''
+[[io.rest-client]]
+== Calling REST Services
 Spring Boot provides various convenient ways to call remote REST services.
 If you are developing a non-blocking reactive application and you're using Spring WebFlux, then you can use javadoc:org.springframework.web.reactive.function.client.WebClient[].
 If you prefer blocking APIs then you can use javadoc:org.springframework.web.client.RestClient[] or javadoc:org.springframework.web.client.RestTemplate[].
 
-
-
 [[io.rest-client.webclient]]
 == WebClient
-
 If you have Spring WebFlux on your classpath we recommend that you use javadoc:org.springframework.web.reactive.function.client.WebClient[] to call remote REST services.
 The javadoc:org.springframework.web.reactive.function.client.WebClient[] interface provides a functional style API and is fully reactive.
 You can learn more about the javadoc:org.springframework.web.reactive.function.client.WebClient[] in the dedicated {url-spring-framework-docs}/web/webflux-webclient.html[section in the Spring Framework docs].
@@ -25,11 +231,8 @@ The following code shows a typical example:
 
 include-code::MyService[]
 
-
-
 [[io.rest-client.webclient.runtime]]
 === WebClient Runtime
-
 Spring Boot will auto-detect which javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] to use to drive javadoc:org.springframework.web.reactive.function.client.WebClient[] depending on the libraries available on the application classpath.
 In order of preference, the following clients are supported:
 
@@ -50,11 +253,8 @@ If you wish to override that choice for the client, you can define your own java
 
 You can learn more about the {url-spring-framework-docs}/web/webflux-webclient/client-builder.html[`WebClient` configuration options in the Spring Framework reference documentation].
 
-
-
 [[io.rest-client.webclient.customization]]
 === WebClient Customization
-
 There are three main approaches to javadoc:org.springframework.web.reactive.function.client.WebClient[] customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured javadoc:org.springframework.web.reactive.function.client.WebClient$Builder[] and then call its methods as required.
@@ -66,11 +266,8 @@ To make an application-wide, additive customization to all javadoc:org.springfra
 Finally, you can fall back to the original API and use `WebClient.create()`.
 In that case, no auto-configuration or javadoc:org.springframework.boot.web.reactive.function.client.WebClientCustomizer[] is applied.
 
-
-
 [[io.rest-client.webclient.ssl]]
 === WebClient SSL Support
-
 If you need custom SSL configuration on the javadoc:org.springframework.http.client.reactive.ClientHttpConnector[] used by the javadoc:org.springframework.web.reactive.function.client.WebClient[], you can inject a javadoc:org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl[] instance that can be used with the builder's `apply` method.
 
 The javadoc:org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl[] interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
@@ -79,11 +276,8 @@ The following code shows a typical example:
 
 include-code::MyService[]
 
-
-
 [[io.rest-client.restclient]]
 == RestClient
-
 If you are not using Spring WebFlux or Project Reactor in your application we recommend that you use javadoc:org.springframework.web.client.RestClient[] to call remote REST services.
 
 The javadoc:org.springframework.web.client.RestClient[] interface provides a functional style blocking API.
@@ -96,11 +290,8 @@ The following code shows a typical example:
 
 include-code::MyService[]
 
-
-
 [[io.rest-client.restclient.customization]]
 === RestClient Customization
-
 There are three main approaches to javadoc:org.springframework.web.client.RestClient[] customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured javadoc:org.springframework.web.client.RestClient$Builder[] and then call its methods as required.
@@ -114,11 +305,8 @@ In that case, no auto-configuration or javadoc:org.springframework.boot.web.clie
 
 TIP: You can also change the xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[global HTTP client configuration].
 
-
-
 [[io.rest-client.restclient.ssl]]
 === RestClient SSL Support
-
 If you need custom SSL configuration on the javadoc:org.springframework.http.client.ClientHttpRequestFactory[] used by the javadoc:org.springframework.web.client.RestClient[], you can inject a javadoc:org.springframework.boot.autoconfigure.web.client.RestClientSsl[] instance that can be used with the builder's `apply` method.
 
 The javadoc:org.springframework.boot.autoconfigure.web.client.RestClientSsl[] interface provides access to any xref:features/ssl.adoc#features.ssl.bundles[SSL bundles] that you have defined in your `application.properties` or `application.yaml` file.
@@ -131,11 +319,8 @@ If you need to apply other customization in addition to an SSL bundle, you can u
 
 include-code::settings/MyService[]
 
-
-
 [[io.rest-client.resttemplate]]
 == RestTemplate
-
 Spring Framework's javadoc:org.springframework.web.client.RestTemplate[] class predates javadoc:org.springframework.web.client.RestClient[] and is the classic way that many applications use to call remote REST services.
 You might choose to use javadoc:org.springframework.web.client.RestTemplate[] when you have existing code that you don't want to migrate to javadoc:org.springframework.web.client.RestClient[], or because you're already familiar with the javadoc:org.springframework.web.client.RestTemplate[] API.
 
@@ -150,11 +335,8 @@ include-code::MyService[]
 javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] includes a number of useful methods that can be used to quickly configure a javadoc:org.springframework.web.client.RestTemplate[].
 For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
 
-
-
 [[io.rest-client.resttemplate.customization]]
 === RestTemplate Customization
-
 There are three main approaches to javadoc:org.springframework.web.client.RestTemplate[] customization, depending on how broadly you want the customizations to apply.
 
 To make the scope of any customizations as narrow as possible, inject the auto-configured javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] and then call its methods as required.
@@ -179,20 +361,14 @@ In addition to replacing the auto-configured builder, this also prevents any jav
 
 TIP: You can also change the xref:io/rest-client.adoc#io.rest-client.clienthttprequestfactory.configuration[global HTTP client configuration].
 
-
-
 [[io.rest-client.resttemplate.ssl]]
 === RestTemplate SSL Support
-
 If you need custom SSL configuration on the javadoc:org.springframework.web.client.RestTemplate[], you can apply an xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] to the javadoc:org.springframework.boot.web.client.RestTemplateBuilder[] as shown in this example:
 
 include-code::MyService[]
 
-
-
 [[io.rest-client.clienthttprequestfactory]]
 == HTTP Client Detection for RestClient and RestTemplate
-
 Spring Boot will auto-detect which HTTP client to use with javadoc:org.springframework.web.client.RestClient[] and javadoc:org.springframework.web.client.RestTemplate[] depending on the libraries available on the application classpath.
 In order of preference, the following clients are supported:
 
@@ -204,11 +380,8 @@ In order of preference, the following clients are supported:
 
 If multiple clients are available on the classpath, and not global configuration is provided, the most preferred client will be used.
 
-
-
 [[io.rest-client.clienthttprequestfactory.configuration]]
 === Global HTTP Client Configuration
-
 If the auto-detected HTTP client does not meet your needs, you can use the configprop:spring.http.client.factory[] property to pick a specific factory.
 For example, if you have Apache HttpClient on your classpath, but you prefer Jetty's javadoc:org.eclipse.jetty.client.HttpClient[] you can add the following:
 
@@ -239,4 +412,3 @@ This can be useful when you need to customize some of the internals of the under
 For example, the following will use a JDK client configured with a specific javadoc:java.net.ProxySelector[]:
 
 include-code::MyClientHttpConfiguration[]
-

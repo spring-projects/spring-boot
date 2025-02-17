@@ -1,31 +1,418 @@
-[[packaging-executable]]
 = Packaging Executable Archives
+:encoding: utf-8
+:numbered:
 
+[[packaging-executable]]
+== 打包可执行归档文件
+
+该插件可以创建包含应用程序所有依赖项的可执行归档文件（jar 文件和 war 文件），然后可以使用 `java -jar` 运行。
+
+[[packaging-executable.jars]]
+== 打包可执行 Jars
+
+可以使用 `bootJar` 任务构建可执行 jar。当应用 `java` 插件时，该任务会自动创建，并且是 xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`] 的实例。`assemble` 任务会自动配置为依赖于 `bootJar` 任务，因此运行 `assemble`（或 `build`）也会运行 `bootJar` 任务。
+
+[[packaging-executable.wars]]
+== 打包可执行 Wars
+
+可以使用 `bootWar` 任务构建可执行 war。当应用 `war` 插件时，该任务会自动创建，并且是 {apiref-gradle-plugin-boot-war}[`BootWar`] 的实例。`assemble` 任务会自动配置为依赖于 `bootWar` 任务，因此运行 `assemble`（或 `build`）也会运行 `bootWar` 任务。
+
+[[packaging-executable.wars.deployable]]
+=== 打包可执行和可部署的 Wars
+
+可以打包 war 文件，使其可以使用 `java -jar` 执行并部署到外部容器。为此，应将嵌入式 servlet 容器依赖项添加到 `providedRuntime` 配置中，例如：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/war-container-dependency.gradle[tags=dependencies]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/war-container-dependency.gradle.kts[tags=dependencies]
+----
+======
+
+这确保它们被打包到 war 文件的 `WEB-INF/lib-provided` 目录中，从而不会与外部容器自己的类冲突。
+
+NOTE: `providedRuntime` 优先于 Gradle 的 `compileOnly` 配置，因为 `compileOnly` 依赖项不在测试类路径上，因此任何基于 Web 的集成测试都会失败。
+
+[[packaging-executable.and-plain-archives]]
+== 打包可执行和普通归档文件
+
+默认情况下，当配置 `bootJar` 或 `bootWar` 任务时，`jar` 或 `war` 任务配置为使用 `plain` 作为其归档分类器的约定。这确保 `bootJar` 和 `jar` 或 `bootWar` 和 `war` 具有不同的输出位置，从而允许同时构建可执行归档文件和普通归档文件。
+
+如果你希望可执行归档文件而不是普通归档文件使用分类器，请按以下示例为 `jar` 和 `bootJar` 任务配置分类器：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-and-jar-classifiers.gradle[tags=classifiers]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-and-jar-classifiers.gradle.kts[tags=classifiers]
+----
+======
+
+或者，如果你希望根本不构建普通归档文件，请禁用其任务，如下例所示，针对 `jar` 任务：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/only-boot-jar.gradle[tags=disable-jar]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/only-boot-jar.gradle.kts[tags=disable-jar]
+----
+======
+
+WARNING: 在创建原生镜像时不要禁用 `jar` 任务。有关详细信息，请参阅 https://github.com/spring-projects/spring-boot/issues/33238[#33238]。
+
+[[packaging-executable.configuring]]
+== 配置可执行归档文件打包
+
+xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`] 和 {apiref-gradle-plugin-boot-war}[`BootWar`] 任务分别是 Gradle 的 `Jar` 和 `War` 任务的子类。因此，打包 jar 或 war 时可用的所有标准配置选项在打包可执行 jar 或 war 时也可用。还提供了许多特定于可执行 jar 和 war 的配置选项。
+
+[[packaging-executable.configuring.main-class]]
+=== 配置主类
+
+默认情况下，可执行归档文件的主类将通过在主源集的输出中查找具有 `public static void main(String[])` 方法的类来自动配置。
+
+也可以使用任务的 `mainClass` 属性显式配置主类：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-main-class.gradle[tags=main-class]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-main-class.gradle.kts[tags=main-class]
+----
+======
+
+或者，可以使用 Spring Boot DSL 的 `mainClass` 属性在项目范围内配置主类名称：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/spring-boot-dsl-main-class.gradle.kts[tags=main-class]
+----
+======
+
+如果应用了 {url-gradle-docs-application-plugin}[`application` 插件]，则必须配置其 `mainClass` 属性，并且可以用于相同目的：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/application-plugin-main-class.gradle[tags=main-class]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/application-plugin-main-class.gradle.kts[tags=main-class]
+----
+======
+
+最后，可以在任务的清单上配置 `Start-Class` 属性：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-manifest-main-class.gradle[tags=main-class]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-class]
+----
+======
+
+NOTE: 如果主类是用 Kotlin 编写的，则应使用生成的 Java 类的名称。默认情况下，这是 Kotlin 类的名称，并添加了 `Kt` 后缀。例如，`ExampleApplication` 变为 `ExampleApplicationKt`。如果使用 `@JvmName` 定义了另一个名称，则应使用该名称。
+
+[[packaging-executable.configuring.including-development-only-dependencies]]
+=== 包含仅用于开发的依赖项
+
+默认情况下，`developmentOnly` 配置中声明的所有依赖项都将从可执行 jar 或 war 中排除。
+
+如果你想在归档中包含 `developmentOnly` 配置中声明的依赖项，请配置其任务的类路径以包含该配置，如下例所示，针对 `bootWar` 任务：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-war-include-devtools.gradle[tags=include-devtools]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-war-include-devtools.gradle.kts[tags=include-devtools]
+----
+======
+
+[[packaging-executable.configuring.unpacking]]
+=== 配置需要解压的库
+
+大多数库在嵌套在可执行归档文件中时可以直接使用，但某些库可能会出现问题。例如，JRuby 包含其自己的嵌套 jar 支持，假设 `jruby-complete.jar` 始终可以直接在文件系统上使用。
+
+为了处理任何有问题的库，可以配置可执行归档文件在运行时将特定的嵌套 jar 解压到临时目录。可以使用 Ant 风格的模式来识别需要解压的库，这些模式与源 jar 文件的绝对路径匹配：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-requires-unpack.gradle[tags=requires-unpack]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unpack]
+----
+======
+
+为了更精细的控制，也可以使用闭包。闭包传递一个 `FileTreeElement`，并应返回一个 `boolean`，指示是否需要解压。
+
+[[packaging-executable.configuring.launch-script]]
+=== 使归档文件完全可执行
+
+Spring Boot 提供了对完全可执行归档文件的支持。通过前置一个知道如何启动应用程序的 shell 脚本来使归档文件完全可执行。在类 Unix 平台上，此启动脚本允许归档文件像任何其他可执行文件一样直接运行，或作为服务安装。
+
+NOTE: 目前，某些工具不接受此格式，因此你可能无法始终使用此技术。例如，`jar -xf` 可能会静默地无法提取已完全可执行的 jar 或 war。建议仅在打算直接执行它时启用此选项，而不是使用 `java -jar` 运行它或将其部署到 servlet 容器。
+
+要使用此功能，必须启用启动脚本的包含：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-include-launch-script.gradle[tags=include-launch-script]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-include-launch-script.gradle.kts[tags=include-launch-script]
+----
+======
+
+这将向归档文件中添加 Spring Boot 的默认启动脚本。默认启动脚本包含多个具有合理默认值的属性。可以使用 `properties` 属性自定义这些值：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-launch-script-properties.gradle[tags=launch-script-properties]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-launch-script-properties.gradle.kts[tags=launch-script-properties]
+----
+======
+
+如果默认启动脚本不符合你的需求，可以使用 `script` 属性提供自定义启动脚本：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-custom-launch-script.gradle[tags=custom-launch-script]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-launch-script]
+----
+======
+
+[[packaging-executable.configuring.properties-launcher]]
+=== 使用 PropertiesLauncher
+
+要使用 `PropertiesLauncher` 启动可执行 jar 或 war，请配置任务的清单以设置 `Main-Class` 属性：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-war-properties-launcher.gradle[tags=properties-launcher]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-war-properties-launcher.gradle.kts[tags=properties-launcher]
+----
+======
+
+[[packaging-executable.configuring.layered-archives]]
+=== 打包分层 Jar 或 War
+
+默认情况下，`bootJar` 任务构建的归档文件包含应用程序的类和依赖项，分别位于 `BOOT-INF/classes` 和 `BOOT-INF/lib` 中。类似地，`bootWar` 构建的归档文件包含应用程序的类在 `WEB-INF/classes` 中，依赖项在 `WEB-INF/lib` 和 `WEB-INF/lib-provided` 中。对于需要从 jar 内容构建 docker 镜像的情况，能够进一步分离这些目录以便将它们写入不同的层是很有用的。
+
+分层 jar 使用与常规 boot 打包 jar 相同的布局，但包含一个额外的元数据文件，用于描述每个层。
+
+默认情况下，定义了以下层：
+
+* `dependencies` 用于版本不包含 `SNAPSHOT` 的任何非项目依赖项。
+* `spring-boot-loader` 用于 jar 加载器类。
+* `snapshot-dependencies` 用于版本包含 `SNAPSHOT` 的任何非项目依赖项。
+* `application` 用于项目依赖项、应用程序类和资源。
+
+层的顺序很重要，因为它决定了当应用程序的一部分发生变化时，前一层被缓存的可能性。默认顺序是 `dependencies`、`spring-boot-loader`、`snapshot-dependencies`、`application`。最不可能更改的内容应首先添加，然后是更可能更改的层。
+
+要禁用此功能，可以按以下方式操作：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-layered-disabled.gradle[tags=layered]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
+----
+======
+
+当创建分层 jar 或 war 时，`spring-boot-jarmode-tools` jar 将作为依赖项添加到你的归档文件中。通过将此 jar 放在类路径上，你可以以特殊模式启动应用程序，该模式允许引导代码运行与应用程序完全不同的内容，例如提取层的内容。如果你希望排除此依赖项，可以按以下方式操作：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-layered-exclude-tools.gradle[tags=layered]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layered]
+----
+======
+
+[[packaging-executable.configuring.layered-archives.configuration]]
+==== 自定义层配置
+
+根据你的应用程序，你可能希望调整层的创建方式并添加新的层。
+
+这可以通过描述如何将 jar 或 war 分离为层以及这些层的顺序的配置来完成。以下示例显示了如何显式定义上述默认顺序：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-layered-custom.gradle[tags=layered]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$packaging/boot-jar-layered-custom.gradle.kts[tags=layered]
+----
+======
+
+`layered` DSL 使用三部分定义：
+
+* `application` 闭包定义应用程序类和资源应如何分层。
+* `dependencies` 闭包定义依赖项应如何分层。
+* `layerOrder` 方法定义层的写入顺序。
+
+`application` 和 `dependencies` 部分中的嵌套 `intoLayer` 闭包用于为层声明内容。这些闭包按定义的顺序从上到下进行评估。任何未被早期 `intoLayer` 闭包声明的内容仍然可供后续闭包考虑。
+
+`intoLayer` 闭包使用嵌套的 `include` 和 `exclude` 调用来声明内容。`application` 闭包使用 Ant 风格的路径匹配进行包含/排除参数。`dependencies` 部分使用 `group:artifact[:version]` 模式。它还提供了 `includeProjectDependencies()` 和 `excludeProjectDependencies()` 方法，可用于包含或排除项目依赖项。
+
+如果未进行 `include` 调用，则所有内容（未被早期闭包声明的内容）都被考虑。
+
+如果未进行 `exclude` 调用，则不应用任何排除。
+
+查看上面示例中的 `dependencies` 闭包，我们可以看到第一个 `intoLayer` 将为 `application` 层声明所有项目依赖项。下一个 `intoLayer` 将为 `snapshot-dependencies` 层声明所有 SNAPSHOT 依赖项。第三个也是最后一个 `intoLayer` 将为 `dependencies` 层声明剩余的任何内容（在这种情况下，任何不是项目依赖项或 SNAPSHOT 的依赖项）。
+
+`application` 闭包有类似的规则。首先为 `spring-boot-loader` 层声明 `org/springframework/boot/loader/**` 内容。然后为 `application` 层声明任何剩余的类和资源。
+
+NOTE: `intoLayer` 闭包的添加顺序通常与层的写入顺序不同。因此，必须始终调用 `layerOrder` 方法，并且 _必须_ 涵盖 `intoLayer` 调用引用的所有层。
+
+'''
+[[packaging-executable]]
+== Packaging Executable Archives
 The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
-
-
 
 [[packaging-executable.jars]]
 == Packaging Executable Jars
-
 Executable jars can be built using the `bootJar` task.
 The task is automatically created when the `java` plugin is applied and is an instance of xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`].
 The `assemble` task is automatically configured to depend upon the `bootJar` task so running `assemble` (or `build`) will also run the `bootJar` task.
 
-
-
 [[packaging-executable.wars]]
 == Packaging Executable Wars
-
 Executable wars can be built using the `bootWar` task.
 The task is automatically created when the `war` plugin is applied and is an instance of {apiref-gradle-plugin-boot-war}[`BootWar`].
 The `assemble` task is automatically configured to depend upon the `bootWar` task so running `assemble` (or `build`) will also run the `bootWar` task.
 
-
-
 [[packaging-executable.wars.deployable]]
 === Packaging Executable and Deployable Wars
-
 A war file can be packaged such that it can be executed using `java -jar` and deployed to an external container.
 To do so, the embedded servlet container dependencies should be added to the `providedRuntime` configuration, for example:
 
@@ -49,11 +436,8 @@ This ensures that they are package in the war file's `WEB-INF/lib-provided` dire
 
 NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other limitations, `compileOnly` dependencies are not on the test classpath so any web-based integration tests will fail.
 
-
-
 [[packaging-executable.and-plain-archives]]
 == Packaging Executable and Plain Archives
-
 By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are configured to use `plain` as the convention for their archive classifier.
 This ensures that `bootJar` and `jar` or `bootWar` and `war` have different output locations, allowing both the executable archive and the plain archive to be built at the same time.
 
@@ -96,20 +480,14 @@ include::example$packaging/only-boot-jar.gradle.kts[tags=disable-jar]
 WARNING: Do not disable the `jar` task when creating native images.
 See https://github.com/spring-projects/spring-boot/issues/33238[#33238] for details.
 
-
-
 [[packaging-executable.configuring]]
 == Configuring Executable Archive Packaging
-
 The xref:api/java/org/springframework/boot/gradle/tasks/bundling/BootJar.html[`BootJar`] and {apiref-gradle-plugin-boot-war}[`BootWar`] tasks are subclasses of Gradle's `Jar` and `War` tasks respectively.
 As a result, all of the standard configuration options that are available when packaging a jar or war are also available when packaging an executable jar or war.
 A number of configuration options that are specific to executable jars and wars are also provided.
 
-
-
 [[packaging-executable.configuring.main-class]]
 === Configuring the Main Class
-
 By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in the main source set's output.
 
 The main class can also be configured explicitly using the task's `mainClass` property:
@@ -189,11 +567,8 @@ By default, this is the name of the Kotlin class with the `Kt` suffix added.
 For example, `ExampleApplication` becomes `ExampleApplicationKt`.
 If another name is defined using `@JvmName` then that name should be used.
 
-
-
 [[packaging-executable.configuring.including-development-only-dependencies]]
 === Including Development-only Dependencies
-
 By default all dependencies declared in the `developmentOnly` configuration will be excluded from an executable jar or war.
 
 If you want to include dependencies declared in the `developmentOnly` configuration in your archive, configure the classpath of its task to include the configuration, as shown in the following example for the `bootWar` task:
@@ -214,11 +589,8 @@ include::example$packaging/boot-war-include-devtools.gradle.kts[tags=include-dev
 ----
 ======
 
-
-
 [[packaging-executable.configuring.unpacking]]
 === Configuring Libraries that Require Unpacking
-
 Most libraries can be used directly when nested in an executable archive, however certain libraries can have problems.
 For example, JRuby includes its own nested jar support which assumes that `jruby-complete.jar` is always directly available on the file system.
 
@@ -244,11 +616,8 @@ include::example$packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unp
 For more control a closure can also be used.
 The closure is passed a `FileTreeElement` and should return a `boolean` indicating whether or not unpacking is required.
 
-
-
 [[packaging-executable.configuring.launch-script]]
 === Making an Archive Fully Executable
-
 Spring Boot provides support for fully executable archives.
 An archive is made fully executable by prepending a shell script that knows how to launch the application.
 On Unix-like platforms, this launch script allows the archive to be run directly like any other executable or to be installed as a service.
@@ -313,11 +682,8 @@ include::example$packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-
 ----
 ======
 
-
-
 [[packaging-executable.configuring.properties-launcher]]
 === Using the PropertiesLauncher
-
 To use the `PropertiesLauncher` to launch an executable jar or war, configure the task's manifest to set the `Main-Class` attribute:
 
 [tabs]
@@ -336,11 +702,8 @@ include::example$packaging/boot-war-properties-launcher.gradle.kts[tags=properti
 ----
 ======
 
-
-
 [[packaging-executable.configuring.layered-archives]]
 === Packaging Layered Jar or War
-
 By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
 Similarly, `bootWar` builds an archive that contains the application's classes in `WEB-INF/classes` and dependencies in `WEB-INF/lib` and `WEB-INF/lib-provided`.
 For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
@@ -396,11 +759,8 @@ include::example$packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layere
 ----
 ======
 
-
-
 [[packaging-executable.configuring.layered-archives.configuration]]
 ==== Custom Layers Configuration
-
 Depending on your application, you may want to tune how layers are created and add new ones.
 
 This can be done using configuration that describes how the jar or war can be separated into layers, and the order of those layers.

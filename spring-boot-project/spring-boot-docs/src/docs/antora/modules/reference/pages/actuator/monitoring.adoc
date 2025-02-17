@@ -1,6 +1,139 @@
-[[actuator.monitoring]]
-= Monitoring and Management Over HTTP
+= 通过 HTTP 进行监控和管理
+:encoding: utf-8
+:numbered:
 
+[[actuator.monitoring]]
+== 通过 HTTP 进行监控和管理
+如果你正在开发一个 Web 应用程序，Spring Boot Actuator 会自动配置所有已启用的端点，以便通过 HTTP 暴露。默认的约定是使用端点的 `id` 并以 `/actuator` 作为 URL 路径的前缀。例如，`health` 端点暴露为 `/actuator/health`。
+
+TIP: Actuator 原生支持 Spring MVC、Spring WebFlux 和 Jersey。如果 Jersey 和 Spring MVC 都可用，则使用 Spring MVC。
+
+NOTE: 为了获得 xref:api:rest/actuator/index.adoc[API 文档] 中记录的正确的 JSON 响应，Jackson 是一个必需的依赖项。
+
+[[actuator.monitoring.customizing-management-server-context-path]]
+== 自定义管理端点的路径
+有时，自定义管理端点的前缀是有用的。例如，你的应用程序可能已经将 `/actuator` 用于其他目的。你可以使用 configprop:management.endpoints.web.base-path[] 属性来更改管理端点的前缀，如下例所示：
+
+[configprops,yaml]
+----
+management:
+  endpoints:
+    web:
+      base-path: "/manage"
+----
+
+前面的 `application.properties` 示例将端点从 `/actuator/\{id}` 更改为 `/manage/\{id}`（例如，`/manage/info`）。
+
+NOTE: 除非管理端口已配置为 xref:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[使用不同的 HTTP 端口暴露端点]，否则 `management.endpoints.web.base-path` 是相对于 `server.servlet.context-path`（对于 servlet Web 应用程序）或 `spring.webflux.base-path`（对于反应式 Web 应用程序）的。如果配置了 `management.server.port`，则 `management.endpoints.web.base-path` 是相对于 `management.server.base-path` 的。
+
+如果你希望将端点映射到不同的路径，可以使用 configprop:management.endpoints.web.path-mapping[] 属性。
+
+以下示例将 `/actuator/health` 重新映射到 `/healthcheck`：
+
+[configprops,yaml]
+----
+management:
+  endpoints:
+    web:
+      base-path: "/"
+      path-mapping:
+        health: "healthcheck"
+----
+
+[[actuator.monitoring.customizing-management-server-port]]
+== 自定义管理服务器端口
+对于基于云的部署，使用默认的 HTTP 端口暴露管理端点是一个合理的选择。然而，如果你的应用程序运行在你自己的数据中心内，你可能更愿意使用不同的 HTTP 端口暴露端点。
+
+你可以设置 configprop:management.server.port[] 属性来更改 HTTP 端口，如下例所示：
+
+[configprops,yaml]
+----
+management:
+  server:
+    port: 8081
+----
+
+NOTE: 在 Cloud Foundry 上，默认情况下，应用程序仅在端口 8080 上接收 HTTP 和 TCP 路由的请求。如果你希望在 Cloud Foundry 上使用自定义的管理端口，你需要显式设置应用程序的路由以将流量转发到自定义端口。
+
+[[actuator.monitoring.management-specific-ssl]]
+== 配置管理特定的 SSL
+当配置为使用自定义端口时，你还可以使用各种 `management.server.ssl.*` 属性为管理服务器配置自己的 SSL。例如，这样做可以让管理服务器通过 HTTP 可用，而主应用程序使用 HTTPS，如下面的属性设置所示：
+
+[configprops,yaml]
+----
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: "classpath:store.jks"
+    key-password: "secret"
+management:
+  server:
+    port: 8080
+    ssl:
+      enabled: false
+----
+
+或者，主服务器和管理服务器都可以使用 SSL，但使用不同的密钥库，如下所示：
+
+[configprops,yaml]
+----
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: "classpath:main.jks"
+    key-password: "secret"
+management:
+  server:
+    port: 8080
+    ssl:
+      enabled: true
+      key-store: "classpath:management.jks"
+      key-password: "secret"
+----
+
+[[actuator.monitoring.customizing-management-server-address]]
+== 自定义管理服务器地址
+你可以通过设置 configprop:management.server.address[] 属性来自定义管理端点可用的地址。如果你只想监听内部或面向运维的网络，或者只监听来自 `localhost` 的连接，这将非常有用。
+
+NOTE: 只有当端口与主服务器端口不同时，你才能监听不同的地址。
+
+以下示例 `application.properties` 不允许远程管理连接：
+
+[configprops,yaml]
+----
+management:
+  server:
+    port: 8081
+    address: "127.0.0.1"
+----
+
+[[actuator.monitoring.disabling-http-endpoints]]
+== 禁用 HTTP 端点
+如果你不想通过 HTTP 暴露端点，可以将管理端口设置为 `-1`，如下例所示：
+
+[configprops,yaml]
+----
+management:
+  server:
+    port: -1
+----
+
+你也可以通过使用 configprop:management.endpoints.web.exposure.exclude[] 属性来实现这一点，如下例所示：
+
+[configprops,yaml]
+----
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: "*"
+----
+
+'''
+[[actuator.monitoring]]
+== Monitoring and Management Over HTTP
 If you are developing a web application, Spring Boot Actuator auto-configures all enabled endpoints to be exposed over HTTP.
 The default convention is to use the `id` of the endpoint with a prefix of `/actuator` as the URL path.
 For example, `health` is exposed as `/actuator/health`.
@@ -10,11 +143,8 @@ If both Jersey and Spring MVC are available, Spring MVC is used.
 
 NOTE: Jackson is a required dependency in order to get the correct JSON responses as documented in the xref:api:rest/actuator/index.adoc[API documentation].
 
-
-
 [[actuator.monitoring.customizing-management-server-context-path]]
 == Customizing the Management Endpoint Paths
-
 Sometimes, it is useful to customize the prefix for the management endpoints.
 For example, your application might already use `/actuator` for another purpose.
 You can use the configprop:management.endpoints.web.base-path[] property to change the prefix for your management endpoint, as the following example shows:
@@ -46,11 +176,8 @@ management:
         health: "healthcheck"
 ----
 
-
-
 [[actuator.monitoring.customizing-management-server-port]]
 == Customizing the Management Server Port
-
 Exposing management endpoints by using the default HTTP port is a sensible choice for cloud-based deployments.
 If, however, your application runs inside your own data center, you may prefer to expose endpoints by using a different HTTP port.
 
@@ -66,11 +193,8 @@ management:
 NOTE: On Cloud Foundry, by default, applications receive requests only on port 8080 for both HTTP and TCP routing.
 If you want to use a custom management port on Cloud Foundry, you need to explicitly set up the application's routes to forward traffic to the custom port.
 
-
-
 [[actuator.monitoring.management-specific-ssl]]
 == Configuring Management-specific SSL
-
 When configured to use a custom port, you can also configure the management server with its own SSL by using the various `management.server.ssl.*` properties.
 For example, doing so lets a management server be available over HTTP while the main application uses HTTPS, as the following property settings show:
 
@@ -108,11 +232,8 @@ management:
       key-password: "secret"
 ----
 
-
-
 [[actuator.monitoring.customizing-management-server-address]]
 == Customizing the Management Server Address
-
 You can customize the address on which the management endpoints are available by setting the configprop:management.server.address[] property.
 Doing so can be useful if you want to listen only on an internal or ops-facing network or to listen only for connections from `localhost`.
 
@@ -128,11 +249,8 @@ management:
     address: "127.0.0.1"
 ----
 
-
-
 [[actuator.monitoring.disabling-http-endpoints]]
 == Disabling HTTP Endpoints
-
 If you do not want to expose endpoints over HTTP, you can set the management port to `-1`, as the following example shows:
 
 [configprops,yaml]

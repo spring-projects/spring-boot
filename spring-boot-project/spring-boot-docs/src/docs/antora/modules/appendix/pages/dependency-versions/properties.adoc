@@ -1,6 +1,17 @@
-[[appendix.dependency-versions.properties]]
 = Version Properties
+:encoding: utf-8
+:numbered:
 
+[[appendix.dependency-versions.properties]]
+== 版本属性
+
+下表提供了可用于覆盖 Spring Boot 管理的版本的所有属性。浏览 {code-spring-boot}/spring-boot-project/spring-boot-dependencies/build.gradle[`spring-boot-dependencies` build.gradle] 以获取完整的依赖项列表。你可以在 xref:build-tool-plugin:index.adoc[] 文档中了解如何在应用程序中自定义这些版本。
+
+include::partial$dependency-versions/documented-properties.adoc[]
+
+'''
+[[appendix.dependency-versions.properties]]
+== Version Properties
 The following table provides all properties that can be used to override the versions managed by Spring Boot.
 Browse the {code-spring-boot}/spring-boot-project/spring-boot-dependencies/build.gradle[`spring-boot-dependencies` build.gradle] for a complete list of dependencies.
 You can learn how to customize these versions in your application in the xref:build-tool-plugin:index.adoc[] documentation.

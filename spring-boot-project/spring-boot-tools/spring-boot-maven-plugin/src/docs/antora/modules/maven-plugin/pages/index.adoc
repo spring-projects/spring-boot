@@ -1,6 +1,19 @@
-[[maven-plugin]]
-= Maven Plugin
+= Maven 插件
+:encoding: utf-8
+:numbered:
 
+[[maven-plugin]]
+== Maven 插件
+
+Spring Boot Maven 插件在 https://maven.org[Apache Maven] 中提供了 Spring Boot 支持。它允许你打包可执行的 jar 或 war 归档文件，运行 Spring Boot 应用程序，生成构建信息，并在运行集成测试之前启动你的 Spring Boot 应用程序。
+
+要使用它，你必须使用 Maven 3.6.3 或更高版本。
+
+除了本用户指南外，还可以参考 xref:api/java/index.html[API 文档]。
+
+'''
+[[maven-plugin]]
+== Maven Plugin
 The Spring Boot Maven Plugin provides Spring Boot support in https://maven.org[Apache Maven].
 It allows you to package executable jar or war archives, run Spring Boot applications, generate build information and start your Spring Boot application prior to running integration tests.
 

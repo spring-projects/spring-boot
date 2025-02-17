@@ -1,6 +1,17 @@
-[[io]]
-= IO
+= 输入输出（IO）
+:encoding: utf-8
+:numbered:
 
+[[io]]
+== 输入输出（IO）
+大多数应用程序在某些时候都需要处理输入和输出的问题。
+Spring Boot 提供了多种技术的工具和集成，以帮助你在需要 IO 功能时更轻松地实现。
+本节涵盖了标准的 IO 功能，例如缓存和验证，以及更高级的主题，例如调度和分布式事务。
+我们还将介绍如何调用远程 REST 或 SOAP 服务以及发送电子邮件。
+
+'''
+[[io]]
+== IO
 Most applications will need to deal with input and output concerns at some point.
 Spring Boot provides utilities and integrations with a range of technologies to help when you need IO capabilities.
 This section covers standard IO features such as caching and validation as well as more advanced topics such as scheduling and distributed transactions.

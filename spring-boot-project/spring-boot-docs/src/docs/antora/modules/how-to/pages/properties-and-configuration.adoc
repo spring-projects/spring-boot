@@ -1,21 +1,256 @@
+= 属性和配置
+:encoding: utf-8
+:numbered:
+
 [[howto.properties-and-configuration]]
-= Properties and Configuration
+== 属性和配置
+本节包括有关设置和读取属性及配置设置及其与 Spring Boot 应用程序交互的主题。
 
+[[howto.properties-and-configuration.expand-properties]]
+== 在构建时自动扩展属性
+与其硬编码一些在项目构建配置中也指定的属性，不如使用现有的构建配置自动扩展它们。这在 Maven 和 Gradle 中都是可能的。
+
+[[howto.properties-and-configuration.expand-properties.maven]]
+=== 使用 Maven 自动扩展属性
+你可以通过使用资源过滤在 Maven 项目中自动扩展属性。如果你使用 `spring-boot-starter-parent`，则可以使用 `@..@` 占位符引用 Maven 的“项目属性”，如下例所示：
+
+```yaml
+app:
+  encoding: "@project.build.sourceEncoding@"
+  java:
+    version: "@java.version@"
+```
+
+NOTE: 只有生产配置会以这种方式过滤（换句话说，`src/test/resources` 不会应用过滤）。
+
+TIP: 如果启用 `addResources` 标志，`spring-boot:run` 目标可以直接将 `src/main/resources` 添加到类路径中（用于热重载目的）。这样做会绕过资源过滤和此功能。相反，你可以使用 `exec:java` 目标或自定义插件配置。有关更多详细信息，请参阅[插件使用页面](xref:maven-plugin:using.adoc)。
+
+如果你不使用启动器父级，则需要在 `pom.xml` 的 `<build/>` 元素中包含以下元素：
+
+```xml
+<resources>
+	<resource>
+		<directory>src/main/resources</directory>
+		<filtering>true</filtering>
+	</resource>
+</resources>
+```
+
+你还需要在 `<plugins/>` 中包含以下元素：
+
+```xml
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-resources-plugin</artifactId>
+	<version>2.7</version>
+	<configuration>
+		<delimiters>
+			<delimiter>@</delimiter>
+		</delimiters>
+		<useDefaultDelimiters>false</useDefaultDelimiters>
+	</configuration>
+</plugin>
+```
+
+NOTE: 如果你在配置中使用标准的 Spring 占位符（例如 `${placeholder}`），则 `useDefaultDelimiters` 属性非常重要。如果该属性未设置为 `false`，这些占位符可能会被构建扩展。
+
+[[howto.properties-and-configuration.expand-properties.gradle]]
+=== 使用 Gradle 自动扩展属性
+你可以通过配置 Java 插件的 `processResources` 任务来自动扩展 Gradle 项目中的属性，如下例所示：
+
+```gradle
+tasks.named('processResources') {
+	expand(project.properties)
+}
+```
+
+然后，你可以使用占位符引用 Gradle 项目的属性，如下例所示：
+
+```yaml
+app:
+  name: "${name}"
+  description: "${description}"
+```
+
+NOTE: Gradle 的 `expand` 方法使用 Groovy 的 `SimpleTemplateEngine`，它会转换 `${..}` 标记。`${..}` 样式与 Spring 自己的属性占位符机制冲突。要将 Spring 属性占位符与自动扩展一起使用，请按如下方式转义 Spring 属性占位符：`\${..}`。
+
+[[howto.properties-and-configuration.externalize-configuration]]
+== 外部化 SpringApplication 的配置
+`org.springframework.boot.SpringApplication` 具有 Bean 属性设置器，因此你可以在创建应用程序时使用其 Java API 来修改其行为。或者，你可以通过在 `spring.main.*` 中设置属性来外部化配置。例如，在 `application.properties` 中，你可能有以下设置：
+
+```yaml
+spring:
+  main:
+    web-application-type: "none"
+    banner-mode: "off"
+```
+
+然后，Spring Boot 启动时不会打印横幅，并且应用程序不会启动嵌入式 Web 服务器。
+
+外部配置中定义的属性会覆盖并替换 Java API 中指定的值，但主要源除外。主要源是提供给 `org.springframework.boot.SpringApplication` 构造函数的源：
+
+```java
+include-code::application/MyApplication[]
+```
+
+或者 `org.springframework.boot.builder.SpringApplicationBuilder` 的 `sources(...)` 方法：
+
+```java
+include-code::builder/MyApplication[]
+```
+
+根据上述示例，如果我们有以下配置：
+
+```yaml
+spring:
+  main:
+    sources: "com.example.MyDatabaseConfig,com.example.MyJmsConfig"
+    banner-mode: "console"
+```
+
+实际应用程序将显示横幅（由配置覆盖）并使用三个源来创建 `org.springframework.context.ApplicationContext`。应用程序源为：
+
+1. `MyApplication`（来自代码）
+2. `MyDatabaseConfig`（来自外部配置）
+3. `MyJmsConfig`（来自外部配置）
+
+[[howto.properties-and-configuration.external-properties-location]]
+== 更改应用程序外部属性的位置
+默认情况下，来自不同源的属性按定义的顺序添加到 Spring `org.springframework.core.env.Environment` 中（有关确切顺序，请参阅“Spring Boot 特性”部分中的[外部配置](xref:reference:features/external-config.adoc)）。
+
+你还可以提供以下系统属性（或环境变量）来更改行为：
+
+* `spring.config.name`（环境变量：`SPRING_CONFIG_NAME`）：默认为 `application` 作为文件名的根。
+* `spring.config.location`（环境变量：`SPRING_CONFIG_LOCATION`）：要加载的文件（例如类路径资源或 URL）。为此文档设置了一个单独的 `org.springframework.core.env.Environment` 属性源，并且可以通过系统属性、环境变量或命令行覆盖它。
+
+无论你在环境中设置什么，Spring Boot 始终会加载 `application.properties`，如上所述。默认情况下，如果使用 YAML，则还会将扩展名为 `.yaml` 和 `.yml` 的文件添加到列表中。
+
+TIP: 如果你想详细了解正在加载的文件，可以将 `org.springframework.boot.context.config` 的日志级别设置为 `trace`。
+
+[[howto.properties-and-configuration.short-command-line-arguments]]
+== 使用“短”命令行参数
+有些人喜欢使用（例如）`--port=9000` 而不是 `--server.port=9000` 来在命令行上设置配置属性。你可以通过在 `application.properties` 中使用占位符来启用此行为，如下例所示：
+
+```yaml
+server:
+  port: "${port:8080}"
+```
+
+TIP: 如果你继承自 `spring-boot-starter-parent` POM，则 `maven-resources-plugins` 的默认过滤标记已从 `${*}` 更改为 `@`（即 `@maven.token@` 而不是 `${maven.token}`），以防止与 Spring 样式的占位符冲突。如果你直接为 `application.properties` 启用了 Maven 过滤，则可能还需要更改默认过滤标记以使用[其他分隔符](https://maven.apache.org/plugins/maven-resources-plugin/resources-mojo.html#delimiters)。
+
+NOTE: 在这种特定情况下，端口绑定在 Heroku 或 Cloud Foundry 等 PaaS 环境中有效。在这两个平台上，`PORT` 环境变量会自动设置，Spring 可以绑定到 `org.springframework.core.env.Environment` 属性的大写同义词。
+
+[[howto.properties-and-configuration.yaml]]
+== 使用 YAML 作为外部属性
+YAML 是 JSON 的超集，因此它是一种方便的语法，用于以分层格式存储外部属性，如下例所示：
+
+```yaml
+spring:
+  application:
+    name: "cruncher"
+  datasource:
+    driver-class-name: "com.mysql.jdbc.Driver"
+    url: "jdbc:mysql://localhost/test"
+server:
+  port: 9000
+```
+
+创建一个名为 `application.yaml` 的文件并将其放在类路径的根目录中。然后将 `snakeyaml` 添加到你的依赖项中（Maven 坐标为 `org.yaml:snakeyaml`，如果你使用 `spring-boot-starter`，则已包含）。YAML 文件被解析为 Java `Map<String,Object>`（类似于 JSON 对象），Spring Boot 会将其展平为一级深度，并具有句点分隔的键，就像许多人在 Java 中使用 `java.util.Properties` 文件一样。
+
+前面的 YAML 示例对应于以下 `application.properties` 文件：
+
+```properties
+spring.application.name=cruncher
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost/test
+server.port=9000
+```
+
+有关 YAML 的更多信息，请参阅“Spring Boot 特性”部分中的[外部配置](xref:reference:features/external-config.adoc#features.external-config.yaml)。
+
+[[howto.properties-and-configuration.set-active-spring-profiles]]
+== 设置活动的 Spring 配置文件
+Spring `org.springframework.core.env.Environment` 有一个 API 可以做到这一点，但你通常会设置一个系统属性（`spring.profiles.active`）或操作系统环境变量（`SPRING_PROFILES_ACTIVE`）。此外，你可以使用 `-D` 参数启动应用程序（请记住将其放在主类或 jar 存档之前），如下所示：
+
+```shell
+$ java -jar -Dspring.profiles.active=production demo-0.0.1-SNAPSHOT.jar
+```
+
+在 Spring Boot 中，你还可以在 `application.properties` 中设置活动配置文件，如下例所示：
+
+```yaml
+spring:
+  profiles:
+    active: "production"
+```
+
+以这种方式设置的值会被系统属性或环境变量设置覆盖，但不会被 `SpringApplicationBuilder.profiles()` 方法覆盖。因此，后者 Java API 可用于在不更改默认值的情况下增强配置文件。
+
+有关更多信息，请参阅“Spring Boot 特性”部分中的[配置文件](xref:reference:features/profiles.adoc)。
+
+[[howto.properties-and-configuration.set-default-spring-profile-name]]
+== 设置默认配置文件名称
+默认配置文件是在没有活动配置文件时启用的配置文件。默认情况下，默认配置文件的名称是 `default`，但可以使用系统属性（`spring.profiles.default`）或操作系统环境变量（`SPRING_PROFILES_DEFAULT`）进行更改。
+
+在 Spring Boot 中，你还可以在 `application.properties` 中设置默认配置文件名称，如下例所示：
+
+```yaml
+spring:
+  profiles:
+    default: "dev"
+```
+
+有关更多信息，请参阅“Spring Boot 特性”部分中的[配置文件](xref:reference:features/profiles.adoc)。
+
+[[howto.properties-and-configuration.change-configuration-depending-on-the-environment]]
+== 根据环境更改配置
+Spring Boot 支持多文档 YAML 和 Properties 文件（有关详细信息，请参阅[多文档文件](xref:reference:features/external-config.adoc#features.external-config.files.multi-document)），这些文件可以根据活动配置文件有条件地激活。
+
+如果文档包含 `spring.config.activate.on-profile` 键，则配置文件值（配置文件的逗号分隔列表或配置文件表达式）将传递给 Spring `Environment.acceptsProfiles()` 方法。如果配置文件表达式匹配，则该文档将包含在最终合并中（否则不包括），如下例所示：
+
+```yaml
+server:
+  port: 9000
+---
+spring:
+config:
+activate:
+on-profile: "development"
+server:
+port: 9001
+---
+spring:
+config:
+activate:
+on-profile: "production"
+server:
+port: 0
+```
+
+在前面的示例中，默认端口为 9000。但是，如果名为 `development` 的 Spring 配置文件处于活动状态，则端口为 9001。如果 `production` 处于活动状态，则端口为 0。
+
+NOTE: 文档按遇到的顺序合并。后面的值会覆盖前面的值。
+
+[[howto.properties-and-configuration.discover-build-in-options-for-external-properties]]
+== 发现外部属性的内置选项
+Spring Boot 在运行时将 `application.properties`（或 YAML 文件和其他位置）中的外部属性绑定到应用程序中。没有（技术上也不可能）在单个位置列出所有支持的属性的详尽列表，因为贡献可以来自类路径上的其他 jar 文件。
+
+具有 Actuator 功能的运行应用程序具有一个 `configprops` 端点，该端点显示通过 `@ConfigurationProperties` 可用的所有绑定和可绑定属性。
+
+附录包括一个[`application.properties`](xref:appendix:application-properties/index.adoc) 示例，其中列出了 Spring Boot 支持的最常见属性。确切的列表来自在源代码中搜索 `@ConfigurationProperties` 和 `@Value` 注解以及偶尔使用 `org.springframework.boot.context.properties.bind.Binder`。有关加载属性的确切顺序的更多信息，请参阅[外部配置](xref:reference:features/external-config.adoc)。
+
+'''
+[[howto.properties-and-configuration]]
+== Properties and Configuration
 This section includes topics about setting and reading properties and configuration settings and their interaction with Spring Boot applications.
-
-
 
 [[howto.properties-and-configuration.expand-properties]]
 == Automatically Expand Properties at Build Time
-
 Rather than hardcoding some properties that are also specified in your project's build configuration, you can automatically expand them by instead using the existing build configuration.
 This is possible in both Maven and Gradle.
 
-
-
 [[howto.properties-and-configuration.expand-properties.maven]]
 === Automatic Property Expansion Using Maven
-
 You can automatically expand properties in the Maven project by using resource filtering.
 If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
@@ -66,11 +301,8 @@ You also need to include the following element inside `<plugins/>`:
 NOTE: The `useDefaultDelimiters` property is important if you use standard Spring placeholders (such as `$\{placeholder}`) in your configuration.
 If that property is not set to `false`, these may be expanded by the build.
 
-
-
 [[howto.properties-and-configuration.expand-properties.gradle]]
 === Automatic Property Expansion Using Gradle
-
 You can automatically expand properties from the Gradle project by configuring the Java plugin's `processResources` task to do so, as shown in the following example:
 
 [source,gradle]
@@ -93,11 +325,8 @@ NOTE: Gradle's `expand` method uses Groovy's `SimpleTemplateEngine`, which trans
 The `${..}` style conflicts with Spring's own property placeholder mechanism.
 To use Spring property placeholders together with automatic expansion, escape the Spring property placeholders as follows: `\${..}`.
 
-
-
 [[howto.properties-and-configuration.externalize-configuration]]
 == Externalize the Configuration of SpringApplication
-
 A javadoc:org.springframework.boot.SpringApplication[] has bean property setters, so you can use its Java API as you create the application to modify its behavior.
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
@@ -138,11 +367,8 @@ The application sources are:
 . `MyDatabaseConfig` (from the external config)
 . `MyJmsConfig`(from the external config)
 
-
-
 [[howto.properties-and-configuration.external-properties-location]]
 == Change the Location of External Properties of an Application
-
 By default, properties from different sources are added to the Spring javadoc:org.springframework.core.env.Environment[] in a defined order (see xref:reference:features/external-config.adoc[] in the "`Spring Boot Features`" section for the exact order).
 
 You can also provide the following System properties (or environment variables) to change the behavior:
@@ -156,11 +382,8 @@ By default, if YAML is used, then files with the '`.yaml`' and '`.yml`' extensio
 
 TIP: If you want detailed information about the files that are being loaded you can xref:reference:features/logging.adoc#features.logging.log-levels[set the logging level] of `org.springframework.boot.context.config` to `trace`.
 
-
-
 [[howto.properties-and-configuration.short-command-line-arguments]]
 == Use '`Short`' Command Line Arguments
-
 Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to set configuration properties on the command line.
 You can enable this behavior by using placeholders in `application.properties`, as shown in the following example:
 
@@ -176,11 +399,8 @@ If you have enabled Maven filtering for the `application.properties` directly, y
 NOTE: In this specific case, the port binding works in a PaaS environment such as Heroku or Cloud Foundry.
 On those two platforms, the `PORT` environment variable is set automatically and Spring can bind to capitalized synonyms for javadoc:org.springframework.core.env.Environment[] properties.
 
-
-
 [[howto.properties-and-configuration.yaml]]
 == Use YAML for External Properties
-
 YAML is a superset of JSON and, as such, is a convenient syntax for storing external properties in a hierarchical format, as shown in the following example:
 
 [source,yaml]
@@ -211,11 +431,8 @@ server.port=9000
 
 See xref:reference:features/external-config.adoc#features.external-config.yaml[] in the "`Spring Boot Features`" section for more information about YAML.
 
-
-
 [[howto.properties-and-configuration.set-active-spring-profiles]]
 == Set the Active Spring Profiles
-
 The Spring javadoc:org.springframework.core.env.Environment[] has an API for this, but you would normally set a System property (configprop:spring.profiles.active[]) or an OS environment variable (configprop:spring.profiles.active[format=envvar]).
 Also, you can launch your application with a `-D` argument (remember to put it before the main class or jar archive), as follows:
 
@@ -238,11 +455,8 @@ Thus, the latter Java API can be used to augment the profiles without changing t
 
 See xref:reference:features/profiles.adoc[] in the "`Spring Boot Features`" section for more information.
 
-
-
 [[howto.properties-and-configuration.set-default-spring-profile-name]]
 == Set the Default Profile Name
-
 The default profile is a profile that is enabled if no profile is active.
 By default, the name of the default profile is `default`, but it could be changed using a System property (configprop:spring.profiles.default[]) or an OS environment variable (configprop:spring.profiles.default[format=envvar]).
 
@@ -257,11 +471,8 @@ spring:
 
 See xref:reference:features/profiles.adoc[] in the "`Spring Boot Features`" section for more information.
 
-
-
 [[howto.properties-and-configuration.change-configuration-depending-on-the-environment]]
 == Change Configuration Depending on the Environment
-
 Spring Boot supports multi-document YAML and Properties files (see xref:reference:features/external-config.adoc#features.external-config.files.multi-document[] for details) which can be activated conditionally based on the active profiles.
 
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
@@ -294,11 +505,8 @@ If '`production`' is active, then the port is 0.
 NOTE: The documents are merged in the order in which they are encountered.
 Later values override earlier values.
 
-
-
 [[howto.properties-and-configuration.discover-build-in-options-for-external-properties]]
 == Discover Built-in Options for External Properties
-
 Spring Boot binds external properties from `application.properties` (or YAML files and other places) into an application at runtime.
 There is not (and technically cannot be) an exhaustive list of all supported properties in a single location, because contributions can come from additional jar files on your classpath.
 

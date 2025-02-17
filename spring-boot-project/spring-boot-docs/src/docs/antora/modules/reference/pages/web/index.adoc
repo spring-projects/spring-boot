@@ -1,6 +1,19 @@
-[[web]]
 = Web
+:encoding: utf-8
+:numbered:
 
+[[web]]
+== Web
+Spring Boot 非常适合用于 Web 应用程序开发。
+你可以通过使用嵌入式 Tomcat、Jetty、Undertow 或 Netty 来创建一个独立的 HTTP 服务器。
+大多数 Web 应用程序使用 `spring-boot-starter-web` 模块来快速启动和运行。
+你也可以选择使用 `spring-boot-starter-webflux` 模块来构建响应式 Web 应用程序。
+
+如果你还没有开发过 Spring Boot Web 应用程序，可以按照 xref:tutorial:first-application/index.adoc[入门] 部分中的“`Hello World!`”示例进行操作。
+
+'''
+[[web]]
+== Web
 Spring Boot is well suited for web application development.
 You can create a self-contained HTTP server by using embedded Tomcat, Jetty, Undertow, or Netty.
 Most web applications use the `spring-boot-starter-web` module to get up and running quickly.

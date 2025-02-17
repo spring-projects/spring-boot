@@ -1,7 +1,57 @@
+= Common Application Properties
+:encoding: utf-8
+:numbered:
+
 [appendix]
 [[appendix.application-properties]]
-= Common Application Properties
+== 常用应用程序属性
 
+可以在 `application.properties` 文件、`application.yaml` 文件或命令行开关中指定各种属性。本附录提供了常见的 Spring Boot 属性列表，并引用了使用这些属性的底层类。
+
+TIP: Spring Boot 提供了多种转换机制，支持高级值格式化。请确保查看 xref:reference:features/external-config.adoc#features.external-config.typesafe-configuration-properties.conversion[属性转换部分]。
+
+NOTE: 属性贡献可以来自类路径上的其他 jar 文件，因此你不应将此列表视为详尽无遗。此外，你还可以定义自己的属性。
+
+include::partial$configuration-properties/actuator.adoc[]
+
+include::partial$configuration-properties/cache.adoc[]
+
+include::partial$configuration-properties/core.adoc[]
+
+include::partial$configuration-properties/data-migration.adoc[]
+
+include::partial$configuration-properties/data.adoc[]
+
+include::partial$configuration-properties/devtools.adoc[]
+
+include::partial$configuration-properties/docker-compose.adoc[]
+
+include::partial$configuration-properties/integration.adoc[]
+
+include::partial$configuration-properties/json.adoc[]
+
+include::partial$configuration-properties/mail.adoc[]
+
+include::partial$configuration-properties/rsocket.adoc[]
+
+include::partial$configuration-properties/security.adoc[]
+
+include::partial$configuration-properties/server.adoc[]
+
+include::partial$configuration-properties/templating.adoc[]
+
+include::partial$configuration-properties/testcontainers.adoc[]
+
+include::partial$configuration-properties/testing.adoc[]
+
+include::partial$configuration-properties/transaction.adoc[]
+
+include::partial$configuration-properties/web.adoc[]
+
+'''
+[appendix]
+[[appendix.application-properties]]
+== Common Application Properties
 Various properties can be specified inside your `application.properties` file, inside your `application.yaml` file, or as command line switches.
 This appendix provides a list of common Spring Boot properties and references to the underlying classes that consume them.
 

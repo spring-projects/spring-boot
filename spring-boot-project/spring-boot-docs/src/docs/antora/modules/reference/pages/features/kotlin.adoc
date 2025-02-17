@@ -1,6 +1,165 @@
-[[features.kotlin]]
-= Kotlin Support
+= Kotlin 支持
+:encoding: utf-8
+:numbered:
 
+[[features.kotlin]]
+== Kotlin 支持
+https://kotlinlang.org[Kotlin] 是一种针对 JVM（和其他平台）的静态类型语言，它允许编写简洁而优雅的代码，同时提供与现有 Java 库的 {url-kotlin-docs}/java-interop.html[互操作性]。
+
+Spring Boot 通过利用 Spring Framework、Spring Data 和 Reactor 等其他 Spring 项目中的支持来提供 Kotlin 支持。
+有关更多信息，请参阅 {url-spring-framework-docs}/languages/kotlin.html[Spring Framework Kotlin 支持文档]。
+
+开始使用 Spring Boot 和 Kotlin 的最简单方法是遵循 https://spring.io/guides/tutorials/spring-boot-kotlin/[这个全面的教程]。
+你可以使用 https://start.spring.io/#!language=kotlin[start.spring.io] 创建新的 Kotlin 项目。
+如果需要支持，请随时加入 https://slack.kotlinlang.org/[Kotlin Slack] 的 #spring 频道，或在 https://stackoverflow.com/questions/tagged/spring+kotlin[Stack Overflow] 上使用 `spring` 和 `kotlin` 标签提问。
+
+[[features.kotlin.requirements]]
+== 要求
+Spring Boot 要求至少 Kotlin 1.7.x，并通过依赖管理管理合适的 Kotlin 版本。
+要使用 Kotlin，必须在类路径上存在 `org.jetbrains.kotlin:kotlin-stdlib` 和 `org.jetbrains.kotlin:kotlin-reflect`。
+也可以使用 `kotlin-stdlib` 的变体 `kotlin-stdlib-jdk7` 和 `kotlin-stdlib-jdk8`。
+
+由于 https://discuss.kotlinlang.org/t/classes-final-by-default/166[Kotlin 类默认是 final 的]，你可能需要配置 {url-kotlin-docs}/compiler-plugins.html#spring-support[kotlin-spring] 插件，以便自动打开带有 Spring 注解的类，从而使它们可以被代理。
+
+https://github.com/FasterXML/jackson-module-kotlin[Jackson 的 Kotlin 模块] 是序列化/反序列化 Kotlin 中 JSON 数据所必需的。
+当在类路径上找到它时，它会自动注册。
+如果存在 Jackson 和 Kotlin 但缺少 Jackson Kotlin 模块，则会记录警告消息。
+
+TIP: 如果在 https://start.spring.io/#!language=kotlin[start.spring.io] 上引导 Kotlin 项目，则默认提供这些依赖项和插件。
+
+[[features.kotlin.null-safety]]
+== 空安全
+Kotlin 的关键特性之一是 {url-kotlin-docs}/null-safety.html[空安全]。
+它在编译时处理 `null` 值，而不是将问题推迟到运行时并遇到 javadoc:java.lang.NullPointerException[]。
+这有助于消除常见的错误来源，而无需支付像 javadoc:java.util.Optional[] 这样的包装器的成本。
+Kotlin 还允许使用可空值的函数式构造，如这篇 https://www.baeldung.com/kotlin-null-safety[Kotlin 空安全综合指南] 中所述。
+
+尽管 Java 不允许在其类型系统中表达空安全，但 Spring Framework、Spring Data 和 Reactor 现在通过工具友好的注解提供了其 API 的空安全性。
+默认情况下，Kotlin 中使用的 Java API 类型被识别为 {url-kotlin-docs}/java-interop.html#null-safety-and-platform-types[平台类型]，对这些类型的空检查较为宽松。
+{url-kotlin-docs}/java-interop.html#jsr-305-support[Kotlin 对 JSR 305 注解的支持] 结合空安全性注解，为 Kotlin 中的相关 Spring API 提供了空安全性。
+
+可以通过添加 `-Xjsr305` 编译器标志来配置 JSR 305 检查，选项为：`-Xjsr305={strict|warn|ignore}`。
+默认行为与 `-Xjsr305=warn` 相同。
+`strict` 值需要在从 Spring API 推断的 Kotlin 类型中考虑空安全性，但应了解 Spring API 的空声明可能会在次要版本之间演变，并且将来可能会添加更多检查。
+
+WARNING: 泛型类型参数、可变参数和数组元素的空安全性尚未得到支持。
+有关最新信息，请参阅 https://jira.spring.io/browse/SPR-15942[SPR-15942]。
+另请注意，Spring Boot 自己的 API {url-github-issues}/10712[尚未注解]。
+
+[[features.kotlin.api]]
+== Kotlin API
+
+[[features.kotlin.api.run-application]]
+=== runApplication
+Spring Boot 提供了一种惯用的方式来运行应用程序，即使用 `runApplication<MyApplication>(*args)`，如下例所示：
+
+[source,kotlin]
+----
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
+
+@SpringBootApplication
+class MyApplication
+
+fun main(args: Array<String>) {
+	runApplication<MyApplication>(*args)
+}
+----
+
+这是 `SpringApplication.run(MyApplication::class.java, *args)` 的直接替代品。
+它还允许自定义应用程序，如下例所示：
+
+[source,kotlin]
+----
+runApplication<MyApplication>(*args) {
+	setBannerMode(OFF)
+}
+----
+
+[[features.kotlin.api.extensions]]
+=== 扩展
+Kotlin {url-kotlin-docs}/extensions.html[扩展] 提供了使用附加功能扩展现有类的能力。
+Spring Boot Kotlin API 利用这些扩展为现有 API 添加了新的 Kotlin 特定便利。
+
+提供了 javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] 扩展，类似于 Spring Framework 为 javadoc:org.springframework.web.client.RestOperations[] 提供的扩展。
+其中，扩展使得可以利用 Kotlin 的具体化类型参数。
+
+[[features.kotlin.dependency-management]]
+== 依赖管理
+为了避免在类路径上混合不同版本的 Kotlin 依赖项，Spring Boot 导入了 Kotlin BOM。
+
+使用 Maven 时，可以通过设置 `kotlin.version` 属性自定义 Kotlin 版本，并为 `kotlin-maven-plugin` 提供插件管理。
+使用 Gradle 时，Spring Boot 插件会自动将 `kotlin.version` 与 Kotlin 插件的版本对齐。
+
+Spring Boot 还通过导入 Kotlin Coroutines BOM 来管理 Coroutines 依赖项的版本。
+可以通过设置 `kotlin-coroutines.version` 属性自定义版本。
+
+TIP: 如果在 https://start.spring.io/#!language=kotlin[start.spring.io] 上引导 Kotlin 项目并至少有一个响应式依赖项，则默认提供 `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` 依赖项。
+
+[[features.kotlin.configuration-properties]]
+== @ConfigurationProperties
+当与 xref:features/external-config.adoc#features.external-config.typesafe-configuration-properties.constructor-binding[构造函数绑定] 结合使用时，javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation] 支持具有不可变 `val` 属性的数据类，如下例所示：
+
+[source,kotlin]
+----
+@ConfigurationProperties("example.kotlin")
+data class KotlinExampleProperties(
+		val name: String,
+		val description: String,
+		val myService: MyService) {
+
+	data class MyService(
+			val apiToken: String,
+			val uri: URI
+	)
+}
+----
+
+由于与 Java 的互操作性的限制，对值类的支持有限。
+特别是，依赖值类的默认值将无法与配置属性绑定一起使用。
+在这种情况下，应改用数据类。
+
+TIP: 要使用注解处理器生成 xref:specification:configuration-metadata/annotation-processor.adoc[你自己的元数据]，应使用 {url-kotlin-docs}/kapt.html[`kapt`] 配置 `spring-boot-configuration-processor` 依赖项。
+请注意，由于 kapt 提供的模型的限制，某些功能（例如检测默认值或已弃用的项）无法正常工作。
+
+[[features.kotlin.testing]]
+== 测试
+虽然可以使用 JUnit 4 测试 Kotlin 代码，但默认提供 JUnit 5 并推荐使用。
+JUnit 5 允许测试类实例化一次并重用于该类的所有测试。
+这使得可以在非静态方法上使用 javadoc:org.junit.jupiter.api.BeforeAll[format=annotation] 和 javadoc:org.junit.jupiter.api.AfterAll[format=annotation] 注解，这非常适合 Kotlin。
+
+要模拟 Kotlin 类，推荐使用 https://mockk.io/[MockK]。
+如果你需要 Mockito 特定的 xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[`@MockitoBean` 和 javadoc:org.springframework.test.context.bean.override.mockito.MockitoSpyBean[format=annotation] 注解] 的 `MockK` 等效项，可以使用 https://github.com/Ninja-Squad/springmockk[SpringMockK]，它提供了类似的 `@MockkBean` 和 `@SpykBean` 注解。
+
+[[features.kotlin.resources]]
+== 资源
+
+[[features.kotlin.resources.further-reading]]
+=== 进一步阅读
+* {url-kotlin-docs}[Kotlin 语言参考]
+* https://kotlinlang.slack.com/[Kotlin Slack]（带有专门的 #spring 频道）
+* https://stackoverflow.com/questions/tagged/spring+kotlin[带有 `spring` 和 `kotlin` 标签的 Stack Overflow]
+* https://try.kotlinlang.org/[在浏览器中尝试 Kotlin]
+* https://blog.jetbrains.com/kotlin/[Kotlin 博客]
+* https://kotlin.link/[Awesome Kotlin]
+* https://spring.io/guides/tutorials/spring-boot-kotlin/[教程：使用 Spring Boot 和 Kotlin 构建 Web 应用程序]
+* https://spring.io/blog/2016/02/15/developing-spring-boot-applications-with-kotlin[使用 Kotlin 开发 Spring Boot 应用程序]
+* https://spring.io/blog/2016/03/20/a-geospatial-messenger-with-kotlin-spring-boot-and-postgresql[使用 Kotlin、Spring Boot 和 PostgreSQL 构建地理空间消息应用]
+* https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0[在 Spring Framework 5.0 中引入 Kotlin 支持]
+* https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way[Spring Framework 5 Kotlin API，函数式方式]
+
+[[features.kotlin.resources.examples]]
+=== 示例
+* https://github.com/sdeleuze/spring-boot-kotlin-demo[spring-boot-kotlin-demo]：常规 Spring Boot + Spring Data JPA 项目
+* https://github.com/mixitconf/mixit[mixit]：Spring Boot 2 + WebFlux + 响应式 Spring Data MongoDB
+* https://github.com/sdeleuze/spring-kotlin-fullstack[spring-kotlin-fullstack]：使用 Kotlin2js 代替 JavaScript 或 TypeScript 的 WebFlux Kotlin 全栈示例
+* https://github.com/spring-petclinic/spring-petclinic-kotlin[spring-petclinic-kotlin]：Spring PetClinic 示例应用程序的 Kotlin 版本
+* https://github.com/sdeleuze/spring-kotlin-deepdive[spring-kotlin-deepdive]：从 Boot 1.0 + Java 到 Boot 2.0 + Kotlin 的逐步迁移
+* https://github.com/sdeleuze/spring-boot-coroutines-demo[spring-boot-coroutines-demo]：协程示例项目。
+
+'''
+[[features.kotlin]]
+== Kotlin Support
 https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing {url-kotlin-docs}/java-interop.html[interoperability] with existing libraries written in Java.
 
 Spring Boot provides Kotlin support by leveraging the support in other Spring projects such as Spring Framework, Spring Data, and Reactor.
@@ -10,11 +169,8 @@ The easiest way to start with Spring Boot and Kotlin is to follow https://spring
 You can create new Kotlin projects by using https://start.spring.io/#!language=kotlin[start.spring.io].
 Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Slack] or ask a question with the `spring` and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stack Overflow] if you need support.
 
-
-
 [[features.kotlin.requirements]]
 == Requirements
-
 Spring Boot requires at least Kotlin 1.7.x and manages a suitable Kotlin version through dependency management.
 To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
 The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
@@ -27,11 +183,8 @@ A warning message is logged if Jackson and Kotlin are present but the Jackson Ko
 
 TIP: These dependencies and plugins are provided by default if one bootstraps a Kotlin project on https://start.spring.io/#!language=kotlin[start.spring.io].
 
-
-
 [[features.kotlin.null-safety]]
 == Null-safety
-
 One of Kotlin's key features is {url-kotlin-docs}/null-safety.html[null-safety].
 It deals with `null` values at compile time rather than deferring the problem to runtime and encountering a javadoc:java.lang.NullPointerException[].
 This helps to eliminate a common source of bugs without paying the cost of wrappers like javadoc:java.util.Optional[].
@@ -49,16 +202,11 @@ WARNING: Generic type arguments, varargs and array elements nullability are not 
 See https://jira.spring.io/browse/SPR-15942[SPR-15942] for up-to-date information.
 Also be aware that Spring Boot's own API is {url-github-issues}/10712[not yet annotated].
 
-
-
 [[features.kotlin.api]]
 == Kotlin API
 
-
-
 [[features.kotlin.api.run-application]]
 === runApplication
-
 Spring Boot provides an idiomatic way to run an application with `runApplication<MyApplication>(*args)` as shown in the following example:
 
 [source,kotlin]
@@ -84,22 +232,16 @@ runApplication<MyApplication>(*args) {
 }
 ----
 
-
-
 [[features.kotlin.api.extensions]]
 === Extensions
-
 Kotlin {url-kotlin-docs}/extensions.html[extensions] provide the ability to extend existing classes with additional functionality.
 The Spring Boot Kotlin API makes use of these extensions to add new Kotlin specific conveniences to existing APIs.
 
 javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] extensions, similar to those provided by Spring Framework for javadoc:org.springframework.web.client.RestOperations[] in Spring Framework, are provided.
 Among other things, the extensions make it possible to take advantage of Kotlin reified type parameters.
 
-
-
 [[features.kotlin.dependency-management]]
 == Dependency Management
-
 In order to avoid mixing different versions of Kotlin dependencies on the classpath, Spring Boot imports the Kotlin BOM.
 
 With Maven, the Kotlin version can be customized by setting the `kotlin.version` property and plugin management is provided for `kotlin-maven-plugin`.
@@ -109,8 +251,6 @@ Spring Boot also manages the version of Coroutines dependencies by importing the
 The version can be customized by setting the `kotlin-coroutines.version` property.
 
 TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided by default if one bootstraps a Kotlin project with at least one reactive dependency on https://start.spring.io/#!language=kotlin[start.spring.io].
-
-
 
 [[features.kotlin.configuration-properties]]
 == @ConfigurationProperties
@@ -138,11 +278,8 @@ In such cases, a data class should be used instead.
 TIP: To generate xref:specification:configuration-metadata/annotation-processor.adoc[your own metadata] using the annotation processor, {url-kotlin-docs}/kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
 Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
 
-
-
 [[features.kotlin.testing]]
 == Testing
-
 While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
 This makes it possible to use javadoc:org.junit.jupiter.api.BeforeAll[format=annotation] and javadoc:org.junit.jupiter.api.AfterAll[format=annotation] annotations on non-static methods, which is a good fit for Kotlin.
@@ -150,16 +287,11 @@ This makes it possible to use javadoc:org.junit.jupiter.api.BeforeAll[format=ann
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
 If you need the `MockK` equivalent of the Mockito specific xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.mocking-beans[`@MockitoBean` and javadoc:org.springframework.test.context.bean.override.mockito.MockitoSpyBean[format=annotation] annotations], you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
 
-
-
 [[features.kotlin.resources]]
 == Resources
 
-
-
 [[features.kotlin.resources.further-reading]]
 === Further Reading
-
 * {url-kotlin-docs}[Kotlin language reference]
 * https://kotlinlang.slack.com/[Kotlin Slack] (with a dedicated #spring channel)
 * https://stackoverflow.com/questions/tagged/spring+kotlin[Stack Overflow with `spring` and `kotlin` tags]
@@ -172,11 +304,8 @@ If you need the `MockK` equivalent of the Mockito specific xref:testing/spring-b
 * https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0[Introducing Kotlin support in Spring Framework 5.0]
 * https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way[Spring Framework 5 Kotlin APIs, the functional way]
 
-
-
 [[features.kotlin.resources.examples]]
 === Examples
-
 * https://github.com/sdeleuze/spring-boot-kotlin-demo[spring-boot-kotlin-demo]: regular Spring Boot + Spring Data JPA project
 * https://github.com/mixitconf/mixit[mixit]: Spring Boot 2 + WebFlux + Reactive Spring Data MongoDB
 * https://github.com/sdeleuze/spring-kotlin-fullstack[spring-kotlin-fullstack]: WebFlux Kotlin fullstack example with Kotlin2js for frontend instead of JavaScript or TypeScript

@@ -1,6 +1,390 @@
-[[features.spring-application]]
 = SpringApplication
+:encoding: utf-8
+:numbered:
 
+[[features.spring-application]]
+== SpringApplication
+`javadoc:org.springframework.boot.SpringApplication[]` 类提供了一种便捷的方式来引导从 `main()` 方法启动的 Spring 应用程序。
+在许多情况下，你可以委托给静态方法 `javadoc:org.springframework.boot.SpringApplication#run(java.lang.Class,java.lang.String...)[]`，如下例所示：
+
+include-code::MyApplication[]
+
+当你的应用程序启动时，你应该会看到类似于以下输出：
+
+[source,subs="verbatim,attributes"]
+----
+include::ROOT:partial$application/spring-application.txt[]
+----
+
+默认情况下，会显示 `INFO` 级别的日志消息，包括一些相关的启动详细信息，例如启动应用程序的用户。
+如果你需要除 `INFO` 之外的日志级别，可以按照 xref:features/logging.adoc#features.logging.log-levels[] 中的描述进行设置。
+应用程序版本是通过主应用程序类包中的实现版本确定的。
+可以通过将 `spring.main.log-startup-info` 设置为 `false` 来关闭启动信息日志记录。
+这也会关闭应用程序活动配置文件的日志记录。
+
+TIP: 要在启动期间添加额外的日志记录，你可以在 `javadoc:org.springframework.boot.SpringApplication[]` 的子类中重写 `logStartupInfo(boolean)` 方法。
+
+
+[[features.spring-application.startup-failure]]
+== 启动失败
+如果你的应用程序启动失败，已注册的 `javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[]` bean 将有机会提供专门的错误消息和解决问题的具体操作。
+例如，如果你在端口 `8080` 上启动一个 Web 应用程序，而该端口已被占用，你应该会看到类似于以下消息：
+
+[source]
+----
+***************************
+应用程序启动失败
+***************************
+
+描述：
+
+嵌入式 servlet 容器启动失败。端口 8080 已被占用。
+
+操作：
+
+识别并停止正在监听端口 8080 的进程，或配置此应用程序以监听其他端口。
+----
+
+NOTE: Spring Boot 提供了许多 `javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[]` 实现，你还可以 xref:how-to:application.adoc#howto.application.failure-analyzer[添加自己的实现]。
+
+如果没有故障分析器能够处理异常，你仍然可以显示完整的条件报告以更好地了解问题所在。
+为此，你需要 xref:features/external-config.adoc[启用 `debug` 属性] 或 xref:features/logging.adoc#features.logging.log-levels[启用 `DEBUG` 日志记录] 以支持 `javadoc:org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener[]`。
+
+例如，如果你使用 `java -jar` 运行应用程序，可以按如下方式启用 `debug` 属性：
+
+[source,shell]
+----
+$ java -jar myproject-0.0.1-SNAPSHOT.jar --debug
+----
+
+
+[[features.spring-application.lazy-initialization]]
+== 延迟初始化
+`javadoc:org.springframework.boot.SpringApplication[]` 允许应用程序延迟初始化。
+当启用延迟初始化时，bean 会在需要时创建，而不是在应用程序启动期间创建。
+因此，启用延迟初始化可以减少应用程序启动所需的时间。
+在 Web 应用程序中，启用延迟初始化将导致许多与 Web 相关的 bean 在收到 HTTP 请求之前不会被初始化。
+
+延迟初始化的一个缺点是它可能会延迟发现应用程序中的问题。
+如果配置错误的 bean 被延迟初始化，则启动期间不会发生故障，问题只有在 bean 初始化时才会显现。
+还必须注意确保 JVM 有足够的内存来容纳所有应用程序的 bean，而不仅仅是启动期间初始化的 bean。
+由于这些原因，默认情况下未启用延迟初始化，建议在启用延迟初始化之前对 JVM 的堆大小进行微调。
+
+可以使用 `javadoc:org.springframework.boot.builder.SpringApplicationBuilder[]` 上的 `lazyInitialization` 方法或 `javadoc:org.springframework.boot.SpringApplication[]` 上的 `setLazyInitialization` 方法以编程方式启用延迟初始化。
+或者，可以使用 `configprop:spring.main.lazy-initialization[]` 属性启用延迟初始化，如下例所示：
+
+[configprops,yaml]
+----
+spring:
+  main:
+    lazy-initialization: true
+----
+
+TIP: 如果你希望在使用延迟初始化的同时为某些 bean 禁用延迟初始化，可以使用 `@Lazy(false)` 注解显式将其 `lazy` 属性设置为 `false`。
+
+
+[[features.spring-application.banner]]
+== 自定义 Banner
+启动时打印的 banner 可以通过在类路径中添加 `banner.txt` 文件或将 `configprop:spring.banner.location[]` 属性设置为该文件的位置来更改。
+如果文件的编码不是 UTF-8，你可以设置 `spring.banner.charset`。
+
+在 `banner.txt` 文件中，你可以使用 `javadoc:org.springframework.core.env.Environment[]` 中可用的任何键以及以下占位符：
+
+.Banner 变量
+|===
+| 变量 | 描述
+
+| `${application.version}`
+| 应用程序的版本号，如 `MANIFEST.MF` 中声明的版本号。
+例如，`Implementation-Version: 1.0` 将打印为 `1.0`。
+
+| `${application.formatted-version}`
+| 应用程序的版本号，如 `MANIFEST.MF` 中声明的版本号，并格式化为显示（用括号括起来并前缀为 `v`）。
+例如 `(v1.0)`。
+
+| `${spring-boot.version}`
+| 你正在使用的 Spring Boot 版本。
+例如 `{version-spring-boot}`。
+
+| `${spring-boot.formatted-version}`
+| 你正在使用的 Spring Boot 版本，格式化为显示（用括号括起来并前缀为 `v`）。
+例如 `(v{version-spring-boot})`。
+
+| `${Ansi.NAME}`（或 `${AnsiColor.NAME}`、`${AnsiBackground.NAME}`、`${AnsiStyle.NAME}`）
+| 其中 `NAME` 是 ANSI 转义码的名称。
+有关详细信息，请参阅 `javadoc:org.springframework.boot.ansi.AnsiPropertySource[]`。
+
+| `${application.title}`
+| 应用程序的标题，如 `MANIFEST.MF` 中声明的标题。
+例如 `Implementation-Title: MyApp` 将打印为 `MyApp`。
+|===
+
+TIP: 如果你希望以编程方式生成 banner，可以使用 `SpringApplication.setBanner(...)` 方法。
+使用 `javadoc:org.springframework.boot.Banner[]` 接口并实现你自己的 `printBanner()` 方法。
+
+你还可以使用 `configprop:spring.main.banner-mode[]` 属性来确定 banner 是否必须打印到 `javadoc:java.lang.System#out[]`（`console`）、发送到配置的日志记录器（`log`）或根本不生成（`off`）。
+
+打印的 banner 将作为单例 bean 注册，名称为：`springBootBanner`。
+
+[NOTE]
+====
+`application.title`、`application.version` 和 `application.formatted-version` 属性仅在你使用 `java -jar` 或 `java -cp` 与 Spring Boot 启动器时可用。
+如果你运行未打包的 jar 并使用 `java -cp <classpath> <mainclass>` 启动它，或者将应用程序作为本机映像运行，则不会解析这些值。
+
+要使用 `application.*` 属性，请使用 `java -jar` 将应用程序作为打包的 jar 启动，或使用 `java org.springframework.boot.loader.launch.JarLauncher` 将应用程序作为未打包的 jar 启动。
+这将在构建类路径并启动应用程序之前初始化 `application.*` banner 属性。
+====
+
+
+[[features.spring-application.customizing-spring-application]]
+== 自定义 SpringApplication
+如果 `javadoc:org.springframework.boot.SpringApplication[]` 的默认设置不符合你的需求，你可以创建一个本地实例并对其进行自定义。
+例如，要关闭 banner，你可以编写：
+
+include-code::MyApplication[]
+
+NOTE: 传递给 `javadoc:org.springframework.boot.SpringApplication[]` 的构造函数参数是 Spring bean 的配置源。
+在大多数情况下，这些是对 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 类的引用，但它们也可以是对 `javadoc:org.springframework.stereotype.Component[format=annotation]` 类的直接引用。
+
+还可以使用 `application.properties` 文件配置 `javadoc:org.springframework.boot.SpringApplication[]`。
+有关详细信息，请参阅 xref:features/external-config.adoc[]。
+
+有关配置选项的完整列表，请参阅 `javadoc:org.springframework.boot.SpringApplication[]` API 文档。
+
+
+[[features.spring-application.fluent-builder-api]]
+== 流式构建器 API
+如果你需要构建 `javadoc:org.springframework.context.ApplicationContext[]` 层次结构（具有父子关系的多个上下文），或者如果你更喜欢使用流式构建器 API，则可以使用 `javadoc:org.springframework.boot.builder.SpringApplicationBuilder[]`。
+
+`javadoc:org.springframework.boot.builder.SpringApplicationBuilder[]` 允许你将多个方法调用链接在一起，并包括 `parent` 和 `child` 方法，以便你可以创建层次结构，如下例所示：
+
+include-code::MyApplication[tag=*]
+
+NOTE: 在创建 `javadoc:org.springframework.context.ApplicationContext[]` 层次结构时存在一些限制。
+例如，Web 组件 *必须* 包含在子上下文中，并且父上下文和子上下文使用相同的 `javadoc:org.springframework.core.env.Environment[]`。
+有关完整详细信息，请参阅 `javadoc:org.springframework.boot.builder.SpringApplicationBuilder[]` API 文档。
+
+
+[[features.spring-application.application-availability]]
+== 应用程序可用性
+当部署在平台上时，应用程序可以使用基础设施（例如 https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Kubernetes 探针]）向平台提供有关其可用性的信息。
+Spring Boot 包含对常用的“`liveness`”（存活）和“`readiness`”（就绪）可用性状态的开箱即用支持。
+如果你使用 Spring Boot 的“`actuator`”支持，则这些状态将作为健康端点组公开。
+
+此外，你还可以通过将 `javadoc:org.springframework.boot.availability.ApplicationAvailability[]` 接口注入到你自己的 bean 中来获取可用性状态。
+
+
+[[features.spring-application.application-availability.liveness]]
+=== 存活状态
+
+应用程序的“`Liveness`”状态指示其内部状态是否允许其正常工作，或者如果当前失败是否可以自行恢复。
+“`Liveness`”状态损坏意味着应用程序处于无法恢复的状态，基础设施应重新启动应用程序。
+
+NOTE: 通常，“Liveness”状态不应基于外部检查，例如 xref:actuator/endpoints.adoc#actuator.endpoints.health[健康检查]。
+如果这样做，外部系统（数据库、Web API、外部缓存）的故障将触发平台上的大规模重启和级联故障。
+
+Spring Boot 应用程序的内部状态主要由 Spring 的 `javadoc:org.springframework.context.ApplicationContext[]` 表示。
+如果应用程序上下文已成功启动，Spring Boot 会假定应用程序处于有效状态。
+一旦上下文刷新完成，应用程序即被视为存活，请参阅 xref:features/spring-application.adoc#features.spring-application.application-events-and-listeners[Spring Boot 应用程序生命周期及相关应用程序事件]。
+
+
+[[features.spring-application.application-availability.readiness]]
+=== 就绪状态
+
+应用程序的“`Readiness`”状态指示应用程序是否准备好处理流量。
+“`Readiness`”状态失败会告诉平台暂时不应将流量路由到应用程序。
+这通常发生在启动期间，当 `javadoc:org.springframework.boot.CommandLineRunner[]` 和 `javadoc:org.springframework.boot.ApplicationRunner[]` 组件正在处理时，或者如果应用程序决定当前过于繁忙而无法处理额外流量时。
+
+一旦应用程序和命令行运行器被调用，应用程序即被视为就绪，请参阅 xref:features/spring-application.adoc#features.spring-application.application-events-and-listeners[Spring Boot 应用程序生命周期及相关应用程序事件]。
+
+TIP: 应在启动期间运行的任务应由 `javadoc:org.springframework.boot.CommandLineRunner[]` 和 `javadoc:org.springframework.boot.ApplicationRunner[]` 组件执行，而不是使用 Spring 组件生命周期回调（例如 `javadoc:jakarta.annotation.PostConstruct[format=annotation]`）。
+
+
+[[features.spring-application.application-availability.managing]]
+=== 管理应用程序可用性状态
+应用程序组件可以通过注入 `javadoc:org.springframework.boot.availability.ApplicationAvailability[]` 接口并调用其方法来随时检索当前的可用性状态。
+更常见的是，应用程序会希望监听状态更新或更新应用程序的状态。
+
+例如，我们可以将应用程序的“Readiness”状态导出到文件中，以便 Kubernetes 的“exec Probe”可以查看此文件：
+
+include-code::MyReadinessStateExporter[]
+
+我们还可以在应用程序崩溃且无法恢复时更新应用程序的状态：
+
+include-code::MyLocalCacheVerifier[]
+
+Spring Boot 提供了 xref:actuator/endpoints.adoc#actuator.endpoints.kubernetes-probes[通过 Actuator 健康端点支持 Kubernetes HTTP 探针的“Liveness”和“Readiness”]。
+你可以在 xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes[专门章节] 中获取有关在 Kubernetes 上部署 Spring Boot 应用程序的更多指导。
+
+
+[[features.spring-application.application-events-and-listeners]]
+== 应用程序事件和监听器
+除了通常的 Spring Framework 事件（例如 `javadoc:org.springframework.context.event.ContextRefreshedEvent[]`），`javadoc:org.springframework.boot.SpringApplication[]` 还会发送一些额外的应用程序事件。
+
+[NOTE]
+====
+某些事件实际上是在 `javadoc:org.springframework.context.ApplicationContext[]` 创建之前触发的，因此你无法将这些事件注册为 `javadoc:org.springframework.context.annotation.Bean[format=annotation]`。
+你可以使用 `SpringApplication.addListeners(...)` 方法或 `SpringApplicationBuilder.listeners(...)` 方法注册它们。
+
+如果你希望无论应用程序的创建方式如何都能自动注册这些监听器，可以在项目中添加一个 `META-INF/spring.factories` 文件，并使用 `javadoc:org.springframework.context.ApplicationListener[]` 键引用你的监听器，如下例所示：
+
+[source]
+----
+org.springframework.context.ApplicationListener=com.example.project.MyListener
+----
+
+====
+
+应用程序事件在应用程序运行时按以下顺序发送：
+
+1. 在运行开始时但在任何处理之前（除了监听器和初始化程序的注册）发送 `javadoc:org.springframework.boot.context.event.ApplicationStartingEvent[]`。
+2. 当上下文中要使用的 `javadoc:org.springframework.core.env.Environment[]` 已知但在创建上下文之前发送 `javadoc:org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent[]`。
+3. 当 `javadoc:org.springframework.context.ApplicationContext[]` 准备就绪并且已调用 `ApplicationContextInitializers` 但在加载任何 bean 定义之前发送 `javadoc:org.springframework.boot.context.event.ApplicationContextInitializedEvent[]`。
+4. 在刷新开始之前但在加载 bean 定义之后发送 `javadoc:org.springframework.boot.context.event.ApplicationPreparedEvent[]`。
+5. 在上下文刷新之后但在调用任何应用程序和命令行运行器之前发送 `javadoc:org.springframework.boot.context.event.ApplicationStartedEvent[]`。
+6. 紧接着发送 `javadoc:org.springframework.boot.availability.AvailabilityChangeEvent[]`，其中包含 `javadoc:org.springframework.boot.availability.LivenessState#CORRECT[]`，以指示应用程序被视为存活。
+7. 在调用任何 xref:features/spring-application.adoc#features.spring-application.command-line-runner[应用程序和命令行运行器] 之后发送 `javadoc:org.springframework.boot.context.event.ApplicationReadyEvent[]`。
+8. 紧接着发送 `javadoc:org.springframework.boot.availability.AvailabilityChangeEvent[]`，其中包含 `javadoc:org.springframework.boot.availability.ReadinessState#ACCEPTING_TRAFFIC[]`，以指示应用程序已准备好处理请求。
+9. 如果启动时发生异常，则发送 `javadoc:org.springframework.boot.context.event.ApplicationFailedEvent[]`。
+
+上述列表仅包括与 `javadoc:org.springframework.boot.SpringApplication[]` 绑定的 `SpringApplicationEvent`。
+除此之外，以下事件也会在 `javadoc:org.springframework.boot.context.event.ApplicationPreparedEvent[]` 之后和 `javadoc:org.springframework.boot.context.event.ApplicationStartedEvent[]` 之前发布：
+
+- 在 `javadoc:org.springframework.boot.web.server.WebServer[]` 准备就绪后发送 `javadoc:org.springframework.boot.web.context.WebServerInitializedEvent[]`。
+`javadoc:org.springframework.boot.web.servlet.context.ServletWebServerInitializedEvent[]` 和 `javadoc:org.springframework.boot.web.reactive.context.ReactiveWebServerInitializedEvent[]` 分别是 servlet 和 reactive 的变体。
+- 当 `javadoc:org.springframework.context.ApplicationContext[]` 刷新时发送 `javadoc:org.springframework.context.event.ContextRefreshedEvent[]`。
+
+TIP: 你通常不需要使用应用程序事件，但了解它们的存在可能会很方便。
+Spring Boot 在内部使用事件来处理各种任务。
+
+NOTE: 事件监听器默认情况下不应运行可能耗时的任务，因为它们在同一线程中执行。
+考虑使用 xref:features/spring-application.adoc#features.spring-application.command-line-runner[应用程序和命令行运行器] 代替。
+
+应用程序事件通过 Spring Framework 的事件发布机制发送。
+该机制的一部分确保发布到子上下文中的监听器的事件也会发布到任何祖先上下文中的监听器。
+因此，如果你的应用程序使用 `javadoc:org.springframework.boot.SpringApplication[]` 实例的层次结构，则监听器可能会收到多个相同类型的应用程序事件。
+
+为了让你的监听器区分其上下文的事件和后代上下文的事件，它应请求注入其应用程序上下文，然后将注入的上下文与事件的上下文进行比较。
+可以通过实现 `javadoc:org.springframework.context.ApplicationContextAware[]` 或如果监听器是 bean 则使用 `javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation]` 注入上下文。
+
+
+[[features.spring-application.web-environment]]
+== Web 环境
+`javadoc:org.springframework.boot.SpringApplication[]` 会尝试为你创建正确类型的 `javadoc:org.springframework.context.ApplicationContext[]`。
+用于确定 `javadoc:org.springframework.boot.WebApplicationType[]` 的算法如下：
+
+* 如果存在 Spring MVC，则使用 `javadoc:org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext[]`。
+* 如果不存在 Spring MVC 但存在 Spring WebFlux，则使用 `javadoc:org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext[]`。
+* 否则，使用 `javadoc:org.springframework.context.annotation.AnnotationConfigApplicationContext[]`。
+
+这意味着，如果你在同一应用程序中使用 Spring MVC 和 Spring WebFlux 的新 `javadoc:org.springframework.web.reactive.function.client.WebClient[]`，则默认情况下将使用 Spring MVC。
+你可以通过调用 `setWebApplicationType(WebApplicationType)` 轻松覆盖此设置。
+
+还可以通过调用 `setApplicationContextFactory(...)` 完全控制所使用的 `javadoc:org.springframework.context.ApplicationContext[]` 类型。
+
+TIP: 在 JUnit 测试中使用 `javadoc:org.springframework.boot.SpringApplication[]` 时，通常需要调用 `setWebApplicationType(WebApplicationType.NONE)`。
+
+
+[[features.spring-application.application-arguments]]
+== 访问应用程序参数
+如果你需要访问传递给 `SpringApplication.run(...)` 的应用程序参数，可以注入 `javadoc:org.springframework.boot.ApplicationArguments[]` bean。
+`javadoc:org.springframework.boot.ApplicationArguments[]` 接口提供对原始 `String[]` 参数以及解析后的 `option` 和 `non-option` 参数的访问，如下例所示：
+
+include-code::MyBean[]
+
+TIP: Spring Boot 还会将 `javadoc:org.springframework.core.env.CommandLinePropertySource[]` 注册到 Spring 的 `javadoc:org.springframework.core.env.Environment[]` 中。
+这使你还可以使用 `javadoc:org.springframework.beans.factory.annotation.Value[format=annotation]` 注解注入单个应用程序参数。
+
+
+[[features.spring-application.command-line-runner]]
+== 使用 ApplicationRunner 或 CommandLineRunner
+如果你需要在 `javadoc:org.springframework.boot.SpringApplication[]` 启动后运行一些特定代码，可以实现 `javadoc:org.springframework.boot.ApplicationRunner[]` 或 `javadoc:org.springframework.boot.CommandLineRunner[]` 接口。
+这两个接口的工作方式相同，并提供一个 `run` 方法，该方法在 `SpringApplication.run(...)` 完成之前调用。
+
+NOTE: 此约定非常适合应在应用程序启动后但在开始接受流量之前运行的任务。
+
+`javadoc:org.springframework.boot.CommandLineRunner[]` 接口提供对应用程序参数的字符串数组访问，而 `javadoc:org.springframework.boot.ApplicationRunner[]` 使用前面讨论的 `javadoc:org.springframework.boot.ApplicationArguments[]` 接口。
+以下示例显示了一个带有 `run` 方法的 `javadoc:org.springframework.boot.CommandLineRunner[]`：
+
+include-code::MyCommandLineRunner[]
+
+如果定义了多个必须按特定顺序调用的 `javadoc:org.springframework.boot.CommandLineRunner[]` 或 `javadoc:org.springframework.boot.ApplicationRunner[]` bean，你可以额外实现 `javadoc:org.springframework.core.Ordered[]` 接口或使用 `javadoc:org.springframework.core.annotation.Order[]` 注解。
+
+
+[[features.spring-application.application-exit]]
+== 应用程序退出
+每个 `javadoc:org.springframework.boot.SpringApplication[]` 都会向 JVM 注册一个关闭钩子，以确保 `javadoc:org.springframework.context.ApplicationContext[]` 在退出时正常关闭。
+所有标准的 Spring 生命周期回调（例如 `javadoc:org.springframework.beans.factory.DisposableBean[]` 接口或 `javadoc:jakarta.annotation.PreDestroy[format=annotation]` 注解）都可以使用。
+
+此外，如果 bean 希望在调用 `SpringApplication.exit()` 时返回特定的退出代码，可以实现 `javadoc:org.springframework.boot.ExitCodeGenerator[]` 接口。
+然后可以将此退出代码传递给 `System.exit()` 以将其作为状态代码返回，如下例所示：
+
+include-code::MyApplication[]
+
+此外，`javadoc:org.springframework.boot.ExitCodeGenerator[]` 接口可以由异常实现。
+当遇到此类异常时，Spring Boot 将返回实现的 `getExitCode()` 方法提供的退出代码。
+
+如果有多个 `javadoc:org.springframework.boot.ExitCodeGenerator[]`，则使用生成的第一个非零退出代码。
+要控制生成器的调用顺序，可以额外实现 `javadoc:org.springframework.core.Ordered[]` 接口或使用 `javadoc:org.springframework.core.annotation.Order[]` 注解。
+
+
+[[features.spring-application.admin]]
+== 管理功能
+可以通过指定 `configprop:spring.application.admin.enabled[]` 属性为应用程序启用与管理相关的功能。
+这会在平台的 `javadoc:javax.management.MBeanServer[]` 上公开 `javadoc:org.springframework.boot.admin.SpringApplicationAdminMXBean[]`。
+你可以使用此功能远程管理你的 Spring Boot 应用程序。
+此功能对于任何服务包装器实现也可能有用。
+
+TIP: 如果你想知道应用程序在哪个 HTTP 端口上运行，请获取键为 `local.server.port` 的属性。
+
+
+[[features.spring-application.startup-tracking]]
+== 应用程序启动跟踪
+在应用程序启动期间，`javadoc:org.springframework.boot.SpringApplication[]` 和 `javadoc:org.springframework.context.ApplicationContext[]` 会执行许多与应用程序生命周期、bean 生命周期甚至处理应用程序事件相关的任务。
+通过 `javadoc:org.springframework.core.metrics.ApplicationStartup[]`，Spring Framework {url-spring-framework-docs}/core/beans/context-introduction.html#context-functionality-startup[允许你使用 `javadoc:org.springframework.core.metrics.StartupStep[]` 对象跟踪应用程序启动顺序]。
+可以收集此数据以进行分析，或者只是为了更好地了解应用程序启动过程。
+
+你可以在设置 `javadoc:org.springframework.boot.SpringApplication[]` 实例时选择 `javadoc:org.springframework.core.metrics.ApplicationStartup[]` 实现。
+例如，要使用 `javadoc:org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup[]`，你可以编写：
+
+include-code::MyApplication[]
+
+第一个可用的实现 `javadoc:org.springframework.core.metrics.jfr.FlightRecorderApplicationStartup[]` 由 Spring Framework 提供。
+它将 Spring 特定的启动事件添加到 Java Flight Recorder 会话中，并用于分析应用程序并将其 Spring 上下文生命周期与 JVM 事件（例如分配、GC、类加载等）相关联。
+配置完成后，你可以通过启用 Flight Recorder 运行应用程序来记录数据：
+
+[source,shell]
+----
+$ java -XX:StartFlightRecording:filename=recording.jfr,duration=10s -jar demo.jar
+----
+
+Spring Boot 附带了 `javadoc:org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup[]` 变体；此实现旨在缓冲启动步骤并将其排入外部指标系统。
+应用程序可以在任何组件中请求类型为 `javadoc:org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup[]` 的 bean。
+
+Spring Boot 还可以配置为公开 xref:api:rest/actuator/startup.adoc[`startup` 端点]，该端点将此信息作为 JSON 文档提供。
+
+
+[[features.spring-application.virtual-threads]]
+== 虚拟线程
+如果你在 Java 21 或更高版本上运行，可以通过将 `configprop:spring.threads.virtual.enabled[]` 属性设置为 `true` 来启用虚拟线程。
+
+在为你的应用程序启用此选项之前，你应该考虑 https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html[阅读官方的 Java 虚拟线程文档]。
+在某些情况下，由于“Pinned Virtual Threads”，应用程序可能会经历较低的吞吐量；此页面还解释了如何使用 JDK Flight Recorder 或 `jcmd` CLI 检测此类情况。
+
+NOTE: 如果启用了虚拟线程，则配置线程池的属性将不再生效。
+这是因为虚拟线程是在 JVM 范围内的平台线程池上调度，而不是在专用线程池上调度。
+
+WARNING: 虚拟线程的一个副作用是它们是守护线程。
+如果 JVM 的所有线程都是守护线程，则 JVM 将退出。
+当你依赖 `javadoc:org.springframework.scheduling.annotation.Scheduled[format=annotation]` bean 来保持应用程序运行时，此行为可能会成为问题。
+如果你使用虚拟线程，调度程序线程是虚拟线程，因此是守护线程，不会保持 JVM 运行。
+这不仅影响调度，也可能影响其他技术。
+为了在所有情况下保持 JVM 运行，建议将 `configprop:spring.main.keep-alive[]` 属性设置为 `true`。
+这确保即使所有线程都是虚拟线程，JVM 也会保持运行。
+
+'''
+[[features.spring-application]]
+== SpringApplication
 The javadoc:org.springframework.boot.SpringApplication[] class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
 In many situations, you can delegate to the static javadoc:org.springframework.boot.SpringApplication#run(java.lang.Class,java.lang.String...)[] method, as shown in the following example:
 
@@ -13,8 +397,6 @@ When your application starts, you should see something similar to the following 
 include::ROOT:partial$application/spring-application.txt[]
 ----
 
-
-
 By default, `INFO` logging messages are shown, including some relevant startup details, such as the user that launched the application.
 If you need a log level other than `INFO`, you can set it, as described in xref:features/logging.adoc#features.logging.log-levels[].
 The application version is determined using the implementation version from the main application class's package.
@@ -24,10 +406,8 @@ This will also turn off logging of the application's active profiles.
 TIP: To add additional logging during startup, you can override `logStartupInfo(boolean)` in a subclass of javadoc:org.springframework.boot.SpringApplication[].
 
 
-
 [[features.spring-application.startup-failure]]
 == Startup Failure
-
 If your application fails to start, registered javadoc:org.springframework.boot.diagnostics.FailureAnalyzer[] beans get a chance to provide a dedicated error message and a concrete action to fix the problem.
 For instance, if you start a web application on port `8080` and that port is already in use, you should see something similar to the following message:
 
@@ -59,10 +439,8 @@ $ java -jar myproject-0.0.1-SNAPSHOT.jar --debug
 ----
 
 
-
 [[features.spring-application.lazy-initialization]]
 == Lazy Initialization
-
 javadoc:org.springframework.boot.SpringApplication[] allows an application to be initialized lazily.
 When lazy initialization is enabled, beans are created as they are needed rather than during application startup.
 As a result, enabling lazy initialization can reduce the time that it takes your application to start.
@@ -86,10 +464,8 @@ spring:
 TIP: If you want to disable lazy initialization for certain beans while using lazy initialization for the rest of the application, you can explicitly set their lazy attribute to false using the `@Lazy(false)` annotation.
 
 
-
 [[features.spring-application.banner]]
 == Customizing the Banner
-
 The banner that is printed on start up can be changed by adding a `banner.txt` file to your classpath or by setting the configprop:spring.banner.location[] property to the location of such a file.
 If the file has an encoding other than UTF-8, you can set `spring.banner.charset`.
 
@@ -142,10 +518,8 @@ This will initialize the `application.*` banner properties before building the c
 ====
 
 
-
 [[features.spring-application.customizing-spring-application]]
 == Customizing SpringApplication
-
 If the javadoc:org.springframework.boot.SpringApplication[] defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:
 
@@ -160,10 +534,8 @@ See xref:features/external-config.adoc[] for details.
 For a complete list of the configuration options, see the javadoc:org.springframework.boot.SpringApplication[] API documentation.
 
 
-
 [[features.spring-application.fluent-builder-api]]
 == Fluent Builder API
-
 If you need to build an javadoc:org.springframework.context.ApplicationContext[] hierarchy (multiple contexts with a parent/child relationship) or if you prefer using a fluent builder API, you can use the javadoc:org.springframework.boot.builder.SpringApplicationBuilder[].
 
 The javadoc:org.springframework.boot.builder.SpringApplicationBuilder[] lets you chain together multiple method calls and includes `parent` and `child` methods that let you create a hierarchy, as shown in the following example:
@@ -175,16 +547,13 @@ For example, Web components *must* be contained within the child context, and th
 See the javadoc:org.springframework.boot.builder.SpringApplicationBuilder[] API documentation for full details.
 
 
-
 [[features.spring-application.application-availability]]
 == Application Availability
-
 When deployed on platforms, applications can provide information about their availability to the platform using infrastructure such as https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[Kubernetes Probes].
 Spring Boot includes out-of-the box support for the commonly used "`liveness`" and "`readiness`" availability states.
 If you are using Spring Boot's "`actuator`" support then these states are exposed as health endpoint groups.
 
 In addition, you can also obtain availability states by injecting the javadoc:org.springframework.boot.availability.ApplicationAvailability[] interface into your own beans.
-
 
 
 [[features.spring-application.application-availability.liveness]]
@@ -214,10 +583,8 @@ An application is considered ready as soon as application and command-line runne
 TIP: Tasks expected to run during startup should be executed by javadoc:org.springframework.boot.CommandLineRunner[] and javadoc:org.springframework.boot.ApplicationRunner[] components instead of using Spring component lifecycle callbacks such as javadoc:jakarta.annotation.PostConstruct[format=annotation].
 
 
-
 [[features.spring-application.application-availability.managing]]
 === Managing the Application Availability State
-
 Application components can retrieve the current availability state at any time, by injecting the javadoc:org.springframework.boot.availability.ApplicationAvailability[] interface and calling methods on it.
 More often, applications will want to listen to state updates or update the state of the application.
 
@@ -233,10 +600,8 @@ Spring Boot provides xref:actuator/endpoints.adoc#actuator.endpoints.kubernetes-
 You can get more guidance about xref:how-to:deployment/cloud.adoc#howto.deployment.cloud.kubernetes[deploying Spring Boot applications on Kubernetes in the dedicated section].
 
 
-
 [[features.spring-application.application-events-and-listeners]]
 == Application Events and Listeners
-
 In addition to the usual Spring Framework events, such as javadoc:org.springframework.context.event.ContextRefreshedEvent[], a javadoc:org.springframework.boot.SpringApplication[] sends some additional application events.
 
 [NOTE]
@@ -286,10 +651,8 @@ To allow your listener to distinguish between an event for its context and an ev
 The context can be injected by implementing javadoc:org.springframework.context.ApplicationContextAware[] or, if the listener is a bean, by using javadoc:org.springframework.beans.factory.annotation.Autowired[format=annotation].
 
 
-
 [[features.spring-application.web-environment]]
 == Web Environment
-
 A javadoc:org.springframework.boot.SpringApplication[] attempts to create the right type of javadoc:org.springframework.context.ApplicationContext[] on your behalf.
 The algorithm used to determine a javadoc:org.springframework.boot.WebApplicationType[] is the following:
 
@@ -305,10 +668,8 @@ It is also possible to take complete control of the javadoc:org.springframework.
 TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NONE)` when using javadoc:org.springframework.boot.SpringApplication[] within a JUnit test.
 
 
-
 [[features.spring-application.application-arguments]]
 == Accessing Application Arguments
-
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a javadoc:org.springframework.boot.ApplicationArguments[] bean.
 The javadoc:org.springframework.boot.ApplicationArguments[] interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
@@ -318,15 +679,12 @@ TIP: Spring Boot also registers a javadoc:org.springframework.core.env.CommandLi
 This lets you also inject single application arguments by using the javadoc:org.springframework.beans.factory.annotation.Value[format=annotation] annotation.
 
 
-
 [[features.spring-application.command-line-runner]]
 == Using the ApplicationRunner or CommandLineRunner
-
 If you need to run some specific code once the javadoc:org.springframework.boot.SpringApplication[] has started, you can implement the javadoc:org.springframework.boot.ApplicationRunner[] or javadoc:org.springframework.boot.CommandLineRunner[] interfaces.
 Both interfaces work in the same way and offer a single `run` method, which is called just before `SpringApplication.run(...)` completes.
 
 NOTE: This contract is well suited for tasks that should run after application startup but before it starts accepting traffic.
-
 
 The javadoc:org.springframework.boot.CommandLineRunner[] interfaces provides access to application arguments as a string array, whereas the javadoc:org.springframework.boot.ApplicationRunner[] uses the javadoc:org.springframework.boot.ApplicationArguments[] interface discussed earlier.
 The following example shows a javadoc:org.springframework.boot.CommandLineRunner[] with a `run` method:
@@ -336,10 +694,8 @@ include-code::MyCommandLineRunner[]
 If several javadoc:org.springframework.boot.CommandLineRunner[] or javadoc:org.springframework.boot.ApplicationRunner[] beans are defined that must be called in a specific order, you can additionally implement the javadoc:org.springframework.core.Ordered[] interface or use the javadoc:org.springframework.core.annotation.Order[] annotation.
 
 
-
 [[features.spring-application.application-exit]]
 == Application Exit
-
 Each javadoc:org.springframework.boot.SpringApplication[] registers a shutdown hook with the JVM to ensure that the javadoc:org.springframework.context.ApplicationContext[] closes gracefully on exit.
 All the standard Spring lifecycle callbacks (such as the javadoc:org.springframework.beans.factory.DisposableBean[] interface or the javadoc:jakarta.annotation.PreDestroy[format=annotation] annotation) can be used.
 
@@ -355,10 +711,8 @@ If there is more than one javadoc:org.springframework.boot.ExitCodeGenerator[], 
 To control the order in which the generators are called, additionally implement the javadoc:org.springframework.core.Ordered[] interface or use the javadoc:org.springframework.core.annotation.Order[] annotation.
 
 
-
 [[features.spring-application.admin]]
 == Admin Features
-
 It is possible to enable admin-related features for the application by specifying the configprop:spring.application.admin.enabled[] property.
 This exposes the javadoc:org.springframework.boot.admin.SpringApplicationAdminMXBean[] on the platform javadoc:javax.management.MBeanServer[].
 You could use this feature to administer your Spring Boot application remotely.
@@ -367,10 +721,8 @@ This feature could also be useful for any service wrapper implementation.
 TIP: If you want to know on which HTTP port the application is running, get the property with a key of `local.server.port`.
 
 
-
 [[features.spring-application.startup-tracking]]
 == Application Startup tracking
-
 During the application startup, the javadoc:org.springframework.boot.SpringApplication[] and the javadoc:org.springframework.context.ApplicationContext[] perform many tasks related to the application lifecycle,
 the beans lifecycle or even processing application events.
 With javadoc:org.springframework.core.metrics.ApplicationStartup[], Spring Framework {url-spring-framework-docs}/core/beans/context-introduction.html#context-functionality-startup[allows you to track the application startup sequence with javadoc:org.springframework.core.metrics.StartupStep[] objects].
@@ -396,10 +748,8 @@ Applications can ask for the bean of type javadoc:org.springframework.boot.conte
 Spring Boot can also be configured to expose a xref:api:rest/actuator/startup.adoc[`startup` endpoint] that provides this information as a JSON document.
 
 
-
 [[features.spring-application.virtual-threads]]
 == Virtual threads
-
 If you're running on Java 21 or up, you can enable virtual threads by setting the property configprop:spring.threads.virtual.enabled[] to `true`.
 
 Before turning on this option for your application, you should consider https://docs.oracle.com/en/java/javase/21/core/virtual-threads.html[reading the official Java virtual threads documentation].

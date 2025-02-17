@@ -1,5 +1,15 @@
+= Test Auto-configuration Annotations
+:encoding: utf-8
+:numbered:
+
 [appendix]
 [[appendix.test-auto-configuration]]
-= Test Auto-configuration Annotations
+== 测试自动配置注解
 
+本附录介绍了 Spring Boot 提供的 `@...Test` 自动配置注解，用于测试应用程序的各个部分。
+
+'''
+[appendix]
+[[appendix.test-auto-configuration]]
+== Test Auto-configuration Annotations
 This appendix describes the `@...Test` auto-configuration annotations that Spring Boot provides to test slices of your application.

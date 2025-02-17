@@ -1,6 +1,91 @@
-[[integration-tests]]
-= Running Integration Tests
+= 运行集成测试
+:encoding: utf-8
+:numbered:
 
+[[integration-tests]]
+== 运行集成测试
+虽然你可以从测试（或测试套件）本身轻松启动 Spring Boot 应用程序，但可能希望在构建本身中处理此问题。
+为了确保在集成测试期间正确管理 Spring Boot 应用程序的生命周期，你可以使用 `start` 和 `stop` 目标，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$integration-tests/pom.xml[tags=integration-tests]
+----
+
+现在，这种设置可以使用 https://maven.apache.org/surefire/maven-failsafe-plugin[failsafe-plugin] 来按预期运行你的集成测试。
+
+NOTE: 应用程序在单独的进程中启动，并使用 JMX 与应用程序通信。
+默认情况下，插件使用端口 `9001`。
+如果需要配置 JMX 端口，请参阅 xref:integration-tests.adoc#integration-tests.examples.jmx-port[专用示例]。
+
+你还可以配置更高级的设置，以便在设置了特定属性时跳过集成测试，请参阅 xref:integration-tests.adoc#integration-tests.examples.skip[专用示例]。
+
+[[integration-tests.no-starter-parent]]
+== 不使用 Spring Boot 的父 POM 时使用 Failsafe
+Spring Boot 的父 POM `spring-boot-starter-parent` 将 Failsafe 的 `<classesDirectory>` 配置为 `${project.build.outputDirectory}`。
+如果没有此配置，Failsafe 将使用编译的类而不是重新打包的 jar，导致 Failsafe 无法加载应用程序的类。
+如果不使用父 POM，你应该以相同的方式配置 Failsafe，如下例所示：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$integration-tests/failsafe-pom.xml[tags=failsafe]
+----
+
+include::partial$goals/start.adoc[leveloffset=+1]
+
+include::partial$goals/stop.adoc[leveloffset=+1]
+
+[[integration-tests.examples]]
+== 示例
+
+[[integration-tests.examples.random-port]]
+=== 集成测试的随机端口
+Spring Boot 测试集成的一个很好的特性是它可以为 Web 应用程序分配一个空闲端口。
+当使用插件的 `start` 目标时，Spring Boot 应用程序会单独启动，这使得将实际端口传递给集成测试本身变得困难。
+
+以下示例展示了如何使用 https://www.mojohaus.org/build-helper-maven-plugin[Build Helper Maven Plugin] 实现相同的功能：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$integration-tests/random-port-pom.xml[tags=random-port]
+----
+
+现在，你可以在任何集成测试中检索 `test.server.port` 系统属性，以创建指向服务器的正确 `URL`。
+
+[[integration-tests.examples.jmx-port]]
+=== 自定义 JMX 端口
+`jmxPort` 属性允许自定义插件用于与 Spring Boot 应用程序通信的端口。
+
+此示例展示了如何在 `9001` 已被使用时自定义端口：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$integration-tests/customize-jmx-port-pom.xml[tags=customize-jmx-port]
+----
+
+TIP: 如果需要配置 JMX 端口，请确保如上所示在全局配置中进行配置，以便两个目标共享该配置。
+
+[[integration-tests.examples.skip]]
+=== 跳过集成测试
+`skip` 属性允许完全跳过 Spring Boot Maven 插件的执行。
+
+此示例展示了如何使用命令行属性跳过集成测试，同时确保 `repackage` 目标仍然运行：
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+include::example$integration-tests/skip-integration-tests-pom.xml[tags=skip-integration-tests]
+----
+
+默认情况下，集成测试将运行，但此设置允许你通过以下命令行轻松禁用它们：
+
+[source,shell]
+----
+$ mvn verify -Dskip.it=true
+----
+
+'''
+[[integration-tests]]
+== Running Integration Tests
 While you may start your Spring Boot application very easily from your test (or test suite) itself, it may be desirable to handle that in the build itself.
 To make sure that the lifecycle of your Spring Boot application is properly managed around your integration tests, you can use the `start` and `stop` goals, as shown in the following example:
 
@@ -17,11 +102,8 @@ If you need to configure the JMX port, see xref:integration-tests.adoc#integrati
 
 You could also configure a more advanced setup to skip the integration tests when a specific property has been set, see xref:integration-tests.adoc#integration-tests.examples.skip[the dedicated example].
 
-
-
 [[integration-tests.no-starter-parent]]
 == Using Failsafe Without Spring Boot's Parent POM
-
 Spring Boot's Parent POM, `spring-boot-starter-parent`, configures Failsafe's `<classesDirectory>` to be `${project.build.outputDirectory}`.
 Without this configuration, which causes Failsafe to use the compiled classes rather than the repackaged jar, Failsafe cannot load your application's classes.
 If you are not using the parent POM, you should configure Failsafe in the same way, as shown in the following example:
@@ -35,16 +117,11 @@ include::partial$goals/start.adoc[leveloffset=+1]
 
 include::partial$goals/stop.adoc[leveloffset=+1]
 
-
-
 [[integration-tests.examples]]
 == Examples
 
-
-
 [[integration-tests.examples.random-port]]
 === Random Port for Integration Tests
-
 One nice feature of the Spring Boot test integration is that it can allocate a free port for the web application.
 When the `start` goal of the plugin is used, the Spring Boot application is started separately, making it difficult to pass the actual port to the integration test itself.
 
@@ -57,11 +134,8 @@ include::example$integration-tests/random-port-pom.xml[tags=random-port]
 
 You can now retrieve the `test.server.port` system property in any of your integration test to create a proper `URL` to the server.
 
-
-
 [[integration-tests.examples.jmx-port]]
 === Customize JMX Port
-
 The `jmxPort` property allows to customize the port the plugin uses to communicate with the Spring Boot application.
 
 This example shows how you can customize the port in case `9001` is already used:
@@ -73,11 +147,8 @@ include::example$integration-tests/customize-jmx-port-pom.xml[tags=customize-jmx
 
 TIP: If you need to configure the JMX port, make sure to do so in the global configuration as shown above so that it is shared by both goals.
 
-
-
 [[integration-tests.examples.skip]]
 === Skip Integration Tests
-
 The `skip` property allows to skip the execution of the Spring Boot maven plugin altogether.
 
 This example shows how you can skip integration tests with a command-line property and still make sure that the `repackage` goal runs:

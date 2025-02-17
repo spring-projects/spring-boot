@@ -1,6 +1,33 @@
-[[using.using-the-springbootapplication-annotation]]
-= Using the @SpringBootApplication Annotation
+= 使用 @SpringBootApplication 注解
+:encoding: utf-8
+:numbered:
 
+[[using.using-the-springbootapplication-annotation]]
+== 使用 @SpringBootApplication 注解
+许多 Spring Boot 开发者喜欢他们的应用程序使用自动配置、组件扫描，并能够在“应用程序类”上定义额外的配置。
+一个 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 注解可以用于启用这三个功能，即：
+
+* `javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]`：启用 xref:using/auto-configuration.adoc[Spring Boot 的自动配置机制]。
+* `javadoc:org.springframework.context.annotation.ComponentScan[format=annotation]`：在应用程序所在的包上启用 `javadoc:org.springframework.stereotype.Component[format=annotation]` 扫描（请参阅 xref:using/structuring-your-code.adoc[最佳实践]）。
+* `javadoc:org.springframework.boot.SpringBootConfiguration[format=annotation]`：在上下文中启用额外 bean 的注册或导入其他配置类。
+这是 Spring 标准 `javadoc:org.springframework.context.annotation.Configuration[format=annotation]` 的替代方案，有助于在集成测试中进行 xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.detecting-configuration[配置检测]。
+
+include-code::springapplication/MyApplication[]
+
+NOTE: `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 还提供了别名来自定义 `javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]` 和 `javadoc:org.springframework.context.annotation.ComponentScan[format=annotation]` 的属性。
+
+[NOTE]
+====
+这些功能都不是强制性的，你可以选择用它所启用的任何功能替换此单一注解。
+例如，你可能不希望在应用程序中使用组件扫描或配置属性扫描：
+
+include-code::individualannotations/MyApplication[]
+
+在此示例中，`MyApplication` 与其他 Spring Boot 应用程序一样，只是不会自动检测 `javadoc:org.springframework.stereotype.Component[format=annotation]` 注解的类和 `javadoc:org.springframework.boot.context.properties.ConfigurationProperties[format=annotation]` 注解的类，并且用户定义的 bean 是显式导入的（请参阅 `javadoc:org.springframework.context.annotation.Import[format=annotation]`）。
+====
+
+'''
+== Using the @SpringBootApplication Annotation
 Many Spring Boot developers like their apps to use auto-configuration, component scan and be able to define extra configuration on their "application class".
 A single javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotation can be used to enable those three features, that is:
 

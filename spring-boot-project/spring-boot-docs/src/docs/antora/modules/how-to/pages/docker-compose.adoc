@@ -1,13 +1,45 @@
-[[howto.docker-compose]]
 = Docker Compose
+:encoding: utf-8
+:numbered:
 
+[[howto.docker-compose]]
+== Docker Compose
+本节包含与 Spring Boot 中 Docker Compose 支持相关的主题。
+
+[[howto.docker-compose.jdbc-url]]
+== 自定义 JDBC URL
+当使用 `org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails` 与 Docker Compose 时，可以通过向服务应用 `org.springframework.boot.jdbc.parameters` 标签来自定义 JDBC URL 的参数。例如：
+
+```yaml
+services:
+  postgres:
+    image: 'postgres:15.3'
+    environment:
+      - 'POSTGRES_USER=myuser'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_DB=mydb'
+    ports:
+      - '5432:5432'
+    labels:
+      org.springframework.boot.jdbc.parameters: 'ssl=true&sslmode=require'
+```
+
+使用此 Docker Compose 文件后，使用的 JDBC URL 为 `jdbc:postgresql://127.0.0.1:5432/mydb?ssl=true&sslmode=require`。
+
+[[howto.docker-compose.sharing-services]]
+== 在多个应用程序之间共享服务
+如果你希望在多个应用程序之间共享服务，可以在其中一个应用程序中创建 `compose.yaml` 文件，然后在其他应用程序中使用配置属性 `spring.docker.compose.file` 来引用该 `compose.yaml` 文件。
+你还应将 `spring.docker.compose.lifecycle-management` 设置为 `start-only`，因为其默认值为 `start-and-stop`，停止一个应用程序也会关闭仍在运行的其他应用程序的共享服务。
+将其设置为 `start-only` 不会在应用程序停止时停止共享服务，但需要注意的是，如果你关闭所有应用程序，服务仍会保持运行。
+你可以通过在包含 `compose.yaml` 文件的目录中运行 `docker compose stop` 命令手动停止服务。
+
+'''
+[[howto.docker-compose]]
+== Docker Compose
 This section includes topics relating to the Docker Compose support in Spring Boot.
-
-
 
 [[howto.docker-compose.jdbc-url]]
 == Customizing the JDBC URL
-
 When using javadoc:org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails[] with Docker Compose, the parameters of the JDBC URL
 can be customized by applying the `org.springframework.boot.jdbc.parameters` label to the
 service. For example:
@@ -29,11 +61,8 @@ services:
 
 With this Docker Compose file in place, the JDBC URL used is `jdbc:postgresql://127.0.0.1:5432/mydb?ssl=true&sslmode=require`.
 
-
-
 [[howto.docker-compose.sharing-services]]
 == Sharing Services Between Multiple Applications
-
 If you want to share services between multiple applications, create the `compose.yaml` file in one of the applications and then use the configuration property configprop:spring.docker.compose.file[] in the other applications to reference the `compose.yaml` file.
 You should also set configprop:spring.docker.compose.lifecycle-management[] to `start-only`, as it defaults to `start-and-stop` and stopping one application would shut down the shared services for the other still running applications as well.
 Setting it to `start-only` won't stop the shared services on application stop, but a caveat is that if you shut down all applications, the services remain running.

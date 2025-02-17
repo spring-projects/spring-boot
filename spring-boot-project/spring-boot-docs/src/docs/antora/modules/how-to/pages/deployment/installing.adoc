@@ -1,13 +1,354 @@
+= 部署 Spring Boot 应用程序
+:encoding: utf-8
+:numbered:
+
+[[howto.deployment]]
+== 部署 Spring Boot 应用程序
+Spring Boot 灵活的打包选项为应用程序的部署提供了多种选择。你可以将 Spring Boot 应用程序部署到各种云平台、虚拟机/物理机，或者为 Unix 系统制作完全可执行的应用程序。
+
+本节介绍一些更常见的部署场景。
+
 [[howto.deployment.installing]]
-= Installing Spring Boot Applications
+== 安装 Spring Boot 应用程序
+除了直接使用 `java -jar` 运行 Spring Boot 应用程序外，还可以将其作为 `systemd`、`init.d` 或 Windows 服务运行。
 
+[[howto.deployment.installing.system-d]]
+== 作为 systemd 服务安装
+`systemd` 是 System V init 系统的继任者，现在被许多现代 Linux 发行版使用。Spring Boot 应用程序可以通过 `systemd` 的 "`service`" 脚本启动。
+
+假设你有一个打包为 uber jar 的 Spring Boot 应用程序位于 `/var/myapp` 中，要将其安装为 `systemd` 服务，请创建一个名为 `myapp.service` 的脚本并将其放置在 `/etc/systemd/system` 目录中。以下脚本提供了一个示例：
+
+[source]
+----
+[Unit]
+Description=myapp
+After=syslog.target network.target
+
+[Service]
+User=myapp
+Group=myapp
+
+Type=exec
+ExecStart=/path/to/java/home/bin/java -jar /var/myapp/myapp.jar
+WorkingDirectory=/var/myapp
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+----
+
+IMPORTANT: 请记得根据你的应用程序更改 `Description`、`User`、`Group`、`ExecStart` 和 `WorkingDirectory` 字段。
+
+NOTE: `ExecStart` 字段未声明脚本操作命令，这意味着默认使用 `run` 命令。
+
+运行应用程序的用户、PID 文件和控制台日志文件由 `systemd` 自身管理，因此必须通过在 "`service`" 脚本中使用适当的字段进行配置。有关更多详细信息，请参阅 [service unit configuration man page](https://www.freedesktop.org/software/systemd/man/systemd.service.html)。
+
+要将应用程序标记为在系统启动时自动启动，请使用以下命令：
+
+[source,shell]
+----
+$ systemctl enable myapp.service
+----
+
+运行 `man systemctl` 以获取更多详细信息。
+
+[[howto.deployment.installing.init-d]]
+== 作为 init.d 服务安装（System V）
+要将你的应用程序用作 `init.d` 服务，请配置其构建以生成 xref:deployment/installing.adoc[完全可执行的 jar]。
+
+WARNING: 完全可执行的 jar 通过在文件开头嵌入额外的脚本来工作。目前，某些工具不接受这种格式，因此你可能无法始终使用此技术。例如，`jar -xf` 可能会静默地无法提取已完全执行的 jar 或 war。建议仅在你打算直接执行它而不是使用 `java -jar` 运行或将其部署到 servlet 容器时，才使你的 jar 或 war 完全可执行。
+
+WARNING: zip64 格式的 jar 文件不能完全可执行。尝试这样做将导致在直接执行或使用 `java -jar` 时报告为损坏的 jar 文件。包含一个或多个 zip64 格式嵌套 jar 的标准格式 jar 文件可以完全可执行。
+
+要使用 Maven 创建 "`完全可执行`" 的 jar，请使用以下插件配置：
+
+[source,xml]
+----
+<plugin>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-maven-plugin</artifactId>
+	<configuration>
+		<executable>true</executable>
+	</configuration>
+</plugin>
+----
+
+以下示例显示了等效的 Gradle 配置：
+
+[source,gradle]
+----
+tasks.named('bootJar') {
+	launchScript()
+}
+----
+
+然后可以将其符号链接到 `init.d` 以支持标准的 `start`、`stop`、`restart` 和 `status` 命令。
+
+添加到完全可执行 jar 的默认启动脚本支持大多数 Linux 发行版，并在 CentOS 和 Ubuntu 上进行了测试。其他平台（如 OS X 和 FreeBSD）需要使用自定义脚本。默认脚本支持以下功能：
+
+* 以拥有 jar 文件的用户身份启动服务
+* 使用 `/var/run/<appname>/<appname>.pid` 跟踪应用程序的 PID
+* 将控制台日志写入 `/var/log/<appname>.log`
+
+假设你有一个 Spring Boot 应用程序安装在 `/var/myapp` 中，要将 Spring Boot 应用程序安装为 `init.d` 服务，请创建一个符号链接，如下所示：
+
+[source,shell]
+----
+$ sudo ln -s /var/myapp/myapp.jar /etc/init.d/myapp
+----
+
+安装后，你可以按常规方式启动和停止服务。例如，在基于 Debian 的系统上，你可以使用以下命令启动它：
+
+[source,shell]
+----
+$ service myapp start
+----
+
+TIP: 如果你的应用程序无法启动，请检查写入 `/var/log/<appname>.log` 的日志文件以查找错误。
+
+你还可以使用标准的操作系统工具将应用程序标记为自动启动。例如，在 Debian 上，你可以使用以下命令：
+
+[source,shell]
+----
+$ update-rc.d myapp defaults <priority>
+----
+
+[[howto.deployment.installing.init-d.securing]]
+=== 保护 init.d 服务
+NOTE: 以下是一组关于如何保护作为 init.d 服务运行的 Spring Boot 应用程序的指南。它并非旨在列出强化应用程序及其运行环境所需的所有内容。
+
+当以 root 身份执行时（如使用 root 启动 init.d 服务时），默认的可执行脚本会以 `RUN_AS_USER` 环境变量中指定的用户身份运行应用程序。如果未设置环境变量，则使用拥有 jar 文件的用户。你永远不应以 `root` 身份运行 Spring Boot 应用程序，因此 `RUN_AS_USER` 不应为 root，并且你的应用程序的 jar 文件也不应由 root 拥有。相反，创建一个特定用户来运行你的应用程序，并设置 `RUN_AS_USER` 环境变量或使用 `chown` 使其成为 jar 文件的所有者，如下例所示：
+
+[source,shell]
+----
+$ chown bootapp:bootapp your-app.jar
+----
+
+在这种情况下，默认的可执行脚本会以 `bootapp` 用户身份运行应用程序。
+
+TIP: 为了减少应用程序用户帐户被泄露的可能性，你应考虑防止其使用登录 shell。例如，你可以将帐户的 shell 设置为 `/usr/sbin/nologin`。
+
+你还应采取措施防止修改应用程序的 jar 文件。首先，配置其权限，使其不可写入，并且只能由其所有者读取或执行，如下例所示：
+
+[source,shell]
+----
+$ chmod 500 your-app.jar
+----
+
+其次，你还应采取措施限制应用程序或运行它的帐户被泄露时的损害。如果攻击者确实获得了访问权限，他们可以使 jar 文件可写并更改其内容。防止这种情况的一种方法是使用 `chattr` 使其不可变，如下例所示：
+
+[source,shell]
+----
+$ sudo chattr +i your-app.jar
+----
+
+这将防止任何用户（包括 root）修改 jar。
+
+如果使用 root 控制应用程序的服务，并且你使用 xref:deployment/installing.adoc#howto.deployment.installing.init-d.script-customization.when-running.conf-file[`.conf` 文件] 自定义其启动，则 `.conf` 文件由 root 用户读取和评估。应相应地保护它。使用 `chmod` 使文件只能由所有者读取，并使用 `chown` 使 root 成为所有者，如下例所示：
+
+[source,shell]
+----
+$ chmod 400 your-app.conf
+$ sudo chown root:root your-app.conf
+----
+
+[[howto.deployment.installing.init-d.script-customization]]
+=== 自定义启动脚本
+Maven 或 Gradle 插件编写的默认嵌入式启动脚本可以通过多种方式进行自定义。对于大多数人来说，使用默认脚本以及一些自定义通常就足够了。如果你发现无法自定义所需的内容，请使用 `embeddedLaunchScript` 选项完全编写自己的文件。
+
+[[howto.deployment.installing.init-d.script-customization.when-written]]
+==== 在编写启动脚本时自定义
+在将启动脚本写入 jar 文件时，通常可以自定义其某些元素。例如，init.d 脚本可以提供 "`描述`"。由于你事先知道描述（并且不需要更改），因此你可以在生成 jar 时提供它。
+
+要自定义写入的元素，请使用 Spring Boot Maven 插件的 `embeddedLaunchScriptProperties` 选项或 Spring Boot Gradle 插件的 `launchScript` 的 xref:gradle-plugin:packaging.adoc#packaging-executable.configuring.launch-script[`properties` 属性]。
+
+默认脚本支持以下属性替换：
+
+[cols="1,3,3,3"]
+|===
+| 名称 | 描述 | Gradle 默认值 | Maven 默认值
+
+| `mode`
+| 脚本模式。
+| `auto`
+| `auto`
+
+| `initInfoProvides`
+| "`INIT INFO`" 的 `Provides` 部分
+| `${task.baseName}`
+| `${project.artifactId}`
+
+| `initInfoRequiredStart`
+| "`INIT INFO`" 的 `Required-Start` 部分。
+| `$remote_fs $syslog $network`
+| `$remote_fs $syslog $network`
+
+| `initInfoRequiredStop`
+| "`INIT INFO`" 的 `Required-Stop` 部分。
+| `$remote_fs $syslog $network`
+| `$remote_fs $syslog $network`
+
+| `initInfoDefaultStart`
+| "`INIT INFO`" 的 `Default-Start` 部分。
+| `2 3 4 5`
+| `2 3 4 5`
+
+| `initInfoDefaultStop`
+| "`INIT INFO`" 的 `Default-Stop` 部分。
+| `0 1 6`
+| `0 1 6`
+
+| `initInfoShortDescription`
+| "`INIT INFO`" 的 `Short-Description` 部分。
+| `${project.description}` 的单行版本（回退到 `${task.baseName}`）
+| `${project.name}`
+
+| `initInfoDescription`
+| "`INIT INFO`" 的 `Description` 部分。
+| `${project.description}`（回退到 `${task.baseName}`）
+| `${project.description}`（回退到 `${project.name}`）
+
+| `initInfoChkconfig`
+| "`INIT INFO`" 的 `chkconfig` 部分
+| `2345 99 01`
+| `2345 99 01`
+
+| `confFolder`
+| `CONF_FOLDER` 的默认值
+| 包含 jar 的文件夹
+| 包含 jar 的文件夹
+
+| `inlinedConfScript`
+| 应内联在默认启动脚本中的文件脚本的引用。
+这可用于在加载任何外部配置文件之前设置环境变量，例如 `JAVA_OPTS`
+|
+|
+
+| `logFolder`
+| `LOG_FOLDER` 的默认值。
+仅对 `init.d` 服务有效
+|
+|
+
+| `logFilename`
+| `LOG_FILENAME` 的默认值。
+仅对 `init.d` 服务有效
+|
+|
+
+| `pidFolder`
+| `PID_FOLDER` 的默认值。
+仅对 `init.d` 服务有效
+|
+|
+
+| `pidFilename`
+| `PID_FOLDER` 中 PID 文件名称的默认值。
+仅对 `init.d` 服务有效
+|
+|
+
+| `useStartStopDaemon`
+| 当 `start-stop-daemon` 命令可用时，是否应使用它来控制进程
+| `true`
+| `true`
+
+| `stopWaitTime`
+| `STOP_WAIT_TIME` 的默认值（以秒为单位）。
+仅对 `init.d` 服务有效
+| 60
+| 60
+|===
+
+[[howto.deployment.installing.init-d.script-customization.when-running]]
+==== 在运行脚本时自定义
+对于需要在 jar 写入后自定义的脚本项，你可以使用环境变量或 xref:deployment/installing.adoc#howto.deployment.installing.init-d.script-customization.when-running.conf-file[配置文件]。
+
+默认脚本支持以下环境属性：
+
+[cols="1,6"]
+|===
+| 变量 | 描述
+
+| `MODE`
+| 操作的 "`模式`"。
+默认值取决于 jar 的构建方式，但通常为 `auto`（意味着它通过检查它是否是名为 `init.d` 的目录中的符号链接来猜测它是否是 init 脚本）。
+你可以显式将其设置为 `service`，以便 `stop\|start\|status\|restart` 命令工作，或者设置为 `run`，如果你希望在前台运行脚本。
+
+| `RUN_AS_USER`
+| 用于运行应用程序的用户。
+未设置时，将使用拥有 jar 文件的用户。
+
+| `USE_START_STOP_DAEMON`
+| 当 `start-stop-daemon` 命令可用时，是否应使用它来控制进程。
+默认为 `true`。
+
+| `PID_FOLDER`
+| pid 文件夹的根名称（默认为 `/var/run`）。
+
+| `LOG_FOLDER`
+| 放置日志文件的文件夹名称（默认为 `/var/log`）。
+
+| `CONF_FOLDER`
+| 从中读取 .conf 文件的文件夹名称（默认为与 jar 文件相同的文件夹）。
+
+| `LOG_FILENAME`
+| `LOG_FOLDER` 中日志文件的名称（默认为 `<appname>.log`）。
+
+| `APP_NAME`
+| 应用程序的名称。
+如果从符号链接运行 jar，脚本会猜测应用程序名称。
+如果它不是符号链接或你希望显式设置应用程序名称，这可能很有用。
+
+| `RUN_ARGS`
+| 传递给程序（Spring Boot 应用程序）的参数。
+
+| `JAVA_HOME`
+| 默认情况下，通过使用 `PATH` 发现 `java` 可执行文件的位置，但如果 `$JAVA_HOME/bin/java` 处有可执行文件，则可以显式设置它。
+
+| `JAVA_OPTS`
+| 启动 JVM 时传递给它的选项。
+
+| `JARFILE`
+| jar 文件的显式位置，以防脚本用于启动未实际嵌入的 jar。
+
+| `DEBUG`
+| 如果不为空，则在 shell 进程上设置 `-x` 标志，允许你查看脚本中的逻辑。
+
+| `STOP_WAIT_TIME`
+| 停止应用程序时等待强制关闭的时间（以秒为单位）（默认为 `60`）。
+|===
+
+NOTE: `PID_FOLDER`、`LOG_FOLDER` 和 `LOG_FILENAME` 变量仅对 `init.d` 服务有效。对于 `systemd`，等效的自定义是通过使用 "`service`" 脚本进行的。有关更多详细信息，请参阅 [service unit configuration man page](https://www.freedesktop.org/software/systemd/man/systemd.service.html)。
+
+[[howto.deployment.installing.init-d.script-customization.when-running.conf-file]]
+===== 使用 Conf 文件
+除了 `JARFILE` 和 `APP_NAME` 之外，前面列出的设置可以通过使用 `.conf` 文件进行配置。该文件应位于 jar 文件旁边，并具有相同的名称，但后缀为 `.conf` 而不是 `.jar`。例如，名为 `/var/myapp/myapp.jar` 的 jar 使用名为 `/var/myapp/myapp.conf` 的配置文件，如下例所示：
+
+.myapp.conf
+[source,properties]
+----
+JAVA_OPTS=-Xmx1024M
+LOG_FOLDER=/custom/log/folder
+----
+
+TIP: 如果你不喜欢将配置文件放在 jar 文件旁边，可以设置 `CONF_FOLDER` 环境变量以自定义配置文件的位置。
+
+要了解如何适当地保护此文件，请参阅 xref:deployment/installing.adoc#howto.deployment.installing.init-d.securing[保护 init.d 服务的指南]。
+
+[[howto.deployment.installing.windows-services]]
+== Microsoft Windows 服务
+Spring Boot 应用程序可以通过使用 https://github.com/kohsuke/winsw[`winsw`] 作为 Windows 服务启动。
+
+一个（https://github.com/snicoll/spring-boot-daemon[单独维护的示例]）逐步描述了如何为你的 Spring Boot 应用程序创建 Windows 服务。
+
+'''
+[[howto.deployment.installing]]
+== Installing Spring Boot Applications
 In addition to running Spring Boot applications by using `java -jar` directly, it is also possible to run them as `systemd`, `init.d` or Windows services.
-
-
 
 [[howto.deployment.installing.system-d]]
 == Installation as a systemd Service
-
 `systemd` is the successor of the System V init system and is now being used by many modern Linux distributions.
 Spring Boot applications can be launched by using `systemd` '`service`' scripts.
 
@@ -49,11 +390,8 @@ $ systemctl enable myapp.service
 
 Run `man systemctl` for more details.
 
-
-
 [[howto.deployment.installing.init-d]]
 == Installation as an init.d Service (System V)
-
 To use your application as `init.d` service, configure its build to produce a xref:deployment/installing.adoc[fully executable jar].
 
 CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
@@ -122,11 +460,8 @@ For example, on Debian, you could use the following command:
 $ update-rc.d myapp defaults <priority>
 ----
 
-
-
 [[howto.deployment.installing.init-d.securing]]
 === Securing an init.d Service
-
 NOTE: The following is a set of guidelines on how to secure a Spring Boot application that runs as an init.d service.
 It is not intended to be an exhaustive list of everything that should be done to harden an application and the environment in which it runs.
 
@@ -174,20 +509,14 @@ $ chmod 400 your-app.conf
 $ sudo chown root:root your-app.conf
 ----
 
-
-
 [[howto.deployment.installing.init-d.script-customization]]
 === Customizing the Startup Script
-
 The default embedded startup script written by the Maven or Gradle plugin can be customized in a number of ways.
 For most people, using the default script along with a few customizations is usually enough.
 If you find you cannot customize something that you need to, use the `embeddedLaunchScript` option to write your own file entirely.
 
-
-
 [[howto.deployment.installing.init-d.script-customization.when-written]]
 ==== Customizing the Start Script When It Is Written
-
 It often makes sense to customize elements of the start script as it is written into the jar file.
 For example, init.d scripts can provide a "`description`".
 Since you know the description up front (and it need not change), you may as well provide it when the jar is generated.
@@ -292,11 +621,8 @@ The following property substitutions are supported with the default script:
 | 60
 |===
 
-
-
 [[howto.deployment.installing.init-d.script-customization.when-running]]
 ==== Customizing a Script When It Runs
-
 For items of the script that need to be customized _after_ the jar has been written, you can use environment variables or a xref:deployment/installing.adoc#howto.deployment.installing.init-d.script-customization.when-running.conf-file[config file].
 
 The following environment properties are supported with the default script:
@@ -358,11 +684,8 @@ NOTE: The `PID_FOLDER`, `LOG_FOLDER`, and `LOG_FILENAME` variables are only vali
 For `systemd`, the equivalent customizations are made by using the '`service`' script.
 See the https://www.freedesktop.org/software/systemd/man/systemd.service.html[service unit configuration man page] for more details.
 
-
-
 [[howto.deployment.installing.init-d.script-customization.when-running.conf-file]]
 ===== Using a Conf File
-
 With the exception of `JARFILE` and `APP_NAME`, the settings listed in the preceding section can be configured by using a `.conf` file.
 The file is expected to be next to the jar file and have the same name but suffixed with `.conf` rather than `.jar`.
 For example, a jar named `/var/myapp/myapp.jar` uses the configuration file named `/var/myapp/myapp.conf`, as shown in the following example:
@@ -374,15 +697,12 @@ JAVA_OPTS=-Xmx1024M
 LOG_FOLDER=/custom/log/folder
 ----
 
-TIP:  If you do not like having the config file next to the jar file, you can set a `CONF_FOLDER` environment variable to customize the location of the config file.
+TIP: If you do not like having the config file next to the jar file, you can set a `CONF_FOLDER` environment variable to customize the location of the config file.
 
 To learn about securing this file appropriately, see xref:deployment/installing.adoc#howto.deployment.installing.init-d.securing[the guidelines for securing an init.d service].
 
-
-
 [[howto.deployment.installing.windows-services]]
 == Microsoft Windows Services
-
 A Spring Boot application can be started as a Windows service by using https://github.com/kohsuke/winsw[`winsw`].
 
 A (https://github.com/snicoll/spring-boot-daemon[separately maintained sample]) describes step-by-step how you can create a Windows service for your Spring Boot application.

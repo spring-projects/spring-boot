@@ -1,6 +1,43 @@
-[[io.email]]
-= Sending Email
+= 发送电子邮件
+:encoding: utf-8
+:numbered:
 
+[[io.email]]
+== 发送电子邮件
+Spring 框架通过使用 javadoc:org.springframework.mail.javamail.JavaMailSender[] 接口提供了发送电子邮件的抽象，Spring Boot 也为其提供了自动配置以及一个 starter 模块。
+
+TIP: 有关如何使用 javadoc:org.springframework.mail.javamail.JavaMailSender[] 的详细说明，请参阅 {url-spring-framework-docs}/integration/email.html[参考文档]。
+
+如果 `spring.mail.host` 和相关库（由 `spring-boot-starter-mail` 定义）可用，并且不存在任何 javadoc:org.springframework.mail.javamail.JavaMailSender[]，则会创建一个默认的 javadoc:org.springframework.mail.javamail.JavaMailSender[]。
+可以通过 `spring.mail` 命名空间中的配置项进一步自定义发送者。
+有关更多详细信息，请参阅 javadoc:org.springframework.boot.autoconfigure.mail.MailProperties[]。
+
+特别是，某些默认超时值是无限的，你可能希望更改这些值以避免线程被无响应的邮件服务器阻塞，如下例所示：
+
+[configprops,yaml]
+----
+spring:
+  mail:
+    properties:
+      "[mail.smtp.connectiontimeout]": 5000
+      "[mail.smtp.timeout]": 3000
+      "[mail.smtp.writetimeout]": 5000
+----
+
+还可以使用 JNDI 中的现有 javadoc:jakarta.mail.Session[] 配置 javadoc:org.springframework.mail.javamail.JavaMailSender[]：
+
+[configprops,yaml]
+----
+spring:
+  mail:
+    jndi-name: "mail/Session"
+----
+
+当设置了 `jndi-name` 时，它将优先于所有其他与 Session 相关的设置。
+
+'''
+[[io.email]]
+== Sending Email
 The Spring Framework provides an abstraction for sending email by using the javadoc:org.springframework.mail.javamail.JavaMailSender[] interface, and Spring Boot provides auto-configuration for it as well as a starter module.
 
 TIP: See the {url-spring-framework-docs}/integration/email.html[reference documentation] for a detailed explanation of how you can use javadoc:org.springframework.mail.javamail.JavaMailSender[].

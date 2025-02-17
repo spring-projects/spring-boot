@@ -1,5 +1,68 @@
+= 系统要求
+:encoding: utf-8
+:numbered:
+
 [[getting-started.system-requirements]]
-= System Requirements
+== 系统要求
+Spring Boot 3.4.1 至少需要 https://www.java.com[Java 17]，并兼容包括 Java 23 在内的更高版本。
+同时需要 https://docs.spring.io/spring-framework/reference/[Spring Framework 6.2.1] 或更高版本。
+
+以下构建工具提供了明确的构建支持：
+
+|===
+| 构建工具 | 版本
+
+| Maven
+| 3.6.3 或更高版本
+
+| Gradle
+| Gradle 7.x（7.6.4 或更高版本）或 8.x（8.4 或更高版本）
+|===
+
+[[getting-started.system-requirements.servlet-containers]]
+== Servlet 容器
+
+Spring Boot 支持以下嵌入式 Servlet 容器：
+
+|===
+| 名称 | Servlet 版本
+
+| Tomcat 10.1（10.1.25 或更高版本）
+| 6.0
+
+| Jetty 12.0
+| 6.0
+
+| Undertow 2.3
+| 6.0
+|===
+
+你还可以将 Spring Boot 应用程序部署到任何兼容 Servlet 5.0+ 的容器中。
+
+[[getting-started.system-requirements.graal]]
+== GraalVM 原生镜像
+
+Spring Boot 应用程序可以使用 GraalVM 22.3 或更高版本 xref:reference:packaging/native-image/introducing-graalvm-native-images.adoc[转换为原生镜像]。
+
+可以使用 https://github.com/graalvm/native-build-tools[原生构建工具] Gradle/Maven 插件或 GraalVM 提供的 `native-image` 工具创建镜像。
+你还可以使用 https://github.com/paketo-buildpacks/native-image[native-image Paketo 构建包] 创建原生镜像。
+
+支持的版本如下：
+
+|===
+| 名称 | 版本
+
+| GraalVM Community
+| 22.3
+
+| Native Build Tools
+| 0.10.4
+|===
+
+'''
+
+[[getting-started.system-requirements]]
+== System Requirements
 
 Spring Boot {version-spring-boot} requires at least https://www.java.com[Java 17] and is compatible with versions up to and including Java 23.
 {url-spring-framework-docs}/[Spring Framework {version-spring-framework}] or above is also required.

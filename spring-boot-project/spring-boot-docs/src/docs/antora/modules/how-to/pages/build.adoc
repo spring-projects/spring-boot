@@ -1,14 +1,300 @@
-[[howto.build]]
-= Build
+= 构建
+:encoding: utf-8
+:numbered:
 
+[[howto.build]]
+== 构建
+Spring Boot 包含了 Maven 和 Gradle 的构建插件。本节回答关于这些插件的常见问题。
+
+[[howto.build.generate-info]]
+== 生成构建信息
+Maven 插件和 Gradle 插件都可以生成包含项目坐标、名称和版本的构建信息。插件还可以通过配置添加额外的属性。当存在这样的文件时，Spring Boot 会自动配置一个 javadoc:org.springframework.boot.info.BuildProperties[] bean。
+
+要使用 Maven 生成构建信息，请为 `build-info` 目标添加一个执行，如下例所示：
+
+[source,xml,subs="verbatim,attributes"]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>{version-spring-boot}</version>
+			<executions>
+				<execution>
+					<goals>
+						<goal>build-info</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+----
+
+TIP: 有关更多详细信息，请参阅 xref:maven-plugin:build-info.adoc[Spring Boot Maven 插件文档]。
+
+以下示例在 Gradle 中执行相同的操作：
+
+[source,gradle]
+----
+springBoot {
+	buildInfo()
+}
+----
+
+TIP: 有关更多详细信息，请参阅 xref:gradle-plugin:integrating-with-actuator.adoc[Spring Boot Gradle 插件文档]。
+
+[[howto.build.generate-git-info]]
+== 生成 Git 信息
+Maven 和 Gradle 都可以生成一个 `git.properties` 文件，其中包含项目构建时 `git` 源代码仓库的状态信息。
+
+对于 Maven 用户，`spring-boot-starter-parent` POM 包含一个预配置的插件来生成 `git.properties` 文件。要使用它，请将以下 https://github.com/git-commit-id/git-commit-id-maven-plugin[`Git Commit Id Plugin`] 声明添加到你的 POM 中：
+
+[source,xml]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>io.github.git-commit-id</groupId>
+			<artifactId>git-commit-id-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
+----
+
+Gradle 用户可以通过使用 https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] 插件实现相同的结果，如下例所示：
+
+[source,gradle]
+----
+plugins {
+	id "com.gorylenko.gradle-git-properties" version "2.4.1"
+}
+----
+
+Maven 和 Gradle 插件都允许配置 `git.properties` 中包含的属性。
+
+TIP: `git.properties` 中的提交时间应匹配以下格式：`yyyy-MM-dd'T'HH:mm:ssZ`。这是上述两个插件的默认格式。使用此格式可以让时间解析为 javadoc:java.util.Date[]，并且当序列化为 JSON 时，其格式由 Jackson 的日期序列化配置设置控制。
+
+[[howto.build.generate-cyclonedx-sbom]]
+== 生成 CycloneDX SBOM
+Maven 和 Gradle 都可以在项目构建时生成 CycloneDX SBOM。
+
+对于 Maven 用户，`spring-boot-starter-parent` POM 包含一个预配置的插件来生成 SBOM。要使用它，请将以下 {url-cyclonedx-docs-maven-plugin}[`cyclonedx-maven-plugin`] 声明添加到你的 POM 中：
+
+[source,xml]
+----
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+----
+
+Gradle 用户可以通过使用 {url-cyclonedx-docs-gradle-plugin}[`cyclonedx-gradle-plugin`] 插件实现相同的结果，如下例所示：
+
+[source,gradle]
+----
+plugins {
+    id 'org.cyclonedx.bom' version '1.10.0'
+}
+----
+
+[[howto.build.customize-dependency-versions]]
+== 自定义依赖版本
+`spring-boot-dependencies` POM 管理常见依赖的版本。Spring Boot 的 Maven 和 Gradle 插件允许使用构建属性自定义这些管理的依赖版本。
+
+WARNING: 每个 Spring Boot 版本都是针对这组特定的第三方依赖进行设计和测试的。覆盖版本可能会导致兼容性问题。
+
+要使用 Maven 覆盖依赖版本，请参阅 Maven 插件文档中的 xref:maven-plugin:using.adoc[]。
+
+要在 Gradle 中覆盖依赖版本，请参阅 Gradle 插件文档中的 xref:gradle-plugin:managing-dependencies.adoc#managing-dependencies.dependency-management-plugin.customizing[]。
+
+[[howto.build.create-an-executable-jar-with-maven]]
+== 使用 Maven 创建可执行 JAR
+`spring-boot-maven-plugin` 可用于创建可执行的“`fat`” JAR。如果你使用 `spring-boot-starter-parent` POM，你可以声明该插件，你的 jar 将被重新打包如下：
+
+[source,xml]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
+----
+
+如果你不使用父 POM，你仍然可以使用该插件。但是，你必须额外添加一个 `<executions>` 部分，如下所示：
+
+[source,xml,subs="verbatim,attributes"]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>{version-spring-boot}</version>
+			<executions>
+				<execution>
+					<goals>
+						<goal>repackage</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+----
+
+有关完整的使用详细信息，请参阅 xref:maven-plugin:packaging.adoc#packaging.repackage-goal[插件文档]。
+
+[[howto.build.use-a-spring-boot-application-as-dependency]]
+== 使用 Spring Boot 应用程序作为依赖项
+与 war 文件一样，Spring Boot 应用程序不打算用作依赖项。如果你的应用程序包含要与其他项目共享的类，推荐的方法是将该代码移动到单独的模块中。然后，你的应用程序和其他项目可以依赖该模块。
+
+如果你无法按照上述建议重新排列代码，则必须配置 Spring Boot 的 Maven 和 Gradle 插件以生成适合用作依赖项的单独工件。可执行归档文件不能用作依赖项，因为 xref:specification:executable-jar/nested-jars.adoc#appendix.executable-jar.nested-jars.jar-structure[可执行 jar 格式] 将应用程序类打包在 `BOOT-INF/classes` 中。这意味着当可执行 jar 用作依赖项时，无法找到它们。
+
+要生成两个工件，一个可以用作依赖项，另一个是可执行的，必须指定一个分类器。此分类器应用于可执行归档文件的名称，保留默认归档文件用作依赖项。
+
+要在 Maven 中配置 `exec` 分类器，你可以使用以下配置：
+
+[source,xml]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<classifier>exec</classifier>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+----
+
+[[howto.build.extract-specific-libraries-when-an-executable-jar-runs]]
+== 在可执行 JAR 运行时提取特定库
+可执行 jar 中的大多数嵌套库不需要解压即可运行。然而，某些库可能会有问题。例如，JRuby 包含其自己的嵌套 jar 支持，它假定 `jruby-complete.jar` 始终作为文件直接可用。
+
+为了处理任何有问题的库，你可以标记特定的嵌套 jar 在可执行 jar 首次运行时自动解压。这些嵌套 jar 被写入由 `java.io.tmpdir` 系统属性标识的临时目录下。
+
+WARNING: 应确保你的操作系统配置为在应用程序仍在运行时不会删除已解压到临时目录的 jar。
+
+例如，要指示 JRuby 应使用 Maven 插件标记为解压，你可以添加以下配置：
+
+[source,xml]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<requiresUnpack>
+					<dependency>
+						<groupId>org.jruby</groupId>
+						<artifactId>jruby-complete</artifactId>
+					</dependency>
+				</requiresUnpack>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+----
+
+[[howto.build.create-a-nonexecutable-jar]]
+== 创建带有排除项的非可执行 JAR
+通常，如果你有一个可执行和一个非可执行 jar 作为两个单独的构建产品，可执行版本具有库 jar 中不需要的额外配置文件。例如，`application.yaml` 配置文件可能会从非可执行 JAR 中排除。
+
+在 Maven 中，可执行 jar 必须是主要工件，你可以为库添加一个分类 jar，如下所示：
+
+[source,xml]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+		<plugin>
+			<artifactId>maven-jar-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>lib</id>
+					<phase>package</phase>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+					<configuration>
+						<classifier>lib</classifier>
+						<excludes>
+							<exclude>application.yaml</exclude>
+						</excludes>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+----
+
+[[howto.build.remote-debug-maven]]
+== 远程调试使用 Maven 启动的 Spring Boot 应用程序
+要将远程调试器附加到使用 Maven 启动的 Spring Boot 应用程序，你可以使用 xref:maven-plugin:index.adoc[maven 插件] 的 `jvmArguments` 属性。
+
+有关更多详细信息，请参阅 xref:maven-plugin:run.adoc#run.examples.debug[此示例]。
+
+[[howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib]]
+== 在不使用 spring-boot-antlib 的情况下使用 Ant 构建可执行归档文件
+要使用 Ant 构建，你需要获取依赖项、编译，然后创建 jar 或 war 归档文件。要使其可执行，你可以使用 `spring-boot-antlib` 模块，或者按照以下说明操作：
+
+1. 如果你正在构建一个 jar，请将应用程序的类和资源打包在嵌套的 `BOOT-INF/classes` 目录中。如果你正在构建一个 war，请将应用程序的类打包在嵌套的 `WEB-INF/classes` 目录中，就像通常那样。
+2. 将运行时依赖项添加到嵌套的 `BOOT-INF/lib` 目录（对于 jar）或 `WEB-INF/lib` 目录（对于 war）。记住 *不要* 压缩归档文件中的条目。
+3. 将 `provided`（嵌入式容器）依赖项添加到嵌套的 `BOOT-INF/lib` 目录（对于 jar）或 `WEB-INF/lib-provided` 目录（对于 war）。记住 *不要* 压缩归档文件中的条目。
+4. 将 `spring-boot-loader` 类添加到归档文件的根目录（以便 `Main-Class` 可用）。
+5. 使用适当的启动器（例如 javadoc:org.springframework.boot.loader.launch.JarLauncher[] 用于 jar 文件）作为清单中的 `Main-Class` 属性，并指定它需要的其他属性作为清单条目 —— 主要是通过设置 `Start-Class` 属性。
+
+以下示例展示了如何使用 Ant 构建可执行归档文件：
+
+[source,xml]
+----
+<target name="build" depends="compile">
+	<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">
+		<mappedresources>
+			<fileset dir="target/classes" />
+			<globmapper from="*" to="BOOT-INF/classes/*"/>
+		</mappedresources>
+		<mappedresources>
+			<fileset dir="src/main/resources" erroronmissingdir="false"/>
+			<globmapper from="*" to="BOOT-INF/classes/*"/>
+		</mappedresources>
+		<mappedresources>
+			<fileset dir="${lib.dir}/runtime" />
+			<globmapper from="*" to="BOOT-INF/lib/*"/>
+		</mappedresources>
+		<zipfileset src="${lib.dir}/loader/spring-boot-loader-jar-${spring-boot.version}.jar" />
+		<manifest>
+			<attribute name="Main-Class" value="org.springframework.boot.loader.launch.JarLauncher" />
+			<attribute name="Start-Class" value="${start-class}" />
+		</manifest>
+	</jar>
+</target>
+----
+
+'''
+[[howto.build]]
+== Build
 Spring Boot includes build plugins for Maven and Gradle.
 This section answers common questions about these plugins.
 
-
-
 [[howto.build.generate-info]]
 == Generate Build Information
-
 Both the Maven plugin and the Gradle plugin allow generating build information containing the coordinates, name, and version of the project.
 The plugins can also be configured to add additional properties through configuration.
 When such a file is present, Spring Boot auto-configures a javadoc:org.springframework.boot.info.BuildProperties[] bean.
@@ -48,11 +334,8 @@ springBoot {
 
 TIP: See the xref:gradle-plugin:integrating-with-actuator.adoc[Spring Boot Gradle Plugin documentation] for more details.
 
-
-
 [[howto.build.generate-git-info]]
 == Generate Git Information
-
 Both Maven and Gradle allow generating a `git.properties` file containing information about the state of your `git` source code repository when the project was built.
 
 For Maven users, the `spring-boot-starter-parent` POM includes a pre-configured plugin to generate a `git.properties` file.
@@ -85,11 +368,8 @@ TIP: The commit time in `git.properties` is expected to match the following form
 This is the default format for both plugins listed above.
 Using this format lets the time be parsed into a javadoc:java.util.Date[] and its format, when serialized to JSON, to be controlled by Jackson's date serialization configuration settings.
 
-
-
 [[howto.build.generate-cyclonedx-sbom]]
 == Generate a CycloneDX SBOM
-
 Both Maven and Gradle allow generating a CycloneDX SBOM at project build time.
 
 For Maven users, the `spring-boot-starter-parent` POM includes a pre-configured plugin to generate the SBOM.
@@ -116,11 +396,8 @@ plugins {
 }
 ----
 
-
-
 [[howto.build.customize-dependency-versions]]
 == Customize Dependency Versions
-
 The `spring-boot-dependencies` POM manages the versions of common dependencies.
 The Spring Boot plugins for Maven and Gradle allow these managed dependency versions to be customized using build properties.
 
@@ -131,11 +408,8 @@ To override dependency versions with Maven, see xref:maven-plugin:using.adoc[] i
 
 To override dependency versions in Gradle, see xref:gradle-plugin:managing-dependencies.adoc#managing-dependencies.dependency-management-plugin.customizing[] in the Gradle plugin's documentation.
 
-
-
 [[howto.build.create-an-executable-jar-with-maven]]
 == Create an Executable JAR with Maven
-
 The `spring-boot-maven-plugin` can be used to create an executable "`fat`" JAR.
 If you use the `spring-boot-starter-parent` POM, you can declare the plugin and your jars are repackaged as follows:
 
@@ -176,11 +450,8 @@ However, you must additionally add an `<executions>` section, as follows:
 
 See the xref:maven-plugin:packaging.adoc#packaging.repackage-goal[plugin documentation] for full usage details.
 
-
-
 [[howto.build.use-a-spring-boot-application-as-dependency]]
 == Use a Spring Boot Application as a Dependency
-
 Like a war file, a Spring Boot application is not intended to be used as a dependency.
 If your application contains classes that you want to share with other projects, the recommended approach is to move that code into a separate module.
 The separate module can then be depended upon by your application and other projects.
@@ -209,11 +480,8 @@ To configure a classifier of `exec` in Maven, you can use the following configur
 </build>
 ----
 
-
-
 [[howto.build.extract-specific-libraries-when-an-executable-jar-runs]]
 == Extract Specific Libraries When an Executable Jar Runs
-
 Most nested libraries in an executable jar do not need to be unpacked in order to run.
 However, certain libraries can have problems.
 For example, JRuby includes its own nested jar support, which assumes that the `jruby-complete.jar` is always directly available as a file in its own right.
@@ -245,11 +513,8 @@ For example, to indicate that JRuby should be flagged for unpacking by using the
 </build>
 ----
 
-
-
 [[howto.build.create-a-nonexecutable-jar]]
 == Create a Non-executable JAR with Exclusions
-
 Often, if you have an executable and a non-executable jar as two separate build products, the executable version has additional configuration files that are not needed in a library jar.
 For example, the `application.yaml` configuration file might be excluded from the non-executable JAR.
 
@@ -285,20 +550,14 @@ In Maven, the executable jar must be the main artifact and you can add a classif
 </build>
 ----
 
-
-
 [[howto.build.remote-debug-maven]]
 == Remote Debug a Spring Boot Application Started with Maven
-
 To attach a remote debugger to a Spring Boot application that was started with Maven, you can use the `jvmArguments` property of the xref:maven-plugin:index.adoc[maven plugin].
 
 See xref:maven-plugin:run.adoc#run.examples.debug[this example] for more details.
 
-
-
 [[howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib]]
 == Build an Executable Archive From Ant without Using spring-boot-antlib
-
 To build with Ant, you need to grab dependencies, compile, and then create a jar or war archive.
 To make it executable, you can either use the `spring-boot-antlib` module or you can follow these instructions:
 

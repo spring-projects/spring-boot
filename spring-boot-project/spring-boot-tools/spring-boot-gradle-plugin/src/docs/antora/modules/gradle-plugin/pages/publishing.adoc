@@ -1,11 +1,38 @@
 [[publishing-your-application]]
 = Publishing your Application
 
+[[publishing-your-application.maven-publish]]
+== 使用 Maven-publish 插件发布
+要发布你的 Spring Boot jar 或 war，请使用 `MavenPublication` 上的 `artifact` 方法将其添加到发布中。
+将生成你希望发布的产物的任务传递给 `artifact` 方法。
+例如，要发布由默认 `bootJar` 任务生成的产物：
 
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$publishing/maven-publish.gradle[tags=publishing]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$publishing/maven-publish.gradle.kts[tags=publishing]
+----
+======
 
+[[publishing-your-application.distribution]]
+== 使用 Application 插件分发
+当应用 {url-gradle-docs-application-plugin}[`application` 插件] 时，会创建一个名为 `boot` 的分发。
+此分发包含由 `bootJar` 或 `bootWar` 任务生成的归档文件，以及用于在类 Unix 平台和 Windows 上启动它的脚本。
+可以通过 `bootDistZip` 和 `bootDistTar` 任务分别构建 zip 和 tar 分发。
+要使用 `application` 插件，必须将其 `mainClassName` 属性配置为应用程序主类的名称。
+
+'''
 [[publishing-your-application.maven-publish]]
 == Publishing with the Maven-publish Plugin
-
 To publish your Spring Boot jar or war, add it to the publication using the `artifact` method on `MavenPublication`.
 Pass the task that produces that artifact that you wish to publish to the `artifact` method.
 For example, to publish the artifact produced by the default `bootJar` task:
@@ -26,11 +53,8 @@ include::example$publishing/maven-publish.gradle.kts[tags=publishing]
 ----
 ======
 
-
-
 [[publishing-your-application.distribution]]
 == Distributing with the Application Plugin
-
 When the {url-gradle-docs-application-plugin}[`application` plugin] is applied a distribution named `boot` is created.
 This distribution contains the archive produced by the `bootJar` or `bootWar` task and scripts to launch it on Unix-like platforms and Windows.
 Zip and tar distributions can be built by the `bootDistZip` and `bootDistTar` tasks respectively.

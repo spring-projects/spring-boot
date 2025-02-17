@@ -1,11 +1,126 @@
-[[integrating-with-actuator]]
 = Integrating with Actuator
+:encoding: utf-8
+:numbered:
 
+[[integrating-with-actuator]]
+== 与 Actuator 集成
 
+[[integrating-with-actuator.build-info]]
+== 生成构建信息
+Spring Boot Actuator 的 `info` 端点会在存在 `META-INF/build-info.properties` 文件时自动发布有关构建的信息。
+提供了一个 {apiref-gradle-plugin-boot-build-info}[`BuildInfo`] 任务来生成此文件。
+使用该任务的最简单方法是通过插件的 DSL：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-basic.gradle[tags=build-info]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-basic.gradle.kts[tags=build-info]
+----
+======
+
+这将配置一个名为 `bootBuildInfo` 的 {apiref-gradle-plugin-boot-build-info}[`BuildInfo`] 任务，并且如果存在，将使 Java 插件的 `classes` 任务依赖于它。
+任务的目标目录将是主源集资源输出目录中的 `META-INF`（通常为 `build/resources/main`）。
+
+默认情况下，生成的构建信息是从项目中派生的：
+
+|===
+| 属性 | 默认值
+
+| `build.artifact`
+| `bootJar` 或 `bootWar` 任务的基本名称
+
+| `build.group`
+| 项目的组
+
+| `build.name`
+| 项目的名称
+
+| `build.version`
+| 项目的版本
+
+| `build.time`
+| 项目构建的时间
+
+|===
+
+可以使用 DSL 自定义这些属性：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-custom-values.gradle[tags=custom-values]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-custom-values.gradle.kts[tags=custom-values]
+----
+======
+
+要从生成的构建信息中排除任何默认属性，请将其名称添加到排除列表中。
+例如，可以按如下方式排除 `time` 属性：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-exclude-time.gradle[tags=exclude-time]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-exclude-time.gradle.kts[tags=exclude-time]
+----
+======
+
+`build.time` 的默认值是项目构建时的时刻。
+这样做的一个副作用是任务永远不会是最新的。
+因此，构建将花费更长的时间，因为包括项目测试在内的更多任务将不得不执行。
+另一个副作用是任务的输出将始终更改，因此构建将不是真正可重复的。
+如果你更看重构建性能或可重复性，而不是 `build.time` 属性的准确性，请按前面的示例排除 `time` 属性。
+
+还可以将其他属性添加到构建信息中：
+
+[tabs]
+======
+Groovy::
++
+[source,groovy,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-additional.gradle[tags=additional]
+----
+Kotlin::
++
+[source,kotlin,indent=0,subs="verbatim,attributes"]
+----
+include::example$integrating-with-actuator/build-info-additional.gradle.kts[tags=additional]
+----
+======
+
+可以通过使用 `Provider` 延迟计算附加属性的值。
+
+'''
+[[integrating-with-actuator]]
+== Integrating with Actuator
 
 [[integrating-with-actuator.build-info]]
 == Generating Build Information
-
 Spring Boot Actuator's `info` endpoint automatically publishes information about your build in the presence of a `META-INF/build-info.properties` file.
 A {apiref-gradle-plugin-boot-build-info}[`BuildInfo`] task is provided to generate this file.
 The easiest way to use the task is through the plugin's DSL:

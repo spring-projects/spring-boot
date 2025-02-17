@@ -1,18 +1,93 @@
-[[messaging.rsocket]]
 = RSocket
+:encoding: utf-8
+:numbered:
 
+[[messaging.rsocket]]
+== RSocket
+https://rsocket.io[RSocket] 是一种用于字节流传输的二进制协议。
+它通过单一连接上的异步消息传递实现对称的交互模型。
+
+Spring Framework 的 `spring-messaging` 模块提供了对 RSocket 请求者和响应者的支持，无论是在客户端还是服务器端。
+有关更多详细信息，包括 RSocket 协议的概述，请参阅 Spring Framework 参考文档中的 {url-spring-framework-docs}/rsocket.html#rsocket-spring[RSocket 部分]。
+
+[[messaging.rsocket.strategies-auto-configuration]]
+== RSocket 策略自动配置
+Spring Boot 自动配置一个 javadoc:org.springframework.messaging.rsocket.RSocketStrategies[] bean，该 bean 提供了编码和解码 RSocket 有效负载所需的所有基础设施。
+默认情况下，自动配置将尝试按顺序配置以下内容：
+
+1. 使用 Jackson 的 https://cbor.io/[CBOR] 编解码器
+2. 使用 Jackson 的 JSON 编解码器
+
+`spring-boot-starter-rsocket` starter 提供了这两个依赖项。
+有关自定义可能性的更多信息，请参阅 xref:features/json.adoc#features.json.jackson[Jackson 支持部分]。
+
+开发者可以通过创建实现 javadoc:org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer[] 接口的 bean 来自定义 javadoc:org.springframework.messaging.rsocket.RSocketStrategies[] 组件。
+请注意，它们的 javadoc:org.springframework.core.annotation.Order[format=annotation] 很重要，因为它决定了编解码器的顺序。
+
+[[messaging.rsocket.server-auto-configuration]]
+== RSocket 服务器自动配置
+Spring Boot 提供了 RSocket 服务器的自动配置。
+所需的依赖项由 `spring-boot-starter-rsocket` 提供。
+
+Spring Boot 允许通过 WebFlux 服务器暴露 WebSocket 上的 RSocket，或者启动一个独立的 RSocket 服务器。
+这取决于应用程序的类型及其配置。
+
+对于 WebFlux 应用程序（即类型为 javadoc:org.springframework.boot.WebApplicationType#REACTIVE[] 的应用程序），只有在以下属性匹配时，RSocket 服务器才会插入到 Web 服务器中：
+
+[configprops,yaml]
+----
+spring:
+  rsocket:
+    server:
+      mapping-path: "/rsocket"
+      transport: "websocket"
+----
+
+WARNING: 只有在使用 Reactor Netty 时，才支持将 RSocket 插入到 Web 服务器中，因为 RSocket 本身是用该库构建的。
+
+或者，RSocket TCP 或 WebSocket 服务器可以作为独立的嵌入式服务器启动。
+除了依赖项要求外，唯一的必要配置是为该服务器定义一个端口：
+
+[configprops,yaml]
+----
+spring:
+  rsocket:
+    server:
+      port: 9898
+----
+
+[[messaging.rsocket.messaging]]
+== Spring Messaging RSocket 支持
+Spring Boot 将为 RSocket 自动配置 Spring Messaging 基础设施。
+
+这意味着 Spring Boot 将创建一个 javadoc:org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler[] bean，该 bean 将处理应用程序的 RSocket 请求。
+
+[[messaging.rsocket.requester]]
+== 使用 RSocketRequester 调用 RSocket 服务
+一旦在服务器和客户端之间建立了 javadoc:io.rsocket.RSocket[] 通道，任何一方都可以向另一方发送或接收请求。
+
+作为服务器，你可以在 RSocket javadoc:org.springframework.stereotype.Controller[format=annotation] 的任何处理程序方法中注入一个 javadoc:org.springframework.messaging.rsocket.RSocketRequester[] 实例。
+作为客户端，你需要首先配置并建立 RSocket 连接。
+Spring Boot 为此类情况自动配置了一个 javadoc:org.springframework.messaging.rsocket.RSocketRequester$Builder[]，并使用预期的编解码器，同时应用任何 javadoc:org.springframework.messaging.rsocket.RSocketConnectorConfigurer[] bean。
+
+javadoc:org.springframework.messaging.rsocket.RSocketRequester$Builder[] 实例是一个原型 bean，这意味着每个注入点都会为你提供一个新的实例。
+这是有意为之的，因为此构建器是有状态的，你不应使用同一实例创建具有不同设置的请求者。
+
+以下代码展示了一个典型示例：
+
+include-code::MyService[]
+
+'''
+[[messaging.rsocket]]
+== RSocket
 https://rsocket.io[RSocket] is a binary protocol for use on byte stream transports.
 It enables symmetric interaction models through async message passing over a single connection.
-
 
 The `spring-messaging` module of the Spring Framework provides support for RSocket requesters and responders, both on the client and on the server side.
 See the {url-spring-framework-docs}/rsocket.html#rsocket-spring[RSocket section] of the Spring Framework reference for more details, including an overview of the RSocket protocol.
 
-
-
 [[messaging.rsocket.strategies-auto-configuration]]
 == RSocket Strategies Auto-configuration
-
 Spring Boot auto-configures an javadoc:org.springframework.messaging.rsocket.RSocketStrategies[] bean that provides all the required infrastructure for encoding and decoding RSocket payloads.
 By default, the auto-configuration will try to configure the following (in order):
 
@@ -25,11 +100,8 @@ See the xref:features/json.adoc#features.json.jackson[Jackson support section] t
 Developers can customize the javadoc:org.springframework.messaging.rsocket.RSocketStrategies[] component by creating beans that implement the javadoc:org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer[] interface.
 Note that their javadoc:org.springframework.core.annotation.Order[format=annotation] is important, as it determines the order of codecs.
 
-
-
 [[messaging.rsocket.server-auto-configuration]]
 == RSocket Server Auto-configuration
-
 Spring Boot provides RSocket server auto-configuration.
 The required dependencies are provided by the `spring-boot-starter-rsocket`.
 
@@ -60,20 +132,14 @@ spring:
       port: 9898
 ----
 
-
-
 [[messaging.rsocket.messaging]]
 == Spring Messaging RSocket Support
-
 Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
 
 This means that Spring Boot will create a javadoc:org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler[] bean that will handle RSocket requests to your application.
 
-
-
 [[messaging.rsocket.requester]]
 == Calling RSocket Services with RSocketRequester
-
 Once the javadoc:io.rsocket.RSocket[] channel is established between server and client, any party can send or receive requests to the other.
 
 As a server, you can get injected with an javadoc:org.springframework.messaging.rsocket.RSocketRequester[] instance on any handler method of an RSocket javadoc:org.springframework.stereotype.Controller[format=annotation].

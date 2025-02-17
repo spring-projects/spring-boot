@@ -1,13 +1,61 @@
+= 测试工具
+:encoding: utf-8
+:numbered:
+
 [[testing.utilities]]
-= Test Utilities
-
-A few test utility classes that are generally useful when testing your application are packaged as part of `spring-boot`.
-
-
+== 测试工具
+一些在测试应用程序时通常有用的测试工具类被打包在 `spring-boot` 中。
 
 [[testing.utilities.config-data-application-context-initializer]]
 == ConfigDataApplicationContextInitializer
 
+`ConfigDataApplicationContextInitializer` 是一个 `ApplicationContextInitializer`，你可以将其应用于测试中以加载 Spring Boot 的 `application.properties` 文件。当你不需要 `@SpringBootTest` 提供的完整功能集时，可以使用它，如下例所示：
+
+include-code::MyConfigFileTests[]
+
+NOTE: 单独使用 `ConfigDataApplicationContextInitializer` 并不支持 `@Value("${...}")` 注入。它的唯一任务是确保 `application.properties` 文件被加载到 Spring 的 `Environment` 中。为了支持 `@Value`，你需要额外配置一个 `PropertySourcesPlaceholderConfigurer`，或者使用 `@SpringBootTest`，它会自动为你配置一个。
+
+[[testing.utilities.test-property-values]]
+== TestPropertyValues
+
+`TestPropertyValues` 允许你快速向 `ConfigurableEnvironment` 或 `ConfigurableApplicationContext` 添加属性。你可以使用 `key=value` 字符串调用它，如下所示：
+
+include-code::MyEnvironmentTests[]
+
+[[testing.utilities.output-capture]]
+== OutputCaptureExtension
+
+`OutputCaptureExtension` 是一个 JUnit `Extension`，你可以使用它来捕获 `System.out` 和 `System.err` 的输出。要使用它，请添加 `@ExtendWith(OutputCaptureExtension.class)`，并将 `CapturedOutput` 作为参数注入到测试类构造函数或测试方法中，如下所示：
+
+include-code::MyOutputCaptureTests[]
+
+[[testing.utilities.test-rest-template]]
+== TestRestTemplate
+
+`TestRestTemplate` 是 Spring 的 `RestTemplate` 的一个便捷替代品，适用于集成测试。你可以获取一个普通的模板，或者一个发送基本 HTTP 认证（带有用户名和密码）的模板。无论哪种情况，模板都是容错的。这意味着它以测试友好的方式运行，不会在 4xx 和 5xx 错误时抛出异常。相反，可以通过返回的 `ResponseEntity` 及其状态码来检测此类错误。
+
+TIP: Spring Framework 5.0 提供了一个新的 `WebTestClient`，适用于 WebFlux 集成测试以及 WebFlux 和 MVC 端到端测试。与 `TestRestTemplate` 不同，它提供了一个流畅的 API 用于断言。
+
+建议但不强制使用 Apache HTTP 客户端（5.1 或更高版本）。如果你的类路径上有它，`TestRestTemplate` 会通过适当配置客户端来响应。如果你确实使用 Apache 的 HTTP 客户端，则会启用一些额外的测试友好功能：
+
+* 不遵循重定向（因此你可以断言响应位置）。
+* 忽略 Cookie（因此模板是无状态的）。
+
+`TestRestTemplate` 可以直接在你的集成测试中实例化，如下例所示：
+
+include-code::MyTests[]
+
+或者，如果你使用 `@SpringBootTest` 注解并指定 `WebEnvironment.RANDOM_PORT` 或 `WebEnvironment.DEFINED_PORT`，你可以注入一个完全配置的 `TestRestTemplate` 并开始使用它。如果需要，可以通过 `RestTemplateBuilder` Bean 应用额外的自定义。任何未指定主机和端口的 URL 都会自动连接到嵌入式服务器，如下例所示：
+
+include-code::MySpringBootTests[]
+
+'''
+[[testing.utilities]]
+== Test Utilities
+A few test utility classes that are generally useful when testing your application are packaged as part of `spring-boot`.
+
+[[testing.utilities.config-data-application-context-initializer]]
+== ConfigDataApplicationContextInitializer
 javadoc:org.springframework.boot.test.context.ConfigDataApplicationContextInitializer[] is an javadoc:org.springframework.context.ApplicationContextInitializer[] that you can apply to your tests to load Spring Boot `application.properties` files.
 You can use it when you do not need the full set of features provided by javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation], as shown in the following example:
 
@@ -17,31 +65,22 @@ NOTE: Using javadoc:org.springframework.boot.test.context.ConfigDataApplicationC
 Its only job is to ensure that `application.properties` files are loaded into Spring's javadoc:org.springframework.core.env.Environment[].
 For javadoc:org.springframework.beans.factory.annotation.Value[format=annotation] support, you need to either additionally configure a javadoc:org.springframework.context.support.PropertySourcesPlaceholderConfigurer[] or use javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation], which auto-configures one for you.
 
-
-
 [[testing.utilities.test-property-values]]
 == TestPropertyValues
-
 javadoc:org.springframework.boot.test.util.TestPropertyValues[] lets you quickly add properties to a javadoc:org.springframework.core.env.ConfigurableEnvironment[] or javadoc:org.springframework.context.ConfigurableApplicationContext[].
 You can call it with `key=value` strings, as follows:
 
 include-code::MyEnvironmentTests[]
 
-
-
 [[testing.utilities.output-capture]]
 == OutputCaptureExtension
-
 javadoc:org.springframework.boot.test.system.OutputCaptureExtension[] is a JUnit javadoc:org.junit.jupiter.api.extension.Extension[] that you can use to capture javadoc:java.lang.System#out[] and javadoc:java.lang.System#err[] output.
 To use it, add `@ExtendWith(OutputCaptureExtension.class)` and inject javadoc:org.springframework.boot.test.system.CapturedOutput[] as an argument to your test class constructor or test method as follows:
 
 include-code::MyOutputCaptureTests[]
 
-
-
 [[testing.utilities.test-rest-template]]
 == TestRestTemplate
-
 javadoc:org.springframework.boot.test.web.client.TestRestTemplate[] is a convenience alternative to Spring's javadoc:org.springframework.web.client.RestTemplate[] that is useful in integration tests.
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
 In either case, the template is fault tolerant.

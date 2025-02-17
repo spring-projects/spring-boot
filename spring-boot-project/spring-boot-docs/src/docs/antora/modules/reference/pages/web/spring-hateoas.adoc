@@ -1,6 +1,25 @@
-[[web.spring-hateoas]]
 = Spring HATEOAS
+:encoding: utf-8
+:numbered:
 
+[[web.spring-hateoas]]
+== Spring HATEOAS
+如果你开发了一个使用超媒体的 RESTful API，Spring Boot 提供了适用于大多数应用程序的 Spring HATEOAS 自动配置。
+自动配置取代了使用 javadoc:org.springframework.hateoas.config.EnableHypermediaSupport[format=annotation] 的需要，并注册了许多 bean 以简化基于超媒体的应用程序的开发，包括 javadoc:org.springframework.hateoas.client.LinkDiscoverers[]（用于客户端支持）和配置为正确将响应编组为所需表示的 javadoc:com.fasterxml.jackson.databind.ObjectMapper[]。
+javadoc:com.fasterxml.jackson.databind.ObjectMapper[] 通过设置各种 `spring.jackson.*` 属性或通过 javadoc:org.springframework.http.converter.json.Jackson2ObjectMapperBuilder[] bean（如果存在）进行自定义。
+
+你可以使用 javadoc:org.springframework.hateoas.config.EnableHypermediaSupport[format=annotation] 来控制 Spring HATEOAS 的配置。
+请注意，这样做会禁用前面描述的 javadoc:com.fasterxml.jackson.databind.ObjectMapper[] 自定义。
+
+WARNING: `spring-boot-starter-hateoas` 特定于 Spring MVC，不应与 Spring WebFlux 结合使用。
+为了在 Spring WebFlux 中使用 Spring HATEOAS，你可以添加对 `org.springframework.hateoas:spring-hateoas` 的直接依赖以及 `spring-boot-starter-webflux`。
+
+默认情况下，接受 `application/json` 的请求将收到 `application/hal+json` 响应。
+要禁用此行为，请将 configprop:spring.hateoas.use-hal-as-default-json-media-type[] 设置为 `false`，并定义 javadoc:org.springframework.hateoas.config.HypermediaMappingInformation[] 或 javadoc:org.springframework.hateoas.mediatype.hal.HalConfiguration[] 来配置 Spring HATEOAS 以满足你的应用程序及其客户端的需求。
+
+'''
+[[web.spring-hateoas]]
+== Spring HATEOAS
 If you develop a RESTful API that makes use of hypermedia, Spring Boot provides auto-configuration for Spring HATEOAS that works well with most applications.
 The auto-configuration replaces the need to use javadoc:org.springframework.hateoas.config.EnableHypermediaSupport[format=annotation] and registers a number of beans to ease building hypermedia-based applications, including a javadoc:org.springframework.hateoas.client.LinkDiscoverers[] (for client side support) and an javadoc:com.fasterxml.jackson.databind.ObjectMapper[] configured to correctly marshal responses into the desired representation.
 The javadoc:com.fasterxml.jackson.databind.ObjectMapper[] is customized by setting the various `spring.jackson.*` properties or, if one exists, by a javadoc:org.springframework.http.converter.json.Jackson2ObjectMapperBuilder[] bean.

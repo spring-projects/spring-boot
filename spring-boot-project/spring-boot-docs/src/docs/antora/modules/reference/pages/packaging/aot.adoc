@@ -1,6 +1,44 @@
-[[packaging.aot]]
-= Ahead-of-Time Processing With the JVM
+= 使用 JVM 进行提前处理
+:encoding: utf-8
+:numbered:
 
+[[packaging.aot]]
+== 使用 JVM 进行提前处理
+
+使用 AOT 生成的初始化代码运行应用程序对启动时间有益。首先，你需要确保构建的 jar 包含 AOT 生成的代码。
+
+NOTE: CDS 和 AOT 可以结合使用以进一步改善启动时间。
+
+对于 Maven，这意味着你应该使用 `-Pnative` 构建以激活 `native` 配置文件：
+
+[source,shell]
+----
+$ mvn -Pnative package
+----
+
+对于 Gradle，你需要确保构建包含 `org.springframework.boot.aot` 插件。
+
+当 JAR 构建完成后，使用 `spring.aot.enabled` 系统属性设置为 `true` 来运行它。例如：
+
+[source,shell]
+----
+$ java -Dspring.aot.enabled=true -jar myapplication.jar
+
+........ Starting AOT-processed MyApplication ...
+----
+
+请注意，使用提前处理有一些缺点。它意味着以下限制：
+
+* 类路径在构建时是固定的并且完全定义
+* 应用程序中定义的 Bean 在运行时不能更改，这意味着：
+- Spring 的 `@Profile` 注解和特定于配置文件的配置 xref:how-to:aot.adoc#howto.aot.conditions[有局限性]。
+- 不支持在创建 Bean 时更改的属性（例如，`@ConditionalOnProperty` 和 `.enabled` 属性）。
+
+要了解更多关于提前处理的信息，请参阅 xref:packaging/native-image/introducing-graalvm-native-images.adoc#packaging.native-image.introducing-graalvm-native-images.understanding-aot-processing[] 部分。
+
+'''
+[[packaging.aot]]
+== Ahead-of-Time Processing With the JVM
 It's beneficial for the startup time to run your application using the AOT generated initialization code.
 First, you need to ensure that the jar you are building includes AOT generated code.
 

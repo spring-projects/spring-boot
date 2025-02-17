@@ -1,6 +1,31 @@
-[[features.internationalization]]
-= Internationalization
+= 国际化
+:encoding: utf-8
+:numbered:
 
+[[features.internationalization]]
+== 国际化
+Spring Boot 支持本地化消息，以便你的应用程序可以满足不同语言偏好的用户需求。默认情况下，Spring Boot 在类路径的根目录下查找 `messages` 资源包的存在。
+
+NOTE: 当配置的资源包的默认属性文件可用时（默认情况下为 `messages.properties`），自动配置将生效。如果你的资源包仅包含特定语言的属性文件，则需要添加默认文件。如果找不到与任何配置的基本名称匹配的属性文件，则不会自动配置 `MessageSource`。
+
+资源包的基本名称以及其他几个属性可以使用 `spring.messages` 命名空间进行配置，如下例所示：
+
+[configprops,yaml]
+----
+spring:
+  messages:
+    basename: "messages, config.i18n.messages"
+    common-messages: "classpath:my-common-messages.properties"
+    fallback-to-system-locale: false
+----
+
+TIP: `spring.messages.basename` 属性支持位置列表，可以是包限定符或从类路径根解析的资源。`spring.messages.common-messages` 属性支持属性文件资源列表。
+
+有关更多支持的选项，请参阅 `MessageSourceProperties`。
+
+'''
+[[features.internationalization]]
+== Internationalization
 Spring Boot supports localized messages so that your application can cater to users of different language preferences.
 By default, Spring Boot looks for the presence of a `messages` resource bundle at the root of the classpath.
 

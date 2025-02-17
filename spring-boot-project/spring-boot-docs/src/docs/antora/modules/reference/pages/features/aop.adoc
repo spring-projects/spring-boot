@@ -1,6 +1,18 @@
-[[features.aop]]
-= Aspect-Oriented Programming
+= 面向切面编程
+:encoding: utf-8
+:numbered:
 
+[[features.aop]]
+== 面向切面编程
+Spring Boot 为面向切面编程（AOP）提供了自动配置。你可以在 {url-spring-framework-docs}/core/aop-api.html[Spring Framework 参考文档] 中了解更多关于 Spring AOP 的信息。
+
+默认情况下，Spring Boot 的自动配置会配置 Spring AOP 使用 CGLib 代理。要改用 JDK 代理，请将 `spring.aop.proxy-target-class` 设置为 `false`。
+
+如果类路径上有 AspectJ，Spring Boot 的自动配置将自动启用 AspectJ 自动代理，因此不需要使用 `@EnableAspectJAutoProxy` 注解。
+
+'''
+[[features.aop]]
+== Aspect-Oriented Programming
 Spring Boot provides auto-configuration for aspect-oriented programming (AOP).
 You can learn more about AOP with Spring in the {url-spring-framework-docs}/core/aop-api.html[Spring Framework reference documentation].
 

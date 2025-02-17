@@ -1,6 +1,342 @@
-[[howto.deployment.cloud]]
-= Deploying to the Cloud
+= 部署到云平台
+:encoding: utf-8
+:numbered:
 
+[[howto.deployment.cloud]]
+== 部署到云平台
+Spring Boot 的可执行 jar 已经为大多数流行的云平台即服务（PaaS）提供商做好了准备。这些提供商通常要求你“自带容器”。他们管理应用程序进程（而不是特定的 Java 应用程序），因此需要一个中间层来将你的应用程序适配到云平台的运行进程概念中。
+
+两个流行的云提供商 Heroku 和 Cloud Foundry 采用了“构建包”方法。构建包将你部署的代码包装在启动应用程序所需的任何内容中。它可能是一个 JDK 和一个调用 `java` 的命令、一个嵌入式 Web 服务器或一个完整的应用服务器。构建包是可插拔的，但理想情况下，你应该尽可能少地对其进行自定义。这减少了不受你控制的功能的占用空间，并最大限度地减少了开发和生产环境之间的差异。
+
+理想情况下，你的应用程序（如 Spring Boot 可执行 jar）包含运行所需的所有内容。
+
+在本节中，我们将介绍如何将 xref:tutorial:first-application/index.adoc[入门部分开发的应用程序] 部署到云平台并运行。
+
+[[howto.deployment.cloud.cloud-foundry]]
+== Cloud Foundry
+Cloud Foundry 提供了默认的构建包，如果没有指定其他构建包，则会使用这些默认构建包。Cloud Foundry 的 https://github.com/cloudfoundry/java-buildpack[Java 构建包] 对 Spring 应用程序（包括 Spring Boot）提供了出色的支持。你可以部署独立的可执行 jar 应用程序以及传统的 `.war` 打包应用程序。
+
+一旦你构建了应用程序（例如使用 `mvn clean package`）并安装了 https://docs.cloudfoundry.org/cf-cli/install-go-cli.html[`cf` 命令行工具]，你可以使用 `cf push` 命令部署应用程序，替换为编译后的 `.jar` 的路径。在推送应用程序之前，请确保已使用 https://docs.cloudfoundry.org/cf-cli/getting-started.html#login[`cf` 命令行客户端登录]。以下行展示了使用 `cf push` 命令部署应用程序的示例：
+
+[source,shell]
+----
+$ cf push acloudyspringtime -p target/demo-0.0.1-SNAPSHOT.jar
+----
+
+NOTE: 在前面的示例中，我们将 `acloudyspringtime` 替换为你为 `cf` 提供的应用程序名称。
+
+有关更多选项，请参阅 https://docs.cloudfoundry.org/cf-cli/getting-started.html#push[`cf push` 文档]。如果同一目录中存在 Cloud Foundry 的 https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html[`manifest.yml`] 文件，则会考虑该文件。
+
+此时，`cf` 开始上传你的应用程序，并生成类似于以下示例的输出：
+
+[source,subs="verbatim,quotes"]
+----
+Uploading acloudyspringtime... *OK*
+Preparing to start acloudyspringtime... *OK*
+-----> Downloaded app package (*8.9M*)
+-----> Java Buildpack Version: v3.12 (offline) | https://github.com/cloudfoundry/java-buildpack.git#6f25b7e
+-----> Downloading Open Jdk JRE
+       Expanding Open Jdk JRE to .java-buildpack/open_jdk_jre (1.6s)
+-----> Downloading Open JDK Like Memory Calculator 2.0.2_RELEASE from https://java-buildpack.cloudfoundry.org/memory-calculator/trusty/x86_64/memory-calculator-2.0.2_RELEASE.tar.gz (found in cache)
+       Memory Settings: -Xss349K -Xmx681574K -XX:MaxMetaspaceSize=104857K -Xms681574K -XX:MetaspaceSize=104857K
+-----> Downloading Container Certificate Trust Store 1.0.0_RELEASE from https://java-buildpack.cloudfoundry.org/container-certificate-trust-store/container-certificate-trust-store-1.0.0_RELEASE.jar (found in cache)
+       Adding certificates to .java-buildpack/container_certificate_trust_store/truststore.jks (0.6s)
+-----> Downloading Spring Auto Reconfiguration 1.10.0_RELEASE from https://java-buildpack.cloudfoundry.org/auto-reconfiguration/auto-reconfiguration-1.10.0_RELEASE.jar (found in cache)
+Checking status of app 'acloudyspringtime'...
+  0 of 1 instances running (1 starting)
+  ...
+  0 of 1 instances running (1 starting)
+  ...
+  0 of 1 instances running (1 starting)
+  ...
+  1 of 1 instances running (1 running)
+
+App started
+----
+
+恭喜！应用程序现在已经上线！
+
+一旦你的应用程序上线，你可以使用 `cf apps` 命令验证已部署应用程序的状态，如下例所示：
+
+[source,shell]
+----
+$ cf apps
+Getting applications in ...
+OK
+
+name                 requested state   instances   memory   disk   urls
+...
+acloudyspringtime    started           1/1         512M     1G     acloudyspringtime.cfapps.io
+...
+----
+
+一旦 Cloud Foundry 确认你的应用程序已部署，你应该能够在给定的 URI 上找到该应用程序。在前面的示例中，你可以在 `\https://acloudyspringtime.cfapps.io/` 找到它。
+
+[[howto.deployment.cloud.cloud-foundry.binding-to-services]]
+=== 绑定到服务
+默认情况下，有关运行应用程序的元数据以及服务连接信息会作为环境变量（例如：`$VCAP_SERVICES`）暴露给应用程序。这个架构决策是由于 Cloud Foundry 的多语言（任何语言和平台都可以作为构建包支持）性质。进程范围的环境变量是语言无关的。
+
+环境变量并不总是最容易使用的 API，因此 Spring Boot 会自动提取它们并将数据扁平化为可以通过 Spring 的 `Environment` 抽象访问的属性，如下例所示：
+
+include-code::MyBean[]
+
+所有 Cloud Foundry 属性都以 `vcap` 为前缀。你可以使用 `vcap` 属性访问应用程序信息（例如应用程序的公共 URL）和服务信息（例如数据库凭据）。有关完整详细信息，请参阅 `CloudFoundryVcapEnvironmentPostProcessor` 的 API 文档。
+
+TIP: https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] 项目更适合配置 `DataSource` 等任务。
+
+[[howto.deployment.cloud.kubernetes]]
+== Kubernetes
+Spring Boot 通过检查环境中的 `"*_SERVICE_HOST"` 和 `"*_SERVICE_PORT"` 变量来自动检测 Kubernetes 部署环境。你可以使用 `spring.main.cloud-platform` 配置属性覆盖此检测。
+
+Spring Boot 帮助你管理应用程序的状态，并通过 xref:reference:actuator/endpoints.adoc#actuator.endpoints.kubernetes-probes[HTTP Kubernetes 探针] 导出它。
+
+[[howto.deployment.cloud.kubernetes.container-lifecycle]]
+=== Kubernetes 容器生命周期
+当 Kubernetes 删除应用程序实例时，关闭过程涉及多个子系统同时运行：关闭钩子、注销服务、从负载均衡器中删除实例等。由于此关闭处理是并行进行的（并且由于分布式系统的性质），存在一个窗口期，在此期间流量可能会路由到已经开始关闭处理的 Pod。
+
+你可以在 `preStop` 处理程序中配置一个睡眠执行，以避免将请求路由到已经开始关闭的 Pod。此睡眠时间应足够长，以便新请求停止路由到该 Pod，其持续时间因部署而异。可以通过在 Pod 的配置文件中使用 `PodSpec` 配置 `preStop` 处理程序，如下所示：
+
+[source,yaml]
+----
+spec:
+  containers:
+  - name: "example-container"
+    image: "example-image"
+    lifecycle:
+      preStop:
+        exec:
+          command: ["sh", "-c", "sleep 10"]
+----
+
+一旦 `preStop` 钩子完成，SIGTERM 将发送到容器，并开始 xref:reference:web/graceful-shutdown.adoc[优雅关闭]，允许任何剩余的飞行中请求完成。
+
+NOTE: 当 Kubernetes 向 Pod 发送 SIGTERM 信号时，它会等待指定的时间（称为终止宽限期，默认为 30 秒）。如果容器在宽限期后仍在运行，则会发送 SIGKILL 信号并强制删除它们。如果 Pod 关闭时间超过 30 秒（可能是因为你增加了 `spring.lifecycle.timeout-per-shutdown-phase`），请确保通过设置 Pod YAML 中的 `terminationGracePeriodSeconds` 选项来增加终止宽限期。
+
+[[howto.deployment.cloud.heroku]]
+== Heroku
+Heroku 是另一个流行的 PaaS 平台。要自定义 Heroku 构建，你需要提供一个 `Procfile`，其中包含部署应用程序所需的命令。Heroku 会为 Java 应用程序分配一个端口，并确保路由到外部 URI 正常工作。
+
+你必须配置应用程序以监听正确的端口。以下示例展示了我们入门 REST 应用程序的 `Procfile`：
+
+[source]
+----
+web: java -Dserver.port=$PORT -jar target/demo-0.0.1-SNAPSHOT.jar
+----
+
+Spring Boot 使 `-D` 参数可作为 Spring `Environment` 实例访问的属性。`server.port` 配置属性被传递给嵌入式 Tomcat、Jetty 或 Undertow 实例，然后在启动时使用该端口。`$PORT` 环境变量由 Heroku PaaS 分配给我们。
+
+这应该是你需要的全部内容。Heroku 部署的最常见工作流程是将代码 `git push` 到生产环境，如下例所示：
+
+[source,shell]
+----
+$ git push heroku main
+----
+
+这将导致以下结果：
+
+[source,subs="verbatim,quotes"]
+----
+Initializing repository, *done*.
+Counting objects: 95, *done*.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (78/78), *done*.
+Writing objects: 100% (95/95), 8.66 MiB | 606.00 KiB/s, *done*.
+Total 95 (delta 31), reused 0 (delta 0)
+
+-----> Java app detected
+-----> Installing OpenJDK... *done*
+-----> Installing Maven... *done*
+-----> Installing settings.xml... *done*
+-----> Executing: mvn -B -DskipTests=true clean install
+
+       [INFO] Scanning for projects...
+       Downloading: https://repo.spring.io/...
+       Downloaded: https://repo.spring.io/... (818 B at 1.8 KB/sec)
+		....
+       Downloaded: https://s3pository.heroku.com/jvm/... (152 KB at 595.3 KB/sec)
+       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/target/...
+       [INFO] Installing /tmp/build_0c35a5d2-a067-4abc-a232-14b1fb7a8229/pom.xml ...
+       [INFO] ------------------------------------------------------------------------
+       [INFO] *BUILD SUCCESS*
+       [INFO] ------------------------------------------------------------------------
+       [INFO] Total time: 59.358s
+       [INFO] Finished at: Fri Mar 07 07:28:25 UTC 2014
+       [INFO] Final Memory: 20M/493M
+       [INFO] ------------------------------------------------------------------------
+
+-----> Discovering process types
+       Procfile declares types -> *web*
+
+-----> Compressing... *done*, 70.4MB
+-----> Launching... *done*, v6
+       https://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
+
+To git@heroku.com:agile-sierra-1405.git
+ * [new branch]      main -> main
+----
+
+你的应用程序现在应该在 Heroku 上运行。有关更多详细信息，请参阅 https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku[将 Spring Boot 应用程序部署到 Heroku]。
+
+[[howto.deployment.cloud.openshift]]
+== OpenShift
+https://www.openshift.com/[OpenShift] 有许多资源描述了如何部署 Spring Boot 应用程序，包括：
+
+* https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[使用 S2I 构建器]
+* https://access.redhat.com/documentation/en-us/reference_architectures/2017/html-single/spring_boot_microservices_on_red_hat_openshift_container_platform_3/[架构指南]
+* https://blog.openshift.com/using-spring-boot-on-openshift/[在 Wildfly 上作为传统 Web 应用程序运行]
+* https://blog.openshift.com/openshift-commons-briefing-96-cloud-native-applications-spring-rhoar/[OpenShift Commons 简报]
+
+[[howto.deployment.cloud.aws]]
+== Amazon Web Services (AWS)
+Amazon Web Services 提供了多种方式来安装基于 Spring Boot 的应用程序，无论是作为传统的 Web 应用程序（war）还是作为带有嵌入式 Web 服务器的可执行 jar 文件。选项包括：
+
+* AWS Elastic Beanstalk
+* AWS Code Deploy
+* AWS OPS Works
+* AWS Cloud Formation
+* AWS Container Registry
+
+每种方式都有不同的功能和定价模型。在本文档中，我们描述了使用 AWS Elastic Beanstalk 的方法。
+
+[[howto.deployment.cloud.aws.beanstalk]]
+=== AWS Elastic Beanstalk
+如官方 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic Beanstalk Java 指南] 中所述，部署 Java 应用程序有两种主要选项。你可以使用“Tomcat 平台”或“Java SE 平台”。
+
+[[howto.deployment.cloud.aws.beanstalk.tomcat-platform]]
+==== 使用 Tomcat 平台
+此选项适用于生成 war 文件的 Spring Boot 项目。无需特殊配置。你只需按照官方指南操作即可。
+
+[[howto.deployment.cloud.aws.beanstalk.java-se-platform]]
+==== 使用 Java SE 平台
+此选项适用于生成 jar 文件并运行嵌入式 Web 容器的 Spring Boot 项目。Elastic Beanstalk 环境在端口 80 上运行一个 nginx 实例，以代理实际运行在端口 5000 上的应用程序。要配置它，请将以下行添加到你的 `application.properties` 文件中：
+
+[configprops,yaml]
+----
+server:
+  port: 5000
+----
+
+[TIP]
+.上传二进制文件而不是源代码
+====
+默认情况下，Elastic Beanstalk 上传源代码并在 AWS 中编译它们。但是，最好上传二进制文件。为此，请将类似于以下内容的行添加到你的 `.elasticbeanstalk/config.yml` 文件中：
+
+[source,xml]
+----
+deploy:
+	artifact: target/demo-0.0.1-SNAPSHOT.jar
+----
+====
+
+[TIP]
+.通过设置环境类型降低成本
+====
+默认情况下，Elastic Beanstalk 环境是负载均衡的。负载均衡器的成本很高。为避免该成本，请将环境类型设置为“单实例”，如 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-create-wizard.html#environments-create-wizard-capacity[Amazon 文档] 中所述。你还可以使用 CLI 和以下命令创建单实例环境：
+
+[source]
+----
+eb create -s
+----
+====
+
+[[howto.deployment.cloud.aws.summary]]
+=== 总结
+这是进入 AWS 的最简单方法之一，但还有更多内容需要涵盖，例如如何将 Elastic Beanstalk 集成到任何 CI / CD 工具中，使用 Elastic Beanstalk Maven 插件而不是 CLI 等。有一篇 https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[博客文章] 更详细地介绍了这些主题。
+
+[[howto.deployment.cloud.boxfuse]]
+== CloudCaptain 和 Amazon Web Services
+https://cloudcaptain.sh/[CloudCaptain] 通过将你的 Spring Boot 可执行 jar 或 war 转换为最小的 VM 镜像来工作，该镜像可以原封不动地部署在 VirtualBox 或 AWS 上。CloudCaptain 与 Spring Boot 深度集成，并使用 Spring Boot 配置文件中的信息自动配置端口和健康检查 URL。CloudCaptain 利用这些信息来生成镜像以及它配置的所有资源（实例、安全组、弹性负载均衡器等）。
+
+一旦你创建了 https://console.cloudcaptain.sh[CloudCaptain 帐户]，将其连接到你的 AWS 帐户，安装了最新版本的 CloudCaptain 客户端，并确保应用程序已由 Maven 或 Gradle 构建（例如使用 `mvn clean package`），你可以使用类似于以下命令将 Spring Boot 应用程序部署到 AWS：
+
+[source,shell]
+----
+$ boxfuse run myapp-1.0.jar -env=prod
+----
+
+有关更多选项，请参阅 https://cloudcaptain.sh/docs/commandline/run.html[`boxfuse run` 文档]。如果当前目录中存在 https://cloudcaptain.sh/docs/commandline/#configuration[`boxfuse.conf`] 文件，则会考虑该文件。
+
+TIP: 默认情况下，CloudCaptain 在启动时激活名为 `boxfuse` 的 Spring 配置文件。如果你的可执行 jar 或 war 包含 https://cloudcaptain.sh/docs/payloads/springboot.html#configuration[`application-boxfuse.properties`] 文件，CloudCaptain 将基于其中包含的属性进行配置。
+
+此时，CloudCaptain 为你的应用程序创建镜像，上传它，并在 AWS 上配置和启动必要的资源，生成类似于以下示例的输出：
+
+[source]
+----
+Fusing Image for myapp-1.0.jar ...
+Image fused in 00:06.838s (53937 K) -> axelfontaine/myapp:1.0
+Creating axelfontaine/myapp ...
+Pushing axelfontaine/myapp:1.0 ...
+Verifying axelfontaine/myapp:1.0 ...
+Creating Elastic IP ...
+Mapping myapp-axelfontaine.boxfuse.io to 52.28.233.167 ...
+Waiting for AWS to create an AMI for axelfontaine/myapp:1.0 in eu-central-1 (this may take up to 50 seconds) ...
+AMI created in 00:23.557s -> ami-d23f38cf
+Creating security group boxfuse-sg_axelfontaine/myapp:1.0 ...
+Launching t2.micro instance of axelfontaine/myapp:1.0 (ami-d23f38cf) in eu-central-1 ...
+Instance launched in 00:30.306s -> i-92ef9f53
+Waiting for AWS to boot Instance i-92ef9f53 and Payload to start at https://52.28.235.61/ ...
+Payload started in 00:29.266s -> https://52.28.235.61/
+Remapping Elastic IP 52.28.233.167 to i-92ef9f53 ...
+Waiting 15s for AWS to complete Elastic IP Zero Downtime transition ...
+Deployment completed successfully. axelfontaine/myapp:1.0 is up and running at https://myapp-axelfontaine.boxfuse.io/
+----
+
+你的应用程序现在应该在 AWS 上运行。
+
+请参阅 https://cloudcaptain.sh/blog/spring-boot-ec2.html[在 EC2 上部署 Spring Boot 应用程序] 的博客文章以及 https://cloudcaptain.sh/docs/payloads/springboot.html[CloudCaptain Spring Boot 集成文档]，以开始使用 Maven 构建来运行应用程序。
+
+[[howto.deployment.cloud.azure]]
+== Azure
+此 https://spring.io/guides/gs/spring-boot-for-azure/[入门指南] 将引导你将 Spring Boot 应用程序部署到 https://azure.microsoft.com/en-us/services/spring-cloud/[Azure Spring Cloud] 或 https://docs.microsoft.com/en-us/azure/app-service/overview[Azure App Service]。
+
+[[howto.deployment.cloud.google]]
+== Google Cloud
+Google Cloud 提供了多种选项来启动 Spring Boot 应用程序。最容易上手的是 App Engine，但你也可以找到在 Container Engine 中使用容器运行 Spring Boot 或在 Compute Engine 中使用虚拟机运行 Spring Boot 的方法。
+
+要将你的第一个应用程序部署到 App Engine 标准环境，请按照 https://codelabs.developers.google.com/codelabs/cloud-app-engine-springboot#0[本教程] 操作。
+
+或者，App Engine Flex 要求你创建一个 `app.yaml` 文件来描述应用程序所需的资源。通常，你将此文件放在 `src/main/appengine` 中，它应类似于以下文件：
+
+[source,yaml]
+----
+service: "default"
+
+runtime: "java17"
+env: "flex"
+
+handlers:
+- url: "/.*"
+  script: "this field is required, but ignored"
+
+manual_scaling:
+  instances: 1
+
+health_check:
+  enable_health_check: false
+
+env_variables:
+  ENCRYPT_KEY: "your_encryption_key_here"
+----
+
+你可以通过将项目 ID 添加到构建配置中来部署应用程序（例如，使用 Maven 插件），如下例所示：
+
+[source,xml]
+----
+<plugin>
+	<groupId>com.google.cloud.tools</groupId>
+	<artifactId>appengine-maven-plugin</artifactId>
+	<version>2.4.4</version>
+	<configuration>
+		<project>myproject</project>
+	</configuration>
+</plugin>
+----
+
+然后使用 `mvn appengine:deploy` 进行部署（你需要先进行身份验证，否则构建会失败）。
+
+'''
+[[howto.deployment.cloud]]
+== Deploying to the Cloud
 Spring Boot's executable jars are ready-made for most popular cloud PaaS (Platform-as-a-Service) providers.
 These providers tend to require that you "`bring your own container`".
 They manage application processes (not Java applications specifically), so they need an intermediary layer that adapts _your_ application to the _cloud's_ notion of a running process.
@@ -16,11 +352,8 @@ Ideally, your application, like a Spring Boot executable jar, has everything tha
 
 In this section, we look at what it takes to get the xref:tutorial:first-application/index.adoc[application that we developed] in the "`Getting Started`" section up and running in the Cloud.
 
-
-
 [[howto.deployment.cloud.cloud-foundry]]
 == Cloud Foundry
-
 Cloud Foundry provides default buildpacks that come into play if no other buildpack is specified.
 The Cloud Foundry https://github.com/cloudfoundry/java-buildpack[Java buildpack] has excellent support for Spring applications, including Spring Boot.
 You can deploy stand-alone executable jar applications as well as traditional `.war` packaged applications.
@@ -85,11 +418,8 @@ acloudyspringtime    started           1/1         512M     1G     acloudyspring
 Once Cloud Foundry acknowledges that your application has been deployed, you should be able to find the application at the URI given.
 In the preceding example, you could find it at `\https://acloudyspringtime.cfapps.io/`.
 
-
-
 [[howto.deployment.cloud.cloud-foundry.binding-to-services]]
 === Binding to Services
-
 By default, metadata about the running application as well as service connection information is exposed to the application as environment variables (for example: `$VCAP_SERVICES`).
 This architecture decision is due to Cloud Foundry's polyglot (any language and platform can be supported as a buildpack) nature.
 Process-scoped environment variables are language agnostic.
@@ -104,21 +434,15 @@ See the javadoc:org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostPr
 
 TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a better fit for tasks such as configuring a DataSource.
 
-
-
 [[howto.deployment.cloud.kubernetes]]
 == Kubernetes
-
 Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
 You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
 
 Spring Boot helps you to xref:reference:features/spring-application.adoc#features.spring-application.application-availability[manage the state of your application] and export it with xref:reference:actuator/endpoints.adoc#actuator.endpoints.kubernetes-probes[HTTP Kubernetes Probes using Actuator].
 
-
-
 [[howto.deployment.cloud.kubernetes.container-lifecycle]]
 === Kubernetes Container Lifecycle
-
 When Kubernetes deletes an application instance, the shutdown process involves several subsystems concurrently: shutdown hooks, unregistering the service, removing the instance from the load-balancer...
 Because this shutdown processing happens in parallel (and due to the nature of distributed systems), there is a window during which traffic can be routed to a pod that has also begun its shutdown processing.
 
@@ -144,11 +468,8 @@ NOTE: When Kubernetes sends a SIGTERM signal to the pod, it waits for a specifie
 If the containers are still running after the grace period, they are sent the SIGKILL signal and forcibly removed.
 If the pod takes longer than 30 seconds to shut down, which could be because you have increased configprop:spring.lifecycle.timeout-per-shutdown-phase[], make sure to increase the termination grace period by setting the `terminationGracePeriodSeconds` option in the Pod YAML.
 
-
-
 [[howto.deployment.cloud.heroku]]
 == Heroku
-
 Heroku is another popular PaaS platform.
 To customize Heroku builds, you provide a `Procfile`, which provides the incantation required to deploy an application.
 Heroku assigns a `port` for the Java application to use and then ensures that routing to the external URI works.
@@ -219,11 +540,8 @@ To git@heroku.com:agile-sierra-1405.git
 Your application should now be up and running on Heroku.
 For more details, see https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku[Deploying Spring Boot Applications to Heroku].
 
-
-
 [[howto.deployment.cloud.openshift]]
 == OpenShift
-
 https://www.openshift.com/[OpenShift] has many resources describing how to deploy Spring Boot applications, including:
 
 * https://blog.openshift.com/using-openshift-enterprise-grade-spring-boot-deployments/[Using the S2I builder]
@@ -231,11 +549,8 @@ https://www.openshift.com/[OpenShift] has many resources describing how to deplo
 * https://blog.openshift.com/using-spring-boot-on-openshift/[Running as a traditional web application on Wildfly]
 * https://blog.openshift.com/openshift-commons-briefing-96-cloud-native-applications-spring-rhoar/[OpenShift Commons Briefing]
 
-
-
 [[howto.deployment.cloud.aws]]
 == Amazon Web Services (AWS)
-
 Amazon Web Services offers multiple ways to install Spring Boot-based applications, either as traditional web applications (war) or as executable jar files with an embedded web server.
 The options include:
 
@@ -248,28 +563,19 @@ The options include:
 Each has different features and pricing models.
 In this document, we describe to approach using AWS Elastic Beanstalk.
 
-
-
 [[howto.deployment.cloud.aws.beanstalk]]
 === AWS Elastic Beanstalk
-
 As described in the official https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic Beanstalk Java guide], there are two main options to deploy a Java application.
 You can either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
-
-
 [[howto.deployment.cloud.aws.beanstalk.tomcat-platform]]
 ==== Using the Tomcat Platform
-
 This option applies to Spring Boot projects that produce a war file.
 No special configuration is required.
 You need only follow the official guide.
 
-
-
 [[howto.deployment.cloud.aws.beanstalk.java-se-platform]]
 ==== Using the Java SE Platform
-
 This option applies to Spring Boot projects that produce a jar file and run an embedded web container.
 Elastic Beanstalk environments run an nginx instance on port 80 to proxy the actual application, running on port 5000.
 To configure it, add the following line to your `application.properties` file:
@@ -309,19 +615,13 @@ eb create -s
 ----
 ====
 
-
-
 [[howto.deployment.cloud.aws.summary]]
 === Summary
-
 This is one of the easiest ways to get to AWS, but there are more things to cover, such as how to integrate Elastic Beanstalk into any CI / CD tool, use the Elastic Beanstalk Maven plugin instead of the CLI, and others.
 There is a https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog post] covering these topics more in detail.
 
-
-
 [[howto.deployment.cloud.boxfuse]]
 == CloudCaptain and Amazon Web Services
-
 https://cloudcaptain.sh/[CloudCaptain] works by turning your Spring Boot executable jar or war into a minimal VM image that can be deployed unchanged either on VirtualBox or on AWS.
 CloudCaptain comes with deep integration for Spring Boot and uses the information from your Spring Boot configuration file to automatically configure ports and health check URLs.
 CloudCaptain leverages this information both for the images it produces as well as for all the resources it provisions (instances, security groups, elastic load balancers, and so on).
@@ -366,18 +666,12 @@ Your application should now be up and running on AWS.
 
 See the blog post on https://cloudcaptain.sh/blog/spring-boot-ec2.html[deploying Spring Boot apps on EC2] as well as the https://cloudcaptain.sh/docs/payloads/springboot.html[documentation for the CloudCaptain Spring Boot integration] to get started with a Maven build to run the app.
 
-
-
 [[howto.deployment.cloud.azure]]
 == Azure
-
 This https://spring.io/guides/gs/spring-boot-for-azure/[Getting Started guide] walks you through deploying your Spring Boot application to either https://azure.microsoft.com/en-us/services/spring-cloud/[Azure Spring Cloud] or https://docs.microsoft.com/en-us/azure/app-service/overview[Azure App Service].
-
-
 
 [[howto.deployment.cloud.google]]
 == Google Cloud
-
 Google Cloud has several options that can be used to launch Spring Boot applications.
 The easiest to get started with is probably App Engine, but you could also find ways to run Spring Boot in a container with Container Engine or on a virtual machine with Compute Engine.
 

@@ -1,6 +1,22 @@
-[[actuator.http-exchanges]]
-= Recording HTTP Exchanges
+= 记录 HTTP 交换
+:encoding: utf-8
+:numbered:
 
+[[actuator.http-exchanges]]
+== 记录 HTTP 交换
+你可以通过在应用程序配置中提供一个类型为 javadoc:org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository[] 的 bean 来启用 HTTP 交换的记录。为了方便起见，Spring Boot 提供了 javadoc:org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository[]，它默认存储最近的 100 个请求-响应交换。与追踪解决方案相比，javadoc:org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository[] 功能有限，我们建议仅在开发环境中使用它。对于生产环境，我们建议使用生产级的追踪或可观测性解决方案，例如 Zipkin 或 OpenTelemetry。或者，你可以创建自己的 javadoc:org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository[]。
+
+你可以使用 `httpexchanges` 端点来获取存储在 javadoc:org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository[] 中的请求-响应交换的信息。
+
+[[actuator.http-exchanges.custom]]
+== 自定义 HTTP 交换记录
+要自定义每个记录的交换中包含的项目，请使用 configprop:management.httpexchanges.recording.include[] 配置属性。
+
+要完全禁用记录，请将 configprop:management.httpexchanges.recording.enabled[] 设置为 `false`。
+
+'''
+[[actuator.http-exchanges]]
+== Recording HTTP Exchanges
 You can enable recording of HTTP exchanges by providing a bean of type javadoc:org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository[] in your application's configuration.
 For convenience, Spring Boot offers javadoc:org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository[], which, by default, stores the last 100 request-response exchanges.
 javadoc:org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository[] is limited compared to tracing solutions, and we recommend using it only for development environments.
@@ -9,11 +25,8 @@ Alternatively, you can create your own javadoc:org.springframework.boot.actuate.
 
 You can use the `httpexchanges` endpoint to obtain information about the request-response exchanges that are stored in the javadoc:org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository[].
 
-
-
 [[actuator.http-exchanges.custom]]
 == Custom HTTP Exchange Recording
-
 To customize the items that are included in each recorded exchange, use the configprop:management.httpexchanges.recording.include[] configuration property.
 
 To disable recoding entirely, set configprop:management.httpexchanges.recording.enabled[] to `false`.

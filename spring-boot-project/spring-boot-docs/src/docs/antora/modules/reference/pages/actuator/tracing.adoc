@@ -1,25 +1,184 @@
-[[actuator.micrometer-tracing]]
 = Tracing
+:encoding: utf-8
+:numbered:
 
+[[actuator.micrometer-tracing]]
+== 追踪
+Spring Boot Actuator 为 {url-micrometer-tracing-docs}[Micrometer Tracing] 提供了依赖管理和自动配置，Micrometer Tracing 是流行追踪器库的门面。
+
+TIP: 要了解更多关于 Micrometer Tracing 的功能，请参阅其 {url-micrometer-tracing-docs}[参考文档]。
+
+[[actuator.micrometer-tracing.tracers]]
+== 支持的追踪器
+Spring Boot 提供了以下追踪器的自动配置：
+
+* https://opentelemetry.io/[OpenTelemetry] 与 https://zipkin.io/[Zipkin]、https://docs.wavefront.com/[Wavefront] 或 https://opentelemetry.io/docs/reference/specification/protocol/[OTLP]
+* https://github.com/openzipkin/brave[OpenZipkin Brave] 与 https://zipkin.io/[Zipkin] 或 https://docs.wavefront.com/[Wavefront]
+
+[[actuator.micrometer-tracing.getting-started]]
+== 入门
+我们需要一个示例应用程序来开始使用追踪。为了我们的目的，xref:tutorial:first-application/index.adoc[] 部分中介绍的简单“`Hello World!`”Web 应用程序就足够了。我们将使用 OpenTelemetry 追踪器与 Zipkin 作为追踪后端。
+
+回顾一下，我们的主应用程序代码如下：
+
+include-code::MyApplication[]
+
+NOTE: 在 `home()` 方法中添加了一个日志记录语句，这将在后面很重要。
+
+现在我们需要添加以下依赖项：
+
+* `org.springframework.boot:spring-boot-starter-actuator`
+* `io.micrometer:micrometer-tracing-bridge-otel` - 将 Micrometer Observation API 桥接到 OpenTelemetry。
+* `io.opentelemetry:opentelemetry-exporter-zipkin` - 将 {url-micrometer-tracing-docs}/glossary[追踪] 报告给 Zipkin。
+
+添加以下应用程序属性：
+
+[configprops,yaml]
+----
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+----
+
+默认情况下，Spring Boot 仅对 10% 的请求进行采样，以防止追踪后端过载。此属性将其切换为 100%，以便每个请求都发送到追踪后端。
+
+为了收集和可视化追踪，我们需要一个运行的追踪后端。我们在这里使用 Zipkin 作为我们的追踪后端。https://zipkin.io/pages/quickstart[Zipkin 快速入门指南] 提供了如何本地启动 Zipkin 的说明。
+
+Zipkin 运行后，你可以启动你的应用程序。
+
+如果你在浏览器中打开 `http://localhost:8080`，你应该会看到以下输出：
+
+[source]
+----
+Hello World!
+----
+
+在幕后，已经为 HTTP 请求创建了一个观测，该观测随后被桥接到 OpenTelemetry，后者向 Zipkin 报告了一个新的追踪。
+
+现在打开 Zipkin UI，地址为 `http://localhost:9411`，然后按下“Run Query”按钮以列出所有收集的追踪。你应该看到一个追踪。按下“Show”按钮以查看该追踪的详细信息。
+
+[[actuator.micrometer-tracing.logging]]
+== 日志关联 ID
+关联 ID 提供了一种有用的方式，将日志文件中的行与跨度/追踪关联起来。如果你使用 Micrometer Tracing，Spring Boot 默认会在日志中包含关联 ID。
+
+默认的关联 ID 由 `traceId` 和 `spanId` https://logback.qos.ch/manual/mdc.html[MDC] 值构建。例如，如果 Micrometer Tracing 添加了一个 MDC `traceId` 为 `803B448A0489F84084905D3093480352` 和一个 MDC `spanId` 为 `3425F23BB2432450`，则日志输出将包含关联 ID `[803B448A0489F84084905D3093480352-3425F23BB2432450]`。
+
+如果你更喜欢使用不同的格式来定义关联 ID，可以使用 configprop:logging.pattern.correlation[] 属性来定义一个。例如，以下内容将为 Logback 提供以前由 Spring Cloud Sleuth 使用的格式的关联 ID：
+
+[configprops,yaml]
+----
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
+  include-application-name: false
+----
+
+NOTE: 在上面的示例中，configprop:logging.include-application-name[] 设置为 `false`，以避免应用程序名称在日志消息中重复（configprop:logging.pattern.correlation[] 已经包含它）。还值得一提的是，configprop:logging.pattern.correlation[] 包含一个尾随空格，以便它与默认情况下紧随其后的记录器名称分开。
+
+TIP: 关联 ID 依赖于上下文传播。请阅读 xref:reference:actuator/observability.adoc#actuator.observability.context-propagation[此文档以了解更多详细信息]。
+
+[[actuator.micrometer-tracing.propagating-traces]]
+== 传播追踪
+要自动通过网络传播追踪，请使用自动配置的 xref:io/rest-client.adoc#io.rest-client.resttemplate[`RestTemplateBuilder`]、xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient.Builder`] 或 xref:io/rest-client.adoc#io.rest-client.webclient[`WebClient.Builder`] 来构建客户端。
+
+WARNING: 如果你不使用自动配置的构建器创建 javadoc:org.springframework.web.client.RestTemplate[]、javadoc:org.springframework.web.client.RestClient[] 或 javadoc:org.springframework.web.reactive.function.client.WebClient[]，自动追踪传播将无法工作！
+
+[[actuator.micrometer-tracing.tracer-implementations]]
+== 追踪器实现
+由于 Micrometer Tracer 支持多种追踪器实现，Spring Boot 有多种依赖组合可能。
+
+所有追踪器实现都需要 `org.springframework.boot:spring-boot-starter-actuator` 依赖。
+
+[[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
+=== OpenTelemetry 与 Zipkin
+使用 OpenTelemetry 进行追踪并报告给 Zipkin 需要以下依赖项：
+
+* `io.micrometer:micrometer-tracing-bridge-otel` - 将 Micrometer Observation API 桥接到 OpenTelemetry。
+* `io.opentelemetry:opentelemetry-exporter-zipkin` - 将追踪报告给 Zipkin。
+
+使用 `management.zipkin.tracing.*` 配置属性来配置报告给 Zipkin。
+
+[[actuator.micrometer-tracing.tracer-implementations.otel-wavefront]]
+=== OpenTelemetry 与 Wavefront
+使用 OpenTelemetry 进行追踪并报告给 Wavefront 需要以下依赖项：
+
+* `io.micrometer:micrometer-tracing-bridge-otel` - 将 Micrometer Observation API 桥接到 OpenTelemetry。
+* `io.micrometer:micrometer-tracing-reporter-wavefront` - 将追踪报告给 Wavefront。
+
+使用 `management.wavefront.*` 配置属性来配置报告给 Wavefront。
+
+[[actuator.micrometer-tracing.tracer-implementations.otel-otlp]]
+=== OpenTelemetry 与 OTLP
+使用 OpenTelemetry 进行追踪并使用 OTLP 报告需要以下依赖项：
+
+* `io.micrometer:micrometer-tracing-bridge-otel` - 将 Micrometer Observation API 桥接到 OpenTelemetry。
+* `io.opentelemetry:opentelemetry-exporter-otlp` - 将追踪报告给可以接受 OTLP 的收集器。
+
+使用 `management.otlp.tracing.*` 配置属性来配置使用 OTLP 报告。
+
+[[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
+=== OpenZipkin Brave 与 Zipkin
+使用 OpenZipkin Brave 进行追踪并报告给 Zipkin 需要以下依赖项：
+
+* `io.micrometer:micrometer-tracing-bridge-brave` - 将 Micrometer Observation API 桥接到 Brave。
+* `io.zipkin.reporter2:zipkin-reporter-brave` - 将追踪报告给 Zipkin。
+
+使用 `management.zipkin.tracing.*` 配置属性来配置报告给 Zipkin。
+
+[[actuator.micrometer-tracing.tracer-implementations.brave-wavefront]]
+=== OpenZipkin Brave 与 Wavefront
+使用 OpenZipkin Brave 进行追踪并报告给 Wavefront 需要以下依赖项：
+
+* `io.micrometer:micrometer-tracing-bridge-brave` - 将 Micrometer Observation API 桥接到 Brave。
+* `io.micrometer:micrometer-tracing-reporter-wavefront` - 将追踪报告给 Wavefront。
+
+使用 `management.wavefront.*` 配置属性来配置报告给 Wavefront。
+
+[[actuator.micrometer-tracing.micrometer-observation]]
+== 与 Micrometer Observation 集成
+一个 javadoc:io.micrometer.tracing.handler.TracingAwareMeterObservationHandler[] 会自动注册到 javadoc:io.micrometer.observation.ObservationRegistry[] 上，该处理程序为每个完成的观测创建跨度。
+
+[[actuator.micrometer-tracing.creating-spans]]
+== 创建自定义跨度
+你可以通过启动一个观测来创建自己的跨度。为此，将 javadoc:io.micrometer.observation.ObservationRegistry[] 注入到你的组件中：
+
+include-code::CustomObservation[]
+
+这将创建一个名为 "some-operation" 的观测，并带有标签 "some-tag=some-value"。
+
+TIP: 如果你想创建一个跨度而不创建指标，你需要使用 Micrometer 的 {url-micrometer-tracing-docs}/api[低级 `Tracer` API]。
+
+[[actuator.micrometer-tracing.baggage]]
+== 行李
+你可以使用 javadoc:io.micrometer.tracing.Tracer[] API 创建行李：
+
+include-code::CreatingBaggage[]
+
+此示例创建了一个名为 `baggage1` 的行李，其值为 `value1`。如果你使用 W3C 传播，行李会自动通过网络传播。如果你使用 B3 传播，行李不会自动传播。要手动通过网络传播行李，请使用 configprop:management.tracing.baggage.remote-fields[] 配置属性（这也适用于 W3C）。对于上面的示例，将此属性设置为 `baggage1` 将生成一个 HTTP 头 `baggage1: value1`。
+
+如果你希望将行李传播到 MDC，请使用 configprop:management.tracing.baggage.correlation.fields[] 配置属性。对于上面的示例，将此属性设置为 `baggage1` 将生成一个名为 `baggage1` 的 MDC 条目。
+
+[[actuator.micrometer-tracing.tests]]
+== 测试
+当使用 javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation] 时，报告数据的追踪组件不会自动配置。有关更多详细信息，请参阅 xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.tracing[]。
+
+'''
+[[actuator.micrometer-tracing]]
+== Tracing
 Spring Boot Actuator provides dependency management and auto-configuration for {url-micrometer-tracing-docs}[Micrometer Tracing], a facade for popular tracer libraries.
 
 TIP: To learn more about Micrometer Tracing capabilities, see its {url-micrometer-tracing-docs}[reference documentation].
 
-
-
 [[actuator.micrometer-tracing.tracers]]
 == Supported Tracers
-
 Spring Boot ships auto-configuration for the following tracers:
 
 * https://opentelemetry.io/[OpenTelemetry] with https://zipkin.io/[Zipkin],  https://docs.wavefront.com/[Wavefront], or https://opentelemetry.io/docs/reference/specification/protocol/[OTLP]
 * https://github.com/openzipkin/brave[OpenZipkin Brave] with https://zipkin.io/[Zipkin] or https://docs.wavefront.com/[Wavefront]
 
-
-
 [[actuator.micrometer-tracing.getting-started]]
 == Getting Started
-
 We need an example application that we can use to get started with tracing.
 For our purposes, the simple "`Hello World!`" web application that's covered in the xref:tutorial:first-application/index.adoc[] section will suffice.
 We're going to use the OpenTelemetry tracer with Zipkin as trace backend.
@@ -68,11 +227,8 @@ Now open the Zipkin UI at `http://localhost:9411` and press the "Run Query" butt
 You should see one trace.
 Press the "Show" button to see the details of that trace.
 
-
-
 [[actuator.micrometer-tracing.logging]]
 == Logging Correlation IDs
-
 Correlation IDs provide a helpful way to link lines in your log files to spans/traces.
 If you are using Micrometer Tracing, Spring Boot will include correlation IDs in your logs by default.
 
@@ -96,29 +252,20 @@ It's also worth mentioning that configprop:logging.pattern.correlation[] contain
 TIP: Correlation IDs rely on context propagation.
 Please read xref:reference:actuator/observability.adoc#actuator.observability.context-propagation[this documentation for more details].
 
-
-
 [[actuator.micrometer-tracing.propagating-traces]]
 == Propagating Traces
-
 To automatically propagate traces over the network, use the auto-configured xref:io/rest-client.adoc#io.rest-client.resttemplate[`RestTemplateBuilder`], xref:io/rest-client.adoc#io.rest-client.restclient[`RestClient.Builder`] or xref:io/rest-client.adoc#io.rest-client.webclient[`WebClient.Builder`] to construct the client.
 
 WARNING: If you create the javadoc:org.springframework.web.client.RestTemplate[], the javadoc:org.springframework.web.client.RestClient[] or the javadoc:org.springframework.web.reactive.function.client.WebClient[] without using the auto-configured builders, automatic trace propagation won't work!
 
-
-
 [[actuator.micrometer-tracing.tracer-implementations]]
 == Tracer Implementations
-
 As Micrometer Tracer supports multiple tracer implementations, there are multiple dependency combinations possible with Spring Boot.
 
 All tracer implementations need the `org.springframework.boot:spring-boot-starter-actuator` dependency.
 
-
-
 [[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
 === OpenTelemetry With Zipkin
-
 Tracing with OpenTelemetry and reporting to Zipkin requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
@@ -126,11 +273,8 @@ Tracing with OpenTelemetry and reporting to Zipkin requires the following depend
 
 Use the `management.zipkin.tracing.*` configuration properties to configure reporting to Zipkin.
 
-
-
 [[actuator.micrometer-tracing.tracer-implementations.otel-wavefront]]
 === OpenTelemetry With Wavefront
-
 Tracing with OpenTelemetry and reporting to Wavefront requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
@@ -138,11 +282,8 @@ Tracing with OpenTelemetry and reporting to Wavefront requires the following dep
 
 Use the `management.wavefront.*` configuration properties to configure reporting to Wavefront.
 
-
-
 [[actuator.micrometer-tracing.tracer-implementations.otel-otlp]]
 === OpenTelemetry With OTLP
-
 Tracing with OpenTelemetry and reporting using OTLP requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
@@ -150,11 +291,8 @@ Tracing with OpenTelemetry and reporting using OTLP requires the following depen
 
 Use the `management.otlp.tracing.*` configuration properties to configure reporting using OTLP.
 
-
-
 [[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
 === OpenZipkin Brave With Zipkin
-
 Tracing with OpenZipkin Brave and reporting to Zipkin requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
@@ -162,11 +300,8 @@ Tracing with OpenZipkin Brave and reporting to Zipkin requires the following dep
 
 Use the `management.zipkin.tracing.*` configuration properties to configure reporting to Zipkin.
 
-
-
 [[actuator.micrometer-tracing.tracer-implementations.brave-wavefront]]
 === OpenZipkin Brave With Wavefront
-
 Tracing with OpenZipkin Brave and reporting to Wavefront requires the following dependencies:
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - bridges the Micrometer Observation API to Brave.
@@ -174,18 +309,12 @@ Tracing with OpenZipkin Brave and reporting to Wavefront requires the following 
 
 Use the `management.wavefront.*` configuration properties to configure reporting to Wavefront.
 
-
-
 [[actuator.micrometer-tracing.micrometer-observation]]
 == Integration with Micrometer Observation
-
 A javadoc:io.micrometer.tracing.handler.TracingAwareMeterObservationHandler[] is automatically registered on the javadoc:io.micrometer.observation.ObservationRegistry[], which creates spans for every completed observation.
-
-
 
 [[actuator.micrometer-tracing.creating-spans]]
 == Creating Custom Spans
-
 You can create your own spans by starting an observation.
 For this, inject javadoc:io.micrometer.observation.ObservationRegistry[] into your component:
 
@@ -195,11 +324,8 @@ This will create an observation named "some-operation" with the tag "some-tag=so
 
 TIP: If you want to create a span without creating a metric, you need to use the {url-micrometer-tracing-docs}/api[lower-level `Tracer` API] from Micrometer.
 
-
-
 [[actuator.micrometer-tracing.baggage]]
 == Baggage
-
 You can create baggage with the javadoc:io.micrometer.tracing.Tracer[] API:
 
 include-code::CreatingBaggage[]
@@ -213,10 +339,7 @@ For the example above, setting this property to `baggage1` results in an HTTP he
 If you want to propagate the baggage to the MDC, use the configprop:management.tracing.baggage.correlation.fields[] configuration property.
 For the example above, setting this property to `baggage1` results in an MDC entry named `baggage1`.
 
-
-
 [[actuator.micrometer-tracing.tests]]
 == Tests
-
 Tracing components which are reporting data are not auto-configured when using javadoc:org.springframework.boot.test.context.SpringBootTest[format=annotation].
 See xref:testing/spring-boot-applications.adoc#testing.spring-boot-applications.tracing[] for more details.

@@ -1,11 +1,34 @@
-[[howto.jersey]]
 = Jersey
+:encoding: utf-8
+:numbered:
 
+[[howto.jersey]]
+== Jersey
 
+[[howto.jersey.spring-security]]
+== 使用 Spring Security 保护 Jersey 端点
+Spring Security 可以用于保护基于 Jersey 的 Web 应用程序，其方式与保护基于 Spring MVC 的 Web 应用程序非常相似。然而，如果你希望将 Spring Security 的方法级安全性与 Jersey 结合使用，则必须配置 Jersey 使用 `setStatus(int)` 而不是 `sendError(int)`。这可以防止 Jersey 在 Spring Security 有机会向客户端报告身份验证或授权失败之前提交响应。
+
+必须在应用程序的 `org.glassfish.jersey.server.ResourceConfig` Bean 上将 `jersey.config.server.response.setStatusOverSendError` 属性设置为 `true`，如下例所示：
+
+```java
+include-code::JerseySetStatusOverSendErrorConfig[]
+```
+
+[[howto.jersey.alongside-another-web-framework]]
+== 将 Jersey 与其他 Web 框架一起使用
+要将 Jersey 与其他 Web 框架（如 Spring MVC）一起使用，应配置 Jersey 以允许其他框架处理它无法处理的请求。首先，通过将 `spring.jersey.type` 应用程序属性配置为 `filter`，将 Jersey 配置为使用过滤器而不是 Servlet。其次，配置你的 `org.glassfish.jersey.server.ResourceConfig` 以转发会导致 404 的请求，如下例所示。
+
+```java
+include-code::JerseyConfig[]
+```
+
+'''
+[[howto.jersey]]
+== Jersey
 
 [[howto.jersey.spring-security]]
 == Secure Jersey Endpoints with Spring Security
-
 Spring Security can be used to secure a Jersey-based web application in much the same way as it can be used to secure a Spring MVC-based web application.
 However, if you want to use Spring Security's method-level security with Jersey, you must configure Jersey to use `setStatus(int)` rather `sendError(int)`.
 This prevents Jersey from committing the response before Spring Security has had an opportunity to report an authentication or authorization failure to the client.
@@ -14,11 +37,8 @@ The `jersey.config.server.response.setStatusOverSendError` property must be set 
 
 include-code::JerseySetStatusOverSendErrorConfig[]
 
-
-
 [[howto.jersey.alongside-another-web-framework]]
 == Use Jersey Alongside Another Web Framework
-
 To use Jersey alongside another web framework, such as Spring MVC, it should be configured so that it will allow the other framework to handle requests that it cannot handle.
 First, configure Jersey to use a filter rather than a servlet by configuring the configprop:spring.jersey.type[] application property with a value of `filter`.
 Second, configure your javadoc:org.glassfish.jersey.server.ResourceConfig[] to forward requests that would have resulted in a 404, as shown in the following example.

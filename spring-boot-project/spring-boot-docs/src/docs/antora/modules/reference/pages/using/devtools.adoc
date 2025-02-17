@@ -1,6 +1,406 @@
-[[using.devtools]]
-= Developer Tools
+= 开发者工具
+:encoding: utf-8
+:numbered:
 
+[[using.devtools]]
+== 开发者工具
+Spring Boot 包含一组额外的工具，可以使应用程序开发体验更加愉快。
+`spring-boot-devtools` 模块可以包含在任何项目中，以提供额外的开发时功能。
+要包含 devtools 支持，请将模块依赖项添加到你的构建中，如下面的 Maven 和 Gradle 清单所示：
+
+.Maven
+[source,xml]
+----
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-devtools</artifactId>
+		<optional>true</optional>
+	</dependency>
+</dependencies>
+----
+
+.Gradle
+[source,gradle]
+----
+dependencies {
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
+}
+----
+
+WARNING: Devtools 可能会导致类加载问题，特别是在多模块项目中。
+xref:using/devtools.adoc#using.devtools.diagnosing-classloading-issues[] 解释了如何诊断和解决这些问题。
+
+NOTE: 当运行完全打包的应用程序时，开发者工具会自动禁用。
+如果你的应用程序是从 `java -jar` 启动的，或者是从特殊的类加载器启动的，那么它被视为“生产应用程序”。
+你可以使用 `spring.devtools.restart.enabled` 系统属性来控制此行为。
+要启用 devtools，无论用于启动应用程序的类加载器是什么，请设置 `-Dspring.devtools.restart.enabled=true` 系统属性。
+在生产环境中不得这样做，因为运行 devtools 存在安全风险。
+要禁用 devtools，请排除依赖项或将 `-Dspring.devtools.restart.enabled=false` 系统属性设置为 `false`。
+
+TIP: 在 Maven 中将依赖项标记为可选，或在 Gradle 中使用 `developmentOnly` 配置（如上所示），可以防止 devtools 被传递性地应用到使用你项目的其他模块。
+
+TIP: 重新打包的存档默认不包含 devtools。
+如果你想使用 xref:using/devtools.adoc#using.devtools.remote-applications[某些远程 devtools 功能]，则需要包含它。
+使用 Maven 插件时，将 `excludeDevtools` 属性设置为 `false`。
+使用 Gradle 插件时，xref:gradle-plugin:packaging.adoc#packaging-executable.configuring.including-development-only-dependencies[配置任务的类路径以包含 `developmentOnly` 配置]。
+
+[[using.devtools.diagnosing-classloading-issues]]
+== 诊断类加载问题
+如 xref:#using.devtools.restart.restart-vs-reload[] 部分所述，重启功能是通过使用两个类加载器实现的。
+对于大多数应用程序，这种方法效果很好。
+然而，有时可能会导致类加载问题，特别是在多模块项目中。
+
+要诊断类加载问题是否确实由 devtools 及其两个类加载器引起，xref:using/devtools.adoc#using.devtools.restart.disable[尝试禁用重启]。
+如果这解决了你的问题，xref:using/devtools.adoc#using.devtools.restart.customizing-the-classload[自定义重启类加载器] 以包含整个项目。
+
+[[using.devtools.property-defaults]]
+== 属性默认值
+Spring Boot 支持的许多库使用缓存来提高性能。
+例如，xref:web/servlet.adoc#web.servlet.spring-mvc.template-engines[模板引擎] 缓存已编译的模板，以避免重复解析模板文件。
+此外，Spring MVC 可以在提供静态资源时为响应添加 HTTP 缓存头。
+
+虽然缓存在生产中非常有益，但在开发过程中可能会适得其反，阻止你看到刚刚在应用程序中所做的更改。
+因此，`spring-boot-devtools` 默认禁用缓存选项。
+
+缓存选项通常通过 `application.properties` 文件中的设置进行配置。
+例如，Thymeleaf 提供了 `configprop:spring.thymeleaf.cache[]` 属性。
+`spring-boot-devtools` 模块会自动应用合理的开发时配置，而无需手动设置这些属性。
+
+下表列出了所有应用的属性：
+
+include::ROOT:partial$propertydefaults/devtools-property-defaults.adoc[]
+
+NOTE: 如果你不希望应用属性默认值，可以在 `application.properties` 中将 `configprop:spring.devtools.add-properties[]` 设置为 `false`。
+
+由于在开发 Spring MVC 和 Spring WebFlux 应用程序时需要更多关于 Web 请求的信息，开发者工具建议你为 `web` 日志组启用 `DEBUG` 日志记录。
+这将为你提供有关传入请求、处理它的处理程序、响应结果等详细信息。
+如果你希望记录所有请求详细信息（包括潜在的敏感信息），可以打开 `configprop:spring.mvc.log-request-details[]` 或 `configprop:spring.codec.log-request-details[]` 配置属性。
+
+[[using.devtools.restart]]
+== 自动重启
+使用 `spring-boot-devtools` 的应用程序在类路径上的文件发生更改时会自动重启。
+在 IDE 中工作时，这可能是一个有用的功能，因为它为代码更改提供了非常快速的反馈循环。
+默认情况下，会监视类路径上指向目录的任何条目以查找更改。
+请注意，某些资源（例如静态资源和视图模板）xref:using/devtools.adoc#using.devtools.restart.excluding-resources[不需要重启应用程序]。
+
+.触发重启
+****
+由于 DevTools 监视类路径资源，触发重启的唯一方法是更新类路径。
+无论你使用的是 IDE 还是构建插件，修改后的文件都必须重新编译以触发重启。
+导致类路径更新的方式取决于你使用的工具：
+
+* 在 Eclipse 中，保存修改后的文件会导致类路径更新并触发重启。
+* 在 IntelliJ IDEA 中，构建项目（`Build +->+ Build Project`）具有相同的效果。
+* 如果使用构建插件，运行 `mvn compile`（对于 Maven）或 `gradle build`（对于 Gradle）将触发重启。
+****
+
+NOTE: 如果你使用构建插件通过 Maven 或 Gradle 重启，则必须将 `forking` 设置为 `enabled`。
+如果禁用分叉，则不会创建 devtools 使用的隔离应用程序类加载器，并且重启将无法正常工作。
+
+TIP: 自动重启与 LiveReload 配合使用效果非常好。
+有关详细信息，请参阅 xref:using/devtools.adoc#using.devtools.livereload[] 部分。
+如果你使用 JRebel，则自动重启将被禁用，以支持动态类重新加载。
+其他 devtools 功能（例如 LiveReload 和属性覆盖）仍然可以使用。
+
+NOTE: DevTools 依赖于应用程序上下文的关闭钩子在重启期间关闭它。
+如果你禁用了关闭钩子（`SpringApplication.setRegisterShutdownHook(false)`），它将无法正常工作。
+
+NOTE: DevTools 需要自定义 `javadoc:org.springframework.context.ApplicationContext[]` 使用的 `javadoc:org.springframework.core.io.ResourceLoader[]`。
+如果你的应用程序已经提供了一个，它将被包装。
+不支持直接覆盖 `javadoc:org.springframework.context.ApplicationContext[]` 上的 `getResource` 方法。
+
+WARNING: 使用 AspectJ 编织时不支持自动重启。
+
+[[using.devtools.restart.restart-vs-reload]]
+.重启与重新加载
+****
+Spring Boot 提供的重启技术通过使用两个类加载器来工作。
+未更改的类（例如来自第三方 jar 的类）被加载到 _base_ 类加载器中。
+你正在积极开发的类被加载到 _restart_ 类加载器中。
+当应用程序重启时，_restart_ 类加载器被丢弃并创建一个新的类加载器。
+这种方法意味着应用程序重启通常比“冷启动”快得多，因为 _base_ 类加载器已经可用并已填充。
+
+如果你发现重启对你的应用程序来说不够快，或者遇到类加载问题，你可以考虑使用重新加载技术，例如 ZeroTurnaround 的 https://jrebel.com/software/jrebel/[JRebel]。
+这些技术通过在加载类时重写类来使它们更适合重新加载。
+****
+
+[[using.devtools.restart.logging-condition-delta]]
+=== 记录条件评估的更改
+默认情况下，每次应用程序重启时，都会记录一个显示条件评估差异的报告。
+该报告显示了在你进行更改（例如添加或删除 bean 以及设置配置属性）时应用程序自动配置的更改。
+
+要禁用报告的日志记录，请设置以下属性：
+
+[configprops,yaml]
+----
+spring:
+  devtools:
+    restart:
+      log-condition-evaluation-delta: false
+----
+
+[[using.devtools.restart.excluding-resources]]
+=== 排除资源
+某些资源在更改时不一定需要触发重启。
+例如，Thymeleaf 模板可以就地编辑。
+默认情况下，更改 `/META-INF/maven`、`/META-INF/resources`、`/resources`、`/static`、`/public` 或 `/templates` 中的资源不会触发重启，但会触发 xref:using/devtools.adoc#using.devtools.livereload[实时重新加载]。
+如果你想自定义这些排除项，可以使用 `configprop:spring.devtools.restart.exclude[]` 属性。
+例如，要仅排除 `/static` 和 `/public`，你可以设置以下属性：
+
+[configprops,yaml]
+----
+spring:
+  devtools:
+    restart:
+      exclude: "static/**,public/**"
+----
+
+TIP: 如果你想保留这些默认值并_添加_其他排除项，请改用 `configprop:spring.devtools.restart.additional-exclude[]` 属性。
+
+[[using.devtools.restart.watching-additional-paths]]
+=== 监视其他路径
+你可能希望在对不在类路径上的文件进行更改时重新启动或重新加载应用程序。
+为此，请使用 `configprop:spring.devtools.restart.additional-paths[]` 属性配置要监视的其他路径。
+你可以使用 `configprop:spring.devtools.restart.exclude[]` 属性 xref:using/devtools.adoc#using.devtools.restart.excluding-resources[如前所述] 来控制其他路径下的更改是触发完全重启还是 xref:using/devtools.adoc#using.devtools.livereload[实时重新加载]。
+
+[[using.devtools.restart.disable]]
+=== 禁用重启
+如果你不想使用重启功能，可以使用 `configprop:spring.devtools.restart.enabled[]` 属性禁用它。
+在大多数情况下，你可以在 `application.properties` 中设置此属性（这样做仍然会初始化重启类加载器，但它不会监视文件更改）。
+
+如果你需要_完全_禁用重启支持（例如，因为它与特定库不兼容），你需要在调用 `SpringApplication.run(...)` 之前将 `configprop:spring.devtools.restart.enabled[]` javadoc:java.lang.System[] 属性设置为 `false`，如下例所示：
+
+include-code::MyApplication[]
+
+[[using.devtools.restart.triggerfile]]
+=== 使用触发文件
+如果你使用的 IDE 会持续编译更改的文件，你可能更愿意仅在特定时间触发重启。
+为此，你可以使用“触发文件”，这是一个特殊的文件，当你希望实际触发重启检查时必须对其进行修改。
+
+NOTE: 对文件的任何更新都会触发检查，但只有在 Devtools 检测到有事情要做时才会实际发生重启。
+
+要使用触发文件，请将 `configprop:spring.devtools.restart.trigger-file[]` 属性设置为触发文件的名称（不包括任何路径）。
+触发文件必须出现在你的类路径上的某个位置。
+
+例如，如果你有一个具有以下结构的项目：
+
+[source]
+----
+src
++- main
+   +- resources
+      +- .reloadtrigger
+----
+
+那么你的 `trigger-file` 属性将是：
+
+[configprops,yaml]
+----
+spring:
+  devtools:
+    restart:
+      trigger-file: ".reloadtrigger"
+----
+
+现在，只有在更新 `src/main/resources/.reloadtrigger` 时才会发生重启。
+
+TIP: 你可能希望将 `spring.devtools.restart.trigger-file` 设置为 xref:using/devtools.adoc#using.devtools.globalsettings[全局设置]，以便所有项目都以相同的方式运行。
+
+一些 IDE 具有功能，可以避免你手动更新触发文件。
+https://spring.io/tools[Spring Tools for Eclipse] 和 https://www.jetbrains.com/idea/[IntelliJ IDEA (Ultimate Edition)] 都具有此类支持。
+使用 Spring Tools，你可以使用控制台视图中的“重新加载”按钮（只要你的 `trigger-file` 名为 `.reloadtrigger`）。
+对于 IntelliJ IDEA，你可以按照 https://www.jetbrains.com/help/idea/spring-boot.html#application-update-policies[其文档中的说明] 进行操作。
+
+[[using.devtools.restart.customizing-the-classload]]
+=== 自定义重启类加载器
+如前面 xref:#using.devtools.restart.restart-vs-reload[] 部分所述，重启功能是通过使用两个类加载器实现的。
+如果这导致问题，你可以使用 `spring.devtools.restart.enabled` 系统属性来诊断问题，如果应用程序在关闭重启的情况下工作，你可能需要自定义哪些内容由哪个类加载器加载。
+
+默认情况下，IDE 中打开的任何项目都使用“重启”类加载器加载，而任何常规的 `.jar` 文件都使用“基础”类加载器加载。
+如果你使用 `mvn spring-boot:run` 或 `gradle bootRun`，情况也是如此：包含 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 的项目使用“重启”类加载器加载，其他所有内容使用“基础”类加载器加载。
+启动应用程序时，类路径会打印在控制台上，这有助于识别任何有问题的条目。
+反射使用的类，尤其是注解，可以在启动时加载到父（固定）类加载器中，然后才加载使用它们的应用程序类，这可能导致 Spring 在应用程序中无法检测到它们。
+
+你可以通过创建 `META-INF/spring-devtools.properties` 文件来指示 Spring Boot 使用不同的类加载器加载项目的某些部分。
+`spring-devtools.properties` 文件可以包含以 `restart.exclude` 和 `restart.include` 为前缀的属性。
+`include` 元素是应拉入“重启”类加载器的项目，而 `exclude` 元素是应推入“基础”类加载器的项目。
+属性的值是应用于启动时传递给 JVM 的类路径的正则表达式模式。
+以下是一个示例，其中排除了一些本地类文件，并将一些额外的库包含在重启类加载器中：
+
+[source,properties]
+----
+restart:
+  exclude:
+    companycommonlibs: "/mycorp-common-[\\w\\d-\\.]/(build|bin|out|target)/"
+  include:
+    projectcommon: "/mycorp-myproj-[\\w\\d-\\.]+\\.jar"
+----
+
+NOTE: 所有属性键必须是唯一的。
+只要属性以 `restart.include.` 或 `restart.exclude.` 开头，它就会被考虑。
+
+TIP: 从类路径加载所有 `META-INF/spring-devtools.properties` 文件。
+你可以将文件打包在项目中，或打包在项目使用的库中。
+不能使用系统属性，只能使用属性文件。
+
+[[using.devtools.restart.limitations]]
+=== 已知限制
+重启功能与使用标准 `javadoc:java.io.ObjectInputStream[]` 反序列化的对象不能很好地配合使用。
+如果你需要反序列化数据，你可能需要结合使用 Spring 的 `javadoc:org.springframework.core.ConfigurableObjectInputStream[]` 和 `Thread.currentThread().getContextClassLoader()`。
+
+不幸的是，一些第三方库在不考虑上下文类加载器的情况下进行反序列化。
+如果你发现此类问题，你需要向原始作者请求修复。
+
+[[using.devtools.livereload]]
+== LiveReload
+`spring-boot-devtools` 模块包含一个嵌入式 LiveReload 服务器，可以在资源更改时触发浏览器刷新。
+LiveReload 浏览器扩展程序可免费用于 Chrome、Firefox 和 Safari。
+你可以在所选浏览器的市场或商店中搜索“LiveReload”来找到这些扩展程序。
+
+如果你不想在应用程序运行时启动 LiveReload 服务器，可以将 `configprop:spring.devtools.livereload.enabled[]` 属性设置为 `false`。
+
+NOTE: 你一次只能运行一个 LiveReload 服务器。
+在启动应用程序之前，请确保没有其他 LiveReload 服务器正在运行。
+如果你从 IDE 启动多个应用程序，则只有第一个具有 LiveReload 支持。
+
+WARNING: 要在文件更改时触发 LiveReload，必须启用 xref:using/devtools.adoc#using.devtools.restart[]。
+
+[[using.devtools.globalsettings]]
+== 全局设置
+你可以通过将以下任何文件添加到 `$HOME/.config/spring-boot` 目录来配置全局 devtools 设置：
+
+. `spring-boot-devtools.properties`
+. `spring-boot-devtools.yaml`
+. `spring-boot-devtools.yml`
+
+添加到这些文件中的任何属性都适用于你机器上使用 devtools 的_所有_ Spring Boot 应用程序。
+例如，要配置重启以始终使用 xref:using/devtools.adoc#using.devtools.restart.triggerfile[触发文件]，你可以将以下属性添加到 `spring-boot-devtools` 文件中：
+
+[configprops,yaml]
+----
+spring:
+  devtools:
+    restart:
+      trigger-file: ".reloadtrigger"
+----
+
+默认情况下，`$HOME` 是用户的主目录。
+要自定义此位置，请设置 `SPRING_DEVTOOLS_HOME` 环境变量或 `spring.devtools.home` 系统属性。
+
+NOTE: 如果在 `$HOME/.config/spring-boot` 中找不到 devtools 配置文件，则会在 `$HOME` 目录的根目录中搜索 `.spring-boot-devtools.properties` 文件。
+这使你可以与不支持 `$HOME/.config/spring-boot` 位置的旧版本 Spring Boot 应用程序共享 devtools 全局配置。
+
+[NOTE]
+====
+devtools 属性/yaml 文件中不支持配置文件。
+
+在 `.spring-boot-devtools.properties` 中激活的任何配置文件都不会影响 xref:features/external-config.adoc#features.external-config.files.profile-specific[特定配置文件] 的加载。
+不支持特定配置文件名（形式为 `spring-boot-devtools-<profile>.properties`）以及 YAML 和 Properties 文件中的 `spring.config.activate.on-profile` 文档。
+====
+
+[[using.devtools.globalsettings.configuring-file-system-watcher]]
+=== 配置文件系统监视器
+`javadoc:org.springframework.boot.devtools.filewatch.FileSystemWatcher[]` 通过以一定的时间间隔轮询类更改，然后等待预定义的静默期以确保没有更多更改来工作。
+由于 Spring Boot 完全依赖 IDE 将文件编译并复制到 Spring Boot 可以读取的位置，你可能会发现有时某些更改在 devtools 重启应用程序时未反映出来。
+如果你经常观察到此类问题，请尝试增加 `spring.devtools.restart.poll-interval` 和 `spring.devtools.restart.quiet-period` 参数以适应你的开发环境：
+
+[configprops,yaml]
+----
+spring:
+  devtools:
+    restart:
+      poll-interval: "2s"
+      quiet-period: "1s"
+----
+
+现在，每 2 秒轮询一次受监视的类路径目录以查找更改，并保持 1 秒的静默期以确保没有其他类更改。
+
+[[using.devtools.remote-applications]]
+== 远程应用程序
+Spring Boot 开发者工具不仅限于本地开发。
+你还可以在远程运行应用程序时使用多项功能。
+远程支持是选择加入的，因为启用它可能存在安全风险。
+只有在受信任的网络上运行或使用 SSL 保护时才应启用它。
+如果这两个选项都不可用，你不应使用 Devtools 的远程支持。
+切勿在生产部署中启用支持。
+
+要启用它，你需要确保 `devtools` 包含在重新打包的存档中，如下面的清单所示：
+
+[source,xml]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<excludeDevtools>false</excludeDevtools>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+----
+
+然后，你需要设置 `configprop:spring.devtools.remote.secret[]` 属性。
+与任何重要的密码或密钥一样，该值应该是唯一且强大的，以防止被猜测或暴力破解。
+
+远程 devtools 支持分为两部分：接受连接的服务器端端点和在 IDE 中运行的客户端应用程序。
+当设置 `configprop:spring.devtools.remote.secret[]` 属性时，服务器组件会自动启用。
+客户端组件必须手动启动。
+
+NOTE: Spring WebFlux 应用程序不支持远程 devtools。
+
+[[using.devtools.remote-applications.client]]
+=== 运行远程客户端应用程序
+远程客户端应用程序设计为在 IDE 中运行。
+你需要使用与远程项目相同的类路径运行 `javadoc:org.springframework.boot.devtools.RemoteSpringApplication[]`。
+应用程序的唯一必需参数是它连接到的远程 URL。
+
+例如，如果你使用的是 Eclipse 或 Spring Tools，并且你有一个名为 `my-app` 的项目已部署到 Cloud Foundry，你将执行以下操作：
+
+* 从 `Run` 菜单中选择 `Run Configurations...`。
+* 创建一个新的 `Java Application` “启动配置”。
+* 浏览 `my-app` 项目。
+* 使用 `javadoc:org.springframework.boot.devtools.RemoteSpringApplication[]` 作为主类。
+* 将 `+++https://myapp.cfapps.io+++` 添加到 `Program arguments`（或你的远程 URL 是什么）。
+
+正在运行的远程客户端可能类似于以下清单：
+
+[source,subs="verbatim,attributes"]
+----
+include::ROOT:example$remote-spring-application.txt[]
+----
+
+NOTE: 由于远程客户端使用与实际应用程序相同的类路径，因此它可以直接读取应用程序属性。
+这就是如何读取 `configprop:spring.devtools.remote.secret[]` 属性并将其传递给服务器进行身份验证的方式。
+
+TIP: 始终建议使用 `https://` 作为连接协议，以便加密流量并防止密码被截获。
+
+TIP: 如果需要使用代理访问远程应用程序，请配置 `spring.devtools.remote.proxy.host` 和 `spring.devtools.remote.proxy.port` 属性。
+
+[[using.devtools.remote-applications.update]]
+=== 远程更新
+远程客户端以与 xref:using/devtools.adoc#using.devtools.restart[本地重启] 相同的方式监视应用程序类路径的更改。
+任何更新的资源都会被推送到远程应用程序，并且（_如果需要_）触发重启。
+如果你迭代使用本地没有的云服务的功能，这可能会很有帮助。
+通常，远程更新和重启比完整的重建和部署周期要快得多。
+
+在较慢的开发环境中，可能会发生静默期不足的情况，并且类更改可能会分批进行。
+在第一批类更改上传后，服务器会重新启动。
+由于服务器正在重新启动，下一批无法发送到应用程序。
+
+这通常表现为 `javadoc:org.springframework.boot.devtools.RemoteSpringApplication[]` 日志中关于某些类上传失败的警告，以及随后的重试。
+但也可能导致应用程序代码不一致，并且在第一批更改上传后无法重新启动。
+如果你经常观察到此类问题，请尝试增加 `spring.devtools.restart.poll-interval` 和 `spring.devtools.restart.quiet-period` 参数以适应你的开发环境。
+有关配置这些属性的详细信息，请参阅 xref:using/devtools.adoc#using.devtools.globalsettings.configuring-file-system-watcher[] 部分。
+
+NOTE: 只有在远程客户端运行时才会监视文件。
+如果你在启动远程客户端之前更改了文件，则不会将其推送到远程服务器。
+
+'''
+
+== Developer Tools
 Spring Boot includes an additional set of tools that can make the application development experience a little more pleasant.
 The `spring-boot-devtools` module can be included in any project to provide additional development-time features.
 To include devtools support, add the module dependency to your build, as shown in the following listings for Maven and Gradle:
@@ -42,11 +442,8 @@ If you want to use a xref:using/devtools.adoc#using.devtools.remote-applications
 When using the Maven plugin, set the `excludeDevtools` property to `false`.
 When using the Gradle plugin, xref:gradle-plugin:packaging.adoc#packaging-executable.configuring.including-development-only-dependencies[configure the task's classpath to include the `developmentOnly` configuration].
 
-
-
 [[using.devtools.diagnosing-classloading-issues]]
 == Diagnosing Classloading Issues
-
 As described in the xref:#using.devtools.restart.restart-vs-reload[] section, restart functionality is implemented by using two classloaders.
 For most applications, this approach works well.
 However, it can sometimes cause classloading issues, in particular in multi-module projects.
@@ -54,11 +451,8 @@ However, it can sometimes cause classloading issues, in particular in multi-modu
 To diagnose whether the classloading issues are indeed caused by devtools and its two classloaders, xref:using/devtools.adoc#using.devtools.restart.disable[try disabling restart].
 If this solves your problems, xref:using/devtools.adoc#using.devtools.restart.customizing-the-classload[customize the restart classloader] to include your entire project.
 
-
-
 [[using.devtools.property-defaults]]
 == Property Defaults
-
 Several of the libraries supported by Spring Boot use caches to improve performance.
 For example, xref:web/servlet.adoc#web.servlet.spring-mvc.template-engines[template engines] cache compiled templates to avoid repeatedly parsing template files.
 Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
@@ -80,11 +474,8 @@ Because you need more information about web requests while developing Spring MVC
 This will give you information about the incoming request, which handler is processing it, the response outcome, and other details.
 If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.codec.log-request-details[] configuration properties.
 
-
-
 [[using.devtools.restart]]
 == Automatic Restart
-
 Applications that use `spring-boot-devtools` automatically restart whenever files on the classpath change.
 This can be a useful feature when working in an IDE, as it gives a very fast feedback loop for code changes.
 By default, any entry on the classpath that points to a directory is monitored for changes.
@@ -131,11 +522,8 @@ If you find that restarts are not quick enough for your applications or you enco
 These work by rewriting classes as they are loaded to make them more amenable to reloading.
 ****
 
-
-
 [[using.devtools.restart.logging-condition-delta]]
 === Logging Changes in Condition Evaluation
-
 By default, each time your application restarts, a report showing the condition evaluation delta is logged.
 The report shows the changes to your application's auto-configuration as you make changes such as adding or removing beans and setting configuration properties.
 
@@ -149,11 +537,8 @@ spring:
       log-condition-evaluation-delta: false
 ----
 
-
-
 [[using.devtools.restart.excluding-resources]]
 === Excluding Resources
-
 Certain resources do not necessarily need to trigger a restart when they are changed.
 For example, Thymeleaf templates can be edited in-place.
 By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/resources`, `/static`, `/public`, or `/templates` does not trigger a restart but does trigger a xref:using/devtools.adoc#using.devtools.livereload[live reload].
@@ -170,20 +555,14 @@ spring:
 
 TIP: If you want to keep those defaults and _add_ additional exclusions, use the configprop:spring.devtools.restart.additional-exclude[] property instead.
 
-
-
 [[using.devtools.restart.watching-additional-paths]]
 === Watching Additional Paths
-
 You may want your application to be restarted or reloaded when you make changes to files that are not on the classpath.
 To do so, use the configprop:spring.devtools.restart.additional-paths[] property to configure additional paths to watch for changes.
 You can use the configprop:spring.devtools.restart.exclude[] property xref:using/devtools.adoc#using.devtools.restart.excluding-resources[described earlier] to control whether changes beneath the additional paths trigger a full restart or a xref:using/devtools.adoc#using.devtools.livereload[live reload].
 
-
-
 [[using.devtools.restart.disable]]
 === Disabling Restart
-
 If you do not want to use the restart feature, you can disable it by using the configprop:spring.devtools.restart.enabled[] property.
 In most cases, you can set this property in your `application.properties` (doing so still initializes the restart classloader, but it does not watch for file changes).
 
@@ -191,11 +570,8 @@ If you need to _completely_ disable restart support (for example, because it doe
 
 include-code::MyApplication[]
 
-
-
 [[using.devtools.restart.triggerfile]]
 === Using a Trigger File
-
 If you work with an IDE that continuously compiles changed files, you might prefer to trigger restarts only at specific times.
 To do so, you can use a "`trigger file`", which is a special file that must be modified when you want to actually trigger a restart check.
 
@@ -233,8 +609,6 @@ https://spring.io/tools[Spring Tools for Eclipse] and https://www.jetbrains.com/
 With Spring Tools, you can use the "`reload`" button from the console view (as long as your `trigger-file` is named `.reloadtrigger`).
 For IntelliJ IDEA, you can follow the https://www.jetbrains.com/help/idea/spring-boot.html#application-update-policies[instructions in their documentation].
 
-
-
 [[using.devtools.restart.customizing-the-classload]]
 === Customizing the Restart Classloader
 As described earlier in the xref:#using.devtools.restart.restart-vs-reload[] section, restart functionality is implemented by using two classloaders.
@@ -267,22 +641,16 @@ TIP: All `META-INF/spring-devtools.properties` from the classpath are loaded.
 You can package files inside your project, or in the libraries that the project consumes.
 System properties can not be used, only the properties file.
 
-
-
 [[using.devtools.restart.limitations]]
 === Known Limitations
-
 Restart functionality does not work well with objects that are deserialized by using a standard javadoc:java.io.ObjectInputStream[].
 If you need to deserialize data, you may need to use Spring's javadoc:org.springframework.core.ConfigurableObjectInputStream[] in combination with `Thread.currentThread().getContextClassLoader()`.
 
 Unfortunately, several third-party libraries deserialize without considering the context classloader.
 If you find such a problem, you need to request a fix with the original authors.
 
-
-
 [[using.devtools.livereload]]
 == LiveReload
-
 The `spring-boot-devtools` module includes an embedded LiveReload server that can be used to trigger a browser refresh when a resource is changed.
 LiveReload browser extensions are freely available for Chrome, Firefox and Safari.
 You can find these extensions by searching 'LiveReload' in the marketplace or store of your chosen browser.
@@ -295,11 +663,8 @@ If you start multiple applications from your IDE, only the first has LiveReload 
 
 WARNING: To trigger LiveReload when a file changes, xref:using/devtools.adoc#using.devtools.restart[] must be enabled.
 
-
-
 [[using.devtools.globalsettings]]
 == Global Settings
-
 You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` directory:
 
 . `spring-boot-devtools.properties`
@@ -331,11 +696,8 @@ Any profiles activated in `.spring-boot-devtools.properties` will not affect the
 Profile specific filenames (of the form `spring-boot-devtools-<profile>.properties`) and `spring.config.activate.on-profile` documents in both YAML and Properties files are not supported.
 ====
 
-
-
 [[using.devtools.globalsettings.configuring-file-system-watcher]]
 === Configuring File System Watcher
-
 javadoc:org.springframework.boot.devtools.filewatch.FileSystemWatcher[] works by polling the class changes with a certain time interval, and then waiting for a predefined quiet period to make sure there are no more changes.
 Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
@@ -351,11 +713,8 @@ spring:
 
 The monitored classpath directories are now polled every 2 seconds for changes, and a 1 second quiet period is maintained to make sure there are no additional class changes.
 
-
-
 [[using.devtools.remote-applications]]
 == Remote Applications
-
 The Spring Boot developer tools are not limited to local development.
 You can also use several features when running applications remotely.
 Remote support is opt-in as enabling it can be a security risk.
@@ -389,11 +748,8 @@ The client component must be launched manually.
 
 NOTE: Remote devtools is not supported for Spring WebFlux applications.
 
-
-
 [[using.devtools.remote-applications.client]]
 === Running the Remote Client Application
-
 The remote client application is designed to be run from within your IDE.
 You need to run javadoc:org.springframework.boot.devtools.RemoteSpringApplication[] with the same classpath as the remote project that you connect to.
 The application's single required argument is the remote URL to which it connects.
@@ -420,11 +776,8 @@ TIP: It is always advisable to use `https://` as the connection protocol, so tha
 
 TIP: If you need to use a proxy to access the remote application, configure the `spring.devtools.remote.proxy.host` and `spring.devtools.remote.proxy.port` properties.
 
-
-
 [[using.devtools.remote-applications.update]]
 === Remote Update
-
 The remote client monitors your application classpath for changes in the same way as the xref:using/devtools.adoc#using.devtools.restart[local restart].
 Any updated resource is pushed to the remote application and (_if required_) triggers a restart.
 This can be helpful if you iterate on a feature that uses a cloud service that you do not have locally.

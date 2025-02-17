@@ -1,6 +1,17 @@
-[[appendix.test-auto-configuration.slices]]
 = Test Slices
+:encoding: utf-8
+:numbered:
 
+[[appendix.test-auto-configuration.slices]]
+== 测试切片
+
+下表列出了可用于测试应用程序各个部分的 `@...Test` 注解及其默认导入的自动配置：
+
+include::partial$slices/documented-slices.adoc[]
+
+'''
+[[appendix.test-auto-configuration.slices]]
+== Test Slices
 The following table lists the various `@...Test` annotations that can be used to test slices of your application and the auto-configuration that they import by default:
 
 include::partial$slices/documented-slices.adoc[]

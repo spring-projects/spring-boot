@@ -1,35 +1,52 @@
-[[howto.actuator]]
 = Actuator
+:encoding: utf-8
+:numbered:
 
+[[howto.actuator]]
+== Actuator
+Spring Boot 包含了 Spring Boot Actuator。本节回答其使用中常见的问题。
+
+[[howto.actuator.change-http-port-or-address]]
+== 更改 Actuator 端点的 HTTP 端口或地址
+在独立应用程序中，Actuator HTTP 端口默认与主 HTTP 端口相同。要使应用程序在不同的端口上监听，请设置外部属性：configprop:management.server.port[]。要监听完全不同的网络地址（例如，当你有一个用于管理的内部网络和一个用于用户应用程序的外部网络时），你还可以将 `management.server.address` 设置为服务器能够绑定的有效 IP 地址。
+
+有关更多详细信息，请参阅 javadoc:org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties[] 源代码以及“`生产就绪功能`”部分中的 xref:reference:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[自定义管理服务器端口]。
+
+[[howto.actuator.customizing-sanitization]]
+== 自定义清理
+要控制清理过程，请定义一个 javadoc:org.springframework.boot.actuate.endpoint.SanitizingFunction[] bean。调用该函数时使用的 javadoc:org.springframework.boot.actuate.endpoint.SanitizableData[] 提供对键和值以及它们来自的 javadoc:org.springframework.core.env.PropertySource[] 的访问。这允许你，例如，清理来自特定属性源的每个值。每个 javadoc:org.springframework.boot.actuate.endpoint.SanitizingFunction[] 按顺序调用，直到某个函数更改了可清理数据的值。
+
+[[howto.actuator.map-health-indicators-to-metrics]]
+== 将健康指示器映射到 Micrometer 指标
+Spring Boot 健康指示器返回一个 javadoc:org.springframework.boot.actuate.health.Status[] 类型以指示系统的整体健康状况。如果你想监控或警报特定应用程序的健康状况级别，可以使用 Micrometer 将这些状态导出为指标。默认情况下，Spring Boot 使用状态码 "`UP`"、"`DOWN`"、"`OUT_OF_SERVICE`" 和 "`UNKNOWN`"。要导出这些状态，你需要将这些状态转换为一些数字集，以便它们可以与 Micrometer javadoc:io.micrometer.core.instrument.Gauge[] 一起使用。
+
+以下示例展示了一种编写此类导出器的方法：
+
+include-code::MyHealthMetricsExportConfiguration[]
+
+'''
+[[howto.actuator]]
+== Actuator
 Spring Boot includes the Spring Boot Actuator.
 This section answers questions that often arise from its use.
 
-
-
 [[howto.actuator.change-http-port-or-address]]
 == Change the HTTP Port or Address of the Actuator Endpoints
-
 In a standalone application, the Actuator HTTP port defaults to the same as the main HTTP port.
 To make the application listen on a different port, set the external property: configprop:management.server.port[].
 To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
 
 For more detail, see the javadoc:org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties[] source code and xref:reference:actuator/monitoring.adoc#actuator.monitoring.customizing-management-server-port[Customizing the Management Server Port] in the "`Production-Ready Features`" section.
 
-
-
 [[howto.actuator.customizing-sanitization]]
 == Customizing Sanitization
-
 To take control over the sanitization, define a javadoc:org.springframework.boot.actuate.endpoint.SanitizingFunction[] bean.
 The javadoc:org.springframework.boot.actuate.endpoint.SanitizableData[] with which the function is called provides access to the key and value as well as the javadoc:org.springframework.core.env.PropertySource[] from which they came.
 This allows you to, for example, sanitize every value that comes from a particular property source.
 Each javadoc:org.springframework.boot.actuate.endpoint.SanitizingFunction[] is called in order until a function changes the value of the sanitizable data.
 
-
-
 [[howto.actuator.map-health-indicators-to-metrics]]
 == Map Health Indicators to Micrometer Metrics
-
 Spring Boot health indicators return a javadoc:org.springframework.boot.actuate.health.Status[] type to indicate the overall system health.
 If you want to monitor or alert on levels of health for a particular application, you can export these statuses as metrics with Micrometer.
 By default, the status codes "`UP`", "`DOWN`", "`OUT_OF_SERVICE`" and "`UNKNOWN`" are used by Spring Boot.

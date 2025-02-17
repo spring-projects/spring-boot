@@ -1,6 +1,99 @@
-[[using.running-your-application]]
-= Running Your Application
+= 运行你的应用程序
+:encoding: utf-8
+:numbered:
 
+[[using.running-your-application]]
+== 运行你的应用程序
+将应用程序打包为 jar 并使用嵌入式 HTTP 服务器的最大优势之一是，你可以像运行其他应用程序一样运行你的应用程序。
+此示例适用于调试 Spring Boot 应用程序。
+你不需要任何特殊的 IDE 插件或扩展。
+
+NOTE: 以下选项最适合在本地运行应用程序进行开发。
+对于生产部署，请参阅 xref:reference:using/packaging-for-production.adoc[]。
+
+NOTE: 本节仅涵盖基于 jar 的打包。
+如果你选择将应用程序打包为 war 文件，请参阅你的服务器和 IDE 文档。
+
+[[using.running-your-application.from-an-ide]]
+== 从 IDE 运行
+你可以从 IDE 中将 Spring Boot 应用程序作为 Java 应用程序运行。
+但是，你首先需要导入你的项目。
+导入步骤因你的 IDE 和构建系统而异。
+大多数 IDE 可以直接导入 Maven 项目。
+例如，Eclipse 用户可以从 `文件` 菜单中选择 `导入...` -> `现有 Maven 项目`。
+
+如果无法直接将项目导入 IDE，你可以使用构建插件生成 IDE 元数据。
+Maven 包含用于 https://maven.apache.org/plugins/maven-eclipse-plugin/[Eclipse] 和 https://maven.apache.org/plugins/maven-idea-plugin/[IDEA] 的插件。
+Gradle 提供了适用于 {url-gradle-docs}/userguide.html[各种 IDE] 的插件。
+
+TIP: 如果不小心运行了两次 Web 应用程序，你会看到“端口已被占用”错误。
+Spring Tools 用户可以使用 `重新启动` 按钮而不是 `运行` 按钮，以确保关闭任何现有实例。
+
+[[using.running-your-application.as-a-packaged-application]]
+== 作为打包应用程序运行
+如果你使用 Spring Boot Maven 或 Gradle 插件创建可执行 jar，则可以使用 `java -jar` 运行你的应用程序，如下例所示：
+
+[source,shell]
+----
+$ java -jar target/myapplication-0.0.1-SNAPSHOT.jar
+----
+
+还可以在启用远程调试支持的情况下运行打包的应用程序。
+这样做可以让你将调试器附加到打包的应用程序，如下例所示：
+
+[source,shell]
+----
+$ java -agentlib:jdwp=server=y,transport=dt_socket,address=8000,suspend=n \
+       -jar target/myapplication-0.0.1-SNAPSHOT.jar
+----
+
+[[using.running-your-application.with-the-maven-plugin]]
+== 使用 Maven 插件
+Spring Boot Maven 插件包含一个 `run` 目标，可用于快速编译和运行你的应用程序。
+应用程序以展开形式运行，就像在 IDE 中一样。
+以下示例显示了运行 Spring Boot 应用程序的典型 Maven 命令：
+
+[source,shell]
+----
+$ mvn spring-boot:run
+----
+
+你可能还想使用 `MAVEN_OPTS` 操作系统环境变量，如下例所示：
+
+[source,shell]
+----
+$ export MAVEN_OPTS=-Xmx1024m
+----
+
+[[using.running-your-application.with-the-gradle-plugin]]
+== 使用 Gradle 插件
+Spring Boot Gradle 插件还包含一个 `bootRun` 任务，可用于以展开形式运行你的应用程序。
+每当你应用 `org.springframework.boot` 和 `java` 插件时，都会添加 `bootRun` 任务，如下例所示：
+
+[source,shell]
+----
+$ gradle bootRun
+----
+
+你可能还想使用 `JAVA_OPTS` 操作系统环境变量，如下例所示：
+
+[source,shell]
+----
+$ export JAVA_OPTS=-Xmx1024m
+----
+
+[[using.running-your-application.hot-swapping]]
+== 热替换
+由于 Spring Boot 应用程序是普通的 Java 应用程序，JVM 热替换应该可以直接使用。
+JVM 热替换在可以替换的字节码方面有些限制。
+对于更完整的解决方案，可以使用 https://www.jrebel.com/products/jrebel[JRebel]。
+
+`spring-boot-devtools` 模块还包括对快速应用程序重启的支持。
+有关详细信息，请参阅“操作指南”中的 xref:how-to:hotswapping.adoc[] 部分。
+
+'''
+
+== Running Your Application
 One of the biggest advantages of packaging your application as a jar and using an embedded HTTP server is that you can run your application as you would any other.
 The sample applies to debugging Spring Boot applications.
 You do not need any special IDE plugins or extensions.
@@ -11,11 +104,8 @@ For production deployment, see xref:reference:using/packaging-for-production.ado
 NOTE: This section only covers jar-based packaging.
 If you choose to package your application as a war file, see your server and IDE documentation.
 
-
-
 [[using.running-your-application.from-an-ide]]
 == Running From an IDE
-
 You can run a Spring Boot application from your IDE as a Java application.
 However, you first need to import your project.
 Import steps vary depending on your IDE and build system.
@@ -29,11 +119,8 @@ Gradle offers plugins for {url-gradle-docs}/userguide.html[various IDEs].
 TIP: If you accidentally run a web application twice, you see a "`Port already in use`" error.
 Spring Tools users can use the `Relaunch` button rather than the `Run` button to ensure that any existing instance is closed.
 
-
-
 [[using.running-your-application.as-a-packaged-application]]
 == Running as a Packaged Application
-
 If you use the Spring Boot Maven or Gradle plugins to create an executable jar, you can run your application using `java -jar`, as shown in the following example:
 
 [source,shell]
@@ -50,11 +137,8 @@ $ java -agentlib:jdwp=server=y,transport=dt_socket,address=8000,suspend=n \
        -jar target/myapplication-0.0.1-SNAPSHOT.jar
 ----
 
-
-
 [[using.running-your-application.with-the-maven-plugin]]
 == Using the Maven Plugin
-
 The Spring Boot Maven plugin includes a `run` goal that can be used to quickly compile and run your application.
 Applications run in an exploded form, as they do in your IDE.
 The following example shows a typical Maven command to run a Spring Boot application:
@@ -70,8 +154,6 @@ You might also want to use the `MAVEN_OPTS` operating system environment variabl
 ----
 $ export MAVEN_OPTS=-Xmx1024m
 ----
-
-
 
 [[using.running-your-application.with-the-gradle-plugin]]
 == Using the Gradle Plugin
@@ -90,8 +172,6 @@ You might also want to use the `JAVA_OPTS` operating system environment variable
 ----
 $ export JAVA_OPTS=-Xmx1024m
 ----
-
-
 
 [[using.running-your-application.hot-swapping]]
 == Hot Swapping

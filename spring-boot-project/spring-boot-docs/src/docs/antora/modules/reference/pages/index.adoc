@@ -1,3 +1,11 @@
-= Reference
+= 参考文档
+:encoding: utf-8
+:numbered:
 
+== 参考文档
+本节提供了关于如何使用 Spring Boot 功能和特性的信息。
+
+'''
+
+== Reference
 This section provides information on using the features and capabilities of Spring Boot.

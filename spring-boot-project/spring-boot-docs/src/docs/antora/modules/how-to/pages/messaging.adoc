@@ -1,14 +1,29 @@
-[[howto.messaging]]
-= Messaging
+= 消息传递
+:encoding: utf-8
+:numbered:
 
+[[howto.messaging]]
+== 消息传递
+Spring Boot 提供了多个启动器来支持消息传递。本节回答与使用 Spring Boot 进行消息传递相关的问题。
+
+[[howto.messaging.disable-transacted-jms-session]]
+== 禁用事务性 JMS 会话
+如果你的 JMS 代理不支持事务性会话，则必须完全禁用事务支持。如果你创建自己的 `org.springframework.jms.config.JmsListenerContainerFactory`，则无需执行任何操作，因为默认情况下它不支持事务。如果你希望使用 `org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer` 来重用 Spring Boot 的默认配置，可以按如下方式禁用事务性会话：
+
+```java
+include-code::MyJmsConfiguration[]
+```
+
+上述示例覆盖了默认工厂，并且应应用于应用程序定义的任何其他工厂（如果有）。
+
+'''
+[[howto.messaging]]
+== Messaging
 Spring Boot offers a number of starters to support messaging.
 This section answers questions that arise from using messaging with Spring Boot.
 
-
-
 [[howto.messaging.disable-transacted-jms-session]]
 == Disable Transacted JMS Session
-
 If your JMS broker does not support transacted sessions, you have to disable the support of transactions altogether.
 If you create your own javadoc:org.springframework.jms.config.JmsListenerContainerFactory[], there is nothing to do, since, by default it cannot be transacted.
 If you want to use the javadoc:org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer[] to reuse Spring Boot's default, you can disable transacted sessions, as follows:

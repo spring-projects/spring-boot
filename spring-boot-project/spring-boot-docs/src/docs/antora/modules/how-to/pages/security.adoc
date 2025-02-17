@@ -1,32 +1,63 @@
-[[howto.security]]
-= Security
+= 安全性
+:encoding: utf-8
+:numbered:
 
+[[howto.security]]
+== 安全性
+本节讨论在使用 Spring Boot 时有关安全性的问题，包括将 Spring Security 与 Spring Boot 结合使用时出现的问题。
+
+有关 Spring Security 的更多信息，请参阅 [Spring Security 项目页面]({url-spring-security-site})。
+
+[[howto.security.switch-off-spring-boot-configuration]]
+== 关闭 Spring Boot 安全配置
+如果你在应用程序中定义了一个带有 `@Configuration` 注解的类，并且该类中定义了一个 `SecurityFilterChain` Bean，则此操作将关闭 Spring Boot 中的默认 Web 应用程序安全设置。
+
+[[howto.security.change-user-details-service-and-add-user-accounts]]
+== 更改 UserDetailsService 并添加用户账户
+如果你提供了一个类型为 `AuthenticationManager`、`AuthenticationProvider` 或 `UserDetailsService` 的 `@Bean`，则不会创建默认的 `InMemoryUserDetailsManager` Bean。这意味着你可以获得 Spring Security 的全部功能集（例如[各种身份验证选项]({url-spring-security-docs}/servlet/authentication/index.html)）。
+
+添加用户账户的最简单方法是提供你自己的 `UserDetailsService` Bean。
+
+[[howto.security.enable-https]]
+== 在代理服务器后运行时启用 HTTPS
+确保所有主要端点仅通过 HTTPS 访问是任何应用程序的重要任务。如果你使用 Tomcat 作为 Servlet 容器，则 Spring Boot 在检测到某些环境设置时会自动添加 Tomcat 自己的 `RemoteIpValve`，允许你依赖 `HttpServletRequest` 来报告是否安全（即使是在处理实际 SSL 终止的代理服务器下游）。标准行为由某些请求头（`x-forwarded-for` 和 `x-forwarded-proto`）的存在与否决定，这些请求头的名称是约定俗成的，因此它应该适用于大多数前端代理。你可以通过在 `application.properties` 中添加一些条目来打开阀门，如下例所示：
+
+```yaml
+server:
+  tomcat:
+    remoteip:
+      remote-ip-header: "x-forwarded-for"
+      protocol-header: "x-forwarded-proto"
+```
+
+（这些属性中的任何一个存在都会打开阀门。或者，你可以通过使用 `WebServerFactoryCustomizer` Bean 自定义 `TomcatServletWebServerFactory` 来添加 `RemoteIpValve`。）
+
+要将 Spring Security 配置为要求所有（或某些）请求使用安全通道，请考虑添加你自己的 `SecurityFilterChain` Bean，该 Bean 添加以下 `HttpSecurity` 配置：
+
+```java
+include-code::MySecurityConfig[]
+```
+
+'''
+[[howto.security]]
+== Security
 This section addresses questions about security when working with Spring Boot, including questions that arise from using Spring Security with Spring Boot.
 
 For more about Spring Security, see the {url-spring-security-site}[Spring Security project page].
 
-
-
 [[howto.security.switch-off-spring-boot-configuration]]
 == Switch Off the Spring Boot Security Configuration
-
 If you define a javadoc:org.springframework.context.annotation.Configuration[format=annotation] with a javadoc:org.springframework.security.web.SecurityFilterChain[] bean in your application, this action switches off the default webapp security settings in Spring Boot.
-
-
 
 [[howto.security.change-user-details-service-and-add-user-accounts]]
 == Change the UserDetailsService and Add User Accounts
-
 If you provide a javadoc:org.springframework.context.annotation.Bean[format=annotation] of type javadoc:org.springframework.security.authentication.AuthenticationManager[], javadoc:org.springframework.security.authentication.AuthenticationProvider[], or javadoc:org.springframework.security.core.userdetails.UserDetailsService[], the default javadoc:org.springframework.context.annotation.Bean[format=annotation] for javadoc:org.springframework.security.provisioning.InMemoryUserDetailsManager[] is not created.
 This means you have the full feature set of Spring Security available (such as {url-spring-security-docs}/servlet/authentication/index.html[various authentication options]).
 
 The easiest way to add user accounts is by providing your own javadoc:org.springframework.security.core.userdetails.UserDetailsService[] bean.
 
-
-
 [[howto.security.enable-https]]
 == Enable HTTPS When Running Behind a Proxy Server
-
 Ensuring that all your main endpoints are only available over HTTPS is an important chore for any application.
 If you use Tomcat as a servlet container, then Spring Boot adds Tomcat's own javadoc:org.apache.catalina.valves.RemoteIpValve[] automatically if it detects some environment settings, allowing you to rely on the javadoc:jakarta.servlet.http.HttpServletRequest[] to report whether it is secure or not (even downstream of a proxy server that handles the real SSL termination).
 The standard behavior is determined by the presence or absence of certain request headers (`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should work with most front-end proxies.

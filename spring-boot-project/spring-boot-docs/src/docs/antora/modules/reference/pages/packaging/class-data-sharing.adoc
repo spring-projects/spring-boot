@@ -1,6 +1,35 @@
-[[packaging.class-data-sharing]]
-= Class Data Sharing
+= 类数据共享
+:encoding: utf-8
+:numbered:
 
+[[packaging.class-data-sharing]]
+== 类数据共享
+
+类数据共享（Class Data Sharing，CDS）是一种 https://docs.oracle.com/en/java/javase/17/vm/class-data-sharing.html[JVM 功能]，可以帮助减少 Java 应用程序的启动时间和内存占用。
+
+要使用它，你应该首先以解压形式对你的应用程序进行一次训练运行：
+
+[source,shell]
+----
+$ java -Djarmode=tools -jar my-app.jar extract --destination application
+$ cd application
+$ java -XX:ArchiveClassesAtExit=application.jsa -Dspring.context.exit=onRefresh -jar my-app.jar
+----
+
+这将创建一个 `application.jsa` 文件，只要应用程序没有更新，就可以重复使用该文件。
+
+要使用缓存，你需要在启动应用程序时添加一个额外的参数：
+
+[source,shell]
+----
+$ java -XX:SharedArchiveFile=application.jsa -jar my-app.jar
+----
+
+NOTE: 有关 CDS 的更多详细信息，请参阅 xref:how-to:class-data-sharing.adoc[CDS 操作指南] 和 {url-spring-framework-docs}/integration/cds.html[Spring Framework 参考文档]。
+
+'''
+[[packaging.class-data-sharing]]
+== Class Data Sharing
 Class Data Sharing (CDS) is a https://docs.oracle.com/en/java/javase/17/vm/class-data-sharing.html[JVM feature] that can help reduce the startup time and memory footprint of Java applications.
 
 To use it, you should first perform a training run on your application in extracted form:

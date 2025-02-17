@@ -1,27 +1,75 @@
-[[using.structuring-your-code]]
-= Structuring Your Code
+= 代码结构
+:encoding: utf-8
+:numbered:
 
+[[using.structuring-your-code]]
+== 代码结构
+Spring Boot 不需要任何特定的代码布局即可工作。
+然而，有一些最佳实践可以提供帮助。
+
+TIP: 如果你希望基于领域强制执行结构，请查看 https://spring.io/projects/spring-modulith#overview[Spring Modulith]。
+
+[[using.structuring-your-code.using-the-default-package]]
+== 使用“默认”包
+当一个类没有包含 `package` 声明时，它被认为是在“默认包”中。
+通常不鼓励使用“默认包”，并应避免使用。
+对于使用 `javadoc:org.springframework.context.annotation.ComponentScan[format=annotation]`、`javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesScan[format=annotation]`、`javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation]` 或 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 注解的 Spring Boot 应用程序来说，这可能会引起特别的问题，因为会读取每个 jar 中的每个类。
+
+TIP: 我们建议你遵循 Java 推荐的包命名约定，并使用反向域名（例如 `com.example.project`）。
+
+[[using.structuring-your-code.locating-the-main-class]]
+== 定位主应用程序类
+我们通常建议你将主应用程序类放在其他类之上的根包中。
+`@SpringBootApplication` 注解通常放在你的主类上，它隐式地为某些项目定义了一个基础“搜索包”。
+例如，如果你正在编写一个 JPA 应用程序，则使用带有 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]` 注解的类的包来搜索 `javadoc:jakarta.persistence.Entity[format=annotation]` 项目。
+使用根包还可以使组件扫描仅应用于你的项目。
+
+TIP: 如果你不想使用 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]`，它所导入的 `javadoc:org.springframework.boot.autoconfigure.EnableAutoConfiguration[format=annotation]` 和 `javadoc:org.springframework.context.annotation.ComponentScan[format=annotation]` 注解定义了该行为，因此你也可以使用这些注解。
+
+以下清单展示了一个典型的布局：
+
+[source]
+----
+com
+ +- example
+     +- myapplication
+         +- MyApplication.java
+         |
+         +- customer
+         |   +- Customer.java
+         |   +- CustomerController.java
+         |   +- CustomerService.java
+         |   +- CustomerRepository.java
+         |
+         +- order
+             +- Order.java
+             +- OrderController.java
+             +- OrderService.java
+             +- OrderRepository.java
+----
+
+`MyApplication.java` 文件将声明 `main` 方法以及基本的 `javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation]`，如下所示：
+
+include-code::MyApplication[]
+
+'''
+
+== Structuring Your Code
 Spring Boot does not require any specific code layout to work.
 However, there are some best practices that help.
 
 TIP: If you wish to enforce a structure based on domains, take a look at https://spring.io/projects/spring-modulith#overview[Spring Modulith].
 
-
-
 [[using.structuring-your-code.using-the-default-package]]
 == Using the "`default`" Package
-
 When a class does not include a `package` declaration, it is considered to be in the "`default package`".
 The use of the "`default package`" is generally discouraged and should be avoided.
 It can cause particular problems for Spring Boot applications that use the javadoc:org.springframework.context.annotation.ComponentScan[format=annotation], javadoc:org.springframework.boot.context.properties.ConfigurationPropertiesScan[format=annotation], javadoc:org.springframework.boot.autoconfigure.domain.EntityScan[format=annotation], or javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotations, since every class from every jar is read.
 
 TIP: We recommend that you follow Java's recommended package naming conventions and use a reversed domain name (for example, `com.example.project`).
 
-
-
 [[using.structuring-your-code.locating-the-main-class]]
 == Locating the Main Application Class
-
 We generally recommend that you locate your main application class in a root package above other classes.
 The xref:using/using-the-springbootapplication-annotation.adoc[`@SpringBootApplication` annotation] is often placed on your main class, and it implicitly defines a base "`search package`" for certain items.
 For example, if you are writing a JPA application, the package of the javadoc:org.springframework.boot.autoconfigure.SpringBootApplication[format=annotation] annotated class is used to search for javadoc:jakarta.persistence.Entity[format=annotation] items.
