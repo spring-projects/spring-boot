@@ -54,6 +54,7 @@ public @interface AutoConfigureAfter {
 	 * In the unusual case that an auto-configuration class is not a top-level class, its
 	 * class name should use {@code $} to separate it from its containing class, for
 	 * example {@code com.example.Outer$NestedAutoConfiguration}.
+	 * @return the class names
 	 * @since 1.2.2
 	 */
 	String[] name() default {};
