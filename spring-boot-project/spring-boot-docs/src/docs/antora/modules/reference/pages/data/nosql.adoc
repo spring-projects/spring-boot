@@ -440,7 +440,7 @@ There is a `spring-boot-starter-data-cassandra` starter for collecting the depen
 [[data.nosql.cassandra.connecting]]
 === Connecting to Cassandra
 
-You can inject an auto-configured javadoc:org.springframework.data.cassandra.core.CassandraTemplate[] or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
+You can inject an auto-configured javadoc:org.springframework.data.cassandra.core.cql.CqlTemplate[], javadoc:org.springframework.data.cassandra.core.CassandraTemplate[], or a Cassandra `CqlSession` instance as you would with any other Spring Bean.
 The `spring.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
