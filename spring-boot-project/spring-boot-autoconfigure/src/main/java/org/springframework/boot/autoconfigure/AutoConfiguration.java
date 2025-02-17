@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,9 @@ import org.springframework.core.annotation.AliasFor;
  * {@link Configuration#proxyBeanMethods() proxyBeanMethods} is always {@code false}. They
  * are located using {@link ImportCandidates}.
  * <p>
- * Generally auto-configuration classes are marked as {@link Conditional @Conditional}
- * (most often using {@link ConditionalOnClass @ConditionalOnClass} and
+ * Generally, auto-configuration classes are top-level classes that are marked as
+ * {@link Conditional @Conditional} (most often using
+ * {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
  *
  * @author Moritz Halbritter
@@ -76,28 +77,34 @@ public @interface AutoConfiguration {
 	String value() default "";
 
 	/**
-	 * The auto-configure classes that should have not yet been applied.
+	 * The auto-configuration classes that should have not yet been applied.
 	 * @return the classes
 	 */
 	@AliasFor(annotation = AutoConfigureBefore.class, attribute = "value")
 	Class<?>[] before() default {};
 
 	/**
-	 * The names of the auto-configure classes that should have not yet been applied.
+	 * The names of the auto-configuration classes that should have not yet been applied.
+	 * In the unusual case that an auto-configuration class is not a top-level class, its
+	 * name should use {@code $} to separate it from its containing class, for example
+	 * {@code com.example.Outer$NestedAutoConfiguration}.
 	 * @return the class names
 	 */
 	@AliasFor(annotation = AutoConfigureBefore.class, attribute = "name")
 	String[] beforeName() default {};
 
 	/**
-	 * The auto-configure classes that should have already been applied.
+	 * The auto-configuration classes that should have already been applied.
 	 * @return the classes
 	 */
 	@AliasFor(annotation = AutoConfigureAfter.class, attribute = "value")
 	Class<?>[] after() default {};
 
 	/**
-	 * The names of the auto-configure classes that should have already been applied.
+	 * The names of the auto-configuration classes that should have already been applied.
+	 * In the unusual case that an auto-configuration class is not a top-level class, its
+	 * class name should use {@code $} to separate it from its containing class, for
+	 * example {@code com.example.Outer$NestedAutoConfiguration}.
 	 * @return the class names
 	 */
 	@AliasFor(annotation = AutoConfigureAfter.class, attribute = "name")
