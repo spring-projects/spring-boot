@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,6 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.toolchain.ToolchainManager;
-
-import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
 
 /**
  * Abstract base class for AOT processing MOJOs.
@@ -149,7 +147,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
 			List<String> options = new ArrayList<>();
 			options.add("-cp");
-			options.add(ClasspathBuilder.build(Arrays.asList(classPath)));
+			options.add(ClasspathBuilder.build(classPath));
 			options.add("-d");
 			options.add(outputDirectory.toPath().toAbsolutePath().toString());
 			String releaseVersion = compilerConfiguration.getReleaseVersion();
