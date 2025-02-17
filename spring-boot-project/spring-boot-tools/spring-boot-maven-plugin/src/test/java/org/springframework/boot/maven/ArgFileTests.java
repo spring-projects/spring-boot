@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,24 +18,24 @@ package org.springframework.boot.maven;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
-
-import org.springframework.boot.maven.AbstractRunMojo.ArgFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link AbstractRunMojo}.
+ * Tests for {@link ArgFile}.
  *
  * @author Moritz Halbritter
+ * @author Dmytro Nosan
  */
-class AbstractRunMojoTests {
+class ArgFileTests {
 
 	@Test
-	void argfileEscapesContent() throws IOException {
+	void argFileEscapesContent() throws IOException {
 		ArgFile file = ArgFile.create("some \\ content");
-		assertThat(file.path()).content(StandardCharsets.UTF_8).isEqualTo("\"some \\\\ content\"");
+		assertThat(Paths.get(file.toString())).content(StandardCharsets.UTF_8).isEqualTo("\"some \\\\ content\"");
 	}
 
 }
