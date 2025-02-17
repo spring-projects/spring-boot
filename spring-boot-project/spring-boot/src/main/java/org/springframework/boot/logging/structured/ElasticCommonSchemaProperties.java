@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.structured;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.json.JsonWriter;
@@ -92,10 +94,12 @@ public record ElasticCommonSchemaProperties(Service service) {
 
 	}
 
-	static class ElasticCommonSchemaPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+	static class ElasticCommonSchemaPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
-		ElasticCommonSchemaPropertiesRuntimeHints() {
-			super(ElasticCommonSchemaProperties.class);
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			BindableRuntimeHintsRegistrar.forTypes(ElasticCommonSchemaProperties.class)
+				.registerHints(hints, classLoader);
 		}
 
 	}

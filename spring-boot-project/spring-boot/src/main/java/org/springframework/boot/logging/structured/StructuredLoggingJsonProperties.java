@@ -27,6 +27,8 @@ import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -146,10 +148,12 @@ record StructuredLoggingJsonProperties(Set<String> include, Set<String> exclude,
 
 	}
 
-	static class StructuredLoggingJsonPropertiesRuntimeHints extends BindableRuntimeHintsRegistrar {
+	static class StructuredLoggingJsonPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
-		StructuredLoggingJsonPropertiesRuntimeHints() {
-			super(StructuredLoggingJsonProperties.class);
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			BindableRuntimeHintsRegistrar.forTypes(StructuredLoggingJsonProperties.class)
+				.registerHints(hints, classLoader);
 		}
 
 	}
