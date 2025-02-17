@@ -36,6 +36,8 @@ com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
 
 TIP: You can add comments to the imports file using the `#` character.
 
+TIP:  In the unusual case that an auto-configuration class is not a top-level class, its class name should use `$` to separate it from its containing class, for example `com.example.Outer$NestedAutoConfiguration`.
+
 NOTE: Auto-configurations must be loaded _only_ by being named in the imports file.
 Make sure that they are defined in a specific package space and that they are never the target of component scanning.
 Furthermore, auto-configuration classes should not enable component scanning to find additional components.
