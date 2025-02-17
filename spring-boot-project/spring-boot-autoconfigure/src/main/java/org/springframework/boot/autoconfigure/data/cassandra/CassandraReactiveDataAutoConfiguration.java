@@ -61,16 +61,16 @@ public class CassandraReactiveDataAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(ReactiveCassandraOperations.class)
-	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveSession reactiveCassandraSession,
-			CassandraConverter converter) {
-		return new ReactiveCassandraTemplate(reactiveCassandraSession, converter);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(ReactiveCqlOperations.class)
 	public ReactiveCqlTemplate reactiveCqlTemplate(ReactiveSessionFactory reactiveCassandraSessionFactory) {
 		return new ReactiveCqlTemplate(reactiveCassandraSessionFactory);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(ReactiveCassandraOperations.class)
+	public ReactiveCassandraTemplate reactiveCassandraTemplate(ReactiveCqlTemplate reactiveCqlTemplate,
+			CassandraConverter converter) {
+		return new ReactiveCassandraTemplate(reactiveCqlTemplate, converter);
 	}
 
 }

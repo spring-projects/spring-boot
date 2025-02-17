@@ -117,15 +117,15 @@ public class CassandraDataAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(CassandraOperations.class)
-	public CassandraTemplate cassandraTemplate(SessionFactory sessionFactory, CassandraConverter converter) {
-		return new CassandraTemplate(sessionFactory, converter);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(CqlOperations.class)
 	public CqlTemplate cqlTemplate(SessionFactory sessionFactory) {
 		return new CqlTemplate(sessionFactory);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(CassandraOperations.class)
+	public CassandraTemplate cassandraTemplate(CqlTemplate cqlTemplate, CassandraConverter converter) {
+		return new CassandraTemplate(cqlTemplate, converter);
 	}
 
 	@Bean
