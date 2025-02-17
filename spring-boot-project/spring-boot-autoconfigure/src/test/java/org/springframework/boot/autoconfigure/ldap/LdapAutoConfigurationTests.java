@@ -138,6 +138,21 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
+	void objectDirectoryMapperExists() {
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
+			assertThat(context).hasSingleBean(ObjectDirectoryMapper.class);
+			ObjectDirectoryMapper objectDirectoryMapper = context.getBean(ObjectDirectoryMapper.class);
+			ApplicationConversionService conversionService = assertThat(objectDirectoryMapper)
+				.extracting("converterManager")
+				.extracting("conversionService")
+				.asInstanceOf(InstanceOfAssertFactories.type(ApplicationConversionService.class))
+				.actual();
+			assertThat(conversionService.canConvert(String.class, Name.class)).isTrue();
+			assertThat(conversionService.canConvert(Name.class, String.class)).isTrue();
+		});
+	}
+
+	@Test
 	void templateExists() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
 			assertThat(context).hasSingleBean(LdapTemplate.class);
@@ -145,7 +160,21 @@ class LdapAutoConfigurationTests {
 			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignorePartialResultException", false);
 			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreNameNotFoundException", false);
 			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException", true);
+			assertThat(ldapTemplate).extracting("objectDirectoryMapper")
+				.isSameAs(context.getBean(ObjectDirectoryMapper.class));
 		});
+	}
+
+	@Test
+	void templateCanBeConfiguredWithCustomObjectDirectoryMapper() {
+		ObjectDirectoryMapper objectDirectoryMapper = mock(ObjectDirectoryMapper.class);
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
+			.withBean(ObjectDirectoryMapper.class, () -> objectDirectoryMapper)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(LdapTemplate.class);
+				LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
+				assertThat(ldapTemplate).extracting("objectDirectoryMapper").isSameAs(objectDirectoryMapper);
+			});
 	}
 
 	@Test
@@ -196,36 +225,6 @@ class LdapAutoConfigurationTests {
 					.isNotSameAs(context.getBean("customDirContextAuthenticationStrategy"))
 					.isNotSameAs(context.getBean("anotherCustomDirContextAuthenticationStrategy"))
 					.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
-			});
-	}
-
-	@Test
-	void objectDirectoryMapperBeanAutoConfigured() {
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
-			assertThat(context).hasSingleBean(ObjectDirectoryMapper.class);
-			assertThat(context).hasSingleBean(LdapTemplate.class);
-			ObjectDirectoryMapper objectDirectoryMapper = context.getBean(ObjectDirectoryMapper.class);
-			LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
-			ApplicationConversionService conversionService = assertThat(objectDirectoryMapper)
-				.extracting("converterManager")
-				.extracting("conversionService")
-				.asInstanceOf(InstanceOfAssertFactories.type(ApplicationConversionService.class))
-				.actual();
-			assertThat(conversionService.canConvert(String.class, Name.class)).isTrue();
-			assertThat(conversionService.canConvert(Name.class, String.class)).isTrue();
-			assertThat(ldapTemplate).extracting("objectDirectoryMapper").isSameAs(objectDirectoryMapper);
-		});
-	}
-
-	@Test
-	void customObjectDirectoryMapperBeanCanBeUsed() {
-		ObjectDirectoryMapper objectDirectoryMapper = mock(ObjectDirectoryMapper.class);
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
-			.withBean(ObjectDirectoryMapper.class, () -> objectDirectoryMapper)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(LdapTemplate.class);
-				LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
-				assertThat(ldapTemplate).extracting("objectDirectoryMapper").isSameAs(objectDirectoryMapper);
 			});
 	}
 

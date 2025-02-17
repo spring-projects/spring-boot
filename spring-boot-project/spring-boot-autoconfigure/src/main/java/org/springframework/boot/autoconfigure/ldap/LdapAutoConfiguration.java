@@ -28,7 +28,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.ldap.convert.ConverterUtils;
 import org.springframework.ldap.core.ContextSource;
@@ -76,6 +75,16 @@ public class LdapAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	public ObjectDirectoryMapper objectDirectoryMapper() {
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		ConverterUtils.addDefaultConverters(conversionService);
+		DefaultObjectDirectoryMapper objectDirectoryMapper = new DefaultObjectDirectoryMapper();
+		objectDirectoryMapper.setConversionService(conversionService);
+		return objectDirectoryMapper;
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(LdapOperations.class)
 	public LdapTemplate ldapTemplate(LdapProperties properties, ContextSource contextSource,
 			ObjectDirectoryMapper objectDirectoryMapper) {
@@ -89,20 +98,6 @@ public class LdapAutoConfiguration {
 		propertyMapper.from(template.isIgnoreSizeLimitExceededException())
 			.to(ldapTemplate::setIgnoreSizeLimitExceededException);
 		return ldapTemplate;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public ObjectDirectoryMapper objectDirectoryMapper() {
-		DefaultObjectDirectoryMapper objectDirectoryMapper = new DefaultObjectDirectoryMapper();
-		objectDirectoryMapper.setConversionService(createConversionService());
-		return objectDirectoryMapper;
-	}
-
-	private static ConversionService createConversionService() {
-		ApplicationConversionService conversionService = new ApplicationConversionService();
-		ConverterUtils.addDefaultConverters(conversionService);
-		return conversionService;
 	}
 
 }
