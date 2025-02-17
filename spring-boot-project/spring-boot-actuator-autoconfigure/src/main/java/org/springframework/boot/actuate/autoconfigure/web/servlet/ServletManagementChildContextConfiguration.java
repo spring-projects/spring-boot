@@ -63,6 +63,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -136,18 +137,23 @@ class ServletManagementChildContextConfiguration {
 
 	abstract static class AccessLogCustomizer implements Ordered {
 
-		private final ManagementServerProperties properties;
+		private final String prefix;
 
-		AccessLogCustomizer(ManagementServerProperties properties) {
-			this.properties = properties;
+		AccessLogCustomizer(String prefix) {
+			this.prefix = prefix;
 		}
 
-		protected String customizePrefix(String prefix) {
-			prefix = (prefix != null) ? prefix : "";
-			if (prefix.startsWith(this.properties.getAccesslog().getPrefix())) {
-				return prefix;
+		protected String customizePrefix(String existingPrefix) {
+			if (this.prefix == null) {
+				return existingPrefix;
 			}
-			return this.properties.getAccesslog().getPrefix() + prefix;
+			if (existingPrefix == null) {
+				return this.prefix;
+			}
+			if (existingPrefix.startsWith(this.prefix)) {
+				return existingPrefix;
+			}
+			return this.prefix + existingPrefix;
 		}
 
 		@Override
@@ -161,7 +167,7 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
 		TomcatAccessLogCustomizer(ManagementServerProperties properties) {
-			super(properties);
+			super(properties.getTomcat().getAccesslog().getPrefix());
 		}
 
 		@Override
@@ -188,7 +194,7 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
 
 		UndertowAccessLogCustomizer(ManagementServerProperties properties) {
-			super(properties);
+			super(properties.getUndertow().getAccesslog().getPrefix());
 		}
 
 		@Override
@@ -202,7 +208,7 @@ class ServletManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<JettyServletWebServerFactory> {
 
 		JettyAccessLogCustomizer(ManagementServerProperties properties) {
-			super(properties);
+			super(properties.getJetty().getAccesslog().getPrefix());
 		}
 
 		@Override

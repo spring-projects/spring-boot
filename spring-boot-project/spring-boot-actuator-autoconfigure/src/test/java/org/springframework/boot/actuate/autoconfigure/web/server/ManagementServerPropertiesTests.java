@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class ManagementServerPropertiesTests {
 
@@ -71,7 +72,9 @@ class ManagementServerPropertiesTests {
 	@Test
 	void accessLogsArePrefixedByDefault() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		assertThat(properties.getAccesslog().getPrefix()).isEqualTo("management_");
+		assertThat(properties.getTomcat().getAccesslog().getPrefix()).isEqualTo("management_");
+		assertThat(properties.getJetty().getAccesslog().getPrefix()).isEqualTo("management_");
+		assertThat(properties.getUndertow().getAccesslog().getPrefix()).isEqualTo("management_");
 	}
 
 }

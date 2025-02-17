@@ -56,6 +56,7 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 @EnableWebFlux
@@ -99,18 +100,23 @@ public class ReactiveManagementChildContextConfiguration {
 
 	abstract static class AccessLogCustomizer implements Ordered {
 
-		private final ManagementServerProperties properties;
+		private final String prefix;
 
-		AccessLogCustomizer(ManagementServerProperties properties) {
-			this.properties = properties;
+		AccessLogCustomizer(String prefix) {
+			this.prefix = prefix;
 		}
 
-		protected String customizePrefix(String prefix) {
-			prefix = (prefix != null) ? prefix : "";
-			if (prefix.startsWith(this.properties.getAccesslog().getPrefix())) {
-				return prefix;
+		protected String customizePrefix(String existingPrefix) {
+			if (this.prefix == null) {
+				return existingPrefix;
 			}
-			return this.properties.getAccesslog().getPrefix() + prefix;
+			if (existingPrefix == null) {
+				return this.prefix;
+			}
+			if (existingPrefix.startsWith(this.prefix)) {
+				return existingPrefix;
+			}
+			return this.prefix + existingPrefix;
 		}
 
 		@Override
@@ -124,7 +130,7 @@ public class ReactiveManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<TomcatReactiveWebServerFactory> {
 
 		TomcatAccessLogCustomizer(ManagementServerProperties properties) {
-			super(properties);
+			super(properties.getTomcat().getAccesslog().getPrefix());
 		}
 
 		@Override
@@ -151,7 +157,7 @@ public class ReactiveManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<UndertowReactiveWebServerFactory> {
 
 		UndertowAccessLogCustomizer(ManagementServerProperties properties) {
-			super(properties);
+			super(properties.getUndertow().getAccesslog().getPrefix());
 		}
 
 		@Override
@@ -165,7 +171,7 @@ public class ReactiveManagementChildContextConfiguration {
 			implements WebServerFactoryCustomizer<JettyReactiveWebServerFactory> {
 
 		JettyAccessLogCustomizer(ManagementServerProperties properties) {
-			super(properties);
+			super(properties.getJetty().getAccesslog().getPrefix());
 		}
 
 		@Override

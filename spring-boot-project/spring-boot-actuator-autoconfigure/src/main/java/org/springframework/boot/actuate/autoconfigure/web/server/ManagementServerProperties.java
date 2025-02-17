@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Vedran Pavic
+ * @author Moritz Halbritter
  * @since 2.0.0
  * @see ServerProperties
  */
@@ -57,7 +58,11 @@ public class ManagementServerProperties {
 	@NestedConfigurationProperty
 	private Ssl ssl;
 
-	private final Accesslog accesslog = new Accesslog();
+	private final Jetty jetty = new Jetty();
+
+	private final Tomcat tomcat = new Tomcat();
+
+	private final Undertow undertow = new Undertow();
 
 	/**
 	 * Returns the management port or {@code null} if the
@@ -103,6 +108,18 @@ public class ManagementServerProperties {
 		this.ssl = ssl;
 	}
 
+	public Jetty getJetty() {
+		return this.jetty;
+	}
+
+	public Tomcat getTomcat() {
+		return this.tomcat;
+	}
+
+	public Undertow getUndertow() {
+		return this.undertow;
+	}
+
 	private String cleanBasePath(String basePath) {
 		String candidate = null;
 		if (StringUtils.hasLength(basePath)) {
@@ -119,8 +136,34 @@ public class ManagementServerProperties {
 		return candidate;
 	}
 
-	public Accesslog getAccesslog() {
-		return this.accesslog;
+	public static class Jetty {
+
+		private final Accesslog accesslog = new Accesslog();
+
+		public Accesslog getAccesslog() {
+			return this.accesslog;
+		}
+
+	}
+
+	public static class Tomcat {
+
+		private final Accesslog accesslog = new Accesslog();
+
+		public Accesslog getAccesslog() {
+			return this.accesslog;
+		}
+
+	}
+
+	public static class Undertow {
+
+		private final Accesslog accesslog = new Accesslog();
+
+		public Accesslog getAccesslog() {
+			return this.accesslog;
+		}
+
 	}
 
 	public static class Accesslog {
