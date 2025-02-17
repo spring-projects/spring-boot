@@ -47,6 +47,7 @@ import org.springframework.core.log.LogMessage;
  * @author Marten Deinum
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 1.3.0
  */
 @AutoConfiguration(after = DataSourceAutoConfiguration.class)
@@ -113,7 +114,10 @@ public class H2ConsoleAutoConfiguration {
 		}
 
 		private List<String> getConnectionUrls(ObjectProvider<DataSource> dataSources) {
-			return dataSources.orderedStream().map(this::getConnectionUrl).filter(Objects::nonNull).toList();
+			return dataSources.orderedStream(ObjectProvider.UNFILTERED)
+				.map(this::getConnectionUrl)
+				.filter(Objects::nonNull)
+				.toList();
 		}
 
 		private String getConnectionUrl(DataSource dataSource) {

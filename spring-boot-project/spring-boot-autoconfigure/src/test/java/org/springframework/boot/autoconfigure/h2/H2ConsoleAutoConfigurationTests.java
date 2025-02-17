@@ -57,6 +57,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Shraddha Yeole
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class H2ConsoleAutoConfigurationTests {
 
@@ -206,7 +207,7 @@ class H2ConsoleAutoConfigurationTests {
 			return mockDataSource("anotherJdbcUrl");
 		}
 
-		@Bean
+		@Bean(defaultCandidate = false)
 		@Order(0)
 		DataSource someDataSource() throws SQLException {
 			return mockDataSource("someJdbcUrl");
