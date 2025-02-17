@@ -56,6 +56,7 @@ import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
+import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
@@ -142,6 +143,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(AbstractCachingViewResolver.class)
 		static class ThymeleafViewResolverConfiguration {
 
 			@Bean

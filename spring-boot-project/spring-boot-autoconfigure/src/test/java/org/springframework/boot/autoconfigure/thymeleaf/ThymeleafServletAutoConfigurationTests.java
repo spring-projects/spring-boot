@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -334,6 +335,12 @@ class ThymeleafServletAutoConfigurationTests {
 			SpringResourceTemplateResolver templateResolver = context.getBean(SpringResourceTemplateResolver.class);
 			assertThat(templateResolver.isCacheable()).isFalse();
 		});
+	}
+
+	@Test
+	void missingAbstractCachingViewResolver() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(AbstractCachingViewResolver.class))
+			.run((context) -> assertThat(context).hasNotFailed().doesNotHaveBean("thymeleafViewResolver"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
