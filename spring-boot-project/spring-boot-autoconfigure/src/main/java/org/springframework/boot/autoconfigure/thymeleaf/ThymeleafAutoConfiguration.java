@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,7 @@ import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.util.MimeType;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
+import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Thymeleaf.
@@ -142,6 +143,7 @@ public class ThymeleafAutoConfiguration {
 		}
 
 		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass(AbstractCachingViewResolver.class)
 		static class ThymeleafViewResolverConfiguration {
 
 			@Bean
