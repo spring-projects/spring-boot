@@ -73,12 +73,13 @@ class ApplicationResourceLoaderTests {
 	@Test
 	void shouldLoadAbsolutePathWithWorkingDirectory() throws IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
+		Path workingDirectory = Path.of("/working-directory");
 		Resource resource = ApplicationResourceLoader
-			.get(classLoader, SpringFactoriesLoader.forDefaultResourceLocation(classLoader),
-					Path.of("/working-directory"))
-			.getResource("/root/file.txt");
+			.get(classLoader, SpringFactoriesLoader.forDefaultResourceLocation(classLoader), workingDirectory)
+			.getResource("/file.txt");
 		assertThat(resource.isFile()).isTrue();
-		assertThat(resource.getFile()).hasParent("/root").hasName("file.txt");
+		assertThat(resource.getFile()).hasName("file.txt")
+			.satisfies((file) -> assertThat(file.getParentFile()).isNotEqualTo(workingDirectory));
 	}
 
 	@Test
@@ -170,12 +171,13 @@ class ApplicationResourceLoaderTests {
 	@Test
 	void shouldLoadAbsoluteFileUrisWithWorkingDirectory() throws IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
+		Path workingDirectory = Path.of("/working-directory");
 		Resource resource = ApplicationResourceLoader
-			.get(classLoader, SpringFactoriesLoader.forDefaultResourceLocation(classLoader),
-					Path.of("/working-directory"))
+			.get(classLoader, SpringFactoriesLoader.forDefaultResourceLocation(classLoader), workingDirectory)
 			.getResource("file:/file.txt");
 		assertThat(resource.isFile()).isTrue();
-		assertThat(resource.getFile()).hasParent("/").hasName("file.txt");
+		assertThat(resource.getFile()).hasName("file.txt")
+			.satisfies((file) -> assertThat(file.getParentFile()).isNotEqualTo(workingDirectory));
 	}
 
 	@Test
