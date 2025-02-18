@@ -39,7 +39,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.boot.maven.ClasspathBuilder.Classpath;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -346,12 +345,11 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addClasspath(List<String> args) throws MojoExecutionException {
 		try {
-			Classpath classpath = ClasspathBuilder.forURLs(getClassPathUrls()).build();
+			ClassPath classpath = ClassPath.of(getClassPathUrls());
 			if (getLog().isDebugEnabled()) {
 				getLog().debug("Classpath for forked process: " + classpath);
 			}
-			args.add("-cp");
-			args.add(classpath.argument());
+			args.addAll(classpath.args(true));
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
