@@ -147,7 +147,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
 			List<String> options = new ArrayList<>();
 			options.add("-cp");
-			options.add(ClasspathBuilder.forURLs(classPath).build().argument());
+			options.add(ClasspathBuilder.forURLs(classPath).build().toString());
 			options.add("-d");
 			options.add(outputDirectory.toPath().toAbsolutePath().toString());
 			String releaseVersion = compilerConfiguration.getReleaseVersion();
