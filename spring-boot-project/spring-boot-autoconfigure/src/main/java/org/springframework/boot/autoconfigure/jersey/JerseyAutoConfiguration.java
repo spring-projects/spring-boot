@@ -98,7 +98,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	@Bean
-	@ConditionalOnMissingFilterBean(RequestContextFilter.class)
+	@ConditionalOnMissingFilterBean
 	public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
 		FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>();
 		registration.setFilter(new RequestContextFilter());
