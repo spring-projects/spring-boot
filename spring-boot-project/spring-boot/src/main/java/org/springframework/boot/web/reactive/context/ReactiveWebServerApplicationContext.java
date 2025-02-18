@@ -68,8 +68,13 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		catch (RuntimeException ex) {
 			WebServer webServer = getWebServer();
 			if (webServer != null) {
-				webServer.stop();
-				webServer.destroy();
+				try {
+					webServer.stop();
+					webServer.destroy();
+				}
+				catch (RuntimeException stopOrDestroyEx) {
+					ex.addSuppressed(stopOrDestroyEx);
+				}
 			}
 			throw ex;
 		}
