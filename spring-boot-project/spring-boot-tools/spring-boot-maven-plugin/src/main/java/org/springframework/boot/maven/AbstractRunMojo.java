@@ -335,8 +335,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		try {
 			Classpath classpath = ClasspathBuilder.forURLs(getClassPathUrls()).build();
 			if (getLog().isDebugEnabled()) {
-				getLog().debug("Classpath for forked process: "
-						+ classpath.elements().map(Object::toString).collect(Collectors.joining(File.separator)));
+				getLog().debug("Classpath for forked process: " + classpath);
 			}
 			args.add("-cp");
 			args.add(classpath.argument());
