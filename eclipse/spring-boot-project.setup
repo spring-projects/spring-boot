@@ -91,7 +91,7 @@
     <repository
         url="https://repo.maven.apache.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
-        url="https://download.eclipse.org/buildship/updates/e411/releases/"/>
+        url="https://download.eclipse.org/buildship/updates/e49/releases/"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
