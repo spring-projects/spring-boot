@@ -22,7 +22,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -41,7 +40,7 @@ import org.springframework.context.annotation.Bean;
  */
 @ConditionalOnClass(Undertow.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@EnableConfigurationProperties(ManagementServerProperties.class)
+@EnableConfigurationProperties(UndertowManagementServerProperties.class)
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 class UndertowReactiveManagementChildContextConfiguration {
 
@@ -53,7 +52,7 @@ class UndertowReactiveManagementChildContextConfiguration {
 
 	@Bean
 	UndertowAccessLogCustomizer<UndertowReactiveWebServerFactory> undertowManagementAccessLogCustomizer(
-			ManagementServerProperties properties) {
+			UndertowManagementServerProperties properties) {
 		return new UndertowAccessLogCustomizer<>(properties, UndertowReactiveWebServerFactory::getAccessLogPrefix);
 	}
 
