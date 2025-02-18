@@ -23,16 +23,13 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.aspectj.weaver.Advice;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAspectsAutoConfiguration.ObservationAnnotationsEnabledCondition;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Micrometer-based metrics
@@ -43,7 +40,7 @@ import org.springframework.context.annotation.Conditional;
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass({ MeterRegistry.class, Advice.class })
-@Conditional(ObservationAnnotationsEnabledCondition.class)
+@ConditionalOnBooleanProperty("management.observations.annotations.enabled")
 @ConditionalOnBean(MeterRegistry.class)
 public class MetricsAspectsAutoConfiguration {
 
@@ -60,19 +57,6 @@ public class MetricsAspectsAutoConfiguration {
 		TimedAspect timedAspect = new TimedAspect(registry);
 		meterTagAnnotationHandler.ifAvailable(timedAspect::setMeterTagAnnotationHandler);
 		return timedAspect;
-	}
-
-	static final class ObservationAnnotationsEnabledCondition extends AnyNestedCondition {
-
-		ObservationAnnotationsEnabledCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnBooleanProperty("management.observations.annotations.enabled")
-		static class ManagementObservationsEnabledCondition {
-
-		}
-
 	}
 
 }
