@@ -186,6 +186,11 @@ class ClasspathBuilder {
 			return this.elements.stream();
 		}
 
+		@Override
+		public String toString() {
+			return elements().map(Path::toString).collect(Collectors.joining(File.pathSeparator));
+		}
+
 	}
 
 }
