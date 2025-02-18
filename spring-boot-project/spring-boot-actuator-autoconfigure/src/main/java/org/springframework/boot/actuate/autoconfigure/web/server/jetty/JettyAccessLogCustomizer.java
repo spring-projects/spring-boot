@@ -24,7 +24,6 @@ import org.eclipse.jetty.server.RequestLogWriter;
 import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.AccessLogCustomizer;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.server.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.util.StringUtils;
@@ -37,8 +36,8 @@ import org.springframework.util.StringUtils;
 class JettyAccessLogCustomizer extends AccessLogCustomizer<ConfigurableJettyWebServerFactory>
 		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory> {
 
-	JettyAccessLogCustomizer(ManagementServerProperties properties) {
-		super(properties.getJetty().getAccesslog().getPrefix());
+	JettyAccessLogCustomizer(JettyManagementServerProperties properties) {
+		super(properties.getAccesslog().getPrefix());
 	}
 
 	@Override
