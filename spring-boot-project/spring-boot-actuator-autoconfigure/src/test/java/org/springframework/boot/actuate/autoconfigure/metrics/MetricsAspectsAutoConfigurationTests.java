@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,17 +51,6 @@ class MetricsAspectsAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).doesNotHaveBean(CountedAspect.class);
 				assertThat(context).doesNotHaveBean(TimedAspect.class);
-			});
-	}
-
-	@Test
-	void shouldConfigureAspectsWithLegacyProperty() {
-		new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(MetricsAspectsAutoConfiguration.class))
-			.withPropertyValues("micrometer.observations.annotations.enabled=true")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(CountedAspect.class);
-				assertThat(context).hasSingleBean(TimedAspect.class);
 			});
 	}
 

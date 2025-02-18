@@ -33,13 +33,11 @@ import org.aspectj.weaver.Advice;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -104,7 +102,7 @@ public class MicrometerTracingAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Advice.class)
-	@Conditional(ObservationAnnotationsEnabledCondition.class)
+	@ConditionalOnBooleanProperty("management.observations.annotations.enabled")
 	static class SpanAspectConfiguration {
 
 		@Bean
@@ -148,24 +146,6 @@ public class MicrometerTracingAutoConfiguration {
 			catch (Exception ex) {
 				throw new IllegalStateException("Unable to evaluate SpEL expression '%s'".formatted(expression), ex);
 			}
-		}
-
-	}
-
-	static final class ObservationAnnotationsEnabledCondition extends AnyNestedCondition {
-
-		ObservationAnnotationsEnabledCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnBooleanProperty("micrometer.observations.annotations.enabled")
-		static class MicrometerObservationsEnabledCondition {
-
-		}
-
-		@ConditionalOnBooleanProperty("management.observations.annotations.enabled")
-		static class ManagementObservationsEnabledCondition {
-
 		}
 
 	}
