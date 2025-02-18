@@ -165,7 +165,7 @@ class WebMvcObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void filterRegistrationBacksOffWithAnothertestTraceHeaderObservationFilter() {
+	void filterRegistrationBacksOffWithAnotherTraceHeaderObservationFilter() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(NoopTracerAutoConfiguration.class))
 			.withPropertyValues("management.observations.http.server.requests.write-trace-header=true")
 			.withUserConfiguration(TestTraceHeaderObservationFilterConfiguration.class)

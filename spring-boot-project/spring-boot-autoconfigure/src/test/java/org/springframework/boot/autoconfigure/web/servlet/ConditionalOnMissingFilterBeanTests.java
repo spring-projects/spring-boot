@@ -46,7 +46,6 @@ class ConditionalOnMissingFilterBeanTests {
 
 	@Test
 	void outcomeWhenValueIsOfMissingBeanReturnsMatch() {
-
 		this.contextRunner.withUserConfiguration(WithoutTestFilterConfig.class, OnMissingWithValueConfig.class)
 			.run((context) -> assertThat(context).satisfies(filterBeanRequirement("myOtherFilter", "testFilter")));
 	}
