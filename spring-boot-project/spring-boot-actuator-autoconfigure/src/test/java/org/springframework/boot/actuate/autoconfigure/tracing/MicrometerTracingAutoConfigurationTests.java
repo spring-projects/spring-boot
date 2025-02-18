@@ -146,18 +146,6 @@ class MicrometerTracingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldSupplyAspectBeansIfLegacyPropertyIsEnabled() {
-		new ApplicationContextRunner().withPropertyValues("micrometer.observations.annotations.enabled=true")
-			.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class))
-			.withUserConfiguration(TracerConfiguration.class, PropagatorConfiguration.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(DefaultNewSpanParser.class);
-				assertThat(context).hasSingleBean(ImperativeMethodInvocationProcessor.class);
-				assertThat(context).hasSingleBean(SpanAspect.class);
-			});
-	}
-
-	@Test
 	void shouldNotSupplyBeansIfAspectjIsMissing() {
 		this.contextRunner.withUserConfiguration(TracerConfiguration.class)
 			.withClassLoader(new FilteredClassLoader(Advice.class))

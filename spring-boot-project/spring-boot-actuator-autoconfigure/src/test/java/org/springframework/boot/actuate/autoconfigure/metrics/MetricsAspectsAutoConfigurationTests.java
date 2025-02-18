@@ -55,17 +55,6 @@ class MetricsAspectsAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldConfigureAspectsWithLegacyProperty() {
-		new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(MetricsAspectsAutoConfiguration.class))
-			.withPropertyValues("micrometer.observations.annotations.enabled=true")
-			.run((context) -> {
-				assertThat(context).hasSingleBean(CountedAspect.class);
-				assertThat(context).hasSingleBean(TimedAspect.class);
-			});
-	}
-
-	@Test
 	void shouldConfigureAspects() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(CountedAspect.class);
