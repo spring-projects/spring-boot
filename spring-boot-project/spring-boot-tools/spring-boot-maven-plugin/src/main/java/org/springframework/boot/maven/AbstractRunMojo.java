@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,7 +39,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import org.springframework.boot.loader.tools.FileUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.maven.ClasspathBuilder.Classpath;
 
 /**
  * Base class to run a Spring Boot application.
@@ -338,43 +333,17 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private void addClasspath(List<String> args) throws MojoExecutionException {
 		try {
-			StringBuilder classpath = new StringBuilder();
-			for (URL ele : getClassPathUrls()) {
-				if (!classpath.isEmpty()) {
-					classpath.append(File.pathSeparator);
-				}
-				classpath.append(new File(ele.toURI()));
-			}
+			Classpath classpath = ClasspathBuilder.forURLs(getClassPathUrls()).build();
 			if (getLog().isDebugEnabled()) {
-				getLog().debug("Classpath for forked process: " + classpath);
+				getLog().debug("Classpath for forked process: "
+						+ classpath.elements().map(Object::toString).collect(Collectors.joining(File.separator)));
 			}
 			args.add("-cp");
-			if (needsClasspathArgFile()) {
-				args.add("@" + ArgFile.create(classpath).path());
-			}
-			else {
-				args.add(classpath.toString());
-			}
+			args.add(classpath.argument());
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
 		}
-	}
-
-	private boolean needsClasspathArgFile() {
-		// Windows limits the maximum command length, so we use an argfile there
-		return runsOnWindows();
-	}
-
-	private boolean runsOnWindows() {
-		String os = System.getProperty("os.name");
-		if (!StringUtils.hasLength(os)) {
-			if (getLog().isWarnEnabled()) {
-				getLog().warn("System property os.name is not set");
-			}
-			return false;
-		}
-		return os.toLowerCase(Locale.ROOT).contains("win");
 	}
 
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
@@ -447,39 +416,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				return String.format("-D%s", key);
 			}
 			return String.format("-D%s=\"%s\"", key, value);
-		}
-
-	}
-
-	record ArgFile(Path path) {
-
-		private void write(CharSequence content) throws IOException {
-			Files.writeString(this.path, "\"" + escape(content) + "\"", getCharset());
-		}
-
-		private Charset getCharset() {
-			String nativeEncoding = System.getProperty("native.encoding");
-			if (nativeEncoding == null) {
-				return Charset.defaultCharset();
-			}
-			try {
-				return Charset.forName(nativeEncoding);
-			}
-			catch (UnsupportedCharsetException ex) {
-				return Charset.defaultCharset();
-			}
-		}
-
-		private String escape(CharSequence content) {
-			return content.toString().replace("\\", "\\\\");
-		}
-
-		static ArgFile create(CharSequence content) throws IOException {
-			Path tempFile = Files.createTempFile("spring-boot-", ".argfile");
-			tempFile.toFile().deleteOnExit();
-			ArgFile argFile = new ArgFile(tempFile);
-			argFile.write(content);
-			return argFile;
 		}
 
 	}
