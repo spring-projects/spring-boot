@@ -51,27 +51,30 @@ class ClasspathBuilder {
 	}
 
 	/**
-	 * Builds a classpath string or an argument file representing the classpath, depending
-	 * on the operating system.
-	 * @param urls an array of {@link URL} representing the elements of the classpath
-	 * @return the classpath; on Windows, the path to an argument file is returned,
-	 * prefixed with '@'
+	 * Creates a ClasspathBuilder instance using the specified list of URLs.
+	 * @param urls a list of {@link URL} objects representing the elements of the
+	 * classpath
+	 * @return a new instance of {@code ClasspathBuilder}
 	 */
 	static ClasspathBuilder forURLs(List<URL> urls) {
 		return new ClasspathBuilder(new ArrayList<>(urls));
 	}
 
 	/**
-	 * Builds a classpath string or an argument file representing the classpath, depending
-	 * on the operating system.
-	 * @param urls an array of {@link URL} representing the elements of the classpath
-	 * @return the classpath; on Windows, the path to an argument file is returned,
-	 * prefixed with '@'
+	 * Creates a ClasspathBuilder instance using the specified array of URLs.
+	 * @param urls an array of {@link URL} objects representing the elements of the
+	 * classpath
+	 * @return a new instance of {@code ClasspathBuilder}
 	 */
 	static ClasspathBuilder forURLs(URL... urls) {
 		return new ClasspathBuilder(Arrays.asList(urls));
 	}
 
+	/**
+	 * Builds {@link Classpath} that containing a classpath argument and its corresponding
+	 * classpath elements.
+	 * @return a {@code Classpath}
+	 */
 	Classpath build() {
 		if (ObjectUtils.isEmpty(this.urls)) {
 			return new Classpath("", Collections.emptyList());
@@ -88,6 +91,13 @@ class ClasspathBuilder {
 		return new Classpath(argument, files);
 	}
 
+	/**
+	 * Determines if an argument file should be used for the classpath based on the
+	 * operating system. On Windows, argument files are used due to the command length
+	 * limitation.
+	 * @return {@code true} if an argument file is required for the classpath,
+	 * {@code false} otherwise
+	 */
 	protected boolean needsClasspathArgFile() {
 		String os = System.getProperty("os.name");
 		if (!StringUtils.hasText(os)) {
@@ -145,6 +155,9 @@ class ClasspathBuilder {
 		}
 	}
 
+	/**
+	 * Classpath consisting of a {@code -cp} argument and its associated elements.
+	 */
 	static final class Classpath {
 
 		private final String argument;
@@ -157,7 +170,8 @@ class ClasspathBuilder {
 		}
 
 		/**
-		 * Return the {@code -cp} argument value.
+		 * Return the {@code -cp} argument value; on Windows, the path to an argument file
+		 * is returned, prefixed with '@'.
 		 * @return the argument to use
 		 */
 		String argument() {
