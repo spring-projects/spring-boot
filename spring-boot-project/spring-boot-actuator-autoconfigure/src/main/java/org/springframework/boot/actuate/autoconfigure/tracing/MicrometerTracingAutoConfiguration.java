@@ -158,11 +158,6 @@ public class MicrometerTracingAutoConfiguration {
 			super(ConfigurationPhase.PARSE_CONFIGURATION);
 		}
 
-		@ConditionalOnBooleanProperty("micrometer.observations.annotations.enabled")
-		static class MicrometerObservationsEnabledCondition {
-
-		}
-
 		@ConditionalOnBooleanProperty("management.observations.annotations.enabled")
 		static class ManagementObservationsEnabledCondition {
 
