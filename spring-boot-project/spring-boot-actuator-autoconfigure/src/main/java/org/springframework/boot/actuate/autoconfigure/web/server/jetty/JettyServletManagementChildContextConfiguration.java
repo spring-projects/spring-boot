@@ -20,7 +20,6 @@ import org.eclipse.jetty.server.Server;
 
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -36,12 +35,12 @@ import org.springframework.context.annotation.Bean;
  */
 @ConditionalOnClass(Server.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
-@EnableConfigurationProperties(ManagementServerProperties.class)
+@EnableConfigurationProperties(JettyManagementServerProperties.class)
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 class JettyServletManagementChildContextConfiguration {
 
 	@Bean
-	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(ManagementServerProperties properties) {
+	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer(JettyManagementServerProperties properties) {
 		return new JettyAccessLogCustomizer(properties);
 	}
 

@@ -20,7 +20,6 @@ import org.apache.catalina.startup.Tomcat;
 
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -37,13 +36,13 @@ import org.springframework.context.annotation.Bean;
  */
 @ConditionalOnClass(Tomcat.class)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
-@EnableConfigurationProperties(ManagementServerProperties.class)
+@EnableConfigurationProperties(TomcatManagementServerProperties.class)
 @ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 class TomcatReactiveManagementChildContextConfiguration {
 
 	@Bean
 	TomcatAccessLogCustomizer<TomcatReactiveWebServerFactory> tomcatManagementAccessLogCustomizer(
-			ManagementServerProperties properties) {
+			TomcatManagementServerProperties properties) {
 		return new TomcatAccessLogCustomizer<>(properties, TomcatReactiveWebServerFactory::getEngineValves);
 	}
 

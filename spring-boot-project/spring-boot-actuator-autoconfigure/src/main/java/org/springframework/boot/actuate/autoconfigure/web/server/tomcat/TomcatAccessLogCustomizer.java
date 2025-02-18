@@ -23,7 +23,6 @@ import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
 
 import org.springframework.boot.actuate.autoconfigure.web.server.AccessLogCustomizer;
-import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.web.server.tomcat.ConfigurableTomcatWebServerFactory;
 
 /**
@@ -36,9 +35,9 @@ class TomcatAccessLogCustomizer<T extends ConfigurableTomcatWebServerFactory> ex
 
 	private final Function<T, Collection<Valve>> engineValvesExtractor;
 
-	TomcatAccessLogCustomizer(ManagementServerProperties properties,
+	TomcatAccessLogCustomizer(TomcatManagementServerProperties properties,
 			Function<T, Collection<Valve>> engineValvesExtractor) {
-		super(properties.getTomcat().getAccesslog().getPrefix());
+		super(properties.getAccesslog().getPrefix());
 		this.engineValvesExtractor = engineValvesExtractor;
 	}
 
