@@ -2541,10 +2541,6 @@ bom {
 	}
 	library("Tomcat", "${tomcatVersion}") {
 		prohibit {
-			versionRange "[10.1.35]"
-			because "https://bz.apache.org/bugzilla/show_bug.cgi?id=69576"
-		}
-		prohibit {
 			versionRange "[11.0.0-M1,)"
 			because "it exceeds our Jakarte EE 10 baseline"
 		}
