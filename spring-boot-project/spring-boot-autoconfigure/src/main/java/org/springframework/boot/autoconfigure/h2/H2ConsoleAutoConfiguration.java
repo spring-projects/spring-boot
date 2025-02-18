@@ -113,7 +113,10 @@ public class H2ConsoleAutoConfiguration {
 		}
 
 		private List<String> getConnectionUrls(ObjectProvider<DataSource> dataSources) {
-			return dataSources.orderedStream().map(this::getConnectionUrl).filter(Objects::nonNull).toList();
+			return dataSources.orderedStream(ObjectProvider.UNFILTERED)
+				.map(this::getConnectionUrl)
+				.filter(Objects::nonNull)
+				.toList();
 		}
 
 		private String getConnectionUrl(DataSource dataSource) {

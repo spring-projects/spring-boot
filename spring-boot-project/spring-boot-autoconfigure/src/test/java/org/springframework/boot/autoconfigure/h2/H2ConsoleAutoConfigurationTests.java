@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2024 the original author or authors.
+ * Copyright 2012-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,6 +163,17 @@ class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
+	@ExtendWith(OutputCaptureExtension.class)
+	void allDataSourceUrlsAreLoggedWhenNonCandidate(CapturedOutput output) {
+		ClassLoader webAppClassLoader = new URLClassLoader(new URL[0]);
+		this.contextRunner.withClassLoader(webAppClassLoader)
+			.withUserConfiguration(FailingDataSourceConfiguration.class, MultiDataSourceNonCandidateConfiguration.class)
+			.withPropertyValues("spring.h2.console.enabled=true")
+			.run((context) -> assertThat(output).contains(
+					"H2 console available at '/h2-console'. Databases available at 'someJdbcUrl', 'anotherJdbcUrl'"));
+	}
+
+	@Test
 	void h2ConsoleShouldNotFailIfDatabaseConnectionFails() {
 		this.contextRunner.withUserConfiguration(FailingDataSourceConfiguration.class)
 			.withPropertyValues("spring.h2.console.enabled=true")
@@ -185,6 +196,20 @@ class H2ConsoleAutoConfigurationTests {
 			});
 	}
 
+	private static DataSource mockDataSource(String url, ClassLoader classLoader) throws SQLException {
+		DataSource dataSource = mock(DataSource.class);
+		given(dataSource.getConnection()).will((invocation) -> {
+			assertThat(Thread.currentThread().getContextClassLoader()).isEqualTo(classLoader);
+			Connection connection = mock(Connection.class);
+			DatabaseMetaData metadata = mock(DatabaseMetaData.class);
+			given(connection.getMetaData()).willReturn(metadata);
+			given(metadata.getURL()).willReturn(url);
+			return connection;
+		});
+
+		return dataSource;
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class FailingDataSourceConfiguration {
 
@@ -203,27 +228,30 @@ class H2ConsoleAutoConfigurationTests {
 		@Bean
 		@Order(5)
 		DataSource anotherDataSource() throws SQLException {
-			return mockDataSource("anotherJdbcUrl");
+			return mockDataSource("anotherJdbcUrl", getClass().getClassLoader());
 		}
 
 		@Bean
 		@Order(0)
 		DataSource someDataSource() throws SQLException {
-			return mockDataSource("someJdbcUrl");
+			return mockDataSource("someJdbcUrl", getClass().getClassLoader());
 		}
 
-		private DataSource mockDataSource(String url) throws SQLException {
-			DataSource dataSource = mock(DataSource.class);
-			given(dataSource.getConnection()).will((invocation) -> {
-				assertThat(Thread.currentThread().getContextClassLoader()).isEqualTo(getClass().getClassLoader());
-				Connection connection = mock(Connection.class);
-				DatabaseMetaData metadata = mock(DatabaseMetaData.class);
-				given(connection.getMetaData()).willReturn(metadata);
-				given(metadata.getURL()).willReturn(url);
-				return connection;
-			});
+	}
 
-			return dataSource;
+	@Configuration(proxyBeanMethods = false)
+	static class MultiDataSourceNonCandidateConfiguration {
+
+		@Bean
+		@Order(5)
+		DataSource anotherDataSource() throws SQLException {
+			return mockDataSource("anotherJdbcUrl", getClass().getClassLoader());
+		}
+
+		@Bean(defaultCandidate = false)
+		@Order(0)
+		DataSource nonDefaultDataSource() throws SQLException {
+			return mockDataSource("someJdbcUrl", getClass().getClassLoader());
 		}
 
 	}
