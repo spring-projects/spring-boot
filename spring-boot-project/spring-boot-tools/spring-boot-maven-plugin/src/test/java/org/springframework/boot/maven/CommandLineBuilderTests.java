@@ -119,9 +119,12 @@ class CommandLineBuilderTests {
 
 	@Test
 	void buildAndRunWithLongClassPath() throws IOException, InterruptedException {
-		URL[] urls = Arrays.stream(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
-			.map(this::toURL)
-			.toArray(URL[]::new);
+		StringBuilder classPath = new StringBuilder(ManagementFactory.getRuntimeMXBean().getClassPath());
+		// Simulates [CreateProcess error=206, The filename or extension is too long]
+		while (classPath.length() < 35000) {
+			classPath.append(File.pathSeparator).append(classPath);
+		}
+		URL[] urls = Arrays.stream(classPath.toString().split(File.pathSeparator)).map(this::toURL).toArray(URL[]::new);
 		List<String> command = CommandLineBuilder.forMainClass(ClassWithMainMethod.class.getName())
 			.withClasspath(urls)
 			.build();
