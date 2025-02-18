@@ -73,14 +73,6 @@
     <requirement
         name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
-        name="org.eclipse.jst.server_adapters.feature.feature.group"/>
-    <requirement
-        name="org.eclipse.jst.server_adapters.ext.feature.feature.group"/>
-    <requirement
-        name="org.eclipse.jst.server_ui.feature.feature.group"/>
-    <requirement
-        name="org.eclipse.jst.web_ui.feature.feature.group"/>
-    <requirement
         name="org.eclipse.m2e.feature.feature.group"/>
     <requirement
         name="org.eclipse.oomph.setup.maven.feature.group"/>
