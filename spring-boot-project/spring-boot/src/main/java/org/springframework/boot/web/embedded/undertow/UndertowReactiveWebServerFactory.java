@@ -112,6 +112,11 @@ public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerF
 		this.delegate.setAccessLogPattern(accessLogPattern);
 	}
 
+	/**
+	 * Returns the access log prefix.
+	 * @return the access log prefix
+	 * @since 3.5.0
+	 */
 	public String getAccessLogPrefix() {
 		return this.delegate.getAccessLogPrefix();
 	}
