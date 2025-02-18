@@ -69,12 +69,4 @@ class ManagementServerPropertiesTests {
 		assertThat(properties.getBasePath()).isEmpty();
 	}
 
-	@Test
-	void accessLogsArePrefixedByDefault() {
-		ManagementServerProperties properties = new ManagementServerProperties();
-		assertThat(properties.getTomcat().getAccesslog().getPrefix()).isEqualTo("management_");
-		assertThat(properties.getJetty().getAccesslog().getPrefix()).isEqualTo("management_");
-		assertThat(properties.getUndertow().getAccesslog().getPrefix()).isEqualTo("management_");
-	}
-
 }
