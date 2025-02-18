@@ -17,12 +17,8 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,32 +39,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ClasspathBuilderTests {
 
-	@Test
-	@DisabledOnOs(OS.WINDOWS)
-	void buildWithMultipleClassPathURLs(@TempDir Path tempDir) throws Exception {
-		Path file = tempDir.resolve("test.jar");
-		Path file1 = tempDir.resolve("test1.jar");
-		assertThat(ClasspathBuilder.forURLs(file.toUri().toURL(), file1.toUri().toURL()).build().argument())
-			.isEqualTo(file + File.pathSeparator + file1);
-	}
-
-	@Test
-	@EnabledOnOs(OS.WINDOWS)
-	void buildWithMultipleClassPathURLsOnWindows(@TempDir Path tempDir) throws Exception {
-		Path file = tempDir.resolve("test.jar");
-		Path file1 = tempDir.resolve("test1.jar");
-		String classpath = ClasspathBuilder.forURLs(file.toUri().toURL(), file1.toUri().toURL()).build().argument();
-		assertThat(classpath).startsWith("@");
-		assertThat(Paths.get(classpath.substring(1)))
-			.hasContent("\"" + (file + File.pathSeparator + file1).replace("\\", "\\\\") + "\"");
-	}
-
 	@Nested
+	@EnabledOnOs(OS.WINDOWS)
 	class WindowsTests {
 
 		@Test
-		void buildWithEmptyClassPath() throws MalformedURLException {
-			Classpath classpath = classPathBuilder().build();
+		void buildWithEmptyClassPath() {
+			Classpath classpath = ClasspathBuilder.forURLs().build();
 			assertThat(classpath.argument()).isEmpty();
 			assertThat(classpath.elements()).isEmpty();
 		}
@@ -76,7 +53,7 @@ class ClasspathBuilderTests {
 		@Test
 		void buildWithSingleClassPathURL(@TempDir Path tempDir) throws Exception {
 			Path file = tempDir.resolve("test.jar");
-			Classpath classpath = classPathBuilder(file).build();
+			Classpath classpath = ClasspathBuilder.forURLs(file.toUri().toURL()).build();
 			assertThat(classpath.argument()).isEqualTo(file.toString());
 			assertThat(classpath.elements()).singleElement().isEqualTo(file);
 		}
@@ -84,25 +61,22 @@ class ClasspathBuilderTests {
 		@Test
 		void buildWithMultipleClassPathURLs(@TempDir Path tempDir) throws Exception {
 			Path file = tempDir.resolve("test.jar");
-			Path file2 = tempDir.resolve("test2.jar");
-			Classpath classpath = classPathBuilder(file, file2).build();
-			assertThat(classpath.argument()).startsWith("@");
-			assertThat(Paths.get(classpath.argument().substring(1)))
-				.hasContent("\"" + (file + File.pathSeparator + file2).replace("\\", "\\\\") + "\"");
-		}
-
-		private ClasspathBuilder classPathBuilder(Path... files) throws MalformedURLException {
-			return new TestClasspathBuilder(true, files);
+			Path file1 = tempDir.resolve("test1.jar");
+			String classpath = ClasspathBuilder.forURLs(file.toUri().toURL(), file1.toUri().toURL()).build().argument();
+			assertThat(classpath).startsWith("@");
+			assertThat(Paths.get(classpath.substring(1)))
+				.hasContent("\"" + (file + File.pathSeparator + file1).replace("\\", "\\\\") + "\"");
 		}
 
 	}
 
 	@Nested
+	@DisabledOnOs(OS.WINDOWS)
 	class UnixTests {
 
 		@Test
-		void buildWithEmptyClassPath() throws MalformedURLException {
-			Classpath classpath = classPathBuilder().build();
+		void buildWithEmptyClassPath() {
+			Classpath classpath = ClasspathBuilder.forURLs().build();
 			assertThat(classpath.argument()).isEmpty();
 			assertThat(classpath.elements()).isEmpty();
 		}
@@ -110,7 +84,7 @@ class ClasspathBuilderTests {
 		@Test
 		void buildWithSingleClassPathURL(@TempDir Path tempDir) throws Exception {
 			Path file = tempDir.resolve("test.jar");
-			Classpath classpath = classPathBuilder(file).build();
+			Classpath classpath = ClasspathBuilder.forURLs(file.toUri().toURL()).build();
 			assertThat(classpath.argument()).isEqualTo(file.toString());
 			assertThat(classpath.elements()).singleElement().isEqualTo(file);
 		}
@@ -118,38 +92,9 @@ class ClasspathBuilderTests {
 		@Test
 		void buildWithMultipleClassPathURLs(@TempDir Path tempDir) throws Exception {
 			Path file = tempDir.resolve("test.jar");
-			Path file2 = tempDir.resolve("test2.jar");
-			Classpath classpath = classPathBuilder(file, file2).build();
-			assertThat(classpath.argument()).doesNotStartWith("@")
-				.isEqualTo((file + File.pathSeparator + file2).replace("\\", "\\\\"));
-		}
-
-		private ClasspathBuilder classPathBuilder(Path... files) throws MalformedURLException {
-			return new TestClasspathBuilder(false, files);
-		}
-
-	}
-
-	private static class TestClasspathBuilder extends ClasspathBuilder {
-
-		private final boolean needsClasspathArgFile;
-
-		protected TestClasspathBuilder(boolean needsClasspathArgFile, Path... files) throws MalformedURLException {
-			super(toURLs(files));
-			this.needsClasspathArgFile = needsClasspathArgFile;
-		}
-
-		private static List<URL> toURLs(Path... files) throws MalformedURLException {
-			List<URL> urls = new ArrayList<>();
-			for (Path file : files) {
-				urls.add(file.toUri().toURL());
-			}
-			return urls;
-		}
-
-		@Override
-		protected boolean needsClasspathArgFile() {
-			return this.needsClasspathArgFile;
+			Path file1 = tempDir.resolve("test1.jar");
+			assertThat(ClasspathBuilder.forURLs(file.toUri().toURL(), file1.toUri().toURL()).build().argument())
+				.isEqualTo(file + File.pathSeparator + file1);
 		}
 
 	}
