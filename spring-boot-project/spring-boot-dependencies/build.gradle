@@ -2427,6 +2427,10 @@ bom {
 		}
 	}
 	library("Tomcat", "${tomcatVersion}") {
+		prohibit {
+			versionRange "[10.1.35,10.1.36]"
+			because "https://bz.apache.org/bugzilla/show_bug.cgi?id=69576 and related problems in 10.1.36"
+		}
 		group("org.apache.tomcat") {
 			modules = [
 				"tomcat-annotations-api",
