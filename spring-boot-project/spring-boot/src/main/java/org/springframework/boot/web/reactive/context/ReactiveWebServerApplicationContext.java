@@ -65,7 +65,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		try {
 			super.refresh();
 		}
-		catch (RuntimeException refreshEx) {
+		catch (RuntimeException ex) {
 			WebServer webServer = getWebServer();
 			if (webServer != null) {
 				try {
@@ -73,10 +73,10 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 					webServer.destroy();
 				}
 				catch (RuntimeException stopOrDestroyEx) {
-					refreshEx.addSuppressed(stopOrDestroyEx);
+					ex.addSuppressed(stopOrDestroyEx);
 				}
 			}
-			throw refreshEx;
+			throw ex;
 		}
 	}
 
