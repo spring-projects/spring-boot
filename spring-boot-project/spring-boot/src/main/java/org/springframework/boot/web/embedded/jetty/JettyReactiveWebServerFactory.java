@@ -249,6 +249,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private void customizeSsl(Server server, InetSocketAddress address) {
+		Assert.state(getSsl().getServerNameBundles().isEmpty(), "Server name SSL bundles are not supported with Jetty");
 		new SslServerCustomizer(getHttp2(), address, getSsl().getClientAuth(), getSslBundle()).customize(server);
 	}
 
