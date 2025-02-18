@@ -146,10 +146,15 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 			super.refresh();
 		}
 		catch (RuntimeException ex) {
-			WebServer webServer = this.webServer;
-			if (webServer != null) {
-				webServer.stop();
-				webServer.destroy();
+			try {
+				WebServer webServer = this.webServer;
+				if (webServer != null) {
+					webServer.stop();
+					webServer.destroy();
+				}
+			}
+			catch (RuntimeException stopOrDestroyEx) {
+				ex.addSuppressed(stopOrDestroyEx);
 			}
 			throw ex;
 		}
